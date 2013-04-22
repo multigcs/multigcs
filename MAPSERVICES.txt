@@ -1,0 +1,50 @@
+## Overview (MAP-Tile-Services)
+http://bcdcspatial.blogspot.de/2012/01/onlineoffline-mapping-map-tiles-and.html
+--------------------------------------------------------------------------------------------------
+
+## ArcGIS Server Tiled Map Service Template:
+http://{SERVER}/tile/{ZOOM_LEVEL}/{ROW}/{COLUMN}.png
+
+## Ovi Maps (Nokia and Yahoo! Maps) Template:
+http://{SERVER}/maptiler/v2/maptile/???/{STYLE}/{ZOOM_LEVEL}/{COLUMN}/{ROW}/{SIZE}/{IMG_FORMAT}?token={TOKEN}&lg={LOCALE}
+
+## Bing Maps Tile Template:
+def tileXYZToQuadKey(x, y, z):
+    quadKey = ''
+    for i in range(z, 0, -1):
+        digit = 0
+        mask = 1 << (i - 1)
+        if(x & mask) != 0:
+            digit += 1
+        if(y & mask) != 0:
+            digit += 2
+        quadKey += str(digit)
+    return quadKey
+>>> print tileXYZToQuadKey(2, 6, 4)
+0230
+>>> 
+http://{SERVER}/tiles/a{QUAD_KEY}.jpeg?token={TOKEN}&mkt={LOCALE}&g={??}
+http://t0.tiles.virtualearth.net/tiles/a0230.jpeg?g=854&mkt=en-US&token=Anz84uRE1RULeLwuJ0qKu5amcu5rugRXy1vKc27wUaKVyIv1SVZrUjqaOfXJJoI0
+
+##
+char *tileXYZToQuadKey(char *quadKey, int x, int y, int z) {
+	int i = 0;
+	int n = 0;
+	for (i = z; i > 0; i--) {
+		int digit = 0;
+	        uint8_t mask = 1<<(i - 1);
+		if ((x & mask) != 0) {
+	            digit += 1;
+		}
+		if ((y & mask) != 0) {
+	            digit += 2;
+		}
+//		printf("__ %i __\n", digit);
+		quadKey[n++] = (digit + 48);
+		quadKey[n] = 0;
+	}
+	return quadKey;
+}
+##
+
+
