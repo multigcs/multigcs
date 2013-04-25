@@ -442,8 +442,11 @@ void screen_hud (ESContext *esContext) {
 			draw_box_f3c2(esContext, -2.5f, -2.5f, -0.001, 2.5f, 0.0f, -0.001, 0x01, 0x8e, 0xea, 100, 0x01, 0x8e, 0xea, 255); // blue
 			draw_box_f3c2(esContext, -2.5f, 0.0f, -0.001, 2.5f, 2.5f, -0.001, 0xb1, 0x56, 0x1f, 255, 0xb1, 0x56, 0x1f, 100);  // brown
 #else
-			draw_image_f3(esContext, -2.5f, -2.5f, 2.5f, 0.0f, -0.001, "/usr/share/gl-gcs/textures/blue.png"); // blue
-			draw_image_f3(esContext, -2.5f, 0.0f, 2.5f, 2.5f, -0.001, "/usr/share/gl-gcs/textures/brown.png"); // brown
+			char tmp_str[128];
+			sprintf(tmp_str, "%s/textures/blue.png", BASE_DIR);
+			draw_image_f3(esContext, -2.5f, -2.5f, 2.5f, 0.0f, -0.001, tmp_str); // blue
+			sprintf(tmp_str, "%s/textures/brown.png", BASE_DIR);
+			draw_image_f3(esContext, -2.5f, 0.0f, 2.5f, 2.5f, -0.001, tmp_str); // brown
 #endif
 		}
 	}

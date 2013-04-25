@@ -114,6 +114,7 @@ void screen_filesystem (ESContext *esContext) {
 	reset_buttons();
 	draw_box_f3(esContext, -1.5, -1.0, 0.002, 1.5, 1.0, 0.002, 0, 0, 0, 200);
 
+	char image_path[128];
 	DIR *dir = NULL;
 	struct dirent *dir_entry = NULL;
 	struct stat statbuf;
@@ -130,7 +131,8 @@ void screen_filesystem (ESContext *esContext) {
 				if (filesystem_page == n2) {
 					sprintf(new_path, "%s", directory);
 					dirname(new_path);
-					draw_image_f3(esContext, -1.0 - 0.12, -0.8 + n * 0.1 - 0.02, -1.0 - 0.12 + 0.1, -0.8 + n * 0.1 - 0.02 + 0.1, 0.002, "/usr/share/gl-gcs/textures/folder.png");
+					sprintf(image_path, "%s/textures/folder.png", BASE_DIR);
+					draw_image_f3(esContext, -1.0 - 0.12, -0.8 + n * 0.1 - 0.02, -1.0 - 0.12 + 0.1, -0.8 + n * 0.1 - 0.02 + 0.1, 0.002, image_path);
 					draw_button(esContext, new_path, view_mode, dir_entry->d_name, FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, filesystem_dir_open, 0.0);
 				}
 				n++;
@@ -152,7 +154,8 @@ void screen_filesystem (ESContext *esContext) {
 					if (statbuf.st_mode&S_IFDIR) {
 						if (filesystem_page == n2) {
 							sprintf(tmp_str, "%s", dir_entry->d_name);
-							draw_image_f3(esContext, -1.0 - 0.12, -0.8 + n * 0.1 - 0.02, -1.0 - 0.12 + 0.1, -0.8 + n * 0.1 - 0.02 + 0.1, 0.002, "/usr/share/gl-gcs/textures/folder.png");
+							sprintf(image_path, "%s/textures/folder.png", BASE_DIR);
+							draw_image_f3(esContext, -1.0 - 0.12, -0.8 + n * 0.1 - 0.02, -1.0 - 0.12 + 0.1, -0.8 + n * 0.1 - 0.02 + 0.1, 0.002, image_path);
 							draw_button(esContext, new_path, view_mode, tmp_str, FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, filesystem_dir_open, 0.0);
 						}
 						n++;
@@ -180,7 +183,8 @@ void screen_filesystem (ESContext *esContext) {
 							if (strstr(dir_entry->d_name, ".png\0") > 0) {
 								draw_image_f3(esContext, -1.0 - 0.12, -0.8 + n * 0.1 - 0.02, -1.0 - 0.12 + 0.1, -0.8 + n * 0.1 - 0.02 + 0.1, 0.002, new_path);
 							} else {
-								draw_image_f3(esContext, -1.0 - 0.12, -0.8 + n * 0.1 - 0.02, -1.0 - 0.12 + 0.1, -0.8 + n * 0.1 - 0.02 + 0.1, 0.002, "/usr/share/gl-gcs/textures/file.png");
+								sprintf(image_path, "%s/textures/file.png", BASE_DIR);
+								draw_image_f3(esContext, -1.0 - 0.12, -0.8 + n * 0.1 - 0.02, -1.0 - 0.12 + 0.1, -0.8 + n * 0.1 - 0.02 + 0.1, 0.002, image_path);
 							}
 							draw_button(esContext, new_path, view_mode, tmp_str, FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, filesystem_name_save, 0.0);
 						}

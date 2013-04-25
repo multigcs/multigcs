@@ -35,12 +35,32 @@
 Tcl_Interp *tcl_interp;
 static uint8_t tcl_startup = 0;
 
+
+void TclUpdateVarFloat (char *name, float val);
+void TclUpdateVarInt (char *name, int val);
+void TclUpdateVarString (char *name, char *val_str);
+
 #include <tcl_draw.c>
 #include <tcl_gl_draw.c>
-#include <tcl_modeldata.c>
-#include <tcl_modeldatavar.c>
+#include <tcl_modeldata.h>
+#include <tcl_modeldatavar.h>
 
 
+void TclUpdateVarFloat (char *name, float val) {
+	char val_str[20];
+	sprintf(val_str, "%f", val);
+	Tcl_SetVar(tcl_interp, name, val_str, 0);
+}
+
+void TclUpdateVarInt (char *name, int val) {
+	char val_str[20];
+	sprintf(val_str, "%i", val);
+	Tcl_SetVar(tcl_interp, name, val_str, 0);
+}
+
+void TclUpdateVarString (char *name, char *val_str) {
+	Tcl_SetVar(tcl_interp, name, val_str, 0);
+}
 
 static int Hello_Cmd (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	long n1;
@@ -90,7 +110,7 @@ void tcl_run (char *script) {
 	if (tcl_startup == 0) {
 		tcl_init();
 	}
-	tcl_update_modeldata(tcl_interp);
+	tcl_update_modeldata();
 	if (Tcl_Eval(tcl_interp, script) != TCL_OK) {
 		printf("TCL-ERROR:\n");
 		printf("#######################################################\n");
@@ -104,8 +124,9 @@ void tcl_run (char *script) {
 void tcl_runFile (char *file) {
 	if (tcl_startup == 0) {
 		tcl_init();
+		TclUpdateVarString("BASE_DIR", BASE_DIR);
 	}
-	tcl_update_modeldata(tcl_interp);
+	tcl_update_modeldata();
 	if (Tcl_EvalFile(tcl_interp, file) != TCL_OK) {
 		printf("TCL-ERROR:\n");
 		printf("#######################################################\n");
@@ -128,18 +149,9 @@ void screen_tcl (ESContext *esContext) {
 	UserData *userData = esContext->userData;
 #endif
 
-
-	tcl_runFile("screen_tcl.tcl");
-
-
-/*
-	tcl_run("draw_title tcl-interpreter");
-	tcl_run("draw_text_f3 0.2 0.2 0.0 0.5 0.5 /usr/share/gl-gcs/fonts/font6.png hallo");
-	tcl_run("draw_line_f -0.6 -0.6 0.6 0.6 255 0 0 255");
-	tcl_run("puts $ModelData(name)");
-*/
-
-//	draw_button(esContext, "tcl_test", VIEW_MODE_TCL, "<TCL TEST>", FONT_GREEN, 0.0, -0.8 + 9 * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, tcl_test, 0.0);
+	char scriptfile[1024];
+	sprintf(scriptfile, "%s/scripts/screen_tcl.tcl", BASE_DIR);
+	tcl_runFile(scriptfile);
 
 }
 

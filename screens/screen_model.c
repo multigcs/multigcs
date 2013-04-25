@@ -138,8 +138,9 @@ static uint8_t model_save_xml (char *name, float x, float y, int8_t button, floa
 	int16_t n = 0;
         FILE *fr;
 	char tmp_str[128];
-	system("mkdir -p /usr/share/gl-gcs/models");
-	sprintf(tmp_str, "/usr/share/gl-gcs/models/%s", name);
+	sprintf(tmp_str, "mkdir -p %s/models", BASE_DIR);
+	system(tmp_str);
+	sprintf(tmp_str, "%s/models/%s", BASE_DIR, name);
         fr = fopen(tmp_str, "w");
 	if (fr != 0) {
 		fprintf(fr, "<rcflow>\n");
@@ -400,7 +401,9 @@ static uint8_t model_load_xml (char *name, float x, float y, int8_t button, floa
 
 static uint8_t model_load (char *name, float x, float y, int8_t button, float data) {
 	reset_buttons();
-	filesystem_set_dir("/usr/share/gl-gcs/models");
+	char tmp_str[128];
+	sprintf(tmp_str, "%s/models", BASE_DIR);
+	filesystem_set_dir(tmp_str);
 	filesystem_set_callback(model_load_xml);
 	filesystem_reset_filter();
 	filesystem_add_filter(".xml\0");
@@ -417,7 +420,9 @@ static uint8_t model_image_set (char *name, float x, float y, int8_t button, flo
 
 static uint8_t model_image_change (char *name, float x, float y, int8_t button, float data) {
 	reset_buttons();
-	filesystem_set_dir("/usr/share/gl-gcs");
+	char tmp_str[128];
+	sprintf(tmp_str, "%s", BASE_DIR);
+	filesystem_set_dir(tmp_str);
 	filesystem_set_callback(model_image_set);
 	filesystem_reset_filter();
 	filesystem_add_filter(".png\0");
@@ -459,7 +464,7 @@ void screen_model (ESContext *esContext) {
 
 	draw_button(esContext, "model_type", VIEW_MODE_MODEL, "TYPE:", FONT_WHITE, -1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_modeltype_change, 0);
 	draw_button(esContext, "modeltype_change", VIEW_MODE_MODEL, modeltypes[ModelData.modeltype], FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_modeltype_change, 0);
-	sprintf(tmp_str, "/usr/share/gl-gcs/textures/%s.png", modeltypes[ModelData.modeltype]);
+	sprintf(tmp_str, "%s/textures/%s.png", BASE_DIR, modeltypes[ModelData.modeltype]);
 	draw_image_f3(esContext, -1.1 + 1.0, -0.8 + n * 0.12 - 0.02, -1.1 + 1.0 + 0.1, -0.8 + n * 0.12 + 0.1 - 0.02, 0.002, tmp_str);
 	n++;
 

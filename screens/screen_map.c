@@ -509,7 +509,7 @@ uint8_t map_export_kml (char *name, float x, float y, int8_t button, float data)
 		struct list_element *liste = LogLines;
 	        FILE *fr;
 		char filename[100];
-		sprintf(filename, "/usr/share/gl-gcs/%i.kml", 0);
+		sprintf(filename, "%s/%i.kml", BASE_DIR, 0);
 	        fr = fopen(filename, "w");
 		if (fr != 0) {
 			fprintf(fr, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
@@ -1175,7 +1175,9 @@ void mark_poi (ESContext *esContext, float mark_lat, float mark_long, char *text
 	float y1 = (float)mark_y / (float)esContext->height * 2.0 - 1.0;
 	float z2 = (float)get_altitude(mark_lat, mark_long) / alt_zoom;
 	if (type == 1) {
-		draw_image_f3(esContext, x1 - 0.03, y1 - 0.03, x1 + 0.03, y1 + 0.03, z2, "/usr/share/gl-gcs/textures/poi_airport.png");
+		char tmp_str[128];
+		sprintf(tmp_str, "%s/textures/poi_airport.png", BASE_DIR);
+		draw_image_f3(esContext, x1 - 0.03, y1 - 0.03, x1 + 0.03, y1 + 0.03, z2, tmp_str);
 	} else if (type == 2) {
 		draw_circle_f3(esContext, x1, y1, z2, 0.03, 0, 255, 0, 255);
 	} else {
@@ -1234,14 +1236,16 @@ void draw_notam (ESContext *esContext, float lat, float lon, uint8_t zoom) {
 	int min_lon = x2long(0, lon, zoom);
 	int min_lat = y2lat(esContext->height, lat, zoom);
 	int max_lon = x2long(esContext->width, lon, zoom);
-	if (file_exists("/usr/share/gl-gcs/MAPS/Airspace.txt") == 0) {
+	char tmp_str[128];
+	sprintf(tmp_str, "%s/MAPS/Airspace.txt", BASE_DIR);
+	if (file_exists(tmp_str) == 0) {
 		char status_txt[2024];
 		sprintf(status_txt, "getting Airspace-Data: Airspace.txt");
 		sys_message(status_txt);
 		printf("%s\n", status_txt);
-		file_download("/usr/share/gl-gcs/MAPS/Airspace.txt", "http://soaringweb.org/Airspace/DE/Germany_CW10_2013.txt");
+		file_download(tmp_str, "http://soaringweb.org/Airspace/DE/Germany_CW10_2013.txt");
 	}
-        if ((fr = fopen("/usr/share/gl-gcs/MAPS/Airspace.txt", "r")) > 0) {
+        if ((fr = fopen(tmp_str, "r")) > 0) {
 	        while(fgets(line, 200, fr) != NULL) {
 			if (strncmp(line, "AN ", 3) == 0) {
 				flag1 = 1;
@@ -1363,7 +1367,7 @@ Data: http://download.xcsoar.org/waypoints/Germany.cup
 void draw_waypoints_cup (ESContext *esContext, float lat, float lon, uint8_t zoom) {
 	FILE *fr;
 	char line[501];
-	char tmp_str[51];
+	char tmp_str[128];
 	char wp_name[50];
 	char wp_name2[50];
 	float wp_lat = 0.0;
@@ -1373,14 +1377,15 @@ void draw_waypoints_cup (ESContext *esContext, float lat, float lon, uint8_t zoo
 	int min_lon = x2long(0, lon, zoom);
 	int min_lat = y2lat(esContext->height, lat, zoom);
 	int max_lon = x2long(esContext->width, lon, zoom);
-	if (file_exists("/usr/share/gl-gcs/MAPS/Waypoints_Germany.cup") == 0) {
+	sprintf(tmp_str, "%s/MAPS/Waypoints_Germany.cup", BASE_DIR);
+	if (file_exists(tmp_str) == 0) {
 		char status_txt[2024];
-		sprintf(status_txt, "getting Airspace-Data: Germany.cup");
+		sprintf(status_txt, "getting Airspace-Data: %s", tmp_str);
 		sys_message(status_txt);
 		printf("%s\n", status_txt);
-		file_download("/usr/share/gl-gcs/MAPS/Waypoints_Germany.cup", "http://download.xcsoar.org/waypoints/Germany.cup");
+		file_download(tmp_str, "http://download.xcsoar.org/waypoints/Germany.cup");
 	}
-        if ((fr = fopen("/usr/share/gl-gcs/MAPS/Waypoints_Germany.cup", "r")) > 0) {
+        if ((fr = fopen(tmp_str, "r")) > 0) {
 	        while(fgets(line, 500, fr) != NULL) {
 			int n = 0;
 			int last_p = -1;
@@ -1630,7 +1635,9 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 						draw_image(esContext, x_n * 256, y_n * 256, 256, 256, tile_name);
 					}
 				} else {
-					draw_image(esContext, x_n * 256, y_n * 256, 256, 256, "/usr/share/gl-gcs/textures/loading.png");
+					char tmp_str[128];
+					sprintf(tmp_str, "%s/textures/loading.png", BASE_DIR);
+					draw_image(esContext, x_n * 256, y_n * 256, 256, 256, tmp_str);
 				}
 
 				if (omapnames[omap_type][MAP_FILE][0] != 0) {

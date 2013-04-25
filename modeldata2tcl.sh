@@ -10,14 +10,13 @@ static int ModelData_Cmd (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Ob
 	char tmp_str[1024];
 	char data[10000];
 	data[0] = 0;
-" > tcl_modeldata.c
+" > tcl_modeldata.h
 
 echo "
 
 void tcl_update_modeldata (void) {
-	char tmp_str[1024];
 
-" > tcl_modeldatavar.c
+" > tcl_modeldatavar.h
 
 echo "
 	char name[200];
@@ -68,14 +67,18 @@ do
 	if test "$TYPE" = "float"
 	then
 		T="%f"
+		T2="Float"
 	elif echo "$TYPE" | grep -s -q "int"
 	then
 		T="%i"
+		T2="Int"
 	elif echo "$TYPE" | grep -s -q "char"
 	then
 		T="%s"
-		echo "	sprintf(tmp_str, \"{{$NAME} {$T}} \", ModelData.$NAME); strcat(data, tmp_str);" >> tcl_modeldata.c
-		echo "	sprintf(tmp_str, \"set ModelData($NAME) \\\"$T\\\"\", ModelData.$NAME); Tcl_Eval(tcl_interp, tmp_str);" >> tcl_modeldatavar.c
+		T2="String"
+		echo "	sprintf(tmp_str, \"{{$NAME} {$T}} \", ModelData.$NAME); strcat(data, tmp_str);" >> tcl_modeldata.h
+#		echo "	sprintf(tmp_str, \"set ModelData($NAME) \\\"$T\\\"\", ModelData.$NAME); Tcl_Eval(tcl_interp, tmp_str);" >> tcl_modeldatavar.h
+		echo "	TclUpdateVar$T2(\"ModelData($NAME)\", ModelData.$NAME);" >> tcl_modeldatavar.h
 		continue
 	else
 		echo "ERROR: $TYPE ($NAME)"
@@ -86,12 +89,14 @@ do
 		ARRAY="`expr $ARRAY - 1`"
 		for N in `seq 0 $ARRAY`
 		do
-			echo "	sprintf(tmp_str, \"{{$NAME($N)} {$T}} \", ModelData.$NAME[$N]); strcat(data, tmp_str);" >> tcl_modeldata.c
-			echo "	sprintf(tmp_str, \"set ModelData($NAME,$N) \\\"$T\\\"\", ModelData.$NAME[$N]); Tcl_Eval(tcl_interp, tmp_str);" >> tcl_modeldatavar.c
+			echo "	sprintf(tmp_str, \"{{$NAME($N)} {$T}} \", ModelData.$NAME[$N]); strcat(data, tmp_str);" >> tcl_modeldata.h
+#			echo "	sprintf(tmp_str, \"set ModelData($NAME,$N) \\\"$T\\\"\", ModelData.$NAME[$N]); Tcl_Eval(tcl_interp, tmp_str);" >> tcl_modeldatavar.h
+			echo "	TclUpdateVar$T2(\"ModelData($NAME,$N)\", ModelData.$NAME[$N]);" >> tcl_modeldatavar.h
 		done
 	else
-		echo "	sprintf(tmp_str, \"{{$NAME} {$T}} \", ModelData.$NAME); strcat(data, tmp_str);" >> tcl_modeldata.c
-		echo "	sprintf(tmp_str, \"set ModelData($NAME) \\\"$T\\\"\", ModelData.$NAME); Tcl_Eval(tcl_interp, tmp_str);" >> tcl_modeldatavar.c
+		echo "	sprintf(tmp_str, \"{{$NAME} {$T}} \", ModelData.$NAME); strcat(data, tmp_str);" >> tcl_modeldata.h
+#		echo "	sprintf(tmp_str, \"set ModelData($NAME) \\\"$T\\\"\", ModelData.$NAME); Tcl_Eval(tcl_interp, tmp_str);" >> tcl_modeldatavar.h
+		echo "	TclUpdateVar$T2(\"ModelData($NAME)\", ModelData.$NAME);" >> tcl_modeldatavar.h
 	fi
 done
 
@@ -102,12 +107,12 @@ echo "
 	return TCL_OK;
 }
 
-" >> tcl_modeldata.c
+" >> tcl_modeldata.h
 
 echo "
 }
 
-" >> tcl_modeldatavar.c
+" >> tcl_modeldatavar.h
 
 
 

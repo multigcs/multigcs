@@ -1,4 +1,11 @@
 
+
+## Linux-Desktop GLES Version ##
+DEB_DEPENDS = tcl8.5, espeak, coreutils, bluez, imagemagick, ia32-libs,lib32asound2,lib32gcc1,lib32stdc++6,lib32tinfo5,lib32z1,libasound2,libasyncns0,libattr1,libc6,libc6-i386,libcaca0,libcap2,libcomerr2,libcurl3,libdbus-1-3,libdirectfb-1.2-9,libflac8,libfreetype6,libgcc1,libgcrypt11,libgl1-mesa-glx,libgl1-nvidia-glx,libglu1-mesa,libgnutls26,libgpg-error0,libgssapi-krb5-2,libice6,libidn11,libjbig0,libjpeg8,libjson0,libk5crypto3,libkeyutils1,libkrb5-3,libkrb5support0,libldap-2.4-2,libncursesw5,libogg0,libp11-kit0,libpng12-0,libpulse0,librtmp0,libsasl2-2,libsdl1.2debian,libsdl-image1.2,libsdl-ttf2.0-0,libslang2,libsm6,libsndfile1,libssh2-1,libssl1.0.0,libstdc++6,libtasn1-3,libtiff4,libtinfo5,libts-0.0-0,libuuid1,libvorbis0a,libvorbisenc2,libwebp2,libwrap0,libx11-6,libx11-xcb1,libxau6,libxcb1,libxdmcp6,libxext6,libxi6,libxtst6,zlib1g
+DEB_VERSION_NAME = sdl
+EXTRA_OBJECTS = gl_draw.o
+
+
 INCDIR = -I./ -I./Common -I/usr/include/libxml2 -I/usr/include/tcl8.5 -Iscreens -Imavlink -Igps -Imwi21 -Ijeti -Iopenpilot -Ifrsky
 LIBS = -lGL -lm -lX11 -lpng -lcurl -lSDL -lSDL_image -lGLU -ludev -lxml2 -ltcl8.5
 CFLAGS += -DSDLGL -O3 -Wall
@@ -10,81 +17,5 @@ CFLAGS += -DSDLGL -O3 -Wall
 COMMONSRC=
 COMMONHRD=
 
-GCS=main.o serial.o i2c.o gl_draw.o draw.o video.o geomag70.o \
-	screens/screen_rcflow.o screens/screen_keyboard.o screens/screen_filesystem.o screens/screen_device.o screens/screen_baud.o screens/screen_model.o screens/screen_background.o screens/screen_wpedit.o screens/screen_hud.o screens/screen_map.o screens/screen_calibration.o screens/screen_nd.o screens/screen_fms.o screens/screen_system.o screens/screen_tcl.o screens/screen_mavlink_menu.o screens/screen_mwi_menu.o screens/screen_openpilot_menu.o screens/screen_videolist.o screens/screen_graph.o \
-	mavlink/my_mavlink.o gps/my_gps.o mwi21/mwi21.o jeti/jeti.o openpilot/openpilot.o frsky/frsky.o
-
-
-
-default: all
-
-all: gcs
-
-clean:
-	rm -f gcs *.o screens/*.o mavlink/*.o gps/*.o mwi21/*.o jeti/*.o openpilot/*.o frsky/*.o
-
-
-install:
-	mkdir -p /usr/share/gl-gcs/MAPS
-	mkdir -p /usr/share/gl-gcs/textures
-	mkdir -p /usr/share/gl-gcs/fonts
-	mkdir -p /usr/share/gl-gcs/rcflow_presets
-	mkdir -p /usr/share/gl-gcs/scripts
-	mkdir -p /usr/bin
-	cp -a textures/* /usr/share/gl-gcs/textures/
-	cp -a fonts/* /usr/share/gl-gcs/fonts/
-	cp -a rcflow_presets/* /usr/share/gl-gcs/rcflow_presets/
-	cp -a gcs /usr/bin/gl-gcs
-	cp -a gcs.sh /usr/bin/gcs
-	cp -a clean-badmaps.sh /usr/share/gl-gcs/clean-badmaps.sh
-	cp -a screens/screen_tcl.tcl /usr/share/gl-gcs/scripts/screen_tcl.tcl
-	cp -a WMM2010.COF /usr/share/gl-gcs/MAPS
-	touch /usr/share/gl-gcs/setup.cfg
-	chmod 0755 /usr/bin/gl-gcs
-	chmod 0755 /usr/bin/gcs
-	chmod 0777 /usr/share/gl-gcs/setup.cfg
-	chmod 0777 /usr/share/gl-gcs/clean-badmaps.sh
-
-deb: gcs
-	rm -rf package/
-	mkdir -p package/usr/share/gl-gcs/MAPS
-	mkdir -p package/usr/share/gl-gcs/textures
-	mkdir -p package/usr/share/gl-gcs/fonts
-	mkdir -p package/usr/bin
-	mkdir -p package/DEBIAN
-	cp -a textures/* package/usr/share/gl-gcs/textures/
-	cp -a fonts/* package/usr/share/gl-gcs/fonts/
-	cp -a gcs package/usr/bin/gl-gcs
-	cp -a gcs.sh package/usr/bin/gcs
-	cp -a clean-badmaps.sh package/usr/share/gl-gcs/clean-badmaps.sh
-	cp -a screens/screen_tcl.tcl package/usr/share/gl-gcs/scripts/screens/screen_tcl.tcl
-	cp -a WMM2010.COF package/usr/share/gl-gcs/MAPS
-	touch package/usr/share/gl-gcs/setup.cfg
-	chmod  0755 package/usr/bin/gl-gcs
-	chmod  0755 package/usr/bin/gcs
-	chmod  0777 package/usr/share/gl-gcs/setup.cfg
-	echo "Package: multigcs" > package/DEBIAN/control
-	echo "Source: multigcs" >> package/DEBIAN/control
-	echo "Version: 0.9-`date +%s`" >> package/DEBIAN/control
-	echo "Architecture: `dpkg --print-architecture`" >> package/DEBIAN/control
-	echo "Maintainer: Oliver Dippel <oliver@multixmedia.org>" >> package/DEBIAN/control
-	echo "Depends: tcl8.5, espeak, coreutils, bluez, imagemagick, ia32-libs,lib32asound2,lib32gcc1,lib32stdc++6,lib32tinfo5,lib32z1,libasound2,libasyncns0,libattr1,libc6,libc6-i386,libcaca0,libcap2,libcomerr2,libcurl3,libdbus-1-3,libdirectfb-1.2-9,libflac8,libfreetype6,libgcc1,libgcrypt11,libgl1-mesa-glx,libgl1-nvidia-glx,libglu1-mesa,libgnutls26,libgpg-error0,libgssapi-krb5-2,libice6,libidn11,libjbig0,libjpeg8,libjson0,libk5crypto3,libkeyutils1,libkrb5-3,libkrb5support0,libldap-2.4-2,libncursesw5,libogg0,libp11-kit0,libpng12-0,libpulse0,librtmp0,libsasl2-2,libsdl1.2debian,libsdl-image1.2,libsdl-ttf2.0-0,libslang2,libsm6,libsndfile1,libssh2-1,libssl1.0.0,libstdc++6,libtasn1-3,libtiff4,libtinfo5,libts-0.0-0,libuuid1,libvorbis0a,libvorbisenc2,libwebp2,libwrap0,libx11-6,libx11-xcb1,libxau6,libxcb1,libxdmcp6,libxext6,libxi6,libxtst6,zlib1g" >> package/DEBIAN/control
-	echo "Section: media" >> package/DEBIAN/control
-	echo "Priority: optional" >> package/DEBIAN/control
-	echo "Description: Ground-Control-Station based on OpenGL" >> package/DEBIAN/control
-	echo " Ground-Control-Station based on OpenGL" >> package/DEBIAN/control
-	echo "/usr/share/gl-gcs/setup.cfg" > package/DEBIAN/conffiles
-	chmod -R -s package/ -R
-	chmod 0755 package/DEBIAN/ -R
-	dpkg-deb --build package
-	mv package.deb multigcs-sdl_0.9-`date +%s`_`dpkg --print-architecture`.deb
-
-%.o: %.c
-	gcc -c $(CFLAGS) $< -o $@ ${INCDIR}
-
-gcs: ${COMMONSRC} ${COMMONHDR} ${GCS}
-	gcc $(CFLAGS) ${COMMONSRC} ${GCS} -o $@ ${INCDIR} ${LIBS}
-
-font-generator: font-generator.c
-	gcc -o font-generator font-generator.c -Wall -O -I/usr/include/SDL -lSDL_ttf -lpng
+include make.inc
 

@@ -21,6 +21,7 @@
 #include <screen_rcflow.h>
 #include <screen_keyboard.h>
 #include <screen_filesystem.h>
+#include <screen_tcl.h>
 #include <my_mavlink.h>
 
 #include <tcl.h>
@@ -65,8 +66,6 @@ char rctransmitter_btpin[20];
 
 static Tcl_Interp *rcflow_tcl_interp;
 static uint8_t rcflow_tcl_startup = 0;
-#include <tcl_modeldata.c>
-#include <tcl_modeldatavar.c>
 
 enum {
 	RCFLOW_INOUT_TYPE_BILINEAR,
@@ -259,7 +258,7 @@ static void rcflow_tcl_init (void) {
 		return;
 	}
 
-	Tcl_CreateObjCommand(rcflow_tcl_interp, "ModelData", ModelData_Cmd, NULL, NULL);
+//	Tcl_CreateObjCommand(rcflow_tcl_interp, "ModelData", ModelData_Cmd, NULL, NULL);
 	Tcl_CreateObjCommand(rcflow_tcl_interp, "set_output", rcflow_tcl_output_Cmd, NULL, NULL);
 
 	printf("...done\n");
@@ -270,7 +269,7 @@ static void rcflow_tcl_run (char *script) {
 	if (rcflow_tcl_startup == 0) {
 		rcflow_tcl_init();
 	}
-	tcl_update_modeldata(rcflow_tcl_interp);
+	tcl_update_modeldata();
 	if (Tcl_Eval(rcflow_tcl_interp, script) != TCL_OK) {
 		printf("TCL-ERROR:\n");
 		printf("#######################################################\n");
@@ -709,13 +708,15 @@ void rcflow_undo_save (void) {
 	int16_t n = 0;
 	char tmp_str[128];
 	printf("rcflow_undo_save \n");
-	system("mkdir -p /usr/share/gl-gcs/models");
+	sprintf(tmp_str, "mkdir -p %s/models", BASE_DIR);
+	system(tmp_str);
 	for (n = MAX_UNDO - 1; n >= 0; n--) {
-		sprintf(tmp_str, "mv /usr/share/gl-gcs/models/rcflow_undo%i.bin /usr/share/gl-gcs/models/rcflow_undo%i.bin 2>/dev/null", n, n + 1);
+		sprintf(tmp_str, "mv %s/models/rcflow_undo%i.bin %s/models/rcflow_undo%i.bin 2>/dev/null", BASE_DIR, n, BASE_DIR, n + 1);
 		system(tmp_str);
 	}
         FILE *fr;
-        fr = fopen("/usr/share/gl-gcs/models/rcflow_undo0.bin", "w");
+	sprintf(tmp_str, "%s/models/rcflow_undo0.bin", BASE_DIR);
+        fr = fopen(tmp_str, "w");
 	if (fr != 0) {
 		fwrite(&RcPlugin[0], sizeof(RcFlowPlugin) * MAX_PLUGINS, 1, fr);
 		fwrite(&RcLink[0], sizeof(RcFlowLink) * MAX_LINKS, 1, fr);
@@ -732,7 +733,7 @@ uint8_t rcflow_redo (char *name, float x, float y, int8_t button, float data) {
 	}
 	printf("redo %i\n", undo);
         FILE *fr;
-	sprintf(tmp_str, "/usr/share/gl-gcs/models/rcflow_undo%i.bin", undo);
+	sprintf(tmp_str, "%s/models/rcflow_undo%i.bin", BASE_DIR, undo);
         fr = fopen(tmp_str, "r");
 	if (fr != 0) {
 		fread(&RcPlugin[0], sizeof(RcFlowPlugin) * MAX_PLUGINS, 1, fr);
@@ -749,7 +750,7 @@ uint8_t rcflow_undo (char *name, float x, float y, int8_t button, float data) {
 	}
 	printf("undo %i\n", undo);
         FILE *fr;
-	sprintf(tmp_str, "/usr/share/gl-gcs/models/rcflow_undo%i.bin", undo);
+	sprintf(tmp_str, "%s/models/rcflow_undo%i.bin", BASE_DIR, undo);
         fr = fopen(tmp_str, "r");
 	if (fr != 0) {
 		fread(&RcPlugin[0], sizeof(RcFlowPlugin) * MAX_PLUGINS, 1, fr);
@@ -941,7 +942,9 @@ uint8_t rcflow_load_xml (char *name, float x, float y, int8_t button, float data
 
 uint8_t rcflow_load (char *name, float x, float y, int8_t button, float data) {
 	reset_buttons();
-	filesystem_set_dir("/usr/share/gl-gcs/models");
+	char tmp_str[128];
+	sprintf(tmp_str, "%s/models", BASE_DIR);
+	filesystem_set_dir(tmp_str);
 	filesystem_set_callback(rcflow_load_xml);
 	filesystem_reset_filter();
 	filesystem_add_filter(".xml\0");
@@ -969,9 +972,9 @@ uint8_t rcflow_save_xml (char *name, float x, float y, int8_t button, float data
 		strcat(name, ".xml");
 	}
 	strcpy(setup_name, name);
-
-	system("mkdir -p /usr/share/gl-gcs/models");
-	sprintf(tmp_str, "/usr/share/gl-gcs/models/%s", name);
+	sprintf(tmp_str, "mkdir -p %s/models", BASE_DIR);
+	system(tmp_str);
+	sprintf(tmp_str, "%s/models/%s", BASE_DIR, name);
         fr = fopen(tmp_str, "w");
 	if (fr != 0) {
 		fprintf(fr, "<rcflow>\n");
@@ -2756,8 +2759,8 @@ void screen_rcflow (ESContext *esContext) {
 		strcpy(RcPlugin[plugin].input[10].name, "ch11");
 		strcpy(RcPlugin[plugin].input[11].name, "ch12");
 		plugin++;
-
-		rcflow_parseDoc("/usr/share/gl-gcs/models/rcflow.xml");
+		sprintf(tmp_str, "%s/models/rcflow.xml", BASE_DIR);
+		rcflow_parseDoc(tmp_str);
 		rcflow_undo_save();
 	}
 

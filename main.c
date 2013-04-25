@@ -464,7 +464,9 @@ void setup_save (void) {
 		calibration_mode = 1;
 	}
 //        printf("** saving file\n");
-        fr = fopen("/usr/share/gl-gcs/setup.cfg", "w");
+	char filename[1024];
+	sprintf(filename, "%s/setup.cfg", BASE_DIR);
+        fr = fopen(filename, "w");
 	if (fr != 0) {
 	        fprintf(fr, "model_name   %s\n", ModelData.name);
 	        fprintf(fr, "view_mode    %i\n", view_mode);
@@ -521,7 +523,7 @@ void setup_save (void) {
 	        }
 	        fclose(fr);
 	} else {
-		printf("Can not save setup-file: %s\n", "/usr/share/gl-gcs/setup.cfg");
+		printf("Can not save setup-file: %s\n", filename);
 	}
 }
 
@@ -544,7 +546,9 @@ void setup_load (void) {
 	jeti_baud = 9600;
 	strcpy(frsky_port, "/dev/ttyUSB30");;
 	frsky_baud = 9600;
-        fr = fopen ("/usr/share/gl-gcs/setup.cfg", "r");
+	char filename[1024];
+	sprintf(filename, "%s/setup.cfg", BASE_DIR);
+        fr = fopen (filename, "r");
 	if (fr != 0) {
 	        while(fgets(line, 100, fr) != NULL) {
 	                var[0] = 0;
@@ -671,7 +675,7 @@ void setup_load (void) {
 	        }
 	        fclose(fr);
 	} else {
-		printf("Can not load setup-file: %s\n", "/usr/share/gl-gcs/setup.cfg");
+		printf("Can not load setup-file: %s\n", filename);
 	}
 	if (calibration_mode > 0) {
 		calibration_mode = 1;
@@ -887,7 +891,6 @@ void check_events (ESContext *esContext, SDL_Event event) {
 			int ret_dd = 0;
 			int ret_dm = 0;
 			get_declination(mouse_lat, mouse_long, mouse_alt, &ret_dd, &ret_dm);
-
 
 			char msg[200];
 			sprintf(msg, "POS: %f, %f (ALT_G:%im MAG_D:%id%02im)\n", mouse_lat, mouse_long, mouse_alt, ret_dd, ret_dm);
@@ -1671,7 +1674,7 @@ void ShutDown ( ESContext *esContext ) {
 	gui_running = 0;
 	SDL_Delay(600);
 	char file[200];
-	sprintf(file, "/usr/share/gl-gcs/%i.log", startup_time);
+	sprintf(file, "%s/%i.log", BASE_DIR, startup_time);
 	printf("* save log\n");
 	LogSave(file);
 	printf("* save setup\n");
@@ -1731,6 +1734,7 @@ void ShutDown ( ESContext *esContext ) {
 ESContext *GlobalesContext = NULL;
 
 int main ( int argc, char *argv[] ) {
+	char tmp_name[201];
 	ESContext esContext;
 #ifndef SDLGL
 	UserData userData;
@@ -1742,7 +1746,8 @@ int main ( int argc, char *argv[] ) {
 	localtime_r(&liczba_sekund, &strukt); 
 	printf("DATE: %d.%d %d\n", strukt.tm_mday, strukt.tm_mon+1, strukt.tm_year + 1900); 
 
-	init_declination("/usr/share/gl-gcs/MAPS/WMM2010.COF", strukt.tm_year + 1900, strukt.tm_mon+1, strukt.tm_mday);
+	sprintf(tmp_name, "%s/MAPS/WMM2010.COF", BASE_DIR);
+	init_declination(tmp_name, strukt.tm_year + 1900, strukt.tm_mon+1, strukt.tm_mday);
 
 	uint16_t n = 0;
 	for (n = 0; n < MAX_TEXCACHE; n++) {
@@ -1754,8 +1759,6 @@ int main ( int argc, char *argv[] ) {
 	touchscreen_device[0] = 0;
 
 	keyboard_key[0] = 0;
-
-//	system("sh /usr/share/gl-gcs/clean-badmaps.sh &");
 
 	LogInit("startup");
 
@@ -1777,7 +1780,6 @@ int main ( int argc, char *argv[] ) {
 	setup_waypoints();
 	setup_load();
 
-	char tmp_name[201];
 	strcpy(tmp_name, ModelData.name);
 
 
