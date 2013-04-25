@@ -27,7 +27,6 @@
 #include <openpilot.h>
 #include <mwi21.h>
 #include <jeti.h>
-#include <screen_rctransmitter.h>
 #include <screen_device.h>
 #include <screen_baud.h>
 #include <tcl.h>

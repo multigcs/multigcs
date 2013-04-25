@@ -59,8 +59,6 @@
 #include "screen_openpilot_menu.h"
 #include "screen_videolist.h"
 #include "screen_model.h"
-#include "screen_rctransmitter.h"
-#include "screen_rctransmitter_load.h"
 #include "screen_rcflow.h"
 
 // V4L
@@ -165,14 +163,10 @@ void save_screenshot (void) {
 
 	if (view_mode == VIEW_MODE_HUD) {
 		strcpy(name, "hud");
-//	} else if (view_mode == VIEW_MODE_RCTRANSMITTER) {
-//		strcpy(name, "transmitter");
 	} else if (view_mode == VIEW_MODE_MODEL) {
 		strcpy(name, "model");
 	} else if (view_mode == VIEW_MODE_RCFLOW) {
 		strcpy(name, "rcflow");
-	} else if (view_mode == VIEW_MODE_RCTRANSMITTER_LOAD) {
-		strcpy(name, "transmitter_load");
 	} else if (view_mode == VIEW_MODE_FMS) {
 		strcpy(name, "fms");
 	} else if (view_mode == VIEW_MODE_WPEDIT) {
@@ -449,6 +443,9 @@ void setup_waypoints (void) {
 	ModelData.p_long = WayPoints[0].p_long;
 	ModelData.p_alt = WayPoints[0].p_alt;
 	ModelData.yaw = WayPoints[0].yaw;
+
+	ModelData.sysid = 250;
+	ModelData.compid = 0;
 }
 
 void sys_message (char *msg) {
@@ -1548,18 +1545,12 @@ void Draw (ESContext *esContext) {
 
 	if (view_mode == VIEW_MODE_HUD) {
 		screen_hud(esContext);
-//	} else if (view_mode == VIEW_MODE_RCTRANSMITTER) {
-//		screen_background(esContext);
-//		screen_rctransmitter(esContext);
 	} else if (view_mode == VIEW_MODE_MODEL) {
 		screen_background(esContext);
 		screen_model(esContext);
 	} else if (view_mode == VIEW_MODE_RCFLOW) {
 //		screen_background(esContext);
 		screen_rcflow(esContext);
-//	} else if (view_mode == VIEW_MODE_RCTRANSMITTER_LOAD) {
-//		screen_background(esContext);
-//		screen_rctransmitter_load(esContext);
 	} else if (view_mode == VIEW_MODE_FMS) {
 		screen_fms(esContext);
 	} else if (view_mode == VIEW_MODE_WPEDIT) {
@@ -1788,8 +1779,7 @@ int main ( int argc, char *argv[] ) {
 
 	char tmp_name[201];
 	strcpy(tmp_name, ModelData.name);
-	rctransmitter_load_model(tmp_name, 0, 0, 0, 0);
-	bt_reconnect();
+
 
 #ifdef RPI_NO_X
 	system("modprobe i2c-dev");
@@ -1804,9 +1794,6 @@ int main ( int argc, char *argv[] ) {
 		calibration_mode = 0;
 	}
 #endif
-
-
-	rctransmitter_init();
 
 	frsky_exit();
 	frsky_init(frsky_port, frsky_baud);

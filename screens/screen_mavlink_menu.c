@@ -8,7 +8,6 @@
 #include <screen_mavlink_menu.h>
 #include <screen_keyboard.h>
 #include <screen_filesystem.h>
-#include <screen_rctransmitter.h>
 #include <i2c.h>
 #include <my_mavlink.h>
 
@@ -21,13 +20,33 @@ uint8_t sel2_mode = 0;
 char select_section[100];
 
 uint8_t mavlink_param_file_save (char *name, float x, float y, int8_t button, float data) {
-	printf("# saving file: %s #\n", name);
+	char filename[1024];
+	FILE *fr;
+	int n = 0;
+	sprintf(filename, "%s/PARAMS/%s", BASE_DIR, name);
+	if ((fr = fopen(filename, "w")) != 0) {
+		fprintf(fr, "# Onboard parameters\n");
+		fprintf(fr, "#\n");
+		fprintf(fr, "# MAV ID  COMPONENT ID  PARAM NAME  VALUE (FLOAT)\n");
+		for (n = 0; n < 500 - 1; n++) {
+			if (MavLinkVars[n].name[0] != 0) {
+				fprintf(fr, "%i	%i	%s	%f\n", ModelData.sysid, ModelData.compid, MavLinkVars[n].name, MavLinkVars[n].value);
+			}
+		}
+		fprintf(fr, "\n");
+		fclose(fr);
+		printf("failed to save file: %s\n", filename);
+	} else {
+		printf("saved file: %s\n", filename);
+	}
 	return 0;
 }
 
 uint8_t mavlink_param_save (char *name, float x, float y, int8_t button, float data) {
+	char filename[1024];
+	sprintf(filename, "%s.txt", ModelData.name);
 	keyboard_set_callback(mavlink_param_file_save);
-	keyboard_set_text("test-file");
+	keyboard_set_text(filename);
 	keyboard_set_mode(VIEW_MODE_FCMENU);
 	return 0;
 }
@@ -137,27 +156,16 @@ void mavlink_param_read_file (char *param_file) {
         fclose(fr);
 }
 
-void mavlink_param_upload_all (char *param_file) {
-        FILE *fr;
-        char line[1024];
-        int tmp_int1;
-        int tmp_int2;
-        char var[101];
-        char val[101];
-        fr = fopen (param_file, "r");
-        while(fgets(line, 100, fr) != NULL) {
-                var[0] = 0;
-                val[0] = 0;
-		if (line[0] != '#' && line[0] != '\n') {
-	                sscanf (line, "%i %i %s %s", &tmp_int1, &tmp_int2, (char *)&var, (char *)&val);
-	                printf ("%s = %f\n", var, atof(val));
-			mavlink_send_value(var, atof(val));
+uint8_t mavlink_param_upload_all (char *name, float x, float y, int8_t button, float data) {
+	int n = 0;
+	for (n = 0; n < 500 - 1; n++) {
+		if (MavLinkVars[n].name[0] != 0) {
+			mavlink_send_value(MavLinkVars[n].name, MavLinkVars[n].value);
 			SDL_Delay(20);
 		}
-        }
-        fclose(fr);
+	}
+	return 0;
 }
-
 
 void screen_mavlink_menu (ESContext *esContext) {
 #ifndef SDLGL
@@ -232,7 +240,6 @@ void screen_mavlink_menu (ESContext *esContext) {
 	}
 */
 	strcpy(section, mainMavLinkVars[(int)sel2].name);
-printf("### %s %f\n", section, sel2);
 	row2 = 0;
 	for (row = 0; row < 500 - 1; row++) {
 		if (strlen(MavLinkVars[row].name) > 3) {
@@ -310,20 +317,20 @@ printf("### %s %f\n", section, sel2);
 				break;
 			}
 
-			if (strcmp(selMavLinkVars[n + (int)set_sel].name, diff_name[0]) == 0) {
-				sprintf(tmp_str, "RESET 0%i", n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "1", FONT_GREEN, -1.4, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, rctransmitter_mavlink_diff, 0);
-			} else {
-				sprintf(tmp_str, "%s 0%i", selMavLinkVars[n + (int)set_sel].name, n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "1", FONT_WHITE, -1.4, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, rctransmitter_mavlink_diff, 0);
-			}
-			if (strcmp(selMavLinkVars[n + (int)set_sel].name, diff_name[1]) == 0) {
-				sprintf(tmp_str, "RESET 1%i", n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "2", FONT_GREEN, -1.3, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, rctransmitter_mavlink_diff, 1);
-			} else {
-				sprintf(tmp_str, "%s 1%i", selMavLinkVars[n + (int)set_sel].name, n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "2", FONT_WHITE, -1.3, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, rctransmitter_mavlink_diff, 1);
-			}
+//			if (strcmp(selMavLinkVars[n + (int)set_sel].name, diff_name[0]) == 0) {
+//				sprintf(tmp_str, "RESET 0%i", n);
+//				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "1", FONT_GREEN, -1.4, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, rctransmitter_mavlink_diff, 0);
+//			} else {
+//				sprintf(tmp_str, "%s 0%i", selMavLinkVars[n + (int)set_sel].name, n);
+//				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "1", FONT_WHITE, -1.4, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, rctransmitter_mavlink_diff, 0);
+//			}
+//			if (strcmp(selMavLinkVars[n + (int)set_sel].name, diff_name[1]) == 0) {
+//				sprintf(tmp_str, "RESET 1%i", n);
+//				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "2", FONT_GREEN, -1.3, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, rctransmitter_mavlink_diff, 1);
+//			} else {
+//				sprintf(tmp_str, "%s 1%i", selMavLinkVars[n + (int)set_sel].name, n);
+//				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "2", FONT_WHITE, -1.3, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, rctransmitter_mavlink_diff, 1);
+//			}
 
 			sprintf(tmp_str, "mv_sel_%s_%i_t", selMavLinkVars[n + (int)set_sel].name, n);
 			draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, selMavLinkVars[n + (int)set_sel].name, FONT_WHITE, -1.2, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, mavlink_select_sel, n);
@@ -355,8 +362,10 @@ printf("### %s %f\n", section, sel2);
 
 
 	draw_button(esContext, "flash", VIEW_MODE_FCMENU, "[WRITE TO FLASH]", FONT_WHITE, 0.0, 0.9, 0.002, 0.06, 1, 0, mavlink_flash, 0.0);
-	draw_button(esContext, "load", VIEW_MODE_FCMENU, "[LOAD PARAM]", FONT_WHITE, -0.7, 0.9, 0.002, 0.06, 1, 0, mavlink_param_load, 1.0);
-	draw_button(esContext, "save", VIEW_MODE_FCMENU, "[SAVE PARAM]", FONT_WHITE, 0.7, 0.9, 0.002, 0.06, 1, 0, mavlink_param_save, 1.0);
+	draw_button(esContext, "load", VIEW_MODE_FCMENU, "[LOAD PARAM]", FONT_WHITE, -0.9, 0.9, 0.002, 0.06, 1, 0, mavlink_param_load, 1.0);
+	draw_button(esContext, "save", VIEW_MODE_FCMENU, "[SAVE PARAM]", FONT_WHITE, 0.9, 0.9, 0.002, 0.06, 1, 0, mavlink_param_save, 1.0);
+
+	draw_button(esContext, "uploads", VIEW_MODE_FCMENU, "[UPLOAD]", FONT_WHITE, -0.45, 0.9, 0.002, 0.06, 1, 0, mavlink_param_upload_all, 1.0);
 
 	if (flag == 0) {
 		draw_text_f(esContext, -0.4, 0.0, 0.05, 0.05, FONT_BLACK_BG, "No Mavlink-Parameters found");

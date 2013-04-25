@@ -77,6 +77,8 @@ typedef struct {
 	float voltage_zell[6];
 	int16_t temperature[2];
 	float ampere;
+	uint8_t sysid;
+	uint8_t compid;
 } Model;
 
 extern Model ModelData;

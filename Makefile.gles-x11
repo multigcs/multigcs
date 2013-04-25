@@ -8,7 +8,7 @@ CFLAGS+=-DMESA -ggdb -O3 -Wall
 COMMONSRC=./Common/esShader.c ./Common/esTransform.c ./Common/esShapes.c ./Common/esUtil.c
 COMMONHRD=esUtil.h
 
-GCS=main.o screens/screen_rcflow.o screens/screen_model.o serial.o i2c.o gles_draw.o draw.o screens/screen_keyboard.o screens/screen_filesystem.o screens/screen_device.o screens/screen_baud.o screens/screen_rctransmitter.o screens/screen_rctransmitter_load.o screens/screen_background.o screens/screen_wpedit.o screens/screen_hud.o screens/screen_map.o screens/screen_calibration.o screens/screen_nd.o screens/screen_fms.o screens/screen_system.o screens/screen_tcl.o screens/screen_mavlink_menu.o screens/screen_mwi_menu.o screens/screen_openpilot_menu.o screens/screen_videolist.o screens/screen_graph.o \
+GCS=main.o screens/screen_rcflow.o screens/screen_model.o serial.o i2c.o gles_draw.o draw.o screens/screen_keyboard.o screens/screen_filesystem.o screens/screen_device.o screens/screen_baud.o screens/screen_background.o screens/screen_wpedit.o screens/screen_hud.o screens/screen_map.o screens/screen_calibration.o screens/screen_nd.o screens/screen_fms.o screens/screen_system.o screens/screen_tcl.o screens/screen_mavlink_menu.o screens/screen_mwi_menu.o screens/screen_openpilot_menu.o screens/screen_videolist.o screens/screen_graph.o \
 	mavlink/my_mavlink.o gps/my_gps.o mwi21/mwi21.o jeti/jeti.o openpilot/openpilot.o frsky/frsky.o
 
 default: all

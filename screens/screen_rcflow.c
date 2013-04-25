@@ -21,7 +21,6 @@
 #include <screen_rcflow.h>
 #include <screen_keyboard.h>
 #include <screen_filesystem.h>
-#include <screen_rctransmitter.h>
 #include <my_mavlink.h>
 
 #include <tcl.h>
@@ -56,6 +55,13 @@ static float canvas_x = 0.0;
 static float canvas_y = 0.0;
 static uint8_t virt_view = 0;
 static char setup_name[100];
+
+
+uint32_t rctransmitter_baud = 115200;
+char rctransmitter_device[20];
+char rctransmitter_btaddr[20];
+char rctransmitter_btpin[20];
+
 
 static Tcl_Interp *rcflow_tcl_interp;
 static uint8_t rcflow_tcl_startup = 0;
@@ -187,6 +193,29 @@ static char plugintype_names[RCFLOW_PLUGIN_LAST][11] = {
 	"TCL",
 };
 
+
+uint8_t rctransmitter_get_type_by_name (char *name) {
+	if (strcmp(name, "MULTIWII_21") == 0) {
+		return TELETYPE_MULTIWII_21;
+	} else if (strcmp(name, "AUTOQUAD") == 0) {
+		return TELETYPE_AUTOQUAD;
+	} else if (strcmp(name, "ARDUPILOT") == 0) {
+		return TELETYPE_ARDUPILOT;
+	} else if (strcmp(name, "MEGAPIRATE_NG") == 0) {
+		return TELETYPE_MEGAPIRATE_NG;
+	} else if (strcmp(name, "OPENPILOT") == 0) {
+		return TELETYPE_OPENPILOT;
+	} else if (strcmp(name, "GPS_NMEA") == 0) {
+		return TELETYPE_GPS_NMEA;
+	} else if (strcmp(name, "FRSKY") == 0) {
+		return TELETYPE_FRSKY;
+	} else if (strcmp(name, "BASEFLIGHT") == 0) {
+		return TELETYPE_BASEFLIGHT;
+	} else {
+		return 255;
+	}
+	return 0;
+}
 
 static int rcflow_tcl_output_Cmd (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	int n1 = 0;
@@ -546,7 +575,7 @@ static void rcflow_parseDoc (char *docname) {
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"image"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
-				strcpy(rctransmitter_image, (char *)key);
+				strcpy(ModelData.image, (char *)key);
 			}
 			xmlFree(key);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"plugin"))) {
@@ -947,7 +976,7 @@ uint8_t rcflow_save_xml (char *name, float x, float y, int8_t button, float data
 	if (fr != 0) {
 		fprintf(fr, "<rcflow>\n");
 		fprintf(fr, " <name>%s</name>\n", setup_name);
-		fprintf(fr, " <image>%s</image>\n", rctransmitter_image);
+		fprintf(fr, " <image>%s</image>\n", ModelData.image);
 		fprintf(fr, " <telemetry>\n");
 		fprintf(fr, "  <type>%s</type>\n", teletypes[ModelData.teletype]);
 		fprintf(fr, "  <device>%s</device>\n", rctransmitter_device);
@@ -2537,8 +2566,11 @@ void screen_rcflow (ESContext *esContext) {
 
 	if (startup == 0) {
 
+		strcpy(rctransmitter_device, "/dev/ttyUSB0");
+		rctransmitter_baud = 115200;
+
 #ifdef ADC_TEST
-fd = serial_open("/dev/ttyUSB0", 115200);
+		fd = serial_open(rctransmitter_device, rctransmitter_baud);
 #endif
 
 		startup = 1;

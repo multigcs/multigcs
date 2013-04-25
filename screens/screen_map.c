@@ -17,7 +17,6 @@
 #include <screen_map.h>
 #include <my_mavlink.h>
 #include <screen_wpedit.h>
-#include <screen_rctransmitter.h>
 
 volatile float lat = 50.29;
 volatile float lon = 9.12;
@@ -516,7 +515,7 @@ uint8_t map_export_kml (char *name, float x, float y, int8_t button, float data)
 			fprintf(fr, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 			fprintf(fr, "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
 			fprintf(fr, "  <Document>\n");
-			fprintf(fr, "    <name>%s</name>\n", rctransmitter_name);
+//			fprintf(fr, "    <name>%s</name>\n", rctransmitter_name);
 			fprintf(fr, "    <description>Flight-Data</description>\n");
 			fprintf(fr, "    <Style id=\"yellowLineGreenPoly\">\n");
 			fprintf(fr, "      <LineStyle>\n");

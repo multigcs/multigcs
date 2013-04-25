@@ -69,8 +69,6 @@ extern int serial_fd_mavlink;
 extern ValueList MavLinkVars[500];
 extern ValueList selMavLinkVars[500];
 extern ValueList mainMavLinkVars[500];
-extern uint8_t received_sysid;
-extern uint8_t received_compid;
 extern uint8_t droneType;
 extern uint8_t autoPilot;
 extern int c;

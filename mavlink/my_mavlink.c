@@ -22,7 +22,6 @@
 #include <main.h>
 #include <my_mavlink.h>
 #include <screen_map.h>
-#include <screen_rctransmitter.h>
 
 
 #define UDP_BUFLEN 2042
@@ -33,8 +32,6 @@ int serial_fd_mavlink = -1;
 ValueList MavLinkVars[500];
 ValueList selMavLinkVars[500];
 ValueList mainMavLinkVars[500];
-uint8_t received_sysid  = 0;
-uint8_t received_compid = 0;
 uint8_t mavlink_update_yaw = 0;
 uint8_t droneType = 1;
 uint8_t autoPilot = 3;
@@ -101,13 +98,13 @@ void mavlink_exit (void) {
 void stop_feeds (void) {
 	printf("Stopping feeds!\n");
 	mavlink_message_t msg1;
-	mavlink_msg_request_data_stream_pack(127, 0, &msg1, received_sysid, received_compid, MAV_DATA_STREAM_ALL, 0, 0);
+	mavlink_msg_request_data_stream_pack(127, 0, &msg1, ModelData.sysid, ModelData.compid, MAV_DATA_STREAM_ALL, 0, 0);
 	send_message(&msg1);
 }
 
 void mavlink_send_value (char *name, float val) {
 	mavlink_message_t msg;
-	mavlink_msg_param_set_pack(127, 0, &msg, received_sysid, received_compid, name, val, 9);
+	mavlink_msg_param_set_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, name, val, 9);
 	send_message(&msg);
 }
 
@@ -139,8 +136,8 @@ void gcs_handleMessage(mavlink_message_t* msg) {
 			ModelData.heartbeat = 100;
 //			sprintf(sysmsg_str, "Heartbeat: %i", (int)time(0));
 			if ((*msg).sysid != 0xff) {
-				received_sysid = (*msg).sysid;
-				received_compid = (*msg).compid;
+				ModelData.sysid = (*msg).sysid;
+				ModelData.compid = (*msg).compid;
 				if (mavlink_maxparam == 0) {
 					start_feeds();
 				}
@@ -292,7 +289,7 @@ void gcs_handleMessage(mavlink_message_t* msg) {
 			sys_message(sysmsg_str);
 			mission_max = packet.count;
 			if (mission_max > 0) {
-				mavlink_msg_mission_request_pack(127, 0, &msg2, received_sysid, received_compid, 0);
+				mavlink_msg_mission_request_pack(127, 0, &msg2, ModelData.sysid, ModelData.compid, 0);
 				send_message(&msg2);
 			}
 			redraw_flag = 1;
@@ -340,7 +337,7 @@ void gcs_handleMessage(mavlink_message_t* msg) {
 			printf("%s\n", sysmsg_str);
 
 
-			mavlink_msg_mission_item_pack(127, 0, &msg2, received_sysid, received_compid, id, 0, type, 0.0, 0.0, WayPoints[1 + id2].radius, WayPoints[1 + id2].wait, WayPoints[1 + id2].orbit, WayPoints[1 + id2].yaw, WayPoints[1 + id2].p_lat, WayPoints[1 + id2].p_long, WayPoints[1 + id2].p_alt);
+			mavlink_msg_mission_item_pack(127, 0, &msg2, ModelData.sysid, ModelData.compid, id, 0, type, 0.0, 0.0, WayPoints[1 + id2].radius, WayPoints[1 + id2].wait, WayPoints[1 + id2].orbit, WayPoints[1 + id2].yaw, WayPoints[1 + id2].p_lat, WayPoints[1 + id2].p_long, WayPoints[1 + id2].p_alt);
 			send_message(&msg2);
 /*
 mavlink_msg_mission_item_pack(system_id, component_id, &msg , packet1.target_system , packet1.target_component , packet1.seq , packet1.frame , packet1.command , packet1.current , packet1.autocontinue , packet1.param1 , packet1.param2 , packet1.param3 , packet1.param4 , packet1.x , packet1.y , packet1.z );
@@ -372,10 +369,10 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			sys_message(sysmsg_str);
 
 			if (packet.seq < mission_max - 1) {
-				mavlink_msg_mission_request_pack(127, 0, &msg2, received_sysid, received_compid, packet.seq + 1);
+				mavlink_msg_mission_request_pack(127, 0, &msg2, ModelData.sysid, ModelData.compid, packet.seq + 1);
 				send_message(&msg2);
 			} else {
-				mavlink_msg_mission_ack_pack(127, 0, &msg2, received_sysid, received_compid, 15);
+				mavlink_msg_mission_ack_pack(127, 0, &msg2, ModelData.sysid, ModelData.compid, 15);
 				send_message(&msg2);
 			}
 
@@ -568,20 +565,20 @@ wp_dist
 void read_waypoints (void) {
 	printf("reading Waypoints\n");
 	mavlink_message_t msg;
-	mavlink_msg_mission_request_list_pack(127, 0, &msg, received_sysid, received_compid);
+	mavlink_msg_mission_request_list_pack(127, 0, &msg, ModelData.sysid, ModelData.compid);
 	send_message(&msg);
 }
 
 void save_to_flash (void) {
 	printf("save values to flash\n");
 	mavlink_message_t msg;
-	mavlink_msg_command_long_pack(127, 0, &msg, received_sysid, received_compid, MAV_CMD_PREFLIGHT_STORAGE, 0, 1.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_CMD_PREFLIGHT_STORAGE, 0, 1.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	send_message(&msg);
 }
 
 void send_waypoints (void) {
 	mavlink_message_t msg;
-	mavlink_msg_mission_clear_all_pack(127, 0, &msg, received_sysid, received_compid);
+	mavlink_msg_mission_clear_all_pack(127, 0, &msg, ModelData.sysid, ModelData.compid);
 	send_message(&msg);
 	usleep(100000);
 	uint16_t n = 0;
@@ -597,7 +594,7 @@ void send_waypoints (void) {
 	}
 
 	printf("sending Waypoints (%i)\n", n - 1);
-	mavlink_msg_mission_count_pack(127, 0, &msg, received_sysid, received_compid, n - 1);
+	mavlink_msg_mission_count_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, n - 1);
 	send_message(&msg);
 }
 
@@ -678,7 +675,7 @@ void gcs_update (void) {
 void param_get_id (uint16_t id) {
 	printf("mavlink: get id: %i\n", id);
 	mavlink_message_t msg;
-	mavlink_msg_param_request_read_pack(127, 0, &msg, received_sysid, received_compid, NULL, id);
+	mavlink_msg_param_request_read_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, NULL, id);
 	send_message(&msg);
 }
 
@@ -700,32 +697,32 @@ void start_feeds (void) {
 	mavlink_message_t msg;
 	mavlink_timeout = 0;
 	printf("Starting feeds!\n");
-	mavlink_msg_param_request_list_pack(127, 0, &msg, received_sysid, received_compid);
+	mavlink_msg_param_request_list_pack(127, 0, &msg, ModelData.sysid, ModelData.compid);
 	send_message(&msg);
 	SDL_Delay(10);
 
-	mavlink_msg_request_data_stream_pack(127, 0, &msg, received_sysid, received_compid, MAV_DATA_STREAM_RAW_SENSORS, MAV_DATA_STREAM_RAW_SENSORS_RATE, MAV_DATA_STREAM_RAW_SENSORS_ACTIVE);
+	mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_DATA_STREAM_RAW_SENSORS, MAV_DATA_STREAM_RAW_SENSORS_RATE, MAV_DATA_STREAM_RAW_SENSORS_ACTIVE);
 	send_message(&msg);
 	SDL_Delay(10);
 
 	if (ModelData.teletype == TELETYPE_MEGAPIRATE_NG || ModelData.teletype == TELETYPE_ARDUPILOT) {
-		mavlink_msg_request_data_stream_pack(127, 0, &msg, received_sysid, received_compid, MAV_DATA_STREAM_EXTENDED_STATUS, MAV_DATA_STREAM_EXTENDED_STATUS_RATE, MAV_DATA_STREAM_EXTENDED_STATUS_ACTIVE);
+		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_DATA_STREAM_EXTENDED_STATUS, MAV_DATA_STREAM_EXTENDED_STATUS_RATE, MAV_DATA_STREAM_EXTENDED_STATUS_ACTIVE);
 		send_message(&msg);
 		SDL_Delay(10);
 
-		mavlink_msg_request_data_stream_pack(127, 0, &msg, received_sysid, received_compid, MAV_DATA_STREAM_RAW_CONTROLLER, MAV_DATA_STREAM_RAW_CONTROLLER_RATE, MAV_DATA_STREAM_RAW_CONTROLLER_ACTIVE);
+		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_DATA_STREAM_RAW_CONTROLLER, MAV_DATA_STREAM_RAW_CONTROLLER_RATE, MAV_DATA_STREAM_RAW_CONTROLLER_ACTIVE);
 		send_message(&msg);
 		SDL_Delay(10);
 
-		mavlink_msg_request_data_stream_pack(127, 0, &msg, received_sysid, received_compid, MAV_DATA_STREAM_POSITION, MAV_DATA_STREAM_POSITION_RATE, MAV_DATA_STREAM_POSITION_ACTIVE);
+		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_DATA_STREAM_POSITION, MAV_DATA_STREAM_POSITION_RATE, MAV_DATA_STREAM_POSITION_ACTIVE);
 		send_message(&msg);
 		SDL_Delay(10);
 
-		mavlink_msg_request_data_stream_pack(127, 0, &msg, received_sysid, received_compid, MAV_DATA_STREAM_EXTRA1, MAV_DATA_STREAM_EXTRA1_RATE, MAV_DATA_STREAM_EXTRA1_ACTIVE);
+		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_DATA_STREAM_EXTRA1, MAV_DATA_STREAM_EXTRA1_RATE, MAV_DATA_STREAM_EXTRA1_ACTIVE);
 		send_message(&msg);
 		SDL_Delay(10);
 
-		mavlink_msg_request_data_stream_pack(127, 0, &msg, received_sysid, received_compid, MAV_DATA_STREAM_EXTRA2, MAV_DATA_STREAM_EXTRA2_RATE, MAV_DATA_STREAM_EXTRA2_ACTIVE);
+		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_DATA_STREAM_EXTRA2, MAV_DATA_STREAM_EXTRA2_RATE, MAV_DATA_STREAM_EXTRA2_ACTIVE);
 		send_message(&msg);
 		SDL_Delay(10);
 	}

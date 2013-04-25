@@ -27,7 +27,6 @@
 #include <openpilot.h>
 #include <mwi21.h>
 #include <jeti.h>
-#include <screen_rctransmitter.h>
 #include <screen_device.h>
 #include <screen_baud.h>
 
@@ -293,13 +292,6 @@ void screen_system (ESContext *esContext) {
 	} else {
 		sprintf(tmp_str, "GCS-GPS %s (%i)", gcs_gps_port, gcs_gps_baud);
 		draw_button(esContext, "gcs_gps", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
-	}
-	if (rctransmitter_connection_status() != 0) {
-		sprintf(tmp_str, "RCOS /dev/hidrawX (%i)", (uint8_t)(time(0)) - rctransmitter_connection_status());
-		draw_button(esContext, "rcos_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
-	} else {
-		sprintf(tmp_str, "RCOS /dev/hidrawX");
-		draw_button(esContext, "rcos_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 	}
 
 /*

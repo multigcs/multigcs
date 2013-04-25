@@ -3,7 +3,6 @@
 #include <screen_background.h>
 #include <main.h>
 #include <model.h>
-#include <screen_rctransmitter.h>
 
 extern int file_exists (char *fileName);
 
@@ -15,7 +14,7 @@ void screen_background (ESContext *esContext) {
 		draw_box_f3(esContext, -1.5, -1.0, 0.0, 1.5, 1.0, 0.0, 0, 0, 0, 255);
 	} else {
 		char tmp_str[1024];
-		sprintf(tmp_str, "%s", rctransmitter_image);
+		sprintf(tmp_str, "%s", ModelData.image);
 		if (file_exists(tmp_str) != 0) {
 			draw_image_f3(esContext, -1.5, -1.0, 1.5, 1.0, 0.0, tmp_str);
 			draw_box_f3(esContext, -1.5, -1.0, 0.0, 1.5, 1.0, 0.0, 0, 0, 0, 200);

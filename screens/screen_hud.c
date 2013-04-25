@@ -8,8 +8,8 @@
 #include <screen_map.h>
 #include <my_mavlink.h>
 #include <jeti.h>
-#include <screen_rctransmitter.h>
 #include <mwi21.h>
+
 
 SDL_Surface *videodev_loop (void);
 void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, SDL_Surface *screen);
@@ -1174,7 +1174,7 @@ void screen_hud (ESContext *esContext) {
 				}
 				draw_graph_value(esContext, 0.95, 0.45 + (float)n * 0.1, 1.35, 0.45 + (float)n * 0.1 + 0.08, 0.001, graph1_data[n], graph1_size, graph1_pointer, 255 - n * 25, n * 25, n * 125, 255);
 			}
-			draw_image_f3(esContext, 0.8, 0.85, 1.0, 0.96, 0.002, rctransmitter_image);
+			draw_image_f3(esContext, 0.8, 0.85, 1.0, 0.96, 0.002, ModelData.image);
 		}
 	}
 
