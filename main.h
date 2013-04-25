@@ -19,21 +19,19 @@
 
 #define PI 3.14159265
 
-#define BASE_DIR "/usr/share/gl-gcs"
+#define FONT_GREEN_BG BASE_DIR"/fonts/font1.png"
+#define FONT_TRANS BASE_DIR"/fonts/font2.png"
+#define FONT_BLACK_BG BASE_DIR"/fonts/font3.png"
+#define FONT_WHITE BASE_DIR"/fonts/font4.png"
+#define FONT_GREEN BASE_DIR"/fonts/font5.png"
+#define FONT_PINK BASE_DIR"/fonts/font6.png"
 
-#define FONT_GREEN_BG "/usr/share/gl-gcs/fonts/font1.png"
-#define FONT_TRANS "/usr/share/gl-gcs/fonts/font2.png"
-#define FONT_BLACK_BG "/usr/share/gl-gcs/fonts/font3.png"
-#define FONT_WHITE "/usr/share/gl-gcs/fonts/font4.png"
-#define FONT_GREEN "/usr/share/gl-gcs/fonts/font5.png"
-#define FONT_PINK "/usr/share/gl-gcs/fonts/font6.png"
-
-#define TEXTURE_LOGO "/usr/share/gl-gcs/textures/autoquad-logo.png"
-#define TEXTURE_QUAD "/usr/share/gl-gcs/textures/autoquad-quad.png"
-#define TEXTURE_HUD_FRAME "/usr/share/gl-gcs/textures/hud_frame.png"
-#define TEXTURE_POINTER "/usr/share/gl-gcs/textures/pointer.png"
-#define TEXTURE_SPEAKER "/usr/share/gl-gcs/textures/speaker.png"
-#define TEXTURE_SPEAKER_MUTE "/usr/share/gl-gcs/textures/speaker_mute.png"
+#define TEXTURE_LOGO BASE_DIR"/textures/autoquad-logo.png"
+#define TEXTURE_QUAD BASE_DIR"/textures/autoquad-quad.png"
+#define TEXTURE_HUD_FRAME BASE_DIR"/textures/hud_frame.png"
+#define TEXTURE_POINTER BASE_DIR"/textures/pointer.png"
+#define TEXTURE_SPEAKER BASE_DIR"/textures/speaker.png"
+#define TEXTURE_SPEAKER_MUTE BASE_DIR"/textures/speaker_mute.png"
 
 #define ALIGN_LEFT	0
 #define ALIGN_TOP	0

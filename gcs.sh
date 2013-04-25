@@ -3,7 +3,9 @@
 #
 
 
-test -e /usr/share/gl-gcs/setup.cfg || echo "touchscreen_device" > /usr/share/gl-gcs/setup.cfg
+test -e /usr/share/gl-gcs && (cp -a /usr/share/gl-gcs/* /usr/share/multigcs/ ; rm -rf /usr/share/gl-gcs/) || true
+
+test -e /usr/share/multigcs/setup.cfg || echo "touchscreen_device" > /usr/share/multigcs/setup.cfg
 
 
 if uname -a | grep -s -q raspberrypi
@@ -21,14 +23,14 @@ then
 		unset DISPLAY
 		export SDL_MOUSEDEV="/dev/input/event999"
 		export SDL_NOMOUSE=1
-		if grep -s -q "touchscreen_device" /usr/share/gl-gcs/setup.cfg
+		if grep -s -q "touchscreen_device" /usr/share/multigcs/setup.cfg
 		then
-			sed -i "s|touchscreen_device.*|touchscreen_device $TOUCH_DEV|g" /usr/share/gl-gcs/setup.cfg
+			sed -i "s|touchscreen_device.*|touchscreen_device $TOUCH_DEV|g" /usr/share/multigcs/setup.cfg
 		else
-			sed -i "s|tile_y.*|touchscreen_device $TOUCH_DEV|g" /usr/share/gl-gcs/setup.cfg
+			sed -i "s|tile_y.*|touchscreen_device $TOUCH_DEV|g" /usr/share/multigcs/setup.cfg
 		fi
 	else
-		sed -i "s|touchscreen_device.*||g" /usr/share/gl-gcs/setup.cfg
+		sed -i "s|touchscreen_device.*||g" /usr/share/multigcs/setup.cfg
 	fi
 
 fi
