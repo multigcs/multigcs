@@ -50,7 +50,7 @@ deb: gcs
 	cp -a gcs package/usr/bin/gl-gcs
 	cp -a gcs.sh package/usr/bin/gcs
 	cp -a clean-badmaps.sh package$(BASE_DIR)/clean-badmaps.sh
-	cp -a screens/screen_tcl.tcl package$(BASE_DIR)/scripts/screens/screen_tcl.tcl
+	cp -a screens/screen_tcl.tcl package$(BASE_DIR)/scripts/screen_tcl.tcl
 	cp -a WMM2010.COF package$(BASE_DIR)/MAPS
 	touch package$(BASE_DIR)/setup.cfg
 	chmod 0755 package/usr/bin/gl-gcs
