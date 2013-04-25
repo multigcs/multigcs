@@ -1,4 +1,5 @@
 *.o
+*.deb
 gcs
 scrennshots
 package
