@@ -251,17 +251,17 @@ static int rcflow_tcl_output_Cmd (ClientData cdata, Tcl_Interp *interp, int objc
 
 static void rcflow_tcl_init (void) {
 	rcflow_tcl_startup = 1;
+/*
 	printf("Init RcFlow-TCL...\n");
 	rcflow_tcl_interp = Tcl_CreateInterp();
 	if (TCL_OK != Tcl_Init(rcflow_tcl_interp)) {
 		printf("...failed (%s)\n", Tcl_GetStringResult(rcflow_tcl_interp));
 		return;
 	}
-
 //	Tcl_CreateObjCommand(rcflow_tcl_interp, "ModelData", ModelData_Cmd, NULL, NULL);
 	Tcl_CreateObjCommand(rcflow_tcl_interp, "set_output", rcflow_tcl_output_Cmd, NULL, NULL);
-
 	printf("...done\n");
+*/
 	return;
 }
 
@@ -2419,20 +2419,20 @@ void rcflow_calc_Embedded (void) {
 			char tmp_str[1024];
 			for (n = 0; n < MAX_INPUTS; n++) {
 				sprintf(tmp_str, "set Input(%i) \"%i\"", n, RcPluginEmbedded[plugin].input[n].value);
-				Tcl_Eval(rcflow_tcl_interp, tmp_str);
+//				Tcl_Eval(rcflow_tcl_interp, tmp_str);
 			}
 			for (n = 0; n < MAX_OUTPUTS; n++) {
 				sprintf(tmp_str, "set Output(%i) \"%i\"", n, RcPluginEmbedded[plugin].output[n].value);
-				Tcl_Eval(rcflow_tcl_interp, tmp_str);
+//				Tcl_Eval(rcflow_tcl_interp, tmp_str);
 			}
 
 			// eval plugin-script
-			rcflow_tcl_run(RcPlugin[plugin].text);
+//			rcflow_tcl_run(RcPlugin[plugin].text);
 
 			// update output values
 			for (n = 0; n < MAX_OUTPUTS; n++) {
 				sprintf(tmp_str, "set_output %i %i $Output(%i)", plugin, n, n);
-				Tcl_Eval(rcflow_tcl_interp, tmp_str);
+//				Tcl_Eval(rcflow_tcl_interp, tmp_str);
 			}
 
 		} else if (RcPluginEmbedded[plugin].type == RCFLOW_PLUGIN_H120) {
