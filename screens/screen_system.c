@@ -313,6 +313,8 @@ void screen_system (ESContext *esContext) {
 	draw_button(esContext, "_border_y++", VIEW_MODE_SYSTEM, "[+]", FONT_GREEN, 0.95, 0.5, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_y, 2.0);
 
 
+	draw_button(esContext, "copyright", VIEW_MODE_SYSTEM, "Copyright by Oliver Dippel (oliver@multixmedia.org)", FONT_PINK, 0.0, 0.9, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, system_null, 0.0);
+
 
 	screen_device(esContext);
 	screen_baud(esContext);
