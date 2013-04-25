@@ -14,3 +14,19 @@ Ground-Control-Station for multiple Protocols
 
 Homepage: http://www.multixmedia.org/Multi-GCS/index.html
 
+
+Installation:
+
+	Linux/Desktop (OpenGL):
+
+		make -f Makefile.gl-sdl all install
+
+	Linux/Desktop (OpenGL-ES):
+
+		make -f Makefile.gles-x11 all install
+
+	Linux/Raspberry-Pi:
+
+		make all install
+
+
