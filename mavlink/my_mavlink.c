@@ -87,7 +87,10 @@ uint8_t mavlink_init (char *port, uint32_t baud) {
 
 void mavlink_exit (void) {
 	printf("* udp-thread kill\n");
-	SDL_KillThread(thread_udp);
+	if (thread_udp != NULL) {
+		SDL_KillThread(thread_udp);
+		thread_udp = NULL;
+	}
 
 	if (serial_fd_mavlink >= 0) {
 		close(serial_fd_mavlink);

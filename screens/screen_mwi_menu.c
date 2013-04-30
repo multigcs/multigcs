@@ -29,6 +29,10 @@ uint8_t mwi_write_rom (char *name, float x, float y, int8_t button, float data) 
 	return 0;
 }
 
+uint8_t mwi_read_values (char *name, float x, float y, int8_t button, float data) {
+	return 0;
+}
+
 uint8_t mwi_view_change (char *name, float x, float y, int8_t button, float data) {
 	mwi_view = 1 - mwi_view;
 	reset_buttons();
