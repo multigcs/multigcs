@@ -50,7 +50,7 @@
 #include "screen_hud.h"
 #include "screen_graph.h"
 #include "screen_calibration.h"
-#include "screen_nd.h"
+#include "screen_telemetry.h"
 #include "screen_fms.h"
 #include "screen_system.h"
 #include "screen_tcl.h"
@@ -173,8 +173,6 @@ void save_screenshot (void) {
 		strcpy(name, "fms");
 	} else if (view_mode == VIEW_MODE_WPEDIT) {
 		strcpy(name, "fms");
-	} else if (view_mode == VIEW_MODE_ND) {
-		strcpy(name, "nav");
 	} else if (view_mode == VIEW_MODE_MAP) {
 		strcpy(name, "map");
 	} else if (view_mode == VIEW_MODE_VIDEOLIST) {
@@ -1567,8 +1565,6 @@ void Draw (ESContext *esContext) {
 			draw_box_f3(esContext, -1.5, -1.0, 0.002, 1.5, 1.0, 0.002, 0, 0, 0, 200);
 		}
 		screen_wpedit(esContext);
-	} else if (view_mode == VIEW_MODE_ND) {
-		screen_nd(esContext);
 	} else if (view_mode == VIEW_MODE_MAP) {
 		if (map_view == 3) {
 			map_view = 0;
