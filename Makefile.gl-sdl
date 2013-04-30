@@ -9,7 +9,7 @@ EXTRA_OBJECTS = gl_draw.o
 INCDIR = -I./ -I./Common -I/usr/include/libxml2 -I/usr/include/tcl8.5 -Iscreens -Imavlink -Igps -Imwi21 -Ijeti -Iopenpilot -Ifrsky
 LIBS = -lGL -lm -lX11 -lpng -lcurl -lSDL -lSDL_image -lGLU -ludev -lxml2 -ltcl8.5
 CFLAGS += -DSDLGL -O3 -Wall
-CFLAGS += -ggdb
+#CFLAGS += -ggdb
 #CFLAGS +=  -pg
 
 ## ldd gcs  | grep -v /opt | awk '{print $1}' | xargs -r -l dpkg -S  | cut -d":" -f1 | sort -u | tr  "\n" "," ##
