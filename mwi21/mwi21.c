@@ -37,6 +37,9 @@ int8_t mwi_set_pid_flag = 0;
 volatile int16_t mwi_box[16];
 volatile int16_t mwi_set_box[16];
 int8_t mwi_set_box_flag = 0;
+int8_t mwi_get_pid_flag = 0;
+int8_t mwi_get_box_flag = 0;
+int8_t mwi_req = 0;
 int16_t mwi_i2cErrors = 0;
 int16_t mwi_sensors = 0;
 int16_t mwi_mag_x = 0;
@@ -159,15 +162,20 @@ void mwi21_send_pid (void) {
 }
 
 void mwi21_cal_acc (void) {
-	mwi21_get_req(MSP_ACC_CALIBRATION);
+	mwi_req = MSP_ACC_CALIBRATION;
 }
 
 void mwi21_cal_mac (void) {
-	mwi21_get_req(MSP_MAG_CALIBRATION);
+	mwi_req = MSP_MAG_CALIBRATION;
 }
 
 void mwi21_write_rom (void) {
-	mwi21_get_req(MSP_EEPROM_WRITE);
+	mwi_req = MSP_EEPROM_WRITE;
+}
+
+void mwi21_get_values (void) {
+	mwi_get_pid_flag = 1;
+	mwi_get_box_flag = 1;
 }
 
 void mwi21_update (void) {
@@ -196,27 +204,28 @@ void mwi21_update (void) {
 			mwi21_get_req(MSP_RAW_GPS);
 			mwi21_rn = 5;
 		} else if (mwi21_rn == 5) {
-			mwi21_get_req(MSP_STATUS);
+			if (mwi_get_pid_flag != 0) {
+				mwi21_get_req(MSP_PID);
+				mwi_get_pid_flag = 0;
+			} else if (mwi_get_box_flag != 0) {
+				mwi21_get_req8(MSP_BOX, 1);
+				mwi_get_box_flag = 0;
+			} else if (mwi_set_pid_flag == 1) {
+				mwi21_send_pid();
+				mwi_set_pid_flag = 0;
+			} else if (mwi_set_box_flag == 1) {
+				mwi21_send_box();
+				mwi_set_box_flag = 0;
+			} else if (mwi_req != 0) {
+				mwi21_get_req(mwi_req);
+				mwi_req = 0;
+			} else {
+				mwi21_get_req(MSP_STATUS);
+			}
 			mwi21_rn = 6;
 		} else if (mwi21_rn == 6) {
 			mwi21_get_req(MSP_RAW_IMU);
-			mwi21_rn = 7;
-		} else if (mwi21_rn == 7) {
-			if (mwi_set_pid_flag == 1) {
-				mwi_set_pid_flag = 0;
-				mwi21_send_pid();
-			} else {
-				mwi21_get_req(MSP_PID);
-			}
-			mwi21_rn = 8;
-		} else if (mwi21_rn == 8) {
-			if (mwi_set_box_flag == 1) {
-				mwi_set_box_flag = 0;
-				mwi21_send_box();
-			} else {
-				mwi21_get_req8(MSP_BOX, 1);
-			}
-//			mwi21_rn = 9;
+//			mwi21_rn = 7;
 //		} else if (mwi21_rn == 9) {
 //			mwi21_get_req8(MSP_WP, 1);
 			mwi21_rn = 0;

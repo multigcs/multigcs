@@ -52,6 +52,7 @@ void mwi21_init (char *port, uint32_t baud);
 void mwi21_exit (void);
 void mwi21_cal_acc (void);
 void mwi21_cal_mac (void);
+void mwi21_get_values (void);
 void mwi21_write_rom (void);
 void mwi21_update (void);
 uint8_t mwi21_connection_status (void);

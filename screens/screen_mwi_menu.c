@@ -29,7 +29,8 @@ uint8_t mwi_write_rom (char *name, float x, float y, int8_t button, float data) 
 	return 0;
 }
 
-uint8_t mwi_read_values (char *name, float x, float y, int8_t button, float data) {
+uint8_t mwi_get_values (char *name, float x, float y, int8_t button, float data) {
+	mwi21_get_values();
 	return 0;
 }
 
@@ -310,6 +311,7 @@ void screen_mwi_menu (ESContext *esContext) {
 	}
 	draw_button(esContext, "mwi_cal_acc", VIEW_MODE_FCMENU, "[CAL_ACC]", FONT_WHITE, -0.8, 0.9, 0.002, 0.07, 1, 0, mwi_cal_acc, 0.0);
 	draw_button(esContext, "mwi_cal_mac", VIEW_MODE_FCMENU, "[CAL_MAG]", FONT_WHITE, -0.4, 0.9, 0.002, 0.07, 1, 0, mwi_cal_mac, 0.0);
-	draw_button(esContext, "mwi_write_rom", VIEW_MODE_FCMENU, "[WRITE_ROM]", FONT_WHITE, 0.6, 0.9, 0.002, 0.07, 1, 0, mwi_write_rom, 0.0);
+	draw_button(esContext, "mwi_get_values", VIEW_MODE_FCMENU, "[READ]", FONT_WHITE, 0.4, 0.9, 0.002, 0.07, 1, 0, mwi_get_values, 0.0);
+	draw_button(esContext, "mwi_write_rom", VIEW_MODE_FCMENU, "[WRITE_ROM]", FONT_WHITE, 0.8, 0.9, 0.002, 0.07, 1, 0, mwi_write_rom, 0.0);
 }
 
