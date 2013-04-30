@@ -73,6 +73,11 @@ uint8_t mavlink_flash (char *name, float x, float y, int8_t button, float data) 
 	return 0;
 }
 
+uint8_t mavlink_flashload (char *name, float x, float y, int8_t button, float data) {
+	load_from_flash();
+	return 0;
+}
+
 uint8_t mavlink_select_main (char *name, float x, float y, int8_t button, float data) {
 	sel2 = (float)data;
 	set_sel2 = (float)data;
@@ -361,11 +366,13 @@ void screen_mavlink_menu (ESContext *esContext) {
 	}
 
 
-	draw_button(esContext, "flash", VIEW_MODE_FCMENU, "[WRITE TO FLASH]", FONT_WHITE, 0.0, 0.9, 0.002, 0.06, 1, 0, mavlink_flash, 0.0);
-	draw_button(esContext, "load", VIEW_MODE_FCMENU, "[LOAD PARAM]", FONT_WHITE, -0.9, 0.9, 0.002, 0.06, 1, 0, mavlink_param_load, 1.0);
-	draw_button(esContext, "save", VIEW_MODE_FCMENU, "[SAVE PARAM]", FONT_WHITE, 0.9, 0.9, 0.002, 0.06, 1, 0, mavlink_param_save, 1.0);
+	draw_button(esContext, "load", VIEW_MODE_FCMENU, "[LOAD FILE]", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 1, 0, mavlink_param_load, 1.0);
+	draw_button(esContext, "save", VIEW_MODE_FCMENU, "[SAVE FILE]", FONT_WHITE, -0.5, 0.9, 0.002, 0.06, 1, 0, mavlink_param_save, 1.0);
+	draw_button(esContext, "upload", VIEW_MODE_FCMENU, "[UPLOAD ALL]", FONT_WHITE, 0.0, 0.9, 0.002, 0.06, 1, 0, mavlink_param_upload_all, 1.0);
+	draw_button(esContext, "flash_r", VIEW_MODE_FCMENU, "[LOAD FLASH]", FONT_WHITE, 0.5, 0.9, 0.002, 0.06, 1, 0, mavlink_flashload, 0.0);
+	draw_button(esContext, "flash_w", VIEW_MODE_FCMENU, "[WRITE FLASH]", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, 1, 0, mavlink_flash, 0.0);
 
-	draw_button(esContext, "uploads", VIEW_MODE_FCMENU, "[UPLOAD]", FONT_WHITE, -0.45, 0.9, 0.002, 0.06, 1, 0, mavlink_param_upload_all, 1.0);
+
 
 	if (flag == 0) {
 		draw_text_f(esContext, -0.4, 0.0, 0.05, 0.05, FONT_BLACK_BG, "No Mavlink-Parameters found");
