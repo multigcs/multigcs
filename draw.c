@@ -419,6 +419,10 @@ void draw_circleFilled (ESContext *esContext, int16_t x, int16_t y, int16_t radi
 	draw_circleFilled_f3(esContext, x1, y1, 0.0, radius1, r, g, b, a);
 }
 
+void draw_rect_f (ESContext *esContext, float x1, float y1, float x2, float y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+	draw_rect_f3(esContext, x1, y1, 0.0, x2, y2, 0.0, r, g, b, a);
+}
+
 void draw_box_f (ESContext *esContext, float x1, float y1, float x2, float y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	draw_box_f3(esContext, x1, y1, 0.0, x2, y2, 0.0, r, g, b, a);
 }
