@@ -163,6 +163,8 @@ void save_screenshot (void) {
 
 	if (view_mode == VIEW_MODE_HUD) {
 		strcpy(name, "hud");
+	} else if (view_mode == VIEW_MODE_TELEMETRY) {
+		strcpy(name, "telemetry");
 	} else if (view_mode == VIEW_MODE_MODEL) {
 		strcpy(name, "model");
 	} else if (view_mode == VIEW_MODE_RCFLOW) {
@@ -1548,6 +1550,9 @@ void Draw (ESContext *esContext) {
 
 	if (view_mode == VIEW_MODE_HUD) {
 		screen_hud(esContext);
+	} else if (view_mode == VIEW_MODE_TELEMETRY) {
+		screen_background(esContext);
+		screen_telemetry(esContext);
 	} else if (view_mode == VIEW_MODE_MODEL) {
 		screen_background(esContext);
 		screen_model(esContext);
