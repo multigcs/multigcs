@@ -579,6 +579,13 @@ void save_to_flash (void) {
 	send_message(&msg);
 }
 
+void load_from_flash (void) {
+	printf("load values from flash\n");
+	mavlink_message_t msg;
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_CMD_PREFLIGHT_STORAGE, 0, 0.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	send_message(&msg);
+}
+
 void send_waypoints (void) {
 	mavlink_message_t msg;
 	mavlink_msg_mission_clear_all_pack(127, 0, &msg, ModelData.sysid, ModelData.compid);

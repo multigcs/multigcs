@@ -85,6 +85,7 @@ void mavlink_send_value (char *name, float val);
 void gcs_handleMessage(mavlink_message_t* msg);
 void read_waypoints (void);
 void save_to_flash (void);
+void load_from_flash (void);
 void send_waypoints (void);
 void send_message (mavlink_message_t* msg);
 void gcs_update (void);
