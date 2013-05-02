@@ -1,10 +1,12 @@
+## Compiler ##
+
+http://sourcery.mentor.com/public/gnu_toolchain/arm-none-eabi/
+
 ## TODO ##
 I2C
 SPI
 2. Serial
-Flash/EEProm-Emulator
 USB-Serial or HID
-
 
 ## FEZ_Cerb40 ##
 // Pins
