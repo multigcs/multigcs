@@ -48,6 +48,7 @@ int16_t mwi_mag_z = 0;
 int16_t cycleTime = 0;
 static uint32_t last_connection = 1;
 static int8_t GPS_found = 0;
+static int8_t mwi_startup = 0;
 
 
 uint8_t mwi21_connection_status (void) {
@@ -202,7 +203,7 @@ void mwi21_update (void) {
 			mwi21_rn++;
 		} else if (mwi21_rn == 4) {
 			mwi21_get_req(MSP_RAW_GPS);
-			mwi21_rn = 5;
+			mwi21_rn++;
 		} else if (mwi21_rn == 5) {
 			if (mwi_get_pid_flag != 0) {
 				mwi21_get_req(MSP_PID);
@@ -213,20 +214,22 @@ void mwi21_update (void) {
 			} else if (mwi_set_pid_flag == 1) {
 				mwi21_send_pid();
 				mwi_set_pid_flag = 0;
+				mwi_get_pid_flag = 1;
 			} else if (mwi_set_box_flag == 1) {
 				mwi21_send_box();
 				mwi_set_box_flag = 0;
+				mwi_get_box_flag = 1;
 			} else if (mwi_req != 0) {
 				mwi21_get_req(mwi_req);
 				mwi_req = 0;
 			} else {
 				mwi21_get_req(MSP_STATUS);
 			}
-			mwi21_rn = 6;
+			mwi21_rn++;
 		} else if (mwi21_rn == 6) {
 			mwi21_get_req(MSP_RAW_IMU);
-//			mwi21_rn = 7;
-//		} else if (mwi21_rn == 9) {
+//			mwi21_rn++;
+//		} else if (mwi21_rn == 7) {
 //			mwi21_get_req8(MSP_WP, 1);
 			mwi21_rn = 0;
 		}
@@ -291,6 +294,10 @@ void mwi21_update (void) {
 					ModelData.pitch = (float)mwi21_read16() / -10.0;
 					ModelData.yaw = (float)mwi21_read16();
 					ModelData.heartbeat = 100;
+					if (mwi_startup == 0) {
+						mwi_get_pid_flag = 1;
+						mwi_get_box_flag = 1;
+					}
 					redraw_flag = 1;
 				break;
 				case MSP_RC:
@@ -313,12 +320,13 @@ void mwi21_update (void) {
 				case MSP_ALTITUDE:
 					mwi21_cn = 5 + mwi21_frame_start;
 					ModelData.baro = (float)mwi21_read32() / 100;
-//					if (GPS_found == 0) {
-//						ModelData.p_alt = (float)mwi21_read32() / 100;
-//					}
+					if (GPS_found == 0) {
+						ModelData.p_alt = (float)mwi21_read32() / 100;
+					}
 					redraw_flag = 1;
 				break;
 				case MSP_PID:
+					mwi_startup = 1;
 					mwi21_cn = 5 + mwi21_frame_start;
 					uint8_t len1 = mwi21_serial_buf[3 + mwi21_frame_start];
 					uint8_t nn1 = 0;
