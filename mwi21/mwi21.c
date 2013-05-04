@@ -49,6 +49,10 @@ int16_t cycleTime = 0;
 static uint32_t last_connection = 1;
 static int8_t GPS_found = 0;
 static int8_t mwi_startup = 0;
+char mwi_box_names[16][12];
+char mwi_pid_names[16][12];
+int8_t mwi_get_boxnames_flag = 0;
+int8_t mwi_get_pidnames_flag = 0;
 
 
 uint8_t mwi21_connection_status (void) {
@@ -59,8 +63,13 @@ uint8_t mwi21_connection_status (void) {
 }
 
 void mwi21_init (char *port, uint32_t baud) {
+	uint8_t n = 0;
 	mwi21_rn = 0;
 	mwi21_serial_n = 0;
+	for (n = 0; n < 16; n++) {
+		mwi_box_names[n][0] = 0;
+		mwi_pid_names[n][0] = 0;
+	}
 	printf("init multiwii serial port...\n");
 	mwi21_serial_fd = serial_open(port, baud);
 }
@@ -123,20 +132,20 @@ void mwi21_send_box (void) {
 	send_buffer[0] = '$';
 	send_buffer[1] = 'M';
 	send_buffer[2] = '<';
-	send_buffer[3] = 28;
+	send_buffer[3] = 32;
 	send_buffer[4] = MSP_SET_BOX;
-	send_buffer[5 + 28] = 28 ^ MSP_SET_BOX;
+	send_buffer[5 + 32] = 32 ^ MSP_SET_BOX;
 	uint8_t nn = 0;
-	for (nn = 0; nn < 14; nn++) {
+	for (nn = 0; nn < 16; nn++) {
 		int8_t d1 = (mwi_set_box[nn]>>8);
 		int8_t d2 = mwi_set_box[nn];
 		send_buffer[5 + nn * 2] = d2;
 		send_buffer[5 + nn * 2 + 1] = d1;
-		send_buffer[5 + 28] ^= d1;
-		send_buffer[5 + 28] ^= d2;
+		send_buffer[5 + 32] ^= d1;
+		send_buffer[5 + 32] ^= d2;
 	}
 	if (mwi21_serial_fd >= 0) {
-		write(mwi21_serial_fd, send_buffer, 6 + 28);
+		write(mwi21_serial_fd, send_buffer, 6 + 32);
 	}
 }
 
@@ -177,9 +186,63 @@ void mwi21_write_rom (void) {
 void mwi21_get_values (void) {
 	mwi_get_pid_flag = 1;
 	mwi_get_box_flag = 1;
+	mwi_get_boxnames_flag = 1;
+	mwi_get_pidnames_flag = 1;
+}
+
+void mwi21_get_new (void) {
+	if (mwi21_rn == 0) {
+		mwi21_get_req(MSP_ATTITUDE);
+		mwi21_rn++;
+	} else if (mwi21_rn == 1) {
+		mwi21_get_req(MSP_RC);
+		mwi21_rn++;
+	} else if (mwi21_rn == 2) {
+		mwi21_get_req(MSP_ALTITUDE);
+		mwi21_rn++;
+	} else if (mwi21_rn == 3) {
+		mwi21_get_req(MSP_BAT);
+		mwi21_rn++;
+	} else if (mwi21_rn == 4) {
+		mwi21_get_req(MSP_RAW_GPS);
+		mwi21_rn++;
+	} else if (mwi21_rn == 5) {
+		if (mwi_get_pid_flag != 0) {
+			mwi21_get_req(MSP_PID);
+		} else if (mwi_get_box_flag != 0) {
+			mwi21_get_req8(MSP_BOX, 1);
+		} else if (mwi_get_boxnames_flag != 0) {
+			mwi21_get_req(MSP_BOXNAMES);
+		} else if (mwi_get_pidnames_flag != 0) {
+			mwi21_get_req(MSP_PIDNAMES);
+		} else if (mwi_set_pid_flag == 1) {
+			mwi21_send_pid();
+			mwi_set_pid_flag = 0;
+			mwi_get_pid_flag = 1;
+		} else if (mwi_set_box_flag == 1) {
+			mwi21_send_box();
+			mwi_set_box_flag = 0;
+			mwi_get_box_flag = 1;
+		} else if (mwi_req != 0) {
+			mwi21_get_req(mwi_req);
+			mwi_req = 0;
+		} else {
+			mwi21_get_req(MSP_STATUS);
+		}
+		mwi21_rn++;
+	} else if (mwi21_rn == 6) {
+		mwi21_get_req(MSP_RAW_IMU);
+//		mwi21_rn++;
+//	} else if (mwi21_rn == 7) {
+//		mwi21_get_req8(MSP_WP, 1);
+		mwi21_rn = 0;
+	}
 }
 
 void mwi21_update (void) {
+	uint8_t nn2 = 0;
+	uint8_t cp = 0;
+	uint8_t bn = 0;
 	uint8_t c = 0;
 	uint8_t res = 0;
 	static uint8_t last = 0;
@@ -188,55 +251,10 @@ void mwi21_update (void) {
 	if (mwi21_serial_fd < 0) {
 		return;
 	}
-	if (mwi21_serial_n == 0) {
-		if (mwi21_rn == 0) {
-			mwi21_get_req(MSP_ATTITUDE);
-			mwi21_rn++;
-		} else if (mwi21_rn == 1) {
-			mwi21_get_req(MSP_RC);
-			mwi21_rn++;
-		} else if (mwi21_rn == 2) {
-			mwi21_get_req(MSP_ALTITUDE);
-			mwi21_rn++;
-		} else if (mwi21_rn == 3) {
-			mwi21_get_req(MSP_BAT);
-			mwi21_rn++;
-		} else if (mwi21_rn == 4) {
-			mwi21_get_req(MSP_RAW_GPS);
-			mwi21_rn++;
-		} else if (mwi21_rn == 5) {
-			if (mwi_get_pid_flag != 0) {
-				mwi21_get_req(MSP_PID);
-				mwi_get_pid_flag = 0;
-			} else if (mwi_get_box_flag != 0) {
-				mwi21_get_req8(MSP_BOX, 1);
-				mwi_get_box_flag = 0;
-			} else if (mwi_set_pid_flag == 1) {
-				mwi21_send_pid();
-				mwi_set_pid_flag = 0;
-				mwi_get_pid_flag = 1;
-			} else if (mwi_set_box_flag == 1) {
-				mwi21_send_box();
-				mwi_set_box_flag = 0;
-				mwi_get_box_flag = 1;
-			} else if (mwi_req != 0) {
-				mwi21_get_req(mwi_req);
-				mwi_req = 0;
-			} else {
-				mwi21_get_req(MSP_STATUS);
-			}
-			mwi21_rn++;
-		} else if (mwi21_rn == 6) {
-			mwi21_get_req(MSP_RAW_IMU);
-//			mwi21_rn++;
-//		} else if (mwi21_rn == 7) {
-//			mwi21_get_req8(MSP_WP, 1);
-			mwi21_rn = 0;
-		}
-	}
 	if (tout++ > 300) {
 		tout = 0;
 		mwi21_serial_n = 0;
+		mwi21_get_new();
 //		printf("mwi21: timeout\n");
 	}
 	while ((res = read(mwi21_serial_fd, mwi21_serial_buf, 1)) > 0) {
@@ -280,14 +298,48 @@ void mwi21_update (void) {
 			}
 
 			if (mwi21_serial_buf[mwi21_frame_len + 5 + mwi21_frame_start] != chksum) {
-//				printf("mwi21: CSUM-Error (cmd:%i/len:%i):  %i %i %i\n", cmd, mwi21_frame_len, mwi21_serial_buf[mwi21_frame_len + 5 + mwi21_frame_start], chksum, mwi21_frame_start);
+				printf("mwi21: CSUM-Error (cmd:%i/len:%i):  %i %i %i\n", cmd, mwi21_frame_len, mwi21_serial_buf[mwi21_frame_len + 5 + mwi21_frame_start], chksum, mwi21_frame_start);
 				mwi21_serial_n = 0;
 				cmd = 0;
 				continue;
+			} else {
+				mwi21_serial_n = 0;
 			}
 //			printf("CSUM %i(%i):  %i %i\n", cmd, mwi21_frame_len, mwi21_serial_buf[mwi21_frame_len + 5 + mwi21_frame_start], chksum);
+			mwi21_get_new();
 
 			switch (cmd) {
+				case MSP_BOXNAMES:
+					mwi21_cn = 5 + mwi21_frame_start;
+					for (nn2 = 0; nn2 < mwi21_frame_len; nn2++) {
+						char c = mwi21_read8();
+
+						if (c == ';') {
+							bn++;
+							cp = 0;
+						} else if (bn < 16 && cp < 11) {
+							mwi_box_names[bn][cp + 1] = 0;
+							mwi_box_names[bn][cp++] = c;
+						}
+					}
+					redraw_flag = 1;
+					mwi_get_boxnames_flag = 0;
+				break;
+				case MSP_PIDNAMES:
+					mwi21_cn = 5 + mwi21_frame_start;
+					for (nn2 = 0; nn2 < mwi21_frame_len; nn2++) {
+						char c = mwi21_read8();
+						if (c == ';') {
+							bn++;
+							cp = 0;
+						} else if (bn < 16 && cp < 11) {
+							mwi_pid_names[bn][cp + 1] = 0;
+							mwi_pid_names[bn][cp++] = c;
+						}
+					}
+					redraw_flag = 1;
+					mwi_get_pidnames_flag = 0;
+				break;
 				case MSP_ATTITUDE:
 					mwi21_cn = 5 + mwi21_frame_start;
 					ModelData.roll = (float)mwi21_read16() / 10.0;
@@ -295,8 +347,7 @@ void mwi21_update (void) {
 					ModelData.yaw = (float)mwi21_read16();
 					ModelData.heartbeat = 100;
 					if (mwi_startup == 0) {
-						mwi_get_pid_flag = 1;
-						mwi_get_box_flag = 1;
+						mwi21_get_values();
 					}
 					redraw_flag = 1;
 				break;
@@ -335,6 +386,7 @@ void mwi21_update (void) {
 						mwi_pid[nn1][1] = mwi21_read8();
 						mwi_pid[nn1][2] = mwi21_read8();
 					}
+					mwi_get_pid_flag = 0;
 				break;
 				case MSP_STATUS:
 					mwi21_cn = 5 + mwi21_frame_start;
@@ -364,6 +416,7 @@ void mwi21_update (void) {
 //						mwi_box[nn] = mwi21_read16();
 						mwi_set_box[nn] = mwi21_read16();
 					}
+					mwi_get_box_flag = 0;
 				break;
 				case MSP_RAW_IMU:
 					mwi21_cn = 5 + mwi21_frame_start;

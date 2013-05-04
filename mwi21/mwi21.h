@@ -70,5 +70,7 @@ extern int16_t mwi_mag_x;
 extern int16_t mwi_mag_y;
 extern int16_t mwi_mag_z;
 extern int16_t cycleTime;
+extern char mwi_box_names[16][12];
+extern char mwi_pid_names[16][12];
 
 

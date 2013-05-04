@@ -9,6 +9,7 @@
 #include <mwi21.h>
 
 uint8_t mwi_view = 0;
+uint8_t mwi_mode = 1;
 
 uint8_t mwi_null (char *name, float x, float y, int8_t button, float data) {
 	return 0;
@@ -66,7 +67,7 @@ uint8_t mwi_pid_set (char *name, float x, float y, int8_t button, float data) {
 			v = -1;
 		}
 	}
-	for (n2 = 0; n2 < 9; n2++) {
+	for (n2 = 0; n2 < 10; n2++) {
 		mwi_set_pid[n2][0] = mwi_pid[n2][0];
 		if (nn == n) {
 			mwi_set_pid[n2][0] += v;
@@ -92,7 +93,7 @@ uint8_t mwi_box_set (char *name, float x, float y, int8_t button, float data) {
 	int8_t n2 = 0;
 	int8_t n3 = 0;
 	uint8_t nn = (uint8_t)data;
-	for (n2 = 0; n2 < 14; n2++) {
+	for (n2 = 0; n2 < 16; n2++) {
 		for (n3 = 0; n3 < 12; n3++) {
 			if (mwi_set_box[n2] & (1<<n3)) {
 				if (n == nn) {
@@ -131,28 +132,10 @@ void screen_mwi_menu (ESContext *esContext) {
 	char tmp_str[100];
 	char tmp_str2[100];
 
-
 	draw_title(esContext, "MultiWii");
 
 	if (mwi_view == 1) {
-		char box_names[16][12];
-		for (n = 0; n < 16; n++) {
-			strcpy(box_names[n], "----");
-		}
-		strcpy(box_names[0], "ACC");
-		strcpy(box_names[1], "BARO");
-		strcpy(box_names[2], "MAG");
-		strcpy(box_names[3], "CAMSTAB");
-		strcpy(box_names[4], "CAMTRIG");
-		strcpy(box_names[5], "ARM");
-		strcpy(box_names[6], "GPSHOME");
-		strcpy(box_names[7], "GPSHOLD");
-		strcpy(box_names[8], "PASSTHRU");
-		strcpy(box_names[9], "HEADFREE");
-		strcpy(box_names[10], "BEEPER");
-		strcpy(box_names[11], "LEDMAX");
-		strcpy(box_names[12], "LLIGHTS");
-		strcpy(box_names[13], "HEADADJ");
+
 		for (n3 = 0; n3 < 4; n3++) {
 			if (n3 < 4) {
 				float val = (float)ModelData.radio[4 + n3] / 2.0 + 50.0;
@@ -161,75 +144,61 @@ void screen_mwi_menu (ESContext *esContext) {
 				} else if (val < -100.0) {
 					val = -100.0;
 				}
-				draw_circleMeter_f3(esContext, -0.3 + (float)n3 * 0.16 * 3.0, -0.74, 0.001, 0.06, 20.0, 30.0, 70.0, 160.0, val, "", "", 1);
+				draw_circleMeter_f3(esContext, -0.4 + (float)n3 * 0.16 * 3.0, -0.8, 0.001, 0.06, 20.0, 30.0, 70.0, 160.0, val, "", "", 1);
 			}
 			sprintf(tmp_str2, "   AUX%i", n3 + 1);
-			draw_button(esContext, "box", VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -0.75 + (float)n3 * 0.16 * 3.0, -0.8, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
+			draw_button(esContext, "box", VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -0.85 + (float)n3 * 0.16 * 3.0, -0.87, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
 			if (ModelData.radio[4 + n3] < -40) {
-				draw_button(esContext, "box", VIEW_MODE_FCMENU, " L", FONT_GREEN, -0.75 + (float)n3 * 0.16 * 3.0, -0.7, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
-				draw_button(esContext, "box", VIEW_MODE_FCMENU, " M", FONT_WHITE, -0.75 + (float)n3 * 0.16 * 3.0 + 0.16, -0.7, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
-				draw_button(esContext, "box", VIEW_MODE_FCMENU, " H", FONT_WHITE, -0.75 + (float)n3 * 0.16 * 3.0 + 0.32, -0.7, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
+				draw_button(esContext, "box", VIEW_MODE_FCMENU, " L", FONT_GREEN, -0.8 + (float)n3 * 0.16 * 3.0, -0.8, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
+				draw_button(esContext, "box", VIEW_MODE_FCMENU, " M", FONT_WHITE, -0.8 + (float)n3 * 0.16 * 3.0 + 0.16, -0.8, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
+				draw_button(esContext, "box", VIEW_MODE_FCMENU, " H", FONT_WHITE, -0.8 + (float)n3 * 0.16 * 3.0 + 0.32, -0.8, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
 			} else if (ModelData.radio[4 + n3] > 40) {
-				draw_button(esContext, "box", VIEW_MODE_FCMENU, " L", FONT_WHITE, -0.75 + (float)n3 * 0.16 * 3.0, -0.7, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
-				draw_button(esContext, "box", VIEW_MODE_FCMENU, " M", FONT_WHITE, -0.75 + (float)n3 * 0.16 * 3.0 + 0.16, -0.7, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
-				draw_button(esContext, "box", VIEW_MODE_FCMENU, " H", FONT_GREEN, -0.75 + (float)n3 * 0.16 * 3.0 + 0.32, -0.7, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
+				draw_button(esContext, "box", VIEW_MODE_FCMENU, " L", FONT_WHITE, -0.8 + (float)n3 * 0.16 * 3.0, -0.8, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
+				draw_button(esContext, "box", VIEW_MODE_FCMENU, " M", FONT_WHITE, -0.8 + (float)n3 * 0.16 * 3.0 + 0.16, -0.8, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
+				draw_button(esContext, "box", VIEW_MODE_FCMENU, " H", FONT_GREEN, -0.8 + (float)n3 * 0.16 * 3.0 + 0.32, -0.8, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
 			} else {
-				draw_button(esContext, "box", VIEW_MODE_FCMENU, " L", FONT_WHITE, -0.75 + (float)n3 * 0.16 * 3.0, -0.7, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
-				draw_button(esContext, "box", VIEW_MODE_FCMENU, " M", FONT_GREEN, -0.75 + (float)n3 * 0.16 * 3.0 + 0.16, -0.7, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
-				draw_button(esContext, "box", VIEW_MODE_FCMENU, " H", FONT_WHITE, -0.75 + (float)n3 * 0.16 * 3.0 + 0.32, -0.7, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
+				draw_button(esContext, "box", VIEW_MODE_FCMENU, " L", FONT_WHITE, -0.8 + (float)n3 * 0.16 * 3.0, -0.8, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
+				draw_button(esContext, "box", VIEW_MODE_FCMENU, " M", FONT_GREEN, -0.8 + (float)n3 * 0.16 * 3.0 + 0.16, -0.8, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
+				draw_button(esContext, "box", VIEW_MODE_FCMENU, " H", FONT_WHITE, -0.8 + (float)n3 * 0.16 * 3.0 + 0.32, -0.8, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
 			}
 		}
-		for (n2 = 0; n2 < 14; n2++) {
+		for (n2 = 0; n2 < 16 && mwi_box_names[n2][0] != 0; n2++) {
 			sprintf(tmp_str, "mwi_v%i", n);
-			sprintf(tmp_str2, "%s", box_names[n2]);
+			sprintf(tmp_str2, "%s", mwi_box_names[n2]);
 			if (n2 < 3 && ! (mwi_sensors & (1<<n2))) {
-				draw_button(esContext, "box", VIEW_MODE_FCMENU, tmp_str2, FONT_TRANS, -1.2, -0.6 + (float)n2 * 0.1, 0.002, 0.08, 0, 0, mwi_null, (float)n2);
-			} else if ((n2 == 6 || n2 == 7) && ! (mwi_sensors & (1<<3))) {
-				draw_button(esContext, "box", VIEW_MODE_FCMENU, tmp_str2, FONT_TRANS, -1.2, -0.6 + (float)n2 * 0.1, 0.002, 0.08, 0, 0, mwi_null, (float)n2);
-			} else if ((n2 == 9) && ! (mwi_sensors & (1<<2))) {
-				draw_button(esContext, "box", VIEW_MODE_FCMENU, tmp_str2, FONT_TRANS, -1.2, -0.6 + (float)n2 * 0.1, 0.002, 0.08, 0, 0, mwi_null, (float)n2);
+				draw_button(esContext, "box", VIEW_MODE_FCMENU, tmp_str2, FONT_TRANS, -1.2, -0.7 + (float)n2 * 0.1, 0.002, 0.08, 0, 0, mwi_null, (float)n2);
+//			} else if ((n2 == 6 || n2 == 7) && ! (mwi_sensors & (1<<3))) {
+//				draw_button(esContext, "box", VIEW_MODE_FCMENU, tmp_str2, FONT_TRANS, -1.2, -0.7 + (float)n2 * 0.1, 0.002, 0.08, 0, 0, mwi_null, (float)n2);
+//			} else if ((n2 == 9) && ! (mwi_sensors & (1<<2))) {
+//				draw_button(esContext, "box", VIEW_MODE_FCMENU, tmp_str2, FONT_TRANS, -1.2, -0.7 + (float)n2 * 0.1, 0.002, 0.08, 0, 0, mwi_null, (float)n2);
 			} else if (mwi_status & (1<<n2)) {
-				draw_button(esContext, "box", VIEW_MODE_FCMENU, tmp_str2, FONT_GREEN, -1.2, -0.6 + (float)n2 * 0.1, 0.002, 0.08, 0, 0, mwi_null, (float)n2);
+				draw_button(esContext, "box", VIEW_MODE_FCMENU, tmp_str2, FONT_GREEN, -1.2, -0.7 + (float)n2 * 0.1, 0.002, 0.08, 0, 0, mwi_null, (float)n2);
 			} else {
-				draw_button(esContext, "box", VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -1.2, -0.6 + (float)n2 * 0.1, 0.002, 0.08, 0, 0, mwi_null, (float)n2);
+				draw_button(esContext, "box", VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -1.2, -0.7 + (float)n2 * 0.1, 0.002, 0.08, 0, 0, mwi_null, (float)n2);
 			}
 		}
 		n = 0;
-		for (n2 = 0; n2 < 14; n2++) {
+		for (n2 = 0; n2 < 16 && mwi_box_names[n2][0] != 0; n2++) {
 			for (n3 = 0; n3 < 12; n3++) {
 				sprintf(tmp_str, "mwi_v%i", n);
-
 				if (mwi_set_box[n2] & (1<<n3)) {
 					sprintf(tmp_str2, "[x]");
-					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -0.75 + (float)n3 * 0.16, -0.6 + (float)n2 * 0.1, 0.002, 0.08, 0, 0, mwi_box_set, (float)n);
+					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -0.8 + (float)n3 * 0.16, -0.7 + (float)n2 * 0.1, 0.002, 0.08, 0, 0, mwi_box_set, (float)n);
 				} else {
 					sprintf(tmp_str2, "[ ]");
-					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -0.75 + (float)n3 * 0.16, -0.6 + (float)n2 * 0.1, 0.002, 0.08, 0, 0, mwi_box_set, (float)n);
+					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -0.8 + (float)n3 * 0.16, -0.7 + (float)n2 * 0.1, 0.002, 0.08, 0, 0, mwi_box_set, (float)n);
 				}
 				n++;
 			}
 		}
 		draw_button(esContext, "mwi_view", VIEW_MODE_FCMENU, "[BOX]", FONT_WHITE, 0.0, 0.9, 0.002, 0.07, 1, 0, mwi_view_change, 0.0);
 	} else {
-		char pid_names[16][12];
-		for (n = 0; n < 16; n++) {
-			strcpy(pid_names[n], "----");
-		}
-		strcpy(pid_names[0], "ROLL");
-		strcpy(pid_names[1], "PITCH");
-		strcpy(pid_names[2], "YAW");
-		strcpy(pid_names[3], "ALT");
-		strcpy(pid_names[4], "Pos");
-		strcpy(pid_names[5], "PosR");
-		strcpy(pid_names[6], "NavR");
-		strcpy(pid_names[7], "LEVEL");
-		strcpy(pid_names[8], "MAG");
 		draw_button(esContext, "pid", VIEW_MODE_FCMENU, "P", FONT_WHITE, -0.7 + 1.0 * 0.2, -0.8, 0.002, 0.08, 1, 0, mwi_pid_set, (float)0);
 		draw_button(esContext, "pid", VIEW_MODE_FCMENU, "I", FONT_WHITE, 0.0 + 1.0 * 0.2, -0.8, 0.002, 0.08, 1, 0, mwi_pid_set, (float)1);
 		draw_button(esContext, "pid", VIEW_MODE_FCMENU, "D", FONT_WHITE, 0.7 + 1.0 * 0.2, -0.8, 0.002, 0.08, 1, 0, mwi_pid_set, (float)2);
-		for (n2 = 0; n2 < 9; n2++) {
-			sprintf(tmp_str2, "%s", pid_names[n2]);
-			draw_button(esContext, "pid", VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -1.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 0, 0, mwi_null, (float)n2);
+		for (n2 = 0; n2 < 16 && mwi_pid_names[n2][0]; n2++) {
+			sprintf(tmp_str2, "%s", mwi_pid_names[n2]);
+			draw_button(esContext, "pid", VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -1.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 0, 0, mwi_null, (float)n2);
 			if (n2 < 3) {
 				float val = (float)ModelData.radio[n2] / 2.0 + 50.0;
 				if (val > 100.0) {
@@ -237,72 +206,72 @@ void screen_mwi_menu (ESContext *esContext) {
 				} else if (val < -100.0) {
 					val = -100.0;
 				}
-				draw_circleMeter_f3(esContext, -0.85, -0.7 + (float)n2 * 0.17 + 0.07, 0.001, 0.06, 20.0, 50.0, 50.0, 160.0, val, "", "", 1);
+				draw_circleMeter_f3(esContext, -0.85, -0.7 + (float)n2 * 0.13 + 0.07, 0.001, 0.06, 20.0, 50.0, 50.0, 160.0, val, "", "", 1);
 			}
 		}
 		n = 0;
-		for (n2 = 0; n2 < 9; n2++) {
-			if (n2 == 4) {
+		for (n2 = 0; n2 < 16 && mwi_pid_names[n2][0]; n2++) {
+			if (n2 == 114) {
 				sprintf(tmp_str2, "%0.2f", (float)mwi_pid[n2][0] / 100.0);
 				sprintf(tmp_str, "mwi_p-%i", n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -0.7 + 0.0 * 0.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n);
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -0.7 + 0.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n);
 				sprintf(tmp_str, "mwi_p%i", n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -0.7 + 1.0 * 0.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n);
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -0.7 + 1.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n);
 				sprintf(tmp_str, "mwi_p+%i", n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -0.7 + 2.0 * 0.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n);
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -0.7 + 2.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n);
 				sprintf(tmp_str2, "%0.2f", (float)mwi_pid[n2][1] / 100.0);
 				sprintf(tmp_str, "mwi_i-%i", n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -0.0 + 0.0 * 0.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 1.0);
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -0.0 + 0.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 1.0);
 				sprintf(tmp_str, "mwi_i%i", n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -0.0 + 1.0 * 0.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 1.0);
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -0.0 + 1.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 1.0);
 				sprintf(tmp_str, "mwi_i+%i", n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -0.0 + 2.0 * 0.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 1.0);
-			} else if (n2 == 5 || n2 == 6) {
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -0.0 + 2.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 1.0);
+			} else if (n2 == 115 || n2 == 116) {
 				sprintf(tmp_str2, "%0.2f", (float)mwi_pid[n2][0] / 10.0);
 				sprintf(tmp_str, "mwi_p-%i", n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -0.7 + 0.0 * 0.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n);
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -0.7 + 0.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n);
 				sprintf(tmp_str, "mwi_p%i", n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -0.7 + 1.0 * 0.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n);
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -0.7 + 1.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n);
 				sprintf(tmp_str, "mwi_p+%i", n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -0.7 + 2.0 * 0.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n);
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -0.7 + 2.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n);
 				sprintf(tmp_str2, "%0.2f", (float)mwi_pid[n2][1] / 100.0);
 				sprintf(tmp_str, "mwi_i-%i", n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -0.0 + 0.0 * 0.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 1.0);
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -0.0 + 0.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 1.0);
 				sprintf(tmp_str, "mwi_i%i", n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -0.0 + 1.0 * 0.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 1.0);
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -0.0 + 1.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 1.0);
 				sprintf(tmp_str, "mwi_i+%i", n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -0.0 + 2.0 * 0.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 1.0);
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -0.0 + 2.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 1.0);
 				sprintf(tmp_str2, "%0.3f", (float)mwi_pid[n2][2] / 1000.0);
 				sprintf(tmp_str, "mwi_d-%i", n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.7 + 0.0 * 0.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 2.0);
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.7 + 0.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 2.0);
 				sprintf(tmp_str, "mwi_d%i", n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, 0.7 + 1.0 * 0.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 2.0);
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, 0.7 + 1.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 2.0);
 				sprintf(tmp_str, "mwi_d+%i", n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.7 + 2.0 * 0.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 2.0);
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.7 + 2.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 2.0);
 			} else {
 				sprintf(tmp_str2, "%0.2f", (float)mwi_pid[n2][0] / 10.0);
 				sprintf(tmp_str, "mwi_p-%i", n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -0.7 + 0.0 * 0.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n);
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -0.7 + 0.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n);
 				sprintf(tmp_str, "mwi_p%i", n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -0.7 + 1.0 * 0.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n);
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -0.7 + 1.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n);
 				sprintf(tmp_str, "mwi_p+%i", n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -0.7 + 2.0 * 0.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n);
-				if (n2 != 8) {
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -0.7 + 2.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n);
+				if (n2 != 118) {
 					sprintf(tmp_str2, "%0.3f", (float)mwi_pid[n2][1] / 1000.0);
 					sprintf(tmp_str, "mwi_i-%i", n);
-					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -0.0 + 0.0 * 0.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 1.0);
+					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -0.0 + 0.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 1.0);
 					sprintf(tmp_str, "mwi_i%i", n);
-					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -0.0 + 1.0 * 0.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 1.0);
+					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -0.0 + 1.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 1.0);
 					sprintf(tmp_str, "mwi_i+%i", n);
-					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -0.0 + 2.0 * 0.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 1.0);
+					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -0.0 + 2.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 1.0);
 	
 					sprintf(tmp_str2, "%0.0f", (float)mwi_pid[n2][2] / 1.0);
 					sprintf(tmp_str, "mwi_d-%i", n);
-					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.7 + 0.0 * 0.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 2.0);
+					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.7 + 0.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 2.0);
 					sprintf(tmp_str, "mwi_d%i", n);
-					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, 0.7 + 1.0 * 0.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 2.0);
+					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, 0.7 + 1.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 2.0);
 					sprintf(tmp_str, "mwi_d+%i", n);
-					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.7 + 2.0 * 0.2, -0.7 + (float)n2 * 0.17, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 2.0);
+					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.7 + 2.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 2.0);
 				}
 			}
 			n += 3;
