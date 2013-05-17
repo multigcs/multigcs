@@ -538,6 +538,7 @@ uint8_t map_view_change (char *name, float x, float y, int8_t button, float data
 }
 
 uint8_t change_maptype (char *name, float x, float y, int8_t button, float data) {
+printf("change_maptype ####\n");
 	if (data == -1) {
 		map_type_select = 1 - map_type_select;
 	} else {
@@ -548,6 +549,7 @@ uint8_t change_maptype (char *name, float x, float y, int8_t button, float data)
 }
 
 uint8_t change_omaptype (char *name, float x, float y, int8_t button, float data) {
+printf("change_omaptype ####\n");
 	if (data == -1) {
 		omap_type_select = 1 - omap_type_select;
 	} else {
@@ -1566,6 +1568,9 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	uint8_t tiles_y = (screen_h + 255) / 256;
 	uint8_t tiles_num = 0;
 	int16_t n = 0;
+
+	reset_buttons();
+
 #ifdef SDLGL
 	if (_map_view == 1) {
 		glMatrixMode( GL_PROJECTION );

@@ -35,6 +35,47 @@
 		<file>%s/MAPS/google_%i_%i_%i.png</file>
 		<type>GOOGLE</type>
 	</service>
+
+	<service>
+		<name>OSM_WC</name>
+		<comment>Watercolor</comment>
+		<url>http://a.tile.stamen.com/watercolor/%i/%i/%i.png</url>
+		<file>%s/MAPS/osm_art_wc_%i_%i_%i.png</file>
+		<type>ZXY</type>
+	</service>
+	<service>
+		<name>TONER</name>
+		<comment>TONER</comment>
+		<url>http://a.tile.stamen.com/toner/%i/%i/%i.png</url>
+		<file>%s/MAPS/osm_art_toner_%i_%i_%i.png</file>
+		<type>ZXY</type>
+	</service>
+
+	<service>
+		<name>BW</name>
+		<comment>Black/White</comment>
+		<url>http://a.www.toolserver.org/tiles/bw-noicons/%i/%i/%i.png</url>
+		<file>%s/MAPS/osm_bw-noicons_%i_%i_%i.png</file>
+		<type>ZXY</type>
+	</service>
+
+
+	<_service>
+		<name>MQCDNM</name>
+		<comment>MQCDN-Map</comment>
+		<url>http://otile1.mqcdn.com/tiles/1.0.0/sat/%i/%i/%i.png</url>
+		<file>%s/MAPS/mqcdn_map_%i_%i_%i.png</file>
+		<type>ZXY</type>
+	</_service>
+	<_service>
+		<name>OSM2</name>
+		<comment>OSM2</comment>
+		<url>http://a.tile.openstreetmap.org/%i/%i/%i.png</url>
+		<file>%s/MAPS/osm2_%i_%i_%i.png</file>
+		<type>ZXY</type>
+	</_service>
+
+
 	<_service>
 		<name>MQSAT</name>
 		<comment>MQEST - SAT</comment>
@@ -120,4 +161,24 @@
 		<file>%s/MAPS/omap_hill_%i_%i_%i.png</file>
 		<type>ZXY</type>
 	</overlay_service>
+
+
+	<overlay_service>
+		<name>Hiking</name>
+		<comment>hiking</comment>
+		<url>http://tile.waymarkedtrails.org/hiking/%i/%i/%i.png</url>
+		<file>%s/MAPS/omap_hiking_%i_%i_%i.png</file>
+		<type>ZXY</type>
+	</overlay_service>
+
+	<overlay_service>
+		<name>LABELS</name>
+		<comment>osm-labels-en</comment>
+		<url>http://a.www.toolserver.org/tiles/osm-labels-en/%i/%i/%i.png</url>
+		<file>%s/MAPS/omap_labels-en_%i_%i_%i.png</file>
+		<type>ZXY</type>
+	</overlay_service>
+
+
+
 </map>
