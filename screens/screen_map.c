@@ -11,6 +11,9 @@
 #include <curl/curl.h>
 #include <SDL/SDL.h>
 
+#include <libxml/xmlmemory.h>
+#include <libxml/parser.h>
+
 #include <model.h>
 #include <userdata.h>
 #include <main.h>
@@ -21,9 +24,9 @@
 volatile float lat = 50.29;
 volatile float lon = 9.12;
 volatile uint8_t zoom = 16;
-uint8_t map_type = MAPS_OSM;
+uint8_t map_type = 0;
 uint8_t map_type_select = 0;
-uint8_t omap_type = OMAPS_NONE;
+uint8_t omap_type = 0;
 uint8_t omap_type_select = 0;
 uint8_t map_view = 0;
 uint8_t map_startup = 0;
@@ -54,32 +57,132 @@ SDL_Thread *sdl_thread_get_maps2;
 // http://ecn.dynamic.t1.tiles.virtualearth.net/comp/ch/120203302111?mkt=de-de&it=A,G,L&shading=hill
 
 
-char mapnames[MAPS_LAST][4][200] = {
-	{"OSM", "http://tile.openstreetmap.org/%i/%i/%i.png", "%s/MAPS/osm_%i_%i_%i.png", "ZXY"},
-	{"GAPI", "http://khm0.googleapis.com/kh/v=120&src=app&x=%i&s=&y=%i&z=%i", "%s/MAPS/gapi_%i_%i_%i.jpg", "XYZ"},
-	{"ARCGIS", "http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/%i/%i/%i.jpg", "%s/MAPS/arcgis_%i_%i_%i.jpg", "ZYX"},
-//	{"BING", "http://t0.tiles.virtualearth.net/tiles/a%s.jpeg?g=854&mkt=en-US&token=Anz84uRE1RULeLwuJ0qKu5amcu5rugRXy1vKc27wUaKVyIv1SVZrUjqaOfXJJoI0", "%s/MAPS/bing_%i_%i_%i.jpg", "BING"},
-//	{"BING", "http://ecn.dynamic.t1.tiles.virtualearth.net/comp/ch/%s?mkt=de-de&it=A,G,L&shading=hill", "%s/MAPS/bing_%i_%i_%i.jpg", "BING"},
-	{"MQUEST", "http://otile2.mqcdn.com/tiles/1.0.0/osm/%i/%i/%i.jpg", "%s/MAPS/mquest_%i_%i_%i.jpg", "ZXY"},
-//	{"MQSAT", "http://otile2.mqcdn.com/tiles/1.0.0/sat/%i/%i/%i.jpg", "%s/MAPS/mquestsat_%i_%i_%i.jpg", "ZXY"},
-	{"GOOGLE", "http://maps.googleapis.com/maps/api/staticmap?center=%0.6f,%0.6f&zoom=%i&size=%ix%i&maptype=satellite&sensor=true", "%s/MAPS/google_%i_%i_%i.png", "GOOGLE"},
-};
+uint8_t maplen = 0;
+uint8_t omaplen = 0;
 
-char omapnames[OMAPS_LAST][4][200] = {
-	{"NONE", "", "", ""},
-	{"PREC", "http://undefined.tile.openweathermap.org/map/precipitation/%i/%i/%i.png", "%s/MAPS/omap_precipitation_%i_%i_%i.png", "ZXY"},
-	{"CLOUDS", "http://undefined.tile.openweathermap.org/map/clouds/%i/%i/%i.png", "%s/MAPS/omap_clouds_%i_%i_%i.png", "ZXY"},
-	{"WIND", "http://undefined.tile.openweathermap.org/map/wind/%i/%i/%i.png", "%s/MAPS/omap_wind_%i_%i_%i.png", "ZXY"},
-	{"TEMP", "http://undefined.tile.openweathermap.org/map/temp/%i/%i/%i.png", "%s/MAPS/omap_temp_%i_%i_%i.png", "ZXY"},
-	{"PRESS", "http://undefined.tile.openweathermap.org/map/pressure/%i/%i/%i.png", "%s/MAPS/omap_pressure_%i_%i_%i.png", "ZXY"},
-	{"PRESC", "http://undefined.tile.openweathermap.org/map/pressure_cntr/%i/%i/%i.png", "%s/MAPS/omap_pressure_cntr_%i_%i_%i.png", "ZXY"},
-	{"RAIN", "http://undefined.tile.openweathermap.org/map/rain/%i/%i/%i.png", "%s/MAPS/omap_rain_%i_%i_%i.png", "ZXY"},
-	{"HILL", "http://toolserver.org/~cmarqu/hill/%i/%i/%i.png", "%s/MAPS/omap_hill_%i_%i_%i.png", "ZXY"},
-};
-
-
+char mapnames[20][4][200];
+char omapnames[20][4][200];
 
 PointOfInterest POIs[MAX_POIS];
+
+static void die(char *msg) {
+	printf("%s", msg);
+	return;
+}
+
+void map_parseMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t map_service) { 
+	xmlChar *key;
+	cur = cur->xmlChildrenNode;
+	while (cur != NULL) {
+		if ((!xmlStrcmp(cur->name, (const xmlChar *)"name"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if (key != NULL) {
+				strcpy(mapnames[map_service][MAP_NAME], (char *)key);
+			} else {
+				mapnames[map_service][MAP_NAME][0] = 0;
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"url"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if (key != NULL) {
+				strcpy(mapnames[map_service][MAP_URL], (char *)key);
+			} else {
+				mapnames[map_service][MAP_URL][0] = 0;
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"file"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if (key != NULL) {
+				strcpy(mapnames[map_service][MAP_FILE], (char *)key);
+			} else {
+				mapnames[map_service][MAP_FILE][0] = 0;
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"type"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if (key != NULL) {
+				strcpy(mapnames[map_service][MAP_TYPE], (char *)key);
+			} else {
+				mapnames[map_service][MAP_TYPE][0] = 0;
+			}
+			xmlFree(key);
+		}
+		cur = cur->next;
+	}
+	return;
+}
+
+void map_parseOverlayMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t omap_service) { 
+	xmlChar *key;
+	cur = cur->xmlChildrenNode;
+	while (cur != NULL) {
+		if ((!xmlStrcmp(cur->name, (const xmlChar *)"name"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if (key != NULL) {
+				strcpy(omapnames[omap_service][MAP_NAME], (char *)key);
+			} else {
+				omapnames[omap_service][MAP_NAME][0] = 0;
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"url"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if (key != NULL) {
+				strcpy(omapnames[omap_service][MAP_URL], (char *)key);
+			} else {
+				omapnames[omap_service][MAP_URL][0] = 0;
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"file"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if (key != NULL) {
+				strcpy(omapnames[omap_service][MAP_FILE], (char *)key);
+			} else {
+				omapnames[omap_service][MAP_FILE][0] = 0;
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"type"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if (key != NULL) {
+				strcpy(omapnames[omap_service][MAP_TYPE], (char *)key);
+			} else {
+				omapnames[omap_service][MAP_TYPE][0] = 0;
+			}
+			xmlFree(key);
+		}
+		cur = cur->next;
+	}
+	return;
+}
+
+static void map_parseDoc (char *docname) {
+	xmlDocPtr doc;
+	xmlNodePtr cur;
+//	xmlChar *key;
+	maplen = 0;
+	omaplen = 0;
+	doc = xmlParseFile(docname);
+	if (doc == NULL) {
+		printf("Document parsing failed: %s\n", docname);
+		return;
+	}
+	cur = xmlDocGetRootElement(doc);
+	if (cur == NULL) {
+		xmlFreeDoc(doc);
+		die("Document is Empty!!!\n");
+		return;
+	}
+	cur = cur->xmlChildrenNode;
+	while (cur != NULL) {
+		if ((!xmlStrcmp(cur->name, (const xmlChar *)"service"))) {
+			map_parseMapService (doc, cur, maplen++);
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"overlay_service"))) {
+			map_parseOverlayMapService (doc, cur, omaplen++);
+		}
+		cur = cur->next;
+	}
+	xmlFreeDoc(doc);
+	return;
+}
 
 
 void map_exit (void) {
@@ -167,7 +270,7 @@ void download_map_range (float from_lat, float from_lon, float to_lat, float to_
 	if (zoom <= 18) {
 		for (y_n = 0; y_n < tiles_y && gui_running == 1; y_n++) {
 			for (x_n = 0; x_n < tiles_x && gui_running == 1; x_n++) {
-				if (map_type == MAPS_GOOGLE) {
+				if (strcmp(mapnames[map_type][MAP_TYPE], "GOOGLE") == 0) {
 					sprintf(tile_name, "%s/MAPS/google_%i_%i_%i.png", BASE_DIR, zoom, tile_x + x_n, tile_y + y_n);
 					if (file_exists(tile_name) == 0) {
 						/* Google-Maps */
@@ -269,7 +372,7 @@ void get_maps (uint8_t mode) {
 						zoom_last[mode] = zoom;
 						return;
 					}
-					if (map_type == MAPS_GOOGLE) {
+					if (strcmp(mapnames[map_type][MAP_TYPE], "GOOGLE") == 0) {
 						sprintf(tile_name, "%s/MAPS/google_%i_%i_%i.png", BASE_DIR, zoom, tile_x + x_n, tile_y + y_n);
 						if (file_exists(tile_name) == 0) {
 							sprintf(status_txt, "getting map-tile: %i_%i_%i.png (%i/%i)", zoom, tile_x + x_n, tile_y + y_n, tiles_num + 1, tiles_need);
@@ -328,7 +431,7 @@ void get_maps (uint8_t mode) {
 			}
 		}
 	}
-	if (map_type == MAPS_GAPI || map_type == MAPS_GOOGLE) {
+	if (strcmp(mapnames[map_type][MAP_NAME], "GAPI") == 0 || strcmp(mapnames[map_type][MAP_TYPE], "GOOGLE") == 0) {
 		sprintf(tile_name, "%s/MAPS/google.png", BASE_DIR);
 		sprintf(tile_url, "http://maps.gstatic.com/intl/de_ALL/mapfiles/poweredby.png");
 		if (file_exists(tile_name) == 0) {
@@ -1503,6 +1606,9 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	}
 	if (map_startup == 0) {
 		map_startup = 1;
+		char map_setup_file[1024];
+		sprintf(map_setup_file, "%s/map-services.xml", BASE_DIR);
+		map_parseDoc(map_setup_file);
 
 		for (n = 0; n < MAX_POIS; n++) {
 			POIs[n].name[0] = 0;
@@ -1961,7 +2067,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
 
-	if (map_type == MAPS_GOOGLE || map_type == MAPS_GAPI) {
+	if (strcmp(mapnames[map_type][MAP_NAME], "GAPI") == 0 || strcmp(mapnames[map_type][MAP_TYPE], "GOOGLE") == 0) {
 		sprintf(tile_name, "%s/MAPS/google.png", BASE_DIR);
 		if (file_exists(tile_name) != 0) {
 			draw_image(esContext, 1, screen_h - 30, 62, 29, tile_name);
@@ -1975,7 +2081,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		if (map_type_select == 1) {
 			uint8_t ny2 = ny;
 			uint8_t nn = 0;
-			for (nn = 0; nn < MAPS_LAST; nn++) {
+			for (nn = 0; nn < maplen; nn++) {
 				draw_box_f3(esContext, -1.15, -0.8 + ny2 * 0.12 - 0.055, 0.002, -0.85, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
 				draw_rect_f3(esContext, -1.15, -0.8 + ny2 * 0.12 - 0.055, 0.002, -0.85, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
 				sprintf(tmp_str, "change_maptype%i", nn);
@@ -1989,7 +2095,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		if (omap_type_select == 1) {
 			uint8_t ny2 = ny;
 			uint8_t nn = 0;
-			for (nn = 0; nn < OMAPS_LAST; nn++) {
+			for (nn = 0; nn < omaplen; nn++) {
 				draw_box_f3(esContext, -1.15, -0.8 + ny2 * 0.12 - 0.055, 0.002, -0.85, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
 				draw_rect_f3(esContext, -1.15, -0.8 + ny2 * 0.12 - 0.055, 0.002, -0.85, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
 				sprintf(tmp_str, "change_omaptype%i", nn);

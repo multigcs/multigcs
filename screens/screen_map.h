@@ -1,34 +1,11 @@
 
 enum {
-	MAPS_OSM,
-	MAPS_GAPI,
-	MAPS_ARCGIS,
-//	MAPS_BING,
-	MAPS_MQUEST,
-//	MAPS_MQUEST_SAT,
-	MAPS_GOOGLE,
-	MAPS_LAST,
-};
-
-enum {
 	MAP_NAME,
 	MAP_URL,
 	MAP_FILE,
 	MAP_TYPE,
 };
 
-enum {
-	OMAPS_NONE,
-	OMAPS_PREC,
-	OMAPS_CLOUDS,
-	OMAPS_WIND,
-	OMAPS_TEMP,
-	OMAPS_PRESS,
-	OMAPS_PRESC,
-	OMAPS_RAIN,
-	OMAPS_HILL,
-	OMAPS_LAST,
-};
 
 #ifndef SDLGL
 #define MAP_OVERLAY	1
@@ -75,6 +52,9 @@ extern float offset_x1;
 extern float offset_y1;
 extern uint8_t map_addmode;
 extern uint8_t center_map;
+extern uint8_t maplen;
+extern uint8_t omaplen;
+
 
 void draw_quad (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, float roll, float pitch, float yaw, float lat, float lon, uint8_t zoom);
 void get_dir (float lat_from, float lon_from, float alt_from, float lat_to, float lon_to, float alt_to, float *heading, float *dist1, float *angle_up, float *dist2);

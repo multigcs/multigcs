@@ -28,6 +28,7 @@ install:
 	cp -a gcs.sh /usr/bin/gcs
 	cp -a clean-badmaps.sh $(BASE_DIR)/clean-badmaps.sh
 	cp -a screens/screen_tcl.tcl $(BASE_DIR)/scripts/screen_tcl.tcl
+	cp -a map-services.xml $(BASE_DIR)/
 	cp -a WMM2010.COF $(BASE_DIR)/MAPS
 	touch $(BASE_DIR)/setup.cfg
 	chmod 0755 /usr/bin/gl-gcs
@@ -51,6 +52,7 @@ deb: gcs
 	cp -a gcs.sh package/usr/bin/gcs
 	cp -a clean-badmaps.sh package$(BASE_DIR)/clean-badmaps.sh
 	cp -a screens/screen_tcl.tcl package$(BASE_DIR)/scripts/screen_tcl.tcl
+	cp -a map-services.xml package$(BASE_DIR)/
 	cp -a WMM2010.COF package$(BASE_DIR)/MAPS
 	touch package$(BASE_DIR)/setup.cfg
 	chmod 0755 package/usr/bin/gl-gcs
