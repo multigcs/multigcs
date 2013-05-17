@@ -38,6 +38,8 @@ uint8_t map_show_log = 0;
 uint8_t map_show_wp = 0;
 uint8_t map_show_notam = 0;
 uint8_t map_show_poi = 0;
+uint8_t map_rotate = 0;
+uint8_t map_side = 0;
 
 SDL_Thread *sdl_thread_get_maps1;
 SDL_Thread *sdl_thread_get_maps2;
@@ -401,7 +403,17 @@ uint8_t map_center (char *name, float x, float y, int8_t button, float data) {
 	return 0;
 }
 
-uint8_t map_rotate (char *name, float x, float y, int8_t button, float data) {
+uint8_t map_rotate_change (char *name, float x, float y, int8_t button, float data) {
+	map_rotate = 1 - map_rotate;
+	return 0;
+}
+
+uint8_t map_side_change (char *name, float x, float y, int8_t button, float data) {
+	map_side = 1 - map_side;
+	return 0;
+}
+
+uint8_t map_3d (char *name, float x, float y, int8_t button, float data) {
 	nav_map = 0;
 	if (map_view < 2) {
 		map_view++;
@@ -1542,25 +1554,41 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 #endif
 	} else if (_map_view == 1) {
 #ifndef SDLGL
-		roty += 1.3;
-		if (roty > 360.0) {
+		if (map_rotate != 0) {
+			roty += 1.3;
+			if (roty > 360.0) {
+				roty = 0.0;
+			}
+		} else {
 			roty = 0.0;
 		}
 		esTranslate( &userData->perspective, 0.0, 0.0, -2.0 );
-		esRotate( &userData->perspective, 45.0, 1.0, 0.0, 0.0 );
-		esRotate( &userData->perspective, roty, 0.0, 0.0, 1.0 );
+		if (map_side != 0) {
+			esRotate( &userData->perspective, 45.0, 1.0, 0.0, 0.0 );
+		}
+		if (map_rotate != 0) {
+			esRotate( &userData->perspective, roty, 0.0, 0.0, 1.0 );
+		}
 		esTranslate( &userData->perspective, 0.0, 0.0, 2.0 );
 		esTranslate( &userData->perspective, -offset_x1, offset_y1, 0.0 );
 #else
-		roty += 1.3;
-		if (roty > 360.0) {
+		if (map_rotate != 0) {
+			roty += 1.3;
+			if (roty > 360.0) {
+				roty = 0.0;
+			}
+		} else {
 			roty = 0.0;
 		}
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
 		glTranslatef( 0.0, 0.0, -2.0 );
-		glRotatef( -45.0, 1.0, 0.0, 0.0 );
-		glRotatef(roty, 0.0, 0.0, 1.0 );
+		if (map_side != 0) {
+			glRotatef( -45.0, 1.0, 0.0, 0.0 );
+		}
+		if (map_rotate != 0) {
+			glRotatef(roty, 0.0, 0.0, 1.0 );
+		}
 		glTranslatef( 0.0, 0.0, 2.0 );
 		glTranslatef(-offset_x1, offset_y1, 0.0);
 #endif
@@ -1581,7 +1609,9 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 #ifndef SDLGL
 		esTranslate( &userData->perspective, 0.0, 0.0, 0.5 );
 		esTranslate( &userData->perspective, 0.0, 0.0, -2.0 );
-		esRotate( &userData->perspective, 45.0, 1.0, 0.0, 0.0 );
+		if (map_side != 0) {
+			esRotate( &userData->perspective, 45.0, 1.0, 0.0, 0.0 );
+		}
 		esTranslate( &userData->perspective, 0.0, -0.5, 0.0 );
 		esTranslate( &userData->perspective, 0.0, 0.0, 2.0 );
 #else
@@ -1626,7 +1656,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	if (zoom <= 18 && _map_view != 4) {
 		for (y_n = -MAP_OVERLAY; y_n < tiles_y + MAP_OVERLAY; y_n++) {
 			for (x_n = -MAP_OVERLAY; x_n < tiles_x + MAP_OVERLAY; x_n++) {
-
 				sprintf(tile_name, mapnames[map_type][MAP_FILE], BASE_DIR, zoom, tile_x + x_n, tile_y + y_n);
 				if (file_exists(tile_name) != 0) {
 					if (_map_view == 1 || _map_view == 3 || _map_view == 4) {
@@ -1639,7 +1668,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 					sprintf(tmp_str, "%s/textures/loading.png", BASE_DIR);
 					draw_image(esContext, x_n * 256, y_n * 256, 256, 256, tmp_str);
 				}
-
 				if (omapnames[omap_type][MAP_FILE][0] != 0) {
 					sprintf(tile_name, omapnames[omap_type][MAP_FILE], BASE_DIR, zoom, tile_x + x_n, tile_y + y_n);
 					if (file_exists(tile_name) != 0) {
@@ -1650,7 +1678,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 						}
 					}
 				}
-
 				tiles_num++;
 			}
 		}
@@ -1998,11 +2025,11 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		draw_box_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 		draw_rect_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
 		if (map_view == 0) {
-			draw_button(esContext, "map_rotate", VIEW_MODE_MAP, "TOP", FONT_WHITE, -1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_rotate, 0.0);
+			draw_button(esContext, "map_3d", VIEW_MODE_MAP, "NORTH", FONT_WHITE, -1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_3d, 0.0);
 		} else if (map_view == 1) {
-			draw_button(esContext, "map_rotate", VIEW_MODE_MAP, "SIDE", FONT_WHITE, -1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_rotate, 0.0);
+			draw_button(esContext, "map_3d", VIEW_MODE_MAP, "3D", FONT_WHITE, -1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_3d, 0.0);
 		} else {
-			draw_button(esContext, "map_rotate", VIEW_MODE_MAP, "NORTH", FONT_WHITE, -1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_rotate, 0.0);
+			draw_button(esContext, "map_3d", VIEW_MODE_MAP, "TOP", FONT_WHITE, -1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_3d, 0.0);
 		}
 #ifndef RPI_NO_X
 		draw_box_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
@@ -2015,8 +2042,29 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 #else
 		ny++;
 #endif
-		ny++;
-		ny++;
+
+		if (map_view == 1) {
+			draw_box_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
+			draw_rect_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
+			if (map_side == 1) {
+				draw_button(esContext, "map_side", VIEW_MODE_MAP, "SIDE", FONT_GREEN, -1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_side_change, 0.0);
+				draw_box_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
+				draw_rect_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
+				if (map_rotate == 1) {
+					draw_button(esContext, "map_rotate", VIEW_MODE_MAP, "ROTATE", FONT_GREEN, -1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_rotate_change, 0.0);
+				} else {
+					draw_button(esContext, "map_rotate", VIEW_MODE_MAP, "ROTATE", FONT_WHITE, -1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_rotate_change, 0.0);
+				}
+			} else {
+				draw_button(esContext, "map_side", VIEW_MODE_MAP, "SIDE", FONT_WHITE, -1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_side_change, 0.0);
+				map_rotate = 0;
+				ny++;
+			}
+		} else {
+			ny++;
+			ny++;
+		}
+
 		ny++;
 		draw_box_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 		draw_rect_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
