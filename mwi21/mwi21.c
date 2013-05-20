@@ -29,11 +29,11 @@ uint8_t mwi21_serial_n = 0;
 uint8_t mwi21_frame_start = 0;
 uint8_t mwi21_frame_len = 0;
 uint8_t mwi21_cn = 5;
-uint8_t mwi21_rn = 0;
+uint8_t mwi21_rn = 1;
 int32_t mwi_status = 0;
-int8_t mwi_pid[16][3];
-int8_t mwi_set_pid[16][3];
-int8_t mwi_set_pid_flag = 0;
+uint8_t mwi_pid[16][3];
+uint8_t mwi_set_pid[16][3];
+uint8_t mwi_set_pid_flag = 0;
 volatile int16_t mwi_box[16];
 volatile int16_t mwi_set_box[16];
 int8_t mwi_set_box_flag = 0;
@@ -64,7 +64,7 @@ uint8_t mwi21_connection_status (void) {
 
 void mwi21_init (char *port, uint32_t baud) {
 	uint8_t n = 0;
-	mwi21_rn = 0;
+	mwi21_rn = 1;
 	mwi21_serial_n = 0;
 	for (n = 0; n < 16; n++) {
 		mwi_box_names[n][0] = 0;
@@ -191,22 +191,11 @@ void mwi21_get_values (void) {
 }
 
 void mwi21_get_new (void) {
-	if (mwi21_rn == 0) {
-		mwi21_get_req(MSP_ATTITUDE);
-		mwi21_rn++;
-	} else if (mwi21_rn == 1) {
-		mwi21_get_req(MSP_RC);
-		mwi21_rn++;
-	} else if (mwi21_rn == 2) {
-		mwi21_get_req(MSP_ALTITUDE);
-		mwi21_rn++;
-	} else if (mwi21_rn == 3) {
-		mwi21_get_req(MSP_BAT);
-		mwi21_rn++;
-	} else if (mwi21_rn == 4) {
-		mwi21_get_req(MSP_RAW_GPS);
-		mwi21_rn++;
-	} else if (mwi21_rn == 5) {
+	static uint8_t flag = 0;
+
+	flag = 1 - flag;
+
+	if (flag == 0) {
 		if (mwi_get_pid_flag != 0) {
 			mwi21_get_req(MSP_PID);
 		} else if (mwi_get_box_flag != 0) {
@@ -227,15 +216,31 @@ void mwi21_get_new (void) {
 			mwi21_get_req(mwi_req);
 			mwi_req = 0;
 		} else {
-			mwi21_get_req(MSP_STATUS);
+			mwi21_get_req(MSP_ATTITUDE);
 		}
+	} else if (mwi21_rn == 1) {
+		mwi21_get_req(MSP_RC);
+		mwi21_rn++;
+	} else if (mwi21_rn == 2) {
+		mwi21_get_req(MSP_ALTITUDE);
+		mwi21_rn++;
+	} else if (mwi21_rn == 3) {
+		mwi21_get_req(MSP_BAT);
+		mwi21_rn++;
+	} else if (mwi21_rn == 4) {
+		mwi21_get_req(MSP_RAW_GPS);
+		mwi21_rn++;
+	} else if (mwi21_rn == 5) {
+		mwi21_get_req(MSP_STATUS);
 		mwi21_rn++;
 	} else if (mwi21_rn == 6) {
 		mwi21_get_req(MSP_RAW_IMU);
 //		mwi21_rn++;
 //	} else if (mwi21_rn == 7) {
 //		mwi21_get_req8(MSP_WP, 1);
-		mwi21_rn = 0;
+		mwi21_rn = 1;
+	} else {
+		mwi21_rn = 1;
 	}
 }
 
@@ -445,13 +450,15 @@ void mwi21_update (void) {
 					new_lon = (float)mwi21_read32() / 10000000.0;
 					new_alt = (float)mwi21_read16();
 					GPS_speed = (float)mwi21_read16();
+
+					ModelData.speed = GPS_speed;
+					ModelData.gpsfix = GPS_fix;
+					ModelData.numSat = GPS_numSat;
+
 					if (new_lat > 0.0 && new_lon > 0.0) {
 						ModelData.p_lat = new_lat;
 						ModelData.p_long = new_lon;
 						ModelData.p_alt = new_alt;
-						ModelData.speed = GPS_speed;
-						ModelData.gpsfix = GPS_fix;
-						ModelData.numSat = GPS_numSat;
 						GPS_found = 1;
 						redraw_flag = 1;
 					}

@@ -1077,11 +1077,6 @@ void check_events (ESContext *esContext, SDL_Event event) {
 				if (zoom < 18) {
 					zoom++;
 				}
-				if (map_type == MAPS_OSM) {
-					if (zoom > 16) {
-						zoom = 16;
-					}
-				}
 			} else if (event.button.button == 5) {
 				if (zoom > 0) {
 					zoom--;

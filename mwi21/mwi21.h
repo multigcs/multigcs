@@ -58,9 +58,9 @@ void mwi21_update (void);
 uint8_t mwi21_connection_status (void);
 
 extern int32_t mwi_status;
-extern int8_t mwi_pid[16][3];
-extern int8_t mwi_set_pid[16][3];
-extern int8_t mwi_set_pid_flag;
+extern uint8_t mwi_pid[16][3];
+extern uint8_t mwi_set_pid[16][3];
+extern uint8_t mwi_set_pid_flag;
 extern volatile int16_t mwi_box[16];
 extern volatile int16_t mwi_set_box[16];
 extern int8_t  mwi_set_box_flag;
