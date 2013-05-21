@@ -427,6 +427,14 @@ void draw_box_f (ESContext *esContext, float x1, float y1, float x2, float y2, u
 	draw_box_f3(esContext, x1, y1, 0.0, x2, y2, 0.0, r, g, b, a);
 }
 
+void draw_rect (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+	float x1 = (float)x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
+	float y1 = (float)y / (float)esContext->height * 2.0 - 1.0;
+	float x2 = x1 + (float)w / (float)esContext->width * 2.0 * aspect;
+	float y2 = y1 + (float)h / (float)esContext->height * 2.0;
+	draw_rect_f3(esContext, x1, y1, 0.0, x2, y2, 0.0, r, g, b, a);
+}
+
 void draw_box (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	float x1 = (float)x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 	float y1 = (float)y / (float)esContext->height * 2.0 - 1.0;
@@ -720,13 +728,13 @@ void draw_text_f3 (ESContext *esContext, float x1, float y1, float z1, float w, 
 }
 
 void draw_text_f (ESContext *esContext, float x1, float y1, float w, float h, char *file, char *text) {
-	draw_text_f3(esContext, x1, y1, 0.0, w, h, file, text);
+	draw_text_f3(esContext, x1, y1, 0.003, w, h, file, text);
 }
 
 void draw_text (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file, char *text) {
 	float x1 = (float)x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 	float y1 = (float)y / (float)esContext->height * 2.0 - 1.0;
-	y1 = y1 * -1;
-	draw_text_f3(esContext, x1, y1, 0.0, w, h, file, text);
+	float fw = (float)w / 200;
+	float fh = (float)h / 200;
+	draw_text_f3(esContext, x1, y1, 0.0, fw, fh, file, text);
 }
-

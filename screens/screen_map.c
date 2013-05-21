@@ -2066,11 +2066,27 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 
 	glDisable( GL_DEPTH_TEST );
 
+
 #ifndef SDLGL
 	esMatrixLoadIdentity(&modelview);
 	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
+
+	// Scale-Info
+	float scale = 100.0;
+	float S = 63727982 * cos((lat * DEG2RAD)) / pow(2, (zoom + 8));
+	scale = (int)(100 * S) / 200 * 200;
+	if (zoom < 14) {
+		scale = (int)(100 * S) / 1000 * 1000;
+	} else if (scale <= 100.0) {
+		scale = 100.0;
+	}
+	draw_box(esContext, 10, esContext->height - 50, (scale / S), 5, 0, 0, 255, 128);
+	draw_rect(esContext, 10, esContext->height - 50, (scale / S), 5, 0, 0, 0, 255);
+	sprintf(tmp_str, "%0.1fkm (Z:%i)", scale / 1000.0, zoom);
+	draw_text(esContext, 10, esContext->height - 40, 8, 8, FONT_BLACK_BG, tmp_str);
+
 
 	if (strcmp(mapnames[map_type][MAP_NAME], "GAPI") == 0 || strcmp(mapnames[map_type][MAP_TYPE], "GOOGLE") == 0) {
 		sprintf(tile_name, "%s/MAPS/google.png", BASE_DIR);
@@ -2185,7 +2201,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			ny++;
 		}
 
-		ny++;
 		draw_box_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 		draw_rect_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
 		if (ModelData.gpsfix > 0) {
@@ -2260,7 +2275,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 
 
-		ny++;
 		ny++;
 		ny++;
 		draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
