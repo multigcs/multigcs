@@ -1,5 +1,5 @@
 
-TARGET_NAME=spi-slave
+TARGET_NAME=rcflow-backend
 TARGET=$(TARGET_NAME).hex
 BINARY=$(TARGET_NAME).bin
 EXECUTABLE=$(TARGET_NAME).elf
