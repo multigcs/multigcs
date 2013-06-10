@@ -4,7 +4,6 @@
 #include <userdata.h>
 #include <main.h>
 #include <screen_mavlink_menu.h>
-#include <i2c.h>
 #include <my_mavlink.h>
 #include <mwi21.h>
 

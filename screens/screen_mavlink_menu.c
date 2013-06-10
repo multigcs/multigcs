@@ -8,7 +8,6 @@
 #include <screen_mavlink_menu.h>
 #include <screen_keyboard.h>
 #include <screen_filesystem.h>
-#include <i2c.h>
 #include <my_mavlink.h>
 
 float sel = 0.0;
@@ -187,63 +186,7 @@ void screen_mavlink_menu (ESContext *esContext) {
 	int8_t flag = 0;
 	int8_t flag2 = 0;
 	draw_title(esContext, "MavLink");
-	if (i2c_button1 == 1) {
-		sel1_mode = 1 - sel1_mode;
-		printf("#i2c_button1#\n");
-		usleep(10000);
-	}
-	if (i2c_button2 == 1) {
-		sel2_mode = 1 - sel2_mode;
-		printf("#i2c_button2#\n");
-		usleep(10000);
-	}
-	if (sel1_mode == 0) {
-		if (i2c_diff1 > 0 && set_sel2 > 0) {
-			set_sel2--;
-		} else if (i2c_diff1 < 0) {
-			set_sel2++;
-		}
-	} else {
-		if (i2c_diff1 > 0 && set_sel > 0) {
-			set_sel--;
-		} else if (i2c_diff1 < 0) {
-			set_sel++;
-		}
-	}
 
-	if (sel1_mode == 1) {
-		if (sel2_mode == 0) {
-			if (i2c_diff2 > 0) {
-				MavLinkVars[selMavLinkVars[(int)sel].id].value += 0.1;
-			} else if (i2c_diff2 < 0) {
-				MavLinkVars[selMavLinkVars[(int)sel].id].value -= 0.1;
-			}
-		} else {
-			if (i2c_diff2 > 0) {
-				MavLinkVars[selMavLinkVars[(int)sel].id].value += 1.0;
-			} else if (i2c_diff2 < 0) {
-				MavLinkVars[selMavLinkVars[(int)sel].id].value -= 1.0;
-			}
-		}
-	}
-/*
-	if (sel2 < set_sel2 - 0.05) {
-		sel2 += 0.2;
-		set_sel = 0.0;
-	} else if (sel2 > set_sel2 + 0.05) {
-		sel2 -= 0.2;
-		set_sel = 0.0;
-	} else {
-		sel2 = set_sel2;
-	}
-	if (sel < set_sel - 0.05) {
-		sel += 0.2;
-	} else if (sel > set_sel + 0.05) {
-		sel -= 0.2;
-	} else {
-		sel = set_sel;
-	}
-*/
 	strcpy(section, mainMavLinkVars[(int)sel2].name);
 	row2 = 0;
 	for (row = 0; row < 500 - 1; row++) {

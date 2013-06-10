@@ -36,7 +36,6 @@
 #include <geomag70.h>
 
 #include "my_mavlink.h"
-#include "i2c.h"
 #include <userdata.h>
 #include <main.h>
 #include "my_gps.h"
@@ -1276,12 +1275,6 @@ void Draw (ESContext *esContext) {
 	uint16_t timer = times(0);
 #endif
 
-	i2c_read();
-
-	gcs_roll = -i2c_Axz;
-	gcs_pitch = i2c_Ayz;
-	gcs_yaw = 0.0;
-
 	if (ModelData.heartbeat != 0) {
 		connection_found = 1;
 	}
@@ -1487,13 +1480,6 @@ void Draw (ESContext *esContext) {
 #endif
 	redraw_flag = 0;
 
-	if (i2c_button3 == 1) {
-		if (view_mode < 4) {
-			view_mode++;
-		} else {
-			view_mode = 0;
-		}
-	}
 
 #ifndef SDLGL
 	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
@@ -1780,8 +1766,6 @@ int main ( int argc, char *argv[] ) {
 
 
 #ifdef RPI_NO_X
-	system("modprobe i2c-dev");
-	system("modprobe i2c-bcm2708");
 	if ((touch_fd = open(touchscreen_device, O_RDONLY)) >= 0) {
 		thread = SDL_CreateThread(touchscreen_thread, NULL);
 		if ( thread == NULL ) {
