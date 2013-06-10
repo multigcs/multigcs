@@ -3,3 +3,6 @@
 gcs
 scrennshots
 package
+*.bin
+*.hex
+*.elf
