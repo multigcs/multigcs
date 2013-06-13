@@ -1198,30 +1198,17 @@ void mark_tunnel (ESContext *esContext, float last_lat, float last_long, float l
 }
 
 void mark_point (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, char *text, char *command, uint8_t type, float radius, float orbit, float lat, float lon, uint8_t zoom) {
-/*
-#ifndef SDLGL
-	UserData *userData = esContext->userData;
-	ESMatrix modelview;
-	esMatrixLoadIdentity(&modelview);
-	if (map_view != 1 && map_view != 3) {
-		esTranslate( &modelview, -offset_x1, offset_y1, 0.0 );
-	}
-	esTranslate(&modelview, 0.0, 0.0, 0.02);
-	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
-#endif
-*/
 	char tmp_str[1024];
 	int mark_x = long2x(mark_long, lon, zoom);
 	int mark_y = lat2y(mark_lat, lat, zoom);
 	float x1 = (float)mark_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 	float y1 = (float)mark_y / (float)esContext->height * 2.0 - 1.0;
-//#ifdef SDLGL
-	float z = mark_alt / alt_zoom;
-	float z2 = (float)get_altitude(mark_lat, mark_long) / alt_zoom;
-//#else
-//	float z = 0.001;
-//	float z2 = z;
-//#endif
+	float z = 0.0;
+	float z2 = 0.0;
+	if (map_view == 1) {
+		z = mark_alt / alt_zoom;
+		z2 = (float)get_altitude(mark_lat, mark_long) / alt_zoom;
+	}
 	if (type == 1) {
 		draw_circle_f3(esContext, x1, y1, z, 0.03, 255, 0, 0, 255);
 	} else if (type == 2) {
@@ -1279,7 +1266,6 @@ void mark_point (ESContext *esContext, float mark_lat, float mark_long, float ma
 
 		glPopMatrix();
 #else
-
 		draw_text_f3(esContext, x1, y1, z, 0.05, 0.05, FONT_GREEN, text);
 		draw_circleFilled_f3(esContext, x1, y1, z2, 0.01, 255, 0, 0, 255);
 		draw_line_f3(esContext, x1, y1, z, x1, y1, z2, 0, 255, 0, 255);
@@ -1570,7 +1556,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	int16_t n = 0;
 
 	reset_buttons();
-
 #ifdef SDLGL
 	if (_map_view == 1) {
 		glMatrixMode( GL_PROJECTION );
@@ -1643,15 +1628,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 
 	}
-#ifdef SDLGL
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-#else
-	esMatrixLoadIdentity(&modelview);
-	esMatrixMultiply( &userData->mvpMatrix, &modelview, &userData->perspective );
-	esMatrixMultiply( &userData->mvpMatrix2, &modelview, &userData->perspective );
-#endif
-
 	if (map_rotate == 1) {
 		roty += 1.3;
 		if (roty >= 360.0) {
@@ -1666,18 +1642,34 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	}
 
 
-	if (_map_view == 1) {
+	// rotate map
 #ifndef SDLGL
-		esTranslate( &userData->perspective, 0.0, 0.0, -2.0 );
+	esMatrixLoadIdentity(&modelview);
+	esMatrixMultiply( &userData->mvpMatrix, &modelview, &userData->perspective );
+	esMatrixMultiply( &userData->mvpMatrix2, &modelview, &userData->perspective );
+
+	if (_map_view == 1) {
+		esTranslate( &userData->perspective, 0.0, 0.0, -3.0 );
 		if (map_side != 0) {
 			esRotate( &userData->perspective, 45.0, 1.0, 0.0, 0.0 );
 		}
 		if (roty != 0.0) {
-			esRotate( &userData->perspective, roty, 0.0, 0.0, 1.0 );
+			esRotate( &userData->perspective, roty, 0.0, 0.0, -1.0 );
 		}
 		esTranslate( &userData->perspective, 0.0, 0.0, 2.0 );
 		esTranslate( &userData->perspective, -offset_x1, offset_y1, 0.0 );
+	} else if (_map_view == 3 || _map_view == 4) {
+	} else {
+		esTranslate( &userData->perspective, 0.0, 0.0, 0.5 );
+		esTranslate( &userData->perspective, 0.0, 0.0, -2.0 );
+		esRotate( &userData->perspective, roty, 0.0, 0.0, -1.0 );
+		esTranslate( &userData->perspective, 0.0, 0.0, -0.5 );
+		esTranslate( &userData->perspective, 0.0, 0.0, 2.0 );
+	}
 #else
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	if (_map_view == 1) {
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
 		glTranslatef( 0.0, 0.0, -2.0 );
@@ -1689,10 +1681,8 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 		glTranslatef( 0.0, 0.0, 2.0 );
 		glTranslatef(-offset_x1, offset_y1, 0.0);
-#endif
 	} else if (_map_view == 3 || _map_view == 4) {
 		roty = 0.0;
-#ifdef SDLGL
 		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
 		glRotatef(-90.0, 1.0, 0.0, 0.0);
@@ -1703,48 +1693,26 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		glTranslatef(0.0, 0.0, 2.0 - 0.00 - (ModelData.p_alt - ModelData.alt_offset) / alt_zoom);
 		glTranslatef(-offset_x1, offset_y1, 0.0);
 		glMatrixMode(GL_MODELVIEW);
-#endif
-#ifndef SDLGL
-		esTranslate( &userData->perspective, 0.0, 0.0, 0.5 );
-		esTranslate( &userData->perspective, 0.0, 0.0, -2.0 );
-		if (map_side != 0) {
-			esRotate( &userData->perspective, 45.0, 1.0, 0.0, 0.0 );
-		}
-		esTranslate( &userData->perspective, 0.0, -0.5, 0.0 );
-		esTranslate( &userData->perspective, 0.0, 0.0, 2.0 );
-#else
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		glTranslatef( 0.0, 0.0, -2.0 );
-//		glRotatef( -45.0, 1.0, 0.0, 0.0 );
-		glTranslatef( 0.0, 0.0, 2.0 );
-#endif
 	} else {
-#ifndef SDLGL
-		esTranslate( &userData->perspective, 0.0, 0.0, 0.5 );
-		esTranslate( &userData->perspective, 0.0, 0.0, -2.0 );
-		esRotate( &userData->perspective, roty, 1.0, 0.0, 1.0 );
-		esTranslate( &userData->perspective, 0.0, -0.5, 0.0 );
-		esTranslate( &userData->perspective, 0.0, 0.0, 2.0 );
-#else
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
 		glTranslatef( 0.0, 0.0, -2.0 );
 		glRotatef( roty, 0.0, 0.0, 1.0 );
 		glTranslatef( 0.0, 0.0, 2.0 );
+	}
 #endif
+
+
+	// move map offset
+	if (_map_view != 1 && _map_view != 3 && _map_view != 4) {
+		esTranslate( &modelview, -offset_x1, offset_y1, 0.0 );
 	}
 #ifndef SDLGL
-	if (_map_view != 1 && _map_view != 3 && _map_view != 4) {
-		esTranslate( &modelview, -offset_x1, offset_y1, 0.0 );
-	}
 	esMatrixMultiply( &userData->mvpMatrix, &modelview, &userData->perspective );
 	esMatrixMultiply( &userData->mvpMatrix2, &modelview, &userData->perspective );
-#else
-	if (_map_view != 1 && _map_view != 3 && _map_view != 4) {
-		esTranslate( &modelview, -offset_x1, offset_y1, 0.0 );
-	}
 #endif
+
+
 	// draw Sky in 3D-Mode
 	if (_map_view == 3) {
 		draw_box_f3c2(esContext, -3.0, -3.0, -1.0, 3.0, -3.0, 3.0, 0x01, 0x8e, 0xea, 255, 0x01, 0x8e, 0xea, 255);
@@ -1793,44 +1761,21 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 	}
 
-	// Map-Scale Test
-	if (zoom == 19) {
-//		glScalef( 0.5, 0.5, 1.0 );
-	}
-
-
-	if (nav_map == 1) {
 #ifdef SDLGL
+	if (nav_map == 1) {
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
-#else
-		esMatrixLoadIdentity(&modelview);
-#endif
 		esTranslate(&modelview, offset_x1, -offset_y1, 0.0);
-#ifndef SDLGL
-		esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
-		esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
-#endif
 		draw_circleFilled_f3_part(esContext, 0.0, 0.0, 0.00, 1.8, 0.75, 0.0, 360.0, 0, 0, 0, 127);
 		draw_box_f3(esContext, -3.0, -3.0, 0.002, 3.0, 3.0, 0.002, 0, 0, 0, 127);
-#ifdef SDLGL
 		glPopMatrix();
-#endif
 		for (n = 0; n < 360; n += 2) {
-#ifdef SDLGL
 			glMatrixMode(GL_MODELVIEW);
 			glPushMatrix();
-#else
-			esMatrixLoadIdentity(&modelview);
-#endif
 			esTranslate(&modelview, 0.0, 0.0, -2.0);
 			esTranslate(&modelview, offset_x1, -offset_y1, 0.0);
 			esRotate(&modelview, ((float)n), 0.0, 0.0, 1.0);
 			esTranslate(&modelview, 0.0, 0.0, 2.0);
-#ifndef SDLGL
-			esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
-			esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
-#endif
 			if (n % 10 == 0) {
 				draw_line_f3(esContext, 0.0, 0.8, 0.003, 0.0, 0.85, 0.003, 255, 255, 255, 255);
 				char tmp_str[1024];
@@ -1839,28 +1784,50 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			} else {
 				draw_line_f3(esContext, 0.0, 0.8, 0.003, 0.0, 0.83, 0.003, 255, 255, 255, 255);
 			}
-#ifdef SDLGL
 			glPopMatrix();
-#endif
-#ifdef SDLGL
 			glMatrixMode(GL_MODELVIEW);
 			glPushMatrix();
-#else
-			esMatrixLoadIdentity(&modelview);
-#endif
 			esTranslate(&modelview, 0.0, 0.0, -2.0);
 			esRotate(&modelview, ((float)n) + 5.0, 0.0, 0.0, 1.0);
 			esTranslate(&modelview, -offset_x1, offset_y1, 0.0);
 			esTranslate(&modelview, 0.0, 0.0, 2.0);
-#ifndef SDLGL
-			esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
-			esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
-#endif
-#ifdef SDLGL
 			glPopMatrix();
-#endif
 		}
 	}
+#else
+	if (nav_map == 1) {
+		esMatrixLoadIdentity(&modelview);
+		esTranslate(&modelview, offset_x1, -offset_y1, 0.0);
+		esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
+		esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
+		draw_circleFilled_f3_part(esContext, 0.0, 0.0, 0.00, 1.8, 0.75, 0.0, 360.0, 0, 0, 0, 127);
+		draw_box_f3(esContext, -3.0, -3.0, 0.002, 3.0, 3.0, 0.002, 0, 0, 0, 127);
+		for (n = 0; n < 360; n += 2) {
+			esMatrixLoadIdentity(&modelview);
+			esTranslate(&modelview, 0.0, 0.0, -2.0);
+			esTranslate(&modelview, offset_x1, -offset_y1, 0.0);
+			esRotate(&modelview, ((float)n), 0.0, 0.0, 1.0);
+			esTranslate(&modelview, 0.0, 0.0, 2.0);
+			esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
+			esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
+			if (n % 10 == 0) {
+				draw_line_f3(esContext, 0.0, 0.8, 0.003, 0.0, 0.85, 0.003, 255, 255, 255, 255);
+				char tmp_str[1024];
+				sprintf(tmp_str, "%i", n);
+				draw_text_f3(esContext, 0.0 - strlen(tmp_str) * 0.05 * 0.6 / 2.0 - 0.01, -0.8, 0.003, 0.05, 0.05, FONT_WHITE, tmp_str);
+			} else {
+				draw_line_f3(esContext, 0.0, 0.8, 0.003, 0.0, 0.83, 0.003, 255, 255, 255, 255);
+			}
+			esMatrixLoadIdentity(&modelview);
+			esTranslate(&modelview, 0.0, 0.0, -2.0);
+			esRotate(&modelview, ((float)n) + 5.0, 0.0, 0.0, 1.0);
+			esTranslate(&modelview, -offset_x1, offset_y1, 0.0);
+			esTranslate(&modelview, 0.0, 0.0, 2.0);
+			esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
+			esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
+		}
+	}
+#endif
 
 	// drawing POI's, NOTAM's and Waypoint's
 	if (map_show_notam == 1) {
@@ -1877,12 +1844,12 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 	}
 
-
 	// drawing Waypoint-Route
 	float last_lat = ModelData.p_lat;
 	float last_lon = ModelData.p_long;
 	float last_alt = (ModelData.p_alt - ModelData.alt_offset);
 	int flag = 0;
+
 	if (map_show_wp == 1) {
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
 			if (WayPoints[n].p_lat != 0.0) {
@@ -1927,6 +1894,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			draw_quad(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset), ModelData.roll, ModelData.pitch, ModelData.yaw, lat, lon, zoom);
 		}
 	}
+
 
 #ifdef SDLGL
 	// Camview - Target-Marking
@@ -2011,67 +1979,45 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			}
 		}
 	}
+
+
+	// rotate map back
 #ifndef SDLGL
-	if (_map_view != 1 && _map_view != 3 && _map_view != 4) {
-		esTranslate( &modelview, offset_x1, -offset_y1, 0.0 );
-	}
-	esMatrixMultiply( &userData->mvpMatrix, &modelview, &userData->perspective );
-	esMatrixMultiply( &userData->mvpMatrix2, &modelview, &userData->perspective );
-#else
-	if (_map_view != 1 && _map_view != 3 && _map_view != 4) {
-		esTranslate(&modelview, offset_x1, -offset_y1, 0.0);
-	}
-#endif
 	if (_map_view == 1) {
-#ifndef SDLGL
 		esTranslate( &userData->perspective, offset_x1, -offset_y1, 0.0 );
 		esTranslate( &userData->perspective, 0.0, 0.0, -2.0 );
-		esRotate( &userData->perspective, -roty, 0.0, 0.0, 1.0 );
-		esRotate( &userData->perspective, -45.0, 1.0, 0.0, 0.0 );
-		esTranslate( &userData->perspective, 0.0, 0.0, 2.0 );
-#else
-		glPopMatrix();
-#endif
-#ifdef SDLGL
-		glMatrixMode( GL_PROJECTION );
-		glPopMatrix();
-		glMatrixMode( GL_MODELVIEW );
-#endif
+		if (roty != 0.0) {
+			esRotate( &userData->perspective, roty, 0.0, 0.0, 1.0 );
+		}
+		if (map_side != 0) {
+			esRotate( &userData->perspective, -45.0, 1.0, 0.0, 0.0 );
+		}
+		esTranslate( &userData->perspective, 0.0, 0.0, 3.0 );
 	} else if (_map_view == 3 || _map_view == 4) {
-#ifndef SDLGL
-		esTranslate( &userData->perspective, 0.0, 0.0, -2.0 );
-		esTranslate( &userData->perspective, 0.0, 0.5, 0.0 );
-		esRotate( &userData->perspective, -45.0, 1.0, 0.0, 0.0 );
-		esTranslate( &userData->perspective, 0.0, 0.0, 2.0 );
-		esTranslate( &userData->perspective, 0.0, 0.0, -0.5 );
-#else
-		glPopMatrix();
-#endif
-#ifdef SDLGL
-		glMatrixMode( GL_PROJECTION );
-		glPopMatrix();
-		glMatrixMode( GL_MODELVIEW );
-#endif
 	} else {
-#ifndef SDLGL
 		esTranslate( &userData->perspective, 0.0, 0.0, 0.5 );
 		esTranslate( &userData->perspective, 0.0, 0.0, -2.0 );
-		esRotate( &userData->perspective, -roty, 1.0, 0.0, 1.0 );
-		esTranslate( &userData->perspective, 0.0, -0.5, 0.0 );
+		esRotate( &userData->perspective, roty, 0.0, 0.0, 1.0 );
+		esTranslate( &userData->perspective, 0.0, 0.0, -0.5 );
 		esTranslate( &userData->perspective, 0.0, 0.0, 2.0 );
-#else
-		glPopMatrix();
-#endif
 	}
 
-	glDisable( GL_DEPTH_TEST );
-
-
-#ifndef SDLGL
 	esMatrixLoadIdentity(&modelview);
 	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
+
+	// move map offset back
+	if (_map_view != 1 && _map_view != 3 && _map_view != 4) {
+		esTranslate( &modelview, offset_x1, -offset_y1, 0.0 );
+	}
+
+#else
+	glPopMatrix();
+	glMatrixMode( GL_MODELVIEW );
 #endif
+
+	glDisable( GL_DEPTH_TEST );
+
 
 	// Scale-Info
 	float scale = 100.0;
