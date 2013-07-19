@@ -236,7 +236,8 @@ void screen_cli (ESContext *esContext) {
 	}
 
 
-	if (keyboard_key[0] != 0 && strcmp(keyboard_key, "escape") != 0) {
+	if (keyboard_key[0] != 0 && strcmp(keyboard_key, "escape") != 0 && strcmp(keyboard_key, "print screen") != 0) {
+//		printf("%s\n", keyboard_key);
 		if (strcmp(keyboard_key, "return") == 0) {
 			if (cli_mode == 1) {
 				write(cli_fd, "\r", 1);
