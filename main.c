@@ -58,6 +58,7 @@
 #include "screen_openpilot_menu.h"
 #include "screen_videolist.h"
 #include "screen_model.h"
+#include "screen_cli.h"
 #include "screen_rcflow.h"
 
 // V4L
@@ -166,6 +167,8 @@ void save_screenshot (void) {
 		strcpy(name, "telemetry");
 	} else if (view_mode == VIEW_MODE_MODEL) {
 		strcpy(name, "model");
+	} else if (view_mode == VIEW_MODE_CLI) {
+		strcpy(name, "cli");
 	} else if (view_mode == VIEW_MODE_RCFLOW) {
 		strcpy(name, "rcflow");
 	} else if (view_mode == VIEW_MODE_FMS) {
@@ -1535,6 +1538,9 @@ void Draw (ESContext *esContext) {
 	} else if (view_mode == VIEW_MODE_MODEL) {
 		screen_background(esContext);
 		screen_model(esContext);
+	} else if (view_mode == VIEW_MODE_CLI) {
+		screen_background(esContext);
+		screen_cli(esContext);
 	} else if (view_mode == VIEW_MODE_RCFLOW) {
 //		screen_background(esContext);
 		screen_rcflow(esContext);
