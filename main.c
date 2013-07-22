@@ -59,6 +59,7 @@
 #include "screen_videolist.h"
 #include "screen_model.h"
 #include "screen_cli.h"
+#include "screen_baseflightcli.h"
 #include "screen_rcflow.h"
 
 // V4L
@@ -70,7 +71,7 @@ void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float 
 #endif
 
 Model ModelData;
-char teletypes[8][15] = {
+char teletypes[10][15] = {
 	"MULTIWII_21",
 	"AUTOQUAD",
 	"ARDUPILOT",
@@ -79,6 +80,8 @@ char teletypes[8][15] = {
 	"GPS_NMEA",
 	"FRSKY",
 	"BASEFLIGHT",
+	"BASEFLIGHTCLI",
+	"CLI",
 };
 char modeltypes[5][15] = {
 	"MULTICOPTER",
@@ -167,8 +170,6 @@ void save_screenshot (void) {
 		strcpy(name, "telemetry");
 	} else if (view_mode == VIEW_MODE_MODEL) {
 		strcpy(name, "model");
-	} else if (view_mode == VIEW_MODE_CLI) {
-		strcpy(name, "cli");
 	} else if (view_mode == VIEW_MODE_RCFLOW) {
 		strcpy(name, "rcflow");
 	} else if (view_mode == VIEW_MODE_FMS) {
@@ -196,6 +197,10 @@ void save_screenshot (void) {
 			strcpy(name, "frsky");
 		} else if (ModelData.teletype == TELETYPE_AUTOQUAD) {
 			strcpy(name, "mavlink");
+		} else if (ModelData.teletype == TELETYPE_BASEFLIGHTCLI) {
+			strcpy(name, "baseflightcli");
+		} else if (ModelData.teletype == TELETYPE_CLI) {
+			strcpy(name, "cli");
 		} else {
 			strcpy(name, "fcmenu");
 		}
@@ -354,6 +359,8 @@ uint8_t need_bluetooth (void) {
 void stop_telemetrie (void) {
 	mwi21_exit();
 	mavlink_exit();
+	baseflightcli_exit();
+	cli_exit();
 	gps_exit();
 	openpilot_exit();
 	frsky_mode(0);
@@ -369,6 +376,10 @@ void reset_telemetrie (void) {
 		gps_init(telemetrie_port, telemetrie_baud);
 	} else if (ModelData.teletype == TELETYPE_OPENPILOT) {
 		openpilot_init(telemetrie_port, telemetrie_baud);
+	} else if (ModelData.teletype == TELETYPE_CLI) {
+		cli_init(telemetrie_port, telemetrie_baud);
+	} else if (ModelData.teletype == TELETYPE_BASEFLIGHTCLI) {
+		baseflightcli_init(telemetrie_port, telemetrie_baud);
 	} else if (ModelData.teletype == TELETYPE_FRSKY) {
 		frsky_mode(1);
 	} else {
@@ -1131,6 +1142,8 @@ int telemetrie_thread (void *data) {
 		mavlink_update();
 		mwi21_update();
 		jeti_update();
+		cli_update();
+		baseflightcli_update();
 		SDL_Delay(1);
 	}
 	printf("** exit thread telemetrie\n");
@@ -1538,9 +1551,6 @@ void Draw (ESContext *esContext) {
 	} else if (view_mode == VIEW_MODE_MODEL) {
 		screen_background(esContext);
 		screen_model(esContext);
-	} else if (view_mode == VIEW_MODE_CLI) {
-		screen_background(esContext);
-		screen_cli(esContext);
 	} else if (view_mode == VIEW_MODE_RCFLOW) {
 //		screen_background(esContext);
 		screen_rcflow(esContext);
@@ -1576,6 +1586,10 @@ void Draw (ESContext *esContext) {
 			screen_graph(esContext);
 		} else if (ModelData.teletype == TELETYPE_OPENPILOT) {
 			screen_openpilot(esContext);
+		} else if (ModelData.teletype == TELETYPE_CLI) {
+			screen_cli(esContext);
+		} else if (ModelData.teletype == TELETYPE_BASEFLIGHTCLI) {
+			screen_baseflightcli(esContext);
 		} else {
 			screen_mavlink_menu(esContext);
 		}

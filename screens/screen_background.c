@@ -23,6 +23,7 @@ void screen_background (ESContext *esContext) {
 		if (file_exists(tmp_str) != 0) {
 			draw_image_f3(esContext, -1.0, -0.3, 1.0, 0.3, 0.0, tmp_str);
 		} else {
+			printf("Logo not found: %s\n", tmp_str);
 			draw_image_f3(esContext, -1.0, -0.3, 1.0, 0.3, 0.0, TEXTURE_LOGO);
 		}
 	}

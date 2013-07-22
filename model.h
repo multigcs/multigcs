@@ -11,6 +11,8 @@ enum {
 	TELETYPE_GPS_NMEA,
 	TELETYPE_FRSKY,
 	TELETYPE_BASEFLIGHT,
+	TELETYPE_BASEFLIGHTCLI,
+	TELETYPE_CLI,
 	TELETYPE_LAST,
 };
 
@@ -82,7 +84,7 @@ typedef struct {
 } Model;
 
 extern Model ModelData;
-extern char teletypes[8][15];
+extern char teletypes[10][15];
 extern char modeltypes[5][15];
 
 #endif

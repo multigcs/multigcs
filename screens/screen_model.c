@@ -37,6 +37,8 @@
 #include <screen_baud.h>
 
 
+static uint8_t select_teletype = 0;
+
 
 uint8_t model_get_teletype_by_name (char *name) {
 	int16_t type = TELETYPE_LAST - 1;
@@ -70,6 +72,15 @@ static uint8_t model_reconnect (char *name, float x, float y, int8_t button, flo
 }
 
 
+uint8_t model_teletype_set (char *name, float x, float y, int8_t button, float data) {
+	if ((int)data < TELETYPE_LAST) {
+		ModelData.teletype = (int)data;
+	}
+	select_teletype = 0;
+	reset_telemetrie();
+	return 0;
+}
+
 static uint8_t model_modeltype_change (char *name, float x, float y, int8_t button, float data) {
 	if (ModelData.modeltype < MODELTYPE_LAST - 1) {
 		ModelData.modeltype++;
@@ -81,12 +92,7 @@ static uint8_t model_modeltype_change (char *name, float x, float y, int8_t butt
 
 
 static uint8_t model_teletype_change (char *name, float x, float y, int8_t button, float data) {
-	if (ModelData.teletype < TELETYPE_LAST - 1) {
-		ModelData.teletype++;
-	} else {
-		ModelData.teletype = 0;
-	}
-	reset_telemetrie();
+	select_teletype = 1;
 	return 0;
 }
 
@@ -447,8 +453,14 @@ void screen_model (ESContext *esContext) {
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
 
+	if (select_teletype == 1) {
+		for (n = 0; n < TELETYPE_LAST; n++) {
+			draw_button(esContext, teletypes[n], VIEW_MODE_MODEL, teletypes[n], FONT_WHITE, -1.25, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_teletype_set, (float)n);
+		}
+		return;
+	}
 
-	draw_button(esContext, "Model", VIEW_MODE_FCMENU, "Model", FONT_WHITE, -1.25, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_null, (float)n);
+	draw_button(esContext, "Model", VIEW_MODE_MODEL, "Model", FONT_WHITE, -1.25, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_null, (float)n);
 	draw_line_f3(esContext, -1.3, -0.8 + n * 0.12 + 0.1, 0.002, 1.25, -0.8 + n * 0.12 + 0.1, 0.002, 255, 255, 0, 128);
 	n++;
 
@@ -473,7 +485,7 @@ void screen_model (ESContext *esContext) {
 	n++;
 
 	n++;
-	draw_button(esContext, "Telemetry", VIEW_MODE_FCMENU, "Telemetry", FONT_WHITE, -1.25, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_null, (float)n);
+	draw_button(esContext, "Telemetry", VIEW_MODE_MODEL, "Telemetry", FONT_WHITE, -1.25, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_null, (float)n);
 	draw_line_f3(esContext, -1.3, -0.8 + n * 0.12 + 0.1, 0.002, 1.25, -0.8 + n * 0.12 + 0.1, 0.002, 255, 255, 0, 128);
 	n++;
 

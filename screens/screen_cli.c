@@ -17,6 +17,7 @@
 #include <dirent.h>
 #include <math.h>
 #include <userdata.h>
+#include <model.h>
 #include <serial.h>
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
@@ -25,19 +26,11 @@
 #include <screen_cli.h>
 #include <SDL/SDL_thread.h>
 #include <screen_keyboard.h>
-#include <screen_filesystem.h>
-#include <screen_device.h>
-#include <screen_baud.h>
 
 
 uint8_t cli_startup = 0;
-char cli_serial_device[1024];
-int cli_serial_baud = 115200;
-int cli_fd = 0;
+int cli_fd = -1;
 uint8_t cli_mode = 0;
-
-static SDL_Thread *sdl_thread_serial_cli = NULL;
-static uint8_t cli_thread_running = 0;
 
 #define CLI_MAX_BUFFER 100
 #define CLI_MAX_LINES 100
@@ -45,49 +38,43 @@ char cli_buffer[CLI_MAX_LINES][CLI_MAX_BUFFER];
 uint16_t cli_history = 0;
 
 
-int thread_serial_cli (void *unused) {
-	uint8_t n = 0;
-	uint8_t nn = 0;
-	uint8_t new = 0;
-	uint8_t read_buffer[201];
-	uint8_t read_num = 0;
-
-	uint8_t read_y = 0;
-	uint8_t read_x = 0;
-	uint8_t n2 = 0;
-
-	while (gui_running == 1 && cli_thread_running == 1) {
-		while ((read_num = read(cli_fd, read_buffer, 200)) > 0) {
-			for (nn = 0; nn < read_num; nn++) {
-				new = read_buffer[nn];
-
-				if (cli_mode == 1 && new == '\r') {
+void cli_update (void) {
+	static uint8_t n = 0;
+	static uint8_t nn = 0;
+	static uint8_t new = 0;
+	static uint8_t read_buffer[201];
+	static uint8_t read_num = 0;
+	static uint8_t read_y = 0;
+	static uint8_t read_x = 0;
+	static uint8_t n2 = 0;
+	if (cli_fd < 0) {
+		return;
+	}
+	while ((read_num = read(cli_fd, read_buffer, 200)) > 0) {
+		for (nn = 0; nn < read_num; nn++) {
+			new = read_buffer[nn];
+			if (cli_mode == 1 && new == '\r') {
+				read_x = 0;
+			} else if (new == '\n' || new == '\r') {
+				cli_buffer[CLI_MAX_LINES - 1][read_x] = ' ';
+				if (cli_mode != 1) {
 					read_x = 0;
-				} else if (new == '\n' || new == '\r') {
-					cli_buffer[CLI_MAX_LINES - 1][read_x] = ' ';
-					if (cli_mode != 1) {
-						read_x = 0;
-					}
-					for (n2 = 0; n2 < CLI_MAX_LINES; n2++) {
-						strncpy(cli_buffer[n2 - 1], cli_buffer[n2], CLI_MAX_BUFFER);
-//						printf("## %i: %s\n", n2, cli_buffer[n2]);
-					}
-					for (n2 = 0; n2 < CLI_MAX_BUFFER; n2++) {
-						cli_buffer[CLI_MAX_LINES - 1][n2] = ' ';
-					}
-					cli_buffer[CLI_MAX_LINES - 1][CLI_MAX_BUFFER - 1] = 0;
-				} else {
-					if (read_x < CLI_MAX_BUFFER - 1) {
-						cli_buffer[CLI_MAX_LINES - 1][read_x++] = new;
-					}
 				}
-
+				for (n2 = 0; n2 < CLI_MAX_LINES; n2++) {
+					strncpy(cli_buffer[n2 - 1], cli_buffer[n2], CLI_MAX_BUFFER);
+//					printf("## %i: %s\n", n2, cli_buffer[n2]);
+				}
+				for (n2 = 0; n2 < CLI_MAX_BUFFER; n2++) {
+					cli_buffer[CLI_MAX_LINES - 1][n2] = ' ';
+				}
+				cli_buffer[CLI_MAX_LINES - 1][CLI_MAX_BUFFER - 1] = 0;
+			} else {
+				if (read_x < CLI_MAX_BUFFER - 1) {
+					cli_buffer[CLI_MAX_LINES - 1][read_x++] = new;
+				}
 			}
 		}
-		usleep(100000);
 	}
-	printf("** exit thread cli\n");
-	return 0;
 }
 
 
@@ -95,57 +82,18 @@ static uint8_t cli_null (char *name, float x, float y, int8_t button, float data
 	return 0;
 }
 
-static void cli_init (void) {
+uint8_t cli_init (char *port, uint32_t baud) {
 	printf("init cli serial port...\n");
-	cli_fd = serial_open(cli_serial_device, cli_serial_baud);
-	if (cli_fd != -1) {
-		cli_thread_running = 1;
-		sdl_thread_serial_cli = SDL_CreateThread(thread_serial_cli, NULL);
-		if ( sdl_thread_serial_cli == NULL ) {
-			fprintf(stderr, "Unable to create thread_serial_cli: %s\n", SDL_GetError());
-			return 1;
-		}
-	}
+	cli_fd = serial_open(port, baud);
+	return 0;
 }
 
-static void cli_exit (void) {
-	if ( sdl_thread_serial_cli != NULL ) {
-		SDL_WaitThread(sdl_thread_serial_cli, NULL);
-		sdl_thread_serial_cli = NULL;
+uint8_t cli_exit (void) {
+	if (cli_fd < 0) {
+		return;
 	}
-	usleep(200000);
 	serial_close(cli_fd);
-}
-
-static uint8_t cli_reconnect (char *name, float x, float y, int8_t button, float data) {
-	cli_exit();
-	cli_init();
-	return 0;
-}
-
-static uint8_t cli_baud_set (char *name, float x, float y, int8_t button, float data) {
-	printf("# %i #\n", atoi(name));
-	return 0;
-}
-
-static uint8_t cli_baud_change (char *name, float x, float y, int8_t button, float data) {
-	baud_set_callback(cli_baud_set);
-	baud_set_mode(view_mode);
-	return 0;
-}
-
-static uint8_t cli_device_set (char *name, float x, float y, int8_t button, float data) {
-	printf("# %s #\n", name);
-	return 0;
-}
-
-static uint8_t cli_device_change (char *name, float x, float y, int8_t button, float data) {
-	device_set_callback(cli_device_set);
-	device_reset_filter();
-	device_add_filter("ttyUSB");
-	device_add_filter("ttyACM");
-	device_add_filter("ttyS");
-	device_set_mode(view_mode);
+	cli_fd = -1;
 	return 0;
 }
 
@@ -188,12 +136,6 @@ void screen_cli (ESContext *esContext) {
 #endif
 	draw_title(esContext, "CLI");
 
-	if (cli_startup == 0) {
-		cli_startup = 1;
-		strcpy(cli_serial_device, "/dev/ttyS10");
-		cli_init();
-	}
-
 	int n = 0;
 	char tmp_str[100];
 #ifndef SDLGL
@@ -203,21 +145,10 @@ void screen_cli (ESContext *esContext) {
 #endif
 
 
-	draw_text_f3(esContext, -1.1, -0.9 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "DEVICE:");
-	sprintf(tmp_str, "%s [SELECT]", cli_serial_device);
-	draw_button(esContext, "device_select", VIEW_MODE_CLI, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.9 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, cli_device_change, 0);
-
-	draw_text_f3(esContext, 0.1, -0.9 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "BAUD:");
-	sprintf(tmp_str, "%i [CHANGE]", ModelData.telebaud);
-	draw_button(esContext, "rc_baud", VIEW_MODE_CLI, tmp_str, FONT_WHITE, 0.1 + 0.3, -0.9 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, cli_baud_change, n);
-
-//	draw_button(esContext, "cli_reconnect", VIEW_MODE_CLI, "[RECONNECT]", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, cli_reconnect, n);
-
-
 	if (cli_mode == 0) {
-		draw_button(esContext, "cli_reconnect", VIEW_MODE_CLI, "[\\n]", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, cli_set_mode, 0);
+		draw_button(esContext, "cli_mode", VIEW_MODE_FCMENU, "[\\n]", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, cli_set_mode, 0);
 	} else {
-		draw_button(esContext, "cli_reconnect", VIEW_MODE_CLI, "[\\r]", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, cli_set_mode, 0);
+		draw_button(esContext, "cli_mode", VIEW_MODE_FCMENU, "[\\r]", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, cli_set_mode, 0);
 	}
 
 
@@ -234,7 +165,6 @@ void screen_cli (ESContext *esContext) {
 		draw_text_f3(esContext, -1.28, -0.78 + nn2 * 0.065, 0.002, 0.06, 0.06, FONT_WHITE, cli_buffer[nn]);
 		nn2++;
 	}
-
 
 	if (keyboard_key[0] != 0 && strcmp(keyboard_key, "escape") != 0 && strcmp(keyboard_key, "print screen") != 0) {
 //		printf("%s\n", keyboard_key);
@@ -269,9 +199,5 @@ void screen_cli (ESContext *esContext) {
 		keyboard_key[0] = 0;
 	}
 
-
-
-	screen_device(esContext);
-	screen_baud(esContext);
 }
 
