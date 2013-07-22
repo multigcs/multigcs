@@ -509,7 +509,7 @@ void screen_baseflightcli (ESContext *esContext) {
 	if (baseflightcli_group != -1) {
 		nn2 = 0;
 		for (nn = 0; nn < 1000; nn++) {
-			if (strcmp(bf_set_value[nn].group, groupnames[baseflightcli_group]) == 0) {
+			if (bf_set_value[nn].group[0] != 0 && strcmp(bf_set_value[nn].group, groupnames[baseflightcli_group]) == 0) {
 				if (strncmp(bf_set_value[nn].name, "aux_", 4) == 0) {
 					if (aux_flag == 0) {
 						aux_flag = 1;
