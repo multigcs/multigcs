@@ -112,6 +112,7 @@ void baseflightcli_add_value (char *vname, uint8_t type, float vval, float vmin,
 			}
 		}
 	}
+	baseflightcli_startup = 1;
 }
 
 void baseflightcli_update (void) {
@@ -201,9 +202,7 @@ void baseflightcli_update (void) {
 					if (strstr(baseflightcli_buffer, ".") > 0) {
 						type = 1;
 					}
-
 					baseflightcli_add_value(vname, type, vval, vmin, vmax);
-
 				} else {
 					printf("#UNKNOWN# %s\n", baseflightcli_buffer);
 				}
@@ -255,23 +254,22 @@ static uint8_t baseflightcli_aux_toggle (char *name, float x, float y, int8_t bu
 		new |= (1<<n);
 	}
 	bf_set_value[nn].value = (float)new;
-
 	char tmp_str[400];
 	sprintf(tmp_str, "aux %i %i\n", aux_n, new);
 	write(baseflightcli_fd, tmp_str, strlen(tmp_str));
 	printf(tmp_str);
-
 	return 0;
 }
 
 static uint8_t baseflightcli_defaults (char *name, float x, float y, int8_t button, float data) {
+	if (baseflightcli_fd < 0) {
+		return;
+	}
 	printf("baseflightcli_defaults: %f\n", data);
-
 	char tmp_str[400];
 	sprintf(tmp_str, "defaults\n");
 	write(baseflightcli_fd, tmp_str, strlen(tmp_str));
 	printf(tmp_str);
-
 	return 0;
 }
 
@@ -284,6 +282,9 @@ static uint8_t baseflightcli_group_open (char *name, float x, float y, int8_t bu
 }
 
 static uint8_t baseflightcli_read (char *name, float x, float y, int8_t button, float data) {
+	if (baseflightcli_fd < 0) {
+		return;
+	}
 	printf("reading baseflight cli...\n");
 	write(baseflightcli_fd, "####\n", 5);
 	write(baseflightcli_fd, "mixer list\n", 11);
@@ -293,6 +294,9 @@ static uint8_t baseflightcli_read (char *name, float x, float y, int8_t button, 
 }
 
 static uint8_t baseflightcli_save (char *name, float x, float y, int8_t button, float data) {
+	if (baseflightcli_fd < 0) {
+		return;
+	}
 	write(baseflightcli_fd, "save\n", 5);
 	return 0;
 }
@@ -372,7 +376,7 @@ uint8_t baseflightcli_init (char *port, uint32_t baud) {
 	printf("init baseflightcli serial port...\n");
 	baseflightcli_fd = serial_open(port, baud);
 
-	baseflightcli_read("", 0.0, 0.0, 0, 0.0);
+	baseflightcli_startup = 0;
 
 	return 0;
 }
@@ -604,6 +608,10 @@ void screen_baseflightcli (ESContext *esContext) {
 	draw_button(esContext, "defaults", VIEW_MODE_FCMENU, "[DEFAULT]", FONT_WHITE, -1.2, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_defaults, 0.0);
 	draw_button(esContext, "read", VIEW_MODE_FCMENU, "[READ]", FONT_WHITE, 0.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_read, 0.0);
 	draw_button(esContext, "save", VIEW_MODE_FCMENU, "[SAVE]", FONT_WHITE, 1.2, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_save, 0.0);
+
+	if (baseflightcli_startup == 0) {
+		baseflightcli_read("", 0.0, 0.0, 0, 0.0);
+	}
 
 }
 
