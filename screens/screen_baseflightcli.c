@@ -28,6 +28,9 @@
 #include <screen_keyboard.h>
 
 
+#define toRad(x) (PI/180.0) * x
+#define toDeg(x) (x*180.0) / PI
+
 uint8_t baseflightcli_startup = 0;
 int baseflightcli_fd = -1;
 uint8_t baseflightcli_mode = 0;
@@ -200,7 +203,6 @@ void baseflightcli_update (void) {
 					sscanf(baseflightcli_buffer, "aux %i %i", &vnum, &vval);
 					sprintf(tmp_str, "aux_%i", vnum);
 					baseflightcli_add_value(tmp_str, 0, (float)vval, 0.0, 4096.0);
-
 				} else if (strncmp(baseflightcli_buffer, "cmix ", 5) == 0) {
 					char tmp_str[400];
 					int vnum = 0;
@@ -217,7 +219,6 @@ void baseflightcli_update (void) {
 					baseflightcli_add_value(tmp_str, 1, vval3, -1.0, 1.0);
 					sprintf(tmp_str, "cmix_%i_yaw", vnum);
 					baseflightcli_add_value(tmp_str, 1, vval4, -1.0, 1.0);
-
 				} else if (strncmp(baseflightcli_buffer, "mixer ", 6) == 0) {
 					float tmp_val = 0.0;
 					int mm = 0;
@@ -264,6 +265,36 @@ void baseflightcli_update (void) {
 
 static uint8_t baseflightcli_null (char *name, float x, float y, int8_t button, float data) {
 	printf("baseflightcli_null: %f\n", data);
+	return 0;
+}
+
+static uint8_t baseflightcli_load_cmix (char *name, float x, float y, int8_t button, float data) {
+	printf("baseflightcli_load_cmix: %f\n", data);
+
+	int n = 0;
+	int nn = 0;
+
+
+	for (nn = 0; nn < 399; nn++) {
+		if (strncmp(bf_set_value[nn].name, "mixer", 4) == 0) {
+			break;
+		}
+	}
+
+
+	for (n = 0; n < (int)bf_set_value[nn].max; n++) {
+		if (strcmp(bf_mixer[n].name, name) == 0) {
+			bf_set_value[nn].value = (float)n;
+			break;
+		}
+	}
+	char tmp_str[400];
+	sprintf(tmp_str, "cmix load %s\n", bf_mixer[(int)bf_set_value[nn].value].name);
+	write(baseflightcli_fd, tmp_str, strlen(tmp_str));
+	printf(tmp_str);
+
+	sprintf(tmp_str, "dump\n");
+	write(baseflightcli_fd, tmp_str, strlen(tmp_str));
 	return 0;
 }
 
@@ -353,6 +384,7 @@ static uint8_t baseflightcli_read (char *name, float x, float y, int8_t button, 
 	write(baseflightcli_fd, "####\n", 5);
 	write(baseflightcli_fd, "mixer list\n", 11);
 	write(baseflightcli_fd, "set *\n", 6);
+	write(baseflightcli_fd, "aux\n", 4);
 	write(baseflightcli_fd, "dump\n", 5);
 	write(baseflightcli_fd, "version\n", 8);
 	return 0;
@@ -633,6 +665,7 @@ void screen_baseflightcli (ESContext *esContext) {
 	draw_line_f(esContext, 1.37, 0.8, 1.27, 0.8, 255, 255, 255, 127);
 
 	uint8_t aux_flag = 0;
+	uint8_t cmix_flag = 0;
 	if (baseflightcli_group != -1) {
 		nn2 = 0;
 		for (nn = 0; nn < 1000; nn++) {
@@ -700,6 +733,67 @@ void screen_baseflightcli (ESContext *esContext) {
 						}
 					}
 				} else if (bf_set_value[nn].min != 0 || bf_set_value[nn].max != 0) {
+
+
+					if (strcmp(bf_set_value[nn].group, "C-Mixer") == 0) {
+						if (cmix_flag == 0) {
+							cmix_flag = 1;
+							float m_x = 0.2;
+							float m_y = 0.0;
+							float mr = 0.6;
+							draw_circle_f(esContext, m_x, m_y, 0.1, 255, 255, 255, 255);
+							for (n = 1; n <= 8; n++) {
+								float r_x = 0.0;
+								float r_y = 0.0;
+								float r_r = 0.0;
+								float r_r2 = 0.0;
+								for (n2 = 0; n2 < 399; n2++) {
+									sprintf(tmp_str, "cmix_%i_roll", n);
+									if (strcmp(bf_set_value[n2].name, tmp_str) == 0) {
+										r_x = bf_set_value[n2].value;
+									}
+									sprintf(tmp_str, "cmix_%i_pitch", n);
+									if (strcmp(bf_set_value[n2].name, tmp_str) == 0) {
+										r_y = bf_set_value[n2].value;
+									}
+									sprintf(tmp_str, "cmix_%i_yaw", n);
+									if (strcmp(bf_set_value[n2].name, tmp_str) == 0) {
+										r_r = bf_set_value[n2].value;
+									}
+								}
+								if (r_r != 0.0) {
+									sprintf(tmp_str, "M%i,%0.1f", n, r_r);
+									if (r_r > 0.0) {
+										r_r2 = r_r;
+									} else {
+										r_r2 = r_r * -1.0;
+									}
+									float arc = toDeg(atan(toRad(r_x) / toRad(r_y)));
+									if (r_x < 0.0) {
+										arc += 180.0;
+									} else if (r_x == 0.0 && r_y > 0.0) {
+										arc += 90.0;
+									} else if (r_x == 0.0 && r_y < 0.0) {
+										arc -= 90.0;
+									}
+									//printf("arc: M%i: %f %f %f\n", n, arc, r_x, r_y);
+									float p_x = m_x + cos(toRad(arc)) * (r_r2 * mr);
+									float p_y = m_y + sin(toRad(arc)) * (r_r2 * mr);
+									draw_circle_f(esContext, p_x, p_y, 0.2, 255, 255, 255, 127);
+									if (r_r > 0.0) {
+										draw_circle_f(esContext, p_x + 0.01, p_y + 0.01, 0.2, 0, 255, 0, 255);
+										draw_text_f(esContext, p_x - 0.12, p_y, 0.06, 0.06, FONT_GREEN, tmp_str);
+									} else {
+										draw_circle_f(esContext, p_x - 0.01, p_y - 0.01, 0.2, 255, 0, 0, 255);
+										draw_text_f(esContext, p_x - 0.12, p_y - 0.06, 0.06, 0.06, FONT_PINK, tmp_str);
+									}
+									draw_line_f(esContext, m_x, m_y, p_x, p_y, 255, 0, 0, 255);
+								}
+							}
+							draw_button(esContext, "load_cmix", VIEW_MODE_FCMENU, "[LOAD ACTIVE]", FONT_GREEN, -0.9, -0.8 + nn2 * 0.07 + 0.01, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, baseflightcli_load_cmix, 0.0);
+						}
+					}
+
 					if (strncmp(bf_set_value[nn].name, "feature_", 8) == 0 && bf_set_value[nn].value == 1.0) {
 						draw_button(esContext, "name", VIEW_MODE_FCMENU, bf_set_value[nn].name, FONT_GREEN, -0.9, -0.8 + nn2 * 0.07 + 0.01, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, baseflightcli_null, (float)nn);
 					} else {
