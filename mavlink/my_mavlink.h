@@ -84,7 +84,7 @@ extern int mavlink_update (void);
 extern uint8_t mavlink_init (char *port, uint32_t baud);
 extern void mavlink_exit (void);
 void stop_feeds (void);
-void mavlink_send_value (char *name, float val);
+void mavlink_send_value (char *name, float val, uint8_t type);
 void gcs_handleMessage(mavlink_message_t* msg);
 void read_waypoints (void);
 void save_to_flash (void);

@@ -105,9 +105,9 @@ void stop_feeds (void) {
 	send_message(&msg1);
 }
 
-void mavlink_send_value (char *name, float val) {
+void mavlink_send_value (char *name, float val, uint8_t type) {
 	mavlink_message_t msg;
-	mavlink_msg_param_set_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, name, val, 9);
+	mavlink_msg_param_set_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, name, val, type);
 	send_message(&msg);
 }
 
@@ -298,12 +298,11 @@ void gcs_handleMessage(mavlink_message_t* msg) {
 				max = 99999.0;
 			}
 			for (n = 0; n < 500; n++) {
-				if (strcmp(MavLinkVars[n].name, var) == 0 && (MavLinkVars[n].id == packet.param_index || MavLinkVars[n].id == -1)) {
+//				if (strcmp(MavLinkVars[n].name, var) == 0 && (MavLinkVars[n].id == packet.param_index || MavLinkVars[n].id == -1)) {
+				if (strcmp(MavLinkVars[n].name, var) == 0) {
 					MavLinkVars[n].value = packet.param_value;
 					MavLinkVars[n].id = packet.param_index;
 					MavLinkVars[n].type = packet.param_type;
-					MavLinkVars[n].min = min;
-					MavLinkVars[n].max = max;
 					flag = 1;
 					break;
 				}

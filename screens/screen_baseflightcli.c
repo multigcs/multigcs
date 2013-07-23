@@ -268,20 +268,42 @@ static uint8_t baseflightcli_null (char *name, float x, float y, int8_t button, 
 	return 0;
 }
 
+static uint8_t baseflightcli_xml_save (char *name, float x, float y, int8_t button, float data) {
+        FILE *fr;
+        fr = fopen("/tmp/ParameterMetaData.xml", "w");
+	if (fr != 0) {
+		fprintf(fr, "<?xml version=\"1.0\"?>\n");
+		fprintf(fr, "<Params>\n");
+		fprintf(fr, "  <ArduCopter2>\n");
+		int n3 = 0;
+		for (n3 = 0; n3 < 399; n3++) {
+			if (bf_set_value[n3].name[0] != 0) {
+				fprintf(fr, "      <%0.16s>\n", bf_set_value[n3].name);
+				fprintf(fr, "        <DisplayName>%s</DisplayName>\n", bf_set_value[n3].name);
+				fprintf(fr, "        <Description>%s</Description>\n", bf_set_value[n3].name);
+				fprintf(fr, "        <Units>%s</Units>\n", "");
+				fprintf(fr, "        <Range>%f %f</Range>\n", bf_set_value[n3].min, bf_set_value[n3].max);
+				fprintf(fr, "        <Increment>%f</Increment>\n", 1);
+				fprintf(fr, "        <User>Advanced</User>\n");
+				fprintf(fr, "      </%0.16s>\n", bf_set_value[n3].name);
+			}
+		}
+		fprintf(fr, "  </ArduCopter2>\n");
+		fprintf(fr, "</Params>\n");
+	        fclose(fr);
+	}
+	return 0;
+}
+
 static uint8_t baseflightcli_load_cmix (char *name, float x, float y, int8_t button, float data) {
 	printf("baseflightcli_load_cmix: %f\n", data);
-
 	int n = 0;
 	int nn = 0;
-
-
 	for (nn = 0; nn < 399; nn++) {
 		if (strncmp(bf_set_value[nn].name, "mixer", 4) == 0) {
 			break;
 		}
 	}
-
-
 	for (n = 0; n < (int)bf_set_value[nn].max; n++) {
 		if (strcmp(bf_mixer[n].name, name) == 0) {
 			bf_set_value[nn].value = (float)n;
@@ -852,6 +874,9 @@ void screen_baseflightcli (ESContext *esContext) {
 	draw_button(esContext, "defaults", VIEW_MODE_FCMENU, "[DEFAULT]", FONT_WHITE, -1.2, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_defaults, 0.0);
 	draw_button(esContext, "read", VIEW_MODE_FCMENU, "[READ]", FONT_WHITE, 0.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_read, 0.0);
 	draw_button(esContext, "save", VIEW_MODE_FCMENU, "[SAVE]", FONT_WHITE, 1.2, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_save, 0.0);
+
+	draw_button(esContext, "xmldesc", VIEW_MODE_FCMENU, "[XML_DESC]", FONT_WHITE, 0.5, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_xml_save, 0.0);
+
 
 	if (baseflightcli_version[0] != 0) {
 		draw_button(esContext, "version", VIEW_MODE_FCMENU, baseflightcli_version, FONT_WHITE, 0.0, 0.85, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, baseflightcli_null, 0.0);
