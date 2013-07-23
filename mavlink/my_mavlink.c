@@ -257,17 +257,53 @@ void gcs_handleMessage(mavlink_message_t* msg) {
 				}
 			}
 			var[n2++] = 0;
-			sprintf(sysmsg_str, "PARAM_VALUE (%i/%i): #%s# = %f", packet.param_index + 1, packet.param_count, var, packet.param_value);
+
+//	MAV_VAR_FLOAT=0, /* 32 bit float | */
+//	MAV_VAR_UINT8=1, /* 8 bit unsigned integer | */
+//	MAV_VAR_INT8=2, /* 8 bit signed integer | */
+//	MAV_VAR_UINT16=3, /* 16 bit unsigned integer | */
+//	MAV_VAR_INT16=4, /* 16 bit signed integer | */
+//	MAV_VAR_UINT32=5, /* 32 bit unsigned integer | */
+//	MAV_VAR_INT32=6, /* 32 bit signed integer | */
+
+			sprintf(sysmsg_str, "PARAM_VALUE (%i/%i): #%s# = %f (Type: %i)", packet.param_index + 1, packet.param_count, var, packet.param_value, packet.param_type);
 			printf("%s\n", sysmsg_str);
 			sys_message(sysmsg_str);
 			mavlink_maxparam = packet.param_count;
 			mavlink_timeout = 0;
 			uint16_t n = 0;
 			uint8_t flag = 0;
+			float min = 99999.0;
+			float max = 99999.0;
+			if (packet.param_type == MAV_VAR_FLOAT) {
+				min = -99999.0;
+				max = 99999.0;
+			} else if (packet.param_type == MAV_VAR_UINT8) {
+				min = 0.0;
+				max = 255.0;
+			} else if (packet.param_type == MAV_VAR_INT8) {
+				min = -127.0;
+				max = 127.0;
+			} else if (packet.param_type == MAV_VAR_UINT16) {
+				min = 0.0;
+				max = 65535.0;
+			} else if (packet.param_type == MAV_VAR_INT16) {
+				min = -35552.0;
+				max = 35552.0;
+			} else if (packet.param_type == MAV_VAR_UINT32) {
+				min = 0.0;
+				max = 99999.0;
+			} else if (packet.param_type == MAV_VAR_INT32) {
+				min = 99999.0;
+				max = 99999.0;
+			}
 			for (n = 0; n < 500; n++) {
 				if (strcmp(MavLinkVars[n].name, var) == 0 && (MavLinkVars[n].id == packet.param_index || MavLinkVars[n].id == -1)) {
 					MavLinkVars[n].value = packet.param_value;
 					MavLinkVars[n].id = packet.param_index;
+					MavLinkVars[n].type = packet.param_type;
+					MavLinkVars[n].min = min;
+					MavLinkVars[n].max = max;
 					flag = 1;
 					break;
 				}
@@ -278,6 +314,9 @@ void gcs_handleMessage(mavlink_message_t* msg) {
 						strcpy(MavLinkVars[n].name, var);
 						MavLinkVars[n].value = packet.param_value;
 						MavLinkVars[n].id = packet.param_index;
+						MavLinkVars[n].type = packet.param_type;
+						MavLinkVars[n].min = min;
+						MavLinkVars[n].max = max;
 						break;
 					}
 				}

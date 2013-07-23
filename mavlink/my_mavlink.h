@@ -59,6 +59,9 @@ typedef struct {
 	int16_t id;
 	char name[1024];
 	float value;
+	float min;
+	float max;
+	uint8_t type;
 	uint16_t option1;
 	uint16_t option2;
 } ValueList;
