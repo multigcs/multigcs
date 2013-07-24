@@ -4,10 +4,6 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <main.h>
-
-#include <libxml/xmlmemory.h>
-#include <libxml/parser.h>
-
 #include <model.h>
 #include <screen_mavlink_menu.h>
 #include <screen_keyboard.h>
@@ -81,81 +77,6 @@ uint8_t mavlink_slider_move (char *name, float x, float y, int8_t button, float 
 
 	mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
 	return 0;
-}
-
-void mavlink_parseParams1 (xmlDocPtr doc, xmlNodePtr cur, char *name) { 
-	int n = 0;
-	for (n = 0; n < 500 - 1; n++) {
-		if (strcmp(MavLinkVars[n].name, name) == 0) {
-			break;
-		}
-	}
-	if (n == 500 - 1) {
-		return 0;
-	}
-	cur = cur->xmlChildrenNode;
-	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"Range"))) {
-			float min = 0.0;
-			float max = 0.0;
-			xmlChar *key;
-
-			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			sscanf((char *)key, "%f %f", &min, &max);
-			MavLinkVars[n].min = min;
-			MavLinkVars[n].max = max;
-
-			printf("	Range: %s: %f -> %f\n", name, min, max);
-
-			xmlFree(key);
-		}
-
-		cur = cur->next;
-	}
-	return;
-}
-
-void mavlink_parseParams (xmlDocPtr doc, xmlNodePtr cur) { 
-	cur = cur->xmlChildrenNode;
-	while (cur != NULL) {
-		if ((xmlStrcmp(cur->name, (const xmlChar *)"text"))) {
-			mavlink_parseParams1(doc, cur, (char *)cur->name);
-		}
-		cur = cur->next;
-	}
-	return;
-}
-
-static void mavlink_parseDoc (char *docname) {
-	xmlDocPtr doc;
-	xmlNodePtr cur;
-	xmlChar *key;
-	doc = xmlParseFile(docname);
-	if (doc == NULL) {
-		printf("Document parsing failed: %s\n", docname);
-		return;
-	}
-	cur = xmlDocGetRootElement(doc);
-	if (cur == NULL) {
-		xmlFreeDoc(doc);
-		printf("Document is Empty!!!\n");
-		return;
-	}
-	cur = cur->xmlChildrenNode;
-	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"ArduCopter2"))) {
-			mavlink_parseParams(doc, cur);
-		}
-		cur = cur->next;
-	}
-	xmlFreeDoc(doc);
-	return;
-}
-
-uint8_t mavlink_param_xml_meta_load (char *name, float x, float y, int8_t button, float data) {
-	char filename[1024];
-	sprintf(filename, "%s/ParameterMetaData.xml", BASE_DIR);
-	mavlink_parseDoc("/tmp/ParameterMetaData.xml");
 }
 
 uint8_t mavlink_param_file_save (char *name, float x, float y, int8_t button, float data) {
@@ -540,9 +461,6 @@ void screen_mavlink_menu (ESContext *esContext) {
 	draw_button(esContext, "upload", VIEW_MODE_FCMENU, "[UPLOAD ALL]", FONT_WHITE, 0.0, 0.9, 0.002, 0.06, 1, 0, mavlink_param_upload_all, 1.0);
 	draw_button(esContext, "flash_r", VIEW_MODE_FCMENU, "[LOAD FLASH]", FONT_WHITE, 0.5, 0.9, 0.002, 0.06, 1, 0, mavlink_flashload, 0.0);
 	draw_button(esContext, "flash_w", VIEW_MODE_FCMENU, "[WRITE FLASH]", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, 1, 0, mavlink_flash, 0.0);
-
-	draw_button(esContext, "xml_load", VIEW_MODE_FCMENU, "[XML LOAD]", FONT_WHITE, 1.0, 0.8, 0.002, 0.06, 1, 0, mavlink_param_xml_meta_load, 0.0);
-
 
 
 	if (flag == 0) {

@@ -1,0 +1,3909 @@
+<?xml version="1.0"?>
+<Params>
+  <ArduCopter2>
+    <RC1_MIN>
+      <DisplayName>RC min PWM</DisplayName>
+      <Description>RC minimum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC1_MIN>
+    <RC1_TRIM>
+      <DisplayName>RC trim PWM</DisplayName>
+      <Description>RC trim (neutral) PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC1_TRIM>
+    <RC1_MAX>
+      <DisplayName>RC max PWM</DisplayName>
+      <Description>RC maximum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC1_MAX>
+    <RC1_REV>
+      <DisplayName>RC reverse</DisplayName>
+      <Description>Reverse servo operation. Ignored on APM1 unless dip-switches are disabled.</Description>
+      <Values>-1:Reversed,1:Normal</Values>
+      <User>Advanced</User>
+    </RC1_REV>
+    <RC1_DZ>
+      <DisplayName>RC dead-zone</DisplayName>
+      <Description>dead zone around trim.</Description>
+      <User>Advanced</User>
+    </RC1_DZ>
+    <RC2_MIN>
+      <DisplayName>RC min PWM</DisplayName>
+      <Description>RC minimum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC2_MIN>
+    <RC2_TRIM>
+      <DisplayName>RC trim PWM</DisplayName>
+      <Description>RC trim (neutral) PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC2_TRIM>
+    <RC2_MAX>
+      <DisplayName>RC max PWM</DisplayName>
+      <Description>RC maximum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC2_MAX>
+    <RC2_REV>
+      <DisplayName>RC reverse</DisplayName>
+      <Description>Reverse servo operation. Ignored on APM1 unless dip-switches are disabled.</Description>
+      <Values>-1:Reversed,1:Normal</Values>
+      <User>Advanced</User>
+    </RC2_REV>
+    <RC2_DZ>
+      <DisplayName>RC dead-zone</DisplayName>
+      <Description>dead zone around trim.</Description>
+      <User>Advanced</User>
+    </RC2_DZ>
+    <RC3_MIN>
+      <DisplayName>RC min PWM</DisplayName>
+      <Description>RC minimum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC3_MIN>
+    <RC3_TRIM>
+      <DisplayName>RC trim PWM</DisplayName>
+      <Description>RC trim (neutral) PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC3_TRIM>
+    <RC3_MAX>
+      <DisplayName>RC max PWM</DisplayName>
+      <Description>RC maximum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC3_MAX>
+    <RC3_REV>
+      <DisplayName>RC reverse</DisplayName>
+      <Description>Reverse servo operation. Ignored on APM1 unless dip-switches are disabled.</Description>
+      <Values>-1:Reversed,1:Normal</Values>
+      <User>Advanced</User>
+    </RC3_REV>
+    <RC3_DZ>
+      <DisplayName>RC dead-zone</DisplayName>
+      <Description>dead zone around trim.</Description>
+      <User>Advanced</User>
+    </RC3_DZ>
+    <RC4_MIN>
+      <DisplayName>RC min PWM</DisplayName>
+      <Description>RC minimum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC4_MIN>
+    <RC4_TRIM>
+      <DisplayName>RC trim PWM</DisplayName>
+      <Description>RC trim (neutral) PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC4_TRIM>
+    <RC4_MAX>
+      <DisplayName>RC max PWM</DisplayName>
+      <Description>RC maximum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC4_MAX>
+    <RC4_REV>
+      <DisplayName>RC reverse</DisplayName>
+      <Description>Reverse servo operation. Ignored on APM1 unless dip-switches are disabled.</Description>
+      <Values>-1:Reversed,1:Normal</Values>
+      <User>Advanced</User>
+    </RC4_REV>
+    <RC4_DZ>
+      <DisplayName>RC dead-zone</DisplayName>
+      <Description>dead zone around trim.</Description>
+      <User>Advanced</User>
+    </RC4_DZ>
+    <RC5_MIN>
+      <DisplayName>RC min PWM</DisplayName>
+      <Description>RC minimum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC5_MIN>
+    <RC5_TRIM>
+      <DisplayName>RC trim PWM</DisplayName>
+      <Description>RC trim (neutral) PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC5_TRIM>
+    <RC5_MAX>
+      <DisplayName>RC max PWM</DisplayName>
+      <Description>RC maximum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC5_MAX>
+    <RC5_REV>
+      <DisplayName>RC reverse</DisplayName>
+      <Description>Reverse servo operation. Ignored on APM1 unless dip-switches are disabled.</Description>
+      <Values>-1:Reversed,1:Normal</Values>
+      <User>Advanced</User>
+    </RC5_REV>
+    <RC5_DZ>
+      <DisplayName>RC dead-zone</DisplayName>
+      <Description>dead zone around trim.</Description>
+      <User>Advanced</User>
+    </RC5_DZ>
+    <RC5_FUNCTION>
+      <DisplayName>Servo out function</DisplayName>
+      <Description>Setting this to Disabled(0) will disable this output, any other value will enable the corresponding function</Description>
+      <Values>0:Disabled,1:Manual,2:Flap,3:Flap_auto,4:Aileron,5:flaperon,6:mount_pan,7:mount_tilt,8:mount_roll,9:mount_open,10:camera_trigger,11:release,12:mount2_pan,13:mount2_tilt,14:mount2_roll,15:mount2_open,16:DifferentialSpoiler1,17:DifferentialSpoiler2,18:AileronWithInput</Values>
+      <User>Standard</User>
+    </RC5_FUNCTION>
+    <RC6_MIN>
+      <DisplayName>RC min PWM</DisplayName>
+      <Description>RC minimum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC6_MIN>
+    <RC6_TRIM>
+      <DisplayName>RC trim PWM</DisplayName>
+      <Description>RC trim (neutral) PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC6_TRIM>
+    <RC6_MAX>
+      <DisplayName>RC max PWM</DisplayName>
+      <Description>RC maximum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC6_MAX>
+    <RC6_REV>
+      <DisplayName>RC reverse</DisplayName>
+      <Description>Reverse servo operation. Ignored on APM1 unless dip-switches are disabled.</Description>
+      <Values>-1:Reversed,1:Normal</Values>
+      <User>Advanced</User>
+    </RC6_REV>
+    <RC6_DZ>
+      <DisplayName>RC dead-zone</DisplayName>
+      <Description>dead zone around trim.</Description>
+      <User>Advanced</User>
+    </RC6_DZ>
+    <RC6_FUNCTION>
+      <DisplayName>Servo out function</DisplayName>
+      <Description>Setting this to Disabled(0) will disable this output, any other value will enable the corresponding function</Description>
+      <Values>0:Disabled,1:Manual,2:Flap,3:Flap_auto,4:Aileron,5:flaperon,6:mount_pan,7:mount_tilt,8:mount_roll,9:mount_open,10:camera_trigger,11:release,12:mount2_pan,13:mount2_tilt,14:mount2_roll,15:mount2_open,16:DifferentialSpoiler1,17:DifferentialSpoiler2,18:AileronWithInput</Values>
+      <User>Standard</User>
+    </RC6_FUNCTION>
+    <RC7_MIN>
+      <DisplayName>RC min PWM</DisplayName>
+      <Description>RC minimum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC7_MIN>
+    <RC7_TRIM>
+      <DisplayName>RC trim PWM</DisplayName>
+      <Description>RC trim (neutral) PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC7_TRIM>
+    <RC7_MAX>
+      <DisplayName>RC max PWM</DisplayName>
+      <Description>RC maximum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC7_MAX>
+    <RC7_REV>
+      <DisplayName>RC reverse</DisplayName>
+      <Description>Reverse servo operation. Ignored on APM1 unless dip-switches are disabled.</Description>
+      <Values>-1:Reversed,1:Normal</Values>
+      <User>Advanced</User>
+    </RC7_REV>
+    <RC7_DZ>
+      <DisplayName>RC dead-zone</DisplayName>
+      <Description>dead zone around trim.</Description>
+      <User>Advanced</User>
+    </RC7_DZ>
+    <RC7_FUNCTION>
+      <DisplayName>Servo out function</DisplayName>
+      <Description>Setting this to Disabled(0) will disable this output, any other value will enable the corresponding function</Description>
+      <Values>0:Disabled,1:Manual,2:Flap,3:Flap_auto,4:Aileron,5:flaperon,6:mount_pan,7:mount_tilt,8:mount_roll,9:mount_open,10:camera_trigger,11:release,12:mount2_pan,13:mount2_tilt,14:mount2_roll,15:mount2_open,16:DifferentialSpoiler1,17:DifferentialSpoiler2,18:AileronWithInput</Values>
+      <User>Standard</User>
+    </RC7_FUNCTION>
+    <RC8_MIN>
+      <DisplayName>RC min PWM</DisplayName>
+      <Description>RC minimum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC8_MIN>
+    <RC8_TRIM>
+      <DisplayName>RC trim PWM</DisplayName>
+      <Description>RC trim (neutral) PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC8_TRIM>
+    <RC8_MAX>
+      <DisplayName>RC max PWM</DisplayName>
+      <Description>RC maximum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC8_MAX>
+    <RC8_REV>
+      <DisplayName>RC reverse</DisplayName>
+      <Description>Reverse servo operation. Ignored on APM1 unless dip-switches are disabled.</Description>
+      <Values>-1:Reversed,1:Normal</Values>
+      <User>Advanced</User>
+    </RC8_REV>
+    <RC8_DZ>
+      <DisplayName>RC dead-zone</DisplayName>
+      <Description>dead zone around trim.</Description>
+      <User>Advanced</User>
+    </RC8_DZ>
+    <RC8_FUNCTION>
+      <DisplayName>Servo out function</DisplayName>
+      <Description>Setting this to Disabled(0) will disable this output, any other value will enable the corresponding function</Description>
+      <Values>0:Disabled,1:Manual,2:Flap,3:Flap_auto,4:Aileron,5:flaperon,6:mount_pan,7:mount_tilt,8:mount_roll,9:mount_open,10:camera_trigger,11:release,12:mount2_pan,13:mount2_tilt,14:mount2_roll,15:mount2_open,16:DifferentialSpoiler1,17:DifferentialSpoiler2,18:AileronWithInput</Values>
+      <User>Standard</User>
+    </RC8_FUNCTION>
+    <RC10_MIN>
+      <DisplayName>RC min PWM</DisplayName>
+      <Description>RC minimum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC10_MIN>
+    <RC10_TRIM>
+      <DisplayName>RC trim PWM</DisplayName>
+      <Description>RC trim (neutral) PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC10_TRIM>
+    <RC10_MAX>
+      <DisplayName>RC max PWM</DisplayName>
+      <Description>RC maximum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC10_MAX>
+    <RC10_REV>
+      <DisplayName>RC reverse</DisplayName>
+      <Description>Reverse servo operation. Ignored on APM1 unless dip-switches are disabled.</Description>
+      <Values>-1:Reversed,1:Normal</Values>
+      <User>Advanced</User>
+    </RC10_REV>
+    <RC10_DZ>
+      <DisplayName>RC dead-zone</DisplayName>
+      <Description>dead zone around trim.</Description>
+      <User>Advanced</User>
+    </RC10_DZ>
+    <RC10_FUNCTION>
+      <DisplayName>Servo out function</DisplayName>
+      <Description>Setting this to Disabled(0) will disable this output, any other value will enable the corresponding function</Description>
+      <Values>0:Disabled,1:Manual,2:Flap,3:Flap_auto,4:Aileron,5:flaperon,6:mount_pan,7:mount_tilt,8:mount_roll,9:mount_open,10:camera_trigger,11:release,12:mount2_pan,13:mount2_tilt,14:mount2_roll,15:mount2_open,16:DifferentialSpoiler1,17:DifferentialSpoiler2,18:AileronWithInput</Values>
+      <User>Standard</User>
+    </RC10_FUNCTION>
+    <RC11_MIN>
+      <DisplayName>RC min PWM</DisplayName>
+      <Description>RC minimum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC11_MIN>
+    <RC11_TRIM>
+      <DisplayName>RC trim PWM</DisplayName>
+      <Description>RC trim (neutral) PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC11_TRIM>
+    <RC11_MAX>
+      <DisplayName>RC max PWM</DisplayName>
+      <Description>RC maximum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC11_MAX>
+    <RC11_REV>
+      <DisplayName>RC reverse</DisplayName>
+      <Description>Reverse servo operation. Ignored on APM1 unless dip-switches are disabled.</Description>
+      <Values>-1:Reversed,1:Normal</Values>
+      <User>Advanced</User>
+    </RC11_REV>
+    <RC11_DZ>
+      <DisplayName>RC dead-zone</DisplayName>
+      <Description>dead zone around trim.</Description>
+      <User>Advanced</User>
+    </RC11_DZ>
+    <RC11_FUNCTION>
+      <DisplayName>Servo out function</DisplayName>
+      <Description>Setting this to Disabled(0) will disable this output, any other value will enable the corresponding function</Description>
+      <Values>0:Disabled,1:Manual,2:Flap,3:Flap_auto,4:Aileron,5:flaperon,6:mount_pan,7:mount_tilt,8:mount_roll,9:mount_open,10:camera_trigger,11:release,12:mount2_pan,13:mount2_tilt,14:mount2_roll,15:mount2_open,16:DifferentialSpoiler1,17:DifferentialSpoiler2,18:AileronWithInput</Values>
+      <User>Standard</User>
+    </RC11_FUNCTION>
+    <CAM_TRIGG_TYPE>
+      <DisplayName>Camera shutter (trigger) type</DisplayName>
+      <Description>how to trigger the camera to take a picture</Description>
+      <Values>0:Servo,1:Relay,2:Servo and turn off throttle,3:Servo when 3m from waypoint,4:transistor</Values>
+      <User>Standard</User>
+    </CAM_TRIGG_TYPE>
+    <CAM_DURATION>
+      <DisplayName>Duration that shutter is held open</DisplayName>
+      <Description>How long the shutter will be held open in 10ths of a second (i.e. enter 10 for 1second, 50 for 5seconds)</Description>
+      <Range>0 50</Range>
+      <User>Standard</User>
+    </CAM_DURATION>
+    <CAM_SERVO_ON>
+      <DisplayName>Servo ON PWM value</DisplayName>
+      <Description>PWM value to move servo to when shutter is activated</Description>
+      <Range>1000 2000</Range>
+      <User>Standard</User>
+    </CAM_SERVO_ON>
+    <CAM_SERVO_OFF>
+      <DisplayName>Servo OFF PWM value</DisplayName>
+      <Description>PWM value to move servo to when shutter is deactivated</Description>
+      <Range>1000 2000</Range>
+      <User>Standard</User>
+    </CAM_SERVO_OFF>
+    <COMPASS_OFS_X>
+      <DisplayName>Compass offsets on the X axis</DisplayName>
+      <Description>Offset to be added to the compass x-axis values to compensate for metal in the frame</Description>
+      <Range>-400 400</Range>
+      <Increment>1</Increment>
+    </COMPASS_OFS_X>
+    <COMPASS_OFS_Y>
+      <DisplayName>Compass offsets on the Y axis</DisplayName>
+      <Description>Offset to be added to the compass y-axis values to compensate for metal in the frame</Description>
+      <Range>-400 400</Range>
+      <Increment>1</Increment>
+    </COMPASS_OFS_Y>
+    <COMPASS_OFS_Z>
+      <DisplayName>Compass offsets on the Z axis</DisplayName>
+      <Description>Offset to be added to the compass z-axis values to compensate for metal in the frame</Description>
+      <Range>-400 400</Range>
+      <Increment>1</Increment>
+    </COMPASS_OFS_Z>
+    <COMPASS_DEC>
+      <DisplayName>Compass declination</DisplayName>
+      <Description>An angle to compensate between the true north and magnetic north</Description>
+      <Range>-3.142 3.142</Range>
+      <Units>Radians</Units>
+      <Increment>0.01</Increment>
+      <User>Standard</User>
+    </COMPASS_DEC>
+    <COMPASS_LEARN>
+      <DisplayName>Learn compass offsets automatically</DisplayName>
+      <Description>Enable or disable the automatic learning of compass offsets</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Advanced</User>
+    </COMPASS_LEARN>
+    <COMPASS_USE>
+      <DisplayName>Use compass for yaw</DisplayName>
+      <Description>Enable or disable the use of the compass (instead of the GPS) for determining heading</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Advanced</User>
+    </COMPASS_USE>
+    <COMPASS_AUTODEC>
+      <DisplayName>Auto Declination</DisplayName>
+      <Description>Enable or disable the automatic calculation of the declination based on gps location</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Advanced</User>
+    </COMPASS_AUTODEC>
+    <INS_PRODUCT_ID>
+      <DisplayName>IMU Product ID</DisplayName>
+      <Description>Which type of IMU is installed (read-only)</Description>
+      <User>Standard</User>
+    </INS_PRODUCT_ID>
+    <INS_ACCSCAL_X>
+      <DisplayName>Accelerometer scaling of X axis</DisplayName>
+      <Description>Accelerometer scaling of X axis.  Calculated during acceleration calibration routine</Description>
+      <User>Advanced</User>
+    </INS_ACCSCAL_X>
+    <INS_ACCSCAL_Y>
+      <DisplayName>Accelerometer scaling of Y axis</DisplayName>
+      <Description>Accelerometer scaling of Y axis  Calculated during acceleration calibration routine</Description>
+      <User>Advanced</User>
+    </INS_ACCSCAL_Y>
+    <INS_ACCSCAL_Z>
+      <DisplayName>Accelerometer scaling of Z axis</DisplayName>
+      <Description>Accelerometer scaling of Z axis  Calculated during acceleration calibration routine</Description>
+      <User>Advanced</User>
+    </INS_ACCSCAL_Z>
+    <INS_ACCOFFS_X>
+      <DisplayName>Accelerometer offsets of X axis</DisplayName>
+      <Description>Accelerometer offsets of X axis. This is setup using the acceleration calibration or level operations</Description>
+      <Units>m/s/s</Units>
+      <Range>-300 300</Range>
+      <User>Advanced</User>
+    </INS_ACCOFFS_X>
+    <INS_ACCOFFS_Y>
+      <DisplayName>Accelerometer offsets of Y axis</DisplayName>
+      <Description>Accelerometer offsets of Y axis. This is setup using the acceleration calibration or level operations</Description>
+      <Units>m/s/s</Units>
+      <Range>-300 300</Range>
+      <User>Advanced</User>
+    </INS_ACCOFFS_Y>
+    <INS_ACCOFFS_Z>
+      <DisplayName>Accelerometer offsets of Z axis</DisplayName>
+      <Description>Accelerometer offsets of Z axis. This is setup using the acceleration calibration or level operations</Description>
+      <Units>m/s/s</Units>
+      <Range>-300 300</Range>
+      <User>Advanced</User>
+    </INS_ACCOFFS_Z>
+    <INS_GYROFFS_X>
+      <DisplayName>Gyro offsets of X axis</DisplayName>
+      <Description>Gyro sensor offsets of X axis. This is setup on each boot during gyro calibrations</Description>
+      <Units>rad/s</Units>
+      <User>Advanced</User>
+    </INS_GYROFFS_X>
+    <INS_GYROFFS_Y>
+      <DisplayName>Gyro offsets of Y axis</DisplayName>
+      <Description>Gyro sensor offsets of Y axis. This is setup on each boot during gyro calibrations</Description>
+      <Units>rad/s</Units>
+      <User>Advanced</User>
+    </INS_GYROFFS_Y>
+    <INS_GYROFFS_Z>
+      <DisplayName>Gyro offsets of Z axis</DisplayName>
+      <Description>Gyro sensor offsets of Z axis. This is setup on each boot during gyro calibrations</Description>
+      <Units>rad/s</Units>
+      <User>Advanced</User>
+    </INS_GYROFFS_Z>
+    <INS_MPU6K_FILTER>
+      <DisplayName>MPU6000 filter frequency</DisplayName>
+      <Description>Filter frequency to ask the MPU6000 to apply to samples. This can be set to a lower value to try to cope with very high vibration levels in aircraft. The default value on ArduPlane and APMrover2 is 20Hz. The default value on ArduCopter is 42Hz. This option takes effect on the next reboot or gyro initialisation</Description>
+      <Units>Hz</Units>
+      <Values>0:Default,5:5Hz,10:10Hz,20:20Hz,42:42Hz,98:98Hz</Values>
+      <User>Advanced</User>
+    </INS_MPU6K_FILTER>
+    <INAV_ACORR_X>
+      <DisplayName>Inertial Nav accelerometer offset correction on x-axis</DisplayName>
+      <Description>Accelerometer offset correction for the x-axis.  Calculated automatically</Description>
+      <Range>-100 100</Range>
+      <Increment>0.1</Increment>
+    </INAV_ACORR_X>
+    <INAV_ACORR_Y>
+      <DisplayName>Inertial Nav accelerometer correction on y-axis</DisplayName>
+      <Description>Accelerometer offset correction for the y-axis.  Calculated automatically</Description>
+      <Range>-100 100</Range>
+      <Increment>0.1</Increment>
+    </INAV_ACORR_Y>
+    <INAV_ACORR_Z>
+      <DisplayName>Inertial Nav accelerometer correction on z-axis</DisplayName>
+      <Description>Accelerometer offset correction for the z-axis.  Calculated automatically</Description>
+      <Range>-100 100</Range>
+      <Increment>0.1</Increment>
+    </INAV_ACORR_Z>
+    <INAV_TC_XY>
+      <DisplayName>Horizontal Time Constant</DisplayName>
+      <Description>Time constant for GPS and accel mixing. Higher TC decreases GPS impact on position estimate</Description>
+      <Range>0 10</Range>
+      <Increment>0.1</Increment>
+    </INAV_TC_XY>
+    <INAV_TC_Z>
+      <DisplayName>Vertical Time Constant</DisplayName>
+      <Description>Time constant for baro and accel mixing. Higher TC decreases barometers impact on altitude estimate</Description>
+      <Range>0 10</Range>
+      <Increment>0.1</Increment>
+    </INAV_TC_Z>
+    <SR0_RAW_SENS>
+      <DisplayName>Raw sensor stream rate</DisplayName>
+      <Description>Raw sensor stream rate to ground station</Description>
+      <Units>Hz</Units>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SR0_RAW_SENS>
+    <SR0_EXT_STAT>
+      <DisplayName>Extended status stream rate to ground station</DisplayName>
+      <Description>Extended status stream rate to ground station</Description>
+      <Units>Hz</Units>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SR0_EXT_STAT>
+    <SR0_RC_CHAN>
+      <DisplayName>RC Channel stream rate to ground station</DisplayName>
+      <Description>RC Channel stream rate to ground station</Description>
+      <Units>Hz</Units>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SR0_RC_CHAN>
+    <SR0_RAW_CTRL>
+      <DisplayName>Raw Control stream rate to ground station</DisplayName>
+      <Description>Raw Control stream rate to ground station</Description>
+      <Units>Hz</Units>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SR0_RAW_CTRL>
+    <SR0_POSITION>
+      <DisplayName>Position stream rate to ground station</DisplayName>
+      <Description>Position stream rate to ground station</Description>
+      <Units>Hz</Units>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SR0_POSITION>
+    <SR0_EXTRA1>
+      <DisplayName>Extra data type 1 stream rate to ground station</DisplayName>
+      <Description>Extra data type 1 stream rate to ground station</Description>
+      <Units>Hz</Units>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SR0_EXTRA1>
+    <SR0_EXTRA2>
+      <DisplayName>Extra data type 2 stream rate to ground station</DisplayName>
+      <Description>Extra data type 2 stream rate to ground station</Description>
+      <Units>Hz</Units>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SR0_EXTRA2>
+    <SR0_EXTRA3>
+      <DisplayName>Extra data type 3 stream rate to ground station</DisplayName>
+      <Description>Extra data type 3 stream rate to ground station</Description>
+      <Units>Hz</Units>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SR0_EXTRA3>
+    <SR0_PARAMS>
+      <DisplayName>Parameter stream rate to ground station</DisplayName>
+      <Description>Parameter stream rate to ground station</Description>
+      <Units>Hz</Units>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SR0_PARAMS>
+    <SR3_RAW_SENS>
+      <DisplayName>Raw sensor stream rate</DisplayName>
+      <Description>Raw sensor stream rate to ground station</Description>
+      <Units>Hz</Units>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SR3_RAW_SENS>
+    <SR3_EXT_STAT>
+      <DisplayName>Extended status stream rate to ground station</DisplayName>
+      <Description>Extended status stream rate to ground station</Description>
+      <Units>Hz</Units>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SR3_EXT_STAT>
+    <SR3_RC_CHAN>
+      <DisplayName>RC Channel stream rate to ground station</DisplayName>
+      <Description>RC Channel stream rate to ground station</Description>
+      <Units>Hz</Units>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SR3_RC_CHAN>
+    <SR3_RAW_CTRL>
+      <DisplayName>Raw Control stream rate to ground station</DisplayName>
+      <Description>Raw Control stream rate to ground station</Description>
+      <Units>Hz</Units>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SR3_RAW_CTRL>
+    <SR3_POSITION>
+      <DisplayName>Position stream rate to ground station</DisplayName>
+      <Description>Position stream rate to ground station</Description>
+      <Units>Hz</Units>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SR3_POSITION>
+    <SR3_EXTRA1>
+      <DisplayName>Extra data type 1 stream rate to ground station</DisplayName>
+      <Description>Extra data type 1 stream rate to ground station</Description>
+      <Units>Hz</Units>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SR3_EXTRA1>
+    <SR3_EXTRA2>
+      <DisplayName>Extra data type 2 stream rate to ground station</DisplayName>
+      <Description>Extra data type 2 stream rate to ground station</Description>
+      <Units>Hz</Units>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SR3_EXTRA2>
+    <SR3_EXTRA3>
+      <DisplayName>Extra data type 3 stream rate to ground station</DisplayName>
+      <Description>Extra data type 3 stream rate to ground station</Description>
+      <Units>Hz</Units>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SR3_EXTRA3>
+    <SR3_PARAMS>
+      <DisplayName>Parameter stream rate to ground station</DisplayName>
+      <Description>Parameter stream rate to ground station</Description>
+      <Units>Hz</Units>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SR3_PARAMS>
+    <AHRS_GPS_GAIN>
+      <DisplayName>AHRS GPS gain</DisplayName>
+      <Description>This controls how how much to use the GPS to correct the attitude. This should never be set to zero for a plane as it would result in the plane losing control in turns. For a plane please use the default value of 1.0.</Description>
+      <Range>0.0 1.0</Range>
+      <Increment>.01</Increment>
+    </AHRS_GPS_GAIN>
+    <AHRS_GPS_USE>
+      <DisplayName>AHRS use GPS for navigation</DisplayName>
+      <Description>This controls whether to use dead-reckoning or GPS based navigation. If set to 0 then the GPS won't be used for navigation, and only dead reckoning will be used. A value of zero should never be used for normal flight.</Description>
+      <User>Advanced</User>
+    </AHRS_GPS_USE>
+    <AHRS_YAW_P>
+      <DisplayName>Yaw P</DisplayName>
+      <Description>This controls the weight the compass or GPS has on the heading. A higher value means the heading will track the yaw source (GPS or compass) more rapidly.</Description>
+      <Range>0.1 0.4</Range>
+      <Increment>.01</Increment>
+    </AHRS_YAW_P>
+    <AHRS_RP_P>
+      <DisplayName>AHRS RP_P</DisplayName>
+      <Description>This controls how fast the accelerometers correct the attitude</Description>
+      <Range>0.1 0.4</Range>
+      <Increment>.01</Increment>
+    </AHRS_RP_P>
+    <AHRS_WIND_MAX>
+      <DisplayName>Maximum wind</DisplayName>
+      <Description>This sets the maximum allowable difference between ground speed and airspeed. This allows the plane to cope with a failing airspeed sensor. A value of zero means to use the airspeed as is.</Description>
+      <Range>0 127</Range>
+      <Units>m/s</Units>
+      <Increment>1</Increment>
+    </AHRS_WIND_MAX>
+    <AHRS_BARO_USE>
+      <DisplayName>AHRS Use Barometer</DisplayName>
+      <Description>This controls the use of the barometer for vertical acceleration compensation in AHRS. It is currently recommended that you set this value to zero unless you are a developer experimenting with the AHRS system.</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Advanced</User>
+    </AHRS_BARO_USE>
+    <AHRS_TRIM_X>
+      <DisplayName>AHRS Trim Roll</DisplayName>
+      <Description>Compensates for the roll angle difference between the control board and the frame</Description>
+      <Units>Radians</Units>
+      <User>Advanced</User>
+    </AHRS_TRIM_X>
+    <AHRS_TRIM_Y>
+      <DisplayName>AHRS Trim Pitch</DisplayName>
+      <Description>Compensates for the pitch angle difference between the control board and the frame</Description>
+      <Units>Radians</Units>
+      <User>Advanced</User>
+    </AHRS_TRIM_Y>
+    <AHRS_TRIM_Z>
+      <DisplayName>AHRS Trim Yaw</DisplayName>
+      <Description>Not Used</Description>
+      <Units>Radians</Units>
+      <User>Advanced</User>
+    </AHRS_TRIM_Z>
+    <AHRS_ORIENTATION>
+      <DisplayName>Board Orientation</DisplayName>
+      <Description>Overall board orientation relative to the standard orientation for the board type. This rotates the IMU and compass readings to allow the board to be oriented in your vehicle at any 90 or 45 degree angle. This option takes affect on next boot. After changing you will need to re-level your vehicle.</Description>
+      <Values>0:None,1:Yaw45,2:Yaw90,3:Yaw135,4:Yaw180,5:Yaw225,6:Yaw270,7:Yaw315,8:Roll180,9:Roll180Yaw45,10:Roll180Yaw90,11:Roll180Yaw135,12:Pitch180,13:Roll180Yaw225,14:Roll180Yaw270,15:Roll180Yaw315,16:Roll90,17:Roll90Yaw45,18:Roll90Yaw135,19:Roll270,20:Roll270Yaw45,21:Roll270Yaw90,22:Roll270Yaw136,23:Pitch90,24:Pitch270</Values>
+      <User>Advanced</User>
+    </AHRS_ORIENTATION>
+    <MNT_MODE>
+      <DisplayName>Mount operation mode</DisplayName>
+      <Description>Camera or antenna mount operation mode</Description>
+      <Values>0:retract,1:neutral,2:MavLink_targeting,3:RC_targeting,4:GPS_point</Values>
+      <User>Standard</User>
+    </MNT_MODE>
+    <MNT_RETRACT_X>
+      <DisplayName>Mount roll angle when in retracted position</DisplayName>
+      <Description>Mount roll angle when in retracted position</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_RETRACT_X>
+    <MNT_RETRACT_Y>
+      <DisplayName>Mount tilt/pitch angle when in retracted position</DisplayName>
+      <Description>Mount tilt/pitch angle when in retracted position</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_RETRACT_Y>
+    <MNT_RETRACT_Z>
+      <DisplayName>Mount yaw/pan angle when in retracted position</DisplayName>
+      <Description>Mount yaw/pan angle when in retracted position</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_RETRACT_Z>
+    <MNT_NEUTRAL_X>
+      <DisplayName>Mount roll angle when in neutral position</DisplayName>
+      <Description>Mount roll angle when in neutral position</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_NEUTRAL_X>
+    <MNT_NEUTRAL_Y>
+      <DisplayName>Mount tilt/pitch angle when in neutral position</DisplayName>
+      <Description>Mount tilt/pitch angle when in neutral position</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_NEUTRAL_Y>
+    <MNT_NEUTRAL_Z>
+      <DisplayName>Mount pan/yaw angle when in neutral position</DisplayName>
+      <Description>Mount pan/yaw angle when in neutral position</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_NEUTRAL_Z>
+    <MNT_CONTROL_X>
+      <DisplayName>Mount roll angle command from groundstation</DisplayName>
+      <Description>Mount roll angle when in MavLink or RC control operation mode</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+    </MNT_CONTROL_X>
+    <MNT_CONTROL_Y>
+      <DisplayName>Mount tilt/pitch angle command from groundstation</DisplayName>
+      <Description>Mount tilt/pitch angle when in MavLink or RC control operation mode</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+    </MNT_CONTROL_Y>
+    <MNT_CONTROL_Z>
+      <DisplayName>Mount pan/yaw angle command from groundstation</DisplayName>
+      <Description>Mount pan/yaw angle when in MavLink or RC control operation mode</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+    </MNT_CONTROL_Z>
+    <MNT_STAB_ROLL>
+      <DisplayName>Stabilize mount's roll angle</DisplayName>
+      <Description>enable roll stabilisation relative to Earth</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </MNT_STAB_ROLL>
+    <MNT_STAB_TILT>
+      <DisplayName>Stabilize mount's pitch/tilt angle</DisplayName>
+      <Description>enable tilt/pitch stabilisation relative to Earth</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </MNT_STAB_TILT>
+    <MNT_STAB_PAN>
+      <DisplayName>Stabilize mount pan/yaw angle</DisplayName>
+      <Description>enable pan/yaw stabilisation relative to Earth</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </MNT_STAB_PAN>
+    <MNT_RC_IN_ROLL>
+      <DisplayName>roll RC input channel</DisplayName>
+      <Description>0 for none, any other for the RC channel to be used to control roll movements</Description>
+      <Values>0:Disabled,5:RC5,6:RC6,7:RC7,8:RC8</Values>
+      <User>Standard</User>
+    </MNT_RC_IN_ROLL>
+    <MNT_ANGMIN_ROL>
+      <DisplayName>Minimum roll angle</DisplayName>
+      <Description>Minimum physical roll angular position of mount.</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_ANGMIN_ROL>
+    <MNT_ANGMAX_ROL>
+      <DisplayName>Maximum roll angle</DisplayName>
+      <Description>Maximum physical roll angular position of the mount</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_ANGMAX_ROL>
+    <MNT_RC_IN_TILT>
+      <DisplayName>tilt (pitch) RC input channel</DisplayName>
+      <Description>0 for none, any other for the RC channel to be used to control tilt (pitch) movements</Description>
+      <Values>0:Disabled,5:RC5,6:RC6,7:RC7,8:RC8</Values>
+      <User>Standard</User>
+    </MNT_RC_IN_TILT>
+    <MNT_ANGMIN_TIL>
+      <DisplayName>Minimum tilt angle</DisplayName>
+      <Description>Minimum physical tilt (pitch) angular position of mount.</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_ANGMIN_TIL>
+    <MNT_ANGMAX_TIL>
+      <DisplayName>Maximum tilt angle</DisplayName>
+      <Description>Maximum physical tilt (pitch) angular position of the mount</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_ANGMAX_TIL>
+    <MNT_RC_IN_PAN>
+      <DisplayName>pan (yaw) RC input channel</DisplayName>
+      <Description>0 for none, any other for the RC channel to be used to control pan (yaw) movements</Description>
+      <Values>0:Disabled,5:RC5,6:RC6,7:RC7,8:RC8</Values>
+      <User>Standard</User>
+    </MNT_RC_IN_PAN>
+    <MNT_ANGMIN_PAN>
+      <DisplayName>Minimum pan angle</DisplayName>
+      <Description>Minimum physical pan (yaw) angular position of mount.</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_ANGMIN_PAN>
+    <MNT_ANGMAX_PAN>
+      <DisplayName>Maximum pan angle</DisplayName>
+      <Description>Maximum physical pan (yaw) angular position of the mount</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_ANGMAX_PAN>
+    <MNT_JSTICK_SPD>
+      <DisplayName>mount joystick speed</DisplayName>
+      <Description>0 for position control, small for low speeds, 10 for max speed</Description>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_JSTICK_SPD>
+    <MNT2_MODE>
+      <DisplayName>Mount operation mode</DisplayName>
+      <Description>Camera or antenna mount operation mode</Description>
+      <Values>0:retract,1:neutral,2:MavLink_targeting,3:RC_targeting,4:GPS_point</Values>
+      <User>Standard</User>
+    </MNT2_MODE>
+    <MNT2_RETRACT_X>
+      <DisplayName>Mount roll angle when in retracted position</DisplayName>
+      <Description>Mount roll angle when in retracted position</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_RETRACT_X>
+    <MNT2_RETRACT_Y>
+      <DisplayName>Mount tilt/pitch angle when in retracted position</DisplayName>
+      <Description>Mount tilt/pitch angle when in retracted position</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_RETRACT_Y>
+    <MNT2_RETRACT_Z>
+      <DisplayName>Mount yaw/pan angle when in retracted position</DisplayName>
+      <Description>Mount yaw/pan angle when in retracted position</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_RETRACT_Z>
+    <MNT2_NEUTRAL_X>
+      <DisplayName>Mount roll angle when in neutral position</DisplayName>
+      <Description>Mount roll angle when in neutral position</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_NEUTRAL_X>
+    <MNT2_NEUTRAL_Y>
+      <DisplayName>Mount tilt/pitch angle when in neutral position</DisplayName>
+      <Description>Mount tilt/pitch angle when in neutral position</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_NEUTRAL_Y>
+    <MNT2_NEUTRAL_Z>
+      <DisplayName>Mount pan/yaw angle when in neutral position</DisplayName>
+      <Description>Mount pan/yaw angle when in neutral position</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_NEUTRAL_Z>
+    <MNT2_CONTROL_X>
+      <DisplayName>Mount roll angle command from groundstation</DisplayName>
+      <Description>Mount roll angle when in MavLink or RC control operation mode</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+    </MNT2_CONTROL_X>
+    <MNT2_CONTROL_Y>
+      <DisplayName>Mount tilt/pitch angle command from groundstation</DisplayName>
+      <Description>Mount tilt/pitch angle when in MavLink or RC control operation mode</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+    </MNT2_CONTROL_Y>
+    <MNT2_CONTROL_Z>
+      <DisplayName>Mount pan/yaw angle command from groundstation</DisplayName>
+      <Description>Mount pan/yaw angle when in MavLink or RC control operation mode</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+    </MNT2_CONTROL_Z>
+    <MNT2_STAB_ROLL>
+      <DisplayName>Stabilize mount's roll angle</DisplayName>
+      <Description>enable roll stabilisation relative to Earth</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </MNT2_STAB_ROLL>
+    <MNT2_STAB_TILT>
+      <DisplayName>Stabilize mount's pitch/tilt angle</DisplayName>
+      <Description>enable tilt/pitch stabilisation relative to Earth</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </MNT2_STAB_TILT>
+    <MNT2_STAB_PAN>
+      <DisplayName>Stabilize mount pan/yaw angle</DisplayName>
+      <Description>enable pan/yaw stabilisation relative to Earth</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </MNT2_STAB_PAN>
+    <MNT2_RC_IN_ROLL>
+      <DisplayName>roll RC input channel</DisplayName>
+      <Description>0 for none, any other for the RC channel to be used to control roll movements</Description>
+      <Values>0:Disabled,5:RC5,6:RC6,7:RC7,8:RC8</Values>
+      <User>Standard</User>
+    </MNT2_RC_IN_ROLL>
+    <MNT2_ANGMIN_ROL>
+      <DisplayName>Minimum roll angle</DisplayName>
+      <Description>Minimum physical roll angular position of mount.</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_ANGMIN_ROL>
+    <MNT2_ANGMAX_ROL>
+      <DisplayName>Maximum roll angle</DisplayName>
+      <Description>Maximum physical roll angular position of the mount</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_ANGMAX_ROL>
+    <MNT2_RC_IN_TILT>
+      <DisplayName>tilt (pitch) RC input channel</DisplayName>
+      <Description>0 for none, any other for the RC channel to be used to control tilt (pitch) movements</Description>
+      <Values>0:Disabled,5:RC5,6:RC6,7:RC7,8:RC8</Values>
+      <User>Standard</User>
+    </MNT2_RC_IN_TILT>
+    <MNT2_ANGMIN_TIL>
+      <DisplayName>Minimum tilt angle</DisplayName>
+      <Description>Minimum physical tilt (pitch) angular position of mount.</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_ANGMIN_TIL>
+    <MNT2_ANGMAX_TIL>
+      <DisplayName>Maximum tilt angle</DisplayName>
+      <Description>Maximum physical tilt (pitch) angular position of the mount</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_ANGMAX_TIL>
+    <MNT2_RC_IN_PAN>
+      <DisplayName>pan (yaw) RC input channel</DisplayName>
+      <Description>0 for none, any other for the RC channel to be used to control pan (yaw) movements</Description>
+      <Values>0:Disabled,5:RC5,6:RC6,7:RC7,8:RC8</Values>
+      <User>Standard</User>
+    </MNT2_RC_IN_PAN>
+    <MNT2_ANGMIN_PAN>
+      <DisplayName>Minimum pan angle</DisplayName>
+      <Description>Minimum physical pan (yaw) angular position of mount.</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_ANGMIN_PAN>
+    <MNT2_ANGMAX_PAN>
+      <DisplayName>Maximum pan angle</DisplayName>
+      <Description>Maximum physical pan (yaw) angular position of the mount</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_ANGMAX_PAN>
+    <MNT2_JSTICK_SPD>
+      <DisplayName>mount joystick speed</DisplayName>
+      <Description>0 for position control, small for low speeds, 10 for max speed</Description>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_JSTICK_SPD>
+    <LIM_ENABLED>
+      <DisplayName>Enable Limits Library</DisplayName>
+      <Description>Setting this to Enabled(1) will enable the limits system</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </LIM_ENABLED>
+    <LIM_REQUIRED>
+      <DisplayName>Limits Library Required</DisplayName>
+      <Description>Setting this to 1 will enable the limits pre-arm checklist</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </LIM_REQUIRED>
+    <LIM_DEBUG>
+      <DisplayName>Enable Limits Debug</DisplayName>
+      <Description>Setting this to 1 will turn on debugging messages on the console and via MAVLink STATUSTEXT messages</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </LIM_DEBUG>
+    <LIM_SAFETIME>
+      <DisplayName>Limits Safetime</DisplayName>
+      <Description>Automatic return of controls to pilot. Set to 0 to disable (full RTL) or a number of seconds after complete recovery to return the controls to the pilot in STABILIZE</Description>
+      <Values>0:Disabled,1-255:Seconds before returning control</Values>
+      <User>Standard</User>
+    </LIM_SAFETIME>
+    <LIM_CHANNEL>
+      <DisplayName>Limits Channel</DisplayName>
+      <Description>Channel for Limits on/off control. If channel exceeds LIMITS_ENABLE_PWM, it turns limits on, and vice-versa.</Description>
+      <Range>1-8</Range>
+      <User>Standard</User>
+    </LIM_CHANNEL>
+    <LIM_RECMODE>
+      <DisplayName>Limits Recovery Mode</DisplayName>
+      <Description>Select how Limits should "recover". Set to 0 for RTL-like mode, where the vehicle navigates back to home until it is "safe". Set to 1, for bounce-mode, where the vehicle will hold position when it hits a limit. RTL mode is better for large fenced areas, Bounce mode for smaller spaces. Note: RTL mode will cause the vehicle to yaw 180 degrees  (turn around) to navigate towards home when it hits a limit.</Description>
+      <Values>0:RTL mode, 1: Bounce mode</Values>
+      <User>Standard</User>
+    </LIM_RECMODE>
+    <LIM_GPSLCK_ON>
+      <DisplayName>Enable gpslock</DisplayName>
+      <Description>Setting this to Enabled(1) will enable the gpslock. Setting this to Disabled(0) will disable the gpslock</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </LIM_GPSLCK_ON>
+    <LIM_GPSLCK_REQ>
+      <DisplayName>Require gpslock</DisplayName>
+      <Description>Setting this to Enabled(1) will make being inside the gpslock a required check before arming the vehicle.</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </LIM_GPSLCK_REQ>
+    <LIM_FNC_ON>
+      <DisplayName>Enable Geofence</DisplayName>
+      <Description>Setting this to Enabled(1) will enable the geofence. Setting this to Disabled(0) will disable the geofence</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </LIM_FNC_ON>
+    <LIM_FNC_REQ>
+      <DisplayName>Require Geofence</DisplayName>
+      <Description>Setting this to Enabled(1) will make being inside the geofence a required check before arming the vehicle.</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </LIM_FNC_REQ>
+    <LIM_FNC_SMPL>
+      <DisplayName>Require Geofence</DisplayName>
+      <Description>"Simple" geofence (enabled - 1) is based on a radius from the home position, "Complex" (disabled - 0) define a complex fence by lat/long positions</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </LIM_FNC_SMPL>
+    <LIM_FNC_RAD>
+      <DisplayName>Require Geofence</DisplayName>
+      <Description>Radius of fenced area in meters. A value of 20 creates a 20-meter radius circle (40-meter diameter) from the home point.</Description>
+      <Units>Meters</Units>
+      <Range>0 32767</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </LIM_FNC_RAD>
+    <LIM_FNC_TOT>
+      <DisplayName>Total number of geofence points</DisplayName>
+      <Description>Total number of geofence points.  This parameter should not be updated manually</Description>
+      <Range>0 6</Range>
+      <Increment>1</Increment>
+    </LIM_FNC_TOT>
+    <LIM_ALT_ON>
+      <DisplayName>Enable altitude</DisplayName>
+      <Description>Setting this to Enabled(1) will enable the altitude. Setting this to Disabled(0) will disable the altitude</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </LIM_ALT_ON>
+    <LIM_ALT_REQ>
+      <DisplayName>Require altitude</DisplayName>
+      <Description>Setting this to Enabled(1) will make being inside the altitude a required check before arming the vehicle.</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </LIM_ALT_REQ>
+    <LIM_ALT_MIN>
+      <DisplayName>Minimum Altitude</DisplayName>
+      <Description>Minimum Altitude. Zero to disable. Sets a "floor" that your vehicle will try to stay above. IF the vehicle is crossing the threshold at speed, it will take a while to recover, so give yourself enough room. Caution: minimum altitude limits can cause unexpected behaviour, such as inability to land, or sudden takeoff. Read the wiki instructions before setting.</Description>
+      <Units>Meters</Units>
+      <Range>0 250000</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </LIM_ALT_MIN>
+    <LIM_ALT_MAX>
+      <DisplayName>Maximum Altitude</DisplayName>
+      <Description>Maximum Altitude. Zero to disable. Sets a "ceiling" that your vehicle will try to stay below. IF the vehicle is crossing the threshold at speed, it will take a while to recover.</Description>
+      <Units>Meters</Units>
+      <Range>0 250000</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </LIM_ALT_MAX>
+    <H_SV1_POS>
+      <DisplayName>Servo 1 Position</DisplayName>
+      <Description>This is the angular location of swash servo #1.</Description>
+      <Range>-180 180</Range>
+      <Units>Degrees</Units>
+      <User>Standard</User>
+      <Increment>1</Increment>
+    </H_SV1_POS>
+    <H_SV2_POS>
+      <DisplayName>Servo 2 Position</DisplayName>
+      <Description>This is the angular location of swash servo #2.</Description>
+      <Range>-180 180</Range>
+      <Units>Degrees</Units>
+      <User>Standard</User>
+      <Increment>1</Increment>
+    </H_SV2_POS>
+    <H_SV3_POS>
+      <DisplayName>Servo 3 Position</DisplayName>
+      <Description>This is the angular location of swash servo #3.</Description>
+      <Range>-180 180</Range>
+      <Units>Degrees</Units>
+      <User>Standard</User>
+      <Increment>1</Increment>
+    </H_SV3_POS>
+    <H_ROL_MAX>
+      <DisplayName>Maximum Roll Angle</DisplayName>
+      <Description>This is the maximum allowable roll of the swash plate.</Description>
+      <Range>0 18000</Range>
+      <Units>Degrees</Units>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </H_ROL_MAX>
+    <H_PIT_MAX>
+      <DisplayName>Maximum Pitch Angle</DisplayName>
+      <Description>This is the maximum allowable pitch of the swash plate.</Description>
+      <Range>0 18000</Range>
+      <Units>Degrees</Units>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </H_PIT_MAX>
+    <H_COL_MIN>
+      <DisplayName>Collective Pitch Minimum</DisplayName>
+      <Description>This controls the lowest possible servo position for the swashplate.</Description>
+      <Range>1000 2000</Range>
+      <Units>PWM</Units>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </H_COL_MIN>
+    <H_COL_MAX>
+      <DisplayName>Collective Pitch Maximum</DisplayName>
+      <Description>This controls the highest possible servo position for the swashplate.</Description>
+      <Range>1000 2000</Range>
+      <Units>PWM</Units>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </H_COL_MAX>
+    <H_COL_MID>
+      <DisplayName>Collective Pitch Mid-Point</DisplayName>
+      <Description>This is the swash servo position corresponding to zero collective pitch (or zero lift for Assymetrical blades).</Description>
+      <Range>1000 2000</Range>
+      <Units>PWM</Units>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </H_COL_MID>
+    <H_GYR_ENABLE>
+      <DisplayName>External Gyro Enabled</DisplayName>
+      <Description>Setting this to Enabled(1) will enable an external rudder gyro control which means outputting a gain on channel 7 and using a simpler heading control algorithm. Setting this to Disabled(0) will disable the external gyro gain on channel 7 and revert to a more complex yaw control algorithm.</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </H_GYR_ENABLE>
+    <H_SWASH_TYPE>
+      <DisplayName>Swash Plate Type</DisplayName>
+      <Description>Setting this to 0 will configure for a 3-servo CCPM. Setting this to 1 will configure for mechanically mixed "H1".</Description>
+      <User>Standard</User>
+    </H_SWASH_TYPE>
+    <H_GYR_GAIN>
+      <DisplayName>External Gyro Gain</DisplayName>
+      <Description>This is the PWM which is passed to the external gyro when external gyro is enabled.</Description>
+      <Range>1000 2000</Range>
+      <Units>PWM</Units>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </H_GYR_GAIN>
+    <H_SV_MAN>
+      <DisplayName>Manual Servo Mode</DisplayName>
+      <Description>Setting this to Enabled(1) will pass radio inputs directly to servos. Setting this to Disabled(0) will enable Arducopter control of servos.  This is only meant to be used by the Mission Planner using swash plate set-up.</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </H_SV_MAN>
+    <H_PHANG>
+      <DisplayName>Swashplate Phase Angle Compensation</DisplayName>
+      <Description>This corrects for phase angle errors of the helicopter main rotor head.  For example if pitching the swash forward also induces a roll, that effect can be offset with this parameter.</Description>
+      <Range>-90 90</Range>
+      <Units>Degrees</Units>
+      <User>Advanced</User>
+      <Increment>1</Increment>
+    </H_PHANG>
+    <H_COLYAW>
+      <DisplayName>Collective-Yaw Mixing</DisplayName>
+      <Description>This is a feed-forward compensation to automatically add rudder input when collective pitch is increased.</Description>
+      <Range>0 5</Range>
+    </H_COLYAW>
+    <H_GOV_SETPOINT>
+      <DisplayName>External Motor Governor Setpoint</DisplayName>
+      <Description>This is the PWM which is passed to the external motor governor when external governor is enabled.</Description>
+      <Range>1000 2000</Range>
+      <Units>PWM</Units>
+      <Increment>10</Increment>
+      <User>Standard</User>
+    </H_GOV_SETPOINT>
+    <H_RSC_MODE>
+      <DisplayName>Rotor Speed Control Mode</DisplayName>
+      <Description>This sets which ESC control mode is active.</Description>
+      <Range>1 3</Range>
+      <User>Standard</User>
+    </H_RSC_MODE>
+    <H_RSC_RATE>
+      <DisplayName>RSC Ramp Rate</DisplayName>
+      <Description>This sets the time the RSC takes to ramp up to full speed (Soft Start).</Description>
+      <Range>0 6000</Range>
+      <Units>Seconds</Units>
+      <User>Standard</User>
+    </H_RSC_RATE>
+    <H_FLYBAR_MODE>
+      <DisplayName>Flybar Mode Selector</DisplayName>
+      <Description>This sets which acro mode is active. (0) is Flybarless (1) is Mechanical Flybar</Description>
+      <Range>0 1</Range>
+      <User>Standard</User>
+    </H_FLYBAR_MODE>
+    <H_STAB_COL_MIN>
+      <DisplayName>Stabilize Throttle Minimum</DisplayName>
+      <Description>This is the minimum collective setpoint in Stabilize Mode</Description>
+      <Range>0 50</Range>
+      <Units>1%</Units>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </H_STAB_COL_MIN>
+    <H_STAB_COL_MAX>
+      <DisplayName>Stabilize Throttle Maximum</DisplayName>
+      <Description>This is the maximum collective setpoint in Stabilize Mode</Description>
+      <Range>50 100</Range>
+      <Units>1%</Units>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </H_STAB_COL_MAX>
+    <MOT_TB_RATIO>
+      <DisplayName>Top Bottom Ratio</DisplayName>
+      <Description>Not Used.  Will control the speed of the top motors vs bottom motors on frames such as the Octo-Quad and Y6</Description>
+    </MOT_TB_RATIO>
+    <MOT_TCRV_ENABLE>
+      <DisplayName>Thrust Curve Enable</DisplayName>
+      <Description>Controls whether a curve is used to linearize the thrust produced by the motors</Description>
+      <Values>0:Disabled,1:Enable</Values>
+    </MOT_TCRV_ENABLE>
+    <MOT_TCRV_MIDPCT>
+      <DisplayName>Thrust Curve mid-point percentage</DisplayName>
+      <Description>Set the pwm position that produces half the maximum thrust of the motors</Description>
+      <Range>20 80</Range>
+    </MOT_TCRV_MIDPCT>
+    <MOT_TCRV_MAXPCT>
+      <DisplayName>Thrust Curve max thrust percentage</DisplayName>
+      <Description>Set to the lowest pwm position that produces the maximum thrust of the motors.  Most motors produce maximum thrust below the maximum pwm value that they accept.</Description>
+      <Range>20 80</Range>
+    </MOT_TCRV_MAXPCT>
+    <SYSID_SW_MREV>
+      <DisplayName>Eeprom format version number</DisplayName>
+      <Description>This value is incremented when changes are made to the eeprom format</Description>
+      <User>Advanced</User>
+    </SYSID_SW_MREV>
+    <SYSID_SW_TYPE>
+      <DisplayName>Software Type</DisplayName>
+      <Description>This is used by the ground station to recognise the software type (eg ArduPlane vs ArduCopter)</Description>
+      <User>Advanced</User>
+    </SYSID_SW_TYPE>
+    <SYSID_THISMAV>
+      <DisplayName>Mavlink version</DisplayName>
+      <Description>Allows reconising the mavlink version</Description>
+      <User>Advanced</User>
+    </SYSID_THISMAV>
+    <SYSID_MYGCS>
+      <DisplayName>My ground station number</DisplayName>
+      <Description>Allows restricting radio overrides to only come from my ground station</Description>
+      <User>Advanced</User>
+    </SYSID_MYGCS>
+    <SERIAL3_BAUD>
+      <DisplayName>Telemetry Baud Rate</DisplayName>
+      <Description>The baud rate used on the telemetry port</Description>
+      <Values>1:1200,2:2400,4:4800,9:9600,19:19200,38:38400,57:57600,111:111100,115:115200</Values>
+      <User>Standard</User>
+    </SERIAL3_BAUD>
+    <TELEM_DELAY>
+      <DisplayName>Telemetry startup delay</DisplayName>
+      <Description>The amount of time (in seconds) to delay radio telemetry to prevent an Xbee bricking on power up</Description>
+      <User>Standard</User>
+      <Units>seconds</Units>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+    </TELEM_DELAY>
+    <RTL_ALT>
+      <DisplayName>RTL Altitude</DisplayName>
+      <Description>The minimum altitude the model will move to before Returning to Launch.  Set to zero to return at current altitude.</Description>
+      <Units>Centimeters</Units>
+      <Range>0 4000</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </RTL_ALT>
+    <SONAR_ENABLE>
+      <DisplayName>Enable Sonar</DisplayName>
+      <Description>Setting this to Enabled(1) will enable the sonar. Setting this to Disabled(0) will disable the sonar</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </SONAR_ENABLE>
+    <SONAR_TYPE>
+      <DisplayName>Sonar type</DisplayName>
+      <Description>Used to adjust scaling to match the sonar used (only Maxbotix sonars are supported at this time)</Description>
+      <Values>0:XL-EZ0,1:LV-EZ0,2:XLL-EZ0,3:HRLV</Values>
+      <User>Standard</User>
+    </SONAR_TYPE>
+    <BATT_MONITOR>
+      <DisplayName>Battery monitoring</DisplayName>
+      <Description>Controls enabling monitoring of the battery's voltage and current</Description>
+      <Values>0:Disabled,3:Voltage Only,4:Voltage and Current</Values>
+      <User>Standard</User>
+    </BATT_MONITOR>
+    <FS_BATT_ENABLE>
+      <DisplayName>Battery Failsafe Enable</DisplayName>
+      <Description>Controls whether failsafe will be invoked when battery voltage or current runs low</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </FS_BATT_ENABLE>
+    <VOLT_DIVIDER>
+      <DisplayName>Voltage Divider</DisplayName>
+      <Description>Used to convert the voltage of the voltage sensing pin (BATT_VOLT_PIN) to the actual battery's voltage (pin voltage * INPUT_VOLTS/1024 * VOLT_DIVIDER)</Description>
+      <User>Advanced</User>
+    </VOLT_DIVIDER>
+    <AMP_PER_VOLT>
+      <DisplayName>Current Amps per volt</DisplayName>
+      <Description>Used to convert the voltage on the current sensing pin (BATT_CURR_PIN) to the actual current being consumed in amps (curr pin voltage * INPUT_VOLTS/1024 * AMP_PER_VOLT )</Description>
+      <User>Advanced</User>
+    </AMP_PER_VOLT>
+    <INPUT_VOLTS>
+      <DisplayName>Max internal voltage of the battery voltage and current sensing pins</DisplayName>
+      <Description>Used to convert the voltage read in on the voltage and current pins for battery monitoring.  Normally 5 meaning 5 volts.</Description>
+      <User>Advanced</User>
+    </INPUT_VOLTS>
+    <BATT_CAPACITY>
+      <DisplayName>Battery Capacity</DisplayName>
+      <Description>Battery capacity in milliamp-hours (mAh)</Description>
+      <Units>mAh</Units>
+    </BATT_CAPACITY>
+    <MAG_ENABLE>
+      <DisplayName>Enable Compass</DisplayName>
+      <Description>Setting this to Enabled(1) will enable the compass. Setting this to Disabled(0) will disable the compass</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </MAG_ENABLE>
+    <FLOW_ENABLE>
+      <DisplayName>Enable Optical Flow</DisplayName>
+      <Description>Setting this to Enabled(1) will enable optical flow. Setting this to Disabled(0) will disable optical flow</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </FLOW_ENABLE>
+    <LOW_VOLT>
+      <DisplayName>Low Voltage</DisplayName>
+      <Description>Set this to the voltage you want to represent low voltage</Description>
+      <Range>0 20</Range>
+      <Increment>.1</Increment>
+      <User>Standard</User>
+    </LOW_VOLT>
+    <SUPER_SIMPLE>
+      <DisplayName>Enable Super Simple Mode</DisplayName>
+      <Description>Setting this to Enabled(1) will enable Super Simple Mode. Setting this to Disabled(0) will disable Super Simple Mode</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </SUPER_SIMPLE>
+    <RTL_ALT_FINAL>
+      <DisplayName>RTL Final Altitude</DisplayName>
+      <Description>This is the altitude the vehicle will move to as the final stage of Returning to Launch or after completing a mission.  Set to -1 to disable, zero to land.</Description>
+      <Units>Centimeters</Units>
+      <Range>-1 1000</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </RTL_ALT_FINAL>
+    <TILT>
+      <DisplayName>Auto Tilt Compensation</DisplayName>
+      <Description>This is a feed-forward compensation which helps the aircraft achieve target waypoint speed.</Description>
+      <Range>0 100</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </TILT>
+    <BATT_VOLT_PIN>
+      <DisplayName>Battery Voltage sensing pin</DisplayName>
+      <Description>Setting this to 0 ~ 13 will enable battery current sensing on pins A0 ~ A13.</Description>
+      <Values>-1:Disabled, 0:A0, 1:A1, 13:A13</Values>
+      <User>Standard</User>
+    </BATT_VOLT_PIN>
+    <BATT_CURR_PIN>
+      <DisplayName>Battery Current sensing pin</DisplayName>
+      <Description>Setting this to 0 ~ 13 will enable battery current sensing on pins A0 ~ A13.</Description>
+      <Values>-1:Disabled, 1:A1, 2:A2, 13:A13</Values>
+      <User>Standard</User>
+    </BATT_CURR_PIN>
+    <RSSI_PIN>
+      <DisplayName>Receiver RSSI sensing pin</DisplayName>
+      <Description>This selects an analog pin for the receiver RSSI voltage. It assumes the voltage is 5V for max rssi, 0V for minimum</Description>
+      <Values>-1:Disabled, 0:A0, 1:A1, 2:A2, 13:A13</Values>
+      <User>Standard</User>
+    </RSSI_PIN>
+    <THR_ACC_ENABLE>
+      <DisplayName>Enable Accel based throttle controller</DisplayName>
+      <Description>This allows enabling and disabling the accelerometer based throttle controller.  If disabled a velocity based controller is used.</Description>
+      <Values>0:Disabled, 1:Enabled</Values>
+      <User>Standard</User>
+    </THR_ACC_ENABLE>
+    <YAW_OVR_BEHAVE>
+      <DisplayName>Yaw override behaviour</DisplayName>
+      <Description>Controls when autopilot takes back normal control of yaw after pilot overrides</Description>
+      <Values>0:At Next WP, 1:On Mission Restart</Values>
+      <User>Advanced</User>
+    </YAW_OVR_BEHAVE>
+    <WP_TOTAL>
+      <DisplayName>Waypoint Total</DisplayName>
+      <Description>Total number of commands in the mission stored in the eeprom.  Do not update this parameter directly!</Description>
+      <User>Advanced</User>
+    </WP_TOTAL>
+    <WP_INDEX>
+      <DisplayName>Waypoint Index</DisplayName>
+      <Description>The index number of the command that is currently being executed.  Do not update this parameter directly!</Description>
+      <User>Advanced</User>
+    </WP_INDEX>
+    <WP_RADIUS>
+      <DisplayName>Waypoint Radius</DisplayName>
+      <Description>Defines the distance from a waypoint, that when crossed indicates the wp has been hit.</Description>
+      <Units>Meters</Units>
+      <Range>1 127</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </WP_RADIUS>
+    <CIRCLE_RADIUS>
+      <DisplayName>Circle radius</DisplayName>
+      <Description>Defines the radius of the circle the vehicle will fly when in Circle flight mode</Description>
+      <Units>Meters</Units>
+      <Range>1 127</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </CIRCLE_RADIUS>
+    <WP_SPEED_MAX>
+      <DisplayName>Waypoint Max Speed Target</DisplayName>
+      <Description>Defines the speed which the aircraft will attempt to maintain during a WP mission.</Description>
+      <Units>Centimeters/Second</Units>
+      <Increment>100</Increment>
+      <User>Standard</User>
+    </WP_SPEED_MAX>
+    <XTRK_GAIN_SC>
+      <DisplayName>Cross-Track Gain</DisplayName>
+      <Description>This controls the rate that the Auto Controller will attempt to return original track</Description>
+      <Units>Dimensionless</Units>
+      <User>Standard</User>
+    </XTRK_GAIN_SC>
+    <XTRK_MIN_DIST>
+      <DisplayName>Crosstrack mininum distance</DisplayName>
+      <Description>Minimum distance in meters between waypoints to do crosstrack correction.</Description>
+      <Units>Meters</Units>
+      <Range>0 32767</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </XTRK_MIN_DIST>
+    <RTL_LOIT_TIME>
+      <DisplayName>RTL loiter time</DisplayName>
+      <Description>Time (in milliseconds) to loiter above home before begining final descent</Description>
+      <Units>ms</Units>
+      <Range>0 60000</Range>
+      <Increment>1000</Increment>
+      <User>Standard</User>
+    </RTL_LOIT_TIME>
+    <LAND_SPEED>
+      <DisplayName>Land speed</DisplayName>
+      <Description>The descent speed for the final stage of landing in cm/s</Description>
+      <Units>Centimeters/Second</Units>
+      <Range>10 200</Range>
+      <Increment>10</Increment>
+      <User>Standard</User>
+    </LAND_SPEED>
+    <AUTO_VELZ_MIN>
+      <DisplayName>Autopilot's min vertical speed (max descent) in cm/s</DisplayName>
+      <Description>The minimum vertical velocity (i.e. descent speed) the autopilot may request in cm/s</Description>
+      <Units>Centimeters/Second</Units>
+      <Range>-500 -50</Range>
+      <Increment>10</Increment>
+      <User>Standard</User>
+    </AUTO_VELZ_MIN>
+    <AUTO_VELZ_MAX>
+      <DisplayName>Auto pilot's max vertical speed in cm/s</DisplayName>
+      <Description>The maximum vertical velocity the autopilot may request in cm/s</Description>
+      <Units>Centimeters/Second</Units>
+      <Range>50 500</Range>
+      <Increment>10</Increment>
+      <User>Standard</User>
+    </AUTO_VELZ_MAX>
+    <PILOT_VELZ_MAX>
+      <DisplayName>Pilot maximum vertical speed</DisplayName>
+      <Description>The maximum vertical velocity the pilot may request in cm/s</Description>
+      <Units>Centimeters/Second</Units>
+      <Range>10 500</Range>
+      <Increment>10</Increment>
+      <User>Standard</User>
+    </PILOT_VELZ_MAX>
+    <THR_MIN>
+      <DisplayName>Minimum Throttle</DisplayName>
+      <Description>The minimum throttle that will be sent to the motors to keep them spinning</Description>
+      <Units>ms</Units>
+      <Range>0 1000</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </THR_MIN>
+    <THR_MAX>
+      <DisplayName>Maximum Throttle</DisplayName>
+      <Description>The maximum throttle that will be sent to the motors</Description>
+      <Units>ms</Units>
+      <Range>0 1000</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </THR_MAX>
+    <FS_THR_ENABLE>
+      <DisplayName>Throttle Failsafe Enable</DisplayName>
+      <Description>The throttle failsafe allows you to configure a software failsafe activated by a setting on the throttle input channel</Description>
+      <Values>0:Disabled,1:Enabled always RTL,2:Enabled Continue with Mission in Auto Mode</Values>
+      <User>Standard</User>
+    </FS_THR_ENABLE>
+    <FS_THR_VALUE>
+      <DisplayName>Throttle Failsafe Value</DisplayName>
+      <Description>The PWM level on channel 3 below which throttle sailsafe triggers</Description>
+      <User>Standard</User>
+    </FS_THR_VALUE>
+    <TRIM_THROTTLE>
+      <DisplayName>Throttle Trim</DisplayName>
+      <Description>The autopilot's estimate of the throttle required to maintain a level hover.  Calculated automatically from the pilot's throttle input while in stabilize mode</Description>
+      <Range>0 1000</Range>
+      <Units>PWM</Units>
+      <User>Standard</User>
+    </TRIM_THROTTLE>
+    <FLTMODE1>
+      <DisplayName>Flight Mode 1</DisplayName>
+      <Description>Flight mode when Channel 5 pwm is &lt;= 1230</Description>
+      <User>Standard</User>
+    </FLTMODE1>
+    <FLTMODE2>
+      <DisplayName>Flight Mode 2</DisplayName>
+      <Description>Flight mode when Channel 5 pwm is &gt;1230, &lt;= 1360</Description>
+      <User>Standard</User>
+    </FLTMODE2>
+    <FLTMODE3>
+      <DisplayName>Flight Mode 3</DisplayName>
+      <Description>Flight mode when Channel 5 pwm is &gt;1360, &lt;= 1490</Description>
+      <User>Standard</User>
+    </FLTMODE3>
+    <FLTMODE4>
+      <DisplayName>Flight Mode 4</DisplayName>
+      <Description>Flight mode when Channel 5 pwm is &gt;1490, &lt;= 1620</Description>
+      <User>Standard</User>
+    </FLTMODE4>
+    <FLTMODE5>
+      <DisplayName>Flight Mode 5</DisplayName>
+      <Description>Flight mode when Channel 5 pwm is &gt;1620, &lt;= 1749</Description>
+      <User>Standard</User>
+    </FLTMODE5>
+    <FLTMODE6>
+      <DisplayName>Flight Mode 6</DisplayName>
+      <Description>Flight mode when Channel 5 pwm is &gt;=1750</Description>
+      <User>Standard</User>
+    </FLTMODE6>
+    <SIMPLE>
+      <DisplayName>Simple mode bitmask</DisplayName>
+      <Description>Bitmask which holds which flight modes use simple heading mode (eg bit 0 = 1 means Flight Mode 0 uses simple mode)</Description>
+      <User>Advanced</User>
+    </SIMPLE>
+    <LOG_BITMASK>
+      <DisplayName>Log bitmask</DisplayName>
+      <Description>2 byte bitmap of log types to enable</Description>
+      <User>Advanced</User>
+    </LOG_BITMASK>
+    <TOY_RATE>
+      <DisplayName>Toy Yaw Rate</DisplayName>
+      <Description>Controls yaw rate in Toy mode.  Higher values will cause a slower yaw rate.  Do not set to zero!</Description>
+      <User>Advanced</User>
+      <Range>1 10</Range>
+    </TOY_RATE>
+    <ESC>
+      <DisplayName>ESC Calibration</DisplayName>
+      <Description>Controls whether ArduCopter will enter ESC calibration on the next restart.  Do not adjust this parameter manually.</Description>
+      <User>Advanced</User>
+      <Values>0:Normal Start-up,1:Start-up in ESC Calibration mode</Values>
+    </ESC>
+    <TUNE>
+      <DisplayName>Channel 6 Tuning</DisplayName>
+      <Description>Controls which parameters (normally PID gains) are being tuned with transmitter's channel 6 knob</Description>
+      <User>Standard</User>
+      <Values>0:CH6_NONE,1:CH6_STABILIZE_KP,2:CH6_STABILIZE_KI,3:CH6_YAW_KP,4:CH6_RATE_KP,5:CH6_RATE_KI,6:CH6_YAW_RATE_KP,7:CH6_THROTTLE_KP,8:CH6_TOP_BOTTOM_RATIO,9:CH6_RELAY,10:CH6_TRAVERSE_SPEED,11:CH6_NAV_KP,12:CH6_LOITER_KP,13:CH6_HELI_EXTERNAL_GYRO,14:CH6_THR_HOLD_KP,17:CH6_OPTFLOW_KP,18:CH6_OPTFLOW_KI,19:CH6_OPTFLOW_KD,20:CH6_NAV_KI,21:CH6_RATE_KD,22:CH6_LOITER_RATE_KP,23:CH6_LOITER_RATE_KD,24:CH6_YAW_KI,25:CH6_ACRO_KP,26:CH6_YAW_RATE_KD,27:CH6_LOITER_KI,28:CH6_LOITER_RATE_KI,29:CH6_STABILIZE_KD,30:CH6_AHRS_YAW_KP,31:CH6_AHRS_KP,32:CH6_INAV_TC,33:CH6_THROTTLE_KI,34:CH6_THR_ACCEL_KP,35:CH6_THR_ACCEL_KI,36:CH6_THR_ACCEL_KD</Values>
+    </TUNE>
+    <TUNE_LOW>
+      <DisplayName>Tuning minimum</DisplayName>
+      <Description>The minimum value that will be applied to the parameter currently being tuned with the transmitter's channel 6 knob</Description>
+      <User>Standard</User>
+      <Range>0 32767</Range>
+    </TUNE_LOW>
+    <TUNE_HIGH>
+      <DisplayName>Tuning maximum</DisplayName>
+      <Description>The maximum value that will be applied to the parameter currently being tuned with the transmitter's channel 6 knob</Description>
+      <User>Standard</User>
+      <Range>0 32767</Range>
+    </TUNE_HIGH>
+    <FRAME>
+      <DisplayName>Frame Orientation</DisplayName>
+      <Description>Controls motor mixing. Quad: 0=+ 1=X</Description>
+      <User>Standard</User>
+      <Range>0 32767</Range>
+    </FRAME>
+    <CH7_OPT>
+      <DisplayName>Channel 7 option</DisplayName>
+      <Description>Select which function if performed when CH7 is above 1800 pwm</Description>
+      <Values>0:Do Nothing, 2:Flip, 3:Simple Mode, 4:RTL, 5:Save Trim, 7:Save WP, 9:Camera Trigger</Values>
+      <User>Standard</User>
+    </CH7_OPT>
+    <AUTO_SLEW>
+      <DisplayName>Auto Slew Rate</DisplayName>
+      <Description>This restricts the rate of change of the roll and pitch attitude commanded by the auto pilot</Description>
+      <Units>Degrees/Second</Units>
+      <Range>1 45</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+      <Group>RC1_</Group>
+      <Path>../libraries/RC_Channel/RC_Channel.cpp</Path>
+    </AUTO_SLEW>
+    <RC_SPEED>
+      <DisplayName>ESC Update Speed</DisplayName>
+      <Description>This is the speed in Hertz that your ESCs will receive updates</Description>
+      <Units>Hertz (Hz)</Units>
+      <Values>125,400,490</Values>
+      <User>Advanced</User>
+    </RC_SPEED>
+    <ACRO_P>
+      <DisplayName>Acro P gain</DisplayName>
+      <Description>Used to convert pilot roll, pitch and yaw input into a dssired rate of rotation in ACRO mode.  Higher values mean faster rate of rotation.</Description>
+      <Range>1 10</Range>
+      <User>Standard</User>
+    </ACRO_P>
+    <AXIS_ENABLE>
+      <DisplayName>Acro Axis</DisplayName>
+      <Description>Used to control whether acro mode actively maintains the current angle when control sticks are released (Enabled = maintains current angle)</Description>
+      <Values>0:Disabled, 1:Enabled</Values>
+      <User>Standard</User>
+    </AXIS_ENABLE>
+    <ACRO_BAL_ROLL>
+      <DisplayName>Acro Balance Roll</DisplayName>
+      <Description>rate at which roll angle returns to level in acro mode</Description>
+      <Range>0 300</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </ACRO_BAL_ROLL>
+    <ACRO_BAL_PITCH>
+      <DisplayName>Acro Balance Pitch</DisplayName>
+      <Description>rate at which pitch angle returns to level in acro mode</Description>
+      <Range>0 300</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </ACRO_BAL_PITCH>
+    <ACRO_TRAINER>
+      <DisplayName>Acro Trainer Enabled</DisplayName>
+      <Description>Set to 1 (Enabled) to make roll return to within 45 degrees of level automatically</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Advanced</User>
+    </ACRO_TRAINER>
+    <LED_MODE>
+      <DisplayName>Copter LED Mode</DisplayName>
+      <Description>bitmap to control the copter led mode</Description>
+      <Values>0:Disabled,1:Enable,2:GPS On,4:Aux,8:Buzzer,16:Oscillate,32:Nav Blink,64:GPS Nav Blink</Values>
+      <User>Standard</User>
+    </LED_MODE>
+    <RATE_RLL_P>
+      <DisplayName>Roll axis rate controller P gain</DisplayName>
+      <Description>Roll axis rate controller P gain.  Converts the difference between desired roll rate and actual roll rate into a motor speed output</Description>
+      <Range>0.08 0.20</Range>
+      <User>Standard</User>
+    </RATE_RLL_P>
+    <RATE_RLL_I>
+      <DisplayName>Roll axis rate controller I gain</DisplayName>
+      <Description>Roll axis rate controller I gain.  Corrects long-term difference in desired roll rate vs actual roll rate</Description>
+      <Range>0.01 0.5</Range>
+      <User>Standard</User>
+    </RATE_RLL_I>
+    <RATE_RLL_IMAX>
+      <DisplayName>Roll axis rate controller I gain maximum</DisplayName>
+      <Description>Roll axis rate controller I gain maximum.  Constrains the maximum motor output that the I gain will output</Description>
+      <Range>0 500</Range>
+      <Unit>PWM</Unit>
+      <User>Standard</User>
+    </RATE_RLL_IMAX>
+    <RATE_RLL_D>
+      <DisplayName>Roll axis rate controller D gain</DisplayName>
+      <Description>Roll axis rate controller D gain.  Compensates for short-term change in desired roll rate vs actual roll rate</Description>
+      <Range>0.001 0.008</Range>
+      <User>Standard</User>
+    </RATE_RLL_D>
+    <RATE_PIT_P>
+      <DisplayName>Pitch axis rate controller P gain</DisplayName>
+      <Description>Pitch axis rate controller P gain.  Converts the difference between desired pitch rate and actual pitch rate into a motor speed output</Description>
+      <Range>0.08 0.20</Range>
+      <User>Standard</User>
+    </RATE_PIT_P>
+    <RATE_PIT_I>
+      <DisplayName>Pitch axis rate controller I gain</DisplayName>
+      <Description>Pitch axis rate controller I gain.  Corrects long-term difference in desired pitch rate vs actual pitch rate</Description>
+      <Range>0.01 0.5</Range>
+      <User>Standard</User>
+    </RATE_PIT_I>
+    <RATE_PIT_IMAX>
+      <DisplayName>Pitch axis rate controller I gain maximum</DisplayName>
+      <Description>Pitch axis rate controller I gain maximum.  Constrains the maximum motor output that the I gain will output</Description>
+      <Range>0 500</Range>
+      <Unit>PWM</Unit>
+      <User>Standard</User>
+    </RATE_PIT_IMAX>
+    <RATE_PIT_D>
+      <DisplayName>Pitch axis rate controller D gain</DisplayName>
+      <Description>Pitch axis rate controller D gain.  Compensates for short-term change in desired pitch rate vs actual pitch rate</Description>
+      <Range>0.001 0.008</Range>
+      <User>Standard</User>
+    </RATE_PIT_D>
+    <RATE_YAW_P>
+      <DisplayName>Yaw axis rate controller P gain</DisplayName>
+      <Description>Yaw axis rate controller P gain.  Converts the difference between desired yaw rate and actual yaw rate into a motor speed output</Description>
+      <Range>0.150 0.250</Range>
+      <User>Standard</User>
+    </RATE_YAW_P>
+    <RATE_YAW_I>
+      <DisplayName>Yaw axis rate controller I gain</DisplayName>
+      <Description>Yaw axis rate controller I gain.  Corrects long-term difference in desired yaw rate vs actual yaw rate</Description>
+      <Range>0.010 0.020</Range>
+      <User>Standard</User>
+    </RATE_YAW_I>
+    <RATE_YAW_IMAX>
+      <DisplayName>Yaw axis rate controller I gain maximum</DisplayName>
+      <Description>Yaw axis rate controller I gain maximum.  Constrains the maximum motor output that the I gain will output</Description>
+      <Range>0 500</Range>
+      <Unit>PWM</Unit>
+      <User>Standard</User>
+    </RATE_YAW_IMAX>
+    <RATE_YAW_D>
+      <DisplayName>Yaw axis rate controller D gain</DisplayName>
+      <Description>Yaw axis rate controller D gain.  Compensates for short-term change in desired yaw rate vs actual yaw rate</Description>
+      <Range>0.000 0.001</Range>
+      <User>Standard</User>
+    </RATE_YAW_D>
+    <LOITER_LAT_P>
+      <DisplayName>Loiter latitude rate controller P gain</DisplayName>
+      <Description>Loiter latitude rate controller P gain.  Converts the difference between desired speed and actual speed into a lean angle in the latitude direction</Description>
+      <Range>2.000 6.000</Range>
+      <User>Standard</User>
+    </LOITER_LAT_P>
+    <LOITER_LAT_I>
+      <DisplayName>Loiter latitude rate controller I gain</DisplayName>
+      <Description>Loiter latitude rate controller I gain.  Corrects long-term difference in desired speed and actual speed in the latitude direction</Description>
+      <Range>0.020 0.060</Range>
+      <User>Standard</User>
+    </LOITER_LAT_I>
+    <LOITER_LAT_IMAX>
+      <DisplayName>Loiter rate controller I gain maximum</DisplayName>
+      <Description>Loiter rate controller I gain maximum.  Constrains the lean angle that the I gain will output</Description>
+      <Range>0 4500</Range>
+      <Unit>Centi-Degrees</Unit>
+      <User>Standard</User>
+    </LOITER_LAT_IMAX>
+    <LOITER_LAT_D>
+      <DisplayName>Loiter latitude rate controller D gain</DisplayName>
+      <Description>Loiter latitude rate controller D gain.  Compensates for short-term change in desired speed vs actual speed</Description>
+      <Range>0.200 0.600</Range>
+      <User>Standard</User>
+    </LOITER_LAT_D>
+    <LOITER_LON_P>
+      <DisplayName>Loiter longitude rate controller P gain</DisplayName>
+      <Description>Loiter longitude rate controller P gain.  Converts the difference between desired speed and actual speed into a lean angle in the longitude direction</Description>
+      <Range>2.000 6.000</Range>
+      <User>Standard</User>
+    </LOITER_LON_P>
+    <LOITER_LON_I>
+      <DisplayName>Loiter longitude rate controller I gain</DisplayName>
+      <Description>Loiter longitude rate controller I gain.  Corrects long-term difference in desired speed and actual speed in the longitude direction</Description>
+      <Range>0.020 0.060</Range>
+      <User>Standard</User>
+    </LOITER_LON_I>
+    <LOITER_LON_IMAX>
+      <DisplayName>Loiter longitude rate controller I gain maximum</DisplayName>
+      <Description>Loiter longitude rate controller I gain maximum.  Constrains the lean angle that the I gain will output</Description>
+      <Range>0 4500</Range>
+      <Unit>Centi-Degrees</Unit>
+      <User>Standard</User>
+    </LOITER_LON_IMAX>
+    <LOITER_LON_D>
+      <DisplayName>Loiter longituderate controller D gain</DisplayName>
+      <Description>Loiter longitude rate controller D gain.  Compensates for short-term change in desired speed vs actual speed</Description>
+      <Range>0.200 0.600</Range>
+      <User>Standard</User>
+    </LOITER_LON_D>
+    <NAV_LAT_P>
+      <DisplayName>Navigation latitude rate controller P gain</DisplayName>
+      <Description>Navigation latitude rate controller P gain.  Converts the difference between desired speed and actual speed into a lean angle in the latitude direction</Description>
+      <Range>2.000 2.800</Range>
+      <User>Standard</User>
+    </NAV_LAT_P>
+    <NAV_LAT_I>
+      <DisplayName>Navigation latitude rate controller I gain</DisplayName>
+      <Description>Navigation latitude rate controller I gain.  Corrects long-term difference in desired speed and actual speed in the latitude direction</Description>
+      <Range>0.140 0.200</Range>
+      <User>Standard</User>
+    </NAV_LAT_I>
+    <NAV_LAT_IMAX>
+      <DisplayName>Navigation rate controller I gain maximum</DisplayName>
+      <Description>Navigation rate controller I gain maximum.  Constrains the lean angle that the I gain will output</Description>
+      <Range>0 4500</Range>
+      <Unit>Centi-Degrees</Unit>
+      <User>Standard</User>
+    </NAV_LAT_IMAX>
+    <NAV_LAT_D>
+      <DisplayName>Navigation latitude rate controller D gain</DisplayName>
+      <Description>Navigation latitude rate controller D gain.  Compensates for short-term change in desired speed vs actual speed</Description>
+      <Range>0.000 0.100</Range>
+      <User>Standard</User>
+    </NAV_LAT_D>
+    <NAV_LON_P>
+      <DisplayName>Navigation longitude rate controller P gain</DisplayName>
+      <Description>Navigation longitude rate controller P gain.  Converts the difference between desired speed and actual speed into a lean angle in the longitude direction</Description>
+      <Range>2.000 2.800</Range>
+      <User>Standard</User>
+    </NAV_LON_P>
+    <NAV_LON_I>
+      <DisplayName>Navigation longitude rate controller I gain</DisplayName>
+      <Description>Navigation longitude rate controller I gain.  Corrects long-term difference in desired speed and actual speed in the longitude direction</Description>
+      <Range>0.140 0.200</Range>
+      <User>Standard</User>
+    </NAV_LON_I>
+    <NAV_LON_IMAX>
+      <DisplayName>Navigation longitude rate controller I gain maximum</DisplayName>
+      <Description>Navigation longitude rate controller I gain maximum.  Constrains the lean angle that the I gain will generate</Description>
+      <Range>0 4500</Range>
+      <Unit>Centi-Degrees</Unit>
+      <User>Standard</User>
+    </NAV_LON_IMAX>
+    <NAV_LON_D>
+      <DisplayName>Navigation longituderate controller D gain</DisplayName>
+      <Description>Navigation longitude rate controller D gain.  Compensates for short-term change in desired speed vs actual speed</Description>
+      <Range>0.000 0.100</Range>
+      <User>Standard</User>
+    </NAV_LON_D>
+    <THR_RATE_P>
+      <DisplayName>Throttle rate controller P gain</DisplayName>
+      <Description>Throttle rate controller P gain.  Converts the difference between desired vertical speed and actual speed into a desired acceleration that is passed to the throttle acceleration controller</Description>
+      <Range>1.000 8.000</Range>
+      <User>Standard</User>
+    </THR_RATE_P>
+    <THR_RATE_I>
+      <DisplayName>Throttle rate controller I gain</DisplayName>
+      <Description>Throttle rate controller I gain.  Corrects long-term difference in desired vertical speed and actual speed</Description>
+      <Range>0.000 0.100</Range>
+      <User>Standard</User>
+    </THR_RATE_I>
+    <THR_RATE_IMAX>
+      <DisplayName>Throttle rate controller I gain maximum</DisplayName>
+      <Description>Throttle rate controller I gain maximum.  Constrains the desired acceleration that the I gain will generate</Description>
+      <Range>0 500</Range>
+      <Unit>cm/s/s</Unit>
+      <User>Standard</User>
+    </THR_RATE_IMAX>
+    <THR_RATE_D>
+      <DisplayName>Throttle rate controller D gain</DisplayName>
+      <Description>Throttle rate controller D gain.  Compensates for short-term change in desired vertical speed vs actual speed</Description>
+      <Range>0.000 0.400</Range>
+      <User>Standard</User>
+    </THR_RATE_D>
+    <THR_ACCEL_P>
+      <DisplayName>Throttle acceleration controller P gain</DisplayName>
+      <Description>Throttle acceleration controller P gain.  Converts the difference between desired vertical acceleration and actual acceleration into a motor output</Description>
+      <Range>0.500 1.500</Range>
+      <User>Standard</User>
+    </THR_ACCEL_P>
+    <THR_ACCEL_I>
+      <DisplayName>Throttle acceleration controller I gain</DisplayName>
+      <Description>Throttle acceleration controller I gain.  Corrects long-term difference in desired vertical acceleration and actual acceleration</Description>
+      <Range>0.000 3.000</Range>
+      <User>Standard</User>
+    </THR_ACCEL_I>
+    <THR_ACCEL_IMAX>
+      <DisplayName>Throttle acceleration controller I gain maximum</DisplayName>
+      <Description>Throttle acceleration controller I gain maximum.  Constrains the maximum pwm that the I term will generate</Description>
+      <Range>0 500</Range>
+      <Unit>PWM</Unit>
+      <User>Standard</User>
+    </THR_ACCEL_IMAX>
+    <THR_ACCEL_D>
+      <DisplayName>Throttle acceleration controller D gain</DisplayName>
+      <Description>Throttle acceleration controller D gain.  Compensates for short-term change in desired vertical acceleration vs actual acceleration</Description>
+      <Range>0.000 0.400</Range>
+      <User>Standard</User>
+    </THR_ACCEL_D>
+    <OF_RLL_P>
+      <DisplayName>Optical Flow based loiter controller roll axis P gain</DisplayName>
+      <Description>Optical Flow based loiter controller roll axis P gain.  Converts the position error from the target point to a roll angle</Description>
+      <Range>2.000 3.000</Range>
+      <User>Standard</User>
+    </OF_RLL_P>
+    <OF_RLL_I>
+      <DisplayName>Optical Flow based loiter controller roll axis I gain</DisplayName>
+      <Description>Optical Flow based loiter controller roll axis I gain.  Corrects long-term position error by more persistently rolling left or right</Description>
+      <Range>0.250 0.750</Range>
+      <User>Standard</User>
+    </OF_RLL_I>
+    <OF_RLL_IMAX>
+      <DisplayName>Optical Flow based loiter controller roll axis I gain maximum</DisplayName>
+      <Description>Optical Flow based loiter controller roll axis I gain maximum.  Constrains the maximum roll angle that the I term will generate</Description>
+      <Range>0 4500</Range>
+      <Unit>Centi-Degrees</Unit>
+      <User>Standard</User>
+    </OF_RLL_IMAX>
+    <OF_RLL_D>
+      <DisplayName>Optical Flow based loiter controller roll axis D gain</DisplayName>
+      <Description>Optical Flow based loiter controller roll axis D gain.  Compensates for short-term change in speed in the roll direction</Description>
+      <Range>0.100 0.140</Range>
+      <User>Standard</User>
+    </OF_RLL_D>
+    <OF_PIT_P>
+      <DisplayName>Optical Flow based loiter controller pitch axis P gain</DisplayName>
+      <Description>Optical Flow based loiter controller pitch axis P gain.  Converts the position error from the target point to a pitch angle</Description>
+      <Range>2.000 3.000</Range>
+      <User>Standard</User>
+    </OF_PIT_P>
+    <OF_PIT_I>
+      <DisplayName>Optical Flow based loiter controller pitch axis I gain</DisplayName>
+      <Description>Optical Flow based loiter controller pitch axis I gain.  Corrects long-term position error by more persistently pitching left or right</Description>
+      <Range>0.250 0.750</Range>
+      <User>Standard</User>
+    </OF_PIT_I>
+    <OF_PIT_IMAX>
+      <DisplayName>Optical Flow based loiter controller pitch axis I gain maximum</DisplayName>
+      <Description>Optical Flow based loiter controller pitch axis I gain maximum.  Constrains the maximum pitch angle that the I term will generate</Description>
+      <Range>0 4500</Range>
+      <Unit>Centi-Degrees</Unit>
+      <User>Standard</User>
+    </OF_PIT_IMAX>
+    <OF_PIT_D>
+      <DisplayName>Optical Flow based loiter controller pitch axis D gain</DisplayName>
+      <Description>Optical Flow based loiter controller pitch axis D gain.  Compensates for short-term change in speed in the pitch direction</Description>
+      <Range>0.100 0.140</Range>
+      <User>Standard</User>
+    </OF_PIT_D>
+    <STB_RLL_P>
+      <DisplayName>Roll axis stabilize controller P gain</DisplayName>
+      <Description>Roll axis stabilize (i.e. angle) controller P gain.  Converts the error between the desired roll angle and actual angle to a desired roll rate</Description>
+      <Range>3.000 6.000</Range>
+      <User>Standard</User>
+    </STB_RLL_P>
+    <STB_RLL_I>
+      <DisplayName>Roll axis stabilize controller I gain</DisplayName>
+      <Description>Roll axis stabilize (i.e. angle) controller I gain.  Corrects for longer-term difference in desired roll angle and actual angle</Description>
+      <Range>0.000 0.100</Range>
+      <User>Standard</User>
+    </STB_RLL_I>
+    <STB_RLL_IMAX>
+      <DisplayName>Roll axis stabilize controller I gain maximum</DisplayName>
+      <Description>Roll axis stabilize (i.e. angle) controller I gain maximum.  Constrains the maximum roll rate that the I term will generate</Description>
+      <Range>0 4500</Range>
+      <Unit>Centi-Degrees/Sec</Unit>
+      <User>Standard</User>
+    </STB_RLL_IMAX>
+    <STB_PIT_P>
+      <DisplayName>Pitch axis stabilize controller P gain</DisplayName>
+      <Description>Pitch axis stabilize (i.e. angle) controller P gain.  Converts the error between the desired pitch angle and actual angle to a desired pitch rate</Description>
+      <Range>3.000 6.000</Range>
+      <User>Standard</User>
+    </STB_PIT_P>
+    <STB_PIT_I>
+      <DisplayName>Pitch axis stabilize controller I gain</DisplayName>
+      <Description>Pitch axis stabilize (i.e. angle) controller I gain.  Corrects for longer-term difference in desired pitch angle and actual angle</Description>
+      <Range>0.000 0.100</Range>
+      <User>Standard</User>
+    </STB_PIT_I>
+    <STB_PIT_IMAX>
+      <DisplayName>Pitch axis stabilize controller I gain maximum</DisplayName>
+      <Description>Pitch axis stabilize (i.e. angle) controller I gain maximum.  Constrains the maximum pitch rate that the I term will generate</Description>
+      <Range>0 4500</Range>
+      <Unit>Centi-Degrees/Sec</Unit>
+      <User>Standard</User>
+    </STB_PIT_IMAX>
+    <STB_YAW_P>
+      <DisplayName>Yaw axis stabilize controller P gain</DisplayName>
+      <Description>Yaw axis stabilize (i.e. angle) controller P gain.  Converts the error between the desired yaw angle and actual angle to a desired yaw rate</Description>
+      <Range>3.000 6.000</Range>
+      <User>Standard</User>
+    </STB_YAW_P>
+    <STB_YAW_I>
+      <DisplayName>Yaw axis stabilize controller I gain</DisplayName>
+      <Description>Yaw axis stabilize (i.e. angle) controller I gain.  Corrects for longer-term difference in desired yaw angle and actual angle</Description>
+      <Range>0.000 0.100</Range>
+      <User>Standard</User>
+    </STB_YAW_I>
+    <STB_YAW_IMAX>
+      <DisplayName>Yaw axis stabilize controller I gain maximum</DisplayName>
+      <Description>Yaw axis stabilize (i.e. angle) controller I gain maximum.  Constrains the maximum yaw rate that the I term will generate</Description>
+      <Range>0 4500</Range>
+      <Unit>Centi-Degrees/Sec</Unit>
+      <User>Standard</User>
+    </STB_YAW_IMAX>
+    <THR_ALT_P>
+      <DisplayName>Altitude controller P gain</DisplayName>
+      <Description>Altitude controller P gain.  Converts the difference between the desired altitude and actual altitude into a climb or descent rate which is passed to the throttle rate controller</Description>
+      <Range>3.000 6.000</Range>
+      <User>Standard</User>
+    </THR_ALT_P>
+    <THR_ALT_I>
+      <DisplayName>Altitude controller I gain</DisplayName>
+      <Description>Altitude controller I gain.  Corrects for longer-term difference in desired altitude and actual altitude</Description>
+      <Range>0.000 0.100</Range>
+      <User>Standard</User>
+    </THR_ALT_I>
+    <THR_ALT_IMAX>
+      <DisplayName>Altitude controller I gain maximum</DisplayName>
+      <Description>Altitude controller I gain maximum.  Constrains the maximum climb rate rate that the I term will generate</Description>
+      <Range>0 500</Range>
+      <Unit>cm/s</Unit>
+      <User>Standard</User>
+    </THR_ALT_IMAX>
+    <HLD_LAT_P>
+      <DisplayName>Loiter latitude position controller P gain</DisplayName>
+      <Description>Loiter latitude position controller P gain.  Converts the distance (in the latitude direction) to the target location into a desired speed which is then passed to the loiter latitude rate controller</Description>
+      <Range>0.100 0.300</Range>
+      <User>Standard</User>
+    </HLD_LAT_P>
+    <HLD_LAT_I>
+      <DisplayName>Loiter latitude position controller I gain</DisplayName>
+      <Description>Loiter latitude position controller I gain.  Corrects for longer-term distance (in latitude) to the target location</Description>
+      <Range>0.000 0.100</Range>
+      <User>Standard</User>
+    </HLD_LAT_I>
+    <HLD_LAT_IMAX>
+      <DisplayName>Loiter latitude position controller I gain maximum</DisplayName>
+      <Description>Loiter latitude position controller I gain maximum.  Constrains the maximum desired speed that the I term will generate</Description>
+      <Range>0 3000</Range>
+      <Unit>cm/s</Unit>
+      <User>Standard</User>
+    </HLD_LAT_IMAX>
+    <HLD_LON_P>
+      <DisplayName>Loiter longitude position controller P gain</DisplayName>
+      <Description>Loiter longitude position controller P gain.  Converts the distance (in the longitude direction) to the target location into a desired speed which is then passed to the loiter longitude rate controller</Description>
+      <Range>0.100 0.300</Range>
+      <User>Standard</User>
+    </HLD_LON_P>
+    <HLD_LON_I>
+      <DisplayName>Loiter longitude position controller I gain</DisplayName>
+      <Description>Loiter longitude position controller I gain.  Corrects for longer-term distance (in longitude direction) to the target location</Description>
+      <Range>0.000 0.100</Range>
+      <User>Standard</User>
+    </HLD_LON_I>
+    <HLD_LON_IMAX>
+      <DisplayName>Loiter longitudeposition controller I gain maximum</DisplayName>
+      <Description>Loiter  longitudeposition controller I gain maximum.  Constrains the maximum desired speed that the I term will generate</Description>
+      <Range>0 3000</Range>
+      <Unit>cm/s</Unit>
+      <User>Standard</User>
+      <Group>CAM_</Group>
+      <Path>../libraries/AP_Camera/AP_Camera.cpp</Path>
+    </HLD_LON_IMAX>
+  </ArduCopter2>
+  <ArduPlane>
+    <CAM_TRIGG_TYPE>
+      <DisplayName>Camera shutter (trigger) type</DisplayName>
+      <Description>how to trigger the camera to take a picture</Description>
+      <Values>0:Servo,1:Relay,2:Servo and turn off throttle,3:Servo when 3m from waypoint,4:transistor</Values>
+      <User>Standard</User>
+    </CAM_TRIGG_TYPE>
+    <CAM_DURATION>
+      <DisplayName>Duration that shutter is held open</DisplayName>
+      <Description>How long the shutter will be held open in 10ths of a second (i.e. enter 10 for 1second, 50 for 5seconds)</Description>
+      <Range>0 50</Range>
+      <User>Standard</User>
+    </CAM_DURATION>
+    <CAM_SERVO_ON>
+      <DisplayName>Servo ON PWM value</DisplayName>
+      <Description>PWM value to move servo to when shutter is activated</Description>
+      <Range>1000 2000</Range>
+      <User>Standard</User>
+    </CAM_SERVO_ON>
+    <CAM_SERVO_OFF>
+      <DisplayName>Servo OFF PWM value</DisplayName>
+      <Description>PWM value to move servo to when shutter is deactivated</Description>
+      <Range>1000 2000</Range>
+      <User>Standard</User>
+    </CAM_SERVO_OFF>
+    <RC1_MIN>
+      <DisplayName>RC min PWM</DisplayName>
+      <Description>RC minimum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC1_MIN>
+    <RC1_TRIM>
+      <DisplayName>RC trim PWM</DisplayName>
+      <Description>RC trim (neutral) PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC1_TRIM>
+    <RC1_MAX>
+      <DisplayName>RC max PWM</DisplayName>
+      <Description>RC maximum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC1_MAX>
+    <RC1_REV>
+      <DisplayName>RC reverse</DisplayName>
+      <Description>Reverse servo operation. Ignored on APM1 unless dip-switches are disabled.</Description>
+      <Values>-1:Reversed,1:Normal</Values>
+      <User>Advanced</User>
+    </RC1_REV>
+    <RC1_DZ>
+      <DisplayName>RC dead-zone</DisplayName>
+      <Description>dead zone around trim.</Description>
+      <User>Advanced</User>
+    </RC1_DZ>
+    <RC2_MIN>
+      <DisplayName>RC min PWM</DisplayName>
+      <Description>RC minimum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC2_MIN>
+    <RC2_TRIM>
+      <DisplayName>RC trim PWM</DisplayName>
+      <Description>RC trim (neutral) PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC2_TRIM>
+    <RC2_MAX>
+      <DisplayName>RC max PWM</DisplayName>
+      <Description>RC maximum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC2_MAX>
+    <RC2_REV>
+      <DisplayName>RC reverse</DisplayName>
+      <Description>Reverse servo operation. Ignored on APM1 unless dip-switches are disabled.</Description>
+      <Values>-1:Reversed,1:Normal</Values>
+      <User>Advanced</User>
+    </RC2_REV>
+    <RC2_DZ>
+      <DisplayName>RC dead-zone</DisplayName>
+      <Description>dead zone around trim.</Description>
+      <User>Advanced</User>
+    </RC2_DZ>
+    <RC3_MIN>
+      <DisplayName>RC min PWM</DisplayName>
+      <Description>RC minimum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC3_MIN>
+    <RC3_TRIM>
+      <DisplayName>RC trim PWM</DisplayName>
+      <Description>RC trim (neutral) PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC3_TRIM>
+    <RC3_MAX>
+      <DisplayName>RC max PWM</DisplayName>
+      <Description>RC maximum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC3_MAX>
+    <RC3_REV>
+      <DisplayName>RC reverse</DisplayName>
+      <Description>Reverse servo operation. Ignored on APM1 unless dip-switches are disabled.</Description>
+      <Values>-1:Reversed,1:Normal</Values>
+      <User>Advanced</User>
+    </RC3_REV>
+    <RC3_DZ>
+      <DisplayName>RC dead-zone</DisplayName>
+      <Description>dead zone around trim.</Description>
+      <User>Advanced</User>
+    </RC3_DZ>
+    <RC4_MIN>
+      <DisplayName>RC min PWM</DisplayName>
+      <Description>RC minimum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC4_MIN>
+    <RC4_TRIM>
+      <DisplayName>RC trim PWM</DisplayName>
+      <Description>RC trim (neutral) PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC4_TRIM>
+    <RC4_MAX>
+      <DisplayName>RC max PWM</DisplayName>
+      <Description>RC maximum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC4_MAX>
+    <RC4_REV>
+      <DisplayName>RC reverse</DisplayName>
+      <Description>Reverse servo operation. Ignored on APM1 unless dip-switches are disabled.</Description>
+      <Values>-1:Reversed,1:Normal</Values>
+      <User>Advanced</User>
+    </RC4_REV>
+    <RC4_DZ>
+      <DisplayName>RC dead-zone</DisplayName>
+      <Description>dead zone around trim.</Description>
+      <User>Advanced</User>
+    </RC4_DZ>
+    <RC5_FUNCTION>
+      <DisplayName>Servo out function</DisplayName>
+      <Description>Setting this to Disabled(0) will disable this output, any other value will enable the corresponding function</Description>
+      <Values>0:Disabled,1:Manual,2:Flap,3:Flap_auto,4:Aileron,5:flaperon,6:mount_pan,7:mount_tilt,8:mount_roll,9:mount_open,10:camera_trigger,11:release,12:mount2_pan,13:mount2_tilt,14:mount2_roll,15:mount2_open,16:DifferentialSpoiler1,17:DifferentialSpoiler2,18:AileronWithInput</Values>
+      <User>Standard</User>
+    </RC5_FUNCTION>
+    <RC5_MIN>
+      <DisplayName>RC min PWM</DisplayName>
+      <Description>RC minimum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC5_MIN>
+    <RC5_TRIM>
+      <DisplayName>RC trim PWM</DisplayName>
+      <Description>RC trim (neutral) PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC5_TRIM>
+    <RC5_MAX>
+      <DisplayName>RC max PWM</DisplayName>
+      <Description>RC maximum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC5_MAX>
+    <RC5_REV>
+      <DisplayName>RC reverse</DisplayName>
+      <Description>Reverse servo operation. Ignored on APM1 unless dip-switches are disabled.</Description>
+      <Values>-1:Reversed,1:Normal</Values>
+      <User>Advanced</User>
+    </RC5_REV>
+    <RC5_DZ>
+      <DisplayName>RC dead-zone</DisplayName>
+      <Description>dead zone around trim.</Description>
+      <User>Advanced</User>
+    </RC5_DZ>
+    <RC6_FUNCTION>
+      <DisplayName>Servo out function</DisplayName>
+      <Description>Setting this to Disabled(0) will disable this output, any other value will enable the corresponding function</Description>
+      <Values>0:Disabled,1:Manual,2:Flap,3:Flap_auto,4:Aileron,5:flaperon,6:mount_pan,7:mount_tilt,8:mount_roll,9:mount_open,10:camera_trigger,11:release,12:mount2_pan,13:mount2_tilt,14:mount2_roll,15:mount2_open,16:DifferentialSpoiler1,17:DifferentialSpoiler2,18:AileronWithInput</Values>
+      <User>Standard</User>
+    </RC6_FUNCTION>
+    <RC6_MIN>
+      <DisplayName>RC min PWM</DisplayName>
+      <Description>RC minimum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC6_MIN>
+    <RC6_TRIM>
+      <DisplayName>RC trim PWM</DisplayName>
+      <Description>RC trim (neutral) PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC6_TRIM>
+    <RC6_MAX>
+      <DisplayName>RC max PWM</DisplayName>
+      <Description>RC maximum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC6_MAX>
+    <RC6_REV>
+      <DisplayName>RC reverse</DisplayName>
+      <Description>Reverse servo operation. Ignored on APM1 unless dip-switches are disabled.</Description>
+      <Values>-1:Reversed,1:Normal</Values>
+      <User>Advanced</User>
+    </RC6_REV>
+    <RC6_DZ>
+      <DisplayName>RC dead-zone</DisplayName>
+      <Description>dead zone around trim.</Description>
+      <User>Advanced</User>
+    </RC6_DZ>
+    <RC7_FUNCTION>
+      <DisplayName>Servo out function</DisplayName>
+      <Description>Setting this to Disabled(0) will disable this output, any other value will enable the corresponding function</Description>
+      <Values>0:Disabled,1:Manual,2:Flap,3:Flap_auto,4:Aileron,5:flaperon,6:mount_pan,7:mount_tilt,8:mount_roll,9:mount_open,10:camera_trigger,11:release,12:mount2_pan,13:mount2_tilt,14:mount2_roll,15:mount2_open,16:DifferentialSpoiler1,17:DifferentialSpoiler2,18:AileronWithInput</Values>
+      <User>Standard</User>
+    </RC7_FUNCTION>
+    <RC7_MIN>
+      <DisplayName>RC min PWM</DisplayName>
+      <Description>RC minimum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC7_MIN>
+    <RC7_TRIM>
+      <DisplayName>RC trim PWM</DisplayName>
+      <Description>RC trim (neutral) PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC7_TRIM>
+    <RC7_MAX>
+      <DisplayName>RC max PWM</DisplayName>
+      <Description>RC maximum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC7_MAX>
+    <RC7_REV>
+      <DisplayName>RC reverse</DisplayName>
+      <Description>Reverse servo operation. Ignored on APM1 unless dip-switches are disabled.</Description>
+      <Values>-1:Reversed,1:Normal</Values>
+      <User>Advanced</User>
+    </RC7_REV>
+    <RC7_DZ>
+      <DisplayName>RC dead-zone</DisplayName>
+      <Description>dead zone around trim.</Description>
+      <User>Advanced</User>
+    </RC7_DZ>
+    <RC8_FUNCTION>
+      <DisplayName>Servo out function</DisplayName>
+      <Description>Setting this to Disabled(0) will disable this output, any other value will enable the corresponding function</Description>
+      <Values>0:Disabled,1:Manual,2:Flap,3:Flap_auto,4:Aileron,5:flaperon,6:mount_pan,7:mount_tilt,8:mount_roll,9:mount_open,10:camera_trigger,11:release,12:mount2_pan,13:mount2_tilt,14:mount2_roll,15:mount2_open,16:DifferentialSpoiler1,17:DifferentialSpoiler2,18:AileronWithInput</Values>
+      <User>Standard</User>
+    </RC8_FUNCTION>
+    <RC8_MIN>
+      <DisplayName>RC min PWM</DisplayName>
+      <Description>RC minimum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC8_MIN>
+    <RC8_TRIM>
+      <DisplayName>RC trim PWM</DisplayName>
+      <Description>RC trim (neutral) PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC8_TRIM>
+    <RC8_MAX>
+      <DisplayName>RC max PWM</DisplayName>
+      <Description>RC maximum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC8_MAX>
+    <RC8_REV>
+      <DisplayName>RC reverse</DisplayName>
+      <Description>Reverse servo operation. Ignored on APM1 unless dip-switches are disabled.</Description>
+      <Values>-1:Reversed,1:Normal</Values>
+      <User>Advanced</User>
+    </RC8_REV>
+    <RC8_DZ>
+      <DisplayName>RC dead-zone</DisplayName>
+      <Description>dead zone around trim.</Description>
+      <User>Advanced</User>
+    </RC8_DZ>
+    <RC9_FUNCTION>
+      <DisplayName>Servo out function</DisplayName>
+      <Description>Setting this to Disabled(0) will disable this output, any other value will enable the corresponding function</Description>
+      <Values>0:Disabled,1:Manual,2:Flap,3:Flap_auto,4:Aileron,5:flaperon,6:mount_pan,7:mount_tilt,8:mount_roll,9:mount_open,10:camera_trigger,11:release,12:mount2_pan,13:mount2_tilt,14:mount2_roll,15:mount2_open,16:DifferentialSpoiler1,17:DifferentialSpoiler2,18:AileronWithInput</Values>
+      <User>Standard</User>
+    </RC9_FUNCTION>
+    <RC9_MIN>
+      <DisplayName>RC min PWM</DisplayName>
+      <Description>RC minimum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC9_MIN>
+    <RC9_TRIM>
+      <DisplayName>RC trim PWM</DisplayName>
+      <Description>RC trim (neutral) PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC9_TRIM>
+    <RC9_MAX>
+      <DisplayName>RC max PWM</DisplayName>
+      <Description>RC maximum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC9_MAX>
+    <RC9_REV>
+      <DisplayName>RC reverse</DisplayName>
+      <Description>Reverse servo operation. Ignored on APM1 unless dip-switches are disabled.</Description>
+      <Values>-1:Reversed,1:Normal</Values>
+      <User>Advanced</User>
+    </RC9_REV>
+    <RC9_DZ>
+      <DisplayName>RC dead-zone</DisplayName>
+      <Description>dead zone around trim.</Description>
+      <User>Advanced</User>
+    </RC9_DZ>
+    <RC10_FUNCTION>
+      <DisplayName>Servo out function</DisplayName>
+      <Description>Setting this to Disabled(0) will disable this output, any other value will enable the corresponding function</Description>
+      <Values>0:Disabled,1:Manual,2:Flap,3:Flap_auto,4:Aileron,5:flaperon,6:mount_pan,7:mount_tilt,8:mount_roll,9:mount_open,10:camera_trigger,11:release,12:mount2_pan,13:mount2_tilt,14:mount2_roll,15:mount2_open,16:DifferentialSpoiler1,17:DifferentialSpoiler2,18:AileronWithInput</Values>
+      <User>Standard</User>
+    </RC10_FUNCTION>
+    <RC10_MIN>
+      <DisplayName>RC min PWM</DisplayName>
+      <Description>RC minimum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC10_MIN>
+    <RC10_TRIM>
+      <DisplayName>RC trim PWM</DisplayName>
+      <Description>RC trim (neutral) PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC10_TRIM>
+    <RC10_MAX>
+      <DisplayName>RC max PWM</DisplayName>
+      <Description>RC maximum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC10_MAX>
+    <RC10_REV>
+      <DisplayName>RC reverse</DisplayName>
+      <Description>Reverse servo operation. Ignored on APM1 unless dip-switches are disabled.</Description>
+      <Values>-1:Reversed,1:Normal</Values>
+      <User>Advanced</User>
+    </RC10_REV>
+    <RC10_DZ>
+      <DisplayName>RC dead-zone</DisplayName>
+      <Description>dead zone around trim.</Description>
+      <User>Advanced</User>
+    </RC10_DZ>
+    <RC11_FUNCTION>
+      <DisplayName>Servo out function</DisplayName>
+      <Description>Setting this to Disabled(0) will disable this output, any other value will enable the corresponding function</Description>
+      <Values>0:Disabled,1:Manual,2:Flap,3:Flap_auto,4:Aileron,5:flaperon,6:mount_pan,7:mount_tilt,8:mount_roll,9:mount_open,10:camera_trigger,11:release,12:mount2_pan,13:mount2_tilt,14:mount2_roll,15:mount2_open,16:DifferentialSpoiler1,17:DifferentialSpoiler2,18:AileronWithInput</Values>
+      <User>Standard</User>
+    </RC11_FUNCTION>
+    <RC11_MIN>
+      <DisplayName>RC min PWM</DisplayName>
+      <Description>RC minimum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC11_MIN>
+    <RC11_TRIM>
+      <DisplayName>RC trim PWM</DisplayName>
+      <Description>RC trim (neutral) PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC11_TRIM>
+    <RC11_MAX>
+      <DisplayName>RC max PWM</DisplayName>
+      <Description>RC maximum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
+      <Units>ms</Units>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RC11_MAX>
+    <RC11_REV>
+      <DisplayName>RC reverse</DisplayName>
+      <Description>Reverse servo operation. Ignored on APM1 unless dip-switches are disabled.</Description>
+      <Values>-1:Reversed,1:Normal</Values>
+      <User>Advanced</User>
+    </RC11_REV>
+    <RC11_DZ>
+      <DisplayName>RC dead-zone</DisplayName>
+      <Description>dead zone around trim.</Description>
+      <User>Advanced</User>
+    </RC11_DZ>
+    <COMPASS_OFS_X>
+      <DisplayName>Compass offsets on the X axis</DisplayName>
+      <Description>Offset to be added to the compass x-axis values to compensate for metal in the frame</Description>
+      <Range>-400 400</Range>
+      <Increment>1</Increment>
+    </COMPASS_OFS_X>
+    <COMPASS_OFS_Y>
+      <DisplayName>Compass offsets on the Y axis</DisplayName>
+      <Description>Offset to be added to the compass y-axis values to compensate for metal in the frame</Description>
+      <Range>-400 400</Range>
+      <Increment>1</Increment>
+    </COMPASS_OFS_Y>
+    <COMPASS_OFS_Z>
+      <DisplayName>Compass offsets on the Z axis</DisplayName>
+      <Description>Offset to be added to the compass z-axis values to compensate for metal in the frame</Description>
+      <Range>-400 400</Range>
+      <Increment>1</Increment>
+    </COMPASS_OFS_Z>
+    <COMPASS_DEC>
+      <DisplayName>Compass declination</DisplayName>
+      <Description>An angle to compensate between the true north and magnetic north</Description>
+      <Range>-3.142 3.142</Range>
+      <Units>Radians</Units>
+      <Increment>0.01</Increment>
+      <User>Standard</User>
+    </COMPASS_DEC>
+    <COMPASS_LEARN>
+      <DisplayName>Learn compass offsets automatically</DisplayName>
+      <Description>Enable or disable the automatic learning of compass offsets</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Advanced</User>
+    </COMPASS_LEARN>
+    <COMPASS_USE>
+      <DisplayName>Use compass for yaw</DisplayName>
+      <Description>Enable or disable the use of the compass (instead of the GPS) for determining heading</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Advanced</User>
+    </COMPASS_USE>
+    <COMPASS_AUTODEC>
+      <DisplayName>Auto Declination</DisplayName>
+      <Description>Enable or disable the automatic calculation of the declination based on gps location</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Advanced</User>
+    </COMPASS_AUTODEC>
+    <INS_PRODUCT_ID>
+      <DisplayName>IMU Product ID</DisplayName>
+      <Description>Which type of IMU is installed (read-only)</Description>
+      <User>Standard</User>
+    </INS_PRODUCT_ID>
+    <INS_ACCSCAL_X>
+      <DisplayName>Accelerometer scaling of X axis</DisplayName>
+      <Description>Accelerometer scaling of X axis.  Calculated during acceleration calibration routine</Description>
+      <User>Advanced</User>
+    </INS_ACCSCAL_X>
+    <INS_ACCSCAL_Y>
+      <DisplayName>Accelerometer scaling of Y axis</DisplayName>
+      <Description>Accelerometer scaling of Y axis  Calculated during acceleration calibration routine</Description>
+      <User>Advanced</User>
+    </INS_ACCSCAL_Y>
+    <INS_ACCSCAL_Z>
+      <DisplayName>Accelerometer scaling of Z axis</DisplayName>
+      <Description>Accelerometer scaling of Z axis  Calculated during acceleration calibration routine</Description>
+      <User>Advanced</User>
+    </INS_ACCSCAL_Z>
+    <INS_ACCOFFS_X>
+      <DisplayName>Accelerometer offsets of X axis</DisplayName>
+      <Description>Accelerometer offsets of X axis. This is setup using the acceleration calibration or level operations</Description>
+      <Units>m/s/s</Units>
+      <Range>-300 300</Range>
+      <User>Advanced</User>
+    </INS_ACCOFFS_X>
+    <INS_ACCOFFS_Y>
+      <DisplayName>Accelerometer offsets of Y axis</DisplayName>
+      <Description>Accelerometer offsets of Y axis. This is setup using the acceleration calibration or level operations</Description>
+      <Units>m/s/s</Units>
+      <Range>-300 300</Range>
+      <User>Advanced</User>
+    </INS_ACCOFFS_Y>
+    <INS_ACCOFFS_Z>
+      <DisplayName>Accelerometer offsets of Z axis</DisplayName>
+      <Description>Accelerometer offsets of Z axis. This is setup using the acceleration calibration or level operations</Description>
+      <Units>m/s/s</Units>
+      <Range>-300 300</Range>
+      <User>Advanced</User>
+    </INS_ACCOFFS_Z>
+    <INS_GYROFFS_X>
+      <DisplayName>Gyro offsets of X axis</DisplayName>
+      <Description>Gyro sensor offsets of X axis. This is setup on each boot during gyro calibrations</Description>
+      <Units>rad/s</Units>
+      <User>Advanced</User>
+    </INS_GYROFFS_X>
+    <INS_GYROFFS_Y>
+      <DisplayName>Gyro offsets of Y axis</DisplayName>
+      <Description>Gyro sensor offsets of Y axis. This is setup on each boot during gyro calibrations</Description>
+      <Units>rad/s</Units>
+      <User>Advanced</User>
+    </INS_GYROFFS_Y>
+    <INS_GYROFFS_Z>
+      <DisplayName>Gyro offsets of Z axis</DisplayName>
+      <Description>Gyro sensor offsets of Z axis. This is setup on each boot during gyro calibrations</Description>
+      <Units>rad/s</Units>
+      <User>Advanced</User>
+    </INS_GYROFFS_Z>
+    <INS_MPU6K_FILTER>
+      <DisplayName>MPU6000 filter frequency</DisplayName>
+      <Description>Filter frequency to ask the MPU6000 to apply to samples. This can be set to a lower value to try to cope with very high vibration levels in aircraft. The default value on ArduPlane and APMrover2 is 20Hz. The default value on ArduCopter is 42Hz. This option takes effect on the next reboot or gyro initialisation</Description>
+      <Units>Hz</Units>
+      <Values>0:Default,5:5Hz,10:10Hz,20:20Hz,42:42Hz,98:98Hz</Values>
+      <User>Advanced</User>
+    </INS_MPU6K_FILTER>
+    <AHRS_GPS_GAIN>
+      <DisplayName>AHRS GPS gain</DisplayName>
+      <Description>This controls how how much to use the GPS to correct the attitude. This should never be set to zero for a plane as it would result in the plane losing control in turns. For a plane please use the default value of 1.0.</Description>
+      <Range>0.0 1.0</Range>
+      <Increment>.01</Increment>
+    </AHRS_GPS_GAIN>
+    <AHRS_GPS_USE>
+      <DisplayName>AHRS use GPS for navigation</DisplayName>
+      <Description>This controls whether to use dead-reckoning or GPS based navigation. If set to 0 then the GPS won't be used for navigation, and only dead reckoning will be used. A value of zero should never be used for normal flight.</Description>
+      <User>Advanced</User>
+    </AHRS_GPS_USE>
+    <AHRS_YAW_P>
+      <DisplayName>Yaw P</DisplayName>
+      <Description>This controls the weight the compass or GPS has on the heading. A higher value means the heading will track the yaw source (GPS or compass) more rapidly.</Description>
+      <Range>0.1 0.4</Range>
+      <Increment>.01</Increment>
+    </AHRS_YAW_P>
+    <AHRS_RP_P>
+      <DisplayName>AHRS RP_P</DisplayName>
+      <Description>This controls how fast the accelerometers correct the attitude</Description>
+      <Range>0.1 0.4</Range>
+      <Increment>.01</Increment>
+    </AHRS_RP_P>
+    <AHRS_WIND_MAX>
+      <DisplayName>Maximum wind</DisplayName>
+      <Description>This sets the maximum allowable difference between ground speed and airspeed. This allows the plane to cope with a failing airspeed sensor. A value of zero means to use the airspeed as is.</Description>
+      <Range>0 127</Range>
+      <Units>m/s</Units>
+      <Increment>1</Increment>
+    </AHRS_WIND_MAX>
+    <AHRS_BARO_USE>
+      <DisplayName>AHRS Use Barometer</DisplayName>
+      <Description>This controls the use of the barometer for vertical acceleration compensation in AHRS. It is currently recommended that you set this value to zero unless you are a developer experimenting with the AHRS system.</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Advanced</User>
+    </AHRS_BARO_USE>
+    <AHRS_TRIM_X>
+      <DisplayName>AHRS Trim Roll</DisplayName>
+      <Description>Compensates for the roll angle difference between the control board and the frame</Description>
+      <Units>Radians</Units>
+      <User>Advanced</User>
+    </AHRS_TRIM_X>
+    <AHRS_TRIM_Y>
+      <DisplayName>AHRS Trim Pitch</DisplayName>
+      <Description>Compensates for the pitch angle difference between the control board and the frame</Description>
+      <Units>Radians</Units>
+      <User>Advanced</User>
+    </AHRS_TRIM_Y>
+    <AHRS_TRIM_Z>
+      <DisplayName>AHRS Trim Yaw</DisplayName>
+      <Description>Not Used</Description>
+      <Units>Radians</Units>
+      <User>Advanced</User>
+    </AHRS_TRIM_Z>
+    <AHRS_ORIENTATION>
+      <DisplayName>Board Orientation</DisplayName>
+      <Description>Overall board orientation relative to the standard orientation for the board type. This rotates the IMU and compass readings to allow the board to be oriented in your vehicle at any 90 or 45 degree angle. This option takes affect on next boot. After changing you will need to re-level your vehicle.</Description>
+      <Values>0:None,1:Yaw45,2:Yaw90,3:Yaw135,4:Yaw180,5:Yaw225,6:Yaw270,7:Yaw315,8:Roll180,9:Roll180Yaw45,10:Roll180Yaw90,11:Roll180Yaw135,12:Pitch180,13:Roll180Yaw225,14:Roll180Yaw270,15:Roll180Yaw315,16:Roll90,17:Roll90Yaw45,18:Roll90Yaw135,19:Roll270,20:Roll270Yaw45,21:Roll270Yaw90,22:Roll270Yaw136,23:Pitch90,24:Pitch270</Values>
+      <User>Advanced</User>
+    </AHRS_ORIENTATION>
+    <ARSPD_ENABLE>
+      <DisplayName>Airspeed enable</DisplayName>
+      <Description>enable airspeed sensor</Description>
+      <Values>0:Disable,1:Enable</Values>
+    </ARSPD_ENABLE>
+    <ARSPD_USE>
+      <DisplayName>Airspeed use</DisplayName>
+      <Description>use airspeed for flight control</Description>
+      <Values>1:Use,0:Don't Use</Values>
+    </ARSPD_USE>
+    <ARSPD_OFFSET>
+      <DisplayName>Airspeed offset</DisplayName>
+      <Description>Airspeed calibration offset</Description>
+      <Increment>0.1</Increment>
+    </ARSPD_OFFSET>
+    <ARSPD_RATIO>
+      <DisplayName>Airspeed ratio</DisplayName>
+      <Description>Airspeed calibration ratio</Description>
+      <Increment>0.1</Increment>
+    </ARSPD_RATIO>
+    <MNT_MODE>
+      <DisplayName>Mount operation mode</DisplayName>
+      <Description>Camera or antenna mount operation mode</Description>
+      <Values>0:retract,1:neutral,2:MavLink_targeting,3:RC_targeting,4:GPS_point</Values>
+      <User>Standard</User>
+    </MNT_MODE>
+    <MNT_RETRACT_X>
+      <DisplayName>Mount roll angle when in retracted position</DisplayName>
+      <Description>Mount roll angle when in retracted position</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_RETRACT_X>
+    <MNT_RETRACT_Y>
+      <DisplayName>Mount tilt/pitch angle when in retracted position</DisplayName>
+      <Description>Mount tilt/pitch angle when in retracted position</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_RETRACT_Y>
+    <MNT_RETRACT_Z>
+      <DisplayName>Mount yaw/pan angle when in retracted position</DisplayName>
+      <Description>Mount yaw/pan angle when in retracted position</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_RETRACT_Z>
+    <MNT_NEUTRAL_X>
+      <DisplayName>Mount roll angle when in neutral position</DisplayName>
+      <Description>Mount roll angle when in neutral position</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_NEUTRAL_X>
+    <MNT_NEUTRAL_Y>
+      <DisplayName>Mount tilt/pitch angle when in neutral position</DisplayName>
+      <Description>Mount tilt/pitch angle when in neutral position</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_NEUTRAL_Y>
+    <MNT_NEUTRAL_Z>
+      <DisplayName>Mount pan/yaw angle when in neutral position</DisplayName>
+      <Description>Mount pan/yaw angle when in neutral position</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_NEUTRAL_Z>
+    <MNT_CONTROL_X>
+      <DisplayName>Mount roll angle command from groundstation</DisplayName>
+      <Description>Mount roll angle when in MavLink or RC control operation mode</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+    </MNT_CONTROL_X>
+    <MNT_CONTROL_Y>
+      <DisplayName>Mount tilt/pitch angle command from groundstation</DisplayName>
+      <Description>Mount tilt/pitch angle when in MavLink or RC control operation mode</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+    </MNT_CONTROL_Y>
+    <MNT_CONTROL_Z>
+      <DisplayName>Mount pan/yaw angle command from groundstation</DisplayName>
+      <Description>Mount pan/yaw angle when in MavLink or RC control operation mode</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+    </MNT_CONTROL_Z>
+    <MNT_STAB_ROLL>
+      <DisplayName>Stabilize mount's roll angle</DisplayName>
+      <Description>enable roll stabilisation relative to Earth</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </MNT_STAB_ROLL>
+    <MNT_STAB_TILT>
+      <DisplayName>Stabilize mount's pitch/tilt angle</DisplayName>
+      <Description>enable tilt/pitch stabilisation relative to Earth</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </MNT_STAB_TILT>
+    <MNT_STAB_PAN>
+      <DisplayName>Stabilize mount pan/yaw angle</DisplayName>
+      <Description>enable pan/yaw stabilisation relative to Earth</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </MNT_STAB_PAN>
+    <MNT_RC_IN_ROLL>
+      <DisplayName>roll RC input channel</DisplayName>
+      <Description>0 for none, any other for the RC channel to be used to control roll movements</Description>
+      <Values>0:Disabled,5:RC5,6:RC6,7:RC7,8:RC8</Values>
+      <User>Standard</User>
+    </MNT_RC_IN_ROLL>
+    <MNT_ANGMIN_ROL>
+      <DisplayName>Minimum roll angle</DisplayName>
+      <Description>Minimum physical roll angular position of mount.</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_ANGMIN_ROL>
+    <MNT_ANGMAX_ROL>
+      <DisplayName>Maximum roll angle</DisplayName>
+      <Description>Maximum physical roll angular position of the mount</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_ANGMAX_ROL>
+    <MNT_RC_IN_TILT>
+      <DisplayName>tilt (pitch) RC input channel</DisplayName>
+      <Description>0 for none, any other for the RC channel to be used to control tilt (pitch) movements</Description>
+      <Values>0:Disabled,5:RC5,6:RC6,7:RC7,8:RC8</Values>
+      <User>Standard</User>
+    </MNT_RC_IN_TILT>
+    <MNT_ANGMIN_TIL>
+      <DisplayName>Minimum tilt angle</DisplayName>
+      <Description>Minimum physical tilt (pitch) angular position of mount.</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_ANGMIN_TIL>
+    <MNT_ANGMAX_TIL>
+      <DisplayName>Maximum tilt angle</DisplayName>
+      <Description>Maximum physical tilt (pitch) angular position of the mount</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_ANGMAX_TIL>
+    <MNT_RC_IN_PAN>
+      <DisplayName>pan (yaw) RC input channel</DisplayName>
+      <Description>0 for none, any other for the RC channel to be used to control pan (yaw) movements</Description>
+      <Values>0:Disabled,5:RC5,6:RC6,7:RC7,8:RC8</Values>
+      <User>Standard</User>
+    </MNT_RC_IN_PAN>
+    <MNT_ANGMIN_PAN>
+      <DisplayName>Minimum pan angle</DisplayName>
+      <Description>Minimum physical pan (yaw) angular position of mount.</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_ANGMIN_PAN>
+    <MNT_ANGMAX_PAN>
+      <DisplayName>Maximum pan angle</DisplayName>
+      <Description>Maximum physical pan (yaw) angular position of the mount</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_ANGMAX_PAN>
+    <MNT_JSTICK_SPD>
+      <DisplayName>mount joystick speed</DisplayName>
+      <Description>0 for position control, small for low speeds, 10 for max speed</Description>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT_JSTICK_SPD>
+    <MNT2_MODE>
+      <DisplayName>Mount operation mode</DisplayName>
+      <Description>Camera or antenna mount operation mode</Description>
+      <Values>0:retract,1:neutral,2:MavLink_targeting,3:RC_targeting,4:GPS_point</Values>
+      <User>Standard</User>
+    </MNT2_MODE>
+    <MNT2_RETRACT_X>
+      <DisplayName>Mount roll angle when in retracted position</DisplayName>
+      <Description>Mount roll angle when in retracted position</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_RETRACT_X>
+    <MNT2_RETRACT_Y>
+      <DisplayName>Mount tilt/pitch angle when in retracted position</DisplayName>
+      <Description>Mount tilt/pitch angle when in retracted position</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_RETRACT_Y>
+    <MNT2_RETRACT_Z>
+      <DisplayName>Mount yaw/pan angle when in retracted position</DisplayName>
+      <Description>Mount yaw/pan angle when in retracted position</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_RETRACT_Z>
+    <MNT2_NEUTRAL_X>
+      <DisplayName>Mount roll angle when in neutral position</DisplayName>
+      <Description>Mount roll angle when in neutral position</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_NEUTRAL_X>
+    <MNT2_NEUTRAL_Y>
+      <DisplayName>Mount tilt/pitch angle when in neutral position</DisplayName>
+      <Description>Mount tilt/pitch angle when in neutral position</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_NEUTRAL_Y>
+    <MNT2_NEUTRAL_Z>
+      <DisplayName>Mount pan/yaw angle when in neutral position</DisplayName>
+      <Description>Mount pan/yaw angle when in neutral position</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_NEUTRAL_Z>
+    <MNT2_CONTROL_X>
+      <DisplayName>Mount roll angle command from groundstation</DisplayName>
+      <Description>Mount roll angle when in MavLink or RC control operation mode</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+    </MNT2_CONTROL_X>
+    <MNT2_CONTROL_Y>
+      <DisplayName>Mount tilt/pitch angle command from groundstation</DisplayName>
+      <Description>Mount tilt/pitch angle when in MavLink or RC control operation mode</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+    </MNT2_CONTROL_Y>
+    <MNT2_CONTROL_Z>
+      <DisplayName>Mount pan/yaw angle command from groundstation</DisplayName>
+      <Description>Mount pan/yaw angle when in MavLink or RC control operation mode</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+    </MNT2_CONTROL_Z>
+    <MNT2_STAB_ROLL>
+      <DisplayName>Stabilize mount's roll angle</DisplayName>
+      <Description>enable roll stabilisation relative to Earth</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </MNT2_STAB_ROLL>
+    <MNT2_STAB_TILT>
+      <DisplayName>Stabilize mount's pitch/tilt angle</DisplayName>
+      <Description>enable tilt/pitch stabilisation relative to Earth</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </MNT2_STAB_TILT>
+    <MNT2_STAB_PAN>
+      <DisplayName>Stabilize mount pan/yaw angle</DisplayName>
+      <Description>enable pan/yaw stabilisation relative to Earth</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </MNT2_STAB_PAN>
+    <MNT2_RC_IN_ROLL>
+      <DisplayName>roll RC input channel</DisplayName>
+      <Description>0 for none, any other for the RC channel to be used to control roll movements</Description>
+      <Values>0:Disabled,5:RC5,6:RC6,7:RC7,8:RC8</Values>
+      <User>Standard</User>
+    </MNT2_RC_IN_ROLL>
+    <MNT2_ANGMIN_ROL>
+      <DisplayName>Minimum roll angle</DisplayName>
+      <Description>Minimum physical roll angular position of mount.</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_ANGMIN_ROL>
+    <MNT2_ANGMAX_ROL>
+      <DisplayName>Maximum roll angle</DisplayName>
+      <Description>Maximum physical roll angular position of the mount</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_ANGMAX_ROL>
+    <MNT2_RC_IN_TILT>
+      <DisplayName>tilt (pitch) RC input channel</DisplayName>
+      <Description>0 for none, any other for the RC channel to be used to control tilt (pitch) movements</Description>
+      <Values>0:Disabled,5:RC5,6:RC6,7:RC7,8:RC8</Values>
+      <User>Standard</User>
+    </MNT2_RC_IN_TILT>
+    <MNT2_ANGMIN_TIL>
+      <DisplayName>Minimum tilt angle</DisplayName>
+      <Description>Minimum physical tilt (pitch) angular position of mount.</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_ANGMIN_TIL>
+    <MNT2_ANGMAX_TIL>
+      <DisplayName>Maximum tilt angle</DisplayName>
+      <Description>Maximum physical tilt (pitch) angular position of the mount</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_ANGMAX_TIL>
+    <MNT2_RC_IN_PAN>
+      <DisplayName>pan (yaw) RC input channel</DisplayName>
+      <Description>0 for none, any other for the RC channel to be used to control pan (yaw) movements</Description>
+      <Values>0:Disabled,5:RC5,6:RC6,7:RC7,8:RC8</Values>
+      <User>Standard</User>
+    </MNT2_RC_IN_PAN>
+    <MNT2_ANGMIN_PAN>
+      <DisplayName>Minimum pan angle</DisplayName>
+      <Description>Minimum physical pan (yaw) angular position of mount.</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_ANGMIN_PAN>
+    <MNT2_ANGMAX_PAN>
+      <DisplayName>Maximum pan angle</DisplayName>
+      <Description>Maximum physical pan (yaw) angular position of the mount</Description>
+      <Units>Centi-Degrees</Units>
+      <Range>-18000 17999</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_ANGMAX_PAN>
+    <MNT2_JSTICK_SPD>
+      <DisplayName>mount joystick speed</DisplayName>
+      <Description>0 for position control, small for low speeds, 10 for max speed</Description>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </MNT2_JSTICK_SPD>
+    <SERIAL0_BAUD>
+      <DisplayName>Telemetry Baud Rate</DisplayName>
+      <Description>The baud rate used on the main uart</Description>
+      <Values>1:1200,2:2400,4:4800,9:9600,19:19200,38:38400,57:57600,111:111100,115:115200</Values>
+      <User>Standard</User>
+    </SERIAL0_BAUD>
+    <SERIAL3_BAUD>
+      <DisplayName>Telemetry Baud Rate</DisplayName>
+      <Description>The baud rate used on the telemetry port</Description>
+      <Values>1:1200,2:2400,4:4800,9:9600,19:19200,38:38400,57:57600,111:111100,115:115200</Values>
+      <User>Standard</User>
+    </SERIAL3_BAUD>
+    <TELEM_DELAY>
+      <DisplayName>Telemetry startup delay</DisplayName>
+      <Description>The amount of time (in seconds) to delay radio telemetry to prevent an Xbee bricking on power up</Description>
+      <User>Standard</User>
+      <Units>seconds</Units>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+    </TELEM_DELAY>
+    <KFF_PTCHCOMP>
+      <DisplayName>Pitch Compensation</DisplayName>
+      <Description>Adds pitch input to compensate for the loss of lift due to roll control. 0 = 0 %, 1 = 100%</Description>
+      <Range>0 1</Range>
+      <Increment>0.01</Increment>
+      <User>Advanced</User>
+    </KFF_PTCHCOMP>
+    <KFF_RDDRMIX>
+      <DisplayName>Rudder Mix</DisplayName>
+      <Description>The amount of rudder mix to apply during aileron movement 0 = 0 %, 1 = 100%</Description>
+      <Range>0 1</Range>
+      <Increment>0.01</Increment>
+      <User>Standard</User>
+    </KFF_RDDRMIX>
+    <KFF_PTCH2THR>
+      <DisplayName>Pitch to Throttle Mix</DisplayName>
+      <Description>Pitch to throttle feed-forward gain.</Description>
+      <Range>0 5</Range>
+      <Increment>0.01</Increment>
+      <User>Advanced</User>
+    </KFF_PTCH2THR>
+    <KFF_THR2PTCH>
+      <DisplayName>Throttle to Pitch Mix</DisplayName>
+      <Description>Throttle to pitch feed-forward gain.</Description>
+      <Range>0 5</Range>
+      <Increment>0.01</Increment>
+      <User>Advanced</User>
+    </KFF_THR2PTCH>
+    <MANUAL_LEVEL>
+      <DisplayName>Manual Level</DisplayName>
+      <Description>Setting this to Disabled(0) will enable autolevel on every boot. Setting it to Enabled(1) will do a calibration only when you tell it to</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Advanced</User>
+    </MANUAL_LEVEL>
+    <STICK_MIXING>
+      <DisplayName>Stick Mixing</DisplayName>
+      <Description>When enabled, this adds user stick input to the control surfaces in auto modes, allowing the user to have some degree of flight control without changing modes</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Advanced</User>
+    </STICK_MIXING>
+    <RUDDER_STEER>
+      <DisplayName>Rudder steering on takeoff and landing</DisplayName>
+      <Description>When enabled, only rudder will be used for steering during takeoff and landing, with the ailerons used to hold the plane level</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>User</User>
+    </RUDDER_STEER>
+    <land_pitch_cd>
+      <DisplayName>Landing Pitch</DisplayName>
+      <Description>Used in autoland for planes without airspeed sensors in hundredths of a degree</Description>
+      <Units>centi-Degrees</Units>
+      <User>Advanced</User>
+    </land_pitch_cd>
+    <land_flare_alt>
+      <DisplayName>Landing flare altitude</DisplayName>
+      <Description>Altitude in autoland at which to lock heading and flare to the LAND_PITCH_CD pitch</Description>
+      <Units>meters</Units>
+      <Increment>0.1</Increment>
+      <User>Advanced</User>
+    </land_flare_alt>
+    <land_flare_sec>
+      <DisplayName>Landing flare time</DisplayName>
+      <Description>Time before landing point at which to lock heading and flare to the LAND_PITCH_CD pitch</Description>
+      <Units>seconds</Units>
+      <Increment>0.1</Increment>
+      <User>Advanced</User>
+    </land_flare_sec>
+    <XTRK_GAIN_SC>
+      <DisplayName>Crosstrack Gain</DisplayName>
+      <Description>The scale between distance off the line and angle to meet the line (in Degrees * 100)</Description>
+      <Range>0 2000</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </XTRK_GAIN_SC>
+    <XTRK_ANGLE_CD>
+      <DisplayName>Crosstrack Entry Angle</DisplayName>
+      <Description>Maximum angle used to correct for track following.</Description>
+      <Units>centi-Degrees</Units>
+      <Range>0 9000</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </XTRK_ANGLE_CD>
+    <XTRK_USE_WIND>
+      <DisplayName>Crosstrack Wind correction</DisplayName>
+      <Description>If enabled, use wind estimation for navigation crosstrack when using a compass for yaw</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </XTRK_USE_WIND>
+    <XTRK_MIN_DIST>
+      <DisplayName>Crosstrack mininum distance</DisplayName>
+      <Description>Minimum distance in meters between waypoints to do crosstrack correction.</Description>
+      <Units>Meters</Units>
+      <Range>0 32767</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </XTRK_MIN_DIST>
+    <ALT_MIX>
+      <DisplayName>Gps to Baro Mix</DisplayName>
+      <Description>The percent of mixing between gps altitude and baro altitude. 0 = 100% gps, 1 = 100% baro</Description>
+      <Units>Percent</Units>
+      <Range>0 1</Range>
+      <Increment>0.1</Increment>
+      <User>Advanced</User>
+    </ALT_MIX>
+    <ALT_CTRL_ALG>
+      <DisplayName>Altitude control algorithm</DisplayName>
+      <Description>This sets what algorithm will be used for altitude control. The default is to select the algorithm based on whether airspeed is enabled. If you set it to 1, then the airspeed based algorithm won't be used for altitude control, but airspeed can be used for other flight control functions</Description>
+      <Values>0:Default Method,1:non-airspeed</Values>
+      <User>Advanced</User>
+    </ALT_CTRL_ALG>
+    <ALT_OFFSET>
+      <DisplayName>Altitude offset</DisplayName>
+      <Description>This is added to the target altitude in automatic flight. It can be used to add a global altitude offset to a mission, or to adjust for barometric pressure changes</Description>
+      <Units>Meters</Units>
+      <Range>-32767 32767</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </ALT_OFFSET>
+    <WP_RADIUS>
+      <DisplayName>Waypoint Radius</DisplayName>
+      <Description>Defines the distance from a waypoint, that when crossed indicates the wp has been hit.</Description>
+      <Units>Meters</Units>
+      <Range>1 127</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </WP_RADIUS>
+    <WP_LOITER_RAD>
+      <DisplayName>Waypoint Loiter Radius</DisplayName>
+      <Description>Defines the distance from the waypoint center, the plane will maintain during a loiter</Description>
+      <Units>Meters</Units>
+      <Range>1 32767</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </WP_LOITER_RAD>
+    <FENCE_ACTION>
+      <DisplayName>Action on geofence breach</DisplayName>
+      <Description>What to do on fence breach</Description>
+      <Values>0:None,1:GuidedMode,2:ReportOnly</Values>
+      <User>Standard</User>
+    </FENCE_ACTION>
+    <FENCE_TOTAL>
+      <DisplayName>Fence Total</DisplayName>
+      <Description>Number of geofence points currently loaded</Description>
+      <User>Standard</User>
+    </FENCE_TOTAL>
+    <FENCE_CHANNEL>
+      <DisplayName>Fence Channel</DisplayName>
+      <Description>RC Channel to use to enable geofence. PWM input above 1750 enables the geofence</Description>
+      <User>Standard</User>
+    </FENCE_CHANNEL>
+    <FENCE_MINALT>
+      <DisplayName>Fence Minimum Altitude</DisplayName>
+      <Description>Minimum altitude allowed before geofence triggers</Description>
+      <Units>meters</Units>
+      <Range>0 32767</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </FENCE_MINALT>
+    <FENCE_MAXALT>
+      <DisplayName>Fence Maximum Altitude</DisplayName>
+      <Description>Maximum altitude allowed before geofence triggers</Description>
+      <Units>meters</Units>
+      <Range>0 32767</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </FENCE_MAXALT>
+    <ARSPD_FBW_MIN>
+      <DisplayName>Fly By Wire Minimum Airspeed</DisplayName>
+      <Description>Airspeed corresponding to minimum throttle in Fly By Wire B mode.</Description>
+      <Units>m/s</Units>
+      <Range>5 50</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </ARSPD_FBW_MIN>
+    <ARSPD_FBW_MAX>
+      <DisplayName>Fly By Wire Maximum Airspeed</DisplayName>
+      <Description>Airspeed corresponding to maximum throttle in Fly By Wire B mode.</Description>
+      <Units>m/s</Units>
+      <Range>5 50</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </ARSPD_FBW_MAX>
+    <FBWB_ELEV_REV>
+      <DisplayName>Fly By Wire elevator reverse</DisplayName>
+      <Description>Reverse sense of elevator in FBWB. When set to 0 up elevator (pulling back on the stick) means to lower altitude. When set to 1, up elevator means to raise altitude.</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </FBWB_ELEV_REV>
+    <THR_MIN>
+      <DisplayName>Minimum Throttle</DisplayName>
+      <Description>The minimum throttle setting to which the autopilot will apply.</Description>
+      <Units>Percent</Units>
+      <Range>0 100</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </THR_MIN>
+    <THR_MAX>
+      <DisplayName>Maximum Throttle</DisplayName>
+      <Description>The maximum throttle setting to which the autopilot will apply.</Description>
+      <Units>Percent</Units>
+      <Range>0 100</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </THR_MAX>
+    <THR_SLEWRATE>
+      <DisplayName>Throttle slew rate</DisplayName>
+      <Description>maximum percentage change in throttle per second. A setting of 10 means to not change the throttle by more than 10% of the full throttle range in one second</Description>
+      <Units>Percent</Units>
+      <Range>0 100</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </THR_SLEWRATE>
+    <THR_SUPP_MAN>
+      <DisplayName>Throttle suppress manual passthru</DisplayName>
+      <Description>When throttle is supressed in auto mode it is normally forced to zero. If you enable this option, then while suppressed it will be manual throttle. This is useful on petrol engines to hold the idle throttle manually while waiting for takeoff</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Advanced</User>
+    </THR_SUPP_MAN>
+    <THR_PASS_STAB>
+      <DisplayName>Throttle passthru in stabilize</DisplayName>
+      <Description>If this is set then when in STABILIZE or FBWA mode the throttle is a direct passthru from the transmitter. This means the THR_MIN and THR_MAX settings are not used in these modes. This is useful for petrol engines where you setup a throttle cut switch that suppresses the throttle below the normal minimum.</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Advanced</User>
+    </THR_PASS_STAB>
+    <THR_FAILSAFE>
+      <DisplayName>Throttle Failsafe Enable</DisplayName>
+      <Description>The throttle failsafe allows you to configure a software failsafe activated by a setting on the throttle input channel</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </THR_FAILSAFE>
+    <THR_FS_VALUE>
+      <DisplayName>Throttle Failsafe Value</DisplayName>
+      <Description>The PWM level on channel 3 below which throttle sailsafe triggers</Description>
+      <User>Standard</User>
+    </THR_FS_VALUE>
+    <TRIM_THROTTLE>
+      <DisplayName>Throttle cruise percentage</DisplayName>
+      <Description>The target percentage of throttle to apply for normal flight</Description>
+      <Units>Percent</Units>
+      <Range>0 100</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </TRIM_THROTTLE>
+    <THROTTLE_NUDGE>
+      <DisplayName>Throttle nudge enable</DisplayName>
+      <Description>When enabled, this uses the throttle input in auto-throttle modes to 'nudge' the throttle to higher or lower values</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </THROTTLE_NUDGE>
+    <FS_SHORT_ACTN>
+      <DisplayName>Short failsafe action</DisplayName>
+      <Description>The action to take on a short (1 second) failsafe event</Description>
+      <Values>0:None,1:ReturnToLaunch</Values>
+      <User>Standard</User>
+    </FS_SHORT_ACTN>
+    <FS_LONG_ACTN>
+      <DisplayName>Long failsafe action</DisplayName>
+      <Description>The action to take on a long (20 second) failsafe event</Description>
+      <Values>0:None,1:ReturnToLaunch</Values>
+      <User>Standard</User>
+    </FS_LONG_ACTN>
+    <FS_GCS_ENABL>
+      <DisplayName>GCS failsafe enable</DisplayName>
+      <Description>Enable ground control station telemetry failsafe. Failsafe will trigger after 20 seconds of no MAVLink heartbeat messages. WARNING: Enabling this option opens up the possibility of your plane going into failsafe mode and running the motor on the ground it it loses contact with your ground station. If this option is enabled on an electric plane then either use a separate motor arming switch or remove the propeller in any ground testing.</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </FS_GCS_ENABL>
+    <FLTMODE_CH>
+      <DisplayName>Flightmode channel</DisplayName>
+      <Description>RC Channel to use for flight mode control</Description>
+      <User>Advanced</User>
+    </FLTMODE_CH>
+    <FLTMODE1>
+      <DisplayName>FlightMode1</DisplayName>
+      <Values>0:Manual,1:CIRCLE,2:STABILIZE,3:TRAINING,5:FBWA,6:FBWB,10:Auto,11:RTL,12:Loiter,15:Guided</Values>
+      <User>Standard</User>
+      <Description>Flight mode for switch position 1 (910 to 1230 and above 2049)</Description>
+    </FLTMODE1>
+    <FLTMODE2>
+      <DisplayName>FlightMode2</DisplayName>
+      <Description>Flight mode for switch position 2 (1231 to 1360)</Description>
+      <Values>0:Manual,1:CIRCLE,2:STABILIZE,3:TRAINING,5:FBWA,6:FBWB,10:Auto,11:RTL,12:Loiter,15:Guided</Values>
+      <User>Standard</User>
+    </FLTMODE2>
+    <FLTMODE3>
+      <DisplayName>FlightMode3</DisplayName>
+      <Description>Flight mode for switch position 3 (1361 to 1490)</Description>
+      <Values>0:Manual,1:CIRCLE,2:STABILIZE,3:TRAINING,5:FBWA,6:FBWB,10:Auto,11:RTL,12:Loiter,15:Guided</Values>
+      <User>Standard</User>
+    </FLTMODE3>
+    <FLTMODE4>
+      <DisplayName>FlightMode4</DisplayName>
+      <Description>Flight mode for switch position 4 (1491 to 1620)</Description>
+      <Values>0:Manual,1:CIRCLE,2:STABILIZE,3:TRAINING,5:FBWA,6:FBWB,10:Auto,11:RTL,12:Loiter,15:Guided</Values>
+      <User>Standard</User>
+    </FLTMODE4>
+    <FLTMODE5>
+      <DisplayName>FlightMode5</DisplayName>
+      <Description>Flight mode for switch position 5 (1621 to 1749)</Description>
+      <Values>0:Manual,1:CIRCLE,2:STABILIZE,3:TRAINING,5:FBWA,6:FBWB,10:Auto,11:RTL,12:Loiter,15:Guided</Values>
+      <User>Standard</User>
+    </FLTMODE5>
+    <FLTMODE6>
+      <DisplayName>FlightMode6</DisplayName>
+      <Description>Flight mode for switch position 6 (1750 to 2049)</Description>
+      <Values>0:Manual,1:CIRCLE,2:STABILIZE,3:TRAINING,5:FBWA,6:FBWB,10:Auto,11:RTL,12:Loiter,15:Guided</Values>
+      <User>Standard</User>
+    </FLTMODE6>
+    <LIM_ROLL_CD>
+      <DisplayName>Maximum Bank Angle</DisplayName>
+      <Description>The maximum commanded bank angle in either direction</Description>
+      <Units>centi-Degrees</Units>
+      <Range>0 9000</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </LIM_ROLL_CD>
+    <LIM_PITCH_MAX>
+      <DisplayName>Maximum Pitch Angle</DisplayName>
+      <Description>The maximum commanded pitch up angle</Description>
+      <Units>centi-Degrees</Units>
+      <Range>0 9000</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </LIM_PITCH_MAX>
+    <LIM_PITCH_MIN>
+      <DisplayName>Minimum Pitch Angle</DisplayName>
+      <Description>The minimum commanded pitch down angle</Description>
+      <Units>centi-Degrees</Units>
+      <Range>-9000 0</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </LIM_PITCH_MIN>
+    <AUTO_TRIM>
+      <DisplayName>Auto trim</DisplayName>
+      <Description>Set RC trim PWM levels to current levels when switching away from manual mode</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </AUTO_TRIM>
+    <MIX_MODE>
+      <DisplayName>Elevon mixing</DisplayName>
+      <Description>Enable elevon mixing</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>User</User>
+    </MIX_MODE>
+    <ELEVON_REVERSE>
+      <DisplayName>Elevon reverse</DisplayName>
+      <Description>Reverse elevon mixing</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>User</User>
+    </ELEVON_REVERSE>
+    <ELEVON_CH1_REV>
+      <DisplayName>Elevon reverse</DisplayName>
+      <Description>Reverse elevon channel 1</Description>
+      <Values>-1:Disabled,1:Enabled</Values>
+      <User>User</User>
+    </ELEVON_CH1_REV>
+    <ELEVON_CH2_REV>
+      <DisplayName>Elevon reverse</DisplayName>
+      <Description>Reverse elevon channel 2</Description>
+      <Values>-1:Disabled,1:Enabled</Values>
+      <User>User</User>
+    </ELEVON_CH2_REV>
+    <SYS_NUM_RESETS>
+      <DisplayName>Num Resets</DisplayName>
+      <Description>Number of APM board resets</Description>
+      <User>Advanced</User>
+    </SYS_NUM_RESETS>
+    <LOG_BITMASK>
+      <DisplayName>Log bitmask</DisplayName>
+      <Description>bitmap of log fields to enable</Description>
+      <User>Advanced</User>
+    </LOG_BITMASK>
+    <RST_SWITCH_CH>
+      <DisplayName>Reset Switch Channel</DisplayName>
+      <Description>RC channel to use to reset to last flight mode	after geofence takeover.</Description>
+      <User>Advanced</User>
+    </RST_SWITCH_CH>
+    <RST_MISSION_CH>
+      <DisplayName>Reset Mission Channel</DisplayName>
+      <Description>RC channel to use to reset the mission to the first waypoint. When this channel goes above 1750 the mission is reset. Set RST_MISSION_CH to 0 to disable.</Description>
+      <User>Advanced</User>
+    </RST_MISSION_CH>
+    <TRIM_ARSPD_CM>
+      <DisplayName>Target airspeed</DisplayName>
+      <Description>Airspeed in cm/s to aim for when airspeed is enabled in auto mode</Description>
+      <Units>cm/s</Units>
+      <User>User</User>
+    </TRIM_ARSPD_CM>
+    <SCALING_SPEED>
+      <DisplayName>speed used for speed scaling calculations</DisplayName>
+      <Description>Airspeed in m/s to use when calculating surface speed scaling. Note that changing this value will affect all PID values</Description>
+      <Units>m/s</Units>
+      <User>Advanced</User>
+    </SCALING_SPEED>
+    <MIN_GNDSPD_CM>
+      <DisplayName>Minimum ground speed</DisplayName>
+      <Description>Minimum ground speed in cm/s when under airspeed control</Description>
+      <Units>cm/s</Units>
+      <User>Advanced</User>
+    </MIN_GNDSPD_CM>
+    <TRIM_PITCH_CD>
+      <DisplayName>Pitch angle offset</DisplayName>
+      <Description>offset to add to pitch - used for trimming tail draggers</Description>
+      <Units>centi-Degrees</Units>
+      <User>Advanced</User>
+    </TRIM_PITCH_CD>
+    <ALT_HOLD_RTL>
+      <DisplayName>RTL altitude</DisplayName>
+      <Description>Return to launch target altitude</Description>
+      <Units>centimeters</Units>
+      <User>User</User>
+    </ALT_HOLD_RTL>
+    <MAG_ENABLE>
+      <DisplayName>Enable Compass</DisplayName>
+      <Description>Setting this to Enabled(1) will enable the compass. Setting this to Disabled(0) will disable the compass</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </MAG_ENABLE>
+    <APM_PER_VOLT>
+      <DisplayName>Apms per volt</DisplayName>
+      <Description>Number of amps that a 1V reading on the current sensor corresponds to</Description>
+      <Units>A/V</Units>
+      <User>Standard</User>
+    </APM_PER_VOLT>
+    <AMP_OFFSET>
+      <DisplayName>AMP offset</DisplayName>
+      <Description>Voltage offset at zero current on current sensor</Description>
+      <Units>Volts</Units>
+      <User>Standard</User>
+    </AMP_OFFSET>
+    <BATT_CAPACITY>
+      <DisplayName>Battery capacity</DisplayName>
+      <Description>Capacity of the battery in mAh when full</Description>
+      <Units>mAh</Units>
+      <User>Standard</User>
+    </BATT_CAPACITY>
+    <BATT_VOLT_PIN>
+      <DisplayName>Battery Voltage sensing pin</DisplayName>
+      <Description>Setting this to 0 ~ 13 will enable battery current sensing on pins A0 ~ A13.</Description>
+      <Values>-1:Disabled, 0:A0, 1:A1, 13:A13</Values>
+      <User>Standard</User>
+    </BATT_VOLT_PIN>
+    <BATT_CURR_PIN>
+      <DisplayName>Battery Current sensing pin</DisplayName>
+      <Description>Setting this to 0 ~ 13 will enable battery current sensing on pins A0 ~ A13.</Description>
+      <Values>-1:Disabled, 1:A1, 2:A2, 12:A12</Values>
+      <User>Standard</User>
+    </BATT_CURR_PIN>
+    <RSSI_PIN>
+      <DisplayName>Receiver RSSI sensing pin</DisplayName>
+      <Description>This selects an analog pin for the receiver RSSI voltage. It assumes the voltage is 5V for max rssi, 0V for minimum</Description>
+      <Values>-1:Disabled, 0:A0, 1:A1, 13:A13</Values>
+      <User>Standard</User>
+      <Group>CAM_</Group>
+      <Path>../libraries/AP_Camera/AP_Camera.cpp</Path>
+    </RSSI_PIN>
+  </ArduPlane>
+  <ArduRover>
+    <INS_PRODUCT_ID>
+      <DisplayName>IMU Product ID</DisplayName>
+      <Description>Which type of IMU is installed (read-only)</Description>
+      <User>Standard</User>
+    </INS_PRODUCT_ID>
+    <INS_ACCSCAL_X>
+      <DisplayName>Accelerometer scaling of X axis</DisplayName>
+      <Description>Accelerometer scaling of X axis.  Calculated during acceleration calibration routine</Description>
+      <User>Advanced</User>
+    </INS_ACCSCAL_X>
+    <INS_ACCSCAL_Y>
+      <DisplayName>Accelerometer scaling of Y axis</DisplayName>
+      <Description>Accelerometer scaling of Y axis  Calculated during acceleration calibration routine</Description>
+      <User>Advanced</User>
+    </INS_ACCSCAL_Y>
+    <INS_ACCSCAL_Z>
+      <DisplayName>Accelerometer scaling of Z axis</DisplayName>
+      <Description>Accelerometer scaling of Z axis  Calculated during acceleration calibration routine</Description>
+      <User>Advanced</User>
+    </INS_ACCSCAL_Z>
+    <INS_ACCOFFS_X>
+      <DisplayName>Accelerometer offsets of X axis</DisplayName>
+      <Description>Accelerometer offsets of X axis. This is setup using the acceleration calibration or level operations</Description>
+      <Units>m/s/s</Units>
+      <Range>-300 300</Range>
+      <User>Advanced</User>
+    </INS_ACCOFFS_X>
+    <INS_ACCOFFS_Y>
+      <DisplayName>Accelerometer offsets of Y axis</DisplayName>
+      <Description>Accelerometer offsets of Y axis. This is setup using the acceleration calibration or level operations</Description>
+      <Units>m/s/s</Units>
+      <Range>-300 300</Range>
+      <User>Advanced</User>
+    </INS_ACCOFFS_Y>
+    <INS_ACCOFFS_Z>
+      <DisplayName>Accelerometer offsets of Z axis</DisplayName>
+      <Description>Accelerometer offsets of Z axis. This is setup using the acceleration calibration or level operations</Description>
+      <Units>m/s/s</Units>
+      <Range>-300 300</Range>
+      <User>Advanced</User>
+    </INS_ACCOFFS_Z>
+    <INS_GYROFFS_X>
+      <DisplayName>Gyro offsets of X axis</DisplayName>
+      <Description>Gyro sensor offsets of X axis. This is setup on each boot during gyro calibrations</Description>
+      <Units>rad/s</Units>
+      <User>Advanced</User>
+    </INS_GYROFFS_X>
+    <INS_GYROFFS_Y>
+      <DisplayName>Gyro offsets of Y axis</DisplayName>
+      <Description>Gyro sensor offsets of Y axis. This is setup on each boot during gyro calibrations</Description>
+      <Units>rad/s</Units>
+      <User>Advanced</User>
+    </INS_GYROFFS_Y>
+    <INS_GYROFFS_Z>
+      <DisplayName>Gyro offsets of Z axis</DisplayName>
+      <Description>Gyro sensor offsets of Z axis. This is setup on each boot during gyro calibrations</Description>
+      <Units>rad/s</Units>
+      <User>Advanced</User>
+    </INS_GYROFFS_Z>
+    <INS_MPU6K_FILTER>
+      <DisplayName>MPU6000 filter frequency</DisplayName>
+      <Description>Filter frequency to ask the MPU6000 to apply to samples. This can be set to a lower value to try to cope with very high vibration levels in aircraft. The default value on ArduPlane and APMrover2 is 20Hz. The default value on ArduCopter is 42Hz. This option takes effect on the next reboot or gyro initialisation</Description>
+      <Units>Hz</Units>
+      <Values>0:Default,5:5Hz,10:10Hz,20:20Hz,42:42Hz,98:98Hz</Values>
+      <User>Advanced</User>
+    </INS_MPU6K_FILTER>
+    <AHRS_GPS_GAIN>
+      <DisplayName>AHRS GPS gain</DisplayName>
+      <Description>This controls how how much to use the GPS to correct the attitude. This should never be set to zero for a plane as it would result in the plane losing control in turns. For a plane please use the default value of 1.0.</Description>
+      <Range>0.0 1.0</Range>
+      <Increment>.01</Increment>
+    </AHRS_GPS_GAIN>
+    <AHRS_GPS_USE>
+      <DisplayName>AHRS use GPS for navigation</DisplayName>
+      <Description>This controls whether to use dead-reckoning or GPS based navigation. If set to 0 then the GPS won't be used for navigation, and only dead reckoning will be used. A value of zero should never be used for normal flight.</Description>
+      <User>Advanced</User>
+    </AHRS_GPS_USE>
+    <AHRS_YAW_P>
+      <DisplayName>Yaw P</DisplayName>
+      <Description>This controls the weight the compass or GPS has on the heading. A higher value means the heading will track the yaw source (GPS or compass) more rapidly.</Description>
+      <Range>0.1 0.4</Range>
+      <Increment>.01</Increment>
+    </AHRS_YAW_P>
+    <AHRS_RP_P>
+      <DisplayName>AHRS RP_P</DisplayName>
+      <Description>This controls how fast the accelerometers correct the attitude</Description>
+      <Range>0.1 0.4</Range>
+      <Increment>.01</Increment>
+    </AHRS_RP_P>
+    <AHRS_WIND_MAX>
+      <DisplayName>Maximum wind</DisplayName>
+      <Description>This sets the maximum allowable difference between ground speed and airspeed. This allows the plane to cope with a failing airspeed sensor. A value of zero means to use the airspeed as is.</Description>
+      <Range>0 127</Range>
+      <Units>m/s</Units>
+      <Increment>1</Increment>
+    </AHRS_WIND_MAX>
+    <AHRS_BARO_USE>
+      <DisplayName>AHRS Use Barometer</DisplayName>
+      <Description>This controls the use of the barometer for vertical acceleration compensation in AHRS. It is currently recommended that you set this value to zero unless you are a developer experimenting with the AHRS system.</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Advanced</User>
+    </AHRS_BARO_USE>
+    <AHRS_TRIM_X>
+      <DisplayName>AHRS Trim Roll</DisplayName>
+      <Description>Compensates for the roll angle difference between the control board and the frame</Description>
+      <Units>Radians</Units>
+      <User>Advanced</User>
+    </AHRS_TRIM_X>
+    <AHRS_TRIM_Y>
+      <DisplayName>AHRS Trim Pitch</DisplayName>
+      <Description>Compensates for the pitch angle difference between the control board and the frame</Description>
+      <Units>Radians</Units>
+      <User>Advanced</User>
+    </AHRS_TRIM_Y>
+    <AHRS_TRIM_Z>
+      <DisplayName>AHRS Trim Yaw</DisplayName>
+      <Description>Not Used</Description>
+      <Units>Radians</Units>
+      <User>Advanced</User>
+    </AHRS_TRIM_Z>
+    <AHRS_ORIENTATION>
+      <DisplayName>Board Orientation</DisplayName>
+      <Description>Overall board orientation relative to the standard orientation for the board type. This rotates the IMU and compass readings to allow the board to be oriented in your vehicle at any 90 or 45 degree angle. This option takes affect on next boot. After changing you will need to re-level your vehicle.</Description>
+      <Values>0:None,1:Yaw45,2:Yaw90,3:Yaw135,4:Yaw180,5:Yaw225,6:Yaw270,7:Yaw315,8:Roll180,9:Roll180Yaw45,10:Roll180Yaw90,11:Roll180Yaw135,12:Pitch180,13:Roll180Yaw225,14:Roll180Yaw270,15:Roll180Yaw315,16:Roll90,17:Roll90Yaw45,18:Roll90Yaw135,19:Roll270,20:Roll270Yaw45,21:Roll270Yaw90,22:Roll270Yaw136,23:Pitch90,24:Pitch270</Values>
+      <User>Advanced</User>
+    </AHRS_ORIENTATION>
+    <SERIAL3_BAUD>
+      <DisplayName>Telemetry Baud Rate</DisplayName>
+      <Description>The baud rate used on the telemetry port</Description>
+      <Values>1:1200,2:2400,4:4800,9:9600,19:19200,38:38400,57:57600,111:111100,115:115200</Values>
+      <User>Standard</User>
+    </SERIAL3_BAUD>
+    <TELEM_DELAY>
+      <DisplayName>Telemetry startup delay</DisplayName>
+      <Description>The amount of time (in seconds) to delay radio telemetry to prevent an Xbee bricking on power up</Description>
+      <User>Standard</User>
+      <Units>seconds</Units>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+    </TELEM_DELAY>
+    <MANUAL_LEVEL>
+      <DisplayName>Manual Level</DisplayName>
+      <Description>Setting this to Disabled(0) will enable autolevel on every boot. Setting it to Enabled(1) will do a calibration only when you tell it to</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Advanced</User>
+    </MANUAL_LEVEL>
+    <XTRK_GAIN_SC>
+      <DisplayName>Crosstrack Gain</DisplayName>
+      <Description>The scale between distance off the line and angle to meet the line (in Degrees * 100)</Description>
+      <Range>0 2000</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </XTRK_GAIN_SC>
+    <XTRK_ANGLE_CD>
+      <DisplayName>Crosstrack Entry Angle</DisplayName>
+      <Description>Maximum angle used to correct for track following.</Description>
+      <Units>centi-Degrees</Units>
+      <Range>0 9000</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </XTRK_ANGLE_CD>
+    <THR_MIN>
+      <DisplayName>Minimum Throttle</DisplayName>
+      <Description>The minimum throttle setting to which the autopilot will apply.</Description>
+      <Units>Percent</Units>
+      <Range>0 100</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </THR_MIN>
+    <THR_MAX>
+      <DisplayName>Maximum Throttle</DisplayName>
+      <Description>The maximum throttle setting to which the autopilot will apply.</Description>
+      <Units>Percent</Units>
+      <Range>0 100</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </THR_MAX>
+    <THR_SLEWRATE>
+      <DisplayName>Throttle slew rate</DisplayName>
+      <Description>maximum percentage change in throttle per second. A setting of 10 means to not change the throttle by more than 10% of the full throttle range in one second</Description>
+      <Units>Percent</Units>
+      <Range>0 100</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </THR_SLEWRATE>
+    <THR_FAILSAFE>
+      <DisplayName>Throttle Failsafe Enable</DisplayName>
+      <Description>The throttle failsafe allows you to configure a software failsafe activated by a setting on the throttle input channel</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </THR_FAILSAFE>
+    <THR_FS_VALUE>
+      <DisplayName>Throttle Failsafe Value</DisplayName>
+      <Description>The PWM level on channel 3 below which throttle sailsafe triggers</Description>
+      <User>Standard</User>
+    </THR_FS_VALUE>
+    <TRIM_THROTTLE>
+      <DisplayName>Throttle cruise percentage</DisplayName>
+      <Description>The target percentage of throttle to apply for normal flight</Description>
+      <Units>Percent</Units>
+      <Range>0 100</Range>
+      <Increment>1</Increment>
+      <User>Standard</User>
+    </TRIM_THROTTLE>
+    <FS_SHORT_ACTN>
+      <DisplayName>Short failsafe action</DisplayName>
+      <Description>The action to take on a short (1 second) failsafe event</Description>
+      <Values>0:None,1:ReturnToLaunch</Values>
+      <User>Standard</User>
+    </FS_SHORT_ACTN>
+    <FS_LONG_ACTN>
+      <DisplayName>Long failsafe action</DisplayName>
+      <Description>The action to take on a long (20 second) failsafe event</Description>
+      <Values>0:None,1:ReturnToLaunch</Values>
+      <User>Standard</User>
+    </FS_LONG_ACTN>
+    <FS_GCS_ENABL>
+      <DisplayName>GCS failsafe enable</DisplayName>
+      <Description>Enable ground control station telemetry failsafe. Failsafe will trigger after 20 seconds of no MAVLink heartbeat messages</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+    </FS_GCS_ENABL>
+    <FLTMODE_CH>
+      <DisplayName>Flightmode channel</DisplayName>
+      <Description>RC Channel to use for flight mode control</Description>
+      <User>Advanced</User>
+    </FLTMODE_CH>
+    <FLTMODE1>
+      <DisplayName>FlightMode1</DisplayName>
+      <Values>0:Manual,1:CIRCLE,2:STABILIZE,5:FBWA,6:FBWB,10:Auto,11:RTL,12:Loiter,15:Guided</Values>
+      <User>Standard</User>
+      <Description>Flight mode for switch position 1 (910 to 1230 and above 2049)</Description>
+    </FLTMODE1>
+    <FLTMODE2>
+      <DisplayName>FlightMode2</DisplayName>
+      <Description>Flight mode for switch position 2 (1231 to 1360)</Description>
+      <Values>0:Manual,1:CIRCLE,2:STABILIZE,5:FBWA,6:FBWB,10:Auto,11:RTL,12:Loiter,15:Guided</Values>
+      <User>Standard</User>
+    </FLTMODE2>
+    <FLTMODE3>
+      <DisplayName>FlightMode3</DisplayName>
+      <Description>Flight mode for switch position 3 (1361 to 1490)</Description>
+      <Values>0:Manual,1:CIRCLE,2:STABILIZE,5:FBWA,6:FBWB,10:Auto,11:RTL,12:Loiter,15:Guided</Values>
+      <User>Standard</User>
+    </FLTMODE3>
+    <FLTMODE4>
+      <DisplayName>FlightMode4</DisplayName>
+      <Description>Flight mode for switch position 4 (1491 to 1620)</Description>
+      <Values>0:Manual,1:CIRCLE,2:STABILIZE,5:FBWA,6:FBWB,10:Auto,11:RTL,12:Loiter,15:Guided</Values>
+      <User>Standard</User>
+    </FLTMODE4>
+    <FLTMODE5>
+      <DisplayName>FlightMode5</DisplayName>
+      <Description>Flight mode for switch position 5 (1621 to 1749)</Description>
+      <Values>0:Manual,1:CIRCLE,2:STABILIZE,5:FBWA,6:FBWB,10:Auto,11:RTL,12:Loiter,15:Guided</Values>
+      <User>Standard</User>
+    </FLTMODE5>
+    <FLTMODE6>
+      <DisplayName>FlightMode6</DisplayName>
+      <Description>Flight mode for switch position 6 (1750 to 2049)</Description>
+      <Values>0:Manual,1:CIRCLE,2:STABILIZE,5:FBWA,6:FBWB,10:Auto,11:RTL,12:Loiter,15:Guided</Values>
+      <User>Standard</User>
+    </FLTMODE6>
+    <BATT_VOLT_PIN>
+      <DisplayName>Battery Voltage sensing pin</DisplayName>
+      <Description>Setting this to 0 ~ 13 will enable battery current sensing on pins A0 ~ A13.</Description>
+      <Values>-1:Disabled, 0:A0, 1:A1, 13:A13</Values>
+      <User>Standard</User>
+    </BATT_VOLT_PIN>
+    <BATT_CURR_PIN>
+      <DisplayName>Battery Current sensing pin</DisplayName>
+      <Description>Setting this to 0 ~ 13 will enable battery current sensing on pins A0 ~ A13.</Description>
+      <Values>-1:Disabled, 1:A1, 2:A2, 12:A12</Values>
+      <User>Standard</User>
+    </BATT_CURR_PIN>
+    <RSSI_PIN>
+      <DisplayName>Receiver RSSI sensing pin</DisplayName>
+      <Description>This selects an analog pin for the receiver RSSI voltage. It assumes the voltage is 5V for max rssi, 0V for minimum</Description>
+      <Values>-1:Disabled, 0:A0, 1:A1, 13:A13</Values>
+      <User>Standard</User>
+    </RSSI_PIN>
+    <SONAR_ENABLE>
+      <DisplayName>Enable Sonar</DisplayName>
+      <Description>Setting this to Enabled(1) will enable the sonar. Setting this to Disabled(0) will disable the sonar</Description>
+      <Values>0:Disabled,1:Enabled</Values>
+      <User>Standard</User>
+      <Group>INS_</Group>
+      <Path>../libraries/AP_InertialSensor/AP_InertialSensor.cpp</Path>
+    </SONAR_ENABLE>
+  </ArduRover>
+</Params>

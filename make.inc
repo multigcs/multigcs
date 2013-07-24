@@ -21,6 +21,7 @@ install:
 	mkdir -p $(BASE_DIR)/fonts
 	mkdir -p $(BASE_DIR)/rcflow_presets
 	mkdir -p $(BASE_DIR)/scripts
+	mkdir -p $(BASE_DIR)/mavlink
 	cp -a textures/* $(BASE_DIR)/textures/
 	cp -a fonts/* $(BASE_DIR)/fonts/
 	cp -a rcflow_presets/* $(BASE_DIR)/rcflow_presets/
@@ -29,7 +30,8 @@ install:
 	cp -a clean-badmaps.sh $(BASE_DIR)/clean-badmaps.sh
 	cp -a screens/screen_tcl.tcl $(BASE_DIR)/scripts/screen_tcl.tcl
 	cp -a map-services.xml $(BASE_DIR)/
-	cp -a WMM2010.COF $(BASE_DIR)/MAPS
+	cp -a WMM2010.COF $(BASE_DIR)/MAPS/
+	cp -a mavlink/ParameterMetaData*.xml $(BASE_DIR)/mavlink/
 	touch $(BASE_DIR)/setup.cfg
 	chmod 0755 /usr/bin/gl-gcs
 	chmod 0755 /usr/bin/gcs
