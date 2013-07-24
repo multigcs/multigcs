@@ -61,6 +61,15 @@ uint8_t mavlink_slider_move (char *name, float x, float y, int8_t button, float 
 			new = (float)conv;
 		}
 		printf("slider: %s %f %f %f %f\n", name + 1, x, percent, new, data);
+		if (strstr(MavLinkVars[selected].name, "baud") > 0) {
+			float bauds[] = {1200.0, 2400.0, 9600.0, 38400.0, 57600.0, 115200.0, 200000.0};
+			for (n = 0; n < 6; n++) {
+				if (new <= bauds[n] + (bauds[n + 1] - bauds[n]) / 2) {
+					new = bauds[n];
+					break;
+				}
+			}
+		}
 		MavLinkVars[selected].value = new;
 	}
 
@@ -134,9 +143,6 @@ static void mavlink_parseDoc (char *docname) {
 	}
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-
-		printf("#3# %s ##\n", cur->name);
-
 		if ((!xmlStrcmp(cur->name, (const xmlChar *)"ArduCopter2"))) {
 			mavlink_parseParams(doc, cur);
 		}
@@ -209,6 +215,25 @@ uint8_t mavlink_flashload (char *name, float x, float y, int8_t button, float da
 	return 0;
 }
 
+uint8_t mavlink_aux_toggle (char *name, float x, float y, int8_t button, float data) {
+	printf("aux: %s %f\n", name, data);
+	int n = 0;
+	for (n = 0; n < 500 - 1; n++) {
+		if (strcmp(MavLinkVars[n].name, name + 3) == 0) {
+			break;
+		}
+	}
+	int new = (int)MavLinkVars[n].value;
+	if (name[0] == 'S') {
+		new |= (1<<(int)data);
+	} else if (name[0] == 'R') {
+		new &= ~(1<<(int)data);
+	}
+	MavLinkVars[n].value = (float)new;
+	mavlink_send_value(MavLinkVars[n].name, MavLinkVars[n].value, MavLinkVars[n].type);
+	return 0;
+}
+
 uint8_t mavlink_select_main (char *name, float x, float y, int8_t button, float data) {
 	sel2 = (float)data;
 	set_sel2 = (float)data;
@@ -261,7 +286,6 @@ void mavlink_param_read_file (char *param_file) {
 		if (line[0] != '#' && line[0] != '\n') {
 	                sscanf (line, "%i %i %s %s", &tmp_int1, &tmp_int2, (char *)&var1, (char *)&val);
 			float new_val = atof(val);
-//	                printf ("#%s# = %f\n", var1, new_val);
 			uint16_t n = 0;
 			uint8_t flag = 0;
 			for (n = 0; n < 500; n++) {
@@ -312,6 +336,8 @@ void screen_mavlink_menu (ESContext *esContext) {
 	int16_t col = 0;
 	int16_t row2 = 0;
 	int16_t n = 0;
+	int16_t n2 = 0;
+	int16_t n3 = 0;
 	char section[100];
 	char tmp_str[100];
 	char tmp_str2[100];
@@ -429,17 +455,58 @@ void screen_mavlink_menu (ESContext *esContext) {
 				sprintf(tmp_str2, "%0.4f", selMavLinkVars[n + (int)set_sel].value);
 			}
 
-			draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, 0.05, -0.7 + row * 0.14, 0.002, 0.08, 2, 0, mavlink_select_sel, n);
 
+			if (
+				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_angle") == 0
+				||
+				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_horizon") == 0
+				||
+				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_baro") == 0
+				||
+				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_mag") == 0
+				||
+				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_camstab") == 0
+				||
+				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_camtrig") == 0
+				||
+				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_arm") == 0
+				||
+				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_gps_home") == 0
+				||
+				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_gps_hold") == 0
+				||
+				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_gps_log") == 0
+				||
+				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_passthru") == 0
+				||
+				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_headfree") == 0
+				||
+				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_beeper") == 0
+				||
+				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_headadj") == 0
+			) {
+				n3 = 0;
+				for (n2 = 0; n2 < 12; n2++) {
+					if ((int)selMavLinkVars[n + (int)set_sel].value & (1<<n2)) {
+						sprintf(tmp_str, "R%2.0i%s", n2, selMavLinkVars[n + (int)set_sel].name);
+						draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "X", FONT_WHITE, -0.3 + n3 * 0.1, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, mavlink_aux_toggle, (float)n2);
+					} else {
+						sprintf(tmp_str, "S%2.0i%s", n2, selMavLinkVars[n + (int)set_sel].name);
+						draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "O", FONT_WHITE, -0.3 + n3 * 0.1, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, mavlink_aux_toggle, (float)n2);
+					}
+					if (n2 == 2 || n2 == 5 || n2 == 8) {
+						n3++;
+					}
+					n3++;
+				}
+			} else {
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, 0.05, -0.7 + row * 0.14, 0.002, 0.08, 2, 0, mavlink_select_sel, n);
+				sprintf(tmp_str, "S%s", selMavLinkVars[n + (int)set_sel].name);
+				draw_box_f3c2(esContext, SLIDER_START, -0.7 + row * 0.14, 0.001, SLIDER_START + SLIDER_LEN, -0.7 + row * 0.14 + 0.1, 0.001, 55, 55, 55, 220, 75, 45, 85, 100);
+				draw_box_f3c2(esContext, SLIDER_START, -0.7 + row * 0.14, 0.001, SLIDER_START + ((selMavLinkVars[n + (int)set_sel].value - selMavLinkVars[n + (int)set_sel].min) * SLIDER_LEN / (selMavLinkVars[n + (int)set_sel].max - selMavLinkVars[n + (int)set_sel].min)), -0.7 + row * 0.14 + 0.1, 0.001, 255, 255, 55, 220, 175, 145, 85, 100);
+				set_button(tmp_str, view_mode, SLIDER_START, -0.7 + row * 0.14, SLIDER_START + SLIDER_LEN, -0.7 + row * 0.14 + 0.1, mavlink_slider_move, (float)row, 1);
+			}
 
-//			sprintf(tmp_str, "a%s", selMavLinkVars[n + (int)set_sel].name);
-//			draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[-1.0]", FONT_WHITE, 0.1, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, mavlink_select_sel, -1.0);
-
-
-sprintf(tmp_str, "S%s", selMavLinkVars[n + (int)set_sel].name);
-draw_box_f3c2(esContext, SLIDER_START, -0.7 + row * 0.14, 0.001, SLIDER_START + SLIDER_LEN, -0.7 + row * 0.14 + 0.1, 0.001, 55, 55, 55, 220, 75, 45, 85, 100);
-draw_box_f3c2(esContext, SLIDER_START, -0.7 + row * 0.14, 0.001, SLIDER_START + ((selMavLinkVars[n + (int)set_sel].value - selMavLinkVars[n + (int)set_sel].min) * SLIDER_LEN / (selMavLinkVars[n + (int)set_sel].max - selMavLinkVars[n + (int)set_sel].min)), -0.7 + row * 0.14 + 0.1, 0.001, 255, 255, 55, 220, 175, 145, 85, 100);
-set_button(tmp_str, view_mode, SLIDER_START, -0.7 + row * 0.14, SLIDER_START + SLIDER_LEN, -0.7 + row * 0.14 + 0.1, mavlink_slider_move, (float)row, 1);
 
 
 /*			if (selMavLinkVars[n + (int)set_sel].type == 0) {

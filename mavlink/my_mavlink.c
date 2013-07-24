@@ -273,11 +273,11 @@ void gcs_handleMessage(mavlink_message_t* msg) {
 			mavlink_timeout = 0;
 			uint16_t n = 0;
 			uint8_t flag = 0;
-			float min = 99999.0;
-			float max = 99999.0;
+			float min = 999999.0;
+			float max = 999999.0;
 			if (packet.param_type == MAV_VAR_FLOAT) {
-				min = -99999.0;
-				max = 99999.0;
+				min = -999999.0;
+				max = 999999.0;
 			} else if (packet.param_type == MAV_VAR_UINT8) {
 				min = 0.0;
 				max = 255.0;
@@ -288,18 +288,21 @@ void gcs_handleMessage(mavlink_message_t* msg) {
 				min = 0.0;
 				max = 65535.0;
 			} else if (packet.param_type == MAV_VAR_INT16) {
-				min = -35552.0;
-				max = 35552.0;
+				min = -32767.0;
+				max = 32767.0;
 			} else if (packet.param_type == MAV_VAR_UINT32) {
 				min = 0.0;
-				max = 99999.0;
+				max = 999999.0;
 			} else if (packet.param_type == MAV_VAR_INT32) {
-				min = 99999.0;
-				max = 99999.0;
+				min = 999999.0;
+				max = 999999.0;
+			}
+			if (strstr(var, "baud") > 0) {
+				min = 1200.0;
+				max = 115200.0;
 			}
 			for (n = 0; n < 500; n++) {
-//				if (strcmp(MavLinkVars[n].name, var) == 0 && (MavLinkVars[n].id == packet.param_index || MavLinkVars[n].id == -1)) {
-				if (strcmp(MavLinkVars[n].name, var) == 0) {
+				if (strcmp(MavLinkVars[n].name, var) == 0 && (MavLinkVars[n].id == packet.param_index || MavLinkVars[n].id == -1 || packet.param_index > 65000)) {
 					MavLinkVars[n].value = packet.param_value;
 					MavLinkVars[n].id = packet.param_index;
 					MavLinkVars[n].type = packet.param_type;
