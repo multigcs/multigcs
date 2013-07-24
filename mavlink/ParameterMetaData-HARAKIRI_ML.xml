@@ -300,6 +300,7 @@
     <baro_debug>
       <DisplayName>baro_debug</DisplayName>
       <Description>Crashpilot: 1 = Debug Barovalues</Description>
+      <Values>0:OFF,1:ON</Values>
       <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
@@ -748,8 +749,9 @@
     <gps_ins_mdl>
       <DisplayName>gps_ins_mdl</DisplayName>
       <Description>GPS ins model. 1 = Based on lat/lon, 2 = based on Groundcourse  and  speed, 3 = based on ublx velned</Description>
+      <Values>1:Based on lat/lon,2:based on Groundcourse  and  speed,3:based on ublx velned</Values>
       <Units></Units>
-      <Range>1 2</Range>
+      <Range>1 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
     </gps_ins_mdl>
@@ -916,6 +918,7 @@
     <led_armed>
       <DisplayName>LED_ARMED</DisplayName>
       <Description>0 = Show LED only if armed, 1 = always show LED</Description>
+      <Values>0:Show LED only if armed,1:always show LED</Values>
       <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
@@ -1052,6 +1055,7 @@
     <main_pidctrl>
       <DisplayName>mainpidctrl</DisplayName>
       <Description>1 = OriginalMwiiPid pimped by me, 2 = New mwii controller (experimental, float pimped + pt1)</Description>
+      <Values>1:OriginalMwiiPid pimped by me,2:New mwii controller</Values>
       <Units></Units>
       <Range>1 2</Range>
       <Increment>1</Increment>
@@ -1100,6 +1104,7 @@
     <nav_heading>
       <DisplayName>nav_controls_heading</DisplayName>
       <Description>1 = Copter comes back with ass first (only works with nav_controls_heading = 1)</Description>
+      <Values>0:Off,1:Copter comes back with ass first</Values>
       <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
@@ -1140,6 +1145,7 @@
     <nav_tail_first>
       <DisplayName>nav_tail_first</DisplayName>
       <Description>1 = Copter comes back with ass first (only works with nav_controls_heading = 1)</Description>
+      <Values>0:Off,1:Copter comes back with ass first</Values>
       <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
@@ -1652,6 +1658,7 @@
     <snr_type>
       <DisplayName>snr_type</DisplayName>
       <Description>0 = PWM56, 1 = RC78, 2 = I2C (DaddyWalross), 3 = MBPWM56, 4=MBRC78</Description>
+      <Values>0:PWM56,1:RC78,2:I2C (DaddyWalross),3:MBPWM56,4:MBRC78</Values>
       <Units></Units>
       <Range>0 4</Range>
       <Increment>1</Increment>

@@ -66,14 +66,23 @@ uint8_t mavlink_init (char *port, uint32_t baud) {
 	serial_fd_mavlink = serial_open(port, baud);
 	for (n = 0; n < 500; n++) {
 		MavLinkVars[n].name[0] = 0;
+		MavLinkVars[n].display[0] = 0;
+		MavLinkVars[n].desc[0] = 0;
+		MavLinkVars[n].values[0] = 0;
 		MavLinkVars[n].value = 0.0;
 		MavLinkVars[n].id = -1;
 
 		selMavLinkVars[n].name[0] = 0;
+		selMavLinkVars[n].display[0] = 0;
+		selMavLinkVars[n].desc[0] = 0;
+		selMavLinkVars[n].values[0] = 0;
 		selMavLinkVars[n].value = 0.0;
 		selMavLinkVars[n].id = -1;
 
 		mainMavLinkVars[n].name[0] = 0;
+		mainMavLinkVars[n].display[0] = 0;
+		mainMavLinkVars[n].desc[0] = 0;
+		mainMavLinkVars[n].values[0] = 0;
 		mainMavLinkVars[n].value = 0.0;
 		mainMavLinkVars[n].id = -1;
 	}
@@ -315,7 +324,7 @@ void gcs_handleMessage(mavlink_message_t* msg) {
 			if (flag == 0) {
 				for (n = 0; n < 500; n++) {
 					if (MavLinkVars[n].name[0] == 0) {
-						strcpy(MavLinkVars[n].name, var);
+						strncpy(MavLinkVars[n].name, var, 100);
 						MavLinkVars[n].value = packet.param_value;
 						MavLinkVars[n].id = packet.param_index;
 						MavLinkVars[n].type = packet.param_type;
@@ -645,12 +654,10 @@ void send_waypoints (void) {
 			break;
 		}
 	}
-
 	if (ModelData.teletype == TELETYPE_MEGAPIRATE_NG || ModelData.teletype == TELETYPE_ARDUPILOT) {
 		printf("WORKAROUND: MEGAPIRATE_NG: fake one WP\n");
 		n++;
 	}
-
 	printf("sending Waypoints (%i)\n", n - 1);
 	mavlink_msg_mission_count_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, n - 1);
 	send_message(&msg);
@@ -663,20 +670,17 @@ static int s, slen = sizeof(si_other) , recv_len;
 void send_message (mavlink_message_t* msg) {
 	uint8_t buf[MAVLINK_MAX_PACKET_LEN];
 	printf("send_msg...\n");
-
 	uint16_t len = mavlink_msg_to_send_buffer(buf, msg);
 	uint16_t i = 0;
 	for(i = 0; i < len; i++) {
 		uint8_t c = buf[i];
 		write(serial_fd_mavlink, &c, 1);
 	}
-
 	if (mavlink_udp_active == 1) {
 		if (sendto(s, buf, len, 0, (struct sockaddr *)&si_other, slen) == -1) {
 			printf("error: sendto udp()\n");
 		}
 	}
-
 }
 
 uint8_t mavlink_connection_status (void) {
@@ -842,8 +846,22 @@ void mavlink_parseParams1 (xmlDocPtr doc, xmlNodePtr cur, char *name) {
 			MavLinkVars[n].min = min;
 			MavLinkVars[n].max = max;
 			xmlFree(key);
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"Description"))) {
+			xmlChar *key;
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			strncpy(MavLinkVars[n].desc, (char *)key, 1024);
+			xmlFree(key);
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"Values"))) {
+			xmlChar *key;
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			strncpy(MavLinkVars[n].values, (char *)key, 1024);
+			xmlFree(key);
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"DisplayName"))) {
+			xmlChar *key;
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			strncpy(MavLinkVars[n].display, (char *)key, 100);
+			xmlFree(key);
 		}
-
 		cur = cur->next;
 	}
 	return;

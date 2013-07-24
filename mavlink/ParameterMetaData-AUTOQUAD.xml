@@ -1,0 +1,3380 @@
+<?xml version="1.0"?>
+<Params>
+  <ArduCopter2>
+    <CONFIG_VERSION>
+      <DisplayName>CONFIG_VERSION</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>107</Default>
+      <Range>0 1000</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CONFIG_VERSION>
+    <RADIO_TYPE>
+      <DisplayName>RADIO_TYPE</DisplayName>
+      <Description>0 == Spektrum 11bit, 1 == Spektrum 10bit, 2 == SBUS, 3 == PPM, 4 == SUMD</Description>
+      <Units></Units>
+      <Default>0</Default>
+      <Range>0 4</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RADIO_TYPE>
+    <RADIO_THRO_CH>
+      <DisplayName>RADIO_THRO_CH</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0</Default>
+      <Range>0 15</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RADIO_THRO_CH>
+    <RADIO_ROLL_CH>
+      <DisplayName>RADIO_ROLL_CH</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>1</Default>
+      <Range>0 15</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RADIO_ROLL_CH>
+    <RADIO_PITC_CH>
+      <DisplayName>RADIO_PITC_CH</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>2</Default>
+      <Range>0 15</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RADIO_PITC_CH>
+    <RADIO_RUDD_CH>
+      <DisplayName>RADIO_RUDD_CH</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>3</Default>
+      <Range>0 15</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RADIO_RUDD_CH>
+    <RADIO_GEAR_CH>
+      <DisplayName>RADIO_GEAR_CH</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>4</Default>
+      <Range>0 15</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RADIO_GEAR_CH>
+    <RADIO_FLAP_CH>
+      <DisplayName>RADIO_FLAP_CH</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>5</Default>
+      <Range>0 15</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RADIO_FLAP_CH>
+    <RADIO_AUX2_CH>
+      <DisplayName>RADIO_AUX2_CH</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>6</Default>
+      <Range>0 15</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RADIO_AUX2_CH>
+    <RADIO_AUX3_CH>
+      <DisplayName>RADIO_AUX3_CH</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>7</Default>
+      <Range>0 15</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RADIO_AUX3_CH>
+    <RADIO_AUX4_CH>
+      <DisplayName>RADIO_AUX4_CH</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>8</Default>
+      <Range>0 15</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RADIO_AUX4_CH>
+    <RADIO_AUX5_CH>
+      <DisplayName>RADIO_AUX5_CH</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>9</Default>
+      <Range>0 15</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RADIO_AUX5_CH>
+    <RADIO_AUX6_CH>
+      <DisplayName>RADIO_AUX6_CH</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>10</Default>
+      <Range>0 15</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RADIO_AUX6_CH>
+    <RADIO_AUX7_CH>
+      <DisplayName>RADIO_AUX7_CH</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>11</Default>
+      <Range>0 15</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RADIO_AUX7_CH>
+    <PPM_SCALER>
+      <DisplayName>PPM_SCALER</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>3</Default>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </PPM_SCALER>
+    <PPM_THROT_LOW>
+      <DisplayName>PPM_THROT_LOW</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>1090</Default>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </PPM_THROT_LOW>
+    <PPM_CHAN_MID>
+      <DisplayName>PPM_CHAN_MID</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>1512</Default>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </PPM_CHAN_MID>
+    <CTRL_PID_TYPE>
+      <DisplayName>CTRL_PID_TYPE</DisplayName>
+      <Description>0 == parallel TILT/RATE PIDs, 1 == cascading TILT/RATE PIDs</Description>
+      <Units></Units>
+      <Default>0</Default>
+      <Range>0 1</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_PID_TYPE>
+    <CTRL_FACT_THRO>
+      <DisplayName>CTRL_FACT_THRO</DisplayName>
+      <Description>user throttle multiplier</Description>
+      <Units></Units>
+      <Default>0.70</Default>
+      <Range>0 2</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_FACT_THRO>
+    <CTRL_FACT_PITC>
+      <DisplayName>CTRL_FACT_PITC</DisplayName>
+      <Description>user pitch multiplier</Description>
+      <Units></Units>
+      <Default>0.05</Default>
+      <Range>0 2</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_FACT_PITC>
+    <CTRL_FACT_ROLL>
+      <DisplayName>CTRL_FACT_ROLL</DisplayName>
+      <Description>user roll multiplier</Description>
+      <Units></Units>
+      <Default>0.05</Default>
+      <Range>0 2</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_FACT_ROLL>
+    <CTRL_FACT_RUDD>
+      <DisplayName>CTRL_FACT_RUDD</DisplayName>
+      <Description>user rudder multiplier</Description>
+      <Units></Units>
+      <Default>0.0004</Default>
+      <Range>0 2</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_FACT_RUDD>
+    <CTRL_DEAD_BAND>
+      <DisplayName>CTRL_DEAD_BAND</DisplayName>
+      <Description>rc control dead band (for pitch, roll,  and  rudder control)</Description>
+      <Units></Units>
+      <Default>40.0</Default>
+      <Range>0 100</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_DEAD_BAND>
+    <CTRL_DBAND_THRO>
+      <DisplayName>CTRL_DBAND_THRO</DisplayName>
+      <Description>rc control dead band (for throttle channel only)</Description>
+      <Units></Units>
+      <Default>40.0</Default>
+      <Range>0 100</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_DBAND_THRO>
+    <CTRL_MIN_THROT>
+      <DisplayName>CTRL_MIN_THROT</DisplayName>
+      <Description>minimum user throttle to activate motors</Description>
+      <Units></Units>
+      <Default>20.0</Default>
+      <Range>0 100</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_MIN_THROT>
+    <CTRL_MAX>
+      <DisplayName>CTRL_MAX</DisplayName>
+      <Description>maximum control applied to motors +- throttle</Description>
+      <Units></Units>
+      <Default>300.0</Default>
+      <Range>0 500</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_MAX>
+    <CTRL_NAV_YAW_RT>
+      <DisplayName>CTRL_NAV_YAW_RT</DisplayName>
+      <Description>maximum navigation yaw rate deg/s</Description>
+      <Units></Units>
+      <Default>180.0</Default>
+      <Range>90 360</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_NAV_YAW_RT>
+    <CTRL_TLT_RTE_P>
+      <DisplayName>CTRL_TLT_RTE_P</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_TLT_RTE_P>
+    <CTRL_TLT_RTE_I>
+      <DisplayName>CTRL_TLT_RTE_I</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_TLT_RTE_I>
+    <CTRL_TLT_RTE_D>
+      <DisplayName>CTRL_TLT_RTE_D</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>7180.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_TLT_RTE_D>
+    <CTRL_TLT_RTE_F>
+      <DisplayName>CTRL_TLT_RTE_F</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.25</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_TLT_RTE_F>
+    <CTRL_TLT_RTE_PM>
+      <DisplayName>CTRL_TLT_RTE_PM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>999.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_TLT_RTE_PM>
+    <CTRL_TLT_RTE_IM>
+      <DisplayName>CTRL_TLT_RTE_IM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>999.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_TLT_RTE_IM>
+    <CTRL_TLT_RTE_DM>
+      <DisplayName>CTRL_TLT_RTE_DM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>999.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_TLT_RTE_DM>
+    <CTRL_TLT_RTE_OM>
+      <DisplayName>CTRL_TLT_RTE_OM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>250.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_TLT_RTE_OM>
+    <CTRL_YAW_RTE_P>
+      <DisplayName>CTRL_YAW_RTE_P</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>300.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_YAW_RTE_P>
+    <CTRL_YAW_RTE_I>
+      <DisplayName>CTRL_YAW_RTE_I</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.15</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_YAW_RTE_I>
+    <CTRL_YAW_RTE_D>
+      <DisplayName>CTRL_YAW_RTE_D</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>50.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_YAW_RTE_D>
+    <CTRL_YAW_RTE_F>
+      <DisplayName>CTRL_YAW_RTE_F</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.25</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_YAW_RTE_F>
+    <CTRL_YAW_RTE_PM>
+      <DisplayName>CTRL_YAW_RTE_PM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>80.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_YAW_RTE_PM>
+    <CTRL_YAW_RTE_IM>
+      <DisplayName>CTRL_YAW_RTE_IM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>80.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_YAW_RTE_IM>
+    <CTRL_YAW_RTE_DM>
+      <DisplayName>CTRL_YAW_RTE_DM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>80.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_YAW_RTE_DM>
+    <CTRL_YAW_RTE_OM>
+      <DisplayName>CTRL_YAW_RTE_OM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>180.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_YAW_RTE_OM>
+    <CTRL_TLT_ANG_P>
+      <DisplayName>CTRL_TLT_ANG_P</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>60.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_TLT_ANG_P>
+    <CTRL_TLT_ANG_I>
+      <DisplayName>CTRL_TLT_ANG_I</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0005</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_TLT_ANG_I>
+    <CTRL_TLT_ANG_D>
+      <DisplayName>CTRL_TLT_ANG_D</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>1744.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_TLT_ANG_D>
+    <CTRL_TLT_ANG_F>
+      <DisplayName>CTRL_TLT_ANG_F</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.25</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_TLT_ANG_F>
+    <CTRL_TLT_ANG_PM>
+      <DisplayName>CTRL_TLT_ANG_PM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>150.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_TLT_ANG_PM>
+    <CTRL_TLT_ANG_IM>
+      <DisplayName>CTRL_TLT_ANG_IM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>75.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_TLT_ANG_IM>
+    <CTRL_TLT_ANG_DM>
+      <DisplayName>CTRL_TLT_ANG_DM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>150.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_TLT_ANG_DM>
+    <CTRL_TLT_ANG_OM>
+      <DisplayName>CTRL_TLT_ANG_OM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>250.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_TLT_ANG_OM>
+    <CTRL_YAW_ANG_P>
+      <DisplayName>CTRL_YAW_ANG_P</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.05</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_YAW_ANG_P>
+    <CTRL_YAW_ANG_I>
+      <DisplayName>CTRL_YAW_ANG_I</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.00002</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_YAW_ANG_I>
+    <CTRL_YAW_ANG_D>
+      <DisplayName>CTRL_YAW_ANG_D</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_YAW_ANG_D>
+    <CTRL_YAW_ANG_F>
+      <DisplayName>CTRL_YAW_ANG_F</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_YAW_ANG_F>
+    <CTRL_YAW_ANG_PM>
+      <DisplayName>CTRL_YAW_ANG_PM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>1.25</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_YAW_ANG_PM>
+    <CTRL_YAW_ANG_IM>
+      <DisplayName>CTRL_YAW_ANG_IM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.04</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_YAW_ANG_IM>
+    <CTRL_YAW_ANG_DM>
+      <DisplayName>CTRL_YAW_ANG_DM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_YAW_ANG_DM>
+    <CTRL_YAW_ANG_OM>
+      <DisplayName>CTRL_YAW_ANG_OM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>1.25</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </CTRL_YAW_ANG_OM>
+    <MOT_FRAME>
+      <DisplayName>MOT_FRAME</DisplayName>
+      <Description>used as hint for frame config GUI</Description>
+      <Units></Units>
+      <Default>0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_FRAME>
+    <MOT_START>
+      <DisplayName>MOT_START</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>1125</Default>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_START>
+    <MOT_MIN>
+      <DisplayName>MOT_MIN</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>975</Default>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_MIN>
+    <MOT_MAX>
+      <DisplayName>MOT_MAX</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>1950</Default>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_MAX>
+    <MOT_HOV_THROT>
+      <DisplayName>MOT_HOV_THROT</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>500</Default>
+      <Range>0 1000</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_HOV_THROT>
+    <MOT_EXP_FACT>
+      <DisplayName>MOT_EXP_FACT</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_EXP_FACT>
+    <MOT_EXP_MIN>
+      <DisplayName>MOT_EXP_MIN</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_EXP_MIN>
+    <MOT_EXP_MAX>
+      <DisplayName>MOT_EXP_MAX</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_EXP_MAX>
+    <MOT_PWRD_01_T>
+      <DisplayName>MOT_PWRD_01_T</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_01_T>
+    <MOT_PWRD_01_P>
+      <DisplayName>MOT_PWRD_01_P</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_01_P>
+    <MOT_PWRD_01_R>
+      <DisplayName>MOT_PWRD_01_R</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_01_R>
+    <MOT_PWRD_01_Y>
+      <DisplayName>MOT_PWRD_01_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_01_Y>
+    <MOT_PWRD_02_T>
+      <DisplayName>MOT_PWRD_02_T</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_02_T>
+    <MOT_PWRD_02_P>
+      <DisplayName>MOT_PWRD_02_P</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_02_P>
+    <MOT_PWRD_02_R>
+      <DisplayName>MOT_PWRD_02_R</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_02_R>
+    <MOT_PWRD_02_Y>
+      <DisplayName>MOT_PWRD_02_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_02_Y>
+    <MOT_PWRD_03_T>
+      <DisplayName>MOT_PWRD_03_T</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_03_T>
+    <MOT_PWRD_03_P>
+      <DisplayName>MOT_PWRD_03_P</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_03_P>
+    <MOT_PWRD_03_R>
+      <DisplayName>MOT_PWRD_03_R</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_03_R>
+    <MOT_PWRD_03_Y>
+      <DisplayName>MOT_PWRD_03_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_03_Y>
+    <MOT_PWRD_04_T>
+      <DisplayName>MOT_PWRD_04_T</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_04_T>
+    <MOT_PWRD_04_P>
+      <DisplayName>MOT_PWRD_04_P</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_04_P>
+    <MOT_PWRD_04_R>
+      <DisplayName>MOT_PWRD_04_R</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_04_R>
+    <MOT_PWRD_04_Y>
+      <DisplayName>MOT_PWRD_04_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_04_Y>
+    <MOT_PWRD_05_T>
+      <DisplayName>MOT_PWRD_05_T</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_05_T>
+    <MOT_PWRD_05_P>
+      <DisplayName>MOT_PWRD_05_P</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_05_P>
+    <MOT_PWRD_05_R>
+      <DisplayName>MOT_PWRD_05_R</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_05_R>
+    <MOT_PWRD_05_Y>
+      <DisplayName>MOT_PWRD_05_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_05_Y>
+    <MOT_PWRD_06_T>
+      <DisplayName>MOT_PWRD_06_T</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_06_T>
+    <MOT_PWRD_06_P>
+      <DisplayName>MOT_PWRD_06_P</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_06_P>
+    <MOT_PWRD_06_R>
+      <DisplayName>MOT_PWRD_06_R</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_06_R>
+    <MOT_PWRD_06_Y>
+      <DisplayName>MOT_PWRD_06_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_06_Y>
+    <MOT_PWRD_07_T>
+      <DisplayName>MOT_PWRD_07_T</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_07_T>
+    <MOT_PWRD_07_P>
+      <DisplayName>MOT_PWRD_07_P</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_07_P>
+    <MOT_PWRD_07_R>
+      <DisplayName>MOT_PWRD_07_R</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_07_R>
+    <MOT_PWRD_07_Y>
+      <DisplayName>MOT_PWRD_07_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_07_Y>
+    <MOT_PWRD_08_T>
+      <DisplayName>MOT_PWRD_08_T</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_08_T>
+    <MOT_PWRD_08_P>
+      <DisplayName>MOT_PWRD_08_P</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_08_P>
+    <MOT_PWRD_08_R>
+      <DisplayName>MOT_PWRD_08_R</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_08_R>
+    <MOT_PWRD_08_Y>
+      <DisplayName>MOT_PWRD_08_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_08_Y>
+    <MOT_PWRD_09_T>
+      <DisplayName>MOT_PWRD_09_T</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_09_T>
+    <MOT_PWRD_09_P>
+      <DisplayName>MOT_PWRD_09_P</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_09_P>
+    <MOT_PWRD_09_R>
+      <DisplayName>MOT_PWRD_09_R</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_09_R>
+    <MOT_PWRD_09_Y>
+      <DisplayName>MOT_PWRD_09_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_09_Y>
+    <MOT_PWRD_10_T>
+      <DisplayName>MOT_PWRD_10_T</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_10_T>
+    <MOT_PWRD_10_P>
+      <DisplayName>MOT_PWRD_10_P</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_10_P>
+    <MOT_PWRD_10_R>
+      <DisplayName>MOT_PWRD_10_R</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_10_R>
+    <MOT_PWRD_10_Y>
+      <DisplayName>MOT_PWRD_10_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_10_Y>
+    <MOT_PWRD_11_T>
+      <DisplayName>MOT_PWRD_11_T</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_11_T>
+    <MOT_PWRD_11_P>
+      <DisplayName>MOT_PWRD_11_P</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_11_P>
+    <MOT_PWRD_11_R>
+      <DisplayName>MOT_PWRD_11_R</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_11_R>
+    <MOT_PWRD_11_Y>
+      <DisplayName>MOT_PWRD_11_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_11_Y>
+    <MOT_PWRD_12_T>
+      <DisplayName>MOT_PWRD_12_T</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_12_T>
+    <MOT_PWRD_12_P>
+      <DisplayName>MOT_PWRD_12_P</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_12_P>
+    <MOT_PWRD_12_R>
+      <DisplayName>MOT_PWRD_12_R</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_12_R>
+    <MOT_PWRD_12_Y>
+      <DisplayName>MOT_PWRD_12_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_12_Y>
+    <MOT_PWRD_13_T>
+      <DisplayName>MOT_PWRD_13_T</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_13_T>
+    <MOT_PWRD_13_P>
+      <DisplayName>MOT_PWRD_13_P</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_13_P>
+    <MOT_PWRD_13_R>
+      <DisplayName>MOT_PWRD_13_R</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_13_R>
+    <MOT_PWRD_13_Y>
+      <DisplayName>MOT_PWRD_13_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_13_Y>
+    <MOT_PWRD_14_T>
+      <DisplayName>MOT_PWRD_14_T</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_14_T>
+    <MOT_PWRD_14_P>
+      <DisplayName>MOT_PWRD_14_P</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_14_P>
+    <MOT_PWRD_14_R>
+      <DisplayName>MOT_PWRD_14_R</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_14_R>
+    <MOT_PWRD_14_Y>
+      <DisplayName>MOT_PWRD_14_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWRD_14_Y>
+    <COMM_BAUD1>
+      <DisplayName>COMM_BAUD1</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>115200</Default>
+      <Range>1200 3000000</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </COMM_BAUD1>
+    <COMM_BAUD2>
+      <DisplayName>COMM_BAUD2</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>230400</Default>
+      <Range>1200 3000000</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </COMM_BAUD2>
+    <COMM_BAUD3>
+      <DisplayName>COMM_BAUD3</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>3000000</Default>
+      <Range>1200 3000000</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </COMM_BAUD3>
+    <COMM_BAUD4>
+      <DisplayName>COMM_BAUD4</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>460800</Default>
+      <Range>1200 3000000</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </COMM_BAUD4>
+    <COMM_STREAM_TYP1>
+      <DisplayName>COMM_STREAM_TYP1</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>2</Default>
+      <Range>0 255</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </COMM_STREAM_TYP1>
+    <COMM_STREAM_TYP2>
+      <DisplayName>COMM_STREAM_TYP2</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0</Default>
+      <Range>0 255</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </COMM_STREAM_TYP2>
+    <COMM_STREAM_TYP3>
+      <DisplayName>COMM_STREAM_TYP3</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0</Default>
+      <Range>0 255</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </COMM_STREAM_TYP3>
+    <COMM_STREAM_TYP4>
+      <DisplayName>COMM_STREAM_TYP4</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0</Default>
+      <Range>0 255</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </COMM_STREAM_TYP4>
+    <TELEMETRY_RATE>
+      <DisplayName>TELEMETRY_RATE</DisplayName>
+      <Description>loops between reports</Description>
+      <Units></Units>
+      <Default>20</Default>
+      <Range>1 400</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </TELEMETRY_RATE>
+    <NAV_MAX_SPEED>
+      <DisplayName>NAV_MAX_SPEED</DisplayName>
+      <Description>m/s</Description>
+      <Units></Units>
+      <Default>5.0</Default>
+      <Range>0 100</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_MAX_SPEED>
+    <NAV_MAX_DECENT>
+      <DisplayName>NAV_MAX_DECENT</DisplayName>
+      <Description>m/s</Description>
+      <Units></Units>
+      <Default>1.5</Default>
+      <Range>0 100</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_MAX_DECENT>
+    <NAV_CEILING>
+      <DisplayName>NAV_CEILING</DisplayName>
+      <Description>m relative to home alt. Maximum altitude in alt/pos/mission/dvh modes</Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>0 10000</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_CEILING>
+    <NAV_HDFRE_CHAN>
+      <DisplayName>NAV_HDFRE_CHAN</DisplayName>
+      <Description>radio channel for heading-free mode; set to zero to disable</Description>
+      <Units></Units>
+      <Default>0</Default>
+      <Range>0 15</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_HDFRE_CHAN>
+    <NAV_LANDING_VEL>
+      <DisplayName>NAV_LANDING_VEL</DisplayName>
+      <Description>m/s</Description>
+      <Units></Units>
+      <Default>1.5</Default>
+      <Range>0 100</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_LANDING_VEL>
+    <NAV_SPEED_P>
+      <DisplayName>NAV_SPEED_P</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>7.0</Default>
+      <Range>0 100</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_SPEED_P>
+    <NAV_SPEED_I>
+      <DisplayName>NAV_SPEED_I</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.005</Default>
+      <Range>0 100</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_SPEED_I>
+    <NAV_SPEED_PM>
+      <DisplayName>NAV_SPEED_PM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>20.0</Default>
+      <Range>0 1000</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_SPEED_PM>
+    <NAV_SPEED_IM>
+      <DisplayName>NAV_SPEED_IM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>20.0</Default>
+      <Range>0 1000</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_SPEED_IM>
+    <NAV_SPEED_OM>
+      <DisplayName>NAV_SPEED_OM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>30.0</Default>
+      <Range>0 1000</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_SPEED_OM>
+    <NAV_DIST_P>
+      <DisplayName>NAV_DIST_P</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.5</Default>
+      <Range>0 100</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_DIST_P>
+    <NAV_DIST_I>
+      <DisplayName>NAV_DIST_I</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>0 100</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_DIST_I>
+    <NAV_DIST_PM>
+      <DisplayName>NAV_DIST_PM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>999.0</Default>
+      <Range>0 1000</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_DIST_PM>
+    <NAV_DIST_IM>
+      <DisplayName>NAV_DIST_IM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>0 1000</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_DIST_IM>
+    <NAV_DIST_OM>
+      <DisplayName>NAV_DIST_OM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>999.0</Default>
+      <Range>0 1000</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_DIST_OM>
+    <NAV_ATL_SPED_P>
+      <DisplayName>NAV_ATL_SPED_P</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>200.0</Default>
+      <Range>0 100</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_ATL_SPED_P>
+    <NAV_ATL_SPED_I>
+      <DisplayName>NAV_ATL_SPED_I</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>2.85</Default>
+      <Range>0 100</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_ATL_SPED_I>
+    <NAV_ATL_SPED_PM>
+      <DisplayName>NAV_ATL_SPED_PM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>150.0</Default>
+      <Range>0 1000</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_ATL_SPED_PM>
+    <NAV_ATL_SPED_IM>
+      <DisplayName>NAV_ATL_SPED_IM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>700.0</Default>
+      <Range>0 1000</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_ATL_SPED_IM>
+    <NAV_ATL_SPED_OM>
+      <DisplayName>NAV_ATL_SPED_OM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>700.0</Default>
+      <Range>0 1000</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_ATL_SPED_OM>
+    <NAV_ALT_POS_P>
+      <DisplayName>NAV_ALT_POS_P</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.20</Default>
+      <Range>0 100</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_ALT_POS_P>
+    <NAV_ALT_POS_I>
+      <DisplayName>NAV_ALT_POS_I</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>0 100</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_ALT_POS_I>
+    <NAV_ALT_POS_PM>
+      <DisplayName>NAV_ALT_POS_PM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>2.5</Default>
+      <Range>0 1000</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_ALT_POS_PM>
+    <NAV_ALT_POS_IM>
+      <DisplayName>NAV_ALT_POS_IM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>0 1000</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_ALT_POS_IM>
+    <NAV_ALT_POS_OM>
+      <DisplayName>NAV_ALT_POS_OM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>2.5</Default>
+      <Range>0 1000</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </NAV_ALT_POS_OM>
+    <IMU_ROT>
+      <DisplayName>IMU_ROT</DisplayName>
+      <Description>degrees to rotate the IMU to align with the frame</Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>0 360</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ROT>
+    <IMU_ACC_BIAS_X>
+      <DisplayName>IMU_ACC_BIAS_X</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>-1.65</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_BIAS_X>
+    <IMU_ACC_BIAS_Y>
+      <DisplayName>IMU_ACC_BIAS_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>-1.65</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_BIAS_Y>
+    <IMU_ACC_BIAS_Z>
+      <DisplayName>IMU_ACC_BIAS_Z</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>-1.65</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_BIAS_Z>
+    <IMU_ACC_BIAS1_X>
+      <DisplayName>IMU_ACC_BIAS1_X</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_BIAS1_X>
+    <IMU_ACC_BIAS1_Y>
+      <DisplayName>IMU_ACC_BIAS1_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_BIAS1_Y>
+    <IMU_ACC_BIAS1_Z>
+      <DisplayName>IMU_ACC_BIAS1_Z</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_BIAS1_Z>
+    <IMU_ACC_BIAS2_X>
+      <DisplayName>IMU_ACC_BIAS2_X</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_BIAS2_X>
+    <IMU_ACC_BIAS2_Y>
+      <DisplayName>IMU_ACC_BIAS2_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_BIAS2_Y>
+    <IMU_ACC_BIAS2_Z>
+      <DisplayName>IMU_ACC_BIAS2_Z</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_BIAS2_Z>
+    <IMU_ACC_BIAS3_X>
+      <DisplayName>IMU_ACC_BIAS3_X</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_BIAS3_X>
+    <IMU_ACC_BIAS3_Y>
+      <DisplayName>IMU_ACC_BIAS3_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_BIAS3_Y>
+    <IMU_ACC_BIAS3_Z>
+      <DisplayName>IMU_ACC_BIAS3_Z</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_BIAS3_Z>
+    <IMU_ACC_SCAL_X>
+      <DisplayName>IMU_ACC_SCAL_X</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.019</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_SCAL_X>
+    <IMU_ACC_SCAL_Y>
+      <DisplayName>IMU_ACC_SCAL_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.019</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_SCAL_Y>
+    <IMU_ACC_SCAL_Z>
+      <DisplayName>IMU_ACC_SCAL_Z</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.019</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_SCAL_Z>
+    <IMU_ACC_SCAL1_X>
+      <DisplayName>IMU_ACC_SCAL1_X</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_SCAL1_X>
+    <IMU_ACC_SCAL1_Y>
+      <DisplayName>IMU_ACC_SCAL1_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_SCAL1_Y>
+    <IMU_ACC_SCAL1_Z>
+      <DisplayName>IMU_ACC_SCAL1_Z</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_SCAL1_Z>
+    <IMU_ACC_SCAL2_X>
+      <DisplayName>IMU_ACC_SCAL2_X</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_SCAL2_X>
+    <IMU_ACC_SCAL2_Y>
+      <DisplayName>IMU_ACC_SCAL2_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_SCAL2_Y>
+    <IMU_ACC_SCAL2_Z>
+      <DisplayName>IMU_ACC_SCAL2_Z</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_SCAL2_Z>
+    <IMU_ACC_SCAL3_X>
+      <DisplayName>IMU_ACC_SCAL3_X</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_SCAL3_X>
+    <IMU_ACC_SCAL3_Y>
+      <DisplayName>IMU_ACC_SCAL3_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_SCAL3_Y>
+    <IMU_ACC_SCAL3_Z>
+      <DisplayName>IMU_ACC_SCAL3_Z</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_SCAL3_Z>
+    <IMU_ACC_ALGN_XY>
+      <DisplayName>IMU_ACC_ALGN_XY</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_ALGN_XY>
+    <IMU_ACC_ALGN_XZ>
+      <DisplayName>IMU_ACC_ALGN_XZ</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_ALGN_XZ>
+    <IMU_ACC_ALGN_YX>
+      <DisplayName>IMU_ACC_ALGN_YX</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_ALGN_YX>
+    <IMU_ACC_ALGN_YZ>
+      <DisplayName>IMU_ACC_ALGN_YZ</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_ALGN_YZ>
+    <IMU_ACC_ALGN_ZX>
+      <DisplayName>IMU_ACC_ALGN_ZX</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_ALGN_ZX>
+    <IMU_ACC_ALGN_ZY>
+      <DisplayName>IMU_ACC_ALGN_ZY</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_ACC_ALGN_ZY>
+    <IMU_MAG_BIAS_X>
+      <DisplayName>IMU_MAG_BIAS_X</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_BIAS_X>
+    <IMU_MAG_BIAS_Y>
+      <DisplayName>IMU_MAG_BIAS_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_BIAS_Y>
+    <IMU_MAG_BIAS_Z>
+      <DisplayName>IMU_MAG_BIAS_Z</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_BIAS_Z>
+    <IMU_MAG_BIAS1_X>
+      <DisplayName>IMU_MAG_BIAS1_X</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_BIAS1_X>
+    <IMU_MAG_BIAS1_Y>
+      <DisplayName>IMU_MAG_BIAS1_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_BIAS1_Y>
+    <IMU_MAG_BIAS1_Z>
+      <DisplayName>IMU_MAG_BIAS1_Z</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_BIAS1_Z>
+    <IMU_MAG_BIAS2_X>
+      <DisplayName>IMU_MAG_BIAS2_X</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_BIAS2_X>
+    <IMU_MAG_BIAS2_Y>
+      <DisplayName>IMU_MAG_BIAS2_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_BIAS2_Y>
+    <IMU_MAG_BIAS2_Z>
+      <DisplayName>IMU_MAG_BIAS2_Z</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_BIAS2_Z>
+    <IMU_MAG_BIAS3_X>
+      <DisplayName>IMU_MAG_BIAS3_X</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_BIAS3_X>
+    <IMU_MAG_BIAS3_Y>
+      <DisplayName>IMU_MAG_BIAS3_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_BIAS3_Y>
+    <IMU_MAG_BIAS3_Z>
+      <DisplayName>IMU_MAG_BIAS3_Z</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_BIAS3_Z>
+    <IMU_MAG_SCAL_X>
+      <DisplayName>IMU_MAG_SCAL_X</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.19</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_SCAL_X>
+    <IMU_MAG_SCAL_Y>
+      <DisplayName>IMU_MAG_SCAL_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.19</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_SCAL_Y>
+    <IMU_MAG_SCAL_Z>
+      <DisplayName>IMU_MAG_SCAL_Z</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.19</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_SCAL_Z>
+    <IMU_MAG_SCAL1_X>
+      <DisplayName>IMU_MAG_SCAL1_X</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_SCAL1_X>
+    <IMU_MAG_SCAL1_Y>
+      <DisplayName>IMU_MAG_SCAL1_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_SCAL1_Y>
+    <IMU_MAG_SCAL1_Z>
+      <DisplayName>IMU_MAG_SCAL1_Z</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_SCAL1_Z>
+    <IMU_MAG_SCAL2_X>
+      <DisplayName>IMU_MAG_SCAL2_X</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_SCAL2_X>
+    <IMU_MAG_SCAL2_Y>
+      <DisplayName>IMU_MAG_SCAL2_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_SCAL2_Y>
+    <IMU_MAG_SCAL2_Z>
+      <DisplayName>IMU_MAG_SCAL2_Z</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_SCAL2_Z>
+    <IMU_MAG_SCAL3_X>
+      <DisplayName>IMU_MAG_SCAL3_X</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_SCAL3_X>
+    <IMU_MAG_SCAL3_Y>
+      <DisplayName>IMU_MAG_SCAL3_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_SCAL3_Y>
+    <IMU_MAG_SCAL3_Z>
+      <DisplayName>IMU_MAG_SCAL3_Z</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_SCAL3_Z>
+    <IMU_MAG_ALGN_XY>
+      <DisplayName>IMU_MAG_ALGN_XY</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_ALGN_XY>
+    <IMU_MAG_ALGN_XZ>
+      <DisplayName>IMU_MAG_ALGN_XZ</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_ALGN_XZ>
+    <IMU_MAG_ALGN_YX>
+      <DisplayName>IMU_MAG_ALGN_YX</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_ALGN_YX>
+    <IMU_MAG_ALGN_YZ>
+      <DisplayName>IMU_MAG_ALGN_YZ</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_ALGN_YZ>
+    <IMU_MAG_ALGN_ZX>
+      <DisplayName>IMU_MAG_ALGN_ZX</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_ALGN_ZX>
+    <IMU_MAG_ALGN_ZY>
+      <DisplayName>IMU_MAG_ALGN_ZY</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_ALGN_ZY>
+    <IMU_GYO_BIAS_X>
+      <DisplayName>IMU_GYO_BIAS_X</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>-1.33</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_GYO_BIAS_X>
+    <IMU_GYO_BIAS_Y>
+      <DisplayName>IMU_GYO_BIAS_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>-1.33</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_GYO_BIAS_Y>
+    <IMU_GYO_BIAS_Z>
+      <DisplayName>IMU_GYO_BIAS_Z</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>-1.33</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_GYO_BIAS_Z>
+    <IMU_GYO_BIAS1_X>
+      <DisplayName>IMU_GYO_BIAS1_X</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_GYO_BIAS1_X>
+    <IMU_GYO_BIAS1_Y>
+      <DisplayName>IMU_GYO_BIAS1_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_GYO_BIAS1_Y>
+    <IMU_GYO_BIAS1_Z>
+      <DisplayName>IMU_GYO_BIAS1_Z</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_GYO_BIAS1_Z>
+    <IMU_GYO_BIAS2_X>
+      <DisplayName>IMU_GYO_BIAS2_X</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_GYO_BIAS2_X>
+    <IMU_GYO_BIAS2_Y>
+      <DisplayName>IMU_GYO_BIAS2_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_GYO_BIAS2_Y>
+    <IMU_GYO_BIAS2_Z>
+      <DisplayName>IMU_GYO_BIAS2_Z</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_GYO_BIAS2_Z>
+    <IMU_GYO_BIAS3_X>
+      <DisplayName>IMU_GYO_BIAS3_X</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_GYO_BIAS3_X>
+    <IMU_GYO_BIAS3_Y>
+      <DisplayName>IMU_GYO_BIAS3_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_GYO_BIAS3_Y>
+    <IMU_GYO_BIAS3_Z>
+      <DisplayName>IMU_GYO_BIAS3_Z</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_GYO_BIAS3_Z>
+    <IMU_GYO_SCAL_X>
+      <DisplayName>IMU_GYO_SCAL_X</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.1145</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_GYO_SCAL_X>
+    <IMU_GYO_SCAL_Y>
+      <DisplayName>IMU_GYO_SCAL_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.1145</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_GYO_SCAL_Y>
+    <IMU_GYO_SCAL_Z>
+      <DisplayName>IMU_GYO_SCAL_Z</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.1145</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_GYO_SCAL_Z>
+    <IMU_GYO_ALGN_XY>
+      <DisplayName>IMU_GYO_ALGN_XY</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_GYO_ALGN_XY>
+    <IMU_GYO_ALGN_XZ>
+      <DisplayName>IMU_GYO_ALGN_XZ</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_GYO_ALGN_XZ>
+    <IMU_GYO_ALGN_YX>
+      <DisplayName>IMU_GYO_ALGN_YX</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_GYO_ALGN_YX>
+    <IMU_GYO_ALGN_YZ>
+      <DisplayName>IMU_GYO_ALGN_YZ</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_GYO_ALGN_YZ>
+    <IMU_GYO_ALGN_ZX>
+      <DisplayName>IMU_GYO_ALGN_ZX</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_GYO_ALGN_ZX>
+    <IMU_GYO_ALGN_ZY>
+      <DisplayName>IMU_GYO_ALGN_ZY</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_GYO_ALGN_ZY>
+    <IMU_MAG_INCL>
+      <DisplayName>IMU_MAG_INCL</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>-65.0</Default>
+      <Range>-360 360</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_INCL>
+    <IMU_MAG_DECL>
+      <DisplayName>IMU_MAG_DECL</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-360 360</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_MAG_DECL>
+    <IMU_PRESS_SENSE>
+      <DisplayName>IMU_PRESS_SENSE</DisplayName>
+      <Description>0 == sensor #1, 1 == sensor #2, 2 == both</Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>0 2</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_PRESS_SENSE>
+    <GMBL_PITCH_PORT>
+      <DisplayName>GMBL_PITCH_PORT</DisplayName>
+      <Description>0 == disabled</Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>0 16</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </GMBL_PITCH_PORT>
+    <GMBL_ROLL_PORT>
+      <DisplayName>GMBL_ROLL_PORT</DisplayName>
+      <Description>0 == disabled</Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>0 16</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </GMBL_ROLL_PORT>
+    <GMBL_PWM_MAX_RL>
+      <DisplayName>GMBL_PWM_MAX_RL</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>2250</Default>
+      <Range>800 2500</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </GMBL_PWM_MAX_RL>
+    <GMBL_PWM_MIN_RL>
+      <DisplayName>GMBL_PWM_MIN_RL</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>750</Default>
+      <Range>800 2500</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </GMBL_PWM_MIN_RL>
+    <GMBL_PWM_MAX_PT>
+      <DisplayName>GMBL_PWM_MAX_PT</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>2250</Default>
+      <Range>800 2500</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </GMBL_PWM_MAX_PT>
+    <GMBL_PWM_MIN_PT>
+      <DisplayName>GMBL_PWM_MIN_PT</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>750</Default>
+      <Range>800 2500</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </GMBL_PWM_MIN_PT>
+    <GMBL_PWM_FREQ>
+      <DisplayName>GMBL_PWM_FREQ</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>200</Default>
+      <Range>40 600</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </GMBL_PWM_FREQ>
+    <GMBL_NTRL_PITCH>
+      <DisplayName>GMBL_NTRL_PITCH</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>1575</Default>
+      <Range>800 2500</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </GMBL_NTRL_PITCH>
+    <GMBL_NTRL_ROLL>
+      <DisplayName>GMBL_NTRL_ROLL</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>1442</Default>
+      <Range>800 2500</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </GMBL_NTRL_ROLL>
+    <GMBL_SCAL_PITCH>
+      <DisplayName>GMBL_SCAL_PITCH</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.01</Default>
+      <Range>0 2</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </GMBL_SCAL_PITCH>
+    <GMBL_SCAL_ROLL>
+      <DisplayName>GMBL_SCAL_ROLL</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.01</Default>
+      <Range>0 2</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </GMBL_SCAL_ROLL>
+    <GMBL_SLEW_RATE>
+      <DisplayName>GMBL_SLEW_RATE</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.005</Default>
+      <Range>0 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </GMBL_SLEW_RATE>
+    <GMBL_ROLL_EXPO>
+      <DisplayName>GMBL_ROLL_EXPO</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-1000 1000</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </GMBL_ROLL_EXPO>
+    <SPVR_LOW_BAT1>
+      <DisplayName>SPVR_LOW_BAT1</DisplayName>
+      <Description>cell volts</Description>
+      <Units></Units>
+      <Default>3.5</Default>
+      <Range>0 5</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SPVR_LOW_BAT1>
+    <SPVR_LOW_BAT2>
+      <DisplayName>SPVR_LOW_BAT2</DisplayName>
+      <Description>cell volts</Description>
+      <Units></Units>
+      <Default>3.3</Default>
+      <Range>0 5</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SPVR_LOW_BAT2>
+    <SPVR_BAT_CRV1>
+      <DisplayName>SPVR_BAT_CRV1</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>9.210144e+00</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SPVR_BAT_CRV1>
+    <SPVR_BAT_CRV2>
+      <DisplayName>SPVR_BAT_CRV2</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>1.481796e+01</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SPVR_BAT_CRV2>
+    <SPVR_BAT_CRV3>
+      <DisplayName>SPVR_BAT_CRV3</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>-5.890255e+01</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SPVR_BAT_CRV3>
+    <SPVR_BAT_CRV4>
+      <DisplayName>SPVR_BAT_CRV4</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>1.166082e+02</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SPVR_BAT_CRV4>
+    <SPVR_BAT_CRV5>
+      <DisplayName>SPVR_BAT_CRV5</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>-1.074193e+02</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SPVR_BAT_CRV5>
+    <SPVR_BAT_CRV6>
+      <DisplayName>SPVR_BAT_CRV6</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>3.779082e+01</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SPVR_BAT_CRV6>
+    <SPVR_FS_RAD_ST1>
+      <DisplayName>SPVR_FS_RAD_ST1</DisplayName>
+      <Description>radio failsafe stage 1 action (0 = position hold)</Description>
+      <Units></Units>
+      <Default>0</Default>
+      <Range>0 10</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SPVR_FS_RAD_ST1>
+    <SPVR_FS_RAD_ST2>
+      <DisplayName>SPVR_FS_RAD_ST2</DisplayName>
+      <Description>radio failsafe stage 2 action (0 = land, 1 = RTH, land, 2 = Ascend if needed, RTH, land)</Description>
+      <Units></Units>
+      <Default>0</Default>
+      <Range>0 2</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SPVR_FS_RAD_ST2>
+    <SPVR_FS_ADD_ALT>
+      <DisplayName>SPVR_FS_ADD_ALT</DisplayName>
+      <Description>meters to add to home alt. for falisafe stg.2 action == 2</Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>0 500</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SPVR_FS_ADD_ALT>
+    <UKF_VEL_Q>
+      <DisplayName>UKF_VEL_Q</DisplayName>
+      <Description>+0.076019661680	 0.000109304521 -0.001443424436</Description>
+      <Units></Units>
+      <Default>7.6020e-02</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_VEL_Q>
+    <UKF_VEL_ALT_Q>
+      <DisplayName>UKF_VEL_ALT_Q</DisplayName>
+      <Description>+0.141489724652	 0.000109419473 +0.000987597731</Description>
+      <Units></Units>
+      <Default>1.4149e-01</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_VEL_ALT_Q>
+    <UKF_POS_Q>
+      <DisplayName>UKF_POS_Q</DisplayName>
+      <Description>+6048.951523179588	 0.000109199532 +97.58772834123110</Description>
+      <Units></Units>
+      <Default>6.0490e+03</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_POS_Q>
+    <UKF_POS_ALT_Q>
+      <DisplayName>UKF_POS_ALT_Q</DisplayName>
+      <Description>+4557.622475819297	 0.000109580650 +19.44625975731340</Description>
+      <Units></Units>
+      <Default>4.5576e+03</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_POS_ALT_Q>
+    <UKF_ACC_BIAS_Q>
+      <DisplayName>UKF_ACC_BIAS_Q</DisplayName>
+      <Description>+0.000937220476	 0.000109347614 +0.000009865862</Description>
+      <Units></Units>
+      <Default>9.3722e-04</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_ACC_BIAS_Q>
+    <UKF_GYO_BIAS_Q>
+      <DisplayName>UKF_GYO_BIAS_Q</DisplayName>
+      <Description>+0.046871534288	 0.000109380732 -0.000123894440</Description>
+      <Units></Units>
+      <Default>4.6872e-02</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_GYO_BIAS_Q>
+    <UKF_QUAT_Q>
+      <DisplayName>UKF_QUAT_Q</DisplayName>
+      <Description>+0.000730213283	 0.000109472899 +0.000000995669</Description>
+      <Units></Units>
+      <Default>7.3021e-04</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_QUAT_Q>
+    <UKF_PRES_ALT_Q>
+      <DisplayName>UKF_PRES_ALT_Q</DisplayName>
+      <Description>+65.171935456104	 0.000109418082 -0.2151891180844</Description>
+      <Units></Units>
+      <Default>6.5172e+01</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_PRES_ALT_Q>
+    <UKF_ACC_BIAS_V>
+      <DisplayName>UKF_ACC_BIAS_V</DisplayName>
+      <Description>+0.000000275353	 0.000109561088 -0.000000004212</Description>
+      <Units></Units>
+      <Default>2.7535e-07</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_ACC_BIAS_V>
+    <UKF_GYO_BIAS_V>
+      <DisplayName>UKF_GYO_BIAS_V</DisplayName>
+      <Description>+0.000000827379	 0.000107923369 +0.000000009107</Description>
+      <Units></Units>
+      <Default>8.2738e-07</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_GYO_BIAS_V>
+    <UKF_RATE_V>
+      <DisplayName>UKF_RATE_V</DisplayName>
+      <Description>+0.000060568461	 0.000109458065 +0.000000498081</Description>
+      <Units></Units>
+      <Default>6.0568e-05</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_RATE_V>
+    <UKF_PRES_ALT_V>
+      <DisplayName>UKF_PRES_ALT_V</DisplayName>
+      <Description>+0.000102039667	 0.000109254406 -0.000002050090</Description>
+      <Units></Units>
+      <Default>1.0204e-04</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_PRES_ALT_V>
+    <UKF_POS_V>
+      <DisplayName>UKF_POS_V</DisplayName>
+      <Description>+0.000000064505	 0.000109587486 -0.000000000240</Description>
+      <Units></Units>
+      <Default>6.4505e-08</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_POS_V>
+    <UKF_VEL_V>
+      <DisplayName>UKF_VEL_V</DisplayName>
+      <Description>+0.000000109802	 0.000109537353 -0.000000000134</Description>
+      <Units></Units>
+      <Default>1.0980e-07</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_VEL_V>
+    <UKF_ALT_POS_V>
+      <DisplayName>UKF_ALT_POS_V</DisplayName>
+      <Description>+0.000000005382	 0.000109525531 +0.000000000093</Description>
+      <Units></Units>
+      <Default>5.3821e-09</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_ALT_POS_V>
+    <UKF_ALT_VEL_V>
+      <DisplayName>UKF_ALT_VEL_V</DisplayName>
+      <Description>+0.000000281035	 0.000109279082 +0.000000000639</Description>
+      <Units></Units>
+      <Default>2.8103e-07</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_ALT_VEL_V>
+    <UKF_GPS_POS_N>
+      <DisplayName>UKF_GPS_POS_N</DisplayName>
+      <Description>+0.000017619672	 0.000109467204 -0.000000022679</Description>
+      <Units></Units>
+      <Default>1.7620e-05</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_GPS_POS_N>
+    <UKF_GPS_POS_M_N>
+      <DisplayName>UKF_GPS_POS_M_N</DisplayName>
+      <Description>+0.000047413187	 0.000108906551 -0.000000419440</Description>
+      <Units></Units>
+      <Default>4.7413e-05</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_GPS_POS_M_N>
+    <UKF_GPS_ALT_N>
+      <DisplayName>UKF_GPS_ALT_N</DisplayName>
+      <Description>+0.000076558177	 0.000109472033 -0.000000162714</Description>
+      <Units></Units>
+      <Default>7.6558e-05</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_GPS_ALT_N>
+    <UKF_GPS_ALT_M_N>
+      <DisplayName>UKF_GPS_ALT_M_N</DisplayName>
+      <Description>+0.000038534766	 0.000109525552 +0.000000007101</Description>
+      <Units></Units>
+      <Default>3.8535e-05</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_GPS_ALT_M_N>
+    <UKF_GPS_VEL_N>
+      <DisplayName>UKF_GPS_VEL_N</DisplayName>
+      <Description>+0.046255979499	 0.000109061365 +0.000395208418</Description>
+      <Units></Units>
+      <Default>4.6256e-02</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_GPS_VEL_N>
+    <UKF_GPS_VEL_M_N>
+      <DisplayName>UKF_GPS_VEL_M_N</DisplayName>
+      <Description>+0.012336395925	 0.000109431436 +0.000140398236</Description>
+      <Units></Units>
+      <Default>1.2336e-02</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_GPS_VEL_M_N>
+    <UKF_GPS_VD_N>
+      <DisplayName>UKF_GPS_VD_N</DisplayName>
+      <Description>+3.782028700864	 0.000109323731 -0.028830318912</Description>
+      <Units></Units>
+      <Default>3.7820e+00</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_GPS_VD_N>
+    <UKF_GPS_VD_M_N>
+      <DisplayName>UKF_GPS_VD_M_N</DisplayName>
+      <Description>+0.015840936058	 0.000109475273 -0.000030160915</Description>
+      <Units></Units>
+      <Default>1.5841e-02</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_GPS_VD_M_N>
+    <UKF_ALT_N>
+      <DisplayName>UKF_ALT_N</DisplayName>
+      <Description>+0.170768080733	 0.000109571562 +0.000084225765</Description>
+      <Units></Units>
+      <Default>1.7077e-01</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_ALT_N>
+    <UKF_ACC_N>
+      <DisplayName>UKF_ACC_N</DisplayName>
+      <Description>+0.000095468045	 0.000109331710 -0.000000932407</Description>
+      <Units></Units>
+      <Default>9.5468e-05</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_ACC_N>
+    <UKF_DIST_N>
+      <DisplayName>UKF_DIST_N</DisplayName>
+      <Description>+0.018704747883	 0.000109457024 +0.000038618360</Description>
+      <Units></Units>
+      <Default>1.8705e-02</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_DIST_N>
+    <UKF_MAG_N>
+      <DisplayName>UKF_MAG_N</DisplayName>
+      <Description>+0.382258731690	 0.000109407461 +0.002851611558</Description>
+      <Units></Units>
+      <Default>3.8226e-01</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_MAG_N>
+    <UKF_POS_DELAY>
+      <DisplayName>UKF_POS_DELAY</DisplayName>
+      <Description>+2057.421963899194	 0.001097611925 -48.37809534324900</Description>
+      <Units></Units>
+      <Default>2.0574e+03</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_POS_DELAY>
+    <UKF_VEL_DELAY>
+      <DisplayName>UKF_VEL_DELAY</DisplayName>
+      <Description>-103727.997010331557	 0.000109494449 -293.522967971236500</Description>
+      <Units></Units>
+      <Default>-1.0373e+05</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </UKF_VEL_DELAY>
+    <VN100_MAG_BIAS_X>
+      <DisplayName>VN100_MAG_BIAS_X</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </VN100_MAG_BIAS_X>
+    <VN100_MAG_BIAS_Y>
+      <DisplayName>VN100_MAG_BIAS_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </VN100_MAG_BIAS_Y>
+    <VN100_MAG_BIAS_Z>
+      <DisplayName>VN100_MAG_BIAS_Z</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </VN100_MAG_BIAS_Z>
+    <VN100_MAG_SCAL_X>
+      <DisplayName>VN100_MAG_SCAL_X</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>1.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </VN100_MAG_SCAL_X>
+    <VN100_MAG_SCAL_Y>
+      <DisplayName>VN100_MAG_SCAL_Y</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>1.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </VN100_MAG_SCAL_Y>
+    <VN100_MAG_SCAL_Z>
+      <DisplayName>VN100_MAG_SCAL_Z</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>1.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </VN100_MAG_SCAL_Z>
+    <VN100_MAG_ALGN_XY>
+      <DisplayName>VN100_MAG_ALGN_XY</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </VN100_MAG_ALGN_XY>
+    <VN100_MAG_ALGN_XZ>
+      <DisplayName>VN100_MAG_ALGN_XZ</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </VN100_MAG_ALGN_XZ>
+    <VN100_MAG_ALGN_YX>
+      <DisplayName>VN100_MAG_ALGN_YX</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </VN100_MAG_ALGN_YX>
+    <VN100_MAG_ALGN_YZ>
+      <DisplayName>VN100_MAG_ALGN_YZ</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </VN100_MAG_ALGN_YZ>
+    <VN100_MAG_ALGN_ZX>
+      <DisplayName>VN100_MAG_ALGN_ZX</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </VN100_MAG_ALGN_ZX>
+    <VN100_MAG_ALGN_ZY>
+      <DisplayName>VN100_MAG_ALGN_ZY</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </VN100_MAG_ALGN_ZY>
+    <L1_ATT_J_ROLL>
+      <DisplayName>L1_ATT_J_ROLL</DisplayName>
+      <Description>J matrix</Description>
+      <Units></Units>
+      <Default>0.0127</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_J_ROLL>
+    <L1_ATT_J_PITCH>
+      <DisplayName>L1_ATT_J_PITCH</DisplayName>
+      <Description>J matrix</Description>
+      <Units></Units>
+      <Default>0.0127</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_J_PITCH>
+    <L1_ATT_J_YAW>
+      <DisplayName>L1_ATT_J_YAW</DisplayName>
+      <Description>J matrix</Description>
+      <Units></Units>
+      <Default>0.024661</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_J_YAW>
+    <L1_ATT_AM1>
+      <DisplayName>L1_ATT_AM1</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>-10.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_AM1>
+    <L1_ATT_AM2>
+      <DisplayName>L1_ATT_AM2</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>-25.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_AM2>
+    <L1_ATT_T2R_A1>
+      <DisplayName>L1_ATT_T2R_A1</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_T2R_A1>
+    <L1_ATT_T2R_A2>
+      <DisplayName>L1_ATT_T2R_A2</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_T2R_A2>
+    <L1_ATT_PROP_K1>
+      <DisplayName>L1_ATT_PROP_K1</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>14.62</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_PROP_K1>
+    <L1_ATT_M_TLT_RT>
+      <DisplayName>L1_ATT_M_TLT_RT</DisplayName>
+      <Description>rads/s</Description>
+      <Units></Units>
+      <Default>1.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_M_TLT_RT>
+    <L1_ATT_M_YAW_RT>
+      <DisplayName>L1_ATT_M_YAW_RT</DisplayName>
+      <Description>rads/s</Description>
+      <Units></Units>
+      <Default>1.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_M_YAW_RT>
+    <L1_ATT_MAX_OUT>
+      <DisplayName>L1_ATT_MAX_OUT</DisplayName>
+      <Description>total moment demand allowed (n_a + n_b)</Description>
+      <Units></Units>
+      <Default>4.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MAX_OUT>
+    <L1_ATT_QUAT_TAU>
+      <DisplayName>L1_ATT_QUAT_TAU</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.05</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_QUAT_TAU>
+    <L1_ATT_L1_ASP>
+      <DisplayName>L1_ATT_L1_ASP</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>-10.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_L1_ASP>
+    <L1_ATT_L1_K1>
+      <DisplayName>L1_ATT_L1_K1</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>18.6</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_L1_K1>
+    <L1_ATT_PWM_LO>
+      <DisplayName>L1_ATT_PWM_LO</DisplayName>
+      <Description>us</Description>
+      <Units></Units>
+      <Default>1000.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_PWM_LO>
+    <L1_ATT_PWM_HI>
+      <DisplayName>L1_ATT_PWM_HI</DisplayName>
+      <Description>us</Description>
+      <Units></Units>
+      <Default>1950.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_PWM_HI>
+    <L1_ATT_PWM_SCAL>
+      <DisplayName>L1_ATT_PWM_SCAL</DisplayName>
+      <Description>RPM</Description>
+      <Units></Units>
+      <Default>6500.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_PWM_SCAL>
+    <L1_ATT_AM1_KNOB>
+      <DisplayName>L1_ATT_AM1_KNOB</DisplayName>
+      <Description>AM1</Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_AM1_KNOB>
+    <L1_ATT_AM2_KNOB>
+      <DisplayName>L1_ATT_AM2_KNOB</DisplayName>
+      <Description>AM2</Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_AM2_KNOB>
+    <L1_ATT_K1_KNOB>
+      <DisplayName>L1_ATT_K1_KNOB</DisplayName>
+      <Description>L1_K1</Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_K1_KNOB>
+    <L1_ATT_PT_KNOB>
+      <DisplayName>L1_ATT_PT_KNOB</DisplayName>
+      <Description>prop torque</Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_PT_KNOB>
+    <L1_ATT_MM_R01>
+      <DisplayName>L1_ATT_MM_R01</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_R01>
+    <L1_ATT_MM_P01>
+      <DisplayName>L1_ATT_MM_P01</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_P01>
+    <L1_ATT_MM_Y01>
+      <DisplayName>L1_ATT_MM_Y01</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_Y01>
+    <L1_ATT_MM_R02>
+      <DisplayName>L1_ATT_MM_R02</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_R02>
+    <L1_ATT_MM_P02>
+      <DisplayName>L1_ATT_MM_P02</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_P02>
+    <L1_ATT_MM_Y02>
+      <DisplayName>L1_ATT_MM_Y02</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_Y02>
+    <L1_ATT_MM_R03>
+      <DisplayName>L1_ATT_MM_R03</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_R03>
+    <L1_ATT_MM_P03>
+      <DisplayName>L1_ATT_MM_P03</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_P03>
+    <L1_ATT_MM_Y03>
+      <DisplayName>L1_ATT_MM_Y03</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_Y03>
+    <L1_ATT_MM_R04>
+      <DisplayName>L1_ATT_MM_R04</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_R04>
+    <L1_ATT_MM_P04>
+      <DisplayName>L1_ATT_MM_P04</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_P04>
+    <L1_ATT_MM_Y04>
+      <DisplayName>L1_ATT_MM_Y04</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_Y04>
+    <L1_ATT_MM_R05>
+      <DisplayName>L1_ATT_MM_R05</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_R05>
+    <L1_ATT_MM_P05>
+      <DisplayName>L1_ATT_MM_P05</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_P05>
+    <L1_ATT_MM_Y05>
+      <DisplayName>L1_ATT_MM_Y05</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_Y05>
+    <L1_ATT_MM_R06>
+      <DisplayName>L1_ATT_MM_R06</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_R06>
+    <L1_ATT_MM_P06>
+      <DisplayName>L1_ATT_MM_P06</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_P06>
+    <L1_ATT_MM_Y06>
+      <DisplayName>L1_ATT_MM_Y06</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_Y06>
+    <L1_ATT_MM_R07>
+      <DisplayName>L1_ATT_MM_R07</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_R07>
+    <L1_ATT_MM_P07>
+      <DisplayName>L1_ATT_MM_P07</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_P07>
+    <L1_ATT_MM_Y07>
+      <DisplayName>L1_ATT_MM_Y07</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_Y07>
+    <L1_ATT_MM_R08>
+      <DisplayName>L1_ATT_MM_R08</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_R08>
+    <L1_ATT_MM_P08>
+      <DisplayName>L1_ATT_MM_P08</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_P08>
+    <L1_ATT_MM_Y08>
+      <DisplayName>L1_ATT_MM_Y08</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_Y08>
+    <L1_ATT_MM_R09>
+      <DisplayName>L1_ATT_MM_R09</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_R09>
+    <L1_ATT_MM_P09>
+      <DisplayName>L1_ATT_MM_P09</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_P09>
+    <L1_ATT_MM_Y09>
+      <DisplayName>L1_ATT_MM_Y09</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_Y09>
+    <L1_ATT_MM_R10>
+      <DisplayName>L1_ATT_MM_R10</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_R10>
+    <L1_ATT_MM_P10>
+      <DisplayName>L1_ATT_MM_P10</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_P10>
+    <L1_ATT_MM_Y10>
+      <DisplayName>L1_ATT_MM_Y10</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_Y10>
+    <L1_ATT_MM_R11>
+      <DisplayName>L1_ATT_MM_R11</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_R11>
+    <L1_ATT_MM_P11>
+      <DisplayName>L1_ATT_MM_P11</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_P11>
+    <L1_ATT_MM_Y11>
+      <DisplayName>L1_ATT_MM_Y11</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_Y11>
+    <L1_ATT_MM_R12>
+      <DisplayName>L1_ATT_MM_R12</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_R12>
+    <L1_ATT_MM_P12>
+      <DisplayName>L1_ATT_MM_P12</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_P12>
+    <L1_ATT_MM_Y12>
+      <DisplayName>L1_ATT_MM_Y12</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_Y12>
+    <L1_ATT_MM_R13>
+      <DisplayName>L1_ATT_MM_R13</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_R13>
+    <L1_ATT_MM_P13>
+      <DisplayName>L1_ATT_MM_P13</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_P13>
+    <L1_ATT_MM_Y13>
+      <DisplayName>L1_ATT_MM_Y13</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_Y13>
+    <L1_ATT_MM_R14>
+      <DisplayName>L1_ATT_MM_R14</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_R14>
+    <L1_ATT_MM_P14>
+      <DisplayName>L1_ATT_MM_P14</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_P14>
+    <L1_ATT_MM_Y14>
+      <DisplayName>L1_ATT_MM_Y14</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>-33333 33333</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </L1_ATT_MM_Y14>
+    <SIG_LED_1_PRT>
+      <DisplayName>SIG_LED_1_PRT</DisplayName>
+      <Description>External Led(1) port, 0 to disable</Description>
+      <Units></Units>
+      <Default>0</Default>
+      <Range>0 16</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SIG_LED_1_PRT>
+    <SIG_LED_2_PRT>
+      <DisplayName>SIG_LED_2_PRT</DisplayName>
+      <Description>External Led(2) port, 0 to disable</Description>
+      <Units></Units>
+      <Default>0</Default>
+      <Range>0 16</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SIG_LED_2_PRT>
+    <SIG_BEEP_PRT>
+      <DisplayName>SIG_BEEP_PRT</DisplayName>
+      <Description>negative sign before port number when using a piezo speaker, no sign when using a piezo buzzer</Description>
+      <Units></Units>
+      <Default>0</Default>
+      <Range>-16 16</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SIG_BEEP_PRT>
+    <SIG_PWM_PRT>
+      <DisplayName>SIG_PWM_PRT</DisplayName>
+      <Description>External PWM-controlled signaling port, 0 to disable</Description>
+      <Units></Units>
+      <Default>0</Default>
+      <Range>0 16</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </SIG_PWM_PRT>
+  </ArduCopter2>
+</Params>

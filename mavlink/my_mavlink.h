@@ -57,7 +57,10 @@ enum {
 
 typedef struct {
 	int16_t id;
-	char name[1024];
+	char name[100];
+	char display[100];
+	char desc[1024];
+	char values[1024];
 	float value;
 	float min;
 	float max;
