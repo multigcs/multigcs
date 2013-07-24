@@ -152,7 +152,9 @@ static void mavlink_parseDoc (char *docname) {
 	return;
 }
 
-uint8_t mavlink_param_xml_load (char *name, float x, float y, int8_t button, float data) {
+uint8_t mavlink_param_xml_meta_load (char *name, float x, float y, int8_t button, float data) {
+	char filename[1024];
+	sprintf(filename, "%s/ParameterMetaData.xml", BASE_DIR);
 	mavlink_parseDoc("/tmp/ParameterMetaData.xml");
 }
 
@@ -231,15 +233,14 @@ uint8_t mavlink_aux_toggle (char *name, float x, float y, int8_t button, float d
 	}
 	MavLinkVars[n].value = (float)new;
 	mavlink_send_value(MavLinkVars[n].name, MavLinkVars[n].value, MavLinkVars[n].type);
+	reset_buttons();
 	return 0;
 }
 
 uint8_t mavlink_select_main (char *name, float x, float y, int8_t button, float data) {
 	sel2 = (float)data;
 	set_sel2 = (float)data;
-
 	strcpy(select_section, name + 8);
-
 	sel1_mode = 1;
 	reset_buttons();
 	return 0;
@@ -260,6 +261,7 @@ uint8_t mavlink_select_sel (char *name, float x, float y, int8_t button, float d
 			break;
 		}
 	}
+	reset_buttons();
 	return 0;
 }
 
@@ -314,6 +316,7 @@ void mavlink_param_read_file (char *param_file) {
 		}
         }
         fclose(fr);
+	reset_buttons();
 }
 
 uint8_t mavlink_param_upload_all (char *name, float x, float y, int8_t button, float data) {
@@ -324,6 +327,7 @@ uint8_t mavlink_param_upload_all (char *name, float x, float y, int8_t button, f
 			SDL_Delay(20);
 		}
 	}
+	reset_buttons();
 	return 0;
 }
 
@@ -537,7 +541,7 @@ void screen_mavlink_menu (ESContext *esContext) {
 	draw_button(esContext, "flash_r", VIEW_MODE_FCMENU, "[LOAD FLASH]", FONT_WHITE, 0.5, 0.9, 0.002, 0.06, 1, 0, mavlink_flashload, 0.0);
 	draw_button(esContext, "flash_w", VIEW_MODE_FCMENU, "[WRITE FLASH]", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, 1, 0, mavlink_flash, 0.0);
 
-	draw_button(esContext, "xml_load", VIEW_MODE_FCMENU, "[XML LOAD]", FONT_WHITE, 1.0, 0.8, 0.002, 0.06, 1, 0, mavlink_param_xml_load, 0.0);
+	draw_button(esContext, "xml_load", VIEW_MODE_FCMENU, "[XML LOAD]", FONT_WHITE, 1.0, 0.8, 0.002, 0.06, 1, 0, mavlink_param_xml_meta_load, 0.0);
 
 
 

@@ -19,7 +19,7 @@ void screen_background (ESContext *esContext) {
 			draw_image_f3(esContext, -1.5, -1.0, 1.5, 1.0, 0.0, tmp_str);
 			draw_box_f3(esContext, -1.5, -1.0, 0.0, 1.5, 1.0, 0.0, 0, 0, 0, 200);
 		}
-		sprintf(tmp_str, "%s/textures/logo-%i.png", BASE_DIR, ModelData.teletype);
+		sprintf(tmp_str, "%s/textures/logo-%i.png", BASE_DIR, teletypes[ModelData.teletype]);
 		if (file_exists(tmp_str) != 0) {
 			draw_image_f3(esContext, -1.0, -0.3, 1.0, 0.3, 0.0, tmp_str);
 		} else {

@@ -71,7 +71,7 @@ void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float 
 #endif
 
 Model ModelData;
-char teletypes[10][15] = {
+char teletypes[16][16] = {
 	"MULTIWII_21",
 	"AUTOQUAD",
 	"ARDUPILOT",
@@ -81,7 +81,13 @@ char teletypes[10][15] = {
 	"FRSKY",
 	"BASEFLIGHT",
 	"BASEFLIGHTCLI",
+	"HARAKIRI_ML",
 	"CLI",
+	"---",
+	"---",
+	"---",
+	"---",
+	"---",
 };
 char modeltypes[5][15] = {
 	"MULTICOPTER",
@@ -185,27 +191,8 @@ void save_screenshot (void) {
 	} else if (view_mode == VIEW_MODE_TCL) {
 		strcpy(name, "tcl");
 	} else if (view_mode == VIEW_MODE_FCMENU) {
-		if (ModelData.teletype == TELETYPE_MULTIWII_21) {
-			strcpy(name, "mwi");
-		} else if (ModelData.teletype == TELETYPE_MULTIWII_21) {
-			strcpy(name, "baseflight");
-		} else if (ModelData.teletype == TELETYPE_GPS_NMEA) {
-			strcpy(name, "nmea");
-		} else if (ModelData.teletype == TELETYPE_OPENPILOT) {
-			strcpy(name, "openpilot");
-		} else if (ModelData.teletype == TELETYPE_FRSKY) {
-			strcpy(name, "frsky");
-		} else if (ModelData.teletype == TELETYPE_AUTOQUAD) {
-			strcpy(name, "mavlink");
-		} else if (ModelData.teletype == TELETYPE_BASEFLIGHTCLI) {
-			strcpy(name, "baseflightcli");
-		} else if (ModelData.teletype == TELETYPE_CLI) {
-			strcpy(name, "cli");
-		} else {
-			strcpy(name, "fcmenu");
-		}
+		strcpy(name, teletypes[ModelData.teletype]);
 	}
-
 	sprintf(tmp_str, "xwd -name \"Multi-GCS\" -out /tmp/screen.dump; ./save_screenshot.sh /tmp/screen.dump %s", name);
 	system(tmp_str);
 
