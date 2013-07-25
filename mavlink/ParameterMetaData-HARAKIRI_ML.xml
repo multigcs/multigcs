@@ -629,6 +629,7 @@
     <fs_ignoresnr>
       <DisplayName>failsafe_ignoreSNR</DisplayName>
       <Description>When snr_land is set to 1, it is possible to ignore that on Failsafe, because FS over a tree could turn off copter</Description>
+      <Values>0:Off,1:On</Values>
       <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
@@ -637,6 +638,7 @@
     <fs_justph>
       <DisplayName>failsafe_justph</DisplayName>
       <Description>Does just PH and Autoland an not RTL,</Description>
+      <Values>0:RTL+LAND,1:PH+LAND</Values>
       <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
@@ -927,6 +929,7 @@
     <led_ctrlch>
       <DisplayName>LED_ControlChannel</DisplayName>
       <Description>RC Channel to control the LED Pattern</Description>
+      <Values>1:Channel1,2:Channel2,3:Channel3,4:Channel4,5:Channel5,6:Channel6,7:Channel7,8:Channel8,9:Channel9,10:Channel10,11:Channel11,12:Channel12</Values>
       <Units></Units>
       <Range>1 12</Range>
       <Increment>1</Increment>
@@ -1047,6 +1050,7 @@
     <main_mixertype>
       <DisplayName>main_mixertype</DisplayName>
       <Description>mixtable-presets: TRI, QUADP, QUADX, BI, GIMBAL, Y6, HEX6, FLYING_WING, Y4, HEX6X, OCTOX8, OCTOFLATP, OCTOFLATX, AIRPLANE, HELI_120_CCPM, HELI_90_DEG, VTAIL4, CUSTOM</Description>
+      <Values>0:TRI,1:QUADP,2:QUADX,3:BI,4:GIMBAL,5:Y6,6:HEX6,7:FLYING_WING,8:Y4,9:HEX6X,10:OCTOX8,11:OCTOFLATP,12:OCTOFLATX,13:AIRPLANE,14:HELI_120_CCPM,15:HELI_90_DEG,16:VTAIL4,17:CUSTOM</Values>
       <Units></Units>
       <Range>0 17</Range>
       <Increment>1</Increment>
@@ -1394,14 +1398,16 @@
     <rc_map_aux1>
       <DisplayName>rc_map_aux1</DisplayName>
       <Description>mapping of radio channels to internal RPYTA+ order</Description>
+      <Values>0:Channel1,1:Channel2,2:Channel3,3:Channel4,4:Channel5,5:Channel6,6:Channel7,7:Channel8</Values>
       <Units></Units>
-      <Range>0 8</Range>
+      <Range>0 7</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
     </rc_map_aux1>
     <rc_map_aux2>
       <DisplayName>rc_map_aux2</DisplayName>
       <Description>mapping of radio channels to internal RPYTA+ order</Description>
+      <Values>0:Channel1,1:Channel2,2:Channel3,3:Channel4,4:Channel5,5:Channel6,6:Channel7,7:Channel8</Values>
       <Units></Units>
       <Range>0 8</Range>
       <Increment>1</Increment>
@@ -1410,6 +1416,7 @@
     <rc_map_aux3>
       <DisplayName>rc_map_aux3</DisplayName>
       <Description>mapping of radio channels to internal RPYTA+ order</Description>
+      <Values>0:Channel1,1:Channel2,2:Channel3,3:Channel4,4:Channel5,5:Channel6,6:Channel7,7:Channel8</Values>
       <Units></Units>
       <Range>0 8</Range>
       <Increment>1</Increment>
@@ -1418,6 +1425,7 @@
     <rc_map_aux4>
       <DisplayName>rc_map_aux4</DisplayName>
       <Description>mapping of radio channels to internal RPYTA+ order</Description>
+      <Values>0:Channel1,1:Channel2,2:Channel3,3:Channel4,4:Channel5,5:Channel6,6:Channel7,7:Channel8</Values>
       <Units></Units>
       <Range>0 8</Range>
       <Increment>1</Increment>
@@ -1426,6 +1434,7 @@
     <rc_map_pitch>
       <DisplayName>rc_map_pitch</DisplayName>
       <Description>mapping of radio channels to internal RPYTA+ order</Description>
+      <Values>0:Channel1,1:Channel2,2:Channel3,3:Channel4,4:Channel5,5:Channel6,6:Channel7,7:Channel8</Values>
       <Units></Units>
       <Range>0 8</Range>
       <Increment>1</Increment>
@@ -1434,6 +1443,7 @@
     <rc_map_roll>
       <DisplayName>rc_map_roll</DisplayName>
       <Description>mapping of radio channels to internal RPYTA+ order</Description>
+      <Values>0:Channel1,1:Channel2,2:Channel3,3:Channel4,4:Channel5,5:Channel6,6:Channel7,7:Channel8</Values>
       <Units></Units>
       <Range>0 8</Range>
       <Increment>1</Increment>
@@ -1442,6 +1452,7 @@
     <rc_map_thr>
       <DisplayName>rc_map_thr</DisplayName>
       <Description>mapping of radio channels to internal RPYTA+ order</Description>
+      <Values>0:Channel1,1:Channel2,2:Channel3,3:Channel4,4:Channel5,5:Channel6,6:Channel7,7:Channel8</Values>
       <Units></Units>
       <Range>0 8</Range>
       <Increment>1</Increment>
@@ -1450,6 +1461,7 @@
     <rc_map_yaw>
       <DisplayName>rc_map_yaw</DisplayName>
       <Description>mapping of radio channels to internal RPYTA+ order</Description>
+      <Values>0:Channel1,1:Channel2,2:Channel3,3:Channel4,4:Channel5,5:Channel6,6:Channel7,7:Channel8</Values>
       <Units></Units>
       <Range>0 8</Range>
       <Increment>1</Increment>
@@ -1490,6 +1502,7 @@
     <rc_retarded_arm>
       <DisplayName>retarded_arm</DisplayName>
       <Description>allow disarsm/arm on throttle down + roll left/right</Description>
+      <Values>0:Off,1:On</Values>
       <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
@@ -1498,6 +1511,7 @@
     <rc_spektrum_res>
       <DisplayName>spektrum_hires</DisplayName>
       <Description>spektrum high-resolution y/n (1024/2048bit)</Description>
+      <Values>0:Off,1:On</Values>
       <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
@@ -1610,6 +1624,7 @@
     <snr_debug>
       <DisplayName>snr_debug</DisplayName>
       <Description>1 Sets Sonardata within snr_min/max in debug[0]</Description>
+      <Values>0:Off,1:On</Values>
       <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
@@ -1626,6 +1641,7 @@
     <snr_land>
       <DisplayName>snr_land</DisplayName>
       <Description>When snr_land is set to 1, it is possible to ignore that on Failsafe, because FS over a tree could turn off copter</Description>
+      <Values>0:Off,1:On</Values>
       <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
