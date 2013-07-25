@@ -4,7 +4,6 @@
     <acc_hardware>
       <DisplayName>acc_hardware</DisplayName>
       <Description>Which acc hardware to use on boards with more than one device</Description>
-      <Units></Units>
       <Range>0 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -12,7 +11,6 @@
     <acc_ins_lpf>
       <DisplayName>acc_ins_lpf</DisplayName>
       <Description>ACC lowpass for Acc GPS INS</Description>
-      <Units></Units>
       <Range>1 250</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -20,7 +18,6 @@
     <acc_lpf>
       <DisplayName>acc_lpf_factor</DisplayName>
       <Description>Set the Low Pass Filter factor for ACC. Increasing this value would reduce ACC noise (visible in GUI), but would increase ACC lag time. Zero = no filter</Description>
-      <Units></Units>
       <Range>1 250</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -28,7 +25,6 @@
     <acc_trim_pitch>
       <DisplayName>acc_trim_pitch</DisplayName>
       <Description>accelerometer trim</Description>
-      <Units></Units>
       <Range>-300 300</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -36,7 +32,6 @@
     <acc_trim_roll>
       <DisplayName>acc_trim_roll</DisplayName>
       <Description>accelerometer trim</Description>
-      <Units></Units>
       <Range>-300 300</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -44,7 +39,6 @@
     <acc_zalt_cf>
       <DisplayName>accz_alt_cf</DisplayName>
       <Description>Crashpilot: Value for complementary filter accz and altitude</Description>
-      <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -52,7 +46,6 @@
     <acc_zvel_cf>
       <DisplayName>accz_vel_cf</DisplayName>
       <Description>Crashpilot: Value for complementary filter accz and barovelocity</Description>
-      <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -60,7 +53,6 @@
     <al_baro_lr>
       <DisplayName>al_barolr</DisplayName>
       <Description>Temporary value "64" increase to increase Landingspeed</Description>
-      <Units></Units>
       <Range>30 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -68,7 +60,6 @@
     <al_debounce>
       <DisplayName>al_debounce</DisplayName>
       <Description>(0-20%) 0 Disables. Defines a Throttlelimiter on Autoland. This percentage defines the maximum deviation of assumed hoverthrottle during Autoland</Description>
-      <Units></Units>
       <Range>0 20</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -76,7 +67,6 @@
     <algn_acc_x>
       <DisplayName>align_acc_x</DisplayName>
       <Description>acc, gyro, mag alignment (ex: with sensor output of X, Y, Z, align of 1 -3 2 would return X, -Z, Y)</Description>
-      <Units></Units>
       <Range>-3 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -84,7 +74,6 @@
     <algn_acc_y>
       <DisplayName>align_acc_y</DisplayName>
       <Description>acc, gyro, mag alignment (ex: with sensor output of X, Y, Z, align of 1 -3 2 would return X, -Z, Y)</Description>
-      <Units></Units>
       <Range>-3 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -92,7 +81,6 @@
     <algn_acc_z>
       <DisplayName>align_acc_z</DisplayName>
       <Description>acc, gyro, mag alignment (ex: with sensor output of X, Y, Z, align of 1 -3 2 would return X, -Z, Y)</Description>
-      <Units></Units>
       <Range>-3 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -100,7 +88,6 @@
     <algn_gyro_x>
       <DisplayName>align_gyro_x</DisplayName>
       <Description>acc, gyro, mag alignment (ex: with sensor output of X, Y, Z, align of 1 -3 2 would return X, -Z, Y)</Description>
-      <Units></Units>
       <Range>-3 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -108,7 +95,6 @@
     <algn_gyro_y>
       <DisplayName>align_gyro_y</DisplayName>
       <Description>acc, gyro, mag alignment (ex: with sensor output of X, Y, Z, align of 1 -3 2 would return X, -Z, Y)</Description>
-      <Units></Units>
       <Range>-3 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -116,7 +102,6 @@
     <algn_gyro_z>
       <DisplayName>align_gyro_z</DisplayName>
       <Description>acc, gyro, mag alignment (ex: with sensor output of X, Y, Z, align of 1 -3 2 would return X, -Z, Y)</Description>
-      <Units></Units>
       <Range>-3 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -124,7 +109,6 @@
     <algn_mag_x>
       <DisplayName>align_mag_x</DisplayName>
       <Description>acc, gyro, mag alignment (ex: with sensor output of X, Y, Z, align of 1 -3 2 would return X, -Z, Y)</Description>
-      <Units></Units>
       <Range>-3 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -132,7 +116,6 @@
     <algn_mag_y>
       <DisplayName>align_mag_y</DisplayName>
       <Description>acc, gyro, mag alignment (ex: with sensor output of X, Y, Z, align of 1 -3 2 would return X, -Z, Y)</Description>
-      <Units></Units>
       <Range>-3 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -140,7 +123,6 @@
     <algn_mag_z>
       <DisplayName>align_mag_z</DisplayName>
       <Description>acc, gyro, mag alignment (ex: with sensor output of X, Y, Z, align of 1 -3 2 would return X, -Z, Y)</Description>
-      <Units></Units>
       <Range>-3 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -148,7 +130,6 @@
     <al_lndthr>
       <DisplayName>al_lndthr</DisplayName>
       <Description>This is the absolute throttle that kicks off the "has landed timer" if it is "0" or too low cfg.minthrottle is taken.</Description>
-      <Units></Units>
       <Range>0 2000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -156,7 +137,6 @@
     <al_snrlr>
       <DisplayName>al_snrlr</DisplayName>
       <Description>You can specify different landingfactor here on sonar contact, because sonar land maybe too fast...</Description>
-      <Units></Units>
       <Range>30 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -164,7 +144,6 @@
     <al_tobaro>
       <DisplayName>al_tobaro</DisplayName>
       <Description>Timeout in ms (100 - 5000) before shutoff on autoland. "al_lndthr" must be undershot for that timeperiod</Description>
-      <Units></Units>
       <Range>100 5000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -172,7 +151,6 @@
     <al_tosnr>
       <DisplayName>al_tosnr</DisplayName>
       <Description>Timeout in ms (100 - 5000) If sonar aided land is wanted (snr_land = 1) you can choose a different timeout here</Description>
-      <Units></Units>
       <Range>100 5000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -180,7 +158,6 @@
     <alt_thrmid>
       <DisplayName>alt_hold_throttle_neutral</DisplayName>
       <Description>defines the neutral zone of throttle stick during altitude hold, default setting is +/-20</Description>
-      <Units></Units>
       <Range>1 100</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -188,7 +165,6 @@
     <aux_angle>
       <DisplayName>aux_angle</DisplayName>
       <Description>activate switches</Description>
-      <Units></Units>
       <Range>0 4095</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -196,7 +172,6 @@
     <aux_arm>
       <DisplayName>aux_arm</DisplayName>
       <Description>activate switches</Description>
-      <Units></Units>
       <Range>0 4095</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -204,7 +179,6 @@
     <aux_baro>
       <DisplayName>aux_baro</DisplayName>
       <Description>activate switches</Description>
-      <Units></Units>
       <Range>0 4095</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -212,7 +186,6 @@
     <aux_beeper>
       <DisplayName>aux_beeper</DisplayName>
       <Description>activate switches</Description>
-      <Units></Units>
       <Range>0 4095</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -220,7 +193,6 @@
     <aux_camstab>
       <DisplayName>aux_camstab</DisplayName>
       <Description>activate switches</Description>
-      <Units></Units>
       <Range>0 4095</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -228,7 +200,6 @@
     <aux_camtrig>
       <DisplayName>aux_camtrig</DisplayName>
       <Description>activate switches</Description>
-      <Units></Units>
       <Range>0 4095</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -236,7 +207,6 @@
     <aux_gps_hold>
       <DisplayName>aux_gps_hold</DisplayName>
       <Description>activate switches</Description>
-      <Units></Units>
       <Range>0 4095</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -244,7 +214,6 @@
     <aux_gps_home>
       <DisplayName>aux_gps_home</DisplayName>
       <Description>activate switches</Description>
-      <Units></Units>
       <Range>0 4095</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -252,7 +221,6 @@
     <aux_gps_log>
       <DisplayName>aux_gps_log</DisplayName>
       <Description>activate switches</Description>
-      <Units></Units>
       <Range>0 4095</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -260,7 +228,6 @@
     <aux_headadj>
       <DisplayName>aux_headadj</DisplayName>
       <Description>activate switches</Description>
-      <Units></Units>
       <Range>0 4095</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -268,7 +235,6 @@
     <aux_headfree>
       <DisplayName>aux_headfree</DisplayName>
       <Description>activate switches</Description>
-      <Units></Units>
       <Range>0 4095</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -276,7 +242,6 @@
     <aux_horizon>
       <DisplayName>aux_horizon</DisplayName>
       <Description>activate switches</Description>
-      <Units></Units>
       <Range>0 4095</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -284,7 +249,6 @@
     <aux_mag>
       <DisplayName>aux_mag</DisplayName>
       <Description>activate switches</Description>
-      <Units></Units>
       <Range>0 4095</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -292,7 +256,6 @@
     <aux_passthru>
       <DisplayName>aux_passthru</DisplayName>
       <Description>activate switches</Description>
-      <Units></Units>
       <Range>0 4095</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -301,7 +264,6 @@
       <DisplayName>baro_debug</DisplayName>
       <Description>Crashpilot: 1 = Debug Barovalues</Description>
       <Values>0:OFF,1:ON</Values>
-      <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -309,7 +271,6 @@
     <baro_downscale>
       <DisplayName>barodownscale</DisplayName>
       <Description>Scale downmovement down</Description>
-      <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -317,7 +278,6 @@
     <baro_lag>
       <DisplayName>baro_lag</DisplayName>
       <Description>Lag of Baro</Description>
-      <Units></Units>
       <Range>0 10</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -325,7 +285,6 @@
     <cmix_1_pitch>
       <DisplayName>cmix_1_pitch</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -333,7 +292,6 @@
     <cmix_1_roll>
       <DisplayName>cmix_1_roll</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -341,7 +299,6 @@
     <cmix_1_thr>
       <DisplayName>cmix_1_thr</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -349,7 +306,6 @@
     <cmix_1_yaw>
       <DisplayName>cmix_1_yaw</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -357,7 +313,6 @@
     <cmix_2_pitch>
       <DisplayName>cmix_2_pitch</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -365,7 +320,6 @@
     <cmix_2_roll>
       <DisplayName>cmix_2_roll</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -373,7 +327,6 @@
     <cmix_2_thr>
       <DisplayName>cmix_2_thr</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -381,7 +334,6 @@
     <cmix_2_yaw>
       <DisplayName>cmix_2_yaw</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -389,7 +341,6 @@
     <cmix_3_pitch>
       <DisplayName>cmix_3_pitch</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -397,7 +348,6 @@
     <cmix_3_roll>
       <DisplayName>cmix_3_roll</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -405,7 +355,6 @@
     <cmix_3_thr>
       <DisplayName>cmix_3_thr</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -413,7 +362,6 @@
     <cmix_3_yaw>
       <DisplayName>cmix_3_yaw</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -421,7 +369,6 @@
     <cmix_4_pitch>
       <DisplayName>cmix_4_pitch</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -429,7 +376,6 @@
     <cmix_4_roll>
       <DisplayName>cmix_4_roll</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -437,7 +383,6 @@
     <cmix_4_thr>
       <DisplayName>cmix_4_thr</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -445,7 +390,6 @@
     <cmix_4_yaw>
       <DisplayName>cmix_4_yaw</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -453,7 +397,6 @@
     <cmix_5_pitch>
       <DisplayName>cmix_5_pitch</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -461,7 +404,6 @@
     <cmix_5_roll>
       <DisplayName>cmix_5_roll</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -469,7 +411,6 @@
     <cmix_5_thr>
       <DisplayName>cmix_5_thr</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -477,7 +418,6 @@
     <cmix_5_yaw>
       <DisplayName>cmix_5_yaw</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -485,7 +425,6 @@
     <cmix_6_pitch>
       <DisplayName>cmix_6_pitch</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -493,7 +432,6 @@
     <cmix_6_roll>
       <DisplayName>cmix_6_roll</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -501,7 +439,6 @@
     <cmix_6_thr>
       <DisplayName>cmix_6_thr</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -509,7 +446,6 @@
     <cmix_6_yaw>
       <DisplayName>cmix_6_yaw</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -517,7 +453,6 @@
     <cmix_7_pitch>
       <DisplayName>cmix_7_pitch</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -525,7 +460,6 @@
     <cmix_7_roll>
       <DisplayName>cmix_7_roll</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -533,7 +467,6 @@
     <cmix_7_thr>
       <DisplayName>cmix_7_thr</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -541,7 +474,6 @@
     <cmix_7_yaw>
       <DisplayName>cmix_7_yaw</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -549,7 +481,6 @@
     <cmix_8_pitch>
       <DisplayName>cmix_8_pitch</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -557,7 +488,6 @@
     <cmix_8_roll>
       <DisplayName>cmix_8_roll</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -565,7 +495,6 @@
     <cmix_8_thr>
       <DisplayName>cmix_8_thr</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -573,7 +502,6 @@
     <cmix_8_yaw>
       <DisplayName>cmix_8_yaw</DisplayName>
       <Description>custom mixtable</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -581,7 +509,6 @@
     <esc_maxthr>
       <DisplayName>maxthrottle</DisplayName>
       <Description>This is the maximum value for the ESCs at full power this value can be increased up to 2000</Description>
-      <Units></Units>
       <Range>0 2000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -589,7 +516,6 @@
     <esc_mincmd>
       <DisplayName>mincommand</DisplayName>
       <Description>This is the value for the ESCs when they are not armed. In some cases, this value must be lowered down to 900 for some specific ESCs</Description>
-      <Units></Units>
       <Range>0 2000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -597,7 +523,6 @@
     <esc_minthr>
       <DisplayName>minthrottle</DisplayName>
       <Description>Set the minimum throttle command sent to the ESC (Electronic Speed Controller). This is the minimum value that allow motors to run at a idle speed.</Description>
-      <Units></Units>
       <Range>0 2000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -605,7 +530,6 @@
     <esc_passmotor>
       <DisplayName>passmotor</DisplayName>
       <Description>Crashpilot: Only used with feature pass. If 0 = all Motors, otherwise specific Motor</Description>
-      <Units></Units>
       <Range>0 10</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -613,7 +537,6 @@
     <fs_deadpilot>
       <DisplayName>failsafe_deadpilot</DisplayName>
       <Description>Time in sec when FS is engaged after idle on THR/YAW/ROLL/PITCH</Description>
-      <Units></Units>
       <Range>0 250</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -621,7 +544,6 @@
     <fs_delay>
       <DisplayName>failsafe_delay</DisplayName>
       <Description>Guard time for failsafe activation after signal lost. 1 step = 0.1sec - 1sec in example (10)</Description>
-      <Units></Units>
       <Range>0 40</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -630,7 +552,6 @@
       <DisplayName>failsafe_ignoreSNR</DisplayName>
       <Description>When snr_land is set to 1, it is possible to ignore that on Failsafe, because FS over a tree could turn off copter</Description>
       <Values>0:Off,1:On</Values>
-      <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -639,7 +560,6 @@
       <DisplayName>failsafe_justph</DisplayName>
       <Description>Does just PH and Autoland an not RTL,</Description>
       <Values>0:RTL+LAND,1:PH+LAND</Values>
-      <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -647,7 +567,6 @@
     <fs_off_delay>
       <DisplayName>failsafe_off_delay</DisplayName>
       <Description>Time for Landing before motors stop in 0.1sec. 1 step = 0.1sec - 20sec in example (200)</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -655,7 +574,6 @@
     <fs_thr>
       <DisplayName>failsafe_throttle</DisplayName>
       <Description>Throttle level used for landing - specify value between 1000..2000 (pwm pulse width for slightly below hover). center throttle = 1500.</Description>
-      <Units></Units>
       <Range>1000 2000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -663,7 +581,6 @@
     <gmbl_flags>
       <DisplayName>gimbal_flags</DisplayName>
       <Description>in servotilt mode, various things that affect stuff</Description>
-      <Units></Units>
       <Range>0 255</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -671,7 +588,6 @@
     <gmbl_pitch_gain>
       <DisplayName>gimbal_pitch_gain</DisplayName>
       <Description>gimbal pitch servo gain (tied to angle) can be negative to invert movement</Description>
-      <Units></Units>
       <Range>-100 100</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -679,7 +595,6 @@
     <gmbl_pitch_max>
       <DisplayName>gimbal_pitch_max</DisplayName>
       <Description>gimbal pitch servo max travel</Description>
-      <Units></Units>
       <Range>100 3000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -687,7 +602,6 @@
     <gmbl_pitch_mid>
       <DisplayName>gimbal_pitch_mid</DisplayName>
       <Description>gimbal pitch servo neutral value</Description>
-      <Units></Units>
       <Range>100 3000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -695,7 +609,6 @@
     <gmbl_pitch_min>
       <DisplayName>gimbal_pitch_min</DisplayName>
       <Description>gimbal pitch servo min travel</Description>
-      <Units></Units>
       <Range>100 3000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -703,7 +616,6 @@
     <gmbl_roll_gain>
       <DisplayName>gimbal_roll_gain</DisplayName>
       <Description>gimbal roll servo gain (tied to angle) can be negative to invert movement</Description>
-      <Units></Units>
       <Range>-100 100</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -711,7 +623,6 @@
     <gmbl_roll_max>
       <DisplayName>gimbal_roll_max</DisplayName>
       <Description>gimbal roll servo max travel</Description>
-      <Units></Units>
       <Range>100 3000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -719,7 +630,6 @@
     <gmbl_roll_mid>
       <DisplayName>gimbal_roll_mid</DisplayName>
       <Description>gimbal roll servo neutral value</Description>
-      <Units></Units>
       <Range>100 3000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -727,7 +637,6 @@
     <gmbl_roll_min>
       <DisplayName>gimbal_roll_min</DisplayName>
       <Description>gimbal roll servo min travel</Description>
-      <Units></Units>
       <Range>100 3000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -735,7 +644,6 @@
     <gps_adddb>
       <DisplayName>gps_adddb</DisplayName>
       <Description>Additional Deadband for all GPS functions;</Description>
-      <Units></Units>
       <Range>0 100</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -743,7 +651,6 @@
     <gps_baudrate>
       <DisplayName>gps_baudrate</DisplayName>
       <Description>GPS baudrate</Description>
-      <Units></Units>
       <Range>1200 115200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -752,7 +659,6 @@
       <DisplayName>gps_ins_mdl</DisplayName>
       <Description>GPS ins model. 1 = Based on lat/lon, 2 = based on Groundcourse  and  speed, 3 = based on ublx velned</Description>
       <Values>1:Based on lat/lon,2:based on Groundcourse  and  speed,3:based on ublx velned</Values>
-      <Units></Units>
       <Range>1 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -760,7 +666,6 @@
     <gps_ins_vel>
       <DisplayName>gps_ins_vel</DisplayName>
       <Description>Crashpilot: Value for complementary filter INS and GPS Velocity</Description>
-      <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -768,7 +673,6 @@
     <gps_lag>
       <DisplayName>gps_lag</DisplayName>
       <Description>GPS Lag in ms</Description>
-      <Units></Units>
       <Range>0 10000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -776,7 +680,6 @@
     <gps_maxangle>
       <DisplayName>gps_maxangle</DisplayName>
       <Description>maximal over all GPS bank angle</Description>
-      <Units></Units>
       <Range>10 45</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -784,7 +687,6 @@
     <gps_nav_d>
       <DisplayName>gps_nav_d</DisplayName>
       <Description>gps_nav_d</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -792,7 +694,6 @@
     <gps_nav_i>
       <DisplayName>gps_nav_i</DisplayName>
       <Description>gps_nav_i</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -800,7 +701,6 @@
     <gps_nav_p>
       <DisplayName>gps_nav_p</DisplayName>
       <Description>Thats the MAG P during GPS functions, substitute for "cfg.P8[PIDMAG]"</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -808,7 +708,6 @@
     <gps_phase>
       <DisplayName>gps_phase</DisplayName>
       <Description>Make a phaseshift +-30 Deg max of GPS output</Description>
-      <Units></Units>
       <Range>-30 30</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -816,7 +715,6 @@
     <gps_pos_d>
       <DisplayName>gps_pos_d</DisplayName>
       <Description>gps_pos_d</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -824,7 +722,6 @@
     <gps_pos_i>
       <DisplayName>gps_pos_i</DisplayName>
       <Description>gps_pos_i</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -832,7 +729,6 @@
     <gps_pos_p>
       <DisplayName>gps_pos_p</DisplayName>
       <Description>Thats the MAG P during GPS functions, substitute for "cfg.P8[PIDMAG]"</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -840,7 +736,6 @@
     <gps_posr_d>
       <DisplayName>gps_posr_d</DisplayName>
       <Description>gps_posr_d</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -848,7 +743,6 @@
     <gps_posr_i>
       <DisplayName>gps_posr_i</DisplayName>
       <Description>gps_posr_i</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -856,7 +750,6 @@
     <gps_posr_p>
       <DisplayName>gps_posr_p</DisplayName>
       <Description>Thats the MAG P during GPS functions, substitute for "cfg.P8[PIDMAG]"</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -864,7 +757,6 @@
     <gps_pt1cut>
       <DisplayName>gpspt1cut</DisplayName>
       <Description>(1-50Hz) Cuf Off Frequency for D term in Hz of GPS Pid controller</Description>
-      <Units></Units>
       <Range>1 50</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -872,7 +764,6 @@
     <gps_tbe_speed>
       <DisplayName>gps_tbe_speed</DisplayName>
       <Description>0 - 1000 (0 disables) Speed in cm/s for TBE detection must be greater than gps_ph_settlespeed or disabled</Description>
-      <Units></Units>
       <Range>0 1000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -880,7 +771,6 @@
     <gps_type>
       <DisplayName>gps_type</DisplayName>
       <Description>Type of GPS hardware. 0: NMEA 1: UBX 2+ ??</Description>
-      <Units></Units>
       <Range>0 9</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -888,7 +778,6 @@
     <gps_yaw>
       <DisplayName>gps_yaw</DisplayName>
       <Description>Thats the MAG P during GPS functions, substitute for "cfg.P8[PIDMAG]"</Description>
-      <Units></Units>
       <Range>20 150</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -896,7 +785,6 @@
     <gyro_cmpf>
       <DisplayName>gyro_cmpf_factor</DisplayName>
       <Description>Set the Gyro Weight for Gyro/Acc complementary filter. Increasing this value would reduce and delay Acc influence on the output of the filter.</Description>
-      <Units></Units>
       <Range>10 1000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -904,7 +792,6 @@
     <gyro_cmpfm>
       <DisplayName>gyro_cmpfm_factor</DisplayName>
       <Description>gyro_cmpfm_factor</Description>
-      <Units></Units>
       <Range>10 2000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -912,7 +799,6 @@
     <gyro_lpf>
       <DisplayName>gyro_lpf</DisplayName>
       <Description>mpuX050 LPF setting (TODO make it work on L3GD as well)</Description>
-      <Units></Units>
       <Range>0 256</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -921,7 +807,6 @@
       <DisplayName>LED_ARMED</DisplayName>
       <Description>0 = Show LED only if armed, 1 = always show LED</Description>
       <Values>0:Show LED only if armed,1:always show LED</Values>
-      <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -930,7 +815,6 @@
       <DisplayName>LED_ControlChannel</DisplayName>
       <Description>RC Channel to control the LED Pattern</Description>
       <Values>1:Channel1,2:Channel2,3:Channel3,4:Channel4,5:Channel5,6:Channel6,7:Channel7,8:Channel8,9:Channel9,10:Channel10,11:Channel11,12:Channel12</Values>
-      <Units></Units>
       <Range>1 12</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -938,7 +822,6 @@
     <led_invert>
       <DisplayName>LED_invert</DisplayName>
       <Description>Crashpilot invert LED 0 and 1</Description>
-      <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -946,7 +829,6 @@
     <led_pattern1>
       <DisplayName>LED_Pattern1</DisplayName>
       <Description>32bit bit pattern to have flickering led patterns / the pattern for MWCRGB 1000-2000</Description>
-      <Units></Units>
       <Range>0 0x7FFFFFFF</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -954,7 +836,6 @@
     <led_pattern2>
       <DisplayName>LED_Pattern2</DisplayName>
       <Description>32bit bit pattern to have flickering led patterns / the pattern for MWCRGB 1000-2000</Description>
-      <Units></Units>
       <Range>0 0x7FFFFFFF</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -962,7 +843,6 @@
     <led_pattern3>
       <DisplayName>LED_Pattern3</DisplayName>
       <Description>32bit bit pattern to have flickering led patterns / the pattern for MWCRGB 1000-2000</Description>
-      <Units></Units>
       <Range>0 0x7FFFFFFF</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -970,7 +850,6 @@
     <led_pinout>
       <DisplayName>LED_pinout</DisplayName>
       <Description>choose LED pinout (MONO_LED: 0=LED rc5, 1=LED rc6 / MWCRGB: coming soon)</Description>
-      <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -978,7 +857,6 @@
     <led_tgl_delay1>
       <DisplayName>LED_Toggle_Delay1</DisplayName>
       <Description>16bit bit pattern to slow down led patterns</Description>
-      <Units></Units>
       <Range>0 255</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -986,7 +864,6 @@
     <led_tgl_delay2>
       <DisplayName>LED_Toggle_Delay2</DisplayName>
       <Description>16bit bit pattern to slow down led patterns</Description>
-      <Units></Units>
       <Range>0 255</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -994,7 +871,6 @@
     <led_tgl_delay3>
       <DisplayName>LED_Toggle_Delay3</DisplayName>
       <Description>16bit bit pattern to slow down led patterns</Description>
-      <Units></Units>
       <Range>0 255</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1002,7 +878,6 @@
     <led_type>
       <DisplayName>LED_Type</DisplayName>
       <Description>1=MWCRGB / 2=MONO_LED / 3=LEDRing</Description>
-      <Units></Units>
       <Range>0 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1010,7 +885,6 @@
     <mag_declination>
       <DisplayName>mag_declination</DisplayName>
       <Description>magnetic-declination.com/</Description>
-      <Units></Units>
       <Range>-18000 18000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1018,7 +892,6 @@
     <mag_oldcalib>
       <DisplayName>mag_oldcalib</DisplayName>
       <Description>0 = extended calibration (better)</Description>
-      <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1026,7 +899,6 @@
     <mag_oldctime>
       <DisplayName>mag_oldctime</DisplayName>
       <Description>1 - 5 Time in MINUTES for old calibration. Use this together with mag_oldcalib = 1 if you have a monster of a copter</Description>
-      <Units></Units>
       <Range>1 5</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1034,7 +906,7 @@
     <main_features>
       <DisplayName>main_features</DisplayName>
       <Description>main_features</Description>
-      <Units></Units>
+      <Bits>0:PPM,1:VBAT,2:INFLIGHT_ACC_CAL,3:SPEKTRUM,4:MOTOR_STOP,5:SERVO_TILT,6:GYRO_SMOOTHING,7:LED,8:GPS,9:FAILSAFE,10:SONAR,11:PASS,12:POWERMETER,13:LCD</Bits>
       <Range>0 65535</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1042,7 +914,6 @@
     <main_looptime>
       <DisplayName>looptime</DisplayName>
       <Description>imu loop time in us</Description>
-      <Units></Units>
       <Range>0 9000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1050,9 +921,8 @@
     <main_mixertype>
       <DisplayName>main_mixertype</DisplayName>
       <Description>mixtable-presets: TRI, QUADP, QUADX, BI, GIMBAL, Y6, HEX6, FLYING_WING, Y4, HEX6X, OCTOX8, OCTOFLATP, OCTOFLATX, AIRPLANE, HELI_120_CCPM, HELI_90_DEG, VTAIL4, CUSTOM</Description>
-      <Values>0:TRI,1:QUADP,2:QUADX,3:BI,4:GIMBAL,5:Y6,6:HEX6,7:FLYING_WING,8:Y4,9:HEX6X,10:OCTOX8,11:OCTOFLATP,12:OCTOFLATX,13:AIRPLANE,14:HELI_120_CCPM,15:HELI_90_DEG,16:VTAIL4,17:CUSTOM</Values>
-      <Units></Units>
-      <Range>0 17</Range>
+      <Values>1:TRI,2:QUADP,3:QUADX,4:BI,5:GIMBAL,6:Y6,7:HEX6,8:FLYING_WING,9:Y4,10:HEX6X,11:OCTOX8,12:OCTOFLATP,13:OCTOFLATX,14:AIRPLANE,15:HELI_120_CCPM,16:HELI_90_DEG,17:VTAIL4,18:CUSTOM</Values>
+      <Range>1 18</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
     </main_mixertype>
@@ -1060,7 +930,6 @@
       <DisplayName>mainpidctrl</DisplayName>
       <Description>1 = OriginalMwiiPid pimped by me, 2 = New mwii controller (experimental, float pimped + pt1)</Description>
       <Values>1:OriginalMwiiPid pimped by me,2:New mwii controller</Values>
-      <Units></Units>
       <Range>1 2</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1068,7 +937,6 @@
     <main_pidimax>
       <DisplayName>newpidimax</DisplayName>
       <Description>[10-65000) 256 Default. Imax for Gyropart (incl. Yaw) of new Pidcontroller</Description>
-      <Units></Units>
       <Range>10 65000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1076,7 +944,6 @@
     <main_pt1cut>
       <DisplayName>mainpt1cut</DisplayName>
       <Description>(0-50Hz) 0 Disables pt1element. Cuf Off Frequency for pt1 element D term in Hz of main Pid controller</Description>
-      <Units></Units>
       <Range>0 50</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1084,7 +951,6 @@
     <moron_threshold>
       <DisplayName>moron_threshold</DisplayName>
       <Description>people keep forgetting that moving model while init results in wrong gyro offsets. and then they never reset gyro. so this is now on by default.</Description>
-      <Units></Units>
       <Range>0 128</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1092,7 +958,6 @@
     <nav_approachdiv>
       <DisplayName>nav_approachdiv</DisplayName>
       <Description>2-10 This is the divisor for approach speed for wp_distance. Example: 400cm / 3 = 133cm/s if below nav_speed_min it will be adjusted</Description>
-      <Units></Units>
       <Range>2 10</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1100,16 +965,14 @@
     <nav_ctrkgain>
       <DisplayName>nav_ctrkgain</DisplayName>
       <Description>0 - 10.0 (Floatvariable) That is the "Crosstrackgain" APM default is "1". "0" disables</Description>
-      <Units></Units>
       <Range>0 10</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
     </nav_ctrkgain>
     <nav_heading>
       <DisplayName>nav_controls_heading</DisplayName>
-      <Description>1 = Copter comes back with ass first (only works with nav_controls_heading = 1)</Description>
-      <Values>0:Off,1:Copter comes back with ass first</Values>
-      <Units></Units>
+      <Description>1 = Nav controls YAW during WP ONLY</Description>
+      <Values>0:Off,1:Nav controls YAW during WP ONLY</Values>
       <Range>0 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1117,7 +980,6 @@
     <nav_rtl_lsttrn>
       <DisplayName>nav_rtl_lastturn</DisplayName>
       <Description>Something like NAV_SET_TAKEOFF_HEADING on mwii</Description>
-      <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1125,7 +987,6 @@
     <nav_slew_rate>
       <DisplayName>nav_slew_rate</DisplayName>
       <Description>Adds a rate control to nav output, will smoothen out nav angle spikes</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1133,7 +994,6 @@
     <nav_speed_max>
       <DisplayName>nav_speed_max</DisplayName>
       <Description>10 - 200 cm/s don't set higher than nav_speed_max! That dumbness is not covered.</Description>
-      <Units></Units>
       <Range>50 2000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1141,7 +1001,6 @@
     <nav_speed_min>
       <DisplayName>nav_speed_min</DisplayName>
       <Description>10 - 200 cm/s don't set higher than nav_speed_max! That dumbness is not covered.</Description>
-      <Units></Units>
       <Range>10 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1150,7 +1009,6 @@
       <DisplayName>nav_tail_first</DisplayName>
       <Description>1 = Copter comes back with ass first (only works with nav_controls_heading = 1)</Description>
       <Values>0:Off,1:Copter comes back with ass first</Values>
-      <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1158,7 +1016,6 @@
     <nav_tiltcomp>
       <DisplayName>nav_tiltcomp</DisplayName>
       <Description>0-100 Only arducopter really knows. This is some kind of a hack of them to reach actual nav_speed_max. 54 was default, 0 disables</Description>
-      <Units></Units>
       <Range>0 100</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1166,7 +1023,6 @@
     <ph_abstub>
       <DisplayName>gps_ph_abstub</DisplayName>
       <Description>0 - 1000cm (300 default) Defines the "bath tub" around current absolute PH Position, where PosP is diminished, reaction gets harder on tubs edge and then goes on linear</Description>
-      <Units></Units>
       <Range>0 1000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1174,7 +1030,6 @@
     <ph_brkacc>
       <DisplayName>gps_ph_brkacc</DisplayName>
       <Description>[50-500] Is the assumed negative braking acceleration in cm/(s*s) of copter. Value is positive though</Description>
-      <Units></Units>
       <Range>1 500</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1182,7 +1037,6 @@
     <ph_brkmaxangle>
       <DisplayName>gps_ph_brakemaxangle</DisplayName>
       <Description>Maximal 5 Degree Overspeedbrake</Description>
-      <Units></Units>
       <Range>1 45</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1190,7 +1044,6 @@
     <ph_minbrk>
       <DisplayName>gps_ph_minbrakepercent</DisplayName>
       <Description>1-99% minimal percent of "brakemaxangle" left over for braking. Example brakemaxangle = 6 so 50 Percent is 3..</Description>
-      <Units></Units>
       <Range>1 99</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1198,7 +1051,6 @@
     <ph_minsat>
       <DisplayName>gps_ph_minsat</DisplayName>
       <Description>Minimal Satcount for PH, PH on RTL is still done with 5Sats or more</Description>
-      <Units></Units>
       <Range>5 10</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1206,7 +1058,6 @@
     <ph_settlespeed>
       <DisplayName>gps_ph_settlespeed</DisplayName>
       <Description>PH settlespeed in cm/s</Description>
-      <Units></Units>
       <Range>1 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1214,7 +1065,6 @@
     <pid_alt_d>
       <DisplayName>d_alt</DisplayName>
       <Description>d_alt</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1222,7 +1072,6 @@
     <pid_alt_i>
       <DisplayName>i_alt</DisplayName>
       <Description>i_alt</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1230,7 +1079,6 @@
     <pid_alt_p>
       <DisplayName>p_alt</DisplayName>
       <Description>Thats the MAG P during GPS functions, substitute for "cfg.P8[PIDMAG]"</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1238,7 +1086,6 @@
     <pid_level_d>
       <DisplayName>d_level</DisplayName>
       <Description>d_level</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1246,7 +1093,6 @@
     <pid_level_i>
       <DisplayName>i_level</DisplayName>
       <Description>i_level</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1254,7 +1100,6 @@
     <pid_level_p>
       <DisplayName>p_level</DisplayName>
       <Description>Thats the MAG P during GPS functions, substitute for "cfg.P8[PIDMAG]"</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1262,7 +1107,6 @@
     <pid_pitch_d>
       <DisplayName>d_pitch</DisplayName>
       <Description>d_pitch</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1270,7 +1114,6 @@
     <pid_pitch_i>
       <DisplayName>i_pitch</DisplayName>
       <Description>i_pitch</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1278,7 +1121,6 @@
     <pid_pitch_p>
       <DisplayName>p_pitch</DisplayName>
       <Description>Thats the MAG P during GPS functions, substitute for "cfg.P8[PIDMAG]"</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1286,7 +1128,6 @@
     <pid_roll_d>
       <DisplayName>d_roll</DisplayName>
       <Description>d_roll</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1294,7 +1135,6 @@
     <pid_roll_i>
       <DisplayName>i_roll</DisplayName>
       <Description>i_roll</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1302,7 +1142,6 @@
     <pid_roll_p>
       <DisplayName>p_roll</DisplayName>
       <Description>Thats the MAG P during GPS functions, substitute for "cfg.P8[PIDMAG]"</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1310,7 +1149,6 @@
     <pid_yaw_d>
       <DisplayName>d_yaw</DisplayName>
       <Description>d_yaw</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1318,7 +1156,6 @@
     <pid_yaw_i>
       <DisplayName>i_yaw</DisplayName>
       <Description>i_yaw</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1326,7 +1163,6 @@
     <pid_yaw_p>
       <DisplayName>p_yaw</DisplayName>
       <Description>Thats the MAG P during GPS functions, substitute for "cfg.P8[PIDMAG]"</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1334,7 +1170,6 @@
     <pitch_dir_l>
       <DisplayName>pitch_direction_l</DisplayName>
       <Description>left servo - pitch orientation</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1342,7 +1177,6 @@
     <pitch_dir_r>
       <DisplayName>pitch_direction_r</DisplayName>
       <Description>right servo - pitch orientation (opposite sign to pitch_direction_l if servos are mounted mirrored)</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1350,7 +1184,6 @@
     <pwm_rate_motor>
       <DisplayName>motor_pwm_rate</DisplayName>
       <Description>The update rate of motor outputs (50-498Hz)</Description>
-      <Units></Units>
       <Range>50 498</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1358,7 +1191,6 @@
     <pwm_rate_servo>
       <DisplayName>servo_pwm_rate</DisplayName>
       <Description>The update rate of servo outputs (50-498Hz)</Description>
-      <Units></Units>
       <Range>50 498</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1366,7 +1198,6 @@
     <rc_aux_chs>
       <DisplayName>auxChannels</DisplayName>
       <Description>cGiesen: the number of supported aux channels. default = 4</Description>
-      <Units></Units>
       <Range>4 10</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1374,7 +1205,6 @@
     <rc_deadband>
       <DisplayName>deadband</DisplayName>
       <Description>introduce a deadband around the stick center for pitch and roll axis. Must be greater than zero.</Description>
-      <Units></Units>
       <Range>0 32</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1382,7 +1212,6 @@
     <rc_expo>
       <DisplayName>rc_expo</DisplayName>
       <Description>rc_expo</Description>
-      <Units></Units>
       <Range>0 100</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1390,7 +1219,6 @@
     <rc_killswtime>
       <DisplayName>killswitchtime</DisplayName>
       <Description>Time in ms when your arm switch becomes a Killswitch, 0 disables</Description>
-      <Units></Units>
       <Range>0 10000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1399,7 +1227,6 @@
       <DisplayName>rc_map_aux1</DisplayName>
       <Description>mapping of radio channels to internal RPYTA+ order</Description>
       <Values>0:Channel1,1:Channel2,2:Channel3,3:Channel4,4:Channel5,5:Channel6,6:Channel7,7:Channel8</Values>
-      <Units></Units>
       <Range>0 7</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1408,7 +1235,6 @@
       <DisplayName>rc_map_aux2</DisplayName>
       <Description>mapping of radio channels to internal RPYTA+ order</Description>
       <Values>0:Channel1,1:Channel2,2:Channel3,3:Channel4,4:Channel5,5:Channel6,6:Channel7,7:Channel8</Values>
-      <Units></Units>
       <Range>0 8</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1417,7 +1243,6 @@
       <DisplayName>rc_map_aux3</DisplayName>
       <Description>mapping of radio channels to internal RPYTA+ order</Description>
       <Values>0:Channel1,1:Channel2,2:Channel3,3:Channel4,4:Channel5,5:Channel6,6:Channel7,7:Channel8</Values>
-      <Units></Units>
       <Range>0 8</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1426,7 +1251,6 @@
       <DisplayName>rc_map_aux4</DisplayName>
       <Description>mapping of radio channels to internal RPYTA+ order</Description>
       <Values>0:Channel1,1:Channel2,2:Channel3,3:Channel4,4:Channel5,5:Channel6,6:Channel7,7:Channel8</Values>
-      <Units></Units>
       <Range>0 8</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1435,7 +1259,6 @@
       <DisplayName>rc_map_pitch</DisplayName>
       <Description>mapping of radio channels to internal RPYTA+ order</Description>
       <Values>0:Channel1,1:Channel2,2:Channel3,3:Channel4,4:Channel5,5:Channel6,6:Channel7,7:Channel8</Values>
-      <Units></Units>
       <Range>0 8</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1444,7 +1267,6 @@
       <DisplayName>rc_map_roll</DisplayName>
       <Description>mapping of radio channels to internal RPYTA+ order</Description>
       <Values>0:Channel1,1:Channel2,2:Channel3,3:Channel4,4:Channel5,5:Channel6,6:Channel7,7:Channel8</Values>
-      <Units></Units>
       <Range>0 8</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1453,7 +1275,6 @@
       <DisplayName>rc_map_thr</DisplayName>
       <Description>mapping of radio channels to internal RPYTA+ order</Description>
       <Values>0:Channel1,1:Channel2,2:Channel3,3:Channel4,4:Channel5,5:Channel6,6:Channel7,7:Channel8</Values>
-      <Units></Units>
       <Range>0 8</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1462,7 +1283,6 @@
       <DisplayName>rc_map_yaw</DisplayName>
       <Description>mapping of radio channels to internal RPYTA+ order</Description>
       <Values>0:Channel1,1:Channel2,2:Channel3,3:Channel4,4:Channel5,5:Channel6,6:Channel7,7:Channel8</Values>
-      <Units></Units>
       <Range>0 8</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1470,7 +1290,6 @@
     <rc_maxchk>
       <DisplayName>maxcheck</DisplayName>
       <Description>maximum rc end</Description>
-      <Units></Units>
       <Range>0 2000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1478,7 +1297,6 @@
     <rc_midrc>
       <DisplayName>midrc</DisplayName>
       <Description>Some radios have not a neutral point centered on 1500. can be changed here</Description>
-      <Units></Units>
       <Range>1200 1700</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1486,7 +1304,6 @@
     <rc_minchk>
       <DisplayName>mincheck</DisplayName>
       <Description>minimum rc end</Description>
-      <Units></Units>
       <Range>0 2000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1494,7 +1311,6 @@
     <rc_rate>
       <DisplayName>rc_rate</DisplayName>
       <Description>rc_rate</Description>
-      <Units></Units>
       <Range>0 250</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1503,7 +1319,6 @@
       <DisplayName>retarded_arm</DisplayName>
       <Description>allow disarsm/arm on throttle down + roll left/right</Description>
       <Values>0:Off,1:On</Values>
-      <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1512,7 +1327,6 @@
       <DisplayName>spektrum_hires</DisplayName>
       <Description>spektrum high-resolution y/n (1024/2048bit)</Description>
       <Values>0:Off,1:On</Values>
-      <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1520,7 +1334,6 @@
     <rc_thr_expo>
       <DisplayName>thr_expo</DisplayName>
       <Description>thr_expo</Description>
-      <Units></Units>
       <Range>0 250</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1528,7 +1341,6 @@
     <rc_thr_mid>
       <DisplayName>thr_mid</DisplayName>
       <Description>thr_mid</Description>
-      <Units></Units>
       <Range>0 100</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1536,7 +1348,6 @@
     <rc_yawdeadband>
       <DisplayName>yawdeadband</DisplayName>
       <Description>introduce a deadband around the stick center for yaw axis. Must be greater than zero.</Description>
-      <Units></Units>
       <Range>0 100</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1544,7 +1355,6 @@
     <rc_yawrate>
       <DisplayName>yawrate</DisplayName>
       <Description>yawrate</Description>
-      <Units></Units>
       <Range>0 100</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1552,7 +1362,6 @@
     <roll_dir_l>
       <DisplayName>roll_direction_l</DisplayName>
       <Description>left servo - roll orientation</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1560,7 +1369,6 @@
     <roll_dir_r>
       <DisplayName>roll_direction_r</DisplayName>
       <Description>right servo - roll orientation (same sign as ROLL_DIRECTION_L, if servos are mounted in mirrored orientation)</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1568,7 +1376,6 @@
     <roll_pitch_rate>
       <DisplayName>roll_pitch_rate</DisplayName>
       <Description>roll_pitch_rate</Description>
-      <Units></Units>
       <Range>0 100</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1576,7 +1383,6 @@
     <rtl_flyaway>
       <DisplayName>gps_rtl_flyaway</DisplayName>
       <Description>If during RTL the distance increases beyond this valus in meters, something is wrong, autoland</Description>
-      <Units></Units>
       <Range>0 100</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1584,7 +1390,6 @@
     <rtl_mindist>
       <DisplayName>gps_rtl_mindist</DisplayName>
       <Description>Minimal distance for RTL, otherwise it will just autoland, prevent Failsafe jump in your face, when arming copter and turning off TX</Description>
-      <Units></Units>
       <Range>0 50</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1592,7 +1397,6 @@
     <rtl_minhight>
       <DisplayName>gps_rtl_minhight</DisplayName>
       <Description>Crashpilot</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1600,7 +1404,6 @@
     <serial_baudrate>
       <DisplayName>serial_baudrate</DisplayName>
       <Description>serial(uart1) baudrate</Description>
-      <Units></Units>
       <Range>1200 115200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1608,7 +1411,6 @@
     <serial_prot>
       <DisplayName>tele_prot</DisplayName>
       <Description>Protocol ONLY used when Armed including Baudchange if necessary. 0 (Dfault)=Keep Multiwii @CurrentUSB Baud, 1=Frsky @9600Baud, 2=Mavlink @CurrentUSB Baud, 3=Mavlink @57KBaud (like stock minimOSD wants it)</Description>
-      <Units></Units>
       <Range>0 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1616,7 +1418,6 @@
     <snr_cf>
       <DisplayName>snr_cf</DisplayName>
       <Description>The bigger, the more Sonarinfluence</Description>
-      <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1625,7 +1426,6 @@
       <DisplayName>snr_debug</DisplayName>
       <Description>1 Sets Sonardata within snr_min/max in debug[0]</Description>
       <Values>0:Off,1:On</Values>
-      <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1633,7 +1433,6 @@
     <snr_diff>
       <DisplayName>snr_diff</DisplayName>
       <Description>Maximal allowed difference in cm between sonar readouts (100ms rate and maxdiff = 50 means max 5m/s)</Description>
-      <Units></Units>
       <Range>0 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1642,7 +1441,6 @@
       <DisplayName>snr_land</DisplayName>
       <Description>When snr_land is set to 1, it is possible to ignore that on Failsafe, because FS over a tree could turn off copter</Description>
       <Values>0:Off,1:On</Values>
-      <Units></Units>
       <Range>0 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1650,7 +1448,6 @@
     <snr_max>
       <DisplayName>snr_max</DisplayName>
       <Description>Valid Sonar maximal range in cm (0-700)</Description>
-      <Units></Units>
       <Range>50 700</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1658,7 +1455,6 @@
     <snr_min>
       <DisplayName>snr_min</DisplayName>
       <Description>Valid Sonar minimal range in cm (0-200)</Description>
-      <Units></Units>
       <Range>5 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1666,7 +1462,6 @@
     <snr_tilt>
       <DisplayName>snr_tilt</DisplayName>
       <Description>Somehow copter tiltrange in degrees (not exactly) in wich Sonar is possible</Description>
-      <Units></Units>
       <Range>10 50</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1675,7 +1470,6 @@
       <DisplayName>snr_type</DisplayName>
       <Description>0 = PWM56, 1 = RC78, 2 = I2C (DaddyWalross), 3 = MBPWM56, 4=MBRC78</Description>
       <Values>0:PWM56,1:RC78,2:I2C (DaddyWalross),3:MBPWM56,4:MBRC78</Values>
-      <Units></Units>
       <Range>0 4</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1683,7 +1477,6 @@
     <tri_yaw_max>
       <DisplayName>tri_yaw_max</DisplayName>
       <Description>tail servo max</Description>
-      <Units></Units>
       <Range>0 2000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1691,7 +1484,6 @@
     <tri_yaw_middle>
       <DisplayName>tri_yaw_middle</DisplayName>
       <Description>tail servo center pos. - use this for initial trim</Description>
-      <Units></Units>
       <Range>0 2000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1699,7 +1491,6 @@
     <tri_yaw_min>
       <DisplayName>tri_yaw_min</DisplayName>
       <Description>tail servo min</Description>
-      <Units></Units>
       <Range>0 2000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1707,7 +1498,6 @@
     <vbat_adc_ch>
       <DisplayName>power_adc_channel</DisplayName>
       <Description>which channel is used for current sensor. Right now, only 2 places are supported: RC_CH2 (unused when in CPPM mode, = 1), RC_CH8 (last channel in PWM mode, = 9)</Description>
-      <Units></Units>
       <Range>0 9</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1715,7 +1505,6 @@
     <vbat_maxcvolt>
       <DisplayName>vbatmaxcellvoltage</DisplayName>
       <Description>maximum voltage per cell, used for auto-detecting battery voltage in 0.1V units, default is 43 (4.3V)</Description>
-      <Units></Units>
       <Range>10 50</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1723,7 +1512,6 @@
     <vbat_mincvolt>
       <DisplayName>vbatmincellvoltage</DisplayName>
       <Description>minimum voltage per cell, this triggers battery out alarms, in 0.1V units, default is 33 (3.3V)</Description>
-      <Units></Units>
       <Range>10 50</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1731,7 +1519,6 @@
     <vbat_scale>
       <DisplayName>vbatscale</DisplayName>
       <Description>adjust this to match battery voltage to reported value</Description>
-      <Units></Units>
       <Range>10 200</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1739,7 +1526,6 @@
     <wing_left_max>
       <DisplayName>wing_left_max</DisplayName>
       <Description>wing_left_max</Description>
-      <Units></Units>
       <Range>0 2000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1747,7 +1533,6 @@
     <wing_left_mid>
       <DisplayName>wing_left_mid</DisplayName>
       <Description>wing_left_mid</Description>
-      <Units></Units>
       <Range>0 2000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1755,7 +1540,6 @@
     <wing_left_min>
       <DisplayName>wing_left_min</DisplayName>
       <Description>min/mid/max servo travel</Description>
-      <Units></Units>
       <Range>0 2000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1763,7 +1547,6 @@
     <wing_right_max>
       <DisplayName>wing_right_max</DisplayName>
       <Description>wing_right_max</Description>
-      <Units></Units>
       <Range>0 2000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1771,7 +1554,6 @@
     <wing_right_mid>
       <DisplayName>wing_right_mid</DisplayName>
       <Description>wing_right_mid</Description>
-      <Units></Units>
       <Range>0 2000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1779,7 +1561,6 @@
     <wing_right_min>
       <DisplayName>wing_right_min</DisplayName>
       <Description>wing_right_min</Description>
-      <Units></Units>
       <Range>0 2000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1787,7 +1568,6 @@
     <wp_radius>
       <DisplayName>gps_wp_radius</DisplayName>
       <Description>if we are within this distance to a waypoint then we consider it reached (distance is in cm)</Description>
-      <Units></Units>
       <Range>0 2000</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1795,10 +1575,13 @@
     <yaw_dir>
       <DisplayName>yaw_direction</DisplayName>
       <Description>yaw_direction</Description>
-      <Units></Units>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
     </yaw_dir>
   </ArduCopter2>
+  <ArduPlane>
+  </ArduPlane>
+  <ArduRover>
+  </ArduRover>
 </Params>

@@ -3377,4 +3377,8 @@
       <User>Advanced</User>
     </SIG_PWM_PRT>
   </ArduCopter2>
+  <ArduPlane>
+  </ArduPlane>
+  <ArduRover>
+  </ArduRover>
 </Params>

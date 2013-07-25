@@ -42,6 +42,10 @@ do
 done
 
 echo "  </ArduCopter2>"
+echo "  <ArduPlane>"
+echo "  </ArduPlane>"
+echo "  <ArduRover>"
+echo "  </ArduRover>"
 echo "</Params>"
 
 

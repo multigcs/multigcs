@@ -69,6 +69,7 @@ uint8_t mavlink_init (char *port, uint32_t baud) {
 		MavLinkVars[n].display[0] = 0;
 		MavLinkVars[n].desc[0] = 0;
 		MavLinkVars[n].values[0] = 0;
+		MavLinkVars[n].bits[0] = 0;
 		MavLinkVars[n].value = 0.0;
 		MavLinkVars[n].id = -1;
 
@@ -76,6 +77,7 @@ uint8_t mavlink_init (char *port, uint32_t baud) {
 		selMavLinkVars[n].display[0] = 0;
 		selMavLinkVars[n].desc[0] = 0;
 		selMavLinkVars[n].values[0] = 0;
+		selMavLinkVars[n].bits[0] = 0;
 		selMavLinkVars[n].value = 0.0;
 		selMavLinkVars[n].id = -1;
 
@@ -83,6 +85,7 @@ uint8_t mavlink_init (char *port, uint32_t baud) {
 		mainMavLinkVars[n].display[0] = 0;
 		mainMavLinkVars[n].desc[0] = 0;
 		mainMavLinkVars[n].values[0] = 0;
+		mainMavLinkVars[n].bits[0] = 0;
 		mainMavLinkVars[n].value = 0.0;
 		mainMavLinkVars[n].id = -1;
 	}
@@ -131,6 +134,8 @@ void gcs_handleMessage(mavlink_message_t* msg) {
 			mavlink_msg_heartbeat_decode(msg, &packet);
 			droneType = packet.type;
 			autoPilot = packet.autopilot;
+
+//			printf("HB\n");
 
 			if (packet.base_mode == MAV_MODE_MANUAL_ARMED) {
 				ModelData.mode = MODEL_MODE_MANUAL;
@@ -767,7 +772,7 @@ void start_feeds (void) {
 	send_message(&msg);
 	SDL_Delay(10);
 
-	if (ModelData.teletype == TELETYPE_MEGAPIRATE_NG || ModelData.teletype == TELETYPE_ARDUPILOT) {
+	if (ModelData.teletype == TELETYPE_MEGAPIRATE_NG || ModelData.teletype == TELETYPE_ARDUPILOT || ModelData.teletype == TELETYPE_HARAKIRIML) {
 		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_DATA_STREAM_EXTENDED_STATUS, MAV_DATA_STREAM_EXTENDED_STATUS_RATE, MAV_DATA_STREAM_EXTENDED_STATUS_ACTIVE);
 		send_message(&msg);
 		SDL_Delay(10);
@@ -855,6 +860,11 @@ void mavlink_parseParams1 (xmlDocPtr doc, xmlNodePtr cur, char *name) {
 			xmlChar *key;
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			strncpy(MavLinkVars[n].values, (char *)key, 1024);
+			xmlFree(key);
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"Bits"))) {
+			xmlChar *key;
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			strncpy(MavLinkVars[n].bits, (char *)key, 1024);
 			xmlFree(key);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"DisplayName"))) {
 			xmlChar *key;

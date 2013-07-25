@@ -61,6 +61,7 @@ typedef struct {
 	char display[100];
 	char desc[1024];
 	char values[1024];
+	char bits[1024];
 	float value;
 	float min;
 	float max;
