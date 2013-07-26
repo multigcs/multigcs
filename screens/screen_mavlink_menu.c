@@ -441,7 +441,8 @@ void screen_mavlink_menu (ESContext *esContext) {
 	}
 	row2 = 0;
 	for (row = 0; row < 500 - 1; row++) {
-		if (strncmp(MavLinkVars[row].name, section, strlen(section)) == 0) {
+		sprintf(tmp_str, "%s_", section);
+		if (strncmp(MavLinkVars[row].name, tmp_str, strlen(tmp_str)) == 0) {
 //			printf("%s - %s\n", section, MavLinkVars[row].name);
 			strcpy(selMavLinkVars[row2].name, MavLinkVars[row].name);
 			strcpy(selMavLinkVars[row2].desc, MavLinkVars[row].desc);

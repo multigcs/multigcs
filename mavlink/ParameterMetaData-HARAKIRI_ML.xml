@@ -4,6 +4,7 @@
     <acc_hardware>
       <DisplayName>acc_hardware</DisplayName>
       <Description>Which acc hardware to use on boards with more than one device</Description>
+      <Values>0:Autodetect,1:ADXL345,2:MPU6050,3:MMA8452</Values>
       <Range>0 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -67,6 +68,7 @@
     <algn_acc_x>
       <DisplayName>align_acc_x</DisplayName>
       <Description>acc, gyro, mag alignment (ex: with sensor output of X, Y, Z, align of 1 -3 2 would return X, -Z, Y)</Description>
+      <Values>-3:-Z,-2:-Y,-1:-X,0:Off,1:X,2:Y,3:Z</Values>
       <Range>-3 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -74,6 +76,7 @@
     <algn_acc_y>
       <DisplayName>align_acc_y</DisplayName>
       <Description>acc, gyro, mag alignment (ex: with sensor output of X, Y, Z, align of 1 -3 2 would return X, -Z, Y)</Description>
+      <Values>-3:-Z,-2:-Y,-1:-X,0:Off,1:X,2:Y,3:Z</Values>
       <Range>-3 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -81,6 +84,7 @@
     <algn_acc_z>
       <DisplayName>align_acc_z</DisplayName>
       <Description>acc, gyro, mag alignment (ex: with sensor output of X, Y, Z, align of 1 -3 2 would return X, -Z, Y)</Description>
+      <Values>-3:-Z,-2:-Y,-1:-X,0:Off,1:X,2:Y,3:Z</Values>
       <Range>-3 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -88,6 +92,7 @@
     <algn_gyro_x>
       <DisplayName>align_gyro_x</DisplayName>
       <Description>acc, gyro, mag alignment (ex: with sensor output of X, Y, Z, align of 1 -3 2 would return X, -Z, Y)</Description>
+      <Values>-3:-Z,-2:-Y,-1:-X,0:Off,1:X,2:Y,3:Z</Values>
       <Range>-3 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -95,6 +100,7 @@
     <algn_gyro_y>
       <DisplayName>align_gyro_y</DisplayName>
       <Description>acc, gyro, mag alignment (ex: with sensor output of X, Y, Z, align of 1 -3 2 would return X, -Z, Y)</Description>
+      <Values>-3:-Z,-2:-Y,-1:-X,0:Off,1:X,2:Y,3:Z</Values>
       <Range>-3 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -102,6 +108,7 @@
     <algn_gyro_z>
       <DisplayName>align_gyro_z</DisplayName>
       <Description>acc, gyro, mag alignment (ex: with sensor output of X, Y, Z, align of 1 -3 2 would return X, -Z, Y)</Description>
+      <Values>-3:-Z,-2:-Y,-1:-X,0:Off,1:X,2:Y,3:Z</Values>
       <Range>-3 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -109,6 +116,7 @@
     <algn_mag_x>
       <DisplayName>align_mag_x</DisplayName>
       <Description>acc, gyro, mag alignment (ex: with sensor output of X, Y, Z, align of 1 -3 2 would return X, -Z, Y)</Description>
+      <Values>-3:-Z,-2:-Y,-1:-X,0:Off,1:X,2:Y,3:Z</Values>
       <Range>-3 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -116,6 +124,7 @@
     <algn_mag_y>
       <DisplayName>align_mag_y</DisplayName>
       <Description>acc, gyro, mag alignment (ex: with sensor output of X, Y, Z, align of 1 -3 2 would return X, -Z, Y)</Description>
+      <Values>-3:-Z,-2:-Y,-1:-X,0:Off,1:X,2:Y,3:Z</Values>
       <Range>-3 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -123,6 +132,7 @@
     <algn_mag_z>
       <DisplayName>align_mag_z</DisplayName>
       <Description>acc, gyro, mag alignment (ex: with sensor output of X, Y, Z, align of 1 -3 2 would return X, -Z, Y)</Description>
+      <Values>-3:-Z,-2:-Y,-1:-X,0:Off,1:X,2:Y,3:Z</Values>
       <Range>-3 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -530,6 +540,7 @@
     <esc_passmotor>
       <DisplayName>passmotor</DisplayName>
       <Description>Crashpilot: Only used with feature pass. If 0 = all Motors, otherwise specific Motor</Description>
+      <Values>0:All Motors,1:Motor1,2:Motor2,3:Motor3,4:Motor4,5:Motor5,6:Motor6,7:Motor7,8:Motor8,9:Motor9,10:Motor10</Values>
       <Range>0 10</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -581,6 +592,7 @@
     <gmbl_flags>
       <DisplayName>gimbal_flags</DisplayName>
       <Description>in servotilt mode, various things that affect stuff</Description>
+      <Bits>0:NORMAL,1:TILTONLY,2:DISABLE AUX34,3:FORWARD AUX,4:MIXTILT</Bits>
       <Range>0 255</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -822,6 +834,7 @@
     <led_invert>
       <DisplayName>LED_invert</DisplayName>
       <Description>Crashpilot invert LED 0 and 1</Description>
+      <Values>0:Normal,1:Invert</Values>
       <Range>0 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -850,6 +863,7 @@
     <led_pinout>
       <DisplayName>LED_pinout</DisplayName>
       <Description>choose LED pinout (MONO_LED: 0=LED rc5, 1=LED rc6 / MWCRGB: coming soon)</Description>
+      <Values>0:LED rc5,1:LED rc6 / MWCRGB</Values>
       <Range>0 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -878,6 +892,7 @@
     <led_type>
       <DisplayName>LED_Type</DisplayName>
       <Description>1=MWCRGB / 2=MONO_LED / 3=LEDRing</Description>
+      <Values>0:None?,1:MWCRGB,2:MONO_LED,3:LEDRing</Values>
       <Range>0 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -892,6 +907,7 @@
     <mag_oldcalib>
       <DisplayName>mag_oldcalib</DisplayName>
       <Description>0 = extended calibration (better)</Description>
+      <Values>0:extended calibration,1:normal/old calibration</Values>
       <Range>0 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1170,6 +1186,7 @@
     <pitch_dir_l>
       <DisplayName>pitch_direction_l</DisplayName>
       <Description>left servo - pitch orientation</Description>
+      <Values>-1:Reverse,0:Off,1:Normal</Values>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1177,6 +1194,7 @@
     <pitch_dir_r>
       <DisplayName>pitch_direction_r</DisplayName>
       <Description>right servo - pitch orientation (opposite sign to pitch_direction_l if servos are mounted mirrored)</Description>
+      <Values>-1:Reverse,0:Off,1:Normal</Values>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1235,7 +1253,7 @@
       <DisplayName>rc_map_aux2</DisplayName>
       <Description>mapping of radio channels to internal RPYTA+ order</Description>
       <Values>0:Channel1,1:Channel2,2:Channel3,3:Channel4,4:Channel5,5:Channel6,6:Channel7,7:Channel8</Values>
-      <Range>0 8</Range>
+      <Range>0 7</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
     </rc_map_aux2>
@@ -1243,7 +1261,7 @@
       <DisplayName>rc_map_aux3</DisplayName>
       <Description>mapping of radio channels to internal RPYTA+ order</Description>
       <Values>0:Channel1,1:Channel2,2:Channel3,3:Channel4,4:Channel5,5:Channel6,6:Channel7,7:Channel8</Values>
-      <Range>0 8</Range>
+      <Range>0 7</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
     </rc_map_aux3>
@@ -1251,7 +1269,7 @@
       <DisplayName>rc_map_aux4</DisplayName>
       <Description>mapping of radio channels to internal RPYTA+ order</Description>
       <Values>0:Channel1,1:Channel2,2:Channel3,3:Channel4,4:Channel5,5:Channel6,6:Channel7,7:Channel8</Values>
-      <Range>0 8</Range>
+      <Range>0 7</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
     </rc_map_aux4>
@@ -1259,7 +1277,7 @@
       <DisplayName>rc_map_pitch</DisplayName>
       <Description>mapping of radio channels to internal RPYTA+ order</Description>
       <Values>0:Channel1,1:Channel2,2:Channel3,3:Channel4,4:Channel5,5:Channel6,6:Channel7,7:Channel8</Values>
-      <Range>0 8</Range>
+      <Range>0 7</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
     </rc_map_pitch>
@@ -1267,7 +1285,7 @@
       <DisplayName>rc_map_roll</DisplayName>
       <Description>mapping of radio channels to internal RPYTA+ order</Description>
       <Values>0:Channel1,1:Channel2,2:Channel3,3:Channel4,4:Channel5,5:Channel6,6:Channel7,7:Channel8</Values>
-      <Range>0 8</Range>
+      <Range>0 7</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
     </rc_map_roll>
@@ -1275,7 +1293,7 @@
       <DisplayName>rc_map_thr</DisplayName>
       <Description>mapping of radio channels to internal RPYTA+ order</Description>
       <Values>0:Channel1,1:Channel2,2:Channel3,3:Channel4,4:Channel5,5:Channel6,6:Channel7,7:Channel8</Values>
-      <Range>0 8</Range>
+      <Range>0 7</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
     </rc_map_thr>
@@ -1283,7 +1301,7 @@
       <DisplayName>rc_map_yaw</DisplayName>
       <Description>mapping of radio channels to internal RPYTA+ order</Description>
       <Values>0:Channel1,1:Channel2,2:Channel3,3:Channel4,4:Channel5,5:Channel6,6:Channel7,7:Channel8</Values>
-      <Range>0 8</Range>
+      <Range>0 7</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
     </rc_map_yaw>
@@ -1362,6 +1380,7 @@
     <roll_dir_l>
       <DisplayName>roll_direction_l</DisplayName>
       <Description>left servo - roll orientation</Description>
+      <Values>-1:Reverse,0:Off,1:Normal</Values>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1369,6 +1388,7 @@
     <roll_dir_r>
       <DisplayName>roll_direction_r</DisplayName>
       <Description>right servo - roll orientation (same sign as ROLL_DIRECTION_L, if servos are mounted in mirrored orientation)</Description>
+      <Values>-1:Reverse,0:Off,1:Normal</Values>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1411,6 +1431,7 @@
     <serial_prot>
       <DisplayName>tele_prot</DisplayName>
       <Description>Protocol ONLY used when Armed including Baudchange if necessary. 0 (Dfault)=Keep Multiwii @CurrentUSB Baud, 1=Frsky @9600Baud, 2=Mavlink @CurrentUSB Baud, 3=Mavlink @57KBaud (like stock minimOSD wants it)</Description>
+      <Values>0:Keep Multiwii (CurrentUSB-Baud),1:Frsky (9600Baud),2:Mavlink (CurrentUSB Baud),3:Mavlink (57KBaud)</Values>
       <Range>0 3</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
@@ -1575,10 +1596,33 @@
     <yaw_dir>
       <DisplayName>yaw_direction</DisplayName>
       <Description>yaw_direction</Description>
+      <Values>-1:Reverse,0:Off,1:Normal</Values>
       <Range>-1 1</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
     </yaw_dir>
+    <mag_zero>
+      <DisplayName>mag_zero</DisplayName>
+      <Description>mag calibration data</Description>
+      <Range>-99999 99999</Range>
+      <Increment>0.01</Increment>
+      <User>Advanced</User>
+    </mag_zero>
+    <mag_calibrated>
+      <DisplayName>mag_calibrated</DisplayName>
+      <Description>mag calibrated</Description>
+      <Values>0:No,1:Yes</Values>
+      <Range>0 1</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </mag_calibrated>
+    <acc_zero>
+      <DisplayName>acc_zero</DisplayName>
+      <Description>acc calibration</Description>
+      <Range>-32768 32768</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </acc_zero>
   </ArduCopter2>
   <ArduPlane>
   </ArduPlane>
