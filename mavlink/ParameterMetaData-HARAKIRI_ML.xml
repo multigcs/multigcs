@@ -1601,13 +1601,6 @@
       <Increment>1</Increment>
       <User>Advanced</User>
     </yaw_dir>
-    <mag_zero>
-      <DisplayName>mag_zero</DisplayName>
-      <Description>mag calibration data</Description>
-      <Range>-99999 99999</Range>
-      <Increment>0.01</Increment>
-      <User>Advanced</User>
-    </mag_zero>
     <mag_calibrated>
       <DisplayName>mag_calibrated</DisplayName>
       <Description>mag calibrated</Description>
@@ -1616,13 +1609,48 @@
       <Increment>1</Increment>
       <User>Advanced</User>
     </mag_calibrated>
-    <acc_zero>
-      <DisplayName>acc_zero</DisplayName>
+    <mag_zero_x>
+      <DisplayName>mag_zero_x</DisplayName>
+      <Description>mag calibration data</Description>
+      <Range>-99999 99999</Range>
+      <Increment>0.01</Increment>
+      <User>Advanced</User>
+    </mag_zero_x>
+    <mag_zero_y>
+      <DisplayName>mag_zero_y</DisplayName>
+      <Description>mag calibration data</Description>
+      <Range>-99999 99999</Range>
+      <Increment>0.01</Increment>
+      <User>Advanced</User>
+    </mag_zero_y>
+    <mag_zero_z>
+      <DisplayName>mag_zero_z</DisplayName>
+      <Description>mag calibration data</Description>
+      <Range>-99999 99999</Range>
+      <Increment>0.01</Increment>
+      <User>Advanced</User>
+    </mag_zero_z>
+    <acc_zero_x>
+      <DisplayName>acc_zero_x</DisplayName>
       <Description>acc calibration</Description>
       <Range>-32768 32768</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
-    </acc_zero>
+    </acc_zero_x>
+    <acc_zero_y>
+      <DisplayName>acc_zero_y</DisplayName>
+      <Description>acc calibration</Description>
+      <Range>-32768 32768</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </acc_zero_y>
+    <acc_zero_z>
+      <DisplayName>acc_zero_z</DisplayName>
+      <Description>acc calibration</Description>
+      <Range>-32768 32768</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </acc_zero_z>
   </ArduCopter2>
   <ArduPlane>
   </ArduPlane>
