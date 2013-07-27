@@ -162,6 +162,28 @@ uint8_t mavlink_slider_move (char *name, float x, float y, int8_t button, float 
 	return 0;
 }
 
+uint8_t mavlink_set_magdecl (char *name, float x, float y, int8_t button, float data) {
+	int n = 0;
+	int selected = -1;
+	for (n = 0; n < 500 - 1; n++) {
+		if (strcmp(MavLinkVars[n].name, name + 1) == 0) {
+			selected = n;
+			break;
+		}
+	}
+	if (selected == -1) {
+		return;
+	}
+	char tmp_str[100];
+	int ret_dd = 0;
+	int ret_dm = 0;
+	get_declination(ModelData.p_lat, ModelData.p_long, ModelData.p_alt, &ret_dd, &ret_dm);
+	sprintf(tmp_str, "%i%2.0i", ret_dd, ret_dm);
+	MavLinkVars[selected].value = atof(tmp_str);
+	mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+	return 0;
+}
+
 uint8_t mavlink_options_menu (char *name, float x, float y, int8_t button, float data) {
 	option_menu = (int)data;
 	return 0;
@@ -575,6 +597,16 @@ void screen_mavlink_menu (ESContext *esContext) {
 				draw_box_f3c2(esContext, SLIDER_START, -0.7 + row * 0.14, 0.001, SLIDER_START + SLIDER_LEN, -0.7 + row * 0.14 + 0.1, 0.001, 55, 55, 55, 220, 75, 45, 85, 100);
 				draw_box_f3c2(esContext, SLIDER_START, -0.7 + row * 0.14, 0.001, SLIDER_START + ((selMavLinkVars[n + (int)set_sel].value - selMavLinkVars[n + (int)set_sel].min) * SLIDER_LEN / (selMavLinkVars[n + (int)set_sel].max - selMavLinkVars[n + (int)set_sel].min)), -0.7 + row * 0.14 + 0.1, 0.001, 255, 255, 55, 220, 175, 145, 85, 100);
 				set_button(tmp_str, view_mode, SLIDER_START, -0.7 + row * 0.14, SLIDER_START + SLIDER_LEN, -0.7 + row * 0.14 + 0.1, mavlink_slider_move, (float)row, 1);
+
+				if (strcmp(selMavLinkVars[n + (int)set_sel].name, "mag_declination") == 0) {
+					int ret_dd = 0;
+					int ret_dm = 0;
+					get_declination(ModelData.p_lat, ModelData.p_long, ModelData.p_alt, &ret_dd, &ret_dm);
+					sprintf(tmp_str, "M%s", selMavLinkVars[n + (int)set_sel].name);
+					sprintf(tmp_str2, "%i%2.0i", ret_dd, ret_dm);
+					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, 1.2, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, mavlink_set_magdecl, 0.0);
+				}
+
 			}
 
 			row++;

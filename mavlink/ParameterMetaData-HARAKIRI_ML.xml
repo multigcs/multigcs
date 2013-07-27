@@ -783,7 +783,8 @@
     <gps_type>
       <DisplayName>gps_type</DisplayName>
       <Description>Type of GPS hardware. 0: NMEA 1: UBX 2+ ??</Description>
-      <Range>0 9</Range>
+      <Values>0:GPS_NMEA,1:GPS_UBLOX,2:GPS_MTK16,3:GPS_MTK19,4:GPS_UBLOX_DUMB</Values>
+      <Range>0 4</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
     </gps_type>
