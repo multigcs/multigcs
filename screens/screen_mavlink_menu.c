@@ -14,8 +14,6 @@ float sel = 0.0;
 float set_sel = 0.0;
 float sel2 = 0.0;
 float set_sel2 = 0.0;
-uint8_t sel1_mode = 0;
-uint8_t sel2_mode = 0;
 
 static char select_section[100];
 static int option_menu = -1;
@@ -315,30 +313,15 @@ uint8_t mavlink_aux_toggle (char *name, float x, float y, int8_t button, float d
 }
 
 uint8_t mavlink_select_main (char *name, float x, float y, int8_t button, float data) {
-	sel2 = (float)data;
-	set_sel2 = (float)data;
-	set_sel = 0;
 	strcpy(select_section, name + 8);
-	sel1_mode = 1;
+	set_sel = 0;
 	reset_buttons();
 	return 0;
 }
 
 uint8_t mavlink_select_sel (char *name, float x, float y, int8_t button, float data) {
-	uint16_t n = 0;
-	printf("%s -- %0.2f\n", name + 1, data);
-	if (data == 0.0) {
-		sel1_mode = 0;
-		reset_buttons();
-		return 0;
-	}
-	for (n = 0; n < 500 - 1; n++) {
-		if (strcmp(MavLinkVars[n].name, name + 1) == 0) {
-			MavLinkVars[n].value += data;
-			mavlink_send_value(MavLinkVars[n].name, MavLinkVars[n].value, MavLinkVars[n].type);
-			break;
-		}
-	}
+	select_section[0] = 0;
+	set_sel = 0;
 	reset_buttons();
 	return 0;
 }
@@ -421,15 +404,16 @@ void screen_mavlink_menu (ESContext *esContext) {
 	int16_t n2 = 0;
 	int n3 = 0;
 	int n4 = 0;
-	char section[100];
 	char tmp_str[1024];
 	char tmp_str2[1024];
 	char tmp_str3[1024];
 	int8_t flag = 0;
 	int8_t flag2 = 0;
+
+	char main_groups[500][100];
+
 	draw_title(esContext, "MavLink-Parameter");
 
-	strcpy(section, mainMavLinkVars[(int)sel2].name);
 	row2 = 0;
 	for (row = 0; row < 500 - 1; row++) {
 		if (strlen(MavLinkVars[row].name) > 3) {
@@ -442,15 +426,15 @@ void screen_mavlink_menu (ESContext *esContext) {
 			}
 			flag2 = 0;
 			for (row2 = 0; row2 < 500 - 1; row2++) {
-				if (strcmp(mainMavLinkVars[row2].name, tmp_str) == 0) {
+				if (strcmp(main_groups[row2], tmp_str) == 0) {
 					flag2 = 1;
 					break;
 				}
 			}
 			if (flag2 == 0) {
 				for (row2 = 0; row2 < 500 - 1; row2++) {
-					if (mainMavLinkVars[row2].name[0] == 0) {
-						strcpy(mainMavLinkVars[row2].name, tmp_str);
+					if (main_groups[row2][0] == 0) {
+						strcpy(main_groups[row2], tmp_str);
 						break;
 					}
 				}
@@ -458,45 +442,16 @@ void screen_mavlink_menu (ESContext *esContext) {
 			flag = 1;
 		}
 	}
-	if (row2 > 0 && set_sel2 >= row2) {
-		set_sel2 = row2 - 1;
-	}
-	row2 = 0;
-	for (row = 0; row < 500 - 1; row++) {
-		sprintf(tmp_str, "%s_", section);
-		if (strncmp(MavLinkVars[row].name, tmp_str, strlen(tmp_str)) == 0) {
-//			printf("%s - %s\n", section, MavLinkVars[row].name);
-			strcpy(selMavLinkVars[row2].name, MavLinkVars[row].name);
-			strcpy(selMavLinkVars[row2].desc, MavLinkVars[row].desc);
-			strcpy(selMavLinkVars[row2].values, MavLinkVars[row].values);
-			strcpy(selMavLinkVars[row2].bits, MavLinkVars[row].bits);
-			selMavLinkVars[row2].value = MavLinkVars[row].value;
-			selMavLinkVars[row2].min = MavLinkVars[row].min;
-			selMavLinkVars[row2].max = MavLinkVars[row].max;
-			selMavLinkVars[row2].type = MavLinkVars[row].type;
-			selMavLinkVars[row2].id = row;
-			selMavLinkVars[row2 + 1].name[0] = 0;
-			selMavLinkVars[row2 + 1].value = 0.0;
-			selMavLinkVars[row2 + 1].min = 0.0;
-			selMavLinkVars[row2 + 1].max = 0.0;
-			selMavLinkVars[row2 + 1].type = 0;
-			selMavLinkVars[row2 + 1].id = 0;
-			row2++;
-		}
-	}
-	if (row2 > 0 && set_sel >= row2) {
-		set_sel = row2 - 1;
-	}
 
-	if (sel1_mode != 1) {
+	if (select_section[0] == 0) {
 		col = 0;
 		row = 0;
 		for (n = 0; n < 500; n++) {
-			if (mainMavLinkVars[n].name[0] == 0) {
+			if (main_groups[n][0] == 0) {
 				break;
 			}
-			sprintf(tmp_str, "mv_main_%s", mainMavLinkVars[n].name);
-			draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, mainMavLinkVars[n].name, FONT_WHITE, -1.3 + col * 0.5, -0.8 + row * 0.12, 0.002, 0.08, 0, 0, mavlink_select_main, n);
+			sprintf(tmp_str, "mv_main_%s", main_groups[n]);
+			draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, main_groups[n], FONT_WHITE, -1.3 + col * 0.5, -0.8 + row * 0.12, 0.002, 0.08, 0, 0, mavlink_select_main, n);
 			col++;
 			if (col > 4) {
 				col = 0;
@@ -504,72 +459,89 @@ void screen_mavlink_menu (ESContext *esContext) {
 			}
 		}
 	}
-	if (sel1_mode == 1) {
+	if (select_section[0] != 0) {
 		col = 0;
 		row = 0;
+		int mav_id_sect = 0;
+		int mav_id = 0;
+
+
 		if ((int)set_sel > 0) {
-			sprintf(tmp_str, "-scroll_%s", selMavLinkVars[n].name);
-			draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[^]", FONT_WHITE, 0.0, -0.7 - 0.14, 0.002, 0.08, 1, 0, mavlink_select_sel_scroll, -1.0);
+			draw_button(esContext, "scroll_up", VIEW_MODE_FCMENU, "[^]", FONT_WHITE, 0.0, -0.7 - 0.14, 0.002, 0.08, 1, 0, mavlink_select_sel_scroll, -1.0);
 		}
 
-		for (n = 0; n < 10 && n + (int)set_sel < 500; n++) {
-			if (selMavLinkVars[n + (int)set_sel].name[0] == 0) {
-				break;
+		for (mav_id = 0; mav_id < 500; mav_id++) {
+
+			if (MavLinkVars[mav_id].name[0] == 0) {
+				continue;
 			}
 
-			if (strlen(selMavLinkVars[n + (int)set_sel].desc) > 60) {
-				strncpy(tmp_str, selMavLinkVars[n + (int)set_sel].desc, 100);
+			sprintf(tmp_str, "%s_", select_section);
+			if (strncmp(MavLinkVars[mav_id].name, tmp_str, strlen(tmp_str)) == 0 || strcmp(MavLinkVars[mav_id].name, select_section) == 0) {
+			} else {
+				continue;
+			}
+
+			mav_id_sect++;
+
+
+			if (mav_id_sect < (int)set_sel + 1 || mav_id_sect - (int)set_sel > 10) {
+				continue;
+			}
+
+			if (strlen(MavLinkVars[mav_id].desc) > 60) {
+				strncpy(tmp_str, MavLinkVars[mav_id].desc, 100);
 				tmp_str[60] = 0;
-				draw_button(esContext, "#", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.19, -0.7 + row * 0.14 + 0.07, 0.002, 0.04, 0, 0, mavlink_select_sel, n);
-				draw_button(esContext, "#", VIEW_MODE_FCMENU, selMavLinkVars[n + (int)set_sel].desc + 60, FONT_WHITE, -1.18, -0.7 + row * 0.14 + 0.07 + 0.04, 0.002, 0.04, 0, 0, mavlink_select_sel, n);
+				draw_button(esContext, "#", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.19, -0.7 + row * 0.14 + 0.07, 0.002, 0.04, 0, 0, mavlink_select_sel, 0.0);
+				draw_button(esContext, "#", VIEW_MODE_FCMENU, MavLinkVars[mav_id].desc + 60, FONT_WHITE, -1.18, -0.7 + row * 0.14 + 0.07 + 0.04, 0.002, 0.04, 0, 0, mavlink_select_sel, 0.0);
 			} else {
-				draw_button(esContext, "#", VIEW_MODE_FCMENU, selMavLinkVars[n + (int)set_sel].desc, FONT_WHITE, -1.19, -0.7 + row * 0.14 + 0.07, 0.002, 0.04, 0, 0, mavlink_select_sel, n);
+				draw_button(esContext, "#", VIEW_MODE_FCMENU, MavLinkVars[mav_id].desc, FONT_WHITE, -1.19, -0.7 + row * 0.14 + 0.07, 0.002, 0.04, 0, 0, mavlink_select_sel, 0.0);
 			}
 
-			if (selMavLinkVars[n + (int)set_sel].type != 0) {
-				sprintf(tmp_str2, "%i", (int)selMavLinkVars[n + (int)set_sel].value);
+			if (MavLinkVars[mav_id].type != 0) {
+				sprintf(tmp_str2, "%i", (int)MavLinkVars[mav_id].value);
 			} else {
-				sprintf(tmp_str2, "%0.4f", selMavLinkVars[n + (int)set_sel].value);
+				sprintf(tmp_str2, "%0.4f", MavLinkVars[mav_id].value);
 			}
 
 			if (
-				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_angle") == 0
+				strcmp(MavLinkVars[mav_id].name, "aux_angle") == 0
 				||
-				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_horizon") == 0
+				strcmp(MavLinkVars[mav_id].name, "aux_horizon") == 0
 				||
-				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_baro") == 0
+				strcmp(MavLinkVars[mav_id].name, "aux_baro") == 0
 				||
-				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_mag") == 0
+				strcmp(MavLinkVars[mav_id].name, "aux_mag") == 0
 				||
-				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_camstab") == 0
+				strcmp(MavLinkVars[mav_id].name, "aux_camstab") == 0
 				||
-				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_camtrig") == 0
+				strcmp(MavLinkVars[mav_id].name, "aux_camtrig") == 0
 				||
-				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_arm") == 0
+				strcmp(MavLinkVars[mav_id].name, "aux_arm") == 0
 				||
-				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_gps_home") == 0
+				strcmp(MavLinkVars[mav_id].name, "aux_gps_home") == 0
 				||
-				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_gps_hold") == 0
+				strcmp(MavLinkVars[mav_id].name, "aux_gps_hold") == 0
 				||
-				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_gps_log") == 0
+				strcmp(MavLinkVars[mav_id].name, "aux_gps_log") == 0
 				||
-				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_passthru") == 0
+				strcmp(MavLinkVars[mav_id].name, "aux_passthru") == 0
 				||
-				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_headfree") == 0
+				strcmp(MavLinkVars[mav_id].name, "aux_headfree") == 0
 				||
-				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_beeper") == 0
+				strcmp(MavLinkVars[mav_id].name, "aux_beeper") == 0
 				||
-				strcmp(selMavLinkVars[n + (int)set_sel].name, "aux_headadj") == 0
+				strcmp(MavLinkVars[mav_id].name, "aux_headadj") == 0
 			) {
-				sprintf(tmp_str, "mv_sel_%s_%i_t", selMavLinkVars[n + (int)set_sel].name, n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, selMavLinkVars[n + (int)set_sel].name, FONT_WHITE, -1.2, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, mavlink_select_sel, n);
+				sprintf(tmp_str, "mv_sel_%s_%i_t", MavLinkVars[mav_id].name, n);
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, MavLinkVars[mav_id].name, FONT_WHITE, -1.2, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, mavlink_select_sel, 0.0);
 				n3 = 0;
 				for (n2 = 0; n2 < 12; n2++) {
-					if ((int)selMavLinkVars[n + (int)set_sel].value & (1<<n2)) {
-						sprintf(tmp_str, "R%2.0i%s", n2, selMavLinkVars[n + (int)set_sel].name);
+					if ((int)MavLinkVars[mav_id].value & (1<<n2)) {
+						sprintf(tmp_str, "R%2.0i%s", n2, MavLinkVars[mav_id].name);
 						draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "X", FONT_WHITE, -0.3 + n3 * 0.1, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, mavlink_aux_toggle, (float)n2);
 					} else {
-						sprintf(tmp_str, "S%2.0i%s", n2, selMavLinkVars[n + (int)set_sel].name);
+						sprintf(tmp_str, "S%2.0i%s", n2, MavLinkVars[mav_id].name);
 						draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "O", FONT_WHITE, -0.3 + n3 * 0.1, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, mavlink_aux_toggle, (float)n2);
 					}
 					if (n2 == 2 || n2 == 5 || n2 == 8) {
@@ -577,43 +549,41 @@ void screen_mavlink_menu (ESContext *esContext) {
 					}
 					n3++;
 				}
-			} else if (selMavLinkVars[n + (int)set_sel].values[0] != 0) {
-				sprintf(tmp_str, "mv_sel_%s_%i_t", selMavLinkVars[n + (int)set_sel].name, n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, selMavLinkVars[n + (int)set_sel].name, FONT_WHITE, -1.2, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, mavlink_options_menu, (float)(n + (int)set_sel));
-				mavlink_meta_get_option((int)selMavLinkVars[n + (int)set_sel].value, selMavLinkVars[n + (int)set_sel].name, tmp_str2);
-				sprintf(tmp_str, "S%s", selMavLinkVars[n + (int)set_sel].name);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -0.1, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, mavlink_options_menu, (float)(n + (int)set_sel));
-			} else if (selMavLinkVars[n + (int)set_sel].bits[0] != 0) {
-				sprintf(tmp_str, "mv_sel_%s_%i_t", selMavLinkVars[n + (int)set_sel].name, n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, selMavLinkVars[n + (int)set_sel].name, FONT_WHITE, -1.2, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, mavlink_bits_menu, (float)(n + (int)set_sel));
-				sprintf(tmp_str, "B%s", selMavLinkVars[n + (int)set_sel].name);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, ".....", FONT_WHITE, -0.1, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, mavlink_bits_menu, (float)(n + (int)set_sel));
+			} else if (MavLinkVars[mav_id].values[0] != 0) {
+				sprintf(tmp_str, "mv_sel_%s_%i_t", MavLinkVars[mav_id].name, n);
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, MavLinkVars[mav_id].name, FONT_WHITE, -1.2, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, mavlink_options_menu, (float)(mav_id));
+				mavlink_meta_get_option((int)MavLinkVars[mav_id].value, MavLinkVars[mav_id].name, tmp_str2);
+				sprintf(tmp_str, "S%s", MavLinkVars[mav_id].name);
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -0.1, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, mavlink_options_menu, (float)(mav_id));
+			} else if (MavLinkVars[mav_id].bits[0] != 0) {
+				sprintf(tmp_str, "mv_sel_%s_%i_t", MavLinkVars[mav_id].name, n);
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, MavLinkVars[mav_id].name, FONT_WHITE, -1.2, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, mavlink_bits_menu, (float)(mav_id));
+				sprintf(tmp_str, "B%s", MavLinkVars[mav_id].name);
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, ".....", FONT_WHITE, -0.1, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, mavlink_bits_menu, (float)(mav_id));
 			} else {
-				sprintf(tmp_str, "mv_sel_%s_%i_t", selMavLinkVars[n + (int)set_sel].name, n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, selMavLinkVars[n + (int)set_sel].name, FONT_WHITE, -1.2, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, mavlink_select_sel, n);
-				sprintf(tmp_str, "mv_sel_%s_%i_v", selMavLinkVars[n + (int)set_sel].name, n);
-				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, 0.05, -0.7 + row * 0.14, 0.002, 0.08, 2, 0, mavlink_select_sel, n);
-				sprintf(tmp_str, "S%s", selMavLinkVars[n + (int)set_sel].name);
+				sprintf(tmp_str, "mv_sel_%s_%i_t", MavLinkVars[mav_id].name, n);
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, MavLinkVars[mav_id].name, FONT_WHITE, -1.2, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, mavlink_select_sel, 0.0);
+				sprintf(tmp_str, "mv_sel_%s_%i_v", MavLinkVars[mav_id].name, n);
+				draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, 0.05, -0.7 + row * 0.14, 0.002, 0.08, 2, 0, mavlink_select_sel, 0.0);
+				sprintf(tmp_str, "S%s", MavLinkVars[mav_id].name);
 				draw_box_f3c2(esContext, SLIDER_START, -0.7 + row * 0.14, 0.001, SLIDER_START + SLIDER_LEN, -0.7 + row * 0.14 + 0.1, 0.001, 55, 55, 55, 220, 75, 45, 85, 100);
-				draw_box_f3c2(esContext, SLIDER_START, -0.7 + row * 0.14, 0.001, SLIDER_START + ((selMavLinkVars[n + (int)set_sel].value - selMavLinkVars[n + (int)set_sel].min) * SLIDER_LEN / (selMavLinkVars[n + (int)set_sel].max - selMavLinkVars[n + (int)set_sel].min)), -0.7 + row * 0.14 + 0.1, 0.001, 255, 255, 55, 220, 175, 145, 85, 100);
+				draw_box_f3c2(esContext, SLIDER_START, -0.7 + row * 0.14, 0.001, SLIDER_START + ((MavLinkVars[mav_id].value - MavLinkVars[mav_id].min) * SLIDER_LEN / (MavLinkVars[mav_id].max - MavLinkVars[mav_id].min)), -0.7 + row * 0.14 + 0.1, 0.001, 255, 255, 55, 220, 175, 145, 85, 100);
 				set_button(tmp_str, view_mode, SLIDER_START, -0.7 + row * 0.14, SLIDER_START + SLIDER_LEN, -0.7 + row * 0.14 + 0.1, mavlink_slider_move, (float)row, 1);
 
-				if (strcmp(selMavLinkVars[n + (int)set_sel].name, "mag_declination") == 0) {
+				if (strcmp(MavLinkVars[mav_id].name, "mag_declination") == 0) {
 					int ret_dd = 0;
 					int ret_dm = 0;
 					get_declination(ModelData.p_lat, ModelData.p_long, ModelData.p_alt, &ret_dd, &ret_dm);
-					sprintf(tmp_str, "M%s", selMavLinkVars[n + (int)set_sel].name);
+					sprintf(tmp_str, "M%s", MavLinkVars[mav_id].name);
 					sprintf(tmp_str2, "%i%2.0i", ret_dd, ret_dm);
 					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, 1.2, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, mavlink_set_magdecl, 0.0);
 				}
 
 			}
-
 			row++;
 		}
-		if (n >= 10) {
-			sprintf(tmp_str, "+scroll_%s", selMavLinkVars[n + (int)set_sel].name);
-			draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[v]", FONT_WHITE, 0.0, 0.7, 0.002, 0.08, 1, 0, mavlink_select_sel_scroll, 1.0);
+		if (mav_id_sect >= 10 && row >= 10) {
+			draw_button(esContext, "scroll_down", VIEW_MODE_FCMENU, "[v]", FONT_WHITE, 0.0, 0.7, 0.002, 0.08, 1, 0, mavlink_select_sel_scroll, 1.0);
 		}
 		draw_button(esContext, "back", VIEW_MODE_FCMENU, "[BACK]", FONT_WHITE, -1.3, 0.8, 0.002, 0.08, 0, 0, mavlink_select_sel, 0.0);
 	}
@@ -627,25 +597,25 @@ void screen_mavlink_menu (ESContext *esContext) {
 	if (option_menu != -1) {
 		reset_buttons();
 		draw_box_f3(esContext, -1.5, -1.0, 2.0, 1.5, 1.0, 2.0, 0, 0, 0, 200);
-		draw_button(esContext, "#", VIEW_MODE_FCMENU, selMavLinkVars[option_menu].name, FONT_GREEN, 0.0, -0.8, 2.002, 0.08, 1, 0, mavlink_options_menu, (float)-1);
-		for (n2 = (int)selMavLinkVars[option_menu].min; n2 <= (int)selMavLinkVars[option_menu].max; n2++) {
+		draw_button(esContext, "#", VIEW_MODE_FCMENU, MavLinkVars[option_menu].name, FONT_GREEN, 0.0, -0.8, 2.002, 0.08, 1, 0, mavlink_options_menu, (float)-1);
+		for (n2 = (int)MavLinkVars[option_menu].min; n2 <= (int)MavLinkVars[option_menu].max; n2++) {
 			tmp_str2[0] = 0;
-			mavlink_meta_get_option(n2, selMavLinkVars[option_menu].name, tmp_str2);
+			mavlink_meta_get_option(n2, MavLinkVars[option_menu].name, tmp_str2);
 			if (tmp_str2[0] == 0) {
 				break;
 			}
-			sprintf(tmp_str, "%3.0i%s", n2, selMavLinkVars[option_menu].name);
-			if ((n2 - (int)selMavLinkVars[option_menu].min) > 12) {
-				if ((int)selMavLinkVars[option_menu].value == n2) {
-					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_GREEN, 0.0, -0.7 + (n2 - (int)selMavLinkVars[option_menu].min - 13) * 0.1, 2.002, 0.08, 0, 0, mavlink_option_sel, n2);
+			sprintf(tmp_str, "%3.0i%s", n2, MavLinkVars[option_menu].name);
+			if ((n2 - (int)MavLinkVars[option_menu].min) > 12) {
+				if ((int)MavLinkVars[option_menu].value == n2) {
+					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_GREEN, 0.0, -0.7 + (n2 - (int)MavLinkVars[option_menu].min - 13) * 0.1, 2.002, 0.08, 0, 0, mavlink_option_sel, n2);
 				} else {
-					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, 0.0, -0.7 + (n2 - (int)selMavLinkVars[option_menu].min - 13) * 0.1, 2.002, 0.08, 0, 0, mavlink_option_sel, n2);
+					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, 0.0, -0.7 + (n2 - (int)MavLinkVars[option_menu].min - 13) * 0.1, 2.002, 0.08, 0, 0, mavlink_option_sel, n2);
 				}
 			} else {
-				if ((int)selMavLinkVars[option_menu].value == n2) {
-					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_GREEN, -1.2, -0.7 + (n2 - (int)selMavLinkVars[option_menu].min) * 0.1, 2.002, 0.08, 0, 0, mavlink_option_sel, n2);
+				if ((int)MavLinkVars[option_menu].value == n2) {
+					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_GREEN, -1.2, -0.7 + (n2 - (int)MavLinkVars[option_menu].min) * 0.1, 2.002, 0.08, 0, 0, mavlink_option_sel, n2);
 				} else {
-					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -1.2, -0.7 + (n2 - (int)selMavLinkVars[option_menu].min) * 0.1, 2.002, 0.08, 0, 0, mavlink_option_sel, n2);
+					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -1.2, -0.7 + (n2 - (int)MavLinkVars[option_menu].min) * 0.1, 2.002, 0.08, 0, 0, mavlink_option_sel, n2);
 				}
 			}
 		}
@@ -653,22 +623,22 @@ void screen_mavlink_menu (ESContext *esContext) {
 	} else if (bits_menu != -1) {
 		reset_buttons();
 		draw_box_f3(esContext, -1.5, -1.0, 2.0, 1.5, 1.0, 2.0, 0, 0, 0, 200);
-		draw_button(esContext, "#", VIEW_MODE_FCMENU, selMavLinkVars[bits_menu].name, FONT_GREEN, 0.0, -0.8, 2.002, 0.08, 1, 0, mavlink_options_menu, (float)-1);
+		draw_button(esContext, "#", VIEW_MODE_FCMENU, MavLinkVars[bits_menu].name, FONT_GREEN, 0.0, -0.8, 2.002, 0.08, 1, 0, mavlink_options_menu, (float)-1);
 		for (n2 = (int)0; n2 < 32; n2++) {
 			tmp_str2[0] = 0;
-			mavlink_meta_get_bits(n2, selMavLinkVars[bits_menu].name, tmp_str2);
+			mavlink_meta_get_bits(n2, MavLinkVars[bits_menu].name, tmp_str2);
 			if (tmp_str2[0] == 0) {
 				break;
 			}
-			sprintf(tmp_str, "%3.0i%s", n2, selMavLinkVars[bits_menu].name);
+			sprintf(tmp_str, "%3.0i%s", n2, MavLinkVars[bits_menu].name);
 			if ((n2 - 0) > 12) {
-				if ((int)selMavLinkVars[bits_menu].value & (1<<n2)) {
+				if ((int)MavLinkVars[bits_menu].value & (1<<n2)) {
 					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_GREEN, 0.0, -0.7 + (n2 - 13) * 0.1, 2.002, 0.08, 0, 0, mavlink_bits_sel, n2);
 				} else {
 					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, 0.0, -0.7 + (n2 - 13) * 0.1, 2.002, 0.08, 0, 0, mavlink_bits_sel, n2);
 				}
 			} else {
-				if ((int)selMavLinkVars[bits_menu].value & (1<<n2)) {
+				if ((int)MavLinkVars[bits_menu].value & (1<<n2)) {
 					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_GREEN, -1.2, -0.7 + (n2) * 0.1, 2.002, 0.08, 0, 0, mavlink_bits_sel, n2);
 				} else {
 					draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -1.2, -0.7 + (n2) * 0.1, 2.002, 0.08, 0, 0, mavlink_bits_sel, n2);

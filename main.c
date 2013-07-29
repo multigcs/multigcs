@@ -1085,37 +1085,15 @@ void check_events (ESContext *esContext, SDL_Event event) {
 		} else if (view_mode == VIEW_MODE_FCMENU) {
 			if (event.button.button == 1) {
 			} else if (event.button.button == 2) {
-				sel1_mode = 1 - sel1_mode;
 			} else if (event.button.button == 3) {
-				sel2_mode = 1 - sel2_mode;
 			} else if (event.button.button == 4) {
-				if (sel1_mode == 0) {
-					if (set_sel2 > 0) {
-						set_sel2--;
-					}
-				} else {
-					if (set_sel > 0) {
-						set_sel--;
-					}
+				if (set_sel > 0) {
+					set_sel--;
 				}
 			} else if (event.button.button == 5) {
-				if (sel1_mode == 0) {
-					set_sel2++;
-				} else {
-					set_sel++;
-				}
+				set_sel++;
 			} else if (event.button.button == 6) {
-				if (sel2_mode == 0) {
-					MavLinkVars[selMavLinkVars[(int)sel].id].value -= 0.1;
-				} else {
-					MavLinkVars[selMavLinkVars[(int)sel].id].value -= 1.0;
-				}
 			} else if (event.button.button == 7) {
-				if (sel2_mode == 0) {
-					MavLinkVars[selMavLinkVars[(int)sel].id].value += 0.1;
-				} else {
-					MavLinkVars[selMavLinkVars[(int)sel].id].value += 1.0;
-				}
 			} else {
 				printf("Button: %i\n", event.button.button);
 			}

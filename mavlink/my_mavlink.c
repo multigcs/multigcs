@@ -32,8 +32,6 @@
 int16_t mission_max = -1;
 int serial_fd_mavlink = -1;
 ValueList MavLinkVars[500];
-ValueList selMavLinkVars[500];
-ValueList mainMavLinkVars[500];
 uint8_t mavlink_update_yaw = 0;
 uint8_t droneType = 1;
 uint8_t autoPilot = 3;
@@ -72,22 +70,6 @@ uint8_t mavlink_init (char *port, uint32_t baud) {
 		MavLinkVars[n].bits[0] = 0;
 		MavLinkVars[n].value = 0.0;
 		MavLinkVars[n].id = -1;
-
-		selMavLinkVars[n].name[0] = 0;
-		selMavLinkVars[n].display[0] = 0;
-		selMavLinkVars[n].desc[0] = 0;
-		selMavLinkVars[n].values[0] = 0;
-		selMavLinkVars[n].bits[0] = 0;
-		selMavLinkVars[n].value = 0.0;
-		selMavLinkVars[n].id = -1;
-
-		mainMavLinkVars[n].name[0] = 0;
-		mainMavLinkVars[n].display[0] = 0;
-		mainMavLinkVars[n].desc[0] = 0;
-		mainMavLinkVars[n].values[0] = 0;
-		mainMavLinkVars[n].bits[0] = 0;
-		mainMavLinkVars[n].value = 0.0;
-		mainMavLinkVars[n].id = -1;
 	}
 
 	thread_udp = SDL_CreateThread(mavlink_udp, NULL);
