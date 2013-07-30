@@ -32,7 +32,7 @@
 #include <tcl.h>
 
 
-Tcl_Interp *tcl_interp;
+Tcl_Interp *tcl_interp = NULL;
 static uint8_t tcl_startup = 0;
 
 
@@ -91,7 +91,7 @@ void tcl_init (void) {
 	tcl_startup = 1;
 	printf("Init TCL...\n");
 	tcl_interp = Tcl_CreateInterp();
-	if (TCL_OK != Tcl_Init(tcl_interp)) {
+	if (Tcl_Init(tcl_interp) != TCL_OK) {
 		printf("...failed (%s)\n", Tcl_GetStringResult(tcl_interp));
 		return;
 	}
@@ -143,15 +143,45 @@ uint8_t tcl_test (char *name, float x, float y, int8_t button, float data) {
 	return 0;
 }
 
+
+
+#define CLI_MAX_BUFFER 100
+#define CLI_MAX_LINES 100
+extern char cli_buffer[CLI_MAX_LINES][CLI_MAX_BUFFER];
+
+
 void screen_tcl (ESContext *esContext) {
 #ifndef SDLGL
 	ESMatrix modelview;
 	UserData *userData = esContext->userData;
 #endif
 
-	char scriptfile[1024];
-	sprintf(scriptfile, "%s/scripts/screen_tcl.tcl", BASE_DIR);
-	tcl_runFile(scriptfile);
+	static uint8_t startup = 0;
+	if (startup == 0) {
+		startup = 1;
+
+		char scriptfile[1024];
+		sprintf(scriptfile, "%s/scripts/screen_tcl.tcl", BASE_DIR);
+		tcl_runFile(scriptfile);
+
+		if (Tcl_Eval(tcl_interp, "init") != TCL_OK) {
+			printf("TCL-ERROR:\n");
+			printf("#######################################################\n");
+			printf("%s\n", Tcl_GetStringResult(tcl_interp));
+			printf("#######################################################\n");
+		}
+
+	}
+
+	tcl_update_modeldata();
+
+	if (Tcl_Eval(tcl_interp, "view") != TCL_OK) {
+		printf("TCL-ERROR:\n");
+		printf("#######################################################\n");
+		printf("%s\n", Tcl_GetStringResult(tcl_interp));
+		printf("#######################################################\n");
+	}
+
 
 }
 
