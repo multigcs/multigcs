@@ -46,7 +46,7 @@ uint16_t mavlink_foundparam = 0;
 uint8_t mavlink_udp_active = 0;
 
 SDL_Thread *thread_udp = NULL;
-
+FILE *blenderpy_fr = NULL;
 
 int mavlink_udp (void *data);
 
@@ -91,6 +91,10 @@ void mavlink_exit (void) {
 	if (serial_fd_mavlink >= 0) {
 		close(serial_fd_mavlink);
 		serial_fd_mavlink = -1;
+	}
+	if (blenderpy_fr != NULL) {
+		fclose(blenderpy_fr);
+		blenderpy_fr = NULL;
 	}
 }
 
@@ -195,6 +199,31 @@ void gcs_handleMessage(mavlink_message_t* msg) {
 			}
 			mavlink_update_yaw = 1;
 //			printf("ATT;%i;%0.2f;%0.2f;%0.2f\n", time(0), toDeg(packet.roll), toDeg(packet.pitch), toDeg(packet.yaw));
+
+			static uint32_t time_start = 0;
+			if (time_start == -1) {
+				time_start = packet.time_boot_ms;
+				if ((blenderpy_fr = fopen("/tmp/mavlink-blender.py", "w")) != 0) {
+					fprintf(blenderpy_fr, "import bpy\n");
+					fprintf(blenderpy_fr, "\n");
+					fprintf(blenderpy_fr, "if(len(bpy.data.cameras) == 1):\n");
+					fprintf(blenderpy_fr, "     obj = bpy.data.objects['Camera']\n");
+					fprintf(blenderpy_fr, "\n");
+				} else {
+					blenderpy_fr = NULL;
+				}
+			}
+			if (blenderpy_fr != NULL) {
+				fprintf(blenderpy_fr, "     obj.location.x = %f\n", ModelData.p_long / 180.0);
+				fprintf(blenderpy_fr, "     obj.location.y = %f\n", ModelData.p_lat / 180.0);
+				fprintf(blenderpy_fr, "     obj.location.z = %f\n", ModelData.p_alt / 100.0);
+				fprintf(blenderpy_fr, "     obj.keyframe_insert(data_path=\"location\", frame=%i)\n", (packet.time_boot_ms - time_start) / 25);
+				fprintf(blenderpy_fr, "     obj.rotation_euler[0] = %f\n", packet.pitch + 90.0);
+				fprintf(blenderpy_fr, "     obj.rotation_euler[1] = %f\n", packet.roll);
+				fprintf(blenderpy_fr, "     obj.rotation_euler[2] = %f\n", packet.yaw * -1.0);
+				fprintf(blenderpy_fr, "     obj.keyframe_insert(data_path=\"rotation_euler\", frame=%i)\n", (packet.time_boot_ms - time_start) / 25);
+				fprintf(blenderpy_fr, "\n");
+			}
 
 			redraw_flag = 1;
 			break;
