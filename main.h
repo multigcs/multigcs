@@ -155,6 +155,7 @@ extern uint16_t screen_border_y;
 extern char keyboard_key[100];
 extern uint8_t keyboard_shift;
 extern uint8_t keyboard_altgr;
+extern char blender_export_filename[2048];
 
 extern ESContext *GlobalesContext;
 

@@ -104,6 +104,7 @@ uint16_t screen_border_y = 0;
 char keyboard_key[100];
 uint8_t keyboard_shift = 0;
 uint8_t keyboard_altgr = 0;
+char blender_export_filename[2048];
 SDL_Event event;
 char touchscreen_device[200];
 uint8_t calibration_mode = 1;
@@ -504,6 +505,7 @@ void setup_save (void) {
 		fprintf(fr, "calibration_min_y        %i\n", calibration_min_y);
 		fprintf(fr, "calibration_max_y        %i\n", calibration_max_y);
 		fprintf(fr, "videolist_lastfile       %s\n", videolist_lastfile);
+		fprintf(fr, "blender_export_filename  %s\n", blender_export_filename);
 	        fprintf(fr, "\n");
 	        fprintf(fr, "[waypoints]\n");
 	        for (n = 0; n < MAX_WAYPOINTS; n++) {
@@ -539,6 +541,7 @@ void setup_load (void) {
 #else
 	strcpy(gcs_gps_port, "/dev/ttyUSB20");;
 #endif
+	blender_export_filename[0] = 0;
 	gcs_gps_baud = 9600;
 	strcpy(telemetrie_port, "/dev/rfcomm0");;
 	telemetrie_baud = 115200;
@@ -627,6 +630,8 @@ void setup_load (void) {
 	                                calibration_max_y = atoi(val);
 	                        } else if (strcmp(var, "videolist_lastfile") == 0) {
 	                                strcpy(videolist_lastfile, val);
+	                        } else if (strcmp(var, "blender_export_filename") == 0) {
+	                                strcpy(blender_export_filename, val);
 	                        } else if (strcmp(var, "hud_view") == 0) {
 	                                hud_view = atoi(val);
 	                        } else if (strcmp(var, "hud_view_map") == 0) {
