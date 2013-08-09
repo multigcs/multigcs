@@ -461,7 +461,7 @@ void draw_circleFilled_f3_part_end (ESContext *esContext, float x1, float y1, fl
 
 void draw_circleMeter_f3 (ESContext *esContext, float x, float y, float z, float radius, float start1, float start2, float start3, float start4, float value, char *text, char *text2, uint8_t type) {
 	float th = radius / 3.5;
-	float width = radius / 6.0;
+	float width = radius / 15.0;
 	if (type == 2) {
 		width = 0.015;
 	}
@@ -499,13 +499,13 @@ void draw_circleMeter_f3 (ESContext *esContext, float x, float y, float z, float
 		} else {
 	//		draw_circleFilled_f3_part_end(esContext, x, y, z, radius, radius - width, offset1, 200, 10, 10, 255);
 			if (type == 3) {
-				draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, offset1, start2, 10, 200, 10, 255);
-				draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, start2, start3, 200, 200, 100, 255);
-				draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, start3, offset2, 200, 10, 10, 255);
+				draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, offset1, start2, 10, 220, 10, 255);
+				draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, start2, start3, 220, 220, 10, 255);
+				draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, start3, offset2, 220, 10, 10, 255);
 			} else {
-				draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, offset1, start2, 200, 10, 10, 255);
-				draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, start2, start3, 200, 200, 100, 255);
-				draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, start3, offset2, 10, 200, 10, 255);
+				draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, offset1, start2, 220, 10, 10, 255);
+				draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, start2, start3, 220, 220, 10, 255);
+				draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, start3, offset2, 10, 220, 10, 255);
 			}
 	//		draw_circleFilled_f3_part_end(esContext, x, y, z, radius, radius - width, offset2, 10, 200, 10, 255);
 			draw_circlePointer_f3(esContext, x, y, z + 0.0001, radius - width, radius / 20.0, value, 255, 255, 255, 255);

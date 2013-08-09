@@ -200,18 +200,52 @@ void draw_circleFilled_f3_part (ESContext *esContext, float x1, float y1, float 
 	x_inner *= radial_factor;
 	y_inner *= radial_factor;
 
+	float x_inner3 = radius_inner - radius_inner / 3.0;
+	float y_inner3 = 0;
+	float last_x_inner3 = x1 - x_inner3;
+	float last_y_inner3 = y_inner3 + y1;
+	float tx_inner3 = -y_inner3;
+	float ty_inner3 = x_inner3;
+	x_inner3 += tx_inner3 * tangetial_factor;
+	y_inner3 += ty_inner3 * tangetial_factor;
+	x_inner3 *= radial_factor;
+	y_inner3 *= radial_factor;
+
+
 	glBegin(GL_TRIANGLES);
 	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
 
 	for (ii = 0; ii < (float)num_segments * stop / 360.0; ii++) {
 
 		if (ii >= (float)num_segments * start / 360.0 && ii < (float)num_segments * stop / 360.0) {
+
+			glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
+
 			glVertex3f(last_x_inner, last_y_inner, -2.0 + z1);
 			glVertex3f(last_x, last_y, -2.0 + z1);
 			glVertex3f(x1 - x, y + y1, -2.0 + z1);
 
 			glVertex3f(last_x_inner, last_y_inner, -2.0 + z1);
 			glVertex3f(x1 - x, y + y1, -2.0 + z1);
+			glVertex3f(x1 - x_inner, y_inner + y1, -2.0 + z1);
+
+
+			glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0 / 2.0);
+			glVertex3f(last_x_inner, last_y_inner, -2.0 + z1);
+
+			glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)0.0);
+			glVertex3f(last_x_inner3, last_y_inner3, -2.0 + z1);
+
+			glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)0.0);
+			glVertex3f(x1 - x_inner3, y_inner3 + y1, -2.0 + z1);
+
+			glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0 / 2.0);
+			glVertex3f(last_x_inner, last_y_inner, -2.0 + z1);
+
+			glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)0.0);
+			glVertex3f(x1 - x_inner3, y_inner3 + y1, -2.0 + z1);
+
+			glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0 / 2.0);
 			glVertex3f(x1 - x_inner, y_inner + y1, -2.0 + z1);
 		}
 
@@ -232,6 +266,16 @@ void draw_circleFilled_f3_part (ESContext *esContext, float x1, float y1, float 
 		y_inner += ty_inner * tangetial_factor;
 		x_inner *= radial_factor;
 		y_inner *= radial_factor;
+
+		last_x_inner3 = x1 - x_inner3;
+		last_y_inner3 = y_inner3 + y1;
+		tx_inner3 = -y_inner3;
+		ty_inner3 = x_inner3;
+		x_inner3 += tx_inner3 * tangetial_factor;
+		y_inner3 += ty_inner3 * tangetial_factor;
+		x_inner3 *= radial_factor;
+		y_inner3 *= radial_factor;
+
 	}
 	glEnd();
 }
