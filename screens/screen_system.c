@@ -21,6 +21,7 @@
 #include <main.h>
 #include <model.h>
 #include <screen_system.h>
+#include <screen_rcflow.h>
 #include <my_mavlink.h>
 #include <my_gps.h>
 #include <frsky.h>
@@ -39,6 +40,10 @@ uint8_t system_baud_set (char *name, float x, float y, int8_t button, float data
                 gcs_gps_baud = atoi(name);
 		gcs_gps_exit();
 		gcs_gps_init(gcs_gps_port, gcs_gps_baud);
+        } else if (strcmp(baud_selected, "rcflow") == 0) {
+                rcflow_baud = atoi(name);
+		rcflow_exit();
+		rcflow_init(rcflow_port, rcflow_baud);
         } else if (strcmp(baud_selected, "jeti") == 0) {
                 jeti_baud = atoi(name);
 		jeti_exit();
@@ -62,6 +67,8 @@ uint8_t system_device_set (char *name, float x, float y, int8_t button, float da
 	printf("DEVICE: %s_port = %s\n", port_selected, name);
         if (strcmp(port_selected, "gcs_gps") == 0) {
                 strcpy(gcs_gps_port, name);
+        } else if (strcmp(port_selected, "rcflow") == 0) {
+                strcpy(rcflow_port, name);
         } else if (strcmp(port_selected, "jeti") == 0) {
                 strcpy(jeti_port, name);
         } else if (strcmp(port_selected, "frsky") == 0) {
@@ -292,6 +299,13 @@ void screen_system (ESContext *esContext) {
 	} else {
 		sprintf(tmp_str, "GCS-GPS %s (%i)", gcs_gps_port, gcs_gps_baud);
 		draw_button(esContext, "gcs_gps", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
+	}
+	if (rcflow_connection_status() != 0) {
+		sprintf(tmp_str, "RCFLOW %s (%i / %i)", rcflow_port, rcflow_baud, (uint8_t)(time(0)) - rcflow_connection_status());
+		draw_button(esContext, "rcflow", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
+	} else {
+		sprintf(tmp_str, "RCFLOW %s (%i)", rcflow_port, rcflow_baud);
+		draw_button(esContext, "rcflow", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
 	}
 
 /*

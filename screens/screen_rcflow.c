@@ -58,11 +58,6 @@ static uint8_t virt_view = 0;
 static char setup_name[100];
 
 
-uint32_t rctransmitter_baud = 115200;
-char rctransmitter_device[20];
-char rctransmitter_btaddr[20];
-char rctransmitter_btpin[20];
-
 
 static Tcl_Interp *rcflow_tcl_interp;
 static uint8_t rcflow_tcl_startup = 0;
@@ -445,30 +440,6 @@ void rcflow_parseTelemetry (xmlDocPtr doc, xmlNodePtr cur) {
 				ModelData.teletype = rctransmitter_get_type_by_name((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"device"))) {
-			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			if ((char *)key != NULL) {
-				strcpy(rctransmitter_device, (char *)key);
-			}
-			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"baud"))) {
-			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			if ((char *)key != NULL) {
-				rctransmitter_baud = atoi((char *)key);
-			}
-			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"bluetooth_addr"))) {
-			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			if ((char *)key != NULL) {
-				strcpy(rctransmitter_btaddr, (char *)key);
-			}
-			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"bluetooth_pin"))) {
-			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			if ((char *)key != NULL) {
-				strcpy(rctransmitter_btpin, (char *)key);
-			}
-			xmlFree(key);
 		}
 		cur = cur->next;
 	}
@@ -766,7 +737,7 @@ uint8_t rcflow_undo (char *name, float x, float y, int8_t button, float data) {
 int adc[MAX_OUTPUTS];
 int sw[MAX_OUTPUTS];
 int out[MAX_OUTPUTS];
-int fd = -1;
+int rcflow_fd = -1;
 char buf[200];
 char buffer[200];
 
@@ -882,10 +853,10 @@ uint8_t rcflow_update (char *name, float x, float y, int8_t button, float data) 
 	uint8_t start[2] = {'A', 'A'};
 	uint8_t stop[2] = {'S', 'S'};
 	rcflow_convert_to_Embedded();
-	write(fd, &start, 2);
-	write(fd, &RcPluginEmbedded, sizeof(RcPluginEmbedded));
-	write(fd, &RcLinkEmbedded , sizeof(RcLinkEmbedded));
-	write(fd, &stop, 2);
+	write(rcflow_fd, &start, 2);
+	write(rcflow_fd, &RcPluginEmbedded, sizeof(RcPluginEmbedded));
+	write(rcflow_fd, &RcLinkEmbedded , sizeof(RcLinkEmbedded));
+	write(rcflow_fd, &stop, 2);
 #endif
 	return 0;
 }
@@ -903,11 +874,11 @@ uint8_t rcflow_update_plugin (int8_t plugin_num) {
 		chksum ^= *ptr++;
 	}
 //	printf("chksum = %i\n", chksum);
-	write(fd, &start, 2);
-	write(fd, &plugin_num, sizeof(plugin_num));
-	write(fd, &RcPluginEmbedded[plugin_num], sizeof(RcFlowPluginEmbedded));
-	write(fd, &chksum, sizeof(chksum));
-	write(fd, &stop, 2);
+	write(rcflow_fd, &start, 2);
+	write(rcflow_fd, &plugin_num, sizeof(plugin_num));
+	write(rcflow_fd, &RcPluginEmbedded[plugin_num], sizeof(RcFlowPluginEmbedded));
+	write(rcflow_fd, &chksum, sizeof(chksum));
+	write(rcflow_fd, &stop, 2);
 #endif
 	return 0;
 }
@@ -925,11 +896,11 @@ uint8_t rcflow_update_link (int8_t link_num) {
 		chksum ^= *ptr++;
 	}
 //	printf("chksum = %i\n", chksum);
-	write(fd, &start, 2);
-	write(fd, &link_num, sizeof(link_num));
-	write(fd, &RcLinkEmbedded[link_num], sizeof(RcFlowLinkEmbedded));
-	write(fd, &chksum, sizeof(chksum));
-	write(fd, &stop, 2);
+	write(rcflow_fd, &start, 2);
+	write(rcflow_fd, &link_num, sizeof(link_num));
+	write(rcflow_fd, &RcLinkEmbedded[link_num], sizeof(RcFlowLinkEmbedded));
+	write(rcflow_fd, &chksum, sizeof(chksum));
+	write(rcflow_fd, &stop, 2);
 #endif
 	return 0;
 }
@@ -980,15 +951,6 @@ uint8_t rcflow_save_xml (char *name, float x, float y, int8_t button, float data
 		fprintf(fr, "<rcflow>\n");
 		fprintf(fr, " <name>%s</name>\n", setup_name);
 		fprintf(fr, " <image>%s</image>\n", ModelData.image);
-		fprintf(fr, " <telemetry>\n");
-		fprintf(fr, "  <type>%s</type>\n", teletypes[ModelData.teletype]);
-		fprintf(fr, "  <device>%s</device>\n", rctransmitter_device);
-		fprintf(fr, "  <baud>%i</baud>\n", rctransmitter_baud);
-		if (strstr(rctransmitter_device, "rfcomm") > 0) {
-			fprintf(fr, "  <bluetooth_addr>%s</bluetooth_addr>\n", rctransmitter_btaddr);
-			fprintf(fr, "  <bluetooth_pin>%s</bluetooth_pin>\n", rctransmitter_btpin);
-		}
-		fprintf(fr, " </telemetry>\n");
 		fprintf(fr, " <mavlink>\n");
 		for (n = 0; n < 500 - 1; n++) {
 			if (MavLinkVars[n].name[0] != 0) {
@@ -2558,7 +2520,11 @@ void rcflow_calc_Embedded (void) {
 	}
 }
 
-void screen_rcflow (ESContext *esContext) {
+void rcflow_exit (void) {
+	serial_close(rcflow_fd);
+}
+
+uint8_t rcflow_init (char *port, uint32_t baud) {
 	char tmp_str[64];
 	char tmp_str2[64];
 	uint8_t plugin = 0;
@@ -2568,14 +2534,6 @@ void screen_rcflow (ESContext *esContext) {
 	uint8_t n = 0;
 
 	if (startup == 0) {
-
-		strcpy(rctransmitter_device, "/dev/ttyUSB0");
-		rctransmitter_baud = 115200;
-
-#ifdef ADC_TEST
-		fd = serial_open(rctransmitter_device, rctransmitter_baud);
-#endif
-
 		startup = 1;
 		strcpy(setup_name, "new.xml");
 		for (plugin = 0; plugin < MAX_PLUGINS; plugin++) {
@@ -2764,13 +2722,28 @@ void screen_rcflow (ESContext *esContext) {
 		rcflow_undo_save();
 	}
 
+	printf("init rcflow serial port...\n");
+	rcflow_fd = serial_open(port, baud);
 
+	return 0;
+}
+
+uint8_t rcflow_connection_status (void) {
+	return 1;
+}
+
+void screen_rcflow (ESContext *esContext) {
+	char tmp_str[64];
+	uint8_t plugin = 0;
+	uint8_t output = 0;
+	uint8_t link = 0;
+	uint8_t n = 0;
 
 #ifdef ADC_TEST
 
 uint8_t start_flag = 0;
 int buffer_n = 0;
-while (read(fd, buf, 1) > 0) {
+while (read(rcflow_fd, buf, 1) > 0) {
 	if (start_flag == 1 && buffer_n < 100) {
 		if (buf[0] == '\n' || buf[0] == '\r') {
 			if (buffer[0] == 'A' && buffer[1] == 'D' && buffer[2] == 'C' && buffer[3] == ':') {
@@ -2816,9 +2789,6 @@ while (read(fd, buf, 1) > 0) {
 #endif
 
 
-
-
-
 	// Calculating
 	rcflow_convert_to_Embedded();
 	rcflow_calc_Embedded();
@@ -2846,9 +2816,6 @@ while (read(fd, buf, 1) > 0) {
 				rcflow_draw_vplugin(esContext, plugin, n++);
 			}
 		}
-
-
-
 
 	} else if (virt_view == 2) {
 		uint16_t plugin = 0;
@@ -3180,7 +3147,6 @@ while (read(fd, buf, 1) > 0) {
 		draw_button(esContext, "back", view_mode, "[BACK]", FONT_GREEN, 0.0, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)255);
 		plugin++;
 	}
-
 
 	draw_button(esContext, "update", view_mode, "[UPDATE]", FONT_GREEN, 0.0, 0.8, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_update, 0.0);
 

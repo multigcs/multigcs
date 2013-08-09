@@ -111,6 +111,8 @@ extern uint16_t mouse_x;
 extern uint16_t mouse_y;
 extern char gcs_gps_port[1024];
 extern uint32_t gcs_gps_baud;
+extern char rcflow_port[1024];
+extern uint32_t rcflow_baud;
 extern char telemetrie_port[1024];
 extern uint32_t telemetrie_baud;
 extern char jeti_port[1024];

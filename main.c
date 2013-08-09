@@ -142,6 +142,8 @@ char frsky_port[1024];
 uint32_t frsky_baud = 9600;
 char gcs_gps_port[1024];
 uint32_t gcs_gps_baud = 9600;
+char rcflow_port[1024];
+uint32_t rcflow_baud = 115200;
 char telemetrie_port[1024];
 uint32_t telemetrie_baud = 57600;
 uint8_t telemetrie_type = 0;
@@ -485,6 +487,8 @@ void setup_save (void) {
 	        fprintf(fr, "waypoint_active     %i\n", waypoint_active);
 	        fprintf(fr, "gcs_gps_port     %s\n", gcs_gps_port);
 	        fprintf(fr, "gcs_gps_baud     %i\n", gcs_gps_baud);
+	        fprintf(fr, "rcflow_port     %s\n", rcflow_port);
+	        fprintf(fr, "rcflow_baud     %i\n", rcflow_baud);
 	        fprintf(fr, "telemetrie_port %s\n", telemetrie_port);
 	        fprintf(fr, "telemetrie_baud %i\n", telemetrie_baud);
 	        fprintf(fr, "telemetrie_type %i\n", ModelData.teletype);
@@ -536,13 +540,15 @@ void setup_load (void) {
         char val[101];
         int mode = 0;
         int wp_num = 0;
+	blender_export_filename[0] = 0;
 #ifdef RPI_NO_X
 	strcpy(gcs_gps_port, "/dev/ttyAMA0");;
 #else
 	strcpy(gcs_gps_port, "/dev/ttyUSB20");;
 #endif
-	blender_export_filename[0] = 0;
 	gcs_gps_baud = 9600;
+	strcpy(rcflow_port, "/dev/ttyUSB21");;
+	rcflow_baud = 115200;
 	strcpy(telemetrie_port, "/dev/rfcomm0");;
 	telemetrie_baud = 115200;
 	strcpy(jeti_port, "/dev/ttyUSB10");;
@@ -594,6 +600,10 @@ void setup_load (void) {
 	                                strcpy(gcs_gps_port, val);
 	                        } else if (strcmp(var, "gcs_gps_baud") == 0) {
 	                                gcs_gps_baud = atoi(val);
+	                        } else if (strcmp(var, "rcflow_port") == 0) {
+	                                strcpy(rcflow_port, val);
+	                        } else if (strcmp(var, "rcflow_baud") == 0) {
+	                                rcflow_baud = atoi(val);
 	                        } else if (strcmp(var, "telemetrie_port") == 0) {
 	                                strcpy(telemetrie_port, val);
 	                        } else if (strcmp(var, "telemetrie_baud") == 0) {
@@ -1773,6 +1783,8 @@ int main ( int argc, char *argv[] ) {
 	jeti_init(jeti_port, jeti_baud);
 	gcs_gps_exit();
 	gcs_gps_init(gcs_gps_port, gcs_gps_baud);
+	rcflow_exit();
+	rcflow_init(rcflow_port, rcflow_baud);
 
 	printf("Init GL\n");
 #ifndef SDLGL
