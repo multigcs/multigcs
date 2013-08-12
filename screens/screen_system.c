@@ -192,7 +192,6 @@ void screen_system (ESContext *esContext) {
 		}
 		pclose(cmd);
 
-
 		if((cmd = popen("hostname", "r")) != NULL) {
 			while(!feof(cmd)) {
 				if(fgets(hostname, 1024, cmd) != NULL) {
@@ -218,7 +217,7 @@ void screen_system (ESContext *esContext) {
 	draw_text_f(esContext, -0.5, -0.8 + 7 * 0.1, 0.06, 0.06, FONT_GREEN, buffer);
 
 	draw_button(esContext, "system_dhclient", VIEW_MODE_SYSTEM, "<GET IP OVER DHCP>", FONT_GREEN, 0.0, -0.8 + 9 * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, system_dhclient, 0.0);
-	draw_button(esContext, "system_gcs", VIEW_MODE_SYSTEM, "<UPDATE GCS>", FONT_GREEN, 0.0, -0.8 + 10 * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, system_update, 0.0);
+//	draw_button(esContext, "system_gcs", VIEW_MODE_SYSTEM, "<UPDATE GCS>", FONT_GREEN, 0.0, -0.8 + 10 * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, system_update, 0.0);
 
 	// Connections-Status
 	char tmp_str[100];
