@@ -308,16 +308,6 @@ void screen_system (ESContext *esContext) {
 		draw_button(esContext, "rcflow", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
 	}
 
-/*
-	draw_button(esContext, "border_x--", VIEW_MODE_SYSTEM, "<", FONT_WHITE, -1.32, 0.0, 0.002, 0.05, ALIGN_CENTER, ALIGN_TOP, system_set_border_x, -2.0);
-	draw_button(esContext, "border_x", VIEW_MODE_SYSTEM, "|", FONT_WHITE, -1.25, 0.0, 0.002, 0.05, ALIGN_CENTER, ALIGN_TOP, system_set_border_x, 0.0);
-	draw_button(esContext, "border_x++", VIEW_MODE_SYSTEM, ">", FONT_WHITE, -1.18, 0.0, 0.002, 0.05, ALIGN_CENTER, ALIGN_TOP, system_set_border_x, 2.0);
-
-	draw_button(esContext, "border_y--", VIEW_MODE_SYSTEM, "^", FONT_WHITE, 0.0, 0.8, 0.002, 0.05, ALIGN_CENTER, ALIGN_TOP, system_set_border_y, 2.0);
-	draw_button(esContext, "border_y", VIEW_MODE_SYSTEM, "---", FONT_WHITE, 0.0, 0.85, 0.002, 0.05, ALIGN_CENTER, ALIGN_TOP, system_set_border_y, 0.0);
-	draw_button(esContext, "border_y++", VIEW_MODE_SYSTEM, "v", FONT_WHITE, 0.0, 0.9, 0.002, 0.05, ALIGN_CENTER, ALIGN_TOP, system_set_border_y, -2.0);
-*/
-
 	draw_button(esContext, "_border_x", VIEW_MODE_SYSTEM, "X-Border", FONT_GREEN, 0.55, 0.4, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_x, 0.0);
 	draw_button(esContext, "_border_x--", VIEW_MODE_SYSTEM, "[-]", FONT_GREEN, 0.85, 0.4, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_x, -2.0);
 	draw_button(esContext, "_border_x++", VIEW_MODE_SYSTEM, "[+]", FONT_GREEN, 0.95, 0.4, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_x, 2.0);
@@ -326,9 +316,7 @@ void screen_system (ESContext *esContext) {
 	draw_button(esContext, "_border_y--", VIEW_MODE_SYSTEM, "[-]", FONT_GREEN, 0.85, 0.5, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_y, -2.0);
 	draw_button(esContext, "_border_y++", VIEW_MODE_SYSTEM, "[+]", FONT_GREEN, 0.95, 0.5, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_y, 2.0);
 
-
 	draw_button(esContext, "copyright", VIEW_MODE_SYSTEM, "Copyright by Oliver Dippel (oliver@multixmedia.org)", FONT_PINK, 0.0, 0.9, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, system_null, 0.0);
-
 
 	screen_device(esContext);
 	screen_baud(esContext);
