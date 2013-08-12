@@ -114,9 +114,9 @@ uint8_t system_null (char *name, float x, float y, int8_t button, float data) {
 uint8_t system_set_border_x (char *name, float x, float y, int8_t button, float data) {
 	if ((int)data == 0) {
 		screen_border_x = 0;
-	} else if ((int)data > 0 && screen_border_x >= (int)data) {
+	} else if ((int)data > 0) {
 		screen_border_x += (int)data;
-	} else if ((int)data < 0 && screen_border_x <= (int)data) {
+	} else if ((int)data < 0 && screen_border_x >= (int)data) {
 		screen_border_x += (int)data;
 	}
 	resize_border();
@@ -126,9 +126,9 @@ uint8_t system_set_border_x (char *name, float x, float y, int8_t button, float 
 uint8_t system_set_border_y (char *name, float x, float y, int8_t button, float data) {
 	if ((int)data == 0) {
 		screen_border_y = 0;
-	} else if ((int)data > 0 && screen_border_y >= (int)data) {
+	} else if ((int)data > 0) {
 		screen_border_y += (int)data;
-	} else if ((int)data < 0 && screen_border_y <= (int)data) {
+	} else if ((int)data < 0 && screen_border_y >= (int)data) {
 		screen_border_y += (int)data;
 	}
 	resize_border();
