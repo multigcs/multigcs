@@ -43,6 +43,7 @@
 #include "openpilot.h"
 #include "jeti.h"
 #include "frsky.h"
+#include "webserv.h"
 #include "screen_background.h"
 #include "screen_wpedit.h"
 #include "screen_map.h"
@@ -168,11 +169,8 @@ SDL_Thread *thread_telemetrie = NULL;
 #ifdef SDLGL
 
 void save_screenshot (void) {
-
-//	system("xfce4-screenshooter -w -o gimp");
 	char name[100];
 	char tmp_str[100];
-
 	if (view_mode == VIEW_MODE_HUD) {
 		strcpy(name, "hud");
 	} else if (view_mode == VIEW_MODE_TELEMETRY) {
@@ -198,10 +196,16 @@ void save_screenshot (void) {
 	}
 	sprintf(tmp_str, "xwd -name \"Multi-GCS\" -out /tmp/screen.dump; ./save_screenshot.sh /tmp/screen.dump %s", name);
 	system(tmp_str);
-
 }
-#endif
 
+void save_screenshot2 (void) {
+	char name[100];
+	char tmp_str[100];
+	sprintf(tmp_str, "xwd -name \"Multi-GCS\" -out /tmp/screen.dump; ./save_screenshot.sh /tmp/screen.dump dump");
+	system(tmp_str);
+}
+
+#endif
 
 
 SDL_Surface* CreateSurface(int width,int height) {
@@ -1669,7 +1673,8 @@ void ShutDown ( ESContext *esContext ) {
 	jeti_exit();
 	printf("* gcs_gps exit\n");
 	gcs_gps_exit();
-
+	printf("* webserv exit\n");
+	webserv_exit();
 	printf("* map exit\n");
 	map_exit();
 	printf("* telemetry-thread kill\n");
@@ -1842,6 +1847,8 @@ int main ( int argc, char *argv[] ) {
 	if (ModelData.p_alt < zz + 10) {
 		ModelData.p_alt = zz + 10;
 	}
+
+	webserv_init();
 
 	printf("Init Telemetry-Thread\n");
 	reset_telemetrie();
