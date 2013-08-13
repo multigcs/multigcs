@@ -307,7 +307,7 @@ void webserv_child_show_map (int fd) {
 	strcat(content, "<p onclick='JavaScript:HUDxmlhttpGet();'>[HUD UPDATE]</p>\n");
 	strcat(content, "    <canvas id=\"myCanvas\" width=\"640\" height=\"640\"></canvas>\n");
 	strcat(content, "    <script>\n");
-	strcat(content, "	function drawMeter(context, x, y, r, a, b, c) {\n");
+	strcat(content, "	function drawMeter(context, x, y, r, a, b, c, text) {\n");
 	strcat(content, "		var centerX = x;\n");
 	strcat(content, "		var centerY = y;\n");
 	strcat(content, "		endA = 3.141593 + (3.141593 / 180.0 * a);\n");
@@ -328,6 +328,10 @@ void webserv_child_show_map (int fd) {
 	strcat(content, "		context.lineWidth = 10;\n");
 	strcat(content, "		context.strokeStyle = 'green';\n");
 	strcat(content, "		context.stroke();\n");
+	strcat(content, "		context.fillStyle = 'white';\n");
+	strcat(content, "		context.font = 'bold 10px Arial';\n");
+	strcat(content, "		context.textAlign = 'center';\n");
+	strcat(content, "		context.fillText(text, x, y + 10);\n");
 	strcat(content, "	}\n");
 	strcat(content, "	function drawPointer(context, x, y, r, v) {\n");
 	strcat(content, "		var centerX = x;\n");
@@ -343,26 +347,40 @@ void webserv_child_show_map (int fd) {
 	strcat(content, "		context.beginPath();\n");
 	strcat(content, "		context.moveTo(x, y);\n");
 	strcat(content, "		context.lineTo(x + s, y);\n");
-	strcat(content, "		context.lineTo(x + s, y + (s / 2) - (roll / 45.0) * (s / 2) - (pitch / 45.0) * (s / 2));\n");
-	strcat(content, "		context.lineTo(x, y + (s / 2) + (roll / 45.0) * (s / 2) - (pitch / 45.0) * (s / 2));\n");
+
+	strcat(content, "		var warning = 0;\n");
+	strcat(content, "		diff1 = (s / 2) + (roll / 45.0) * (s / 2) + (pitch / 45.0) * (s / 2);\n");
+	strcat(content, "		if (diff1 > s) {diff1 = s; warning = 1;};\n");
+	strcat(content, "		if (diff1 < 0) {diff1 = 0; warning = 1;};\n");
+
+	strcat(content, "		diff2 = (s / 2) - (roll / 45.0) * (s / 2) + (pitch / 45.0) * (s / 2);\n");
+	strcat(content, "		if (diff2 > s) {diff2 = s; warning = 1;};\n");
+	strcat(content, "		if (diff2 < 0) {diff2 = 0; warning = 1;};\n");
+
+	strcat(content, "		context.lineTo(x + s, y + s);\n");
+	strcat(content, "		context.lineTo(x, y + s);\n");
 	strcat(content, "		context.lineTo(x, y);\n");
 	strcat(content, "		context.closePath();\n");
 	strcat(content, "		context.fillStyle = 'blue';\n");
 	strcat(content, "		context.fill();\n");
 	strcat(content, "		context.beginPath();\n");
-	strcat(content, "		context.moveTo(x, y + (s / 2) + (roll / 45.0) * (s / 2) - (pitch / 45.0) * (s / 2));\n");
-	strcat(content, "		context.lineTo(x + s, y + (s / 2) - (roll / 45.0) * (s / 2) - (pitch / 45.0) * (s / 2));\n");
+	strcat(content, "		context.moveTo(x, y + diff1);\n");
+	strcat(content, "		context.lineTo(x + s, y + diff2);\n");
 	strcat(content, "		context.lineTo(x + s, y + s);\n");
 	strcat(content, "		context.lineTo(x, y + s);\n");
-	strcat(content, "		context.lineTo(x, y + (s / 2) + (roll / 45.0) * (s / 2) - (pitch / 45.0) * (s / 2));\n");
+	strcat(content, "		context.lineTo(x, y + diff1);\n");
 	strcat(content, "		context.closePath();\n");
 	strcat(content, "		context.fillStyle = 'brown';\n");
 	strcat(content, "		context.fill();\n");
 	strcat(content, "		context.beginPath();\n");
-	strcat(content, "		context.moveTo(x + s, y + (s / 2) - (roll / 45.0) * (s / 2) - (pitch / 45.0) * (s / 2));\n");
-	strcat(content, "		context.lineTo(x, y + (s / 2) + (roll / 45.0) * (s / 2) - (pitch / 45.0) * (s / 2));\n");
+	strcat(content, "		context.moveTo(x + s, y + diff2);\n");
+	strcat(content, "		context.lineTo(x, y + diff1);\n");
 	strcat(content, "		context.lineWidth = 3;\n");
-	strcat(content, "		context.strokeStyle = 'white';\n");
+	strcat(content, "		if (warning == 0) {\n");
+	strcat(content, "			context.strokeStyle = 'white';\n");
+	strcat(content, "		} else {\n");
+	strcat(content, "			context.strokeStyle = 'red';\n");
+	strcat(content, "		}\n");
 	strcat(content, "		context.stroke();\n");
 	strcat(content, "		context.beginPath();\n");
 	strcat(content, "		context.moveTo(x + s, y + (s / 2));\n");
@@ -371,17 +389,99 @@ void webserv_child_show_map (int fd) {
 	strcat(content, "		context.strokeStyle = 'gray';\n");
 	strcat(content, "		context.stroke();\n");
 	strcat(content, "	}\n");
+
+	strcat(content, "\n");
+	strcat(content, "	function drawStar(context, x, y, r) {\n");
+	strcat(content, "		var x1 = [x, x, x - r, x + r, x, x, x - r, x + r];\n");
+	strcat(content, "		var y1 = [y - r, y + r, y, y, y - r, y + r, y, y];\n");
+	strcat(content, "		var x2 = [x + r / 5, x - r / 5, x - r / 5, x + r / 5, x - r / 5, x + r / 5, x - r / 5, x + r / 5];\n");
+	strcat(content, "		var y2 = [y - r / 5, y + r / 5, y - r / 5, y + r / 5, y - r / 5, y + r / 5, y + r / 5, y - r / 5];\n");
+	strcat(content, "		var col = [0, 0, 0, 0, 1, 1, 1, 1];\n");
+	strcat(content, "		for (var index = 0; index < x1.length; ++index) {\n");
+	strcat(content, "			context.beginPath();\n");
+	strcat(content, "			context.moveTo(x, y);\n");
+	strcat(content, "			context.lineTo(x1[index], y1[index]);\n");
+	strcat(content, "			context.lineTo(x2[index], y2[index]);\n");
+	strcat(content, "			context.lineTo(x, y);\n");
+	strcat(content, "			context.closePath();\n");
+	strcat(content, "			if (col[index] == 0) {\n");
+	strcat(content, "				context.fillStyle = 'black';\n");
+	strcat(content, "			} else {\n");
+	strcat(content, "				context.fillStyle = 'white';\n");
+	strcat(content, "			}\n");
+	strcat(content, "			context.fill();\n");
+	strcat(content, "			context.lineWidth = 1;\n");
+	strcat(content, "			if (col[index] == 0) {\n");
+	strcat(content, "				context.strokeStyle = 'white';\n");
+	strcat(content, "			} else {\n");
+	strcat(content, "				context.strokeStyle = 'black';\n");
+	strcat(content, "			}\n");
+	strcat(content, "			context.stroke();\n");
+	strcat(content, "		}\n");
+	strcat(content, "	}\n");
+	strcat(content, "\n");
+	strcat(content, "	function drawCompas(context, x, y, r, dir) {\n");
+	strcat(content, "		context.beginPath();\n");
+	strcat(content, "		context.arc(x, y, r, 0, Math.PI * 2, false);\n");
+	strcat(content, "		context.fillStyle = 'black';\n");
+	strcat(content, "		context.fill();\n");
+	strcat(content, "		context.beginPath();\n");
+	strcat(content, "		context.arc(x, y, r / 2, 0, Math.PI * 2, false);\n");
+	strcat(content, "		context.lineWidth = 25;\n");
+	strcat(content, "		context.strokeStyle = 'white';\n");
+	strcat(content, "		context.stroke();\n");
+	strcat(content, "		context.fillStyle = 'black';\n");
+	strcat(content, "		context.fill();\n");
+	strcat(content, "		context.translate(x, y);\n");
+	strcat(content, "		context.rotate(Math.PI / 4);\n");
+	strcat(content, "		context.translate(-x, -y);\n");
+	strcat(content, "		drawStar(context, x, y, r / 2);\n");
+	strcat(content, "		context.translate(x, y);\n");
+	strcat(content, "		context.rotate(-Math.PI / 4);\n");
+	strcat(content, "		context.translate(-x, -y);\n");
+	strcat(content, "		drawStar(context, x, y, r - 26);\n");
+	strcat(content, "		context.fillStyle = 'white';\n");
+	strcat(content, "		context.font = 'bold 16px Arial';\n");
+	strcat(content, "		context.textAlign = 'center';\n");
+	strcat(content, "		context.translate(x, y);\n");
+	strcat(content, "		context.rotate(Math.PI / 180 * -dir);\n");
+	strcat(content, "		var index;\n");
+	strcat(content, "		var D = ['NE', 'E', 'SE', 'S', 'SW', 'W', 'NW', 'N'];\n");
+	strcat(content, "		for (var index = 0; index < D.length; ++index) {\n");
+	strcat(content, "			context.rotate(Math.PI / 4);\n");
+	strcat(content, "			context.fillText(D[index], 0, -r + 15);\n");
+	strcat(content, "		}\n");
+	strcat(content, "		context.translate(-x, -y);\n");
+	strcat(content, "		context.fillStyle = 'white';\n");
+	strcat(content, "		context.font = 'bold 10px Arial';\n");
+	strcat(content, "		context.textAlign = 'center';\n");
+	strcat(content, "		context.translate(x, y);\n");
+	strcat(content, "		for (var w = 0; w < 360; w += 30) {\n");
+	strcat(content, "			context.fillText(w, 0, -r + 25);\n");
+	strcat(content, "			context.rotate(Math.PI / 180 * 30);\n");
+	strcat(content, "		}\n");
+	strcat(content, "		for (var w = 0; w < 360; w += 10) {\n");
+	strcat(content, "			context.fillText('|', 0, -r + 35);\n");
+	strcat(content, "			context.rotate(Math.PI / 180 * 10);\n");
+	strcat(content, "		}\n");
+	strcat(content, "		context.rotate(Math.PI / 180 * dir);\n");
+	strcat(content, "		context.translate(-x, -y);\n");
+	strcat(content, "	}\n");
+	strcat(content, "\n");
 	strcat(content, "	var canvas = document.getElementById('myCanvas');\n");
 	strcat(content, "	var context = canvas.getContext('2d');\n");
 	strcat(content, "	context.clearRect(0, 0, canvas.width, canvas.height);\n");
-	strcat(content, "	drawMeter(context, 100, 100, 70, 45, 45, 90);\n");
-	sprintf(tmp_str, "	drawPointer(context, 100, 100, 70, %f);\n", ModelData.roll + 90.0);
+	strcat(content, "	drawMeter(context, 50, 100, 30, 45, 90, 45, 'roll');\n");
+	sprintf(tmp_str, "	drawPointer(context, 50, 100, 30, %f);\n", ModelData.roll + 90.0);
 	strcat(content, tmp_str);
-	strcat(content, "	drawMeter(context, 100, 200, 70, 45, 45, 90);\n");
-	sprintf(tmp_str, "	drawPointer(context, 100, 200, 70, %f);\n", ModelData.pitch + 90.0);
+	strcat(content, "	drawMeter(context, 50, 200, 30, 45, 90, 45, 'pitch');\n");
+	sprintf(tmp_str, "	drawPointer(context, 50, 200, 30, %f);\n", ModelData.pitch + 90.0);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "	drawHorizon(context, 100, 300, 100, %f, %f);\n", ModelData.roll, ModelData.pitch);
+	sprintf(tmp_str, "	drawHorizon(context, 100, 50, 400, %f, %f);\n", ModelData.roll, ModelData.pitch);
 	strcat(content, tmp_str);
+	sprintf(tmp_str, "	drawCompas(context, 300, 500, 150, %f);\n", ModelData.yaw);
+	strcat(content, tmp_str);
+
 	strcat(content, "    </script>\n");
 	strcat(content, "<script src=\"http://www.openlayers.org/api/OpenLayers.js\"></script><script>\n");
 	strcat(content, "map = new OpenLayers.Map(\"mapdiv\");\n");
@@ -409,14 +509,17 @@ void webserv_child_hud_redraw (int fd) {
 
 	strcat(content, "	var canvas = document.getElementById('myCanvas');\n");
 	strcat(content, "	var context = canvas.getContext('2d');\n");
+
 	strcat(content, "	context.clearRect(0, 0, canvas.width, canvas.height);\n");
-	strcat(content, "	drawMeter(context, 100, 100, 70, 45, 45, 90);\n");
-	sprintf(tmp_str, "	drawPointer(context, 100, 100, 70, %f);\n", ModelData.roll + 90.0);
+	strcat(content, "	drawMeter(context, 50, 100, 30, 45, 90, 45, 'roll');\n");
+	sprintf(tmp_str, "	drawPointer(context, 50, 100, 30, %f);\n", ModelData.roll + 90.0);
 	strcat(content, tmp_str);
-	strcat(content, "	drawMeter(context, 100, 200, 70, 45, 45, 90);\n");
-	sprintf(tmp_str, "	drawPointer(context, 100, 200, 70, %f);\n", ModelData.pitch + 90.0);
+	strcat(content, "	drawMeter(context, 50, 200, 30, 45, 90, 45, 'pitch');\n");
+	sprintf(tmp_str, "	drawPointer(context, 50, 200, 30, %f);\n", ModelData.pitch + 90.0);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "	drawHorizon(context, 100, 300, 100, %f, %f);\n", ModelData.roll, ModelData.pitch);
+	sprintf(tmp_str, "	drawHorizon(context, 100, 50, 400, %f, %f);\n", ModelData.roll, ModelData.pitch);
+	strcat(content, tmp_str);
+	sprintf(tmp_str, "	drawCompas(context, 300, 500, 150, %f);\n", ModelData.yaw);
 	strcat(content, tmp_str);
 
 	sprintf(buffer,"HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %ld\nConnection: close\nContent-Type: %s\n\n", strlen(content), "text/html");
@@ -444,9 +547,6 @@ void webserv_child (int fd, int hit) {
 
 	if (strncmp(buffer,"POST ", 5) == 0 || strncmp(buffer,"post ", 5) == 0) {
 		if (strncmp(buffer + 5,"/setdata", 8) == 0) {
-
-
-
 			int n = 0;
 			int l = 0;
 			int l2 = 0;
@@ -630,7 +730,6 @@ printf("### set radio1: %i ##\n", atoi(tmp_str + start));
 			write(fd, content, strlen(content));
 		}
 	}
-
 	close(fd);
 	return;
 }
@@ -662,7 +761,7 @@ int webserv_thread (void *data) {
 			return(1);
 		}
 
-printf("incomming: %i\n", hit);
+		printf("incomming: %i\n", hit);
 
 		webserv_child(socketfd,hit);
 
