@@ -264,8 +264,7 @@ void webserv_child_show_map (int fd) {
 	strcat(content, "    markers.addMarker(new OpenLayers.Marker(lonLat));\n");
 	strcat(content, "    map.setCenter (lonLat, zoom);\n");
 	strcat(content, "}\n");
-
-
+	strcat(content, "\n");
 	strcat(content, "function HUDxmlhttpGet() {\n");
 	strcat(content, "    var xmlHttpReq = false;\n");
 	strcat(content, "    var self = this;\n");
@@ -287,7 +286,7 @@ void webserv_child_show_map (int fd) {
 	strcat(content, "function HUDupdatepage(str){\n");
 	strcat(content, "	eval(str);\n");
 	strcat(content, "}\n");
-
+	strcat(content, "\n");
 	strcat(content, "</script></head><body>\n");
 	strcat(content, "<style type=\"text/css\">\n");
 	strcat(content, "body {\n");
@@ -347,16 +346,13 @@ void webserv_child_show_map (int fd) {
 	strcat(content, "		context.beginPath();\n");
 	strcat(content, "		context.moveTo(x, y);\n");
 	strcat(content, "		context.lineTo(x + s, y);\n");
-
 	strcat(content, "		var warning = 0;\n");
 	strcat(content, "		diff1 = (s / 2) + (roll / 45.0) * (s / 2) + (pitch / 45.0) * (s / 2);\n");
 	strcat(content, "		if (diff1 > s) {diff1 = s; warning = 1;};\n");
 	strcat(content, "		if (diff1 < 0) {diff1 = 0; warning = 1;};\n");
-
 	strcat(content, "		diff2 = (s / 2) - (roll / 45.0) * (s / 2) + (pitch / 45.0) * (s / 2);\n");
 	strcat(content, "		if (diff2 > s) {diff2 = s; warning = 1;};\n");
 	strcat(content, "		if (diff2 < 0) {diff2 = 0; warning = 1;};\n");
-
 	strcat(content, "		context.lineTo(x + s, y + s);\n");
 	strcat(content, "		context.lineTo(x, y + s);\n");
 	strcat(content, "		context.lineTo(x, y);\n");
@@ -389,7 +385,6 @@ void webserv_child_show_map (int fd) {
 	strcat(content, "		context.strokeStyle = 'gray';\n");
 	strcat(content, "		context.stroke();\n");
 	strcat(content, "	}\n");
-
 	strcat(content, "\n");
 	strcat(content, "	function drawStar(context, x, y, r) {\n");
 	strcat(content, "		var x1 = [x, x, x - r, x + r, x, x, x - r, x + r];\n");
