@@ -20,6 +20,7 @@ extern void save_screenshot2 (void);
 #define PI 3.14159265
 
 SDL_Thread *thread_webserv = NULL;
+int listenfd;
 
 
 void webserv_child_dump_screen (int fd) {
@@ -263,6 +264,30 @@ void webserv_child_show_map (int fd) {
 	strcat(content, "    markers.addMarker(new OpenLayers.Marker(lonLat));\n");
 	strcat(content, "    map.setCenter (lonLat, zoom);\n");
 	strcat(content, "}\n");
+
+
+	strcat(content, "function HUDxmlhttpGet() {\n");
+	strcat(content, "    var xmlHttpReq = false;\n");
+	strcat(content, "    var self = this;\n");
+	strcat(content, "    if (window.XMLHttpRequest) {\n");
+	strcat(content, "        self.xmlHttpReq = new XMLHttpRequest();\n");
+	strcat(content, "    } else if (window.ActiveXObject) {\n");
+	strcat(content, "        self.xmlHttpReq = new ActiveXObject(\"Microsoft.XMLHTTP\");\n");
+	strcat(content, "    }\n");
+	strcat(content, "    self.xmlHttpReq.open('GET', \"/hudredraw\", true);\n");
+	strcat(content, "    self.xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');\n");
+	strcat(content, "    self.xmlHttpReq.onreadystatechange = function() {\n");
+	strcat(content, "        if (self.xmlHttpReq.readyState == 4) {\n");
+	strcat(content, "            HUDupdatepage(self.xmlHttpReq.responseText);\n");
+	strcat(content, "        }\n");
+	strcat(content, "    }\n");
+	strcat(content, "    self.xmlHttpReq.send();\n");
+	strcat(content, "    setTimeout(HUDxmlhttpGet, 100);\n");
+	strcat(content, "}\n");
+	strcat(content, "function HUDupdatepage(str){\n");
+	strcat(content, "	eval(str);\n");
+	strcat(content, "}\n");
+
 	strcat(content, "</script></head><body>\n");
 	strcat(content, "<style type=\"text/css\">\n");
 	strcat(content, "body {\n");
@@ -279,8 +304,9 @@ void webserv_child_show_map (int fd) {
 	strcat(content, "</style>\n");
 	strcat(content, "<div class=\"mapdiv\" id=\"mapdiv\"></div>\n");
 	strcat(content, "<p onclick='JavaScript:xmlhttpGet();'>[UPDATE]</p>\n");
-	strcat(content, "    <canvas id=\"myCanvas\" width=\"640\" height=\"480\"></canvas>");
-	strcat(content, "    <script>");
+	strcat(content, "<p onclick='JavaScript:HUDxmlhttpGet();'>[HUD UPDATE]</p>\n");
+	strcat(content, "    <canvas id=\"myCanvas\" width=\"640\" height=\"640\"></canvas>\n");
+	strcat(content, "    <script>\n");
 	strcat(content, "	function drawMeter(context, x, y, r, a, b, c) {\n");
 	strcat(content, "		var centerX = x;\n");
 	strcat(content, "		var centerY = y;\n");
@@ -313,13 +339,48 @@ void webserv_child_show_map (int fd) {
 	strcat(content, "		context.strokeStyle = 'white';\n");
 	strcat(content, "		context.stroke();\n");
 	strcat(content, "	}\n");
+	strcat(content, "	function drawHorizon(context, x, y, s, roll, pitch) {\n");
+	strcat(content, "		context.beginPath();\n");
+	strcat(content, "		context.moveTo(x, y);\n");
+	strcat(content, "		context.lineTo(x + s, y);\n");
+	strcat(content, "		context.lineTo(x + s, y + (s / 2) - (roll / 45.0) * (s / 2) - (pitch / 45.0) * (s / 2));\n");
+	strcat(content, "		context.lineTo(x, y + (s / 2) + (roll / 45.0) * (s / 2) - (pitch / 45.0) * (s / 2));\n");
+	strcat(content, "		context.lineTo(x, y);\n");
+	strcat(content, "		context.closePath();\n");
+	strcat(content, "		context.fillStyle = 'blue';\n");
+	strcat(content, "		context.fill();\n");
+	strcat(content, "		context.beginPath();\n");
+	strcat(content, "		context.moveTo(x, y + (s / 2) + (roll / 45.0) * (s / 2) - (pitch / 45.0) * (s / 2));\n");
+	strcat(content, "		context.lineTo(x + s, y + (s / 2) - (roll / 45.0) * (s / 2) - (pitch / 45.0) * (s / 2));\n");
+	strcat(content, "		context.lineTo(x + s, y + s);\n");
+	strcat(content, "		context.lineTo(x, y + s);\n");
+	strcat(content, "		context.lineTo(x, y + (s / 2) + (roll / 45.0) * (s / 2) - (pitch / 45.0) * (s / 2));\n");
+	strcat(content, "		context.closePath();\n");
+	strcat(content, "		context.fillStyle = 'brown';\n");
+	strcat(content, "		context.fill();\n");
+	strcat(content, "		context.beginPath();\n");
+	strcat(content, "		context.moveTo(x + s, y + (s / 2) - (roll / 45.0) * (s / 2) - (pitch / 45.0) * (s / 2));\n");
+	strcat(content, "		context.lineTo(x, y + (s / 2) + (roll / 45.0) * (s / 2) - (pitch / 45.0) * (s / 2));\n");
+	strcat(content, "		context.lineWidth = 3;\n");
+	strcat(content, "		context.strokeStyle = 'white';\n");
+	strcat(content, "		context.stroke();\n");
+	strcat(content, "		context.beginPath();\n");
+	strcat(content, "		context.moveTo(x + s, y + (s / 2));\n");
+	strcat(content, "		context.lineTo(x, y + (s / 2));\n");
+	strcat(content, "		context.lineWidth = 1;\n");
+	strcat(content, "		context.strokeStyle = 'gray';\n");
+	strcat(content, "		context.stroke();\n");
+	strcat(content, "	}\n");
 	strcat(content, "	var canvas = document.getElementById('myCanvas');\n");
 	strcat(content, "	var context = canvas.getContext('2d');\n");
+	strcat(content, "	context.clearRect(0, 0, canvas.width, canvas.height);\n");
 	strcat(content, "	drawMeter(context, 100, 100, 70, 45, 45, 90);\n");
 	sprintf(tmp_str, "	drawPointer(context, 100, 100, 70, %f);\n", ModelData.roll + 90.0);
 	strcat(content, tmp_str);
 	strcat(content, "	drawMeter(context, 100, 200, 70, 45, 45, 90);\n");
 	sprintf(tmp_str, "	drawPointer(context, 100, 200, 70, %f);\n", ModelData.pitch + 90.0);
+	strcat(content, tmp_str);
+	sprintf(tmp_str, "	drawHorizon(context, 100, 300, 100, %f, %f);\n", ModelData.roll, ModelData.pitch);
 	strcat(content, tmp_str);
 	strcat(content, "    </script>\n");
 	strcat(content, "<script src=\"http://www.openlayers.org/api/OpenLayers.js\"></script><script>\n");
@@ -338,8 +399,31 @@ void webserv_child_show_map (int fd) {
 	sprintf(buffer,"HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %ld\nConnection: close\nContent-Type: %s\n\n", strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
-
 }
+
+void webserv_child_hud_redraw (int fd) {
+	static char buffer[BUFSIZE + 1];
+	char content[BUFSIZE + 1];
+	char tmp_str[512];
+	content[0] = 0;
+
+	strcat(content, "	var canvas = document.getElementById('myCanvas');\n");
+	strcat(content, "	var context = canvas.getContext('2d');\n");
+	strcat(content, "	context.clearRect(0, 0, canvas.width, canvas.height);\n");
+	strcat(content, "	drawMeter(context, 100, 100, 70, 45, 45, 90);\n");
+	sprintf(tmp_str, "	drawPointer(context, 100, 100, 70, %f);\n", ModelData.roll + 90.0);
+	strcat(content, tmp_str);
+	strcat(content, "	drawMeter(context, 100, 200, 70, 45, 45, 90);\n");
+	sprintf(tmp_str, "	drawPointer(context, 100, 200, 70, %f);\n", ModelData.pitch + 90.0);
+	strcat(content, tmp_str);
+	sprintf(tmp_str, "	drawHorizon(context, 100, 300, 100, %f, %f);\n", ModelData.roll, ModelData.pitch);
+	strcat(content, tmp_str);
+
+	sprintf(buffer,"HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %ld\nConnection: close\nContent-Type: %s\n\n", strlen(content), "text/html");
+	write(fd, buffer, strlen(buffer));
+	write(fd, content, strlen(content));
+}
+
 
 void webserv_child (int fd, int hit) {
 	long ret;
@@ -512,20 +596,12 @@ printf("### set radio1: %i ##\n", atoi(tmp_str + start));
 					} else if (strcmp(tmp_str, "compid") == 0) {
 						ModelData.compid = atoi(tmp_str + start);
 					}
-
-
-
 				}
 			}
-
-
-
 			sprintf(content, "OK\n");
 			sprintf(buffer,"HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %ld\nConnection: close\nContent-Type: %s\n\n", strlen(content), "text/plain");
 			write(fd, buffer, strlen(buffer));
 			write(fd, content, strlen(content));
-
-
 		} else {
 			sprintf(content, "UNKNOWN\n");
 			sprintf(buffer,"HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %ld\nConnection: close\nContent-Type: %s\n\n", strlen(content), "text/plain");
@@ -537,6 +613,8 @@ printf("### set radio1: %i ##\n", atoi(tmp_str + start));
 			webserv_child_dump_modeldata(fd);
 		} else if (strncmp(buffer + 4,"/screenshot", 11) == 0) {
 			webserv_child_dump_screen(fd);
+		} else if (strncmp(buffer + 4,"/hudredraw", 10) == 0) {
+			webserv_child_hud_redraw(fd);
 		} else if (strncmp(buffer + 4,"/hud", 4) == 0) {
 			webserv_child_draw_hud(fd);
 		} else if (strncmp(buffer + 4,"/map", 4) == 0) {
@@ -560,8 +638,8 @@ printf("### set radio1: %i ##\n", atoi(tmp_str + start));
 int webserv_thread (void *data) {
 	int pid;
 	int listenfd;
-	int socketfd;
 	int hit;
+	int socketfd;
 	socklen_t length;
 	static struct sockaddr_in cli_addr;
 	static struct sockaddr_in serv_addr;
@@ -618,5 +696,8 @@ void webserv_init (void) {
 void webserv_exit (void) {
 	printf("* webserv-thread kill\n");
 	SDL_KillThread(thread_webserv);
+	if (listenfd >= 0) {
+		close(listenfd);
+	}
 }
 
