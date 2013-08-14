@@ -200,7 +200,12 @@ void save_screenshot (void) {
 	} else if (view_mode == VIEW_MODE_FCMENU) {
 		strcpy(name, teletypes[ModelData.teletype]);
 	}
+
+#ifdef SDL2
+	sprintf(tmp_str, "xwd -name \"%s\" -out /tmp/screen.dump; ./save_screenshot.sh /tmp/screen.dump %s", SDL_GetWindowTitle(MainWindow), name);
+#else
 	sprintf(tmp_str, "xwd -name \"Multi-GCS\" -out /tmp/screen.dump; ./save_screenshot.sh /tmp/screen.dump %s", name);
+#endif
 	system(tmp_str);
 }
 
@@ -215,12 +220,8 @@ void save_screenshot2 (void) {
 
 
 SDL_Surface* CreateSurface(int width,int height) {
-#ifdef SDL2
-#else
-	SDL_Surface *display = SDL_GetVideoSurface();
-	const SDL_PixelFormat fmt = *(display->format);
+	const SDL_PixelFormat fmt = *(WinScreen->format);
 	return SDL_CreateRGBSurface(0,width,height, fmt.BitsPerPixel, fmt.Rmask,fmt.Gmask,fmt.Bmask,fmt.Amask );
-#endif
 }
 
 void LogSave (char *file) {
@@ -1728,7 +1729,11 @@ void ShutDown ( ESContext *esContext ) {
 	bcm_host_deinit();
 #endif
 	printf("* exit SDL\n");
+#ifdef SDL2
+	SDL_DestroyWindow(MainWindow);
+#endif
 	SDL_Quit();
+
 
 #ifdef SDLGL
 	glExit(esContext);
