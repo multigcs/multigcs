@@ -208,6 +208,7 @@ void save_screenshot (void) {
 #endif
 	system(tmp_str);
 }
+#endif
 
 void save_screenshot2 (void) {
 	char name[100];
@@ -216,12 +217,11 @@ void save_screenshot2 (void) {
 	system(tmp_str);
 }
 
-#endif
-
-
 SDL_Surface* CreateSurface(int width,int height) {
+#ifdef SDLGL
 	const SDL_PixelFormat fmt = *(WinScreen->format);
 	return SDL_CreateRGBSurface(0,width,height, fmt.BitsPerPixel, fmt.Rmask,fmt.Gmask,fmt.Bmask,fmt.Amask );
+#endif
 }
 
 void LogSave (char *file) {

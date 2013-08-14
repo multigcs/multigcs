@@ -6,7 +6,7 @@ DEB_VERSION_NAME = glesX11
 EXTRA_OBJECTS = gles_draw.o
 
 
-INCDIR=-I./ -I./Common -I /usr/include/libxml2 -I/usr/include/tcl8.5 -Iscreens -Imavlink -Igps -Imwi21 -Ijeti -Iopenpilot -Ifrsky
+INCDIR=-I./ -I./Common -I /usr/include/libxml2 -I/usr/include/tcl8.5 -Iscreens -Imavlink -Igps -Imwi21 -Ijeti -Iopenpilot -Ifrsky -I /usr/include/SDL
 LIBS=-lGLESv2 -lEGL -lm -lX11 -lpng -lcurl -lSDL -ludev -lxml2 -lSDL_image -ltcl8.5
 CFLAGS+=-DMESA -ggdb -O3 -Wall
 
