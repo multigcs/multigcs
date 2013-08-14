@@ -6,11 +6,12 @@ DEB_VERSION_NAME = glesX11
 EXTRA_OBJECTS = gles_draw.o
 
 
-INCDIR=-I./ -I./Common -I /usr/include/libxml2 -I/usr/include/tcl8.5 -Iscreens -Imavlink -Igps -Imwi21 -Ijeti -Iopenpilot -Ifrsky -I /usr/include/SDL
-LIBS=-lGLESv2 -lEGL -lm -lX11 -lpng -lcurl -lSDL -ludev -lxml2 -lSDL_image -ltcl8.5
+INCDIR = 
+LIBS = 
 CFLAGS+=-DMESA -ggdb -O3 -Wall
 
-
+INCDIR+= $(shell pkg-config --cflags sdl) $(shell pkg-config --cflags SDL_image) $(shell pkg-config --cflags egl) $(shell pkg-config --cflags glesv2)
+LIBS+= $(shell pkg-config --libs sdl) $(shell pkg-config --libs SDL_image) $(shell pkg-config --libs egl) $(shell pkg-config --libs glesv2)
 
 ## ldd gcs  | grep -v /opt | awk '{print $1}' | xargs -r -l dpkg -S  | cut -d":" -f1 | sort -u | tr  "\n" "," ##
 

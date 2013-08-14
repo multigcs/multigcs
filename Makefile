@@ -6,11 +6,13 @@ DEB_VERSION_NAME = rpi
 EXTRA_OBJECTS = gles_draw.o
 
 
-INCDIR=-I./ -I./Common -I$(SDKSTAGE)/opt/vc/include -I$(SDKSTAGE)/opt/vc/include/interface/vcos/pthreads -I/usr/include/libxml2 -I/usr/include/tcl8.5 -Iscreens -Imavlink -Igps -Imwi21 -Ijeti -Iopenpilot -Ifrsky
-LIBS=-lGLESv2 -lEGL -lm -lbcm_host -lpng -L$(SDKSTAGE)/opt/vc/lib -lcurl -lSDL -ludev -lSDL_image -lxml2 -ltcl8.5
-CFLAGS+= -DRPI_NO_X -Ofast -pipe -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
-#CFLAGS+= -flto -ffast-math -fno-math-errno -funsafe-math-optimizations -ffinite-math-only -fno-signed-zeros -fno-trapping-math -frounding-math
+INCDIR = -I$(SDKSTAGE)/opt/vc/include -I$(SDKSTAGE)/opt/vc/include/interface/vcos/pthreads
+LIBS = -lbcm_host -L$(SDKSTAGE)/opt/vc/lib
+CFLAGS += -DRPI_NO_X -Ofast -pipe -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
+#CFLAGS += -flto -ffast-math -fno-math-errno -funsafe-math-optimizations -ffinite-math-only -fno-signed-zeros -fno-trapping-math -frounding-math
 
+INCDIR += $(shell pkg-config --cflags sdl) $(shell pkg-config --cflags SDL_image) $(shell pkg-config --cflags egl) $(shell pkg-config --cflags glesv2)
+LIBS += $(shell pkg-config --libs sdl) $(shell pkg-config --libs SDL_image) $(shell pkg-config --libs egl) $(shell pkg-config --libs glesv2)
 
 ## ldd gcs  | grep -v /opt | awk '{print $1}' | xargs -r -l dpkg -S  | cut -d":" -f1 | sort -u | tr  "\n" "," ##
 
