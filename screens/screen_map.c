@@ -9,7 +9,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <curl/curl.h>
-#include <SDL/SDL.h>
+#include <SDL.h>
 
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
@@ -1617,12 +1617,20 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		POIs[1].p_long = 9.20448303;
 		POIs[1].type = 1;
 
+#ifdef SDL2
+		sdl_thread_get_maps1 = SDL_CreateThread(thread_get_maps1, NULL, NULL);
+#else
 		sdl_thread_get_maps1 = SDL_CreateThread(thread_get_maps1, NULL);
+#endif
 		if ( sdl_thread_get_maps1 == NULL ) {
 			fprintf(stderr, "Unable to create thread_get_maps1: %s\n", SDL_GetError());
 		}
 
+#ifdef SDL2
+		sdl_thread_get_maps2 = SDL_CreateThread(thread_get_maps2, NULL, NULL);
+#else
 		sdl_thread_get_maps2 = SDL_CreateThread(thread_get_maps2, NULL);
+#endif
 		if ( sdl_thread_get_maps2 == NULL ) {
 			fprintf(stderr, "Unable to create thread_get_maps2: %s\n", SDL_GetError());
 		}

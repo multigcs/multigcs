@@ -19,7 +19,7 @@
 #include <main.h>
 #include <my_mavlink.h>
 #include <my_gps.h>
-#include <SDL/SDL.h>
+#include <SDL.h>
 
 SDL_Thread *gcs_sdl_thread_serial_gps = NULL;
 SDL_Thread *sdl_thread_serial_gps = NULL;
@@ -244,7 +244,11 @@ uint8_t gcs_gps_init (char *port, uint32_t baud) {
 	printf("init gcs_gps serial port...\n");
 	gcs_serial_fd_gps = serial_open(port, baud);
 	if (gcs_serial_fd_gps != -1) {
+#ifdef SDL2
+		gcs_sdl_thread_serial_gps = SDL_CreateThread(gcs_thread_serial_gps, NULL, NULL);
+#else
 		gcs_sdl_thread_serial_gps = SDL_CreateThread(gcs_thread_serial_gps, NULL);
+#endif
 		if ( gcs_sdl_thread_serial_gps == NULL ) {
 			fprintf(stderr, "Unable to create gcs_thread_serial_gps: %s\n", SDL_GetError());
 			return 1;
@@ -258,7 +262,11 @@ uint8_t gps_init (char *port, uint32_t baud) {
 	printf("init gps serial port...\n");
 	serial_fd_gps = serial_open(port, baud);
 	if (serial_fd_gps != -1) {
+#ifdef SDL2
+		sdl_thread_serial_gps = SDL_CreateThread(thread_serial_gps, NULL, NULL);
+#else
 		sdl_thread_serial_gps = SDL_CreateThread(thread_serial_gps, NULL);
+#endif
 		if ( sdl_thread_serial_gps == NULL ) {
 			fprintf(stderr, "Unable to create thread_serial_gps: %s\n", SDL_GetError());
 			return 1;

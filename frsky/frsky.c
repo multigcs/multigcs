@@ -19,7 +19,7 @@
 #include <serial.h>
 #include <model.h>
 #include <main.h>
-#include <SDL/SDL.h>
+#include <SDL.h>
 
 static SDL_Thread *sdl_thread_serial_frsky = NULL;
 static uint8_t buffer[102];
@@ -279,7 +279,11 @@ uint8_t frsky_init (char *port, uint32_t baud) {
 	printf("init frsky serial port...\n");
 	serial_fd_frsky = serial_open(port, baud);
 	if (serial_fd_frsky != -1) {
+#ifdef SDL2
+		sdl_thread_serial_frsky = SDL_CreateThread(thread_serial_frsky, NULL, NULL);
+#else
 		sdl_thread_serial_frsky = SDL_CreateThread(thread_serial_frsky, NULL);
+#endif
 		if ( sdl_thread_serial_frsky == NULL ) {
 			fprintf(stderr, "Unable to create thread_serial_frsky: %s\n", SDL_GetError());
 			return 1;

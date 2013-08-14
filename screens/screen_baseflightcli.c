@@ -24,7 +24,7 @@
 #include <model.h>
 #include <main.h>
 #include <screen_baseflightcli.h>
-#include <SDL/SDL_thread.h>
+#include <SDL_thread.h>
 #include <screen_keyboard.h>
 
 

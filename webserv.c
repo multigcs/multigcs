@@ -9,9 +9,9 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <SDL/SDL.h>
-#include <SDL/SDL_thread.h>
-#include <SDL/SDL_events.h>
+#include <SDL.h>
+#include <SDL_thread.h>
+#include <SDL_events.h>
 #include <model.h>
 
 extern void save_screenshot2 (void);
@@ -781,7 +781,11 @@ int webserv_thread (void *data) {
 
 void webserv_init (void) {
 	printf("Init Webserv-Thread\n");
+#ifdef SDL2
+	thread_webserv = SDL_CreateThread(webserv_thread, NULL, NULL);
+#else
 	thread_webserv = SDL_CreateThread(webserv_thread, NULL);
+#endif
 	if (thread_webserv == NULL) {
 		fprintf(stderr, "Webserv-Thread konnte nicht gestartet werden: %s\n", SDL_GetError());
 	}

@@ -30,7 +30,7 @@
 #include <jeti.h>
 #include <openpilot_xml.h>
 #include <screen_model.h>
-#include <SDL/SDL_thread.h>
+#include <SDL_thread.h>
 #include <screen_keyboard.h>
 #include <screen_filesystem.h>
 #include <screen_device.h>

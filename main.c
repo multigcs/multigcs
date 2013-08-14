@@ -18,15 +18,15 @@
 #include <termios.h>
 
 #include <png.h>
-#include <SDL/SDL.h>
-#include <SDL/SDL_thread.h>
-#include <SDL/SDL_events.h>
+#include <SDL.h>
+#include <SDL_thread.h>
+#include <SDL_events.h>
 
 #ifndef SDLGL
 #include "esUtil.h"
 #else
-#include <SDL/SDL_image.h>
-#include <SDL/SDL_opengl.h>
+#include <SDL_image.h>
+#include <SDL_opengl.h>
 #include "GL/gl.h"
 #include "GL/glext.h"
 #endif
@@ -166,6 +166,12 @@ uint8_t connection_found = 0;
 SDL_Thread *thread = NULL;
 SDL_Thread *thread_telemetrie = NULL;
 
+
+#ifdef SDL2
+void SDL_KillThread(SDL_Thread *thread) {
+}
+#endif
+
 #ifdef SDLGL
 
 void save_screenshot (void) {
@@ -209,9 +215,12 @@ void save_screenshot2 (void) {
 
 
 SDL_Surface* CreateSurface(int width,int height) {
+#ifdef SDL2
+#else
 	SDL_Surface *display = SDL_GetVideoSurface();
 	const SDL_PixelFormat fmt = *(display->format);
 	return SDL_CreateRGBSurface(0,width,height, fmt.BitsPerPixel, fmt.Rmask,fmt.Gmask,fmt.Bmask,fmt.Amask );
+#endif
 }
 
 void LogSave (char *file) {
@@ -837,6 +846,11 @@ void check_events (ESContext *esContext, SDL_Event event) {
 			strcpy(keyboard_key, "´");
 		} else {
 			strcpy(keyboard_key, SDL_GetKeyName(event.key.keysym.sym));
+			int n = 0;
+			for(n = 0; n < strlen(keyboard_key); n++ ) {
+				keyboard_key[n] = tolower(keyboard_key[n]);
+			}
+
 		}
 
 
@@ -1503,7 +1517,11 @@ void Draw (ESContext *esContext) {
 #ifndef SDLGL
 		eglSwapBuffers(esContext->eglDisplay, esContext->eglSurface);
 #else
+#ifdef SDL2
+		SDL_GL_SwapWindow(MainWindow);
+#else
 		SDL_GL_SwapBuffers();
+#endif
 		SDL_Delay(20);
 #endif
 		return;
@@ -1647,7 +1665,11 @@ void Draw (ESContext *esContext) {
 #ifndef SDLGL
 	eglSwapBuffers(esContext->eglDisplay, esContext->eglSurface);
 #else
+#ifdef SDL2
+	SDL_GL_SwapWindow(MainWindow);
+#else
 	SDL_GL_SwapBuffers();
+#endif
 	SDL_Delay(15);
 #endif
 }
@@ -1772,7 +1794,11 @@ int main ( int argc, char *argv[] ) {
 
 #ifdef RPI_NO_X
 	if ((touch_fd = open(touchscreen_device, O_RDONLY)) >= 0) {
+#ifdef SDL2
+		thread = SDL_CreateThread(touchscreen_thread, NULL, NULL);
+#else
 		thread = SDL_CreateThread(touchscreen_thread, NULL);
+#endif
 		if ( thread == NULL ) {
 			fprintf(stderr, "Thread konnte nicht gestartet werden: %s\n", SDL_GetError());
 			return 0;
@@ -1838,7 +1864,11 @@ int main ( int argc, char *argv[] ) {
 #ifndef SDLGL
 	eglSwapBuffers(&esContext.eglDisplay, &esContext.eglSurface);
 #else
+#ifdef SDL2
+	SDL_GL_SwapWindow(MainWindow);
+#else
 	SDL_GL_SwapBuffers();
+#endif
 	SDL_Delay(20);
 #endif
 
@@ -1852,7 +1882,11 @@ int main ( int argc, char *argv[] ) {
 
 	printf("Init Telemetry-Thread\n");
 	reset_telemetrie();
+#ifdef SDL2
+	thread_telemetrie = SDL_CreateThread(telemetrie_thread, NULL, NULL);
+#else
 	thread_telemetrie = SDL_CreateThread(telemetrie_thread, NULL);
+#endif
 	if ( thread_telemetrie == NULL ) {
 		fprintf(stderr, "Telemetrie-Thread konnte nicht gestartet werden: %s\n", SDL_GetError());
 		return 0;

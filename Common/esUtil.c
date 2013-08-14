@@ -32,7 +32,7 @@
 #include <termios.h>
 #include <GLES2/gl2.h>
 #include <EGL/egl.h>
-#include <SDL/SDL.h>
+#include <SDL.h>
 #include "esUtil.h"
 
 
@@ -42,7 +42,7 @@
 #include  <X11/Xlib.h>
 #include  <X11/Xatom.h>
 #include  <X11/Xutil.h>
-#include  <SDL/SDL_syswm.h>
+#include  <SDL_syswm.h>
 #endif
 
 #ifndef RPI_NO_X

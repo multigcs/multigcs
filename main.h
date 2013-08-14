@@ -1,15 +1,15 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_thread.h>
-#include <SDL/SDL_events.h>
+#include <SDL.h>
+#include <SDL_thread.h>
+#include <SDL_events.h>
 
 #ifndef SDLGL
 #include "gles_draw.h"
 #else
-#include <SDL/SDL_image.h>
-#include <SDL/SDL_opengl.h>
+#include <SDL_image.h>
+#include <SDL_opengl.h>
 #include "gl_draw.h"
 #endif
 #include "draw.h"
@@ -186,3 +186,6 @@ void next_point_ll (ESContext *esContext, float x_origin, float y_origin, float 
 
 #endif
 
+#ifdef SDL2
+extern SDL_Window *MainWindow;
+#endif

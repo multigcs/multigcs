@@ -5,10 +5,9 @@ DEB_DEPENDS = tcl8.5, espeak, coreutils, bluez, imagemagick, ia32-libs,lib32asou
 DEB_VERSION_NAME = sdl
 EXTRA_OBJECTS = gl_draw.o
 
-
-INCDIR = -I./ -I./Common -I/usr/include/libxml2 -I/usr/include/tcl8.5 -Iscreens -Imavlink -Igps -Imwi21 -Ijeti -Iopenpilot -Ifrsky -I/usr/include/SDL
-LIBS = -lGL -lm -lX11 -lpng -lcurl -lSDL -lSDL_image -lGLU -ludev -lxml2 -ltcl8.5
-CFLAGS += -DSDLGL -O3 -Wall
+INCDIR = -I./ -I./Common -I/usr/include/libxml2 -I/usr/include/tcl8.5 -Iscreens -Imavlink -Igps -Imwi21 -Ijeti -Iopenpilot -Ifrsky -I/usr/local/include/SDL2
+LIBS = -lGL -lm -lX11 -lpng -lcurl -lSDL2_image -lGLU -ludev -lxml2 -ltcl8.5 -L/usr/local/lib -lSDL2
+CFLAGS += -DSDLGL -O3 -Wall -DSDL2
 #CFLAGS += -ggdb
 #CFLAGS +=  -pg
 

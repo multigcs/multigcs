@@ -20,7 +20,7 @@
 #include <my_mavlink.h>
 #include <my_gps.h>
 #include <openpilot.h>
-#include <SDL/SDL.h>
+#include <SDL.h>
 
 /* http://wiki.openpilot.org/display/Doc/UAVTalk */
 
@@ -959,7 +959,11 @@ uint8_t openpilot_init (char *port, uint32_t baud) {
 	printf("init openpilot serial port...\n");
 	serial_fd_openpilot = serial_open(port, baud);
 	if (serial_fd_openpilot != -1) {
+#ifdef SDL2
+		sdl_thread_serial_openpilot = SDL_CreateThread(thread_serial_openpilot, NULL, NULL);
+#else
 		sdl_thread_serial_openpilot = SDL_CreateThread(thread_serial_openpilot, NULL);
+#endif
 		if ( sdl_thread_serial_openpilot == NULL ) {
 			fprintf(stderr, "Unable to create thread_serial_openpilot: %s\n", SDL_GetError());
 			return 1;

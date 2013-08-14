@@ -25,7 +25,7 @@
  * in this Software without prior written authorization of the copyright holder.
  */
 
-#include <SDL/SDL.h>
+#include <SDL.h>
 #include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>

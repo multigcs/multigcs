@@ -18,15 +18,15 @@
 #include <math.h>
 #include <GL/gl.h>
 #include <png.h>
-#include <SDL/SDL.h>
-#include <SDL/SDL_thread.h>
-#include <SDL/SDL_events.h>
-#include <SDL/SDL_image.h>
+#include <SDL.h>
+#include <SDL_thread.h>
+#include <SDL_events.h>
+#include <SDL_image.h>
 
 #include <model.h>
 #include <userdata.h>
 
-#include <SDL/SDL_opengl.h>
+#include <SDL_opengl.h>
 #include <gl_draw.h>
 
 #else

@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <time.h>
 #include <curl/curl.h>
-#include <SDL/SDL.h>
+#include <SDL.h>
 
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>

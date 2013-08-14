@@ -72,7 +72,11 @@ uint8_t mavlink_init (char *port, uint32_t baud) {
 		MavLinkVars[n].id = -1;
 	}
 
+#ifdef SDL2
+	thread_udp = SDL_CreateThread(mavlink_udp, NULL, NULL);
+#else
 	thread_udp = SDL_CreateThread(mavlink_udp, NULL);
+#endif
 	if ( thread_udp == NULL ) {
 		fprintf(stderr, "Thread konnte nicht gestartet werden (mavlink_udp): %s\n", SDL_GetError());
 		return 0;
