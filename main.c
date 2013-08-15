@@ -102,6 +102,7 @@ uint16_t screen_w = SCREEN_W;
 uint16_t screen_h = SCREEN_H;
 uint16_t screen_border_x = 0;
 uint16_t screen_border_y = 0;
+float keep_ratio = 0.0;
 char keyboard_key[100];
 uint8_t keyboard_shift = 0;
 uint8_t keyboard_altgr = 0;
@@ -492,6 +493,7 @@ void setup_save (void) {
 	        fprintf(fr, "screen_h     %i\n", screen_h);
 	        fprintf(fr, "screen_border_x     %i\n", screen_border_x);
 	        fprintf(fr, "screen_border_y     %i\n", screen_border_y);
+	        fprintf(fr, "keep_ratio   %f\n", keep_ratio);
 	        fprintf(fr, "fullscreen   %i\n", fullscreen);
 	        fprintf(fr, "lat          %0.8f\n", lat);
 	        fprintf(fr, "lon          %0.8f\n", lon);
@@ -596,6 +598,8 @@ void setup_load (void) {
 					screen_border_x = atoi(val);
 	                        } else if (strcmp(var, "screen_border_y") == 0) {
 					screen_border_y = atoi(val);
+	                        } else if (strcmp(var, "keep_ratio") == 0) {
+					keep_ratio = atof(val);
 	                        } else if (strcmp(var, "speak") == 0) {
 					speak = atoi(val);
 	                        } else if (strcmp(var, "fullscreen") == 0) {
@@ -751,111 +755,139 @@ void check_events (ESContext *esContext, SDL_Event event) {
 	if (event.type == SDL_QUIT) {
 		ShutDown( esContext );
 		exit(0);
+#ifdef SDL2
+	} else if (event.type == SDL_DROPFILE) {
+		printf("## SDL_DROPFILE: %s ##\n", event.drop.file);
+	} else if (event.type == SDL_WINDOWEVENT) {
+		if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
+			int w = 0;
+			int h = 0;
+			SDL_GetWindowSize(MainWindow, &w, &h);
+#ifdef SDLGL
+			glResize(esContext, w, h);
+#endif
+		}
+	} else if (event.type == SDL_SYSWMEVENT) {
+		printf("## SDL_SYSWMEVENT ##\n");
+#else
+	} else if (event.type == SDL_VIDEORESIZE) {
+#ifdef SDLGL
+//		glResize(esContext, event.resize.w, event.resize.h);
+#endif
+#endif
 	} else if (event.type == SDL_KEYUP) {
-		if (strcmp(SDL_GetKeyName(event.key.keysym.sym), "right") == 0) {
+		char keyname[1024];
+		strcpy(keyname, SDL_GetKeyName(event.key.keysym.sym));
+		int n = 0;
+		for(n = 0; n < strlen(keyname); n++ ) {
+			keyname[n] = tolower(keyname[n]);
+		}
+		if (strcmp(keyname, "right") == 0) {
 			key_pressed &= ~(1<<0);
-		} else if (strcmp(SDL_GetKeyName(event.key.keysym.sym), "left") == 0) {
+		} else if (strcmp(keyname, "left") == 0) {
 			key_pressed &= ~(1<<1);
-		} else if (strcmp(SDL_GetKeyName(event.key.keysym.sym), "up") == 0) {
+		} else if (strcmp(keyname, "up") == 0) {
 			key_pressed &= ~(1<<2);
-		} else if (strcmp(SDL_GetKeyName(event.key.keysym.sym), "down") == 0) {
+		} else if (strcmp(keyname, "down") == 0) {
 			key_pressed &= ~(1<<3);
-		} else if (strcmp(SDL_GetKeyName(event.key.keysym.sym), "[+]") == 0) {
+		} else if (strcmp(keyname, "[+]") == 0) {
 			key_pressed &= ~(1<<4);
-		} else if (strcmp(SDL_GetKeyName(event.key.keysym.sym), "[-]") == 0) {
+		} else if (strcmp(keyname, "[-]") == 0) {
 			key_pressed &= ~(1<<5);
-		} else if (strcmp(SDL_GetKeyName(event.key.keysym.sym), "right shift") == 0 || strcmp(SDL_GetKeyName(event.key.keysym.sym), "left shift") == 0) {
+		} else if (strcmp(keyname, "right shift") == 0 || strcmp(keyname, "left shift") == 0) {
 			keyboard_shift = 0;
-		} else if (strcmp(SDL_GetKeyName(event.key.keysym.sym), "alt gr") == 0) {
+		} else if (strcmp(keyname, "alt gr") == 0) {
 			keyboard_altgr = 0;
 		}
 	} else if (event.type == SDL_KEYDOWN) {
+		char keyname[1024];
+		strcpy(keyname, SDL_GetKeyName(event.key.keysym.sym));
+		int n = 0;
+		for(n = 0; n < strlen(keyname); n++ ) {
+			keyname[n] = tolower(keyname[n]);
+		}
 		event.type = 0;
-		if (strcmp(SDL_GetKeyName(event.key.keysym.sym), "right shift") == 0 || strcmp(SDL_GetKeyName(event.key.keysym.sym), "left shift") == 0) {
+		if (strcmp(keyname, "right shift") == 0 || strcmp(keyname, "left shift") == 0) {
 			keyboard_shift = 1;
 		}
-		if (strcmp(SDL_GetKeyName(event.key.keysym.sym), "alt gr") == 0) {
+		if (strcmp(keyname, "alt gr") == 0) {
 			keyboard_altgr = 1;
 		}
 
-		if (keyboard_shift == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "1") == 0) {
+		if (keyboard_shift == 1 && strcmp(keyname, "1") == 0) {
 			strcpy(keyboard_key, "!");
-		} else if (keyboard_shift == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "2") == 0) {
+		} else if (keyboard_shift == 1 && strcmp(keyname, "2") == 0) {
 			strcpy(keyboard_key, "\"");
-		} else if (keyboard_shift == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "3") == 0) {
+		} else if (keyboard_shift == 1 && strcmp(keyname, "3") == 0) {
 			strcpy(keyboard_key, "§");
-		} else if (keyboard_shift == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "4") == 0) {
+		} else if (keyboard_shift == 1 && strcmp(keyname, "4") == 0) {
 			strcpy(keyboard_key, "$");
-		} else if (keyboard_shift == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "5") == 0) {
+		} else if (keyboard_shift == 1 && strcmp(keyname, "5") == 0) {
 			strcpy(keyboard_key, "%");
-		} else if (keyboard_shift == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "6") == 0) {
+		} else if (keyboard_shift == 1 && strcmp(keyname, "6") == 0) {
 			strcpy(keyboard_key, "&");
-		} else if (keyboard_shift == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "7") == 0) {
+		} else if (keyboard_shift == 1 && strcmp(keyname, "7") == 0) {
 			strcpy(keyboard_key, "/");
-		} else if (keyboard_shift == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "8") == 0) {
+		} else if (keyboard_shift == 1 && strcmp(keyname, "8") == 0) {
 			strcpy(keyboard_key, "(");
-		} else if (keyboard_shift == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "9") == 0) {
+		} else if (keyboard_shift == 1 && strcmp(keyname, "9") == 0) {
 			strcpy(keyboard_key, ")");
-		} else if (keyboard_shift == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "0") == 0) {
+		} else if (keyboard_shift == 1 && strcmp(keyname, "0") == 0) {
 			strcpy(keyboard_key, "=");
-		} else if (keyboard_shift == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), ",") == 0) {
+		} else if (keyboard_shift == 1 && strcmp(keyname, ",") == 0) {
 			strcpy(keyboard_key, ";");
-		} else if (keyboard_shift == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), ".") == 0) {
+		} else if (keyboard_shift == 1 && strcmp(keyname, ".") == 0) {
 			strcpy(keyboard_key, ":");
-		} else if (keyboard_shift == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "-") == 0) {
+		} else if (keyboard_shift == 1 && strcmp(keyname, "-") == 0) {
 			strcpy(keyboard_key, "_");
-		} else if (keyboard_shift == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "+") == 0) {
+		} else if (keyboard_shift == 1 && strcmp(keyname, "+") == 0) {
 			strcpy(keyboard_key, "*");
-		} else if (keyboard_shift == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "#") == 0) {
+		} else if (keyboard_shift == 1 && strcmp(keyname, "#") == 0) {
 			strcpy(keyboard_key, "'");
-		} else if (keyboard_shift == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "^") == 0) {
+		} else if (keyboard_shift == 1 && strcmp(keyname, "^") == 0) {
 			strcpy(keyboard_key, "°");
-		} else if (keyboard_shift == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "<") == 0) {
+		} else if (keyboard_shift == 1 && strcmp(keyname, "<") == 0) {
 			strcpy(keyboard_key, ">");
-		} else if (keyboard_shift == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "world 63") == 0) {
+		} else if (keyboard_shift == 1 && strcmp(keyname, "world 63") == 0) {
 			strcpy(keyboard_key, "?");
-		} else if (keyboard_shift == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "world 20") == 0) {
+		} else if (keyboard_shift == 1 && strcmp(keyname, "world 20") == 0) {
 			strcpy(keyboard_key, "`");
 		} else if (keyboard_shift == 1) {
-			strcpy(keyboard_key, SDL_GetKeyName(event.key.keysym.sym));
+			strcpy(keyboard_key, keyname);
 			keyboard_key[0] = keyboard_key[0] - 32;
-		} else if (keyboard_altgr == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "7") == 0) {
+		} else if (keyboard_altgr == 1 && strcmp(keyname, "7") == 0) {
 			strcpy(keyboard_key, "{");
-		} else if (keyboard_altgr == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "8") == 0) {
+		} else if (keyboard_altgr == 1 && strcmp(keyname, "8") == 0) {
 			strcpy(keyboard_key, "[");
-		} else if (keyboard_altgr == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "9") == 0) {
+		} else if (keyboard_altgr == 1 && strcmp(keyname, "9") == 0) {
 			strcpy(keyboard_key, "]");
-		} else if (keyboard_altgr == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "0") == 0) {
+		} else if (keyboard_altgr == 1 && strcmp(keyname, "0") == 0) {
 			strcpy(keyboard_key, "}");
-		} else if (keyboard_altgr == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "#") == 0) {
+		} else if (keyboard_altgr == 1 && strcmp(keyname, "#") == 0) {
 			strcpy(keyboard_key, "`");
-		} else if (keyboard_altgr == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "<") == 0) {
+		} else if (keyboard_altgr == 1 && strcmp(keyname, "<") == 0) {
 			strcpy(keyboard_key, "|");
-		} else if (keyboard_altgr == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "e") == 0) {
+		} else if (keyboard_altgr == 1 && strcmp(keyname, "e") == 0) {
 			strcpy(keyboard_key, "€");
-		} else if (keyboard_altgr == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "m") == 0) {
+		} else if (keyboard_altgr == 1 && strcmp(keyname, "m") == 0) {
 			strcpy(keyboard_key, "µ");
-		} else if (keyboard_altgr == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "world 63") == 0) {
+		} else if (keyboard_altgr == 1 && strcmp(keyname, "world 63") == 0) {
 			strcpy(keyboard_key, "\\");
-		} else if (keyboard_altgr == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "world 20") == 0) {
+		} else if (keyboard_altgr == 1 && strcmp(keyname, "world 20") == 0) {
 			strcpy(keyboard_key, "¸");
-		} else if (keyboard_altgr == 1 && strcmp(SDL_GetKeyName(event.key.keysym.sym), "q") == 0) {
+		} else if (keyboard_altgr == 1 && strcmp(keyname, "q") == 0) {
 			strcpy(keyboard_key, "@");
-		} else if (strcmp(SDL_GetKeyName(event.key.keysym.sym), "world 63") == 0) {
+		} else if (strcmp(keyname, "world 63") == 0) {
 			strcpy(keyboard_key, "ß");
-		} else if (strcmp(SDL_GetKeyName(event.key.keysym.sym), "world 20") == 0) {
+		} else if (strcmp(keyname, "world 20") == 0) {
 			strcpy(keyboard_key, "´");
 		} else {
-			strcpy(keyboard_key, SDL_GetKeyName(event.key.keysym.sym));
+			strcpy(keyboard_key, keyname);
 			int n = 0;
 			for(n = 0; n < strlen(keyboard_key); n++ ) {
 				keyboard_key[n] = tolower(keyboard_key[n]);
 			}
-
 		}
-
-
-
 		redraw_flag = 1;
 	} else if (event.type == SDL_MOUSEMOTION) {
 		event.type = 0;
@@ -981,26 +1013,6 @@ void check_events (ESContext *esContext, SDL_Event event) {
 		bx += offset_x1;
 		by += offset_y1;
 		if (event.button.button == 1) {
-			if (event.button.y > 0 && event.button.y < 80) {
-				if (event.button.x > 0 && event.button.x < 80) {
-					if (view_mode_next > 0) {
-						view_mode_next = view_mode - 1;
-					} else {
-						view_mode_next = VIEW_MODE_LAST - 1;
-					}
-					trans_count = 1.0;
-					setup_save();
-					return;
-				} else if (event.button.x < screen_w && event.button.x > screen_w - 80) {
-					view_mode_next = view_mode + 1;
-					if (view_mode_next > VIEW_MODE_LAST - 1) {
-						view_mode_next = 0;
-					}
-					trans_count = 1.0;
-					setup_save();
-					return;
-				}
-			}
 			if (event.button.y > esContext->height - 40 && event.button.y < esContext->height) {
 				if (event.button.x > esContext->width - 40 && event.button.x < esContext->width) {
 					speak = 1 - speak;
@@ -1133,6 +1145,10 @@ void check_events (ESContext *esContext, SDL_Event event) {
 			}
 		}
 		redraw_flag = 1;
+#ifdef SDL2
+	} else {
+		printf("## UNKNOWN_EVENT: %i (0x%x) ##\n", event.type, event.type);
+#endif
 	}
 }
 
@@ -1276,6 +1292,26 @@ void transition_rotate_end (ESContext *esContext, float trans_count) {
 #endif
 }
 
+static uint8_t screen_last (char *name, float x, float y, int8_t button, float data) {
+	if (view_mode_next > 0) {
+		view_mode_next = view_mode - 1;
+	} else {
+		view_mode_next = VIEW_MODE_LAST - 1;
+	}
+	trans_count = 1.0;
+	setup_save();
+	return 0;
+}
+
+static uint8_t screen_next (char *name, float x, float y, int8_t button, float data) {
+	view_mode_next = view_mode + 1;
+	if (view_mode_next > VIEW_MODE_LAST - 1) {
+		view_mode_next = 0;
+	}
+	trans_count = 1.0;
+	setup_save();
+	return 0;
+}
 
 void Draw (ESContext *esContext) {
 #ifndef SDLGL
@@ -1618,29 +1654,18 @@ void Draw (ESContext *esContext) {
 #endif
 
 	glDisable( GL_DEPTH_TEST );
-	// Mark Map-Edges
-/*
-	if (map_mark == 1) {
-		draw_box(esContext, 60, 0, esContext->width - 120, 60, 255, 255, 255, 64);
-	} else if (map_mark == 2) {
-		draw_box(esContext, 60, esContext->height - 60, esContext->width - 80, esContext->height, 255, 255, 255, 64);
-	} else if (map_mark == 3) {
-		draw_box(esContext, 0, 60, 60, esContext->height - 120, 255, 255, 255, 64);
-	} else if (map_mark == 4) {
-		draw_box(esContext, esContext->width - 60, 60, esContext->width, esContext->height - 120, 255, 255, 255, 64);
-	}
-*/
 	draw_circleFilled_f3(esContext, 1.25, 0.92, 0.01, (float)ModelData.heartbeat / 4000.0, 255, 0, 0, ModelData.heartbeat * 2);
 	if (ModelData.found_rc == 1) {
 		draw_circleFilled_f3(esContext, 1.25, 0.87, 0.01, (float)ModelData.heartbeat_rc / 4000.0, 0, 0, 255, ModelData.heartbeat_rc * 2);
 	}
-	if (contrast == 1) {
-		draw_text_f3(esContext, -1.4, -0.95, 0.003, 0.06, 0.06, FONT_WHITE, "<<");
-		draw_text_f3(esContext, 1.3, -0.95, 0.003, 0.06, 0.06, FONT_WHITE, ">>");
-	} else {
-		draw_text_f3(esContext, -1.4, -0.95, 0.003, 0.06, 0.06, FONT_GREEN_BG, "<<");
-		draw_text_f3(esContext, 1.3, -0.95, 0.003, 0.06, 0.06, FONT_GREEN_BG, ">>");
-	}
+
+
+	draw_button(esContext, "<<", view_mode, "[<<]", FONT_WHITE, -1.3, -0.95, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, screen_last, 0.0);
+	draw_button(esContext, ">>", view_mode, "[>>]", FONT_WHITE, 1.3, -0.95, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, screen_next, 0.0);
+
+
+
+
 	if (message > 0) {
 		draw_text_f(esContext, 0.0 - strlen(message_txt) * 0.04 * 0.6 / 2 - 0.012, -0.98, 0.04, 0.04, FONT_BLACK_BG, message_txt);
 	}

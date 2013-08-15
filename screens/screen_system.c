@@ -33,6 +33,8 @@
 
 static char port_selected[100];
 static char baud_selected[100];
+static uint8_t resize = 0;
+
 
 uint8_t system_baud_set (char *name, float x, float y, int8_t button, float data) {
 	printf("BAUD: %s_baud = %s\n", baud_selected, name);
@@ -108,6 +110,30 @@ uint8_t system_update (char *name, float x, float y, int8_t button, float data) 
 }
 
 uint8_t system_null (char *name, float x, float y, int8_t button, float data) {
+	return 0;
+}
+
+uint8_t system_set_ratio (char *name, float x, float y, int8_t button, float data) {
+	if (data == 0.0) {
+		if (keep_ratio == 0.0) {
+			keep_ratio = 1.422;
+		} else {
+			keep_ratio = 0;
+		}
+	} else if (data > 0.0) {
+		keep_ratio += data;
+	} else if (data < 0.0) {
+		keep_ratio += data;
+	}
+	if (keep_ratio == 0.0) {
+		aspect = (GLfloat)screen_w / (GLfloat)screen_h;
+	} else if (keep_ratio < 1.4) {
+		keep_ratio = 1.4;
+		aspect = keep_ratio;
+	} else {
+		aspect = keep_ratio;
+	}
+	resize = 1;
 	return 0;
 }
 
@@ -315,10 +341,24 @@ void screen_system (ESContext *esContext) {
 	draw_button(esContext, "_border_y--", VIEW_MODE_SYSTEM, "[-]", FONT_GREEN, 0.85, 0.5, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_y, -2.0);
 	draw_button(esContext, "_border_y++", VIEW_MODE_SYSTEM, "[+]", FONT_GREEN, 0.95, 0.5, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_y, 2.0);
 
+#ifdef SDL2
+	sprintf(tmp_str, "Ratio(%0.1f)", keep_ratio);
+	draw_button(esContext, "ratio", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, 0.55, 0.6, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_ratio, 0.0);
+	draw_button(esContext, "ratio--", VIEW_MODE_SYSTEM, "[-]", FONT_GREEN, 0.85, 0.6, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_ratio, -0.1);
+	draw_button(esContext, "ratio++", VIEW_MODE_SYSTEM, "[+]", FONT_GREEN, 0.95, 0.6, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_ratio, 0.1);
+#endif
 	draw_button(esContext, "copyright", VIEW_MODE_SYSTEM, "Copyright by Oliver Dippel (oliver@multixmedia.org)", FONT_PINK, 0.0, 0.9, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, system_null, 0.0);
 
 	screen_device(esContext);
 	screen_baud(esContext);
+
+	if (resize != 0) {
+		resize = 0;
+#ifdef SDL2
+		glResize(esContext, screen_w, screen_h);
+#endif
+	}
+
 }
 
 

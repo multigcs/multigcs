@@ -836,9 +836,7 @@ void draw_char_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 	}
 }
 
-int gl_init(uint16_t w, uint16_t h) {
-	printf("GL-Screen BPP: %d\n", WinScreen->format->BitsPerPixel);
-
+int gl_init (uint16_t w, uint16_t h) {
 	glClear( GL_COLOR_BUFFER_BIT );
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
@@ -884,14 +882,38 @@ int gl_init(uint16_t w, uint16_t h) {
 	glEnable (GL_COLOR_MATERIAL);
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 */
+
 	return 0;
 }
 
-void glExit ( ESContext *esContext ) {
-//	if (WinScreen != NULL) {
-//		SDL_FreeSurface(WinScreen);
-//		WinScreen = NULL;
-//	}
+void glExit (ESContext *esContext) {
+}
+
+void glResize (ESContext *esContext, int w, int h) {
+	const SDL_PixelFormat fmt = *(WinScreen->format);
+#ifndef SDL2
+	Uint32 video_flags;
+	if (fullscreen == 1) {
+		video_flags = SDL_OPENGLBLIT | SDL_FULLSCREEN;
+	} else {
+		video_flags = SDL_OPENGLBLIT | SDL_RESIZABLE;
+	}
+	if ((WinScreen = SDL_SetVideoMode(w, h, fmt.BitsPerPixel, video_flags)) == NULL) {
+		fprintf(stderr, "Couldn't set GL mode: %s\n", SDL_GetError());
+		SDL_Quit();
+		exit(1);
+	}
+#endif
+	if (keep_ratio == 0.0) {
+		aspect = (GLfloat)w / (GLfloat)h;
+	} else {
+		aspect = keep_ratio;
+	}
+	gl_init(w, h);
+	screen_w = w;
+	screen_h = h;
+	esContext->width = screen_w;
+	esContext->height = screen_h;
 }
 
 int glInit ( ESContext *esContext ) {
@@ -913,9 +935,7 @@ int glInit ( ESContext *esContext ) {
 	} else {
 		video_flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
 	}
-	esContext->width = screen_w;
-	esContext->height = screen_h;
-	if ((MainWindow = SDL_CreateWindow("Multi-GCS", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, esContext->width, esContext->height, video_flags)) == NULL) {
+	if ((MainWindow = SDL_CreateWindow("Multi-GCS", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_w, screen_h, video_flags)) == NULL) {
 		fprintf(stderr, "Couldn't create MainWindow: %s\n", SDL_GetError());
 		SDL_Quit();
 		exit(1);
@@ -935,10 +955,8 @@ int glInit ( ESContext *esContext ) {
 	} else {
 		video_flags = SDL_OPENGLBLIT | SDL_RESIZABLE;
 	}
-	esContext->width = screen_w;
-	esContext->height = screen_h;
 	SDL_WM_SetCaption("Multi-GCS", "");
-	if ((WinScreen = SDL_SetVideoMode(esContext->width, esContext->height, bpp, video_flags)) == NULL) {
+	if ((WinScreen = SDL_SetVideoMode(screen_w, screen_h, bpp, video_flags)) == NULL) {
 		fprintf(stderr, "Couldn't set GL mode: %s\n", SDL_GetError());
 		SDL_Quit();
 		exit(1);
@@ -968,8 +986,18 @@ int glInit ( ESContext *esContext ) {
 	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
 	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
-	aspect = (GLfloat)esContext->width / (GLfloat)esContext->height;
-	gl_init(esContext->width, esContext->height);
+	printf("GL-Screen BPP: %d\n", WinScreen->format->BitsPerPixel);
+
+	if (keep_ratio == 0.0) {
+		aspect = (GLfloat)screen_w / (GLfloat)screen_h;
+	} else {
+		aspect = keep_ratio;
+	}
+	printf("aspect: %f\n", aspect);
+	gl_init(screen_w, screen_h);
+
+	esContext->width = screen_w;
+	esContext->height = screen_h;
 
 	return GL_TRUE;
 }

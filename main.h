@@ -154,6 +154,7 @@ extern uint16_t screen_w;
 extern uint16_t screen_h;
 extern uint16_t screen_border_x;
 extern uint16_t screen_border_y;
+extern float keep_ratio;
 extern char keyboard_key[100];
 extern uint8_t keyboard_shift;
 extern uint8_t keyboard_altgr;
