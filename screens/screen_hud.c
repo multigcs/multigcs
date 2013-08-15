@@ -26,7 +26,13 @@ uint8_t hud_altitude_null (char *name, float x, float y, int8_t button, float da
 }
 
 uint8_t view_hud (char *name, float x, float y, int8_t button, float data) {
-	hud_view = 1 - hud_view;
+	if (hud_view == 0) {
+		hud_view = 1;
+	} else if (hud_view == 1) {
+		hud_view = 2;
+	} else {
+		hud_view = 0;
+	}
 	return 0;
 }
 
@@ -181,7 +187,7 @@ void draw_altiude_rule (ESContext *esContext, float ti_x, float ti_y, float w, f
 #endif
 
 	float ax1 = ti_x;
-	if (hud_view == 0) {
+	if (hud_view == 0 || hud_view == 1) {
 		ax1 = 0.65;
 	}
 	float ax = ax1 + 0.04;
@@ -318,7 +324,7 @@ void draw_speed_rule (ESContext *esContext, float ti_x, float ti_y, float w, flo
 #endif
 
 	float ax1 = ti_x;
-	if (hud_view == 0) {
+	if (hud_view == 0 || hud_view == 1) {
 		ax1 = -0.65;
 	}
 	float ax = ax1 - 0.04;
@@ -762,10 +768,10 @@ void screen_hud (ESContext *esContext) {
 	// Yaw
 	float compas_r = 0.9;
 	float compas_y = 1.5;
-	if (hud_view == 1) {
-		draw_circleFilled_f(esContext, 0.0, compas_y, compas_r + 0.01, 0, 0, 0, 127);
-	} else {
+	if (hud_view == 0) {
 		draw_circleFilled_f(esContext, 0.0, compas_y, compas_r + 0.01, 0, 0, 0, 255);
+	} else {
+		draw_circleFilled_f(esContext, 0.0, compas_y, compas_r + 0.01, 0, 0, 0, 127);
 	}
 	draw_line_f(esContext, 0.0, compas_y - compas_r, 0.0, compas_y, 255, 255, 255, 255);
 	sprintf(tmp_str, "%0.1f", ModelData.yaw);
@@ -983,12 +989,11 @@ void screen_hud (ESContext *esContext) {
 #endif
 	//printf("hud#9b\n");
 
-	if (hud_view == 0) {
+	if (hud_view == 0 || hud_view == 1) {
 		// Turn-Indicator
 		draw_turning_indicator(esContext, 1.15, 0.25, 0.4, 0.1);
 
 	//printf("hud#9c\n");
-
 
 		// CPU, Voltage & Speed
 		float volt_mind = 4.0;
@@ -1196,10 +1201,12 @@ void screen_hud (ESContext *esContext) {
 		draw_button(esContext, "jeti_right", VIEW_MODE_HUD, ">", FONT_GREEN_BG, jetibox_x + 0.37, jetibox_y + 0.15, 0.002, 0.05, 0, 0, jeti_right, 0);
 	}
 
-	if (hud_view == 1) {
-		draw_button(esContext, "view_hud", VIEW_MODE_HUD, "VIEW", FONT_GREEN, -1.35, 0.9, 0.002, 0.06, 0, 0, view_hud, 0);
-	} else {
+	if (hud_view == 0) {
 		draw_button(esContext, "view_hud", VIEW_MODE_HUD, "VIEW", FONT_WHITE, -1.35, 0.9, 0.002, 0.06, 0, 0, view_hud, 0);
+	} else if (hud_view == 1) {
+		draw_button(esContext, "view_hud", VIEW_MODE_HUD, "VIEW", FONT_PINK, -1.35, 0.9, 0.002, 0.06, 0, 0, view_hud, 0);
+	} else {
+		draw_button(esContext, "view_hud", VIEW_MODE_HUD, "VIEW", FONT_GREEN, -1.35, 0.9, 0.002, 0.06, 0, 0, view_hud, 0);
 	}
 #ifdef SDLGL
 	if (hud_view_map == 1) {
