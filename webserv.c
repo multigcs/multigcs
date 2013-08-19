@@ -15,6 +15,9 @@
 #include <model.h>
 
 extern void save_screenshot2 (void);
+extern volatile uint8_t zoom;
+extern uint8_t map_type;
+extern char mapnames[20][4][200];
 
 #define BUFSIZE 18096
 #define PI 3.14159265
@@ -39,6 +42,27 @@ void webserv_child_dump_screen (int fd) {
 	while ((ret = read(file_fd, buffer, BUFSIZE)) > 0) {
 		write(fd,buffer,ret);
 	}
+	close(file_fd);
+}
+
+void webserv_child_dump_file (int fd, char *file, char *type) {
+	static char buffer[BUFSIZE + 1];
+	int file_fd;
+	long len;
+	long ret;
+	printf("file: %s\n", file);
+	if ((file_fd = open(file,O_RDONLY)) == -1) {
+		printf("	not found\n");
+		return;
+	}
+	len = lseek(file_fd, (off_t)0, SEEK_END);
+	lseek(file_fd, (off_t)0, SEEK_SET);
+	sprintf(buffer,"HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %ld\nConnection: close\nContent-Type: %s\n\n", len, type);
+	write(fd, buffer, strlen(buffer));
+	while ((ret = read(file_fd, buffer, BUFSIZE)) > 0) {
+		write(fd,buffer,ret);
+	}
+	close(file_fd);
 }
 
 void webserv_child_dump_modeldata (int fd) {
@@ -478,12 +502,14 @@ void webserv_child_show_map (int fd) {
 	strcat(content, tmp_str);
 
 	strcat(content, "    </script>\n");
-	strcat(content, "<script src=\"http://www.openlayers.org/api/OpenLayers.js\"></script><script>\n");
+	strcat(content, "<script src=\"/openlayer.js\"></script><script>\n");
 	strcat(content, "map = new OpenLayers.Map(\"mapdiv\");\n");
 	strcat(content, "map.addLayer(new OpenLayers.Layer.OSM());\n");
 	sprintf(tmp_str, "var lonLat = new OpenLayers.LonLat( %f ,%f ).transform(new OpenLayers.Projection(\"EPSG:4326\"),map.getProjectionObject());\n", ModelData.p_long, ModelData.p_lat);
 	strcat(content, tmp_str);
-	strcat(content, "var zoom=16;\n");
+
+	sprintf(tmp_str, "var zoom=%i;\n", zoom);
+	strcat(content, tmp_str);
 	strcat(content, "var markers = new OpenLayers.Layer.Markers( \"Markers\" );\n");
 	strcat(content, "map.addLayer(markers);\n");
 	strcat(content, "markers.addMarker(new OpenLayers.Marker(lonLat));\n");
@@ -714,6 +740,27 @@ printf("### set radio1: %i ##\n", atoi(tmp_str + start));
 			webserv_child_draw_hud(fd);
 		} else if (strncmp(buffer + 4,"/map", 4) == 0) {
 			webserv_child_show_map(fd);
+		} else if (strncmp(buffer + 4,"/openlayer.js", 13) == 0) {
+			webserv_child_dump_file(fd, "/usr/share/multigcs/MAPS/OpenLayers.js", "text/html");
+		} else if (strncmp(buffer + 4,"/tile/", 6) == 0) {
+			int tx = 0;
+			int ty = 0;
+			int zoom = 0;
+			sscanf(buffer + 10, "%i/%i/%i.png", &zoom, &tx, &ty);
+			sprintf(tmp_str, "/usr/share/multigcs/MAPS/osm_%i_%i_%i.png", zoom, tx, ty);
+
+			sprintf(tmp_str, mapnames[map_type][2], BASE_DIR, zoom, tx, ty);
+			if (strstr(tmp_str, ".jpg\0") > 0) {
+				webserv_child_dump_file(fd, tmp_str, "image/jpg");
+			} else {
+				webserv_child_dump_file(fd, tmp_str, "image/png");
+			}
+
+
+		} else if (strncmp(buffer + 4,"/img/marker.png", 15) == 0) {
+			webserv_child_dump_file(fd, "/usr/share/multigcs/MAPS/marker.png", "image/png");
+
+
 		} else if (strncmp(buffer + 4,"/lonlat", 7) == 0) {
 			webserv_child_show_lonlat(fd);
 		} else if (strncmp(buffer + 4,"/setdata", 8) == 0) {
