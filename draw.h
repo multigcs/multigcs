@@ -29,7 +29,7 @@ typedef struct {
 extern SrtmCache AltCache[MAX_ALTCACHE];
 extern const GLfloat DEG2RAD;
 
-void object3d_load (Object3d *o3d);
+void object3d_load (Object3d *o3d, char *filename);
 void object3d_free (Object3d *o3d);
 void object3d_draw (Object3d *o3d);
 

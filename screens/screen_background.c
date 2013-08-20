@@ -23,7 +23,7 @@ void screen_background (ESContext *esContext) {
 		static uint8_t startup = 0;
 		if (startup == 0) {
 			startup = 1;
-			object3d_load(&obj3d);
+			object3d_load(&obj3d, tmp_str);
 		}
 	
 		glTranslatef(0.0, 0.0, -3.2);

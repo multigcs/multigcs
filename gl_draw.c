@@ -56,7 +56,7 @@ void esMatrixMultiply(ESMatrix *result, ESMatrix *srcA, ESMatrix *srcB) {
 
 #define GL_OBJECT_USING_BUFFER
 
-void object3d_load (Object3d *o3d) {
+void object3d_load (Object3d *o3d, char *filename) {
 	FILE *fr;
 	char line[1025];
 	uint32_t obj_cords_num = 1;
@@ -64,7 +64,7 @@ void object3d_load (Object3d *o3d) {
 	o3d->faces = malloc(sizeof(Object3dFace));
 	o3d->faces_num = 1;
 	o3d->scale = 0.0;
-	fr = fopen ("test.obj", "r");
+	fr = fopen (filename, "r");
 	if (fr != 0) {
 	        while(fgets(line, 1024, fr) != NULL) {
 			if (strncmp(line, "v ", 2) == 0) {
