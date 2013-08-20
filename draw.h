@@ -1,7 +1,37 @@
 
+#ifndef DRAW_H
+#define DRAW_H
+
+
+typedef struct {
+	float x;
+	float y;
+	float z;
+} Object3dCord;
+
+typedef struct {
+	uint32_t a;
+	uint32_t b;
+	uint32_t c;
+	uint32_t d;
+} Object3dFace;
+
+typedef struct {
+	Object3dCord *cords;
+	Object3dFace *faces;
+	uint32_t faces_num;
+	uint32_t cordsID;
+	uint32_t facesID;
+	float scale;
+} Object3d;
+
 
 extern SrtmCache AltCache[MAX_ALTCACHE];
 extern const GLfloat DEG2RAD;
+
+void object3d_load (Object3d *o3d);
+void object3d_free (Object3d *o3d);
+void object3d_draw (Object3d *o3d);
 
 void draw_image_uncache (char *file);
 void draw_line_f (ESContext *esContext, float x1, float y1, float x2, float y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
@@ -33,3 +63,6 @@ uint8_t draw_button (ESContext *esContext, char *name, uint8_t view_mode, char *
 #ifdef SDLGL
 uint32_t getpixel(SDL_Surface *surface, int x, int y);
 #endif
+
+#endif
+

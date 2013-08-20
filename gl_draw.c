@@ -53,7 +53,151 @@ void esMatrixLoadIdentity(ESMatrix *result) {
 
 void esMatrixMultiply(ESMatrix *result, ESMatrix *srcA, ESMatrix *srcB) {
 }
- 
+
+#define GL_OBJECT_USING_BUFFER
+
+void object3d_load (Object3d *o3d) {
+	FILE *fr;
+	char line[1025];
+	uint32_t obj_cords_num = 1;
+	o3d->cords = malloc(sizeof(Object3dCord));
+	o3d->faces = malloc(sizeof(Object3dFace));
+	o3d->faces_num = 1;
+	o3d->scale = 0.0;
+	fr = fopen ("test.obj", "r");
+	if (fr != 0) {
+	        while(fgets(line, 1024, fr) != NULL) {
+			if (strncmp(line, "v ", 2) == 0) {
+				float px = 0.0;
+				float py = 0.0;
+				float pz = 0.0;
+		                sscanf (line + 2, "%f %f %f", &px, &py, &pz);
+				o3d->cords = realloc(o3d->cords, sizeof(Object3dCord) * (obj_cords_num + 1));
+				o3d->cords[obj_cords_num].x = px;
+				o3d->cords[obj_cords_num].y = py;
+				o3d->cords[obj_cords_num].z = pz;
+				obj_cords_num++;
+				if (px > o3d->scale) {
+					o3d->scale = px;
+				}
+				if (py > o3d->scale) {
+					o3d->scale = py;
+				}
+				if (pz > o3d->scale) {
+					o3d->scale = pz;
+				}
+			} else if (strncmp(line, "f ", 2) == 0) {
+				int p1v = 0;
+				int p1t = 0;
+				int p1n = 0;
+				int p2v = 0;
+				int p2t = 0;
+				int p2n = 0;
+				int p3v = 0;
+				int p3t = 0;
+				int p3n = 0;
+				int p4v = 0;
+				int p4t = 0;
+				int p4n = 0;
+				if (strstr(line + 2, "/") > 0) {
+		                	sscanf (line + 2, "%i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i", &p1v, &p1t, &p1n, &p2v, &p2t, &p2n, &p3v, &p3t, &p3n, &p4v, &p4t, &p4n);
+				} else {
+		                	sscanf (line + 2, "%i %i %i %i", &p1v, &p2v, &p3v, &p4v);
+				}
+//	                	sscanf (line + 2, "%i/%i %i/%i %i/%i %i/%i", &p1v, &p1t, &p2v, &p2t, &p3v, &p3t, &p4v, &p4t);
+
+				o3d->faces = realloc(o3d->faces, sizeof(Object3dFace) * (o3d->faces_num + 1));
+				o3d->faces[o3d->faces_num].a = p1v;
+				o3d->faces[o3d->faces_num].b = p2v;
+				o3d->faces[o3d->faces_num].c = p3v;
+#ifdef GL_OBJECT_USING_BUFFER
+				if (p4v == 0) {
+					o3d->faces[o3d->faces_num].d = p3v;
+				} else {
+					o3d->faces[o3d->faces_num].d = p4v;
+				}
+#else
+				o3d->faces[o3d->faces_num].d = p4v;
+#endif
+				o3d->faces_num++;
+			}
+		}
+		fclose(fr);
+//		o3d->scale *= 2.0;
+//		o3d->scale /= 2.0;
+	}
+#ifdef GL_OBJECT_USING_BUFFER
+	glGenBuffersARB(1, &o3d->cordsID);
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, o3d->cordsID);
+	glBufferDataARB(GL_ARRAY_BUFFER_ARB, obj_cords_num * sizeof(float) * 3, o3d->cords, GL_STATIC_DRAW_ARB);
+
+	glGenBuffersARB(1, &o3d->facesID);
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, o3d->facesID);
+	glBufferDataARB(GL_ARRAY_BUFFER_ARB, o3d->faces_num * sizeof(uint32_t) * 4, o3d->faces, GL_STATIC_DRAW_ARB);
+#else
+	free(o3d->cords);
+	free(o3d->faces);
+#endif
+}
+
+void object3d_free (Object3d *o3d) {
+#ifdef GL_OBJECT_USING_BUFFER
+	glDeleteBuffersARB(1, &o3d->cordsID);
+	o3d->cordsID = 0;
+	glDeleteBuffersARB(1, &o3d->facesID);
+	o3d->facesID = 0;
+#else
+	free(o3d->cords);
+	free(o3d->faces);
+#endif
+	o3d->faces_num = 0;
+	o3d->scale = 0.0;
+}
+
+void object3d_draw (Object3d *o3d) {
+	uint32_t num = 1;
+#ifdef GL_OBJECT_USING_BUFFER
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, o3d->cordsID);
+	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, o3d->facesID);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glVertexPointer(3, GL_FLOAT, 0, 0);
+	glPushMatrix();
+	glScalef(1.0 / o3d->scale, 1.0 / o3d->scale, 1.0 / o3d->scale);
+	glColor4f(0.7, 0.7, 1.0, 0.2);
+	glDrawElements(GL_QUADS, o3d->faces_num * 4, GL_UNSIGNED_INT, 0);
+	glPopMatrix();
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+#else
+	for (num = 1; num < o3d->faces_num; num++) {
+		glColor4f(0.7, 0.7, 1.0, 0.2);
+		if (o3d->faces[num].d == 0) {
+			glBegin(GL_TRIANGLES);
+		} else {
+			glBegin(GL_QUADS);
+		}
+		glVertex3f(o3d->cords[o3d->faces[num].a].x / o3d->scale, o3d->cords[o3d->faces[num].a].y / o3d->scale, o3d->cords[o3d->faces[num].a].z / o3d->scale);
+		glVertex3f(o3d->cords[o3d->faces[num].b].x / o3d->scale, o3d->cords[o3d->faces[num].b].y / o3d->scale, o3d->cords[o3d->faces[num].b].z / o3d->scale);
+		glVertex3f(o3d->cords[o3d->faces[num].c].x / o3d->scale, o3d->cords[o3d->faces[num].c].y / o3d->scale, o3d->cords[o3d->faces[num].c].z / o3d->scale);
+		if (o3d->faces[num].d != 0) {
+			glVertex3f(o3d->cords[o3d->faces[num].d].x / o3d->scale, o3d->cords[o3d->faces[num].d].y / o3d->scale, o3d->cords[o3d->faces[num].d].z / o3d->scale);
+		}
+		glEnd();
+		glColor4f(1.0, 1.0, 1.0, 0.2);
+		glBegin(GL_LINES);
+		glVertex3f(o3d->cords[o3d->faces[num].a].x / o3d->scale, o3d->cords[o3d->faces[num].a].y / o3d->scale, o3d->cords[o3d->faces[num].a].z / o3d->scale);
+		glVertex3f(o3d->cords[o3d->faces[num].b].x / o3d->scale, o3d->cords[o3d->faces[num].b].y / o3d->scale, o3d->cords[o3d->faces[num].b].z / o3d->scale);
+		glVertex3f(o3d->cords[o3d->faces[num].c].x / o3d->scale, o3d->cords[o3d->faces[num].c].y / o3d->scale, o3d->cords[o3d->faces[num].c].z / o3d->scale);
+		if (o3d->faces[num].d != 0) {
+			glVertex3f(o3d->cords[o3d->faces[num].d].x / o3d->scale, o3d->cords[o3d->faces[num].d].y / o3d->scale, o3d->cords[o3d->faces[num].d].z / o3d->scale);
+		}
+		glVertex3f(o3d->cords[o3d->faces[num].a].x / o3d->scale, o3d->cords[o3d->faces[num].a].y / o3d->scale, o3d->cords[o3d->faces[num].a].z / o3d->scale);
+		glEnd();
+	}
+#endif
+}
+
 void draw_line_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	y1 = y1 * -1;
 	y2 = y2 * -1;
