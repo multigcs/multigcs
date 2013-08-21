@@ -20,9 +20,7 @@
 
 int simplebgc_serial_fd = -1;
 uint8_t simplebgc_serial_buf[255];
-uint8_t simplebgc_serial_n = 0;
 static uint32_t last_connection = 1;
-uint8_t simplebgc_cn = 5;
 
 
 uint8_t simplebgc_connection_status (void) {
@@ -93,7 +91,7 @@ void simplebgc_update (void) {
 	while ((res = read(simplebgc_serial_fd, simplebgc_serial_buf, 1)) > 0) {
 		last_connection = time(0);
 		c = simplebgc_serial_buf[0];
-//		printf("	%i	<<<<< %i: %i (%c)\n", data_count - 3, simplebgc_serial_n, c, c);
+//		printf("	%i	<<<<<: %i (%c)\n", data_count - 3, c, c);
 		if (header_found == 1) {
 			if (data_count == 0) {
 				data_cmd = c;
