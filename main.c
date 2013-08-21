@@ -84,7 +84,7 @@ char teletypes[16][16] = {
 	"BASEFLIGHTCLI",
 	"HARAKIRI_ML",
 	"CLI",
-	"---",
+	"SIMPLEBGC",
 	"---",
 	"---",
 	"---",
@@ -375,6 +375,8 @@ void reset_telemetrie (void) {
 	stop_telemetrie();
 	if (ModelData.teletype == TELETYPE_MULTIWII_21) {
 		mwi21_init(telemetrie_port, telemetrie_baud);
+	} else if (ModelData.teletype == TELETYPE_SIMPLEBGC) {
+		simplebgc_init(telemetrie_port, telemetrie_baud);
 	} else if (ModelData.teletype == TELETYPE_BASEFLIGHT) {
 		mwi21_init(telemetrie_port, telemetrie_baud);
 	} else if (ModelData.teletype == TELETYPE_GPS_NMEA) {
@@ -1159,6 +1161,7 @@ int telemetrie_thread (void *data) {
 		jeti_update();
 		cli_update();
 		baseflightcli_update();
+		simplebgc_update();
 		SDL_Delay(1);
 	}
 	printf("** exit thread telemetrie\n");
