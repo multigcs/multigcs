@@ -436,6 +436,10 @@ static uint8_t model_image_change (char *name, float x, float y, int8_t button, 
 	return 0;
 }
 
+#ifdef SDLGL
+Object3d obj3d_modeltype;
+Object3d obj3d_teletype;
+#endif
 
 void screen_model (ESContext *esContext) {
 #ifndef SDLGL
@@ -476,8 +480,37 @@ void screen_model (ESContext *esContext) {
 
 	draw_button(esContext, "model_type", VIEW_MODE_MODEL, "TYPE:", FONT_WHITE, -1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_modeltype_change, 0);
 	draw_button(esContext, "modeltype_change", VIEW_MODE_MODEL, modeltypes[ModelData.modeltype], FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_modeltype_change, 0);
+
+
+#ifdef SDLGL
+	sprintf(tmp_str, "%s/%s.obj", BASE_DIR, modeltypes[ModelData.modeltype]);
+	if (file_exists(tmp_str) != 0) {
+		static uint8_t startup = 0;
+		static float rotate = 0.0;
+		rotate += 0.5;
+		if (startup == 0 || strcmp(obj3d_modeltype.name, tmp_str) != 0) {
+			startup = 1;
+			if (obj3d_modeltype.faces_num != 0) {
+				object3d_free(&obj3d_modeltype);
+			}
+			object3d_load(&obj3d_modeltype, tmp_str);
+		}
+		glTranslatef(0.5, (-0.8 + n * 0.12 + 0.2) * -1.0, 0.0);
+		glRotatef(rotate, 0.2, 1.0, 0.3);
+		glScalef(0.25, 0.25, 0.25);
+		object3d_draw(&obj3d_modeltype, 255, 255, 255, 100);
+		glMatrixMode( GL_MODELVIEW );
+		glLoadIdentity();
+	} else {
+		sprintf(tmp_str, "%s/textures/%s.png", BASE_DIR, modeltypes[ModelData.modeltype]);
+		draw_image_f3(esContext, -1.1 + 1.0, -0.8 + n * 0.12 - 0.02, -1.1 + 1.0 + 0.1, -0.8 + n * 0.12 + 0.1 - 0.02, 0.002, tmp_str);
+	}
+#else
 	sprintf(tmp_str, "%s/textures/%s.png", BASE_DIR, modeltypes[ModelData.modeltype]);
 	draw_image_f3(esContext, -1.1 + 1.0, -0.8 + n * 0.12 - 0.02, -1.1 + 1.0 + 0.1, -0.8 + n * 0.12 + 0.1 - 0.02, 0.002, tmp_str);
+#endif
+
+
 	n++;
 
 	draw_button(esContext, "model_image_change", VIEW_MODE_MODEL, "IMAGE:", FONT_WHITE, -1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_image_change, 0);
@@ -492,6 +525,30 @@ void screen_model (ESContext *esContext) {
 	draw_button(esContext, "model_load3", VIEW_MODE_MODEL, "TYPE:", FONT_WHITE, -1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_teletype_change, 0);
 	draw_button(esContext, "model_teletype_change", VIEW_MODE_MODEL, teletypes[ModelData.teletype], FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_teletype_change, 0);
 	n++;
+
+
+#ifdef SDLGL
+	sprintf(tmp_str, "%s/%s.obj", BASE_DIR, teletypes[ModelData.teletype]);
+	if (file_exists(tmp_str) != 0) {
+		static uint8_t startup = 0;
+		static float rotate = 0.0;
+		rotate += 0.4;
+		if (startup == 0 || strcmp(obj3d_teletype.name, tmp_str) != 0) {
+			startup = 1;
+			if (obj3d_teletype.faces_num != 0) {
+				object3d_free(&obj3d_teletype);
+			}
+			object3d_load(&obj3d_teletype, tmp_str);
+		}
+		glTranslatef(0.5, (-0.8 + n * 0.12 + 0.3) * -1.0, 0.0);
+		glRotatef(rotate, -1.0, -1.0, 0.2);
+		glScalef(0.25, 0.25, 0.25);
+		object3d_draw(&obj3d_teletype, 255, 255, 255, 100);
+		glMatrixMode( GL_MODELVIEW );
+		glLoadIdentity();
+	}
+#endif
+
 
 	draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "DEVICE:");
 	if (ModelData.teledevice[0] == 0) {

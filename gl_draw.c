@@ -66,6 +66,7 @@ void object3d_load (Object3d *o3d, char *filename) {
 	o3d->scale = 0.0;
 	fr = fopen (filename, "r");
 	if (fr != 0) {
+		strncpy(o3d->name, filename, 1023);
 	        while(fgets(line, 1024, fr) != NULL) {
 			if (strncmp(line, "v ", 2) == 0) {
 				float px = 0.0;
@@ -99,12 +100,12 @@ void object3d_load (Object3d *o3d, char *filename) {
 				int p4v = 0;
 				int p4t = 0;
 				int p4n = 0;
-				if (strstr(line + 2, "/") > 0) {
-		                	sscanf (line + 2, "%i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i", &p1v, &p1t, &p1n, &p2v, &p2t, &p2n, &p3v, &p3t, &p3n, &p4v, &p4t, &p4n);
-				} else {
-		                	sscanf (line + 2, "%i %i %i %i", &p1v, &p2v, &p3v, &p4v);
+
+				if (sscanf(line + 2, "%i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i", &p1v, &p1t, &p1n, &p2v, &p2t, &p2n, &p3v, &p3t, &p3n, &p4v, &p4t, &p4n) >= 9) {
+				} else if (sscanf(line + 2, "%i//%i %i//%i %i//%i %i//%i", &p1v, &p1t, &p2v, &p2t, &p3v, &p3t, &p4v, &p4t) >= 6) {
+				} else if (sscanf(line + 2, "%i/%i %i/%i %i/%i %i/%i", &p1v, &p1t, &p2v, &p2t, &p3v, &p3t, &p4v, &p4t) >= 6) {
+				} else if (sscanf(line + 2, "%i %i %i %i", &p1v, &p2v, &p3v, &p4v) >= 3) {
 				}
-//	                	sscanf (line + 2, "%i/%i %i/%i %i/%i %i/%i", &p1v, &p1t, &p2v, &p2t, &p3v, &p3t, &p4v, &p4t);
 
 				o3d->faces = realloc(o3d->faces, sizeof(Object3dFace) * (o3d->faces_num + 1));
 				o3d->faces[o3d->faces_num].a = p1v;
@@ -152,10 +153,12 @@ void object3d_free (Object3d *o3d) {
 #endif
 	o3d->faces_num = 0;
 	o3d->scale = 0.0;
+	o3d->name[0] = 0;
 }
 
-void object3d_draw (Object3d *o3d) {
+void object3d_draw (Object3d *o3d, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	uint32_t num = 1;
+	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
 #ifdef GL_OBJECT_USING_BUFFER
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, o3d->cordsID);
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, o3d->facesID);
@@ -163,7 +166,6 @@ void object3d_draw (Object3d *o3d) {
 	glVertexPointer(3, GL_FLOAT, 0, 0);
 	glPushMatrix();
 	glScalef(1.0 / o3d->scale, 1.0 / o3d->scale, 1.0 / o3d->scale);
-	glColor4f(0.7, 0.7, 1.0, 0.2);
 	glDrawElements(GL_QUADS, o3d->faces_num * 4, GL_UNSIGNED_INT, 0);
 	glPopMatrix();
 	glDisableClientState(GL_VERTEX_ARRAY);
@@ -171,7 +173,6 @@ void object3d_draw (Object3d *o3d) {
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 #else
 	for (num = 1; num < o3d->faces_num; num++) {
-		glColor4f(0.7, 0.7, 1.0, 0.2);
 		if (o3d->faces[num].d == 0) {
 			glBegin(GL_TRIANGLES);
 		} else {
@@ -183,16 +184,6 @@ void object3d_draw (Object3d *o3d) {
 		if (o3d->faces[num].d != 0) {
 			glVertex3f(o3d->cords[o3d->faces[num].d].x / o3d->scale, o3d->cords[o3d->faces[num].d].y / o3d->scale, o3d->cords[o3d->faces[num].d].z / o3d->scale);
 		}
-		glEnd();
-		glColor4f(1.0, 1.0, 1.0, 0.2);
-		glBegin(GL_LINES);
-		glVertex3f(o3d->cords[o3d->faces[num].a].x / o3d->scale, o3d->cords[o3d->faces[num].a].y / o3d->scale, o3d->cords[o3d->faces[num].a].z / o3d->scale);
-		glVertex3f(o3d->cords[o3d->faces[num].b].x / o3d->scale, o3d->cords[o3d->faces[num].b].y / o3d->scale, o3d->cords[o3d->faces[num].b].z / o3d->scale);
-		glVertex3f(o3d->cords[o3d->faces[num].c].x / o3d->scale, o3d->cords[o3d->faces[num].c].y / o3d->scale, o3d->cords[o3d->faces[num].c].z / o3d->scale);
-		if (o3d->faces[num].d != 0) {
-			glVertex3f(o3d->cords[o3d->faces[num].d].x / o3d->scale, o3d->cords[o3d->faces[num].d].y / o3d->scale, o3d->cords[o3d->faces[num].d].z / o3d->scale);
-		}
-		glVertex3f(o3d->cords[o3d->faces[num].a].x / o3d->scale, o3d->cords[o3d->faces[num].a].y / o3d->scale, o3d->cords[o3d->faces[num].a].z / o3d->scale);
 		glEnd();
 	}
 #endif
