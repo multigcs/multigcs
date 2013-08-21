@@ -1058,6 +1058,10 @@ void glResize (ESContext *esContext, int w, int h) {
 	screen_h = h;
 	esContext->width = screen_w;
 	esContext->height = screen_h;
+
+	char tmp_str[100];
+	sprintf(tmp_str, "Resize: %ix%i", screen_w, screen_h);
+	sys_message(tmp_str);
 }
 
 int glInit ( ESContext *esContext ) {
