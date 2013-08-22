@@ -792,17 +792,17 @@ void check_events (ESContext *esContext, SDL_Event event) {
 			key_pressed &= ~(1<<2);
 		} else if (strcmp(keyname, "down") == 0) {
 			key_pressed &= ~(1<<3);
-		} else if (strcmp(keyname, "[+]") == 0) {
+		} else if (strcmp(keyname, "[+]") == 0 || strcmp(keyname, "keypad +") == 0) {
 			key_pressed &= ~(1<<4);
-		} else if (strcmp(keyname, "[-]") == 0) {
+		} else if (strcmp(keyname, "[-]") == 0 || strcmp(keyname, "keypad -") == 0) {
 			key_pressed &= ~(1<<5);
-		} else if (strcmp(keyname, "[4]") == 0) {
+		} else if (strcmp(keyname, "[4]") == 0 || strcmp(keyname, "keypad 4") == 0) {
 			ModelData.roll -= 3.0;
-		} else if (strcmp(keyname, "[6]") == 0) {
+		} else if (strcmp(keyname, "[6]") == 0 || strcmp(keyname, "keypad 6") == 0) {
 			ModelData.roll += 3.0;
-		} else if (strcmp(keyname, "[8]") == 0) {
+		} else if (strcmp(keyname, "[8]") == 0 || strcmp(keyname, "keypad 8") == 0) {
 			ModelData.pitch -= 3.0;
-		} else if (strcmp(keyname, "[2]") == 0) {
+		} else if (strcmp(keyname, "[2]") == 0 || strcmp(keyname, "keypad 2") == 0) {
 			ModelData.pitch += 3.0;
 		} else if (strcmp(keyname, "right shift") == 0 || strcmp(keyname, "left shift") == 0) {
 			keyboard_shift = 0;
@@ -898,6 +898,9 @@ void check_events (ESContext *esContext, SDL_Event event) {
 				keyboard_key[n] = tolower(keyboard_key[n]);
 			}
 		}
+
+printf("## keyname: %s ##\n", keyname);
+
 		redraw_flag = 1;
 	} else if (event.type == SDL_MOUSEMOTION) {
 		event.type = 0;
@@ -1388,9 +1391,9 @@ void Draw (ESContext *esContext) {
 		key_pressed |= (1<<2);
 	} else if (strcmp(keyboard_key, "down") == 0) {
 		key_pressed |= (1<<3);
-	} else if (strcmp(keyboard_key, "[+]") == 0) {
+	} else if (strcmp(keyboard_key, "[+]") == 0 || strcmp(keyboard_key, "keypad +") == 0) {
 		key_pressed |= (1<<4);
-	} else if (strcmp(keyboard_key, "[-]") == 0) {
+	} else if (strcmp(keyboard_key, "[-]") == 0 || strcmp(keyboard_key, "keypad -") == 0) {
 		key_pressed |= (1<<5);
 	} else if (strcmp(keyboard_key, "h") == 0) {
 		int tile_y = lat2tiley(WayPoints[0].p_lat, zoom) - 1;
@@ -1423,7 +1426,7 @@ void Draw (ESContext *esContext) {
 		if (view_mode == VIEW_MODE_FMS || view_mode == VIEW_MODE_MAP) {
 			read_waypoints();
 		}
-	} else if (strcmp(keyboard_key, "print screen") == 0) {
+	} else if (strcmp(keyboard_key, "print screen") == 0 || strcmp(keyboard_key, "printscreen") == 0) {
 #ifdef SDLGL
 		save_screenshot();
 #endif
