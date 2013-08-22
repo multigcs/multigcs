@@ -548,6 +548,67 @@ void webserv_child_hud_redraw (int fd) {
 	write(fd, content, strlen(content));
 }
 
+void webserv_child_kml_feed (int fd) {
+	static char buffer[BUFSIZE + 1];
+	char content[BUFSIZE + 1];
+	char tmp_str[512];
+	content[0] = 0;
+
+	strcat(content, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+	strcat(content, "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
+	strcat(content, "	<Document>\n");
+	strcat(content, "		<Placemark>\n");
+	strcat(content, "			<name>Model</name>\n");
+
+
+	strcat(content, "			<Model id=\"model_10\">\n");
+	strcat(content, "				<extrude>1</extrude>\n");
+	strcat(content, "				<altitudeMode>absolute</altitudeMode>\n");
+//	strcat(content, "				<altitudeMode>relativeToGround</altitudeMode>\n");
+	strcat(content, "				<Location>\n");
+	sprintf(tmp_str, "					<longitude>%f</longitude>\n", ModelData.p_long);
+	strcat(content, tmp_str);
+	sprintf(tmp_str, "					<latitude>%f</latitude>\n", ModelData.p_lat);
+	strcat(content, tmp_str);
+	sprintf(tmp_str, "					<altitude>%f</altitude>\n", ModelData.p_alt);
+	strcat(content, tmp_str);
+	strcat(content, "				</Location>\n");
+	strcat(content, "				<Orientation>\n");
+	sprintf(tmp_str, "					<tilt>%f</tilt>\n", ModelData.pitch * -1);
+	strcat(content, tmp_str);
+	sprintf(tmp_str, "					<roll>%f</roll>\n", ModelData.roll * -1);
+	strcat(content, tmp_str);
+	sprintf(tmp_str, "					<heading>%f</heading>\n", ModelData.yaw);
+	strcat(content, tmp_str);
+	strcat(content, "				</Orientation>\n");
+	strcat(content, "				<Scale>\n");
+	strcat(content, "					<x>15</x>\n");
+	strcat(content, "					<y>15</y>\n");
+	strcat(content, "					<z>15</z>\n");
+	strcat(content, "				</Scale>\n");
+	strcat(content, "				<Link>\n");
+	strcat(content, "					<href>http://localhost:8080/plane.dae</href>\n");
+	strcat(content, "				</Link>\n");
+	strcat(content, "			</Model>\n");
+
+//	strcat(content, "			<LookAt>\n");
+//	sprintf(tmp_str, "				<longitude>%f</longitude>\n", ModelData.p_long);
+//	strcat(content, tmp_str);
+//	sprintf(tmp_str, "				<latitude>%f</latitude>\n", ModelData.p_lat);
+//	strcat(content, tmp_str);
+//	sprintf(tmp_str, "				<heading>%f</heading>\n", ModelData.yaw);
+//	strcat(content, tmp_str);
+//	strcat(content, "			</LookAt>\n");
+	strcat(content, "		</Placemark>\n");
+	strcat(content, "	</Document>\n");
+	strcat(content, "</kml>\n");
+
+
+	sprintf(buffer,"HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %ld\nConnection: close\nContent-Type: %s\n\n", strlen(content), "text/xml");
+	write(fd, buffer, strlen(buffer));
+	write(fd, content, strlen(content));
+}
+
 
 void webserv_child (int fd, int hit) {
 	long ret;
@@ -740,27 +801,31 @@ printf("### set radio1: %i ##\n", atoi(tmp_str + start));
 			webserv_child_draw_hud(fd);
 		} else if (strncmp(buffer + 4,"/map", 4) == 0) {
 			webserv_child_show_map(fd);
+		} else if (strncmp(buffer + 4,"/kmlfeed", 8) == 0) {
+			webserv_child_kml_feed(fd);
+		} else if (strncmp(buffer + 4,"/plane.dae", 4) == 0) {
+			sprintf(tmp_str, "%s/plane.dae", BASE_DIR);
+			webserv_child_dump_file(fd, tmp_str, "text/xml");
+		} else if (strncmp(buffer + 4,"/kml", 4) == 0) {
+			sprintf(tmp_str, "%s/live.kml", BASE_DIR);
+			webserv_child_dump_file(fd, tmp_str, "text/xml");
 		} else if (strncmp(buffer + 4,"/openlayer.js", 13) == 0) {
-			webserv_child_dump_file(fd, "/usr/share/multigcs/MAPS/OpenLayers.js", "text/html");
+			sprintf(tmp_str, "%s/MAPS/OpenLayers.js", BASE_DIR);
+			webserv_child_dump_file(fd, tmp_str, "text/html");
 		} else if (strncmp(buffer + 4,"/tile/", 6) == 0) {
 			int tx = 0;
 			int ty = 0;
 			int zoom = 0;
 			sscanf(buffer + 10, "%i/%i/%i.png", &zoom, &tx, &ty);
-			sprintf(tmp_str, "/usr/share/multigcs/MAPS/osm_%i_%i_%i.png", zoom, tx, ty);
-
 			sprintf(tmp_str, mapnames[map_type][2], BASE_DIR, zoom, tx, ty);
 			if (strstr(tmp_str, ".jpg\0") > 0) {
 				webserv_child_dump_file(fd, tmp_str, "image/jpg");
 			} else {
 				webserv_child_dump_file(fd, tmp_str, "image/png");
 			}
-
-
 		} else if (strncmp(buffer + 4,"/img/marker.png", 15) == 0) {
-			webserv_child_dump_file(fd, "/usr/share/multigcs/MAPS/marker.png", "image/png");
-
-
+			sprintf(tmp_str, "%s/MAPS/marker.png", BASE_DIR);
+			webserv_child_dump_file(fd, tmp_str, "image/png");
 		} else if (strncmp(buffer + 4,"/lonlat", 7) == 0) {
 			webserv_child_show_lonlat(fd);
 		} else if (strncmp(buffer + 4,"/setdata", 8) == 0) {

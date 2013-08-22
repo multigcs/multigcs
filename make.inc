@@ -40,6 +40,8 @@ install:
 	cp -a clean-badmaps.sh $(BASE_DIR)/clean-badmaps.sh
 	cp -a screens/screen_tcl.tcl $(BASE_DIR)/scripts/screen_tcl.tcl
 	cp -a map-services.xml $(BASE_DIR)/
+	cp -a live.kml $(BASE_DIR)/
+	cp -a plane.dae $(BASE_DIR)/
 	cp -a WMM2010.COF $(BASE_DIR)/MAPS/
 	cp -a textures/marker.png $(BASE_DIR)/MAPS/marker.png
 	cp -a OpenLayers.js $(BASE_DIR)/MAPS/OpenLayers.js
@@ -67,6 +69,8 @@ deb: gcs
 	cp -a clean-badmaps.sh package$(BASE_DIR)/clean-badmaps.sh
 	cp -a screens/screen_tcl.tcl package$(BASE_DIR)/scripts/screen_tcl.tcl
 	cp -a map-services.xml package$(BASE_DIR)/
+	cp -a live.kml package$(BASE_DIR)/
+	cp -a plane.dae package$(BASE_DIR)/
 	cp -a WMM2010.COF package$(BASE_DIR)/MAPS
 	cp -a textures/marker.png package$(BASE_DIR)/MAPS/marker.png
 	cp -a OpenLayers.js package$(BASE_DIR)/MAPS/OpenLayers.js

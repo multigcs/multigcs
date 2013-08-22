@@ -796,6 +796,14 @@ void check_events (ESContext *esContext, SDL_Event event) {
 			key_pressed &= ~(1<<4);
 		} else if (strcmp(keyname, "[-]") == 0) {
 			key_pressed &= ~(1<<5);
+		} else if (strcmp(keyname, "[4]") == 0) {
+			ModelData.roll -= 3.0;
+		} else if (strcmp(keyname, "[6]") == 0) {
+			ModelData.roll += 3.0;
+		} else if (strcmp(keyname, "[8]") == 0) {
+			ModelData.pitch -= 3.0;
+		} else if (strcmp(keyname, "[2]") == 0) {
+			ModelData.pitch += 3.0;
 		} else if (strcmp(keyname, "right shift") == 0 || strcmp(keyname, "left shift") == 0) {
 			keyboard_shift = 0;
 		} else if (strcmp(keyname, "alt gr") == 0) {
