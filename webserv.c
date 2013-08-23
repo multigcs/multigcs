@@ -26,6 +26,7 @@ uint8_t webserv_running = 0;
 SDL_Thread *thread_webserv = NULL;
 int listenfd;
 
+#define header_str "HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %ld\nConnection: close\nContent-Type: %s\n\n"
 
 void webserv_child_dump_screen (int fd) {
 	static char buffer[BUFSIZE + 1];
@@ -38,7 +39,7 @@ void webserv_child_dump_screen (int fd) {
 	}
 	len = lseek(file_fd, (off_t)0, SEEK_END);
 	lseek(file_fd, (off_t)0, SEEK_SET);
-	sprintf(buffer,"HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %ld\nConnection: close\nContent-Type: %s\n\n", len, "image/png");
+	sprintf(buffer, header_str, len, "image/png");
 	write(fd, buffer, strlen(buffer));
 	while ((ret = read(file_fd, buffer, BUFSIZE)) > 0) {
 		write(fd,buffer,ret);
@@ -58,7 +59,7 @@ void webserv_child_dump_file (int fd, char *file, char *type) {
 	}
 	len = lseek(file_fd, (off_t)0, SEEK_END);
 	lseek(file_fd, (off_t)0, SEEK_SET);
-	sprintf(buffer,"HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %ld\nConnection: close\nContent-Type: %s\n\n", len, type);
+	sprintf(buffer, header_str, len, type);
 	write(fd, buffer, strlen(buffer));
 	while ((ret = read(file_fd, buffer, BUFSIZE)) > 0) {
 		write(fd,buffer,ret);
@@ -199,7 +200,7 @@ void webserv_child_dump_modeldata (int fd) {
 	sprintf(tmp_str, "compid=%i\n", ModelData.compid);
 	strcat(content, tmp_str);
 
-	sprintf(buffer,"HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %ld\nConnection: close\nContent-Type: %s\n\n", strlen(content), "text/plain");
+	sprintf(buffer, header_str, strlen(content), "text/plain");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 
@@ -244,7 +245,7 @@ void webserv_child_draw_hud (int fd) {
 	strcat(content, "  </body>");
 	strcat(content, "</html>");
 
-	sprintf(buffer,"HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %ld\nConnection: close\nContent-Type: %s\n\n", strlen(content), "text/html");
+	sprintf(buffer, header_str, strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
@@ -253,7 +254,7 @@ void webserv_child_show_lonlat (int fd) {
 	static char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	sprintf(content, "%f, %f", ModelData.p_long, ModelData.p_lat);
-	sprintf(buffer,"HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %ld\nConnection: close\nContent-Type: %s\n\n", strlen(content), "text/plain");
+	sprintf(buffer, header_str, strlen(content), "text/plain");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
@@ -518,7 +519,7 @@ void webserv_child_show_map (int fd) {
 //	strcat(content, "setTimeout(xmlhttpGet, 5000);\n");
 	strcat(content, "</script></body></html>\n");
 
-	sprintf(buffer,"HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %ld\nConnection: close\nContent-Type: %s\n\n", strlen(content), "text/html");
+	sprintf(buffer, header_str, strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
@@ -544,7 +545,7 @@ void webserv_child_hud_redraw (int fd) {
 	sprintf(tmp_str, "	drawCompas(context, 300, 500, 150, %f);\n", ModelData.yaw);
 	strcat(content, tmp_str);
 
-	sprintf(buffer,"HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %ld\nConnection: close\nContent-Type: %s\n\n", strlen(content), "text/html");
+	sprintf(buffer, header_str, strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
@@ -605,7 +606,7 @@ void webserv_child_kml_feed (int fd) {
 	strcat(content, "</kml>\n");
 
 
-	sprintf(buffer,"HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %ld\nConnection: close\nContent-Type: %s\n\n", strlen(content), "text/xml");
+	sprintf(buffer, header_str, strlen(content), "text/xml");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
@@ -704,8 +705,6 @@ void webserv_child (int fd) {
 					} else if (strcmp(tmp_str, "numSat") == 0) {
 						ModelData.numSat = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "radio1") == 0) {
-
-printf("### set radio1: %i ##\n", atoi(tmp_str + start));
 						ModelData.radio[0] = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "radio2") == 0) {
 						ModelData.radio[1] = atoi(tmp_str + start);
@@ -781,12 +780,12 @@ printf("### set radio1: %i ##\n", atoi(tmp_str + start));
 				}
 			}
 			sprintf(content, "OK\n");
-			sprintf(buffer,"HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %ld\nConnection: close\nContent-Type: %s\n\n", strlen(content), "text/plain");
+			sprintf(buffer, header_str, strlen(content), "text/plain");
 			write(fd, buffer, strlen(buffer));
 			write(fd, content, strlen(content));
 		} else {
 			sprintf(content, "UNKNOWN\n");
-			sprintf(buffer,"HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %ld\nConnection: close\nContent-Type: %s\n\n", strlen(content), "text/plain");
+			sprintf(buffer, header_str, strlen(content), "text/plain");
 			write(fd, buffer, strlen(buffer));
 			write(fd, content, strlen(content));
 		}
@@ -832,7 +831,7 @@ printf("### set radio1: %i ##\n", atoi(tmp_str + start));
 			webserv_child_show_lonlat(fd);
 		} else {
 			sprintf(content, "UNKNOWN\n");
-			sprintf(buffer,"HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %ld\nConnection: close\nContent-Type: %s\n\n", strlen(content), "text/plain");
+			sprintf(buffer, header_str, strlen(content), "text/plain");
 			write(fd, buffer, strlen(buffer));
 			write(fd, content, strlen(content));
 		}
@@ -859,11 +858,13 @@ int webserv_thread (void *data) {
 	flags |= O_NONBLOCK;
 	fcntl(listenfd, F_SETFL, flags);
 
+	int opt = 1;
+	setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 
-	if (bind(listenfd, (struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0) {
+	if (bind(listenfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
 		return(1);
 	}
-	if (listen(listenfd,64) < 0) {
+	if (listen(listenfd, 64) < 0) {
 		return(1);
 	}
 
@@ -874,6 +875,8 @@ int webserv_thread (void *data) {
 		}
 		SDL_Delay(1);
 	}
+
+	close(listenfd);
 
 	printf("** exit thread webserv\n");
 	return(0);
