@@ -41,6 +41,7 @@
 #include "my_gps.h"
 #include "mwi21.h"
 #include "simplebgc.h"
+#include "brugi.h"
 #include "openpilot.h"
 #include "jeti.h"
 #include "frsky.h"
@@ -48,6 +49,7 @@
 #include "screen_background.h"
 #include "screen_wpedit.h"
 #include "screen_map.h"
+#include "screen_brugi.h"
 #include "screen_hud.h"
 #include "screen_graph.h"
 #include "screen_calibration.h"
@@ -86,7 +88,7 @@ char teletypes[16][16] = {
 	"HARAKIRI_ML",
 	"CLI",
 	"SIMPLEBGC",
-	"---",
+	"BRUGI",
 	"---",
 	"---",
 	"---",
@@ -367,6 +369,8 @@ void stop_telemetrie (void) {
 	baseflightcli_exit();
 	cli_exit();
 	gps_exit();
+	simplebgc_exit();
+	brugi_exit();
 	openpilot_exit();
 	frsky_mode(0);
 }
@@ -377,6 +381,8 @@ void reset_telemetrie (void) {
 		mwi21_init(telemetrie_port, telemetrie_baud);
 	} else if (ModelData.teletype == TELETYPE_SIMPLEBGC) {
 		simplebgc_init(telemetrie_port, telemetrie_baud);
+	} else if (ModelData.teletype == TELETYPE_BRUGI) {
+		brugi_init(telemetrie_port, telemetrie_baud);
 	} else if (ModelData.teletype == TELETYPE_BASEFLIGHT) {
 		mwi21_init(telemetrie_port, telemetrie_baud);
 	} else if (ModelData.teletype == TELETYPE_GPS_NMEA) {
@@ -1173,6 +1179,7 @@ int telemetrie_thread (void *data) {
 		cli_update();
 		baseflightcli_update();
 		simplebgc_update();
+		brugi_update();
 		SDL_Delay(1);
 	}
 	printf("** exit thread telemetrie\n");
@@ -1643,6 +1650,8 @@ void Draw (ESContext *esContext) {
 			screen_cli(esContext);
 		} else if (ModelData.teletype == TELETYPE_BASEFLIGHTCLI) {
 			screen_baseflightcli(esContext);
+		} else if (ModelData.teletype == TELETYPE_BRUGI) {
+			screen_brugi(esContext);
 		} else {
 			screen_mavlink_menu(esContext);
 		}

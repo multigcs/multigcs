@@ -9,7 +9,6 @@
 #include <unistd.h>
 #include <time.h>
 #include <curl/curl.h>
-#include <GL/glew.h>
 #include <GL/gl.h>
 #include <SDL.h>
 

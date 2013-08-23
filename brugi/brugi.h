@@ -1,0 +1,44 @@
+
+typedef struct {
+	int16_t vers;
+	int16_t gyroPitchKp;
+	int16_t gyroPitchKi;
+	int16_t gyroPitchKd;
+	int16_t gyroRollKp;
+	int16_t gyroRollKi;
+	int16_t gyroRollKd;
+	int16_t accTimeConstant;
+	int16_t mpuLPF;
+	int16_t angleOffsetPitch;
+	int16_t angleOffsetRoll;
+	int16_t dirMotorPitch;
+	int16_t dirMotorRoll;
+	int16_t motorNumberPitch;
+	int16_t motorNumberRoll;
+	int16_t maxPWMmotorPitch;
+	int16_t maxPWMmotorRoll;
+	int16_t minRCPitch;
+	int16_t maxRCPitch;
+	int16_t minRCRoll;
+	int16_t maxRCRoll;
+	int16_t rcGain;
+	int16_t rcLPF;
+	int16_t rcModePPM;
+	int16_t rcChannelPitch;
+	int16_t rcChannelRoll;
+	int16_t rcMid;
+	int16_t rcAbsolute;
+	int16_t accOutput;
+	int16_t enableGyro;
+	int16_t enableACC;
+	int16_t axisReverseZ;
+	int16_t axisSwapXY;
+} BrugiSetup;
+
+void brugi_update (void);
+uint8_t brugi_connection_status (void);
+void brugi_init (char *port, uint32_t baud);
+void brugi_exit (void);
+void brugi_send_cmd (char *cmd);
+void brugi_set_value (char *var, int16_t val);
+extern BrugiSetup brugi_setup;
