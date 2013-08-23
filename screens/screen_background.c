@@ -51,9 +51,12 @@ void screen_background (ESContext *esContext) {
 		}
 		glTranslatef(0.0, 0.0, -3.2);
 
-//		glRotatef(rotate, 1.0, 0.2, 0.3);
-		glRotatef(ModelData.pitch + 90.0, 1.0, 0.0, 0.0);
-		glRotatef(ModelData.roll, 0.0, 1.0, 0.0);
+		if (ModelData.heartbeat == 0) {
+			glRotatef(rotate, 1.0, 0.2, 0.3);
+		} else {
+			glRotatef(ModelData.pitch + 90.0, 1.0, 0.0, 0.0);
+			glRotatef(ModelData.roll, 0.0, 1.0, 0.0);
+		}
 
 
 		object3d_draw(&obj3d, 155, 155, 255, 10);
