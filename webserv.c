@@ -206,50 +206,6 @@ void webserv_child_dump_modeldata (int fd) {
 
 }
 
-void webserv_child_draw_hud (int fd) {
-	static char buffer[BUFSIZE + 1];
-	char content[BUFSIZE + 1];
-	char tmp_str[100];
-
-	content[0] = 0;
-
-	strcat(content, "<!DOCTYPE HTML>");
-	strcat(content, "<html>");
-	strcat(content, "  <head>");
-	strcat(content, "    <style>");
-	strcat(content, "      body {");
-	strcat(content, "        margin: 0px;");
-	strcat(content, "        padding: 0px;");
-	strcat(content, "      }");
-	strcat(content, "    </style>");
-	strcat(content, "  </head>");
-	strcat(content, "  <body>");
-	strcat(content, "    <canvas id=\"myCanvas\" width=\"800\" height=\"600\"></canvas>");
-	strcat(content, "    <script>");
-	strcat(content, "      var canvas = document.getElementById('myCanvas');");
-	strcat(content, "      var context = canvas.getContext('2d');");
-	strcat(content, "      var centerX = canvas.width / 2;");
-	strcat(content, "      var centerY = canvas.height / 2;");
-	strcat(content, "      var radius = 170;");
-	strcat(content, "      context.beginPath();");
-
-	sprintf(tmp_str, "      context.arc(centerX, centerY, radius, %f, %f, false);", ModelData.roll * PI / 180.0, ModelData.roll * PI / 180.0 + PI);
-	strcat(content, tmp_str);
-
-	strcat(content, "      context.fillStyle = 'green';");
-	strcat(content, "      context.fill();");
-	strcat(content, "      context.lineWidth = 5;");
-	strcat(content, "      context.strokeStyle = '#003300';");
-	strcat(content, "      context.stroke();");
-	strcat(content, "    </script>");
-	strcat(content, "  </body>");
-	strcat(content, "</html>");
-
-	sprintf(buffer, header_str, strlen(content), "text/html");
-	write(fd, buffer, strlen(buffer));
-	write(fd, content, strlen(content));
-}
-
 void webserv_child_show_lonlat (int fd) {
 	static char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
@@ -260,7 +216,7 @@ void webserv_child_show_lonlat (int fd) {
 }
 
 
-void webserv_child_show_map (int fd) {
+void webserv_child_show_hud (int fd) {
 	static char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
@@ -274,7 +230,7 @@ void webserv_child_show_map (int fd) {
 	strcat(content, "    } else if (window.ActiveXObject) {\n");
 	strcat(content, "        self.xmlHttpReq = new ActiveXObject(\"Microsoft.XMLHTTP\");\n");
 	strcat(content, "    }\n");
-	strcat(content, "    self.xmlHttpReq.open('GET', \"/lonlat\", true);\n");
+	strcat(content, "    self.xmlHttpReq.open('GET', \"/lonlat.txt\", true);\n");
 	strcat(content, "    self.xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');\n");
 	strcat(content, "    self.xmlHttpReq.onreadystatechange = function() {\n");
 	strcat(content, "        if (self.xmlHttpReq.readyState == 4) {\n");
@@ -299,7 +255,7 @@ void webserv_child_show_map (int fd) {
 	strcat(content, "    } else if (window.ActiveXObject) {\n");
 	strcat(content, "        self.xmlHttpReq = new ActiveXObject(\"Microsoft.XMLHTTP\");\n");
 	strcat(content, "    }\n");
-	strcat(content, "    self.xmlHttpReq.open('GET', \"/hudredraw\", true);\n");
+	strcat(content, "    self.xmlHttpReq.open('GET', \"/hudredraw.js\", true);\n");
 	strcat(content, "    self.xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');\n");
 	strcat(content, "    self.xmlHttpReq.onreadystatechange = function() {\n");
 	strcat(content, "        if (self.xmlHttpReq.readyState == 4) {\n");
@@ -504,7 +460,7 @@ void webserv_child_show_map (int fd) {
 	strcat(content, tmp_str);
 
 	strcat(content, "    </script>\n");
-	strcat(content, "<script src=\"/openlayer.js\"></script><script>\n");
+	strcat(content, "<script src=\"/map.js\"></script><script>\n");
 	strcat(content, "map = new OpenLayers.Map(\"mapdiv\");\n");
 	strcat(content, "map.addLayer(new OpenLayers.Layer.OSM());\n");
 	sprintf(tmp_str, "var lonLat = new OpenLayers.LonLat( %f ,%f ).transform(new OpenLayers.Projection(\"EPSG:4326\"),map.getProjectionObject());\n", ModelData.p_long, ModelData.p_lat);
@@ -550,7 +506,33 @@ void webserv_child_hud_redraw (int fd) {
 	write(fd, content, strlen(content));
 }
 
-void webserv_child_kml_feed (int fd) {
+void webserv_child_kml_live (int fd, char *servername) {
+	static char buffer[BUFSIZE + 1];
+	char content[BUFSIZE + 1];
+	char tmp_str[512];
+	content[0] = 0;
+
+	strcat(content, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+	strcat(content, "<kml xmlns=\"http://earth.google.com/kml/2.2\">\n");
+	strcat(content, "	<NetworkLink>\n");
+	strcat(content, "		<name>MultiGCS</name>\n");
+	strcat(content, "		<open>1</open>\n");
+//	strcat(content, "		<flyToView>1</flyToView>\n");
+	strcat(content, "		<Link>\n");
+	sprintf(tmp_str, "			<href>http://%s/model.kml</href>\n", servername);
+	strcat(content, tmp_str);
+	strcat(content, "			<refreshMode>onInterval</refreshMode>\n");
+	strcat(content, "			<refreshInterval>.3</refreshInterval>\n");
+	strcat(content, "		</Link>\n");
+	strcat(content, "	</NetworkLink>\n");
+	strcat(content, "</kml>\n");
+
+	sprintf(buffer, header_str, strlen(content), "application/vnd.google-earth.kml");
+	write(fd, buffer, strlen(buffer));
+	write(fd, content, strlen(content));
+}
+
+void webserv_child_kml_feed (int fd, char *servername) {
 	static char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
@@ -589,7 +571,7 @@ void webserv_child_kml_feed (int fd) {
 	strcat(content, "					<z>15</z>\n");
 	strcat(content, "				</Scale>\n");
 	strcat(content, "				<Link>\n");
-	strcat(content, "					<href>http://localhost:8080/plane.dae</href>\n");
+	strcat(content, "					<href>plane.dae</href>\n");
 	strcat(content, "				</Link>\n");
 	strcat(content, "			</Model>\n");
 
@@ -605,8 +587,7 @@ void webserv_child_kml_feed (int fd) {
 	strcat(content, "	</Document>\n");
 	strcat(content, "</kml>\n");
 
-
-	sprintf(buffer, header_str, strlen(content), "text/xml");
+	sprintf(buffer, header_str, strlen(content), "application/vnd.google-earth.kml");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
@@ -616,17 +597,34 @@ void webserv_child (int fd) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[BUFSIZE + 1];
+	char servername[1024];
+
+	content[0] = 0;
 
 	SDL_Delay(10);
 
 	int size = 0;
 	read(fd, buffer + size, BUFSIZE);
 
+	char *host = NULL;
+	if ((host = strstr(buffer, "\nHost: ")) > 0) {
+		strncpy(servername, host + 7, 1023);
+		if (strstr(servername, "\n") > 0) {
+			*strstr(servername, "\n") = 0;
+		}
+		if (strstr(servername, "\r") > 0) {
+			*strstr(servername, "\r") = 0;
+		}
+	} else {
+		strcpy(servername, "");
+	}
+
 	printf("###########################\n");
-	printf("webserv:\n");
+	printf("webserv (%s):\n", servername);
 	printf("###########################\n");
 	printf("%s\n", buffer);
 	printf("###########################\n");
+
 
 	if (strncmp(buffer,"POST ", 5) == 0 || strncmp(buffer,"post ", 5) == 0) {
 		if (strncmp(buffer + 5,"/setdata", 8) == 0) {
@@ -790,26 +788,28 @@ void webserv_child (int fd) {
 			write(fd, content, strlen(content));
 		}
 	} else if (strncmp(buffer,"GET ", 4) == 0 || strncmp(buffer,"get ", 4) == 0) {
+		// Misc
 		if (strncmp(buffer + 4,"/modeldata", 10) == 0) {
 			webserv_child_dump_modeldata(fd);
 		} else if (strncmp(buffer + 4,"/screenshot", 11) == 0) {
 			webserv_child_dump_screen(fd);
-		} else if (strncmp(buffer + 4,"/hudredraw", 10) == 0) {
-			webserv_child_hud_redraw(fd);
-		} else if (strncmp(buffer + 4,"/hud", 4) == 0) {
-			webserv_child_draw_hud(fd);
-		} else if (strncmp(buffer + 4,"/map", 4) == 0) {
-			webserv_child_show_map(fd);
-		} else if (strncmp(buffer + 4,"/kmlfeed", 8) == 0) {
-			webserv_child_kml_feed(fd);
+
+		// Google-Earth Live-Feed (Model-Position)
+		} else if (strncmp(buffer + 4,"/live.kml", 4) == 0) {
+			webserv_child_kml_live(fd, servername);
+		} else if (strncmp(buffer + 4,"/model.kml", 8) == 0) {
+			webserv_child_kml_feed(fd, servername);
 		} else if (strncmp(buffer + 4,"/plane.dae", 4) == 0) {
 			sprintf(tmp_str, "%s/plane.dae", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/xml");
-		} else if (strncmp(buffer + 4,"/kml", 4) == 0) {
-			sprintf(tmp_str, "%s/live.kml", BASE_DIR);
-			webserv_child_dump_file(fd, tmp_str, "text/xml");
-		} else if (strncmp(buffer + 4,"/openlayer.js", 13) == 0) {
-			sprintf(tmp_str, "%s/MAPS/OpenLayers.js", BASE_DIR);
+
+		// HTML5 HUD-View + Map
+		} else if (strncmp(buffer + 4,"/hud.html", 9) == 0) {
+			webserv_child_show_hud(fd);
+		} else if (strncmp(buffer + 4,"/hudredraw.js", 13) == 0) {
+			webserv_child_hud_redraw(fd);
+		} else if (strncmp(buffer + 4,"/map.js", 7) == 0) {
+			sprintf(tmp_str, "%s/MAPS/map.js", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/html");
 		} else if (strncmp(buffer + 4,"/tile/", 6) == 0) {
 			int tx = 0;
@@ -822,18 +822,14 @@ void webserv_child (int fd) {
 			} else {
 				webserv_child_dump_file(fd, tmp_str, "image/png");
 			}
-		} else if (strncmp(buffer + 4,"/img/marker.png", 15) == 0) {
+		} else if (strncmp(buffer + 4,"/marker.png", 11) == 0) {
 			sprintf(tmp_str, "%s/MAPS/marker.png", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "image/png");
-		} else if (strncmp(buffer + 4,"/lonlat", 7) == 0) {
-			webserv_child_show_lonlat(fd);
-		} else if (strncmp(buffer + 4,"/setdata", 8) == 0) {
+		} else if (strncmp(buffer + 4,"/lonlat.txt", 11) == 0) {
 			webserv_child_show_lonlat(fd);
 		} else {
-			sprintf(content, "UNKNOWN\n");
-			sprintf(buffer, header_str, strlen(content), "text/plain");
-			write(fd, buffer, strlen(buffer));
-			write(fd, content, strlen(content));
+			sprintf(tmp_str, "%s/index.html", BASE_DIR);
+			webserv_child_dump_file(fd, tmp_str, "text/html");
 		}
 	}
 	close(fd);

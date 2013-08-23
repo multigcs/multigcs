@@ -40,11 +40,11 @@ install:
 	cp -a clean-badmaps.sh $(BASE_DIR)/clean-badmaps.sh
 	cp -a screens/screen_tcl.tcl $(BASE_DIR)/scripts/screen_tcl.tcl
 	cp -a map-services.xml $(BASE_DIR)/
-	cp -a live.kml $(BASE_DIR)/
 	cp -a plane.dae $(BASE_DIR)/
 	cp -a WMM2010.COF $(BASE_DIR)/MAPS/
 	cp -a textures/marker.png $(BASE_DIR)/MAPS/marker.png
-	cp -a OpenLayers.js $(BASE_DIR)/MAPS/OpenLayers.js
+	cp -a map.js $(BASE_DIR)/MAPS/map.js
+	cp -a webserv-index.html $(BASE_DIR)/index.html
 	cp -a mavlink/ParameterMetaData*.xml $(BASE_DIR)/mavlink/
 	touch $(BASE_DIR)/setup.cfg
 	chmod 0755 /usr/bin/gl-gcs
@@ -69,11 +69,12 @@ deb: gcs
 	cp -a clean-badmaps.sh package$(BASE_DIR)/clean-badmaps.sh
 	cp -a screens/screen_tcl.tcl package$(BASE_DIR)/scripts/screen_tcl.tcl
 	cp -a map-services.xml package$(BASE_DIR)/
-	cp -a live.kml package$(BASE_DIR)/
 	cp -a plane.dae package$(BASE_DIR)/
 	cp -a WMM2010.COF package$(BASE_DIR)/MAPS
 	cp -a textures/marker.png package$(BASE_DIR)/MAPS/marker.png
-	cp -a OpenLayers.js package$(BASE_DIR)/MAPS/OpenLayers.js
+	cp -a webserv-index.html package$(BASE_DIR)/index.html
+	cp -a map.js package$(BASE_DIR)/MAPS/map.js
+	cp -a mavlink/ParameterMetaData*.xml $(BASE_DIR)/mavlink/
 	touch package$(BASE_DIR)/setup.cfg
 	chmod 0755 package/usr/bin/gl-gcs
 	chmod 0755 package/usr/bin/gcs
