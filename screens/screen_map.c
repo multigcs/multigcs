@@ -9,6 +9,8 @@
 #include <unistd.h>
 #include <time.h>
 #include <curl/curl.h>
+#include <GL/glew.h>
+#include <GL/gl.h>
 #include <SDL.h>
 
 #include <libxml/xmlmemory.h>
@@ -44,6 +46,8 @@ uint8_t map_show_poi = 0;
 uint8_t map_rotate = 0;
 uint8_t map_side = 1;
 uint8_t map_dir = 0;
+
+static uint8_t mapthread_running = 0;
 
 SDL_Thread *sdl_thread_get_maps1;
 SDL_Thread *sdl_thread_get_maps2;
@@ -186,8 +190,9 @@ static void map_parseDoc (char *docname) {
 
 
 void map_exit (void) {
-	SDL_KillThread(sdl_thread_get_maps1);
-	SDL_KillThread(sdl_thread_get_maps2);
+	mapthread_running = 0;
+	SDL_WaitThread(sdl_thread_get_maps1, NULL);
+	SDL_WaitThread(sdl_thread_get_maps2, NULL);
 }
 
 int file_exists (char *fileName) {
@@ -268,8 +273,8 @@ void download_map_range (float from_lat, float from_lon, float to_lat, float to_
 	float google_tile_long = 0;
 	float google_tile_lat = 0;
 	if (zoom <= 18) {
-		for (y_n = 0; y_n < tiles_y && gui_running == 1; y_n++) {
-			for (x_n = 0; x_n < tiles_x && gui_running == 1; x_n++) {
+		for (y_n = 0; y_n < tiles_y && mapthread_running == 1; y_n++) {
+			for (x_n = 0; x_n < tiles_x && mapthread_running == 1; x_n++) {
 				if (strcmp(mapnames[map_type][MAP_TYPE], "GOOGLE") == 0) {
 					sprintf(tile_name, "%s/MAPS/google_%i_%i_%i.png", BASE_DIR, zoom, tile_x + x_n, tile_y + y_n);
 					if (file_exists(tile_name) == 0) {
@@ -363,9 +368,9 @@ void get_maps (uint8_t mode) {
 		start = 1;
 	}
 	if (zoom <= 18) {
-		for (overlay = 0; overlay <= MAP_OVERLAY && gui_running == 1; overlay++) {
-			for (y_n = -overlay + start; y_n < tiles_y + overlay && gui_running == 1; y_n += step) {
-				for (x_n = -overlay; x_n < tiles_x + overlay && gui_running == 1; x_n += 1) {
+		for (overlay = 0; overlay <= MAP_OVERLAY && mapthread_running == 1; overlay++) {
+			for (y_n = -overlay + start; y_n < tiles_y + overlay && mapthread_running == 1; y_n += step) {
+				for (x_n = -overlay; x_n < tiles_x + overlay && mapthread_running == 1; x_n += 1) {
 					if (lat_last[mode] != lat || lon_last[mode] != lon || zoom_last[mode] != zoom) {
 						lat_last[mode] = lat;
 						lon_last[mode] = lon;
@@ -459,7 +464,7 @@ void get_srtm (void) {
 }
 
 int thread_get_maps1 (void *unused) {
-	while (gui_running == 1) {
+	while (mapthread_running == 1) {
 		get_maps(0);
 		get_srtm();
 		SDL_Delay(100);
@@ -469,7 +474,7 @@ int thread_get_maps1 (void *unused) {
 }
 
 int thread_get_maps2 (void *unused) {
-	while (gui_running == 1) {
+	while (mapthread_running == 1) {
 		get_maps(1);
 		SDL_Delay(100);
 	}
@@ -1617,6 +1622,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		POIs[1].p_long = 9.20448303;
 		POIs[1].type = 1;
 
+		mapthread_running = 1;
 #ifdef SDL2
 		sdl_thread_get_maps1 = SDL_CreateThread(thread_get_maps1, NULL, NULL);
 #else

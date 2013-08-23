@@ -74,5 +74,6 @@ void draw_circleFilled_f3_part_end (ESContext *esContext, float x1, float y1, fl
 void draw_circleMeter_f3 (ESContext *esContext, float x, float y, float z, float radius, float start1, float start2, float start3, float start4, float value, char *text, char *text2, uint8_t type);
 void draw_graph_value (ESContext *esContext, float px1, float py1, float px2, float py2, float pz, uint8_t *data, int16_t len, int16_t pointer, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 void resize_border (void);
+void glResize (ESContext *esContext, int w, int h);
 
 #endif

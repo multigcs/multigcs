@@ -29,6 +29,10 @@
 #define UDP_BUFLEN 2042
 #define UDP_PORT 14550
 
+static struct sockaddr_in si_me, si_other;
+static int s, slen = sizeof(si_other) , recv_len;
+
+static uint8_t udp_running = 0;
 int16_t mission_max = -1;
 int serial_fd_mavlink = -1;
 ValueList MavLinkVars[500];
@@ -72,6 +76,7 @@ uint8_t mavlink_init (char *port, uint32_t baud) {
 		MavLinkVars[n].id = -1;
 	}
 
+	udp_running = 1;
 #ifdef SDL2
 	thread_udp = SDL_CreateThread(mavlink_udp, NULL, NULL);
 #else
@@ -88,7 +93,8 @@ uint8_t mavlink_init (char *port, uint32_t baud) {
 void mavlink_exit (void) {
 	printf("* udp-thread kill\n");
 	if (thread_udp != NULL) {
-		SDL_KillThread(thread_udp);
+		udp_running = 0;
+		SDL_WaitThread(thread_udp, NULL);
 		thread_udp = NULL;
 	}
 
@@ -702,9 +708,6 @@ void send_waypoints (void) {
 }
 
 
-static struct sockaddr_in si_me, si_other;
-static int s, slen = sizeof(si_other) , recv_len;
-
 void send_message (mavlink_message_t* msg) {
 	uint8_t buf[MAVLINK_MAX_PACKET_LEN];
 	printf("send_msg...\n");
@@ -833,10 +836,16 @@ int mavlink_udp (void *data) {
 	mavlink_message_t msg;
 	mavlink_status_t status;
 	char buf[UDP_BUFLEN];
-	if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
+
+	if ((s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
 		printf("socket\n");
 		return 0;
 	}
+
+	int flags = fcntl(s, F_GETFL);
+	flags |= O_NONBLOCK;
+	fcntl(s, F_SETFL, flags);
+
 	memset((char *) &si_me, 0, sizeof(si_me));
 	si_me.sin_family = AF_INET;
 	si_me.sin_port = htons(UDP_PORT);
@@ -845,19 +854,18 @@ int mavlink_udp (void *data) {
 		printf("bind\n");
 		return 0;
 	}
-	while (gui_running == 1) {
+	while (udp_running == 1) {
 		fflush(stdout);
-		if ((recv_len = recvfrom(s, buf, UDP_BUFLEN, 0, (struct sockaddr *)&si_other, (socklen_t *)&slen)) == -1) {
-			printf("recvfrom()\n");
-			return 0;
-		}
-		int n = 0;
-		for (n = 0; n < recv_len; n++) {
-			if(mavlink_parse_char(1, buf[n], &msg, &status)) {
-				gcs_handleMessage(&msg);
-				mavlink_udp_active = 1;
+		while ((recv_len = recvfrom(s, buf, UDP_BUFLEN, 0, (struct sockaddr *)&si_other, (socklen_t *)&slen)) != -1) {
+			int n = 0;
+			for (n = 0; n < recv_len; n++) {
+				if(mavlink_parse_char(1, buf[n], &msg, &status)) {
+					gcs_handleMessage(&msg);
+					mavlink_udp_active = 1;
+				}
 			}
 		}
+		SDL_Delay(1);
 	}
 	close(s);
 	return 0;
@@ -871,7 +879,7 @@ void mavlink_parseParams1 (xmlDocPtr doc, xmlNodePtr cur, char *name) {
 		}
 	}
 	if (n == 500 - 1) {
-		return 0;
+		return;
 	}
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
@@ -924,7 +932,6 @@ void mavlink_parseParams (xmlDocPtr doc, xmlNodePtr cur) {
 static void mavlink_parseDoc (char *docname) {
 	xmlDocPtr doc;
 	xmlNodePtr cur;
-	xmlChar *key;
 	doc = xmlParseFile(docname);
 	if (doc == NULL) {
 		printf("Document parsing failed: %s\n", docname);

@@ -24,7 +24,7 @@ typedef struct {
 	int16_t angle_yaw;
 	uint16_t cycle_time;
 	uint16_t i2c_error_count;
-	uint8_t error_code
+	uint8_t error_code;
 } SimpleBgcRealtime;
 
 
@@ -106,7 +106,7 @@ typedef struct {
 	uint8_t output_pitch;
 	uint8_t output_yaw;
 	uint8_t reserved_bytes[10];
-	uint8_t cur_profile
+	uint8_t cur_profile;
 } SimpleBgcSetup;
 
 void simplebgc_update (void);

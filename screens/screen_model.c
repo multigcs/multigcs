@@ -36,7 +36,7 @@
 #include <screen_device.h>
 #include <screen_baud.h>
 
-
+extern int file_exists (char *fileName);
 static uint8_t select_teletype = 0;
 
 

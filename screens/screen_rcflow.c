@@ -59,7 +59,7 @@ static char setup_name[100];
 
 
 
-static Tcl_Interp *rcflow_tcl_interp;
+//static Tcl_Interp *rcflow_tcl_interp;
 static uint8_t rcflow_tcl_startup = 0;
 
 enum {
@@ -211,6 +211,7 @@ uint8_t rctransmitter_get_type_by_name (char *name) {
 	return 0;
 }
 
+/*
 static int rcflow_tcl_output_Cmd (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	int n1 = 0;
 	int n2 = 0;
@@ -242,7 +243,7 @@ static int rcflow_tcl_output_Cmd (ClientData cdata, Tcl_Interp *interp, int objc
 	Tcl_SetObjResult(interp, res);
 	return TCL_OK;
 }
-
+*/
 
 static void rcflow_tcl_init (void) {
 	rcflow_tcl_startup = 1;
@@ -260,6 +261,7 @@ static void rcflow_tcl_init (void) {
 	return;
 }
 
+/*
 static void rcflow_tcl_run (char *script) {
 	if (rcflow_tcl_startup == 0) {
 		rcflow_tcl_init();
@@ -274,6 +276,7 @@ static void rcflow_tcl_run (char *script) {
 		printf("#######################################################\n");
 	}
 }
+*/
 
 static void die(char *msg) {
 	printf("%s", msg);

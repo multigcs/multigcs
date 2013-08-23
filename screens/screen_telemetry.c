@@ -32,7 +32,6 @@ void draw_value_display (ESContext *esContext, float x1, float y1, float fsize, 
 }
 
 void screen_telemetry (ESContext *esContext) {
-	ESMatrix modelview;
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
 #endif
@@ -43,6 +42,7 @@ void screen_telemetry (ESContext *esContext) {
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 #else
+	ESMatrix modelview;
 	esMatrixLoadIdentity(&modelview);
 #endif
 

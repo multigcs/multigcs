@@ -157,7 +157,6 @@ void object3d_free (Object3d *o3d) {
 }
 
 void object3d_draw (Object3d *o3d, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
-	uint32_t num = 1;
 	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
 #ifdef GL_OBJECT_USING_BUFFER
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, o3d->cordsID);
@@ -172,6 +171,7 @@ void object3d_draw (Object3d *o3d, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
 	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 #else
+	uint32_t num = 1;
 	for (num = 1; num < o3d->faces_num; num++) {
 		if (o3d->faces[num].d == 0) {
 			glBegin(GL_TRIANGLES);
@@ -1025,8 +1025,8 @@ void glExit (ESContext *esContext) {
 }
 
 void glResize (ESContext *esContext, int w, int h) {
-	const SDL_PixelFormat fmt = *(WinScreen->format);
 #ifndef SDL2
+	const SDL_PixelFormat fmt = *(WinScreen->format);
 	Uint32 video_flags;
 	if (fullscreen == 1) {
 		video_flags = SDL_OPENGLBLIT | SDL_FULLSCREEN;
@@ -1056,7 +1056,6 @@ void glResize (ESContext *esContext, int w, int h) {
 }
 
 int glInit ( ESContext *esContext ) {
-	int bpp = 0;
 	int rgb_size[3];
 	Uint32 video_flags;
 
@@ -1082,12 +1081,11 @@ int glInit ( ESContext *esContext ) {
 	WinScreen = SDL_GetWindowSurface(MainWindow);
 	MainGLcontext = SDL_GL_CreateContext(MainWindow);
 #else
-	if (bpp == 0) {
-		if ( SDL_GetVideoInfo()->vfmt->BitsPerPixel <= 8 ) {
-			bpp = 8;
-		} else {
-			bpp = 16;
-		}
+	int bpp = 0;
+	if ( SDL_GetVideoInfo()->vfmt->BitsPerPixel <= 8 ) {
+		bpp = 8;
+	} else {
+		bpp = 16;
 	}
 	if (fullscreen == 1) {
 		video_flags = SDL_OPENGLBLIT | SDL_FULLSCREEN;

@@ -22,6 +22,7 @@ extern char mapnames[20][4][200];
 #define BUFSIZE 18096
 #define PI 3.14159265
 
+uint8_t webserv_running = 0;
 SDL_Thread *thread_webserv = NULL;
 int listenfd;
 
@@ -610,8 +611,7 @@ void webserv_child_kml_feed (int fd) {
 }
 
 
-void webserv_child (int fd, int hit) {
-	long ret;
+void webserv_child (int fd) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[BUFSIZE + 1];
@@ -619,7 +619,7 @@ void webserv_child (int fd, int hit) {
 	SDL_Delay(10);
 
 	int size = 0;
-	ret = read(fd, buffer + size, BUFSIZE);
+	read(fd, buffer + size, BUFSIZE);
 
 	printf("###########################\n");
 	printf("webserv:\n");
@@ -842,9 +842,7 @@ printf("### set radio1: %i ##\n", atoi(tmp_str + start));
 }
 
 int webserv_thread (void *data) {
-	int pid;
 	int listenfd;
-	int hit;
 	int socketfd;
 	socklen_t length;
 	static struct sockaddr_in cli_addr;
@@ -856,35 +854,25 @@ int webserv_thread (void *data) {
 	if ((listenfd = socket(AF_INET, SOCK_STREAM,0)) < 0) {
 		return(1);
 	}
+
+	int flags = fcntl(listenfd, F_GETFL);
+	flags |= O_NONBLOCK;
+	fcntl(listenfd, F_SETFL, flags);
+
+
 	if (bind(listenfd, (struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0) {
 		return(1);
 	}
 	if (listen(listenfd,64) < 0) {
 		return(1);
 	}
-	for (hit = 1;; hit++) {
+
+	while (webserv_running == 1) {
 		length = sizeof(cli_addr);
-		if ((socketfd = accept(listenfd, (struct sockaddr *)&cli_addr, &length)) < 0) {
-			return(1);
+		if ((socketfd = accept(listenfd, (struct sockaddr *)&cli_addr, &length)) >= 0) {
+			webserv_child(socketfd);
 		}
-
-		printf("incomming: %i\n", hit);
-
-		webserv_child(socketfd,hit);
-
-/*
-		if ((pid = fork()) < 0) {
-			return(1);
-		} else {
-			if (pid == 0) {
-				close(listenfd);
-				webserv_child(socketfd,hit);
-			} else {
-				close(socketfd);
-			}
-		}
-
-*/
+		SDL_Delay(1);
 	}
 
 	printf("** exit thread webserv\n");
@@ -893,6 +881,7 @@ int webserv_thread (void *data) {
 
 void webserv_init (void) {
 	printf("Init Webserv-Thread\n");
+	webserv_running = 1;
 #ifdef SDL2
 	thread_webserv = SDL_CreateThread(webserv_thread, NULL, NULL);
 #else
@@ -905,7 +894,9 @@ void webserv_init (void) {
 
 void webserv_exit (void) {
 	printf("* webserv-thread kill\n");
-	SDL_KillThread(thread_webserv);
+	webserv_running = 0;
+	SDL_WaitThread(thread_webserv, NULL);
+	thread_webserv = NULL;
 	if (listenfd >= 0) {
 		close(listenfd);
 	}

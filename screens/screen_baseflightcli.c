@@ -278,14 +278,14 @@ static uint8_t baseflightcli_xml_save (char *name, float x, float y, int8_t butt
 		int n3 = 0;
 		for (n3 = 0; n3 < 399; n3++) {
 			if (bf_set_value[n3].name[0] != 0) {
-				fprintf(fr, "      <%0.16s>\n", bf_set_value[n3].name);
+				fprintf(fr, "      <%16s>\n", bf_set_value[n3].name);
 				fprintf(fr, "        <DisplayName>%s</DisplayName>\n", bf_set_value[n3].name);
 				fprintf(fr, "        <Description>%s</Description>\n", bf_set_value[n3].name);
 				fprintf(fr, "        <Units>%s</Units>\n", "");
 				fprintf(fr, "        <Range>%f %f</Range>\n", bf_set_value[n3].min, bf_set_value[n3].max);
-				fprintf(fr, "        <Increment>%f</Increment>\n", 1);
+				fprintf(fr, "        <Increment>%f</Increment>\n", 1.0);
 				fprintf(fr, "        <User>Advanced</User>\n");
-				fprintf(fr, "      </%0.16s>\n", bf_set_value[n3].name);
+				fprintf(fr, "      </%16s>\n", bf_set_value[n3].name);
 			}
 		}
 		fprintf(fr, "  </ArduCopter2>\n");

@@ -39,12 +39,10 @@ uint16_t cli_history = 0;
 
 
 void cli_update (void) {
-	static uint8_t n = 0;
 	static uint8_t nn = 0;
 	static uint8_t new = 0;
 	static uint8_t read_buffer[201];
 	static uint8_t read_num = 0;
-	static uint8_t read_y = 0;
 	static uint8_t read_x = 0;
 	static uint8_t n2 = 0;
 	if (cli_fd < 0) {
@@ -77,11 +75,6 @@ void cli_update (void) {
 	}
 }
 
-
-static uint8_t cli_null (char *name, float x, float y, int8_t button, float data) {
-	return 0;
-}
-
 uint8_t cli_init (char *port, uint32_t baud) {
 	printf("init cli serial port...\n");
 	cli_fd = serial_open(port, baud);
@@ -90,7 +83,7 @@ uint8_t cli_init (char *port, uint32_t baud) {
 
 uint8_t cli_exit (void) {
 	if (cli_fd < 0) {
-		return;
+		return 0;
 	}
 	serial_close(cli_fd);
 	cli_fd = -1;
@@ -112,6 +105,7 @@ uint8_t cli_move (char *name, float x, float y, int8_t button, float data) {
 			cli_history--;
 		}
 	}
+	return 0;
 }
 
 uint8_t cli_scroll (char *name, float x, float y, int8_t button, float data) {
@@ -136,8 +130,6 @@ void screen_cli (ESContext *esContext) {
 #endif
 	draw_title(esContext, "CLI");
 
-	int n = 0;
-	char tmp_str[100];
 #ifndef SDLGL
 	esMatrixLoadIdentity(&modelview);
 	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);

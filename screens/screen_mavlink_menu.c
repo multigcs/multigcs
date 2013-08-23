@@ -9,6 +9,7 @@
 #include <screen_keyboard.h>
 #include <screen_filesystem.h>
 #include <my_mavlink.h>
+#include <geomag70.h>
 
 float sel = 0.0;
 float set_sel = 0.0;
@@ -267,7 +268,7 @@ uint8_t mavlink_set_magdecl (char *name, float x, float y, int8_t button, float 
 		}
 	}
 	if (selected == -1) {
-		return;
+		return 0;
 	}
 	char tmp_str[100];
 	int ret_dd = 0;
@@ -295,7 +296,7 @@ uint8_t mavlink_option_sel (char *name, float x, float y, int8_t button, float d
 		}
 	}
 	if (selected == -1) {
-		return;
+		return 0;
 	}
 	MavLinkVars[selected].value = data;
 	mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
@@ -328,7 +329,7 @@ uint8_t mavlink_bits_sel (char *name, float x, float y, int8_t button, float dat
 		}
 	}
 	if (selected == -1) {
-		return;
+		return 0;
 	}
 	int new = (int)MavLinkVars[selected].value;
 	if (new & (1<<(int)data)) {
@@ -511,10 +512,8 @@ void screen_mavlink_menu (ESContext *esContext) {
 	int16_t n = 0;
 	int16_t n2 = 0;
 	int n3 = 0;
-	int n4 = 0;
 	char tmp_str[1024];
 	char tmp_str2[1024];
-	char tmp_str3[1024];
 	int8_t flag = 0;
 	int8_t flag2 = 0;
 

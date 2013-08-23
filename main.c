@@ -40,6 +40,7 @@
 #include <main.h>
 #include "my_gps.h"
 #include "mwi21.h"
+#include "simplebgc.h"
 #include "openpilot.h"
 #include "jeti.h"
 #include "frsky.h"
@@ -212,7 +213,6 @@ void save_screenshot (void) {
 #endif
 
 void save_screenshot2 (void) {
-	char name[100];
 	char tmp_str[100];
 	sprintf(tmp_str, "xwd -name \"Multi-GCS\" -out /tmp/screen.dump; ./save_screenshot.sh /tmp/screen.dump dump");
 	system(tmp_str);
