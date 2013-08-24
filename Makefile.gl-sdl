@@ -12,7 +12,7 @@ CFLAGS += -DSDLGL -O3 -Wall
 #CFLAGS += -ggdb
 #CFLAGS +=  -pg
 
-INCDIR += $(shell pkg-config --cflags sdl) $(shell pkg-config --cflags SDL_image) $(shell pkg-config --cflags gl) $(shell pkg-config --cflags glu) $(shell pkg-config --cflags glew)
+INCDIR += $(shell pkg-config --cflags sdl) $(shell pkg-config --cflags SDL_image) $(shell pkg-config --cflags gl) $(shell pkg-config --cflags glu)
 LIBS += $(shell pkg-config --libs sdl) $(shell pkg-config --libs SDL_image) $(shell pkg-config --libs gl) $(shell pkg-config --libs glu) $(shell pkg-config --libs glew)
 
 
