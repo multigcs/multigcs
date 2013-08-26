@@ -42,7 +42,7 @@ touch /tmp/gcs.run
 
 while test -e /tmp/gcs.run
 do
-	gl-gcs
+	gl-gcs $@
 	if test -e /tmp/gcs.playfile
 	then
 		if test -x /usr/bin/omxplayer
