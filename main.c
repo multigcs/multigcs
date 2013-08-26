@@ -1569,6 +1569,7 @@ void Draw (ESContext *esContext) {
 		reset_buttons();
 	}
 
+#ifndef CONSOLE_ONLY
 #ifdef RPI_NO_X
 	if (calibration_mode > 0) {
 		screen_calibration(esContext);
@@ -1585,7 +1586,8 @@ void Draw (ESContext *esContext) {
 		return;
 	}
 #endif
-
+#else
+#endif
 #ifdef SDLGL
 	if (trans_count > 0.0) {
 		trans_count += 10.0;
@@ -1707,6 +1709,8 @@ void Draw (ESContext *esContext) {
 	} else {
 		draw_image(esContext, esContext->width - 40, esContext->height - 40, 16, 16, TEXTURE_SPEAKER_MUTE);
 	}
+
+#ifndef CONSOLE_ONLY
 	// Mouse-Pointer
 	draw_pointer(esContext, mouse_x, mouse_y, 16, 16, TEXTURE_POINTER);
 	glEnable( GL_DEPTH_TEST );
@@ -1719,6 +1723,9 @@ void Draw (ESContext *esContext) {
 #else
 	SDL_GL_SwapBuffers();
 #endif
+	SDL_Delay(15);
+#endif
+#else
 	SDL_Delay(15);
 #endif
 }
@@ -1870,6 +1877,7 @@ int main ( int argc, char *argv[] ) {
 	rcflow_exit();
 	rcflow_init(rcflow_port, rcflow_baud);
 
+#ifndef CONSOLE_ONLY
 	printf("Init GL\n");
 #ifndef SDLGL
 	esInitContext ( &esContext );
@@ -1924,7 +1932,7 @@ int main ( int argc, char *argv[] ) {
 #endif
 	SDL_Delay(20);
 #endif
-
+#endif
 	screen_map(&esContext, lat, lon, zoom);
 	int16_t zz = get_altitude(ModelData.p_lat, ModelData.p_long);
 	if (ModelData.p_alt < zz + 10) {
@@ -1948,6 +1956,11 @@ int main ( int argc, char *argv[] ) {
 GlobalesContext = &esContext;
 
 	printf("Mainloop\n");
+
+#ifndef CONSOLE_ONLY
+	printf("you can connect via Browser or Google-Earth to port :8080\n");
+#endif
+
 #ifndef SDLGL
 	esMainLoop(&esContext);
 #else

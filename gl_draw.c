@@ -190,6 +190,9 @@ void object3d_draw (Object3d *o3d, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 }
 
 void draw_line_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	y1 = y1 * -1;
 	y2 = y2 * -1;
 	glBegin(GL_LINES);
@@ -200,6 +203,9 @@ void draw_line_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 }
 
 void draw_circle_f3 (ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	y1 = y1 * -1;
 	uint16_t ii = 0;
 	float num_segments = radius * 300.0;
@@ -228,6 +234,9 @@ void draw_circle_f3 (ESContext *esContext, float x1, float y1, float z1, float r
 }
 
 void draw_circle_f3_slow (ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	y1 = y1 * -1;
 	GLfloat i = 0.0;
 	GLfloat step = 1.0;
@@ -241,6 +250,9 @@ void draw_circle_f3_slow (ESContext *esContext, float x1, float y1, float z1, fl
 }
 
 void draw_circleFilled_f3 (ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	y1 = y1 * -1;
 	uint16_t ii = 0;
 	float num_segments = radius * 300.0;
@@ -281,6 +293,9 @@ void draw_circleFilled_f3 (ESContext *esContext, float x1, float y1, float z1, f
 }
 
 void draw_circleFilled_f3_slow (ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	y1 = y1 * -1;
 	GLfloat i = 0.0;
 	for (i = 0; i < 360.0; i += 2) {
@@ -294,6 +309,9 @@ void draw_circleFilled_f3_slow (ESContext *esContext, float x1, float y1, float 
 }
 
 void draw_zylinder_f3 (ESContext *esContext, float x1, float y1, float z1, float z2, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	y1 = y1 * -1;
 	GLfloat i = 0.0;
 	for (i = 0; i < 360.0; i += 2) {
@@ -307,6 +325,9 @@ void draw_zylinder_f3 (ESContext *esContext, float x1, float y1, float z1, float
 }
 
 void draw_circleFilled_f3_part (ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, float stop, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	y1 = y1 * -1;
 	uint16_t ii = 0;
 	float num_segments = radius * 300.0;
@@ -420,6 +441,9 @@ void draw_circleFilled_f3_part (ESContext *esContext, float x1, float y1, float 
 }
 
 void draw_circleFilled_f3_part_slow (ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, float stop, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	y1 = y1 * -1;
 	float i = 0.0;
 	float step = 1.0;
@@ -437,6 +461,9 @@ void draw_circleFilled_f3_part_slow (ESContext *esContext, float x1, float y1, f
 }
 
 void draw_circlePointer_f3 (ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	if (radius < 0.04) {
 		float x2 = x1 - cos(start * DEG2RAD) * radius;
 		float y2 = y1 - sin(start * DEG2RAD) * radius;
@@ -456,6 +483,9 @@ void draw_circlePointer_f3 (ESContext *esContext, float x1, float y1, float z1, 
 }
 
 void draw_trifan_f3 (ESContext *esContext, float *poly_array, uint16_t len, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	uint16_t n = 0;
 	glBegin(GL_TRIANGLE_FAN);
 	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
@@ -466,6 +496,9 @@ void draw_trifan_f3 (ESContext *esContext, float *poly_array, uint16_t len, uint
 }
 
 void draw_rect_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	y1 = y1 * -1;
 	y2 = y2 * -1;
 	glBegin(GL_LINES);
@@ -482,6 +515,9 @@ void draw_rect_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 }
 
 void draw_box_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	y1 = y1 * -1;
 	y2 = y2 * -1;
 	glBegin(GL_QUADS);
@@ -494,6 +530,9 @@ void draw_box_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, 
 }
 
 void draw_box_f3c2 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a, uint8_t r2, uint8_t g2, uint8_t b2, uint8_t a2) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	y1 = y1 * -1;
 	y2 = y2 * -1;
 	glBegin(GL_QUADS);
@@ -507,6 +546,9 @@ void draw_box_f3c2 (ESContext *esContext, float x1, float y1, float z1, float x2
 }
 
 void draw_box_f3c2b (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a, uint8_t r2, uint8_t g2, uint8_t b2, uint8_t a2) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	y1 = y1 * -1;
 	y2 = y2 * -1;
 	glBegin(GL_QUADS);
@@ -522,6 +564,9 @@ void draw_box_f3c2b (ESContext *esContext, float x1, float y1, float z1, float x
 }
 
 void draw_tria_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	y1 = y1 * -1;
 	y2 = y2 * -1;
 	y3 = y3 * -1;
@@ -534,6 +579,9 @@ void draw_tria_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 }
 
 void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, SDL_Surface *screen) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	y1 = y1 * -1;
 	y2 = y2 * -1;
 	if (screen == NULL) {
@@ -584,6 +632,9 @@ void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float 
 }
 
 void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, char *file) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	y1 = y1 * -1;
 	y2 = y2 * -1;
 	int16_t n = 0;
@@ -652,6 +703,9 @@ void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2
 
 
 void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file, float lat1, float lon1, float lat2, float lon2) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	float x1 = (float)x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 	float y1 = (float)y / (float)esContext->height * 2.0 - 1.0;
 	float x2 = x1 + (float)w / (float)esContext->width * 2.0 * aspect;
@@ -805,6 +859,9 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 }
 
 void draw_char_f3_fast (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, int8_t tex_num, char num) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	y1 = y1 * -1;
 	y2 = y2 * -1;
 	if (TexCache[tex_num].texture != 0) {
@@ -839,6 +896,9 @@ void draw_char_f3_fast (ESContext *esContext, float x1, float y1, float z1, floa
 }
 
 void draw_text_f3_fast (ESContext *esContext, float x1, float y1, float z1, float w, float h, char *file, char *text) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	int16_t n = 0;
 	int16_t tex_num = -1;
 	int16_t old_num = -1;
@@ -889,6 +949,9 @@ void draw_text_f3_fast (ESContext *esContext, float x1, float y1, float z1, floa
 }
 
 void draw_char_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, char *file, char num) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	y1 = y1 * -1;
 	y2 = y2 * -1;
 	int16_t n = 0;
@@ -1140,6 +1203,9 @@ int glInit ( ESContext *esContext ) {
 }
 
 void draw_graph_value (ESContext *esContext, float px1, float py1, float px2, float py2, float pz, uint8_t *data, int16_t len, int16_t pointer, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	uint16_t n = 0;
 	float w = px2 - px1;
 	float h = py2 - py1;

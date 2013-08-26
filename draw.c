@@ -92,6 +92,9 @@ const GLfloat DEG2RAD = 3.14159 / 180.0;
 #endif
 
 void draw_scrollbar (ESContext *esContext, uint16_t page, uint16_t page_max, uint8_t (*callback) (char *, float, float, int8_t, float)) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	if (page_max > 0) {
 		draw_box_f3(esContext, 1.3, -0.77, 0.002, 1.35, 0.77, 0.002, 255, 255, 255, 128);
 		if (page > 0) {
@@ -120,10 +123,16 @@ void draw_scrollbar (ESContext *esContext, uint16_t page, uint16_t page_max, uin
 }
 
 void draw_title (ESContext *esContext, char *text) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	draw_text_f3(esContext, 0.0 - strlen(text) * 0.06 * 0.6 / 2.0 - 0.012, -0.95, 0.02, 0.06, 0.06, FONT_GREEN, text);
 }
 
 uint8_t draw_button (ESContext *esContext, char *name, uint8_t view_mode, char *text, char *font, float x, float y, float z, float h, uint8_t align_x, uint8_t align_y, uint8_t (*callback) (char *, float, float, int8_t, float), float data) {
+#ifdef CONSOLE_ONLY
+	return 0;
+#endif
 	uint16_t n = 0;
 	float x1 = x - strlen(text) * h * 0.6 / 2.0 - 0.012;
 	float y1 = y;
@@ -366,6 +375,9 @@ int loadPNG(const char *filename) {
 }
 
 void draw_image_uncache (char *file) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	int16_t n = 0;
 	int16_t tex_num = -1;
 	for (n = 0; n < MAX_TEXCACHE; n++) {
@@ -383,10 +395,16 @@ void draw_image_uncache (char *file) {
 
 
 void draw_line_f (ESContext *esContext, float x1, float y1, float x2, float y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	draw_line_f3(esContext, x1, y1, 0.0, x2, y2, 0.0, r, g, b, a);
 }
 
 void draw_line (ESContext *esContext, int16_t px1, int16_t py1, int16_t px2, int16_t py2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	GLfloat x1 = (float)px1 / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 	GLfloat y1 = (float)py1 / (float)esContext->height * 2.0 - 1.0;
 	GLfloat x2 = (float)px2 / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
@@ -396,10 +414,16 @@ void draw_line (ESContext *esContext, int16_t px1, int16_t py1, int16_t px2, int
 
 
 void draw_circle_f (ESContext *esContext, float x1, float y1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	draw_circle_f3(esContext, x1, y1, 0.0, radius, r, g, b, a);
 }
 
 void draw_circle (ESContext *esContext, int16_t x, int16_t y, int16_t radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	GLfloat x1 = (float)x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 	GLfloat y1 = (float)y / (float)esContext->height * 2.0 - 1.0;
 	GLfloat radius1 = (float)radius / (float)esContext->width * 2.0 * aspect;
@@ -408,10 +432,16 @@ void draw_circle (ESContext *esContext, int16_t x, int16_t y, int16_t radius, ui
 }
 
 void draw_circleFilled_f (ESContext *esContext, float x1, float y1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	draw_circleFilled_f3(esContext, x1, y1, 0.0, radius, r, g, b, a);
 }
 
 void draw_circleFilled (ESContext *esContext, int16_t x, int16_t y, int16_t radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	GLfloat x1 = (float)x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 	GLfloat y1 = (float)y / (float)esContext->height * 2.0 - 1.0;
 	GLfloat radius1 = (float)radius / (float)esContext->width * 2.0 * aspect;
@@ -420,14 +450,23 @@ void draw_circleFilled (ESContext *esContext, int16_t x, int16_t y, int16_t radi
 }
 
 void draw_rect_f (ESContext *esContext, float x1, float y1, float x2, float y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	draw_rect_f3(esContext, x1, y1, 0.0, x2, y2, 0.0, r, g, b, a);
 }
 
 void draw_box_f (ESContext *esContext, float x1, float y1, float x2, float y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	draw_box_f3(esContext, x1, y1, 0.0, x2, y2, 0.0, r, g, b, a);
 }
 
 void draw_rect (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	float x1 = (float)x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 	float y1 = (float)y / (float)esContext->height * 2.0 - 1.0;
 	float x2 = x1 + (float)w / (float)esContext->width * 2.0 * aspect;
@@ -436,6 +475,9 @@ void draw_rect (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h
 }
 
 void draw_box (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	float x1 = (float)x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 	float y1 = (float)y / (float)esContext->height * 2.0 - 1.0;
 	float x2 = x1 + (float)w / (float)esContext->width * 2.0 * aspect;
@@ -444,10 +486,16 @@ void draw_box (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h,
 }
 
 void draw_tria_f (ESContext *esContext, float x1, float y1, float x2, float y2, float x3, float y3, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	draw_tria_f3(esContext, x1, y1, 0.0, x2, y2, 0.0, x3, y3, 0.0, r, g, b, a);
 }
 
 void draw_circleFilled_f3_part_end (ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	y1 = y1 * -1;
 	x1 = x1 - cos(start * DEG2RAD) * (radius_inner + (radius - radius_inner) / 2.0);
 	y1 = y1 + sin(start * DEG2RAD) * (radius_inner + (radius - radius_inner) / 2.0);
@@ -460,6 +508,9 @@ void draw_circleFilled_f3_part_end (ESContext *esContext, float x1, float y1, fl
 
 
 void draw_circleMeter_f3 (ESContext *esContext, float x, float y, float z, float radius, float start1, float start2, float start3, float start4, float value, char *text, char *text2, uint8_t type) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	float th = radius / 3.5;
 	float width = radius / 15.0;
 	if (type == 2) {
@@ -528,10 +579,16 @@ void draw_circleMeter_f3 (ESContext *esContext, float x, float y, float z, float
 }
 
 void draw_image_f (ESContext *esContext, float x1, float y1, float x2, float y2, char *file) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	draw_image_f3(esContext, x1, y1, x2, y2, 0.0, file);
 }
 
 void draw_image (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	float x1 = (float)x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 	float y1 = (float)y / (float)esContext->height * 2.0 - 1.0;
 	float x2 = x1 + (float)w / (float)esContext->width * 2.0 * aspect;
@@ -716,6 +773,9 @@ int16_t get_altitude (float lat, float lon) {
 }
 
 void draw_pointer (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	float x1 = (float)x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 	float y1 = (float)y / (float)esContext->height * 2.0 - 1.0;
 	float x2 = x1 + (float)w / (float)esContext->width * 2.0 * aspect;
@@ -724,14 +784,23 @@ void draw_pointer (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_
 }
 
 void draw_text_f3 (ESContext *esContext, float x1, float y1, float z1, float w, float h, char *file, char *text) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	draw_text_f3_fast(esContext, x1, y1, z1, w, h, file, text);
 }
 
 void draw_text_f (ESContext *esContext, float x1, float y1, float w, float h, char *file, char *text) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	draw_text_f3(esContext, x1, y1, 0.003, w, h, file, text);
 }
 
 void draw_text (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file, char *text) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
 	float x1 = (float)x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 	float y1 = (float)y / (float)esContext->height * 2.0 - 1.0;
 	float fw = (float)w / 200;
