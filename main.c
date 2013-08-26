@@ -128,6 +128,9 @@ uint8_t hud_view_video = 0;
 uint8_t hud_view_tunnel = 0;
 uint8_t hud_view_mark = 0;
 uint16_t webport = 8080;
+uint8_t clientmode = 0;
+char clientmode_server[1024];
+uint16_t clientmode_port = 8080;
 float gcs_roll = 0.0;
 float gcs_pitch = 0.0;
 float gcs_yaw = 0.0;
@@ -1182,6 +1185,12 @@ int telemetrie_thread (void *data) {
 		baseflightcli_update();
 		simplebgc_update();
 		brugi_update();
+
+		if (clientmode == 1) {
+			webclient_update(clientmode_server, clientmode_port);
+			SDL_Delay(100);
+		}
+
 		SDL_Delay(1);
 	}
 	printf("telemetry: exit thread\n");
@@ -1800,14 +1809,23 @@ int main ( int argc, char *argv[] ) {
 	UserData userData;
 #endif
 
+	if (argc >= 3 && strcmp(argv[1], "-c") == 0) {
+		strcpy(clientmode_server, argv[2]);
+		if (argc >= 4) {
+			clientmode_port = atoi(argv[3]);
+		}
+		printf("clientmode: %s:%i\n", clientmode_server, clientmode_port);
+		clientmode = 1;
+	}
+
 	time_t liczba_sekund;
 	struct tm strukt;
 	time(&liczba_sekund);
 	localtime_r(&liczba_sekund, &strukt); 
-//	printf("DATE: %d.%d %d\n", strukt.tm_mday, strukt.tm_mon+1, strukt.tm_year + 1900); 
+//	printf("DATE: %d.%d %d\n", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900); 
 
 	sprintf(tmp_name, "%s/MAPS/WMM2010.COF", BASE_DIR);
-	init_declination(tmp_name, strukt.tm_year + 1900, strukt.tm_mon+1, strukt.tm_mday);
+	init_declination(tmp_name, strukt.tm_year + 1900, strukt.tm_mon + 1, strukt.tm_mday);
 
 	uint16_t n = 0;
 	for (n = 0; n < MAX_TEXCACHE; n++) {
@@ -1909,8 +1927,9 @@ int main ( int argc, char *argv[] ) {
 		ModelData.p_alt = zz + 10;
 	}
 
-
-	webserv_init();
+	if (clientmode != 1) {
+		webserv_init();
+	}
 
 	frsky_exit();
 	frsky_init(frsky_port, frsky_baud);
