@@ -570,6 +570,22 @@ void draw_tria_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 	y1 = y1 * -1;
 	y2 = y2 * -1;
 	y3 = y3 * -1;
+	glBegin(GL_LINES);
+	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
+	glVertex3f(x1, y1, -2.0 + z1);
+	glVertex3f(x2, y2, -2.0 + z2);
+	glVertex3f(x3, y3, -2.0 + z3);
+	glVertex3f(x1, y1, -2.0 + z1);
+	glEnd();
+}
+
+void draw_triaFilled_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
+	y1 = y1 * -1;
+	y2 = y2 * -1;
+	y3 = y3 * -1;
 	glBegin(GL_TRIANGLES);
 	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
 	glVertex3f(x1, y1, -2.0 + z1);
@@ -702,7 +718,7 @@ void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2
 }
 
 
-void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file, float lat1, float lon1, float lat2, float lon2) {
+void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file, float lat1, float lon1, float lat2, float lon2, float alpha1, float alpha2) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -776,12 +792,14 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 		float _dhx = _hx2 - _hx1;
 		float _dhy = _hy2 - _hy1;
 		uint8_t subtiles = 5;
+/*
 		subtiles = (int)((lat1 -  lat2) * 400);
 		if (subtiles < 2) {
 			subtiles = 2;
 		} else if (subtiles > 7) {
 			subtiles = 7;
 		}
+*/
 		for (ty = 0; ty < subtiles; ty++) {
 			for (tx = 0; tx < subtiles; tx++) {
 				float tx1 = x1 + dx / (float)subtiles * (float)tx;
@@ -799,10 +817,10 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 				float _thy1 = _hy1 + _dhy / (float)subtiles * (float)ty;
 				float _thy2 = _hy1 + _dhy / (float)subtiles * (float)(ty + 1);
 
-				int16_t _alt1 = get_altitude(_thy1, _thx1);
-				int16_t _alt2 = get_altitude(_thy1, _thx2);
-				int16_t _alt3 = get_altitude(_thy2, _thx2);
-				int16_t _alt4 = get_altitude(_thy2, _thx1);
+				int16_t _alt1 = get_altitude(_thy1, _thx1) - 20;
+				int16_t _alt2 = get_altitude(_thy1, _thx2) - 20;
+				int16_t _alt3 = get_altitude(_thy2, _thx2) - 20;
+				int16_t _alt4 = get_altitude(_thy2, _thx1) - 20;
 
 				z1 = z + (float)_alt1 / alt_zoom;
 				z2 = z + (float)_alt2 / alt_zoom;
@@ -827,28 +845,36 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 				if ((float)_alt1 > ModelData.p_alt || (float)_alt2 > ModelData.p_alt || (float)_alt3 > ModelData.p_alt || (float)_alt4 > ModelData.p_alt) {
 					glBegin( GL_QUADS );
 					if ((float)_alt1 > ModelData.p_alt) {
-						glColor4f(1.0, 0.0, 0.0, 0.2);
+						glColor4f(1.0, 0.0, 0.0, alpha1);
 					} else {
-						glColor4f(1.0, 0.0, 0.0, 0.0);
+						glColor4f(0.0, 1.0, 0.0, alpha2);
 					}
 					glVertex3f(tx1, ty1, -2.0 + z1);
 					if ((float)_alt2 > ModelData.p_alt) {
-						glColor4f(1.0, 0.0, 0.0, 0.2);
+						glColor4f(1.0, 0.0, 0.0, alpha1);
 					} else {
-						glColor4f(1.0, 0.0, 0.0, 0.0);
+						glColor4f(0.0, 1.0, 0.0, alpha2);
 					}
 					glVertex3f(tx2, ty1, -2.0 + z2);
 					if ((float)_alt3 > ModelData.p_alt) {
-						glColor4f(1.0, 0.0, 0.0, 0.2);
+						glColor4f(1.0, 0.0, 0.0, alpha1);
 					} else {
-						glColor4f(1.0, 0.0, 0.0, 0.0);
+						glColor4f(0.0, 1.0, 0.0, alpha2);
 					}
 					glVertex3f(tx2, ty2, -2.0 + z3);
 					if ((float)_alt4 > ModelData.p_alt) {
-						glColor4f(1.0, 0.0, 0.0, 0.2);
+						glColor4f(1.0, 0.0, 0.0, alpha1);
 					} else {
-						glColor4f(1.0, 0.0, 0.0, 0.0);
+						glColor4f(0.0, 1.0, 0.0, alpha2);
 					}
+					glVertex3f(tx1, ty2, -2.0 + z4);
+					glEnd();
+				} else if (alpha2 > 0.0) {
+					glBegin( GL_QUADS );
+					glColor4f(0.0, 1.0, 0.0, alpha2);
+					glVertex3f(tx1, ty1, -2.0 + z1);
+					glVertex3f(tx2, ty1, -2.0 + z2);
+					glVertex3f(tx2, ty2, -2.0 + z3);
 					glVertex3f(tx1, ty2, -2.0 + z4);
 					glEnd();
 				}

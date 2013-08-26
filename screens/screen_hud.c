@@ -148,8 +148,8 @@ void draw_turning_indicator (ESContext *esContext, float ti_x, float ti_y, float
 	// Seite
 	draw_box_f3(esContext, 0.0 - (w / 40.0), 0.0, 0.005, 0.0 + (w / 140.0), 0.0 - 0.1, 0.005, 255, 255, 255, 255);
 	// Flaechen
-	draw_tria_f3(esContext, 0.0, 0.0 - (w / 40.0), 0.005, 0.0 + (w / 2.2), 0.0, (w / 40.0), 0.0, 0.0 + (w / 40.0), 0.005, 255, 255, 255, 255);
-	draw_tria_f3(esContext, 0.0, 0.0 - (w / 40.0), 0.005, 0.0 - (w / 2.2), 0.0, (w / 40.0), 0.0, 0.0 + (w / 40.0), 0.005, 255, 255, 255, 255);
+	draw_triaFilled_f3(esContext, 0.0, 0.0 - (w / 40.0), 0.005, 0.0 + (w / 2.2), 0.0, (w / 40.0), 0.0, 0.0 + (w / 40.0), 0.005, 255, 255, 255, 255);
+	draw_triaFilled_f3(esContext, 0.0, 0.0 - (w / 40.0), 0.005, 0.0 - (w / 2.2), 0.0, (w / 40.0), 0.0, 0.0 + (w / 40.0), 0.005, 255, 255, 255, 255);
 	esRotate(&modelview, -rate_yaw, 0.0, 0.0, 1.0);
 #ifndef SDLGL
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
@@ -282,7 +282,7 @@ void draw_altiude_rule (ESContext *esContext, float ti_x, float ti_y, float w, f
 		draw_line_f3(esContext, ax1, 0.0 - ((float)n - (ModelData.p_alt - ModelData.alt_offset)) * 0.1 + 0.05, 0.0015, ax1 + 0.01, 0.0 - ((float)n - (ModelData.p_alt - ModelData.alt_offset)) * 0.1 + 0.05, 0.0015, 255, 255, 255, 255);
 	}
 	draw_box_f3(esContext, ax, -0.05, 0.002, ax + 0.28, 0.05, 0.002, 0, 0, 0, 255);
-	draw_tria_f3(esContext, ax - 0.02, 0.0, 0.002, ax, -0.02, 0.002, ax, 0.02, 0.002, 0, 0, 0, 255);
+	draw_triaFilled_f3(esContext, ax - 0.02, 0.0, 0.002, ax, -0.02, 0.002, ax, 0.02, 0.002, 0, 0, 0, 255);
 	draw_line_f3(esContext, ax, -0.05, 0.002, ax + 0.28, -0.05, 0.002, 255, 255, 255, 255);
 	draw_line_f3(esContext, ax, 0.05, 0.002, ax + 0.28, 0.05, 0.002, 255, 255, 255, 255);
 	draw_line_f3(esContext, ax + 0.28, -0.05, 0.002, ax + 0.28, 0.05, 0.002, 255, 255, 255, 255);
@@ -350,7 +350,7 @@ void draw_speed_rule (ESContext *esContext, float ti_x, float ti_y, float w, flo
 	}
 
 	draw_box_f3(esContext, ax, -0.05, 0.002, ax - 0.28, 0.05, 0.002, 0, 0, 0, 255);
-	draw_tria_f3(esContext, ax + 0.02, 0.0, 0.002, ax, -0.02, 0.002, ax, 0.02, 0.002, 0, 0, 0, 255);
+	draw_triaFilled_f3(esContext, ax + 0.02, 0.0, 0.002, ax, -0.02, 0.002, ax, 0.02, 0.002, 0, 0, 0, 255);
 	draw_line_f3(esContext, ax, -0.05, 0.002, ax - 0.28, -0.05, 0.002, 255, 255, 255, 255);
 	draw_line_f3(esContext, ax, 0.05, 0.002, ax - 0.28, 0.05, 0.002, 255, 255, 255, 255);
 	draw_line_f3(esContext, ax - 0.28, -0.05, 0.002, ax - 0.28, 0.05, 0.002, 255, 255, 255, 255);

@@ -1155,8 +1155,8 @@ void mark_route (ESContext *esContext, float last_lat, float last_long, float la
 	}
 
 	if (type != 4 && type != 5) {
-		draw_tria_f3(esContext, x1, y1, z1, x2, y2, z2, x2, y2, mark_z, 255, 255, 255, 127);
-		draw_tria_f3(esContext, x1, y1, last_z, x1, y1, z1, x2, y2, mark_z, 255, 255, 255, 127);
+		draw_triaFilled_f3(esContext, x1, y1, z1, x2, y2, z2, x2, y2, mark_z, 255, 255, 255, 127);
+		draw_triaFilled_f3(esContext, x1, y1, last_z, x1, y1, z1, x2, y2, mark_z, 255, 255, 255, 127);
 	}
 
 	if (type == 1) {
@@ -1395,8 +1395,8 @@ void draw_notam (ESContext *esContext, float lat, float lon, uint8_t zoom) {
 				flag1 = 0;
 				if (last_x1 != 0.0 && first_x1 != 0.0) {
 					draw_line_f3(esContext, last_x1, last_y1, last_z1, first_x1, first_y1, first_z1, 0, 255, 0, 255);
-					draw_tria_f3(esContext, last_x1, last_y1, last_z1, first_x1, first_y1, first_z1, first_x1, first_y1, 0.0, 255, 0, 0, 64);
-					draw_tria_f3(esContext, last_x1, last_y1, 0.0, last_x1, last_y1, last_z1, first_x1, first_y1, 0.0, 255, 0, 0, 64);
+					draw_triaFilled_f3(esContext, last_x1, last_y1, last_z1, first_x1, first_y1, first_z1, first_x1, first_y1, 0.0, 255, 0, 0, 64);
+					draw_triaFilled_f3(esContext, last_x1, last_y1, 0.0, last_x1, last_y1, last_z1, first_x1, first_y1, 0.0, 255, 0, 0, 64);
 					poly_array[0] = dp_x_min + (dp_x_max - dp_x_min) / 2.0;
 					poly_array[1] = dp_y_min + (dp_y_max - dp_y_min) / 2.0;
 					poly_array[2] = first_z1;
@@ -1446,8 +1446,8 @@ void draw_notam (ESContext *esContext, float lat, float lon, uint8_t zoom) {
 						draw_circleFilled_f3(esContext, x1, y1, z1, 0.01, 0, 255, 0, 255);
 						if (last_x1 != 0.0) {
 							draw_line_f3(esContext, last_x1, last_y1, last_z1, x1, y1, z1, 0, 255, 0, 255);
-							draw_tria_f3(esContext, last_x1, last_y1, last_z1, x1, y1, z1, x1, y1, 0.0, 255, 0, 0, 64);
-							draw_tria_f3(esContext, last_x1, last_y1, 0.0, last_x1, last_y1, last_z1, x1, y1, 0.0, 255, 0, 0, 64);
+							draw_triaFilled_f3(esContext, last_x1, last_y1, last_z1, x1, y1, z1, x1, y1, 0.0, 255, 0, 0, 64);
+							draw_triaFilled_f3(esContext, last_x1, last_y1, 0.0, last_x1, last_y1, last_z1, x1, y1, 0.0, 255, 0, 0, 64);
 						} else {
 //							printf("map: %s\n", ap_name);
 							first_x1 = x1;
@@ -1763,8 +1763,10 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			for (x_n = -MAP_OVERLAY; x_n < tiles_x + MAP_OVERLAY; x_n++) {
 				sprintf(tile_name, mapnames[map_type][MAP_FILE], BASE_DIR, zoom, tile_x + x_n, tile_y + y_n);
 				if (file_exists(tile_name) != 0) {
-					if (_map_view == 1 || _map_view == 3 || _map_view == 4) {
-						draw_image_srtm(esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, zoom), tilex2long(tile_x + x_n, zoom), tiley2lat(tile_y + y_n + 1, zoom), tilex2long(tile_x + x_n + 1, zoom));
+					if (_map_view == 3 || _map_view == 4) {
+						draw_image_srtm(esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, zoom), tilex2long(tile_x + x_n, zoom), tiley2lat(tile_y + y_n + 1, zoom), tilex2long(tile_x + x_n + 1, zoom), 0.7, 0.4);
+					} else if (_map_view == 1 || _map_view == 3 || _map_view == 4) {
+						draw_image_srtm(esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, zoom), tilex2long(tile_x + x_n, zoom), tiley2lat(tile_y + y_n + 1, zoom), tilex2long(tile_x + x_n + 1, zoom), 0.25, 0.0);
 					} else {
 						draw_image(esContext, x_n * 256, y_n * 256, 256, 256, tile_name);
 					}
@@ -1776,8 +1778,10 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				if (omapnames[omap_type][MAP_FILE][0] != 0) {
 					sprintf(tile_name, omapnames[omap_type][MAP_FILE], BASE_DIR, zoom, tile_x + x_n, tile_y + y_n);
 					if (file_exists(tile_name) != 0) {
-						if (_map_view == 1 || _map_view == 3 || _map_view == 4) {
-							draw_image_srtm(esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, zoom), tilex2long(tile_x + x_n, zoom), tiley2lat(tile_y + y_n + 1, zoom), tilex2long(tile_x + x_n + 1, zoom));
+						if (_map_view == 3 || _map_view == 4) {
+							draw_image_srtm(esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, zoom), tilex2long(tile_x + x_n, zoom), tiley2lat(tile_y + y_n + 1, zoom), tilex2long(tile_x + x_n + 1, zoom), 0.7, 0.4);
+						} else if (_map_view == 1 || _map_view == 3 || _map_view == 4) {
+							draw_image_srtm(esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, zoom), tilex2long(tile_x + x_n, zoom), tiley2lat(tile_y + y_n + 1, zoom), tilex2long(tile_x + x_n + 1, zoom), 0.25, 0.0);
 						} else {
 							draw_image(esContext, x_n * 256, y_n * 256, 256, 256, tile_name);
 						}
@@ -2276,6 +2280,13 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	}
 	glEnable( GL_DEPTH_TEST );
 #ifdef SDLGL
+
+	if (_map_view == 3 || _map_view == 4) {
+		roty = 0.0;
+		glMatrixMode(GL_PROJECTION);
+		glPopMatrix();
+		glMatrixMode(GL_MODELVIEW);
+	}
 	glPopMatrix();
 #endif
 

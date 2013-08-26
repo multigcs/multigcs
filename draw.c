@@ -492,6 +492,13 @@ void draw_tria_f (ESContext *esContext, float x1, float y1, float x2, float y2, 
 	draw_tria_f3(esContext, x1, y1, 0.0, x2, y2, 0.0, x3, y3, 0.0, r, g, b, a);
 }
 
+void draw_triaFilled_f (ESContext *esContext, float x1, float y1, float x2, float y2, float x3, float y3, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
+	draw_triaFilled_f3(esContext, x1, y1, 0.0, x2, y2, 0.0, x3, y3, 0.0, r, g, b, a);
+}
+
 void draw_circleFilled_f3_part_end (ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;

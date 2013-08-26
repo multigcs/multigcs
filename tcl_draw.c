@@ -395,6 +395,56 @@ int tclcmd_draw_tria_f (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj 
 	return TCL_OK;
 }
 
+/* void draw_triaFilled_f (ESContext *esContext, float x1, float y1, float x2, float y2, float x3, float y3, uint8_t r, uint8_t g, uint8_t b, uint8_t a) { */
+int tclcmd_draw_triaFilled_f (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+	if (objc != 11) {
+		Tcl_WrongNumArgs (interp, 1, objv, "{ESContext *esContext} { float x1} { float y1} { float x2} { float y2} { float x3} { float y3} { uint8_t r} { uint8_t g} { uint8_t b} { uint8_t a}");
+		return TCL_ERROR;
+	}
+	double arg_x1;
+	if (Tcl_GetDoubleFromObj(interp, objv[1], (double *)&arg_x1) != TCL_OK) {
+		return TCL_ERROR;
+	}
+	double arg_y1;
+	if (Tcl_GetDoubleFromObj(interp, objv[2], (double *)&arg_y1) != TCL_OK) {
+		return TCL_ERROR;
+	}
+	double arg_x2;
+	if (Tcl_GetDoubleFromObj(interp, objv[3], (double *)&arg_x2) != TCL_OK) {
+		return TCL_ERROR;
+	}
+	double arg_y2;
+	if (Tcl_GetDoubleFromObj(interp, objv[4], (double *)&arg_y2) != TCL_OK) {
+		return TCL_ERROR;
+	}
+	double arg_x3;
+	if (Tcl_GetDoubleFromObj(interp, objv[5], (double *)&arg_x3) != TCL_OK) {
+		return TCL_ERROR;
+	}
+	double arg_y3;
+	if (Tcl_GetDoubleFromObj(interp, objv[6], (double *)&arg_y3) != TCL_OK) {
+		return TCL_ERROR;
+	}
+	uint8_t arg_r;
+	if (Tcl_GetIntFromObj(interp, objv[7], (int *)&arg_r) != TCL_OK) {
+		return TCL_ERROR;
+	}
+	uint8_t arg_g;
+	if (Tcl_GetIntFromObj(interp, objv[8], (int *)&arg_g) != TCL_OK) {
+		return TCL_ERROR;
+	}
+	uint8_t arg_b;
+	if (Tcl_GetIntFromObj(interp, objv[9], (int *)&arg_b) != TCL_OK) {
+		return TCL_ERROR;
+	}
+	uint8_t arg_a;
+	if (Tcl_GetIntFromObj(interp, objv[10], (int *)&arg_a) != TCL_OK) {
+		return TCL_ERROR;
+	}
+	draw_triaFilled_f(GlobalesContext, (float)arg_x1, (float)arg_y1, (float)arg_x2, (float)arg_y2, (float)arg_x3, (float)arg_y3, arg_r, arg_g, arg_b, arg_a);
+	return TCL_OK;
+}
+
 /* void draw_circleFilled_f3_part_end (ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, uint8_t r, uint8_t g, uint8_t b, uint8_t a) { */
 int tclcmd_draw_circleFilled_f3_part_end (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	if (objc != 11) {

@@ -312,6 +312,32 @@ void draw_tria_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 		x2, y2, -2.0 + z2,  // Position 1
 		x3, y3, -2.0 + z3,   // Position 2
 	};
+	GLushort indices[] = { 0, 1, 2, 0 };
+
+	colors[0] = (float)r / 255;
+	colors[1] = (float)g / 255;
+	colors[2] = (float)b / 255;
+	colors[3] = (float)a / 255;
+
+	glUseProgram ( userData->programObject2 );
+	glUniformMatrix4fv( userData->mvpLoc2, 1, GL_FALSE, (GLfloat*) &userData->mvpMatrix2.m[0][0] );
+	glVertexAttribPointer ( 0, 3, GL_FLOAT, GL_FALSE, 0, vVertices );
+	glEnableVertexAttribArray ( 0 );
+	glUniform4fv( userData->colorLoc2, 1, colors );
+	glDrawElements ( GL_LINES, 3, GL_UNSIGNED_SHORT, indices );
+}
+
+void draw_triaFilled_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+	UserData *userData = esContext->userData;
+	y1 = y1 * -1;
+	y2 = y2 * -1;
+	y3 = y3 * -1;
+
+	GLfloat vVertices[] = {
+		x1, y1, -2.0 + z1,  // Position 0
+		x2, y2, -2.0 + z2,  // Position 1
+		x3, y3, -2.0 + z3,   // Position 2
+	};
 	GLushort indices[] = { 0, 1, 2 };
 
 	colors[0] = (float)r / 255;
@@ -327,7 +353,7 @@ void draw_tria_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 	glDrawElements ( GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, indices );
 }
 
-void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file, float lat1, float lon1, float lat2, float lon2) {
+void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file, float lat1, float lon1, float lat2, float lon2, float alpha1, float alpha2) {
 	UserData *userData = esContext->userData;
 	float x1 = (float)x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 	float y1 = (float)y / (float)esContext->height * 2.0 - 1.0;
