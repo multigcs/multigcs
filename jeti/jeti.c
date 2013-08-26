@@ -55,7 +55,7 @@ uint8_t jeti_right (char *name, float x, float y, int8_t button, float data) {
 void jeti_init (char *mdevice, uint32_t baud) {
 	strcpy(jeti_line1, "--- Jeti Box ---");
 	strcpy(jeti_line2, " wait for data  ");
-	printf("init jeti serial port...\n");
+	printf("jeti: init serial port...\n");
 	jeti_serial_fd = serial_open9b(mdevice, baud);
 }
 
@@ -72,19 +72,19 @@ void jeti_update (void) {
 		while ((res = read(jeti_serial_fd, jeti_serial_buf, 1)) > 0) {
 			last_connection = time(0);
 			c = jeti_serial_buf[0];
-//			printf("%i: %i (%c)\n", jeti_line_cn, c, c);
+//			printf("jeti: %i: %i (%c)\n", jeti_line_cn, c, c);
 			if (c == 254) {
 				jeti_line_cn = 0;
 			} else if (c == 255) {
 				if (jeti_line_cn == 32) {
 					strncpy(jeti_line1, jeti_line, 16);
 					strncpy(jeti_line2, jeti_line + 16, 16);
-//					printf("| %s |\n", jeti_line1);
-//					printf("| %s |\n", jeti_line2);
-//					printf("--------------------\n");
+//					printf("jeti: | %s |\n", jeti_line1);
+//					printf("jeti: | %s |\n", jeti_line2);
+//					printf("jeti: --------------------\n");
 					if (jeti_button > 0) {
 						usleep(10000);
-						printf("Button: %c\n", jeti_button);
+						printf("jeti: Button: %c\n", jeti_button);
 //						write(jeti_serial_fd, jeti_button, 1);
 						jeti_button = 0;
 					}

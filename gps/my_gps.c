@@ -56,7 +56,7 @@ int thread_serial_gps (void *unused) {
 				line[n++] = serial_buf[0];
 				line[n] = 0;
 			} else {
-//				printf("%s\n", line);
+//				printf("gps: %s\n", line);
 				if (strncmp(line, "$GPVTG", 6) == 0) {
 					float track;
 					char ch_T;
@@ -67,7 +67,7 @@ int thread_serial_gps (void *unused) {
 					float speed;
 					char ch_K;
 					sscanf( line, "$GPVTG,%f,%c,%c,%c,%f,%c,%f,%c,", &track, &ch_T, &null1, &null2, &speed_knots, &knots, &speed, &ch_K);
-//					printf("%s\n", line);
+//					printf("gps: %s\n", line);
 					ModelData.speed = speed;
 					redraw_flag = 1;
 				} else if (strncmp(line, "$GPRMC", 6) == 0) {
@@ -83,7 +83,7 @@ int thread_serial_gps (void *unused) {
 					float mag_var;
 					char ch_E;
 					sscanf( line, "$GPRMC,%f,%c,%f,%c,%f,%c,%f,%f,%f,%f,%c", &time, &ch_A, &lat1, &ch_N, &lon1, &ch_W, &speed_knots, &curse, &date, &mag_var, &ch_E);
-//					printf("%s %f\n", line, curse);
+//					printf("gps: %s %f\n", line, curse);
 					ModelData.yaw = curse;
 					redraw_flag = 1;
 				} else if (strncmp(line, "$GPGGA", 6) == 0) {
@@ -100,8 +100,8 @@ int thread_serial_gps (void *unused) {
 					float alt1;
 					char alt1_unit;
 					sscanf( line, "$GPGGA,%f,%f,%c,%f,%c,%d,%d,%f,%f,%c,%f,%c", &time, &lat1, &latdir, &lon1, &londir, &quality, &num_sat, &hdilution, &alt2, &alt2_unit, &alt1, &alt1_unit);
-//					printf("%s\n", line);
-//					printf("###################### %f, %f, %c, %f, %c, %d, %d, %f, %f, %c, %f, %c ##\n", time, lat1, latdir, lon1, londir, quality, num_sat, hdilution, alt2, alt2_unit, alt1, alt1_unit);
+//					printf("gps: %s\n", line);
+//					printf("gps: ###################### %f, %f, %c, %f, %c, %d, %d, %f, %f, %c, %f, %c ##\n", time, lat1, latdir, lon1, londir, quality, num_sat, hdilution, alt2, alt2_unit, alt1, alt1_unit);
 					char tmp_str[20];
 					sprintf(tmp_str, "%2.0f", lat1);
 					float hlat = atof(tmp_str + 2) / 60.0;
@@ -165,7 +165,7 @@ int thread_serial_gps (void *unused) {
 		}
 		usleep(100000);
 	}
-	printf("**exit thread gps\n");
+	printf("gps: exit thread\n");
 	return 0;
 }
 
@@ -235,13 +235,13 @@ int gcs_thread_serial_gps (void *unused) {
 		}
 		usleep(100000);
 	}
-	printf("**exit thread gps\n");
+	printf("gcs-gps: exit gps\n");
 	return 0;
 }
 
 
 uint8_t gcs_gps_init (char *port, uint32_t baud) {
-	printf("init gcs_gps serial port...\n");
+	printf("gcs-gps: init serial port...\n");
 	gcs_serial_fd_gps = serial_open(port, baud);
 	if (gcs_serial_fd_gps != -1) {
 #ifdef SDL2
@@ -250,7 +250,7 @@ uint8_t gcs_gps_init (char *port, uint32_t baud) {
 		gcs_sdl_thread_serial_gps = SDL_CreateThread(gcs_thread_serial_gps, NULL);
 #endif
 		if ( gcs_sdl_thread_serial_gps == NULL ) {
-			fprintf(stderr, "Unable to create gcs_thread_serial_gps: %s\n", SDL_GetError());
+			fprintf(stderr, "gcs-gps: Unable to create gcs_thread_serial_gps: %s\n", SDL_GetError());
 			return 1;
 		}
 	}
@@ -259,7 +259,7 @@ uint8_t gcs_gps_init (char *port, uint32_t baud) {
 
 uint8_t gps_init (char *port, uint32_t baud) {
 	gps_thread_running = 1;
-	printf("init gps serial port...\n");
+	printf("gps: init serial port...\n");
 	serial_fd_gps = serial_open(port, baud);
 	if (serial_fd_gps != -1) {
 #ifdef SDL2
@@ -268,7 +268,7 @@ uint8_t gps_init (char *port, uint32_t baud) {
 		sdl_thread_serial_gps = SDL_CreateThread(thread_serial_gps, NULL);
 #endif
 		if ( sdl_thread_serial_gps == NULL ) {
-			fprintf(stderr, "Unable to create thread_serial_gps: %s\n", SDL_GetError());
+			fprintf(stderr, "gps: Unable to create thread_serial_gps: %s\n", SDL_GetError());
 			return 1;
 		}
 	}
@@ -277,6 +277,7 @@ uint8_t gps_init (char *port, uint32_t baud) {
 
 void gcs_gps_exit (void) {
 	if ( gcs_sdl_thread_serial_gps != NULL ) {
+		printf("gcs-gps: wait thread\n");
 		SDL_WaitThread(gcs_sdl_thread_serial_gps, NULL);
 		gcs_sdl_thread_serial_gps = NULL;
 	}
@@ -286,6 +287,7 @@ void gcs_gps_exit (void) {
 void gps_exit (void) {
 	gps_thread_running = 0;
 	if ( sdl_thread_serial_gps != NULL ) {
+		printf("gps: wait thread\n");
 		SDL_WaitThread(sdl_thread_serial_gps, NULL);
 		sdl_thread_serial_gps = NULL;
 	}

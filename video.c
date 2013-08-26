@@ -75,7 +75,7 @@ uint8_t video_ok = 1;
 SDL_Surface *data_sf;
 
 static void errno_exit(const char *s) {
-	fprintf(stderr, "%s error %d, %s\n", s, errno, strerror(errno));
+	fprintf(stderr, "videocapture: * %s error %d, %s\n", s, errno, strerror(errno));
 	video_ok = 0;
 //	exit(EXIT_FAILURE);
 }
@@ -274,7 +274,7 @@ SDL_Surface *videodev_loop (void) {
             }
 
             if (0 == r) {
-                fprintf(stderr, "select timeout\n");
+                fprintf(stderr, "videocapture: select timeout\n");
                 exit(EXIT_FAILURE);
             }
 
@@ -388,7 +388,7 @@ static void init_read(unsigned int buffer_size)
 
     if (!buffers)
     {
-        fprintf(stderr, "Out of memory\n");
+        fprintf(stderr, "videocapture: Out of memory\n");
         exit(EXIT_FAILURE);
     }
 
@@ -397,7 +397,7 @@ static void init_read(unsigned int buffer_size)
 
     if (!buffers[0].start)
     {
-        fprintf(stderr, "Out of memory\n");
+        fprintf(stderr, "videocapture: Out of memory\n");
         exit(EXIT_FAILURE);
     }
 }
@@ -415,7 +415,7 @@ static void init_mmap(void) {
     {
         if (EINVAL == errno)
         {
-            fprintf(stderr, "%s does not support "
+            fprintf(stderr, "videocapture: %s does not support "
                     "memory mapping\n", dev_name);
             exit(EXIT_FAILURE);
         }
@@ -426,14 +426,14 @@ static void init_mmap(void) {
     }
 
     if (req.count < 2) {
-        fprintf(stderr, "Insufficient buffer memory on %s\n", dev_name);
+        fprintf(stderr, "videocapture: Insufficient buffer memory on %s\n", dev_name);
         exit(EXIT_FAILURE);
     }
 
     buffers = calloc(req.count, sizeof(*buffers));
 
     if (!buffers) {
-        fprintf(stderr, "Out of memory\n");
+        fprintf(stderr, "videocapture: Out of memory\n");
         exit(EXIT_FAILURE);
     }
 
@@ -478,7 +478,7 @@ static void init_userp(unsigned int buffer_size) {
 
     if (-1 == xioctl(fd, VIDIOC_REQBUFS, &req)) {
         if (EINVAL == errno) {
-            fprintf(stderr, "%s does not support "
+            fprintf(stderr, "videocapture: %s does not support "
                     "user pointer i/o\n", dev_name);
             exit(EXIT_FAILURE);
         } else {
@@ -487,14 +487,14 @@ static void init_userp(unsigned int buffer_size) {
     }
     buffers = calloc(4, sizeof(*buffers));
     if (!buffers) {
-        fprintf(stderr, "Out of memory\n");
+        fprintf(stderr, "videocapture: Out of memory\n");
         exit(EXIT_FAILURE);
     }
     for (n_buffers = 0; n_buffers < 4; ++n_buffers) {
         buffers[n_buffers].length = buffer_size;
         buffers[n_buffers].start = memalign(page_size, buffer_size);
         if (!buffers[n_buffers].start) {
-            fprintf(stderr, "Out of memory\n");
+            fprintf(stderr, "videocapture: Out of memory\n");
             exit(EXIT_FAILURE);
         }
     }
@@ -508,27 +508,27 @@ static void init_device(void) {
     unsigned int min;
     if (-1 == xioctl(fd, VIDIOC_QUERYCAP, &cap)) {
         if (EINVAL == errno) {
-            fprintf(stderr, "%s is no V4L2 device\n", dev_name);
+            fprintf(stderr, "videocapture: %s is no V4L2 device\n", dev_name);
             return;
         } else {
             return;
         }
     }
     if (!(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE)) {
-        fprintf(stderr, "%s is no video capture device\n", dev_name);
+        fprintf(stderr, "videocapture: %s is no video capture device\n", dev_name);
         return;
     }
     switch (io) {
     case IO_METHOD_READ:
         if (!(cap.capabilities & V4L2_CAP_READWRITE)) {
-            fprintf(stderr, "%s does not support read i/o\n", dev_name);
+            fprintf(stderr, "videocapture: %s does not support read i/o\n", dev_name);
             exit(EXIT_FAILURE);
         }
         break;
     case IO_METHOD_MMAP:
     case IO_METHOD_USERPTR:
         if (!(cap.capabilities & V4L2_CAP_STREAMING)) {
-            fprintf(stderr, "%s does not support streaming i/o\n", dev_name);
+            fprintf(stderr, "videocapture: %s does not support streaming i/o\n", dev_name);
             exit(EXIT_FAILURE);
         }
         break;
@@ -598,35 +598,32 @@ static void close_device(void) {
 static void open_device(void) {
 	struct stat st;
 	if (-1 == stat(dev_name, &st)) {
-		fprintf(stderr, "Cannot identify '%s': %d, %s\n", dev_name, errno, strerror(errno));
+		fprintf(stderr, "videocapture: Cannot identify '%s': %d, %s\n", dev_name, errno, strerror(errno));
 		return;
 	}
 	if (!S_ISCHR(st.st_mode)) {
-		fprintf(stderr, "%s is no device\n", dev_name);
+		fprintf(stderr, "videocapture: %s is no device\n", dev_name);
 		return;
 	}
 	fd = open(dev_name, O_RDWR /* required */  | O_NONBLOCK, 0);
 	if (-1 == fd) {
-		fprintf(stderr, "Cannot open '%s': %d, %s\n", dev_name, errno, strerror(errno));
+		fprintf(stderr, "videocapture: Cannot open '%s': %d, %s\n", dev_name, errno, strerror(errno));
 		return;
 	}
 }
 
 int videodev_stop (void) {
-//	printf("	stop capturing\n");
+	printf("videocapture: exit\n");
 	stop_capturing();
-//	printf("	close device\n");
 	close_device();
-//	printf("	uninit device\n");
 	uninit_device();
-//	printf("	free curface\n");
 	SDL_FreeSurface(data_sf);
-//	printf("	free buffer\n");
 	free(buffer_sdl);
 	return 0;
 }
 
 int videodev_start (void) {
+	printf("videocapture: init\n");
 	dev_name = "/dev/video0";
 	generate_YCbCr_to_RGB_lookup();
 	open_device();

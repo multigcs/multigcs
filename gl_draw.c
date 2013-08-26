@@ -662,7 +662,7 @@ void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2
 		}
 		if (tex_num == -1) {
 			tex_num = old_num;
-			printf("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
+//			printf("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
 			glDeleteTextures( 1, &TexCache[tex_num].texture );
 			TexCache[tex_num].name[0] = 0;
 			TexCache[tex_num].texture = 0;
@@ -740,7 +740,7 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 		}
 		if (tex_num == -1) {
 			tex_num = old_num;
-			printf("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
+//			printf("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
 			glDeleteTextures( 1, &TexCache[tex_num].texture );
 			TexCache[tex_num].name[0] = 0;
 			TexCache[tex_num].texture = 0;
@@ -924,13 +924,13 @@ void draw_text_f3_fast (ESContext *esContext, float x1, float y1, float z1, floa
 		}
 		if (tex_num == -1) {
 			tex_num = old_num;
-			printf("remove font %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
+//			printf("remove font %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
 			glDeleteTextures( 1, &TexCache[tex_num].texture );
 			TexCache[tex_num].name[0] = 0;
 			TexCache[tex_num].texture = 0;
 		}
 		if (tex_num >= 0) {
-			printf("loading font %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
+//			printf("loading font %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
 			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) { 
 				strcpy(TexCache[tex_num].name, file);
 				TexCache[tex_num].atime = time(0);
@@ -982,7 +982,7 @@ void draw_char_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 		}
 		if (tex_num == -1) {
 			tex_num = old_num;
-			printf("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
+//			printf("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
 			glDeleteTextures( 1, &TexCache[tex_num].texture );
 			TexCache[tex_num].name[0] = 0;
 			TexCache[tex_num].texture = 0;
@@ -1097,7 +1097,7 @@ void glResize (ESContext *esContext, int w, int h) {
 		video_flags = SDL_OPENGLBLIT | SDL_RESIZABLE;
 	}
 	if ((WinScreen = SDL_SetVideoMode(w, h, fmt.BitsPerPixel, video_flags)) == NULL) {
-		fprintf(stderr, "Couldn't set GL mode: %s\n", SDL_GetError());
+		fprintf(stderr, "* Couldn't set GL mode: %s\n", SDL_GetError());
 		SDL_Quit();
 		exit(1);
 	}
@@ -1127,7 +1127,7 @@ int glInit ( ESContext *esContext ) {
 #else
 	if( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTTHREAD | SDL_INIT_TIMER) < 0 ) {
 #endif
-		fprintf(stderr,"Couldn't initialize SDL: %s\n",SDL_GetError());
+		fprintf(stderr,"* Couldn't initialize SDL: %s\n",SDL_GetError());
 		exit( 1 );
 	}
 #ifdef SDL2
@@ -1137,7 +1137,7 @@ int glInit ( ESContext *esContext ) {
 		video_flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
 	}
 	if ((MainWindow = SDL_CreateWindow("Multi-GCS", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_w, screen_h, video_flags)) == NULL) {
-		fprintf(stderr, "Couldn't create MainWindow: %s\n", SDL_GetError());
+		fprintf(stderr, "* Couldn't create MainWindow: %s\n", SDL_GetError());
 		SDL_Quit();
 		exit(1);
 	}
@@ -1157,7 +1157,7 @@ int glInit ( ESContext *esContext ) {
 	}
 	SDL_WM_SetCaption("Multi-GCS", "");
 	if ((WinScreen = SDL_SetVideoMode(screen_w, screen_h, bpp, video_flags)) == NULL) {
-		fprintf(stderr, "Couldn't set GL mode: %s\n", SDL_GetError());
+		fprintf(stderr, "* Couldn't set GL mode: %s\n", SDL_GetError());
 		SDL_Quit();
 		exit(1);
 	}
@@ -1186,14 +1186,14 @@ int glInit ( ESContext *esContext ) {
 	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
 	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
-	printf("GL-Screen BPP: %d\n", WinScreen->format->BitsPerPixel);
+	printf("* GL-Screen BPP: %d\n", WinScreen->format->BitsPerPixel);
 
 	if (keep_ratio == 0.0) {
 		aspect = (GLfloat)screen_w / (GLfloat)screen_h;
 	} else {
 		aspect = keep_ratio;
 	}
-	printf("aspect: %f\n", aspect);
+	printf("* aspect: %f\n", aspect);
 	gl_init(screen_w, screen_h);
 
 	esContext->width = screen_w;

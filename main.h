@@ -140,6 +140,7 @@ extern int calibration_max_y;
 extern int size_y;
 extern int last_y;
 extern int touch_fd;
+extern uint16_t webport;
 extern volatile uint8_t gui_running;
 extern uint8_t hud_view;
 extern uint8_t hud_view_map;

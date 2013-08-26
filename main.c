@@ -127,6 +127,7 @@ uint8_t hud_view_map = 0;
 uint8_t hud_view_video = 0;
 uint8_t hud_view_tunnel = 0;
 uint8_t hud_view_mark = 0;
+uint16_t webport = 8080;
 float gcs_roll = 0.0;
 float gcs_pitch = 0.0;
 float gcs_yaw = 0.0;
@@ -526,6 +527,7 @@ void setup_save (void) {
 	        fprintf(fr, "hud_view_map %i\n", hud_view_map);
 	        fprintf(fr, "hud_view_tunnel %i\n", hud_view_tunnel);
 	        fprintf(fr, "map_view     %i\n", map_view);
+	        fprintf(fr, "webport     %i\n", webport);
 	        fprintf(fr, "touchscreen_device       %s\n", touchscreen_device);
 		fprintf(fr, "calibration_mode         %i\n", calibration_mode);
 		fprintf(fr, "calibration_min_x        %i\n", calibration_min_x);
@@ -587,7 +589,7 @@ void setup_load (void) {
 	                var[0] = 0;
 	                val[0] = 0;
 	                sscanf (line, "%s %s", (char *)&var, (char *)&val);
-	                printf ("       %s      %s\n", var, val);
+//	                printf ("       %s      %s\n", var, val);
 	                if (mode == 0) {
 	                        if (strcmp(var, "view_mode") == 0) {
 					view_mode = atoi(val);
@@ -614,10 +616,8 @@ void setup_load (void) {
 					fullscreen = atoi(val);
 	                        } else if (strcmp(var, "lat") == 0) {
 					lat = atof(val);
-					printf("lat = %0.8f\n", lat);
 	                        } else if (strcmp(var, "lon") == 0) {
 	                                lon = atof(val);
-					printf("lon = %0.8f\n", lon);
 	                        } else if (strcmp(var, "zoom") == 0) {
 	                                zoom = atoi(val);
 	                        } else if (strcmp(var, "waypoint_active") == 0) {
@@ -676,6 +676,8 @@ void setup_load (void) {
 	                                hud_view_tunnel = atoi(val);
 	                        } else if (strcmp(var, "map_view") == 0) {
 	                                map_view = atoi(val);
+	                        } else if (strcmp(var, "webport") == 0) {
+	                                webport = atoi(val);
 	                        } else if (strcmp(var, "[waypoints]") == 0) {
 	                                mode = 1;
 	                        }
@@ -716,7 +718,7 @@ void setup_load (void) {
 	        }
 	        fclose(fr);
 	} else {
-		printf("Can not load setup-file: %s\n", filename);
+		printf("setup: Can not load setup-file: %s\n", filename);
 	}
 	if (calibration_mode > 0) {
 		calibration_mode = 1;
@@ -1182,7 +1184,7 @@ int telemetrie_thread (void *data) {
 		brugi_update();
 		SDL_Delay(1);
 	}
-	printf("** exit thread telemetrie\n");
+	printf("telemetry: exit thread\n");
 	return(0);
 }
 
@@ -1278,7 +1280,7 @@ int touchscreen_thread (void *data) {
 		}
 	}
 #endif
-	printf("** exit thread touchscreen\n");
+	printf("touch: exit thread\n");
 	return(0);
 }
 
@@ -1734,41 +1736,31 @@ void ShutDown ( ESContext *esContext ) {
 //	UserData *userData = esContext->userData;
 
 	printf("Shutdown\n");
-	printf("* exit threads\n");
 	gui_running = 0;
 	SDL_Delay(600);
 	char file[200];
 	sprintf(file, "%s/%i.log", BASE_DIR, startup_time);
-	printf("* save log\n");
 	LogSave(file);
-	printf("* save setup\n");
 	setup_save();
-	printf("* stop telemetrie\n");
 	stop_telemetrie();
-	printf("* frsky exit\n");
 	frsky_exit();
-	printf("* jeti exit\n");
 	jeti_exit();
-	printf("* gcs_gps exit\n");
 	gcs_gps_exit();
-	printf("* webserv exit\n");
 	webserv_exit();
-	printf("* map exit\n");
 	map_exit();
-	printf("* telemetry-thread kill\n");
+	printf("telemetry: thread kill\n");
 	SDL_KillThread(thread_telemetrie);
 #ifdef RPI_NO_X
-	printf("* touch-thread kill\n");
+	printf("touch: thread kill\n");
 	SDL_KillThread(thread);
 #endif
 
 #ifdef SDLGL
-	printf("* video exit\n");
 	videodev_stop();
 #endif
 	system("killall -9 espeak 2> /dev/nnull > /dev/nnull");
 
-	printf("* clear texture-cache\n");
+	printf("texture-cache: clear\n");
 	int16_t n = 0;
 	for (n = 0; n < MAX_TEXCACHE; n++) {
 		if (TexCache[n].name[0] != 0 && TexCache[n].texture != 0 ) {
@@ -1780,10 +1772,10 @@ void ShutDown ( ESContext *esContext ) {
 #ifdef RPI_NO_X
 //	glDeleteProgram ( userData->programObject );
 //	free(esContext->userData);
-	printf("* exit bcm_host\n");
+	printf("bcm_host: exit\n");
 	bcm_host_deinit();
 #endif
-	printf("* exit SDL\n");
+	printf("sdl: exit\n");
 #ifdef SDL2
 	SDL_DestroyWindow(MainWindow);
 #endif
@@ -1794,9 +1786,8 @@ void ShutDown ( ESContext *esContext ) {
 	glExit(esContext);
 #endif
 
-	printf("* remove tempfile\n");
+	printf("tempfile: remove\n");
 	system("rm -rf /tmp/gcs.run");
-	printf("done\n");
 }
 
 
@@ -1813,7 +1804,7 @@ int main ( int argc, char *argv[] ) {
 	struct tm strukt;
 	time(&liczba_sekund);
 	localtime_r(&liczba_sekund, &strukt); 
-	printf("DATE: %d.%d %d\n", strukt.tm_mday, strukt.tm_mon+1, strukt.tm_year + 1900); 
+//	printf("DATE: %d.%d %d\n", strukt.tm_mday, strukt.tm_mon+1, strukt.tm_year + 1900); 
 
 	sprintf(tmp_name, "%s/MAPS/WMM2010.COF", BASE_DIR);
 	init_declination(tmp_name, strukt.tm_year + 1900, strukt.tm_mon+1, strukt.tm_mday);
@@ -1843,7 +1834,7 @@ int main ( int argc, char *argv[] ) {
 		}
 	        fclose(fr);
 	} else {
-		printf("Can not load log-file: %s\n", "test.log");
+		printf("log: Can not load log-file: %s\n", "test.log");
 	}
 
 	setup_waypoints();
@@ -1854,13 +1845,14 @@ int main ( int argc, char *argv[] ) {
 
 #ifdef RPI_NO_X
 	if ((touch_fd = open(touchscreen_device, O_RDONLY)) >= 0) {
+		printf("touch: init thread\n");
 #ifdef SDL2
 		thread = SDL_CreateThread(touchscreen_thread, NULL, NULL);
 #else
 		thread = SDL_CreateThread(touchscreen_thread, NULL);
 #endif
 		if ( thread == NULL ) {
-			fprintf(stderr, "Thread konnte nicht gestartet werden: %s\n", SDL_GetError());
+			fprintf(stderr, "touch: Thread konnte nicht gestartet werden: %s\n", SDL_GetError());
 			return 0;
 		}
 	} else {
@@ -1868,59 +1860,37 @@ int main ( int argc, char *argv[] ) {
 	}
 #endif
 
-	frsky_exit();
-	frsky_init(frsky_port, frsky_baud);
-	jeti_exit();
-	jeti_init(jeti_port, jeti_baud);
-	gcs_gps_exit();
-	gcs_gps_init(gcs_gps_port, gcs_gps_baud);
-	rcflow_exit();
-	rcflow_init(rcflow_port, rcflow_baud);
-
 #ifndef CONSOLE_ONLY
-	printf("Init GL\n");
+	printf("init GL\n");
 #ifndef SDLGL
 	esInitContext ( &esContext );
 	esContext.userData = &userData;
-
-	printf("Init GL#1\n");
-
 	esCreateWindow ( &esContext, "GL-GCS", screen_w, screen_h, ES_WINDOW_RGB );
 
-	printf("Init GL#1b\n");
-
 	if (! glesInit(&esContext)) {
-
-	printf("Init GL#err\n");
-
 		return 0;
 	}
-
-	printf("Init GL#2\n");
-
 	esRegisterDrawFunc(&esContext, Draw);
-
-	printf("Init GL#3\n");
-
-
 	glClearDepthf( 2.0f );
 	glEnable( GL_DEPTH_TEST );
 	glDepthFunc( GL_LEQUAL );
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 #else
 	glInit(&esContext);
-	videodev_start();
 #endif
 	SDL_ShowCursor(0);
 
-	printf( "Vendor     : %s\n", glGetString( GL_VENDOR ) );
-	printf( "Renderer   : %s\n", glGetString( GL_RENDERER ) );
-	printf( "Version    : %s\n", glGetString( GL_VERSION ) );
-//	printf( "Extensions : %s\n", glGetString( GL_EXTENSIONS ) );
-	printf("\n");
+	printf( "* Vendor     : %s\n", glGetString( GL_VENDOR ) );
+	printf( "* Renderer   : %s\n", glGetString( GL_RENDERER ) );
+	printf( "* Version    : %s\n", glGetString( GL_VERSION ) );
+//	printf( "* Extensions : %s\n", glGetString( GL_EXTENSIONS ) );
+
+
+#ifdef SDLGL
+	videodev_start();
+#endif
 
 	// preload map on startup for faster view-changes
-	printf("PreLoading Maps...\n");
 	draw_text_f3(&esContext, -1.4, -0.95, 0.003, 0.06, 0.06, FONT_WHITE, "PreLoading Maps...");
 #ifndef SDLGL
 	eglSwapBuffers(&esContext.eglDisplay, &esContext.eglSurface);
@@ -1939,9 +1909,19 @@ int main ( int argc, char *argv[] ) {
 		ModelData.p_alt = zz + 10;
 	}
 
+
 	webserv_init();
 
-	printf("Init Telemetry-Thread\n");
+	frsky_exit();
+	frsky_init(frsky_port, frsky_baud);
+	jeti_exit();
+	jeti_init(jeti_port, jeti_baud);
+	gcs_gps_exit();
+	gcs_gps_init(gcs_gps_port, gcs_gps_baud);
+	rcflow_exit();
+	rcflow_init(rcflow_port, rcflow_baud);
+
+	printf("telemetry: init thread\n");
 	reset_telemetrie();
 #ifdef SDL2
 	thread_telemetrie = SDL_CreateThread(telemetrie_thread, NULL, NULL);
@@ -1949,18 +1929,15 @@ int main ( int argc, char *argv[] ) {
 	thread_telemetrie = SDL_CreateThread(telemetrie_thread, NULL);
 #endif
 	if ( thread_telemetrie == NULL ) {
-		fprintf(stderr, "Telemetrie-Thread konnte nicht gestartet werden: %s\n", SDL_GetError());
+		fprintf(stderr, "telemetry: thread konnte nicht gestartet werden: %s\n", SDL_GetError());
 		return 0;
 	}
 
-GlobalesContext = &esContext;
-
-	printf("Mainloop\n");
-
-#ifndef CONSOLE_ONLY
-	printf("you can connect via Browser or Google-Earth to port :8080\n");
+	GlobalesContext = &esContext;
+	printf("main: start loop\n");
+#ifdef CONSOLE_ONLY
+	printf("main: now you can connect via Browser or Google-Earth to port :8080\n");
 #endif
-
 #ifndef SDLGL
 	esMainLoop(&esContext);
 #else
@@ -1968,9 +1945,7 @@ GlobalesContext = &esContext;
 		Draw(&esContext);
 	}
 #endif
-
 	ShutDown(&esContext);
-
 	return 0;
 }
 

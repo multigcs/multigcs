@@ -64,7 +64,7 @@ uint8_t mavlink_init (char *port, uint32_t baud) {
 	int n = 0;
 	mavlink_maxparam = 0;
 	mavlink_foundparam = 0;
-	printf("init mavlink serial port...\n");
+	printf("mavlink: init serial port...\n");
 	serial_fd_mavlink = serial_open(port, baud);
 	for (n = 0; n < 500; n++) {
 		MavLinkVars[n].name[0] = 0;
@@ -83,7 +83,7 @@ uint8_t mavlink_init (char *port, uint32_t baud) {
 	thread_udp = SDL_CreateThread(mavlink_udp, NULL);
 #endif
 	if ( thread_udp == NULL ) {
-		fprintf(stderr, "Thread konnte nicht gestartet werden (mavlink_udp): %s\n", SDL_GetError());
+		fprintf(stderr, "mavlink: Thread konnte nicht gestartet werden (mavlink_udp): %s\n", SDL_GetError());
 		return 0;
 	}
 
@@ -91,13 +91,12 @@ uint8_t mavlink_init (char *port, uint32_t baud) {
 }
 
 void mavlink_exit (void) {
-	printf("* udp-thread kill\n");
+	udp_running = 0;
 	if (thread_udp != NULL) {
-		udp_running = 0;
+		printf("mavlink: wait udp thread\n");
 		SDL_WaitThread(thread_udp, NULL);
 		thread_udp = NULL;
 	}
-
 	if (serial_fd_mavlink >= 0) {
 		close(serial_fd_mavlink);
 		serial_fd_mavlink = -1;
@@ -111,7 +110,7 @@ void mavlink_exit (void) {
 }
 
 void stop_feeds (void) {
-	printf("Stopping feeds!\n");
+	printf("mavlink: stopping feeds!\n");
 	mavlink_message_t msg1;
 	mavlink_msg_request_data_stream_pack(127, 0, &msg1, ModelData.sysid, ModelData.compid, MAV_DATA_STREAM_ALL, 0, 0);
 	send_message(&msg1);
@@ -132,8 +131,6 @@ void gcs_handleMessage(mavlink_message_t* msg) {
 			mavlink_msg_heartbeat_decode(msg, &packet);
 			droneType = packet.type;
 			autoPilot = packet.autopilot;
-
-//			printf("HB\n");
 
 			if (packet.base_mode == MAV_MODE_MANUAL_ARMED) {
 				ModelData.mode = MODEL_MODE_MANUAL;
@@ -295,7 +292,7 @@ void gcs_handleMessage(mavlink_message_t* msg) {
 		case MAVLINK_MSG_ID_STATUSTEXT: {
 			mavlink_statustext_t packet;
 			mavlink_msg_statustext_decode(msg, &packet);
-			printf("## %s ##\n", packet.text);
+			printf("mavlink: ## %s ##\n", packet.text);
 			sys_message((char *)packet.text);
 			redraw_flag = 1;
 			break;
@@ -322,7 +319,7 @@ void gcs_handleMessage(mavlink_message_t* msg) {
 //	MAV_VAR_INT32=6, /* 32 bit signed integer | */
 
 			sprintf(sysmsg_str, "PARAM_VALUE (%i/%i): #%s# = %f (Type: %i)", packet.param_index + 1, packet.param_count, var, packet.param_value, packet.param_type);
-			printf("%s\n", sysmsg_str);
+			printf("mavlink: %s\n", sysmsg_str);
 			sys_message(sysmsg_str);
 			mavlink_maxparam = packet.param_count;
 			mavlink_timeout = 0;
@@ -400,7 +397,7 @@ void gcs_handleMessage(mavlink_message_t* msg) {
 			break;
 		}
 		case MAVLINK_MSG_ID_MISSION_ACK: {
-			printf("Mission-Transfer ACK\n");
+			printf("mavlink: Mission-Transfer ACK\n");
 			break;
 		}
 		case MAVLINK_MSG_ID_MISSION_REQUEST: {
@@ -414,31 +411,31 @@ void gcs_handleMessage(mavlink_message_t* msg) {
 				if (id2 > 0) {
 					id2 = id2 - 1;
 				} else {
-					printf("WORKAROUND: first WP == HOME ?\n");
+					printf("mavlink: WORKAROUND: first WP == HOME ?\n");
 				}
 			}
 
 			sprintf(sysmsg_str, "sending Waypoint (%i): %s\n", id, WayPoints[1 + id2].name);
 			sys_message(sysmsg_str);
 			if (strcmp(WayPoints[1 + id2].command, "WAYPOINT") == 0) {
-				printf("Type: MAV_CMD_NAV_WAYPOINT\n");
+				printf("mavlink: Type: MAV_CMD_NAV_WAYPOINT\n");
 				type = MAV_CMD_NAV_WAYPOINT;
 			} else if (strcmp(WayPoints[1 + id2].command, "RTL") == 0) {
-				printf("Type: MAV_CMD_NAV_RETURN_TO_LAUNCH\n");
+				printf("mavlink: Type: MAV_CMD_NAV_RETURN_TO_LAUNCH\n");
 				type = MAV_CMD_NAV_RETURN_TO_LAUNCH;
 			} else if (strcmp(WayPoints[1 + id2].command, "LAND") == 0) {
-				printf("Type: MAV_CMD_NAV_LAND\n");
+				printf("mavlink: Type: MAV_CMD_NAV_LAND\n");
 				type = MAV_CMD_NAV_LAND;
 			} else if (strcmp(WayPoints[1 + id2].command, "TAKEOFF") == 0) {
-				printf("Type: MAV_CMD_NAV_TAKEOFF\n");
+				printf("mavlink: Type: MAV_CMD_NAV_TAKEOFF\n");
 				type = MAV_CMD_NAV_TAKEOFF;
 			} else {
-				printf("Type: UNKNOWN\n");
+				printf("mavlink: Type: UNKNOWN\n");
 				type = MAV_CMD_NAV_WAYPOINT;
 			}
 
 			sprintf(sysmsg_str, "SENDING MISSION_ITEM: %i: %f, %f, %f\n", id, WayPoints[1 + id2].p_lat, WayPoints[1 + id2].p_long, WayPoints[1 + id2].p_alt);
-			printf("%s\n", sysmsg_str);
+			printf("mavlink: %s\n", sysmsg_str);
 
 
 			mavlink_msg_mission_item_pack(127, 0, &msg2, ModelData.sysid, ModelData.compid, id, 0, type, 0.0, 0.0, WayPoints[1 + id2].radius, WayPoints[1 + id2].wait, WayPoints[1 + id2].orbit, WayPoints[1 + id2].yaw, WayPoints[1 + id2].p_lat, WayPoints[1 + id2].p_long, WayPoints[1 + id2].p_alt);
@@ -469,7 +466,7 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			mavlink_msg_mission_item_decode(msg, &packet);
 
 			sprintf(sysmsg_str, "RECEIVED MISSION_ITEM: %i/%i: %f, %f, %f (%i)\n", packet.seq, mission_max, packet.x, packet.y, packet.z, packet.frame);
-			printf("%s\n", sysmsg_str);
+			printf("mavlink: %s\n", sysmsg_str);
 			sys_message(sysmsg_str);
 
 			if (packet.seq < mission_max - 1) {
@@ -484,12 +481,12 @@ uint8_t autocontinue; ///< autocontinue to next wp
 				if (packet.seq > 0) {
 					packet.seq = packet.seq - 1;
 				} else {
-					printf("WORKAROUND: ignore first WP\n");
+					printf("mavlink: WORKAROUND: ignore first WP\n");
 					break;
 				}
 			}
 
-			printf("getting WP(%i): %f, %f\n", packet.seq, packet.x, packet.y);
+			printf("mavlink: getting WP(%i): %f, %f\n", packet.seq, packet.x, packet.y);
 
 			switch (packet.command) {
 				case MAV_CMD_NAV_WAYPOINT: {
@@ -579,7 +576,7 @@ GCS_MAVLink/message_definitions_v1.0/common.xml:               <entry value="4" 
 		case MAVLINK_MSG_ID_MISSION_CURRENT: {
 			mavlink_mission_current_t packet;
 			mavlink_msg_mission_current_decode(msg, &packet);
-//			printf("## Active_WP %f ##\n", packet.seq);
+//			printf("mavlink: ## Active_WP %f ##\n", packet.seq);
 			uav_active_waypoint = (uint8_t)packet.seq;
 			break;
 		}
@@ -646,13 +643,13 @@ wp_dist
 			mavlink_radio_t packet;
 			mavlink_msg_radio_decode(msg, &packet);
 
-			printf("## rxerrors %i ##\n", packet.rxerrors);
-			printf("## fixed %i ##\n", packet.fixed);
-			printf("## rssi %i ##\n", packet.rssi);
-			printf("## remrssi %i ##\n", packet.remrssi);
-			printf("## txbuf %i ##\n", packet.txbuf);
-			printf("## noise %i ##\n", packet.noise);
-			printf("## remnoise %i ##\n", packet.remnoise);
+			printf("mavlink: ## rxerrors %i ##\n", packet.rxerrors);
+			printf("mavlink: ## fixed %i ##\n", packet.fixed);
+			printf("mavlink: ## rssi %i ##\n", packet.rssi);
+			printf("mavlink: ## remrssi %i ##\n", packet.remrssi);
+			printf("mavlink: ## txbuf %i ##\n", packet.txbuf);
+			printf("mavlink: ## noise %i ##\n", packet.noise);
+			printf("mavlink: ## remnoise %i ##\n", packet.remnoise);
 
 			break;
 		}
@@ -667,21 +664,21 @@ wp_dist
 }
 
 void read_waypoints (void) {
-	printf("reading Waypoints\n");
+	printf("mavlink: reading Waypoints\n");
 	mavlink_message_t msg;
 	mavlink_msg_mission_request_list_pack(127, 0, &msg, ModelData.sysid, ModelData.compid);
 	send_message(&msg);
 }
 
 void save_to_flash (void) {
-	printf("save values to flash\n");
+	printf("mavlink: save values to flash\n");
 	mavlink_message_t msg;
 	mavlink_msg_command_long_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_CMD_PREFLIGHT_STORAGE, 0, 1.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	send_message(&msg);
 }
 
 void load_from_flash (void) {
-	printf("load values from flash\n");
+	printf("mavlink: load values from flash\n");
 	mavlink_message_t msg;
 	mavlink_msg_command_long_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_CMD_PREFLIGHT_STORAGE, 0, 0.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	send_message(&msg);
@@ -699,10 +696,10 @@ void send_waypoints (void) {
 		}
 	}
 	if (ModelData.teletype == TELETYPE_MEGAPIRATE_NG || ModelData.teletype == TELETYPE_ARDUPILOT) {
-		printf("WORKAROUND: MEGAPIRATE_NG: fake one WP\n");
+		printf("mavlink: WORKAROUND: MEGAPIRATE_NG: fake one WP\n");
 		n++;
 	}
-	printf("sending Waypoints (%i)\n", n - 1);
+	printf("mavlink: sending Waypoints (%i)\n", n - 1);
 	mavlink_msg_mission_count_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, n - 1);
 	send_message(&msg);
 }
@@ -710,7 +707,7 @@ void send_waypoints (void) {
 
 void send_message (mavlink_message_t* msg) {
 	uint8_t buf[MAVLINK_MAX_PACKET_LEN];
-	printf("send_msg...\n");
+	printf("mavlink: send_msg...\n");
 	uint16_t len = mavlink_msg_to_send_buffer(buf, msg);
 	uint16_t i = 0;
 	for(i = 0; i < len; i++) {
@@ -719,7 +716,7 @@ void send_message (mavlink_message_t* msg) {
 	}
 	if (mavlink_udp_active == 1) {
 		if (sendto(s, buf, len, 0, (struct sockaddr *)&si_other, slen) == -1) {
-			printf("error: sendto udp()\n");
+			printf("mavlink: error: sendto udp()\n");
 		}
 	}
 }
@@ -765,12 +762,12 @@ void gcs_update (void) {
 				}
 			}
 			if (c == 0) {
-				printf("missing id: %i\n", id);
+				printf("mavlink: missing id: %i\n", id);
 				param_get_id(id);
 				mavlink_timeout = 0;
 			}
 		}
-		printf("parameters found: %i/%i\n", mavlink_foundparam, mavlink_maxparam);
+		printf("mavlink: parameters found: %i/%i\n", mavlink_foundparam, mavlink_maxparam);
 	}
 */
 }
@@ -799,7 +796,7 @@ void param_get_id (uint16_t id) {
 void start_feeds (void) {
 	mavlink_message_t msg;
 	mavlink_timeout = 0;
-	printf("Starting feeds!\n");
+	printf("mavlink: starting feeds!\n");
 	mavlink_msg_param_request_list_pack(127, 0, &msg, ModelData.sysid, ModelData.compid);
 	send_message(&msg);
 	SDL_Delay(10);
@@ -832,13 +829,13 @@ void start_feeds (void) {
 }
 
 int mavlink_udp (void *data) {
-	printf("starting udp thread\n");
+	printf("mavlink: init udp thread\n");
 	mavlink_message_t msg;
 	mavlink_status_t status;
 	char buf[UDP_BUFLEN];
 
 	if ((s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
-		printf("socket\n");
+		printf("mavlink: socket error\n");
 		return 0;
 	}
 
@@ -851,7 +848,7 @@ int mavlink_udp (void *data) {
 	si_me.sin_port = htons(UDP_PORT);
 	si_me.sin_addr.s_addr = htonl(INADDR_ANY);
 	if( bind(s , (struct sockaddr*)&si_me, sizeof(si_me) ) == -1) {
-		printf("bind\n");
+		printf("mavlink: bind error\n");
 		return 0;
 	}
 	while (udp_running == 1) {
@@ -868,6 +865,7 @@ int mavlink_udp (void *data) {
 		SDL_Delay(1);
 	}
 	close(s);
+	printf("mavlink: exit udp thread\n");
 	return 0;
 }
 
@@ -934,13 +932,13 @@ static void mavlink_parseDoc (char *docname) {
 	xmlNodePtr cur;
 	doc = xmlParseFile(docname);
 	if (doc == NULL) {
-		printf("Document parsing failed: %s\n", docname);
+		printf("mavlink: Document parsing failed: %s\n", docname);
 		return;
 	}
 	cur = xmlDocGetRootElement(doc);
 	if (cur == NULL) {
 		xmlFreeDoc(doc);
-		printf("Document is Empty!!!\n");
+		printf("mavlink: Document is Empty!!!\n");
 		return;
 	}
 	cur = cur->xmlChildrenNode;

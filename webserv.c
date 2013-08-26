@@ -14,6 +14,8 @@
 #include <SDL_events.h>
 #include <model.h>
 
+
+extern uint16_t webport;
 extern void save_screenshot2 (void);
 extern volatile uint8_t zoom;
 extern uint8_t map_type;
@@ -52,9 +54,8 @@ void webserv_child_dump_file (int fd, char *file, char *type) {
 	int file_fd;
 	long len;
 	long ret;
-	printf("file: %s\n", file);
 	if ((file_fd = open(file,O_RDONLY)) == -1) {
-		printf("	not found\n");
+		printf("webserv: file not found: %s\n", file);
 		return;
 	}
 	len = lseek(file_fd, (off_t)0, SEEK_END);
@@ -619,11 +620,11 @@ void webserv_child (int fd) {
 		strcpy(servername, "");
 	}
 
-	printf("###########################\n");
-	printf("webserv (%s):\n", servername);
-	printf("###########################\n");
-	printf("%s\n", buffer);
-	printf("###########################\n");
+//	printf("webserv: ###########################\n");
+//	printf("webserv: servername: %s\n", servername);
+//	printf("webserv: ###########################\n");
+//	printf("%s\n", buffer);
+//	printf("webserv: ###########################\n");
 
 
 	if (strncmp(buffer,"POST ", 5) == 0 || strncmp(buffer,"post ", 5) == 0) {
@@ -646,7 +647,7 @@ void webserv_child (int fd) {
 							break;
 						}
 					}
-					printf("## %s ### %s (%i)##\n", tmp_str, tmp_str + start, start);
+					printf("webserv: ## %s ### %s (%i)##\n", tmp_str, tmp_str + start, start);
 
 					if (strcmp(tmp_str, "name") == 0) {
 						strcpy(ModelData.name, tmp_str + start);
@@ -844,7 +845,7 @@ int webserv_thread (void *data) {
 	static struct sockaddr_in serv_addr;
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	serv_addr.sin_port = htons(8080);
+	serv_addr.sin_port = htons(webport);
 
 	if ((listenfd = socket(AF_INET, SOCK_STREAM,0)) < 0) {
 		return(1);
@@ -874,12 +875,12 @@ int webserv_thread (void *data) {
 
 	close(listenfd);
 
-	printf("** exit thread webserv\n");
+	printf("webserv: exit thread\n");
 	return(0);
 }
 
 void webserv_init (void) {
-	printf("Init Webserv-Thread\n");
+	printf("webserv: init thread\n");
 	webserv_running = 1;
 #ifdef SDL2
 	thread_webserv = SDL_CreateThread(webserv_thread, NULL, NULL);
@@ -887,15 +888,18 @@ void webserv_init (void) {
 	thread_webserv = SDL_CreateThread(webserv_thread, NULL);
 #endif
 	if (thread_webserv == NULL) {
-		fprintf(stderr, "Webserv-Thread konnte nicht gestartet werden: %s\n", SDL_GetError());
+		fprintf(stderr, "webserv: thread konnte nicht gestartet werden: %s\n", SDL_GetError());
 	}
+	printf("webserv: running on Port: %i\n", webport);
 }
 
 void webserv_exit (void) {
-	printf("* webserv-thread kill\n");
 	webserv_running = 0;
-	SDL_WaitThread(thread_webserv, NULL);
-	thread_webserv = NULL;
+	if (thread_webserv != NULL) {
+		printf("webserv: wait thread\n");
+		SDL_WaitThread(thread_webserv, NULL);
+		thread_webserv = NULL;
+	}
 	if (listenfd >= 0) {
 		close(listenfd);
 	}

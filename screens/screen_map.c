@@ -69,7 +69,7 @@ char omapnames[20][4][200];
 PointOfInterest POIs[MAX_POIS];
 
 static void die(char *msg) {
-	printf("%s", msg);
+	printf("map: %s", msg);
 	return;
 }
 
@@ -165,7 +165,7 @@ static void map_parseDoc (char *docname) {
 	omaplen = 0;
 	doc = xmlParseFile(docname);
 	if (doc == NULL) {
-		printf("Document parsing failed: %s\n", docname);
+		printf("map: Document parsing failed: %s\n", docname);
 		return;
 	}
 	cur = xmlDocGetRootElement(doc);
@@ -189,9 +189,21 @@ static void map_parseDoc (char *docname) {
 
 
 void map_exit (void) {
+	if (sdl_thread_get_maps1 != NULL) {
+		printf("map: wait thread (get_maps1)\n");
+	}
+	if (sdl_thread_get_maps2 != NULL) {
+		printf("map: wait thread (get_maps2)\n");
+	}
 	mapthread_running = 0;
-	SDL_WaitThread(sdl_thread_get_maps1, NULL);
-	SDL_WaitThread(sdl_thread_get_maps2, NULL);
+	if (sdl_thread_get_maps1 != NULL) {
+		SDL_WaitThread(sdl_thread_get_maps1, NULL);
+		sdl_thread_get_maps1 = NULL;
+	}
+	if (sdl_thread_get_maps2 != NULL) {
+		SDL_WaitThread(sdl_thread_get_maps2, NULL);
+		sdl_thread_get_maps2 = NULL;
+	}
 }
 
 int file_exists (char *fileName) {
@@ -246,7 +258,7 @@ char *BingtileXYZToQuadKey(char *quadKey, int x, int y, int z) {
 		if ((y & mask) != 0) {
 	            digit += 2;
 		}
-//		printf("__ %i __\n", digit);
+//		printf("map: __ %i __\n", digit);
 		quadKey[n++] = (digit + 48);
 		quadKey[n] = 0;
 	}
@@ -285,7 +297,7 @@ void download_map_range (float from_lat, float from_lon, float to_lat, float to_
 
 						sprintf(tile_name, "%s/MAPS/tobig_google_%i_%i_%i.png", BASE_DIR, zoom, tile_x + x_n, tile_y + y_n);
 						sprintf(tile_url, mapnames[map_type][MAP_URL], google_tile_lat, google_tile_long, zoom, 256, 356);
-						printf("%s -> %s\n", tile_url, tile_name);
+						printf("map: %s -> %s\n", tile_url, tile_name);
 						file_download(tile_name, tile_url);
 						// Crop map-image for titles
 						sprintf(tmp_str2, mapnames[map_type][MAP_FILE], BASE_DIR, zoom, tile_x + x_n, tile_y + y_n);
@@ -306,7 +318,7 @@ void download_map_range (float from_lat, float from_lon, float to_lat, float to_
 								char quadKey[100];
 								sprintf(tile_url, mapnames[map_type][MAP_URL], BingtileXYZToQuadKey(quadKey, tile_x + x_n, tile_y + y_n, zoom));
 							}
-							printf("%s -> %s\n", tile_url, tile_name);
+							printf("map: %s -> %s\n", tile_url, tile_name);
 							file_download(tile_name, tile_url);
 						}
 					}
@@ -380,7 +392,7 @@ void get_maps (uint8_t mode) {
 						sprintf(tile_name, "%s/MAPS/google_%i_%i_%i.png", BASE_DIR, zoom, tile_x + x_n, tile_y + y_n);
 						if (file_exists(tile_name) == 0) {
 							sprintf(status_txt, "getting map-tile: %i_%i_%i.png (%i/%i)", zoom, tile_x + x_n, tile_y + y_n, tiles_num + 1, tiles_need);
-							printf("%s\n", status_txt);
+							printf("map: %s\n", status_txt);
 							/* Google-Maps */
 							google_tile_long1 = tilex2long(tile_x + x_n, zoom);
 							google_tile_long2 = tilex2long(tile_x + x_n + 1, zoom);
@@ -388,7 +400,7 @@ void get_maps (uint8_t mode) {
 							google_tile_lat = tiley2lat(tile_y + y_n + 1, zoom);
 							sprintf(tile_name, "%s/MAPS/tobig_google_%i_%i_%i.png", BASE_DIR, zoom, tile_x + x_n, tile_y + y_n);
 							sprintf(tile_url, mapnames[map_type][MAP_URL], google_tile_lat, google_tile_long, zoom, 256, 356);
-							printf("%s -> %s\n", tile_url, tile_name);
+							printf("map: %s -> %s\n", tile_url, tile_name);
 							file_download(tile_name, tile_url);
 							// Crop map-image for titles
 							sprintf(tmp_str2, "%s/MAPS/google_%i_%i_%i.png", BASE_DIR, zoom, tile_x + x_n, tile_y + y_n);
@@ -401,7 +413,7 @@ void get_maps (uint8_t mode) {
 							if (file_exists(tile_name) == 0) {
 								sprintf(status_txt, "getting map-tile: %s", tile_name);
 								sys_message(status_txt);
-								printf("%s\n", status_txt);
+								printf("map: %s\n", status_txt);
 								if (strcmp(mapnames[map_type][MAP_TYPE], "ZYX") == 0) {
 									sprintf(tile_url, mapnames[map_type][MAP_URL], zoom, tile_y + y_n, tile_x + x_n);
 								} else if (strcmp(mapnames[map_type][MAP_TYPE], "ZXY") == 0) {
@@ -412,7 +424,7 @@ void get_maps (uint8_t mode) {
 									char quadKey[100];
 									sprintf(tile_url, mapnames[map_type][MAP_URL], BingtileXYZToQuadKey(quadKey, tile_x + x_n, tile_y + y_n, zoom));
 								}
-								printf("%s -> %s\n", tile_url, tile_name);
+								printf("map: %s -> %s\n", tile_url, tile_name);
 								file_download(tile_name, tile_url);
 							}
 						}
@@ -422,7 +434,7 @@ void get_maps (uint8_t mode) {
 						if (file_exists(tile_name) == 0) {
 							sprintf(tmp_str2, "%s_org.png", tile_name);
 							sprintf(tile_url, omapnames[omap_type][MAP_URL], zoom, tile_x + x_n, tile_y + y_n);
-							printf("%s -> %s\n", tile_url, tmp_str2);
+							printf("map: %s -> %s\n", tile_url, tmp_str2);
 							file_download(tmp_str2, tile_url);
 							sprintf(tmp_str, "convert -channel Alpha -evaluate Divide 2 %s %s.tmp.png", tmp_str2, tile_name);
 							system(tmp_str);
@@ -452,10 +464,10 @@ void get_srtm (void) {
 	sprintf(file, "N%02iE%03i.hgt", lat_m, lon_m);
 	sprintf(file2, "%s/MAPS/%s", BASE_DIR, file);
 	if (file_exists(file2) == 0) {
-		printf("getting srtm-data: %s\n", file);
+		printf("map: getting srtm-data: %s\n", file);
 		char cmd_str[1024];
 		sprintf(cmd_str, "mkdir -p %s/MAPS/part/ ; wget -q -O %s/MAPS/part/%s.zip http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/Eurasia/%s.zip", BASE_DIR, BASE_DIR, file, file);
-		printf("%s\n", cmd_str);
+		printf("map: %s\n", cmd_str);
 		system(cmd_str);
 		sprintf(cmd_str, "cd %s/MAPS/part/ ; unzip %s.zip ; rm -rf %s.zip ; mv %s ../", BASE_DIR, file, file, file);
 		system(cmd_str);
@@ -468,7 +480,7 @@ int thread_get_maps1 (void *unused) {
 		get_srtm();
 		SDL_Delay(100);
 	}
-	printf("** exit thread get_maps1\n");
+	printf("map: exit thread (get_maps1)\n");
 	return 0;
 }
 
@@ -477,7 +489,7 @@ int thread_get_maps2 (void *unused) {
 		get_maps(1);
 		SDL_Delay(100);
 	}
-	printf("** exit thread get_maps2\n");
+	printf("map: exit thread (get_maps2)\n");
 	return 0;
 }
 
@@ -542,7 +554,7 @@ uint8_t map_view_change (char *name, float x, float y, int8_t button, float data
 }
 
 uint8_t change_maptype (char *name, float x, float y, int8_t button, float data) {
-printf("change_maptype ####\n");
+	printf("map: change_maptype\n");
 	if (data == -1) {
 		map_type_select = 1 - map_type_select;
 	} else {
@@ -553,7 +565,7 @@ printf("change_maptype ####\n");
 }
 
 uint8_t change_omaptype (char *name, float x, float y, int8_t button, float data) {
-printf("change_omaptype ####\n");
+	printf("map: change_omaptype\n");
 	if (data == -1) {
 		omap_type_select = 1 - omap_type_select;
 	} else {
@@ -691,7 +703,7 @@ uint8_t map_export_kml (char *name, float x, float y, int8_t button, float data)
 
 		        fclose(fr);
 		} else {
-			printf("Can not save kml-file: %s\n", filename);
+			printf("map: Can not save kml-file: %s\n", filename);
 		}
 
 	}
@@ -1360,7 +1372,7 @@ void draw_notam (ESContext *esContext, float lat, float lon, uint8_t zoom) {
 		char status_txt[2024];
 		sprintf(status_txt, "getting Airspace-Data: Airspace.txt");
 		sys_message(status_txt);
-		printf("%s\n", status_txt);
+		printf("map: %s\n", status_txt);
 		file_download(tmp_str, "http://soaringweb.org/Airspace/DE/Germany_CW10_2013.txt");
 	}
         if ((fr = fopen(tmp_str, "r")) > 0) {
@@ -1437,7 +1449,7 @@ void draw_notam (ESContext *esContext, float lat, float lon, uint8_t zoom) {
 							draw_tria_f3(esContext, last_x1, last_y1, last_z1, x1, y1, z1, x1, y1, 0.0, 255, 0, 0, 64);
 							draw_tria_f3(esContext, last_x1, last_y1, 0.0, last_x1, last_y1, last_z1, x1, y1, 0.0, 255, 0, 0, 64);
 						} else {
-//							printf("%s\n", ap_name);
+//							printf("map: %s\n", ap_name);
 							first_x1 = x1;
 							first_y1 = y1;
 							first_z1 = z1;
@@ -1500,7 +1512,7 @@ void draw_waypoints_cup (ESContext *esContext, float lat, float lon, uint8_t zoo
 		char status_txt[2024];
 		sprintf(status_txt, "getting Airspace-Data: %s", tmp_str);
 		sys_message(status_txt);
-		printf("%s\n", status_txt);
+		printf("map: %s\n", status_txt);
 		file_download(tmp_str, "http://download.xcsoar.org/waypoints/Germany.cup");
 	}
         if ((fr = fopen(tmp_str, "r")) > 0) {
@@ -1622,22 +1634,24 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		POIs[1].type = 1;
 
 		mapthread_running = 1;
+		printf("map: init thread (get_maps1)\n");
 #ifdef SDL2
 		sdl_thread_get_maps1 = SDL_CreateThread(thread_get_maps1, NULL, NULL);
 #else
 		sdl_thread_get_maps1 = SDL_CreateThread(thread_get_maps1, NULL);
 #endif
 		if ( sdl_thread_get_maps1 == NULL ) {
-			fprintf(stderr, "Unable to create thread_get_maps1: %s\n", SDL_GetError());
+			fprintf(stderr, "map: Unable to create thread_get_maps1: %s\n", SDL_GetError());
 		}
 
+		printf("map: init thread (get_maps2)\n");
 #ifdef SDL2
 		sdl_thread_get_maps2 = SDL_CreateThread(thread_get_maps2, NULL, NULL);
 #else
 		sdl_thread_get_maps2 = SDL_CreateThread(thread_get_maps2, NULL);
 #endif
 		if ( sdl_thread_get_maps2 == NULL ) {
-			fprintf(stderr, "Unable to create thread_get_maps2: %s\n", SDL_GetError());
+			fprintf(stderr, "map: Unable to create thread_get_maps2: %s\n", SDL_GetError());
 		}
 
 	}

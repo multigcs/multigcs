@@ -129,7 +129,7 @@ int thread_serial_frsky (void *unused) {
 //									printf("############## Fuel: \n");
 								} else if (buffer_user[1] == 0x10) {
 									BARO_alt = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
-									printf("############## Altx.0: %i\n", BARO_alt);
+//									printf("############## Altx.0: %i\n", BARO_alt);
 								} else if (buffer_user[1] == 0x21) {
 									uint16_t alt = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
 									if (mode == 1) {
@@ -139,16 +139,16 @@ int thread_serial_frsky (void *unused) {
 										}
 										redraw_flag = 1;
 									}
-									printf("############## Altx.0: %i\n", alt);
+//									printf("############## Altx.0: %i\n", alt);
 								} else if (buffer_user[1] == 0x24) {
 									int16_t acc_x = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
-									printf("############## Acc-x: %f\n", (float)acc_x / 100.0);
+//									printf("############## Acc-x: %f\n", (float)acc_x / 100.0);
 								} else if (buffer_user[1] == 0x25) {
 									int16_t acc_y = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
-									printf("############## Acc-y: %f\n", (float)acc_y / 100.0);
+//									printf("############## Acc-y: %f\n", (float)acc_y / 100.0);
 								} else if (buffer_user[1] == 0x26) {
 									int16_t acc_z = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
-									printf("############## Acc-z: %f\n", (float)acc_z / 100.0);
+//									printf("############## Acc-z: %f\n", (float)acc_z / 100.0);
 								} else if (buffer_user[1] == 0x01) {
 									GPS_alt = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
 								} else if (buffer_user[1] == 0x01 + 8) {
@@ -208,16 +208,16 @@ int thread_serial_frsky (void *unused) {
 									if (GPS_TIME_Year > 11 && GPS_TIME_Second > 0 && GPS_TIME_Day > 0) {
 										char tmp_str[100];
 										sprintf(tmp_str, "date -s \"%02i.%02i.20%02i %02i:%02i:%02i\"", GPS_TIME_Day, GPS_TIME_Month, GPS_TIME_Year, GPS_TIME_Houre, GPS_TIME_Minute, GPS_TIME_Second);
-										printf("############## GPS_Time: %02i.%02i.20%02i %02i:%02i:%02i\n", GPS_TIME_Day, GPS_TIME_Month, GPS_TIME_Year, GPS_TIME_Houre, GPS_TIME_Minute, GPS_TIME_Second);
+//										printf("############## GPS_Time: %02i.%02i.20%02i %02i:%02i:%02i\n", GPS_TIME_Day, GPS_TIME_Month, GPS_TIME_Year, GPS_TIME_Houre, GPS_TIME_Minute, GPS_TIME_Second);
 									}
 								} else if (buffer_user[1] == 0x22) {
 									// East/West
 								} else if (buffer_user[1] == 0x23) {
 									// North/South
 								} else {
-									printf("(0x%x - %i)\n", buffer_user[1], buffer_user[1]);
+//									printf("(0x%x - %i)\n", buffer_user[1], buffer_user[1]);
 									for (i = 2; i < buffer_user_ptr; i++) {
-										printf("	(0x%x - %i - %c) --- %i\n", buffer_user[i], buffer_user[i], buffer_user[i], i);
+//										printf("	(0x%x - %i - %c) --- %i\n", buffer_user[i], buffer_user[i], buffer_user[i], i);
 									}
 								}
 								buffer_user_ptr = 0;
@@ -231,12 +231,12 @@ int thread_serial_frsky (void *unused) {
 								buffer_user[buffer_user_ptr++] = buffer[2 + n];
 							}
 							if (buffer_user_ptr > 30) {
-								printf("# user-buffer overflow / reset #\n");
+								printf("frsky: user-buffer overflow / reset\n");
 								buffer_user_ptr = 0;
 							}
 						}
 					} else {
-						printf("# unknown data (type=%x; len=%i) #\n", type, buffer_ptr);
+//						printf("# unknown data (type=%x; len=%i) #\n", type, buffer_ptr);
 					}
 					type = 0;
 					buffer_ptr = 0;
@@ -257,7 +257,7 @@ int thread_serial_frsky (void *unused) {
 		}
 		usleep(1000000);
 	}
-	printf("** exit thread frsky\n");
+	printf("frsky: exit thread\n");
 	return 0;
 }
 
@@ -268,15 +268,16 @@ uint8_t frsky_mode_get (void) {
 void frsky_mode (uint8_t new_mode) {
 	mode = new_mode;
 	if (mode == 1) {
-		printf("** frsky extented telemtry\n");
+		printf("frsky: extented telemtry\n");
 	} else {
-		printf("** frsky normal telemtry\n");
+		printf("frsky: normal telemtry\n");
 	}
 }
 
 uint8_t frsky_init (char *port, uint32_t baud) {
+	printf("frsky: init\n");
 	frsky_thread_running = 1;
-	printf("init frsky serial port...\n");
+	printf("frsky: init serial port...\n");
 	serial_fd_frsky = serial_open(port, baud);
 	if (serial_fd_frsky != -1) {
 #ifdef SDL2
@@ -285,7 +286,7 @@ uint8_t frsky_init (char *port, uint32_t baud) {
 		sdl_thread_serial_frsky = SDL_CreateThread(thread_serial_frsky, NULL);
 #endif
 		if ( sdl_thread_serial_frsky == NULL ) {
-			fprintf(stderr, "Unable to create thread_serial_frsky: %s\n", SDL_GetError());
+			fprintf(stderr, "* Unable to create thread_serial_frsky: %s\n", SDL_GetError());
 			return 1;
 		}
 	}
@@ -294,6 +295,7 @@ uint8_t frsky_init (char *port, uint32_t baud) {
 
 void frsky_exit (void) {
 	if ( sdl_thread_serial_frsky != NULL ) {
+		printf("frsky: wait thread\n");
 		SDL_WaitThread(sdl_thread_serial_frsky, NULL);
 		sdl_thread_serial_frsky = NULL;
 	}
