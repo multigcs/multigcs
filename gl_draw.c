@@ -718,7 +718,7 @@ void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2
 }
 
 
-void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file, float lat1, float lon1, float lat2, float lon2, float alpha1, float alpha2) {
+void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file, float lat1, float lon1, float lat2, float lon2, float alpha1, float alpha2, float grid) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -735,16 +735,22 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 	y1 = y1 * -1;
 	y2 = y2 * -1;
 
-	for (n = 0; n < MAX_TEXCACHE; n++) {
-		if (strcmp(TexCache[n].name, file) == 0) {
-			tex_num = n;
-			break;
-		} else if (TexCache[n].atime < atime_min) {
-			old_num = n;
-			atime_min = TexCache[n].atime;
+	if (file == NULL || file[0] == 0) {
+		file = NULL;
+	}
+
+	if (file != NULL) {
+		for (n = 0; n < MAX_TEXCACHE; n++) {
+			if (strcmp(TexCache[n].name, file) == 0) {
+				tex_num = n;
+				break;
+			} else if (TexCache[n].atime < atime_min) {
+				old_num = n;
+				atime_min = TexCache[n].atime;
+			}
 		}
 	}
-	if (tex_num == -1) {
+	if (file != NULL && tex_num == -1) {
 		for (n = 0; n < MAX_TEXCACHE; n++) {
 			if (TexCache[n].name[0] == 0) {
 				tex_num = n;
@@ -768,7 +774,7 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 				strcpy(TexCache[tex_num].name, file);
 				TexCache[tex_num].atime = time(0);
 			} else {
-				printf("could not load image: %s\n", file);
+//				printf("could not load image: %s\n", file);
 				char del_cmd[200];
 				sprintf(del_cmd, "rm %s", file);
 				system(del_cmd);
@@ -777,6 +783,8 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 	}
 	if (TexCache[tex_num].texture != 0) {
 		TexCache[tex_num].atime = time(0);
+	}
+	if (file == NULL || TexCache[tex_num].texture != 0) {
 		float z1 = z;
 		float z2 = z;
 		float z3 = z;
@@ -826,22 +834,22 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 				z2 = z + (float)_alt2 / alt_zoom;
 				z3 = z + (float)_alt3 / alt_zoom;
 				z4 = z + (float)_alt4 / alt_zoom;
-
-				glEnable( GL_TEXTURE_2D );
-				glBindTexture( GL_TEXTURE_2D, TexCache[tex_num].texture );
-				glBegin( GL_QUADS );
-				glColor4f(1.0, 1.0, 1.0, 1.0);
-				glTexCoord2f( tex1, tey1 );
-				glVertex3f(tx1, ty1, -2.0 + z1);
-				glTexCoord2f( tex2, tey1 );
-				glVertex3f(tx2, ty1, -2.0 + z2);
-				glTexCoord2f( tex2, tey2 );
-				glVertex3f(tx2, ty2, -2.0 + z3);
-				glTexCoord2f( tex1, tey2 );
-				glVertex3f(tx1, ty2, -2.0 + z4);
-				glEnd();
-				glDisable( GL_TEXTURE_2D );
-
+				if (file != NULL) {
+					glEnable( GL_TEXTURE_2D );
+					glBindTexture( GL_TEXTURE_2D, TexCache[tex_num].texture );
+					glBegin( GL_QUADS );
+					glColor4f(1.0, 1.0, 1.0, 1.0);
+					glTexCoord2f( tex1, tey1 );
+					glVertex3f(tx1, ty1, -2.0 + z1);
+					glTexCoord2f( tex2, tey1 );
+					glVertex3f(tx2, ty1, -2.0 + z2);
+					glTexCoord2f( tex2, tey2 );
+					glVertex3f(tx2, ty2, -2.0 + z3);
+					glTexCoord2f( tex1, tey2 );
+					glVertex3f(tx1, ty2, -2.0 + z4);
+					glEnd();
+					glDisable( GL_TEXTURE_2D );
+				}
 				if ((float)_alt1 > ModelData.p_alt || (float)_alt2 > ModelData.p_alt || (float)_alt3 > ModelData.p_alt || (float)_alt4 > ModelData.p_alt) {
 					glBegin( GL_QUADS );
 					if ((float)_alt1 > ModelData.p_alt) {
@@ -876,6 +884,15 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 					glVertex3f(tx2, ty1, -2.0 + z2);
 					glVertex3f(tx2, ty2, -2.0 + z3);
 					glVertex3f(tx1, ty2, -2.0 + z4);
+					glEnd();
+				}
+				if (grid > 0.0) {
+					glBegin(GL_LINE_LOOP);
+					glColor4f(1.0, 1.0, 1.0, grid);
+					glVertex3f(tx1, ty1, -2.0 + z1 + 0.001);
+					glVertex3f(tx2, ty1, -2.0 + z2 + 0.001);
+					glVertex3f(tx2, ty2, -2.0 + z3 + 0.001);
+					glVertex3f(tx1, ty2, -2.0 + z4 + 0.001);
 					glEnd();
 				}
 

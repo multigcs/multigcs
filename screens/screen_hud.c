@@ -52,7 +52,13 @@ uint8_t view_hud_tunnel (char *name, float x, float y, int8_t button, float data
 }
 
 uint8_t view_hud_map (char *name, float x, float y, int8_t button, float data) {
-	hud_view_map = 1 - hud_view_map;
+	if (hud_view_map == 0) {
+		hud_view_map = 1;
+	} else if (hud_view_map == 1) {
+		hud_view_map = 2;
+	} else {
+		hud_view_map = 0;
+	}
 	return 0;
 }
 
@@ -401,9 +407,15 @@ void screen_hud (ESContext *esContext) {
 	}
 	if (hud_view_map == 1) {
 		if (hud_view_video == 1) {
-			display_map(esContext, lat, lon, zoom, 4);
+			display_map(esContext, lat, lon, zoom, 4, 1, 0.0, 0.0, 0.5);
 		} else {
-			display_map(esContext, lat, lon, zoom, 3);
+			display_map(esContext, lat, lon, zoom, 3, 1, 0.5, 0.0, 0.5);
+		}
+	} else if (hud_view_map == 2) {
+		if (hud_view_video == 1) {
+			display_map(esContext, lat, lon, zoom, 4, 1, 0.3, 0.3, 0.5);
+		} else {
+			display_map(esContext, lat, lon, zoom, 3, 0, 0.7, 0.7, 1.0);
 		}
 	}
 #endif
@@ -439,7 +451,7 @@ void screen_hud (ESContext *esContext) {
 
 	//printf("hud#2\n");
 
-	if (hud_view_map != 1 && hud_view_video != 1) {
+	if (hud_view_map == 0 && hud_view_video != 1) {
 		if (contrast == 1) {
 			draw_box_f3(esContext, -2.5f, -2.5f, -0.001, 2.5f, 0.0f, -0.001, 127, 127, 127, 255);
 			draw_box_f3(esContext, -2.5f, 0.0f, -0.001, 2.5f, 2.5f, -0.001, 255, 255, 255, 255);
@@ -1209,9 +1221,13 @@ void screen_hud (ESContext *esContext) {
 		draw_button(esContext, "view_hud", VIEW_MODE_HUD, "VIEW", FONT_GREEN, -1.35, 0.9, 0.002, 0.06, 0, 0, view_hud, 0);
 	}
 #ifdef SDLGL
-	if (hud_view_map == 1) {
-		draw_button(esContext, "view_hud_mark", VIEW_MODE_HUD, "MARK", FONT_GREEN, -1.35, 0.8, 0.002, 0.06, 0, 0, view_hud_mark, 0);
-		draw_button(esContext, "view_hud_map", VIEW_MODE_HUD, "MAP", FONT_GREEN, -1.15, 0.9, 0.002, 0.06, 0, 0, view_hud_map, 0);
+	if (hud_view_map != 0) {
+			draw_button(esContext, "view_hud_mark", VIEW_MODE_HUD, "MARK", FONT_GREEN, -1.35, 0.8, 0.002, 0.06, 0, 0, view_hud_mark, 0);
+		if (hud_view_map == 1) {
+			draw_button(esContext, "view_hud_map", VIEW_MODE_HUD, "MAP", FONT_GREEN, -1.15, 0.9, 0.002, 0.06, 0, 0, view_hud_map, 0);
+		} else {
+			draw_button(esContext, "view_hud_map", VIEW_MODE_HUD, "MAP", FONT_PINK, -1.15, 0.9, 0.002, 0.06, 0, 0, view_hud_map, 0);
+		}
 //		if (hud_view_tunnel == 1) {
 //			draw_button(esContext, "view_map_tunnel", VIEW_MODE_HUD, "TUNNEL", FONT_GREEN, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_tunnel, 0);
 //		} else {

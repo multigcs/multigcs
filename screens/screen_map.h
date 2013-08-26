@@ -65,5 +65,5 @@ void show_dir_ll(ESContext *esContext, float lat_from, float lon_from, float alt
 void mark_route (ESContext *esContext, float last_lat, float last_long, float last_alt, float mark_lat, float mark_long, float mark_alt, uint8_t type, float lat, float lon, uint8_t zoom);
 void mark_point (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, char *text, char *command, uint8_t type, float radius, float orbit, float lat, float lon, uint8_t zoom);
 void screen_map (ESContext *esContext, float lat, float lon, uint8_t zoom);
-void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint8_t map_view);
+void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint8_t map_view, uint8_t draw_tiles, float alpha1, float alpha2, float grid);
 void map_exit (void);
