@@ -190,6 +190,11 @@ void object3d_draw (Object3d *o3d, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 }
 
 void draw_line_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef HTML_DRAWING
+	char tmp_str[1024];
+	sprintf(tmp_str, "	draw_line(context, %0.0f, %0.0f, %0.0f, %0.0f, '#%0.2x%0.2x%0.2x');\n", x1 * X_CAL, y1 * Y_CAL, x2 * X_CAL, y2 * Y_CAL, r, g, b);
+	strcat(display_html, tmp_str);
+#endif
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -496,6 +501,11 @@ void draw_trifan_f3 (ESContext *esContext, float *poly_array, uint16_t len, uint
 }
 
 void draw_rect_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef HTML_DRAWING
+	char tmp_str[1024];
+	sprintf(tmp_str, "	draw_rect(context, %0.0f, %0.0f, %0.0f, %0.0f, 'rgba(%i,%i,%i,%0.3f)');\n", x1 * X_CAL, y1 * Y_CAL, x2 * X_CAL, y2 * Y_CAL, r, g, b, (float)a / 255.0);
+	strcat(display_html, tmp_str);
+#endif
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -515,6 +525,11 @@ void draw_rect_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 }
 
 void draw_box_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef HTML_DRAWING
+	char tmp_str[1024];
+	sprintf(tmp_str, "	draw_box(context, %0.0f, %0.0f, %0.0f, %0.0f, 'rgba(%i,%i,%i,%0.3f)');\n", x1 * X_CAL, y1 * Y_CAL, x2 * X_CAL, y2 * Y_CAL, r, g, b, (float)a / 255.0);
+	strcat(display_html, tmp_str);
+#endif
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -530,6 +545,11 @@ void draw_box_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, 
 }
 
 void draw_box_f3c2 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a, uint8_t r2, uint8_t g2, uint8_t b2, uint8_t a2) {
+#ifdef HTML_DRAWING
+	char tmp_str[1024];
+	sprintf(tmp_str, "	draw_box(context, %0.0f, %0.0f, %0.0f, %0.0f, '#%0.2x%0.2x%0.2x');\n", x1 * X_CAL, y1 * Y_CAL, x2 * X_CAL, y2 * Y_CAL, r, g, b);
+	strcat(display_html, tmp_str);
+#endif
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -546,6 +566,11 @@ void draw_box_f3c2 (ESContext *esContext, float x1, float y1, float z1, float x2
 }
 
 void draw_box_f3c2b (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a, uint8_t r2, uint8_t g2, uint8_t b2, uint8_t a2) {
+#ifdef HTML_DRAWING
+	char tmp_str[1024];
+	sprintf(tmp_str, "	draw_box(context, %0.0f, %0.0f, %0.0f, %0.0f, '#%0.2x%0.2x%0.2x');\n", x1 * X_CAL, y1 * Y_CAL, x2 * X_CAL, y2 * Y_CAL, r, g, b);
+	strcat(display_html, tmp_str);
+#endif
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -564,6 +589,11 @@ void draw_box_f3c2b (ESContext *esContext, float x1, float y1, float z1, float x
 }
 
 void draw_tria_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef HTML_DRAWING
+	char tmp_str[1024];
+	sprintf(tmp_str, "	draw_tria(context, %0.0f, %0.0f, %0.0f, %0.0f, %0.0f, %0.0f, '#%0.2x%0.2x%0.2x');\n", x1 * X_CAL, y1 * Y_CAL, x2 * X_CAL, y2 * Y_CAL, x3 * X_CAL, y3 * Y_CAL, r, g, b);
+	strcat(display_html, tmp_str);
+#endif
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -580,6 +610,11 @@ void draw_tria_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 }
 
 void draw_triaFilled_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef HTML_DRAWING
+	char tmp_str[1024];
+	sprintf(tmp_str, "	draw_triaFilled(context, %0.0f, %0.0f, %0.0f, %0.0f, %0.0f, %0.0f, '#%0.2x%0.2x%0.2x');\n", x1 * X_CAL, y1 * Y_CAL, x2 * X_CAL, y2 * Y_CAL, x3 * X_CAL, y3 * Y_CAL, r, g, b);
+	strcat(display_html, tmp_str);
+#endif
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -648,6 +683,31 @@ void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float 
 }
 
 void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, char *file) {
+#ifdef HTML_DRAWING
+	char tmp_str[1024];
+	char tmp_str2[1024];
+	int n2;
+	int n3 = 0;
+	strcpy(tmp_str2, file);
+	for (n2 = 0; n2 < strlen(tmp_str2); n2++) {
+		if (tmp_str2[n2] == '/') {
+			n3 = n2 + 1;
+		} else if (tmp_str2[n2] == '.') {
+			tmp_str2[n2] = 0;
+			break;
+		}
+	}
+	sprintf(tmp_str, "	var %s = new Image();\n", tmp_str2 + n3);
+	strcat(display_html, tmp_str);
+	sprintf(tmp_str, "	%s.onload = function() {\n", tmp_str2 + n3);
+	strcat(display_html, tmp_str);
+	sprintf(tmp_str, "		context2.drawImage(%s, %0.0f, %0.0f, %0.0f, %0.0f);\n", tmp_str2 + n3, x1 * X_CAL, y1 * Y_CAL, (x2 * X_CAL) - (x1 * X_CAL), (y2 * Y_CAL) - (y1 * Y_CAL));
+	strcat(display_html, tmp_str);
+	sprintf(tmp_str, "	};\n");
+	strcat(display_html, tmp_str);
+	sprintf(tmp_str, "	%s.src = 'http://127.0.0.1:8080%s';\n", tmp_str2 + n3, file);
+	strcat(display_html, tmp_str);
+#endif
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -939,6 +999,27 @@ void draw_char_f3_fast (ESContext *esContext, float x1, float y1, float z1, floa
 }
 
 void draw_text_f3_fast (ESContext *esContext, float x1, float y1, float z1, float w, float h, char *file, char *text) {
+#ifdef HTML_DRAWING
+	char color[100];
+	if (strcmp(file, FONT_GREEN_BG) == 0) {
+		strcpy(color, "green");
+	} else if (strcmp(file, FONT_TRANS) == 0) {
+		strcpy(color, "gray");
+	} else if (strcmp(file, FONT_BLACK_BG) == 0) {
+		strcpy(color, "black");
+	} else if (strcmp(file, FONT_WHITE) == 0) {
+		strcpy(color, "white");
+	} else if (strcmp(file, FONT_GREEN) == 0) {
+		strcpy(color, "green");
+	} else if (strcmp(file, FONT_PINK) == 0) {
+		strcpy(color, "red");
+	} else {
+		strcpy(color, "white");
+	}
+	char tmp_str[1024];
+	sprintf(tmp_str, "	draw_text(context, %0.0f, %0.0f, 'bold %0.0fpx Arial', \"%s\", '%s');\n", x1 * X_CAL, y1 * Y_CAL + (h * 300.0), h * 300.0, text, color);
+	strcat(display_html, tmp_str);
+#endif
 #ifdef CONSOLE_ONLY
 	return;
 #endif

@@ -165,6 +165,16 @@ extern uint8_t keyboard_shift;
 extern uint8_t keyboard_altgr;
 extern char blender_export_filename[2048];
 
+//#define HTML_DRAWING
+
+#ifdef HTML_DRAWING
+#define HTML_MAX 1000000
+#define X_CAL (1024 / 3) + (1024 / 2)
+#define Y_CAL (720 / 2) + (720 / 2)
+extern char display_html[HTML_MAX];
+extern char display_html2[HTML_MAX];
+#endif
+
 extern ESContext *GlobalesContext;
 
 void LogAppend(char *line);

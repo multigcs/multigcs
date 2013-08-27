@@ -172,6 +172,11 @@ struct list_element *LogLinesEnd = NULL;
 uint8_t contrast = 0;
 uint8_t connection_found = 0;
 
+#ifdef HTML_DRAWING
+char display_html[HTML_MAX];
+char display_html2[HTML_MAX];
+#endif
+
 SDL_Thread *thread = NULL;
 SDL_Thread *thread_telemetrie = NULL;
 
@@ -1352,6 +1357,41 @@ static uint8_t screen_next (char *name, float x, float y, int8_t button, float d
 	return 0;
 }
 
+void display_update (void) {
+#ifndef SDLGL
+	eglSwapBuffers(esContext->eglDisplay, esContext->eglSurface);
+#else
+#ifdef SDL2
+	SDL_GL_SwapWindow(MainWindow);
+#else
+	SDL_GL_SwapBuffers();
+#endif
+	SDL_Delay(15);
+#endif
+
+#ifdef HTML_DRAWING
+
+	strcpy(display_html2, display_html);
+
+	display_html[0] = 0;
+	strcat(display_html, "	var canvas = document.getElementById('myCanvas');\n");
+	strcat(display_html, "	var context = canvas.getContext('2d');\n");
+	strcat(display_html, "	context.clearRect(0, 0, canvas.width, canvas.height);\n");
+	strcat(display_html, "	var canvas2 = document.getElementById('myCanvas2');\n");
+	strcat(display_html, "	var context2 = canvas2.getContext('2d');\n");
+	strcat(display_html, "	context2.clearRect(0, 0, canvas2.width, canvas2.height);\n");
+	strcat(display_html, "	context.lineWidth = 1;\n");
+	strcat(display_html, "	context.font = 'bold 16px Arial';\n");
+	strcat(display_html, "	context2.lineWidth = 1;\n");
+	strcat(display_html, "	context2.font = 'bold 16px Arial';\n");
+	strcat(display_html, "	context2.beginPath();\n");
+	strcat(display_html, "	context2.moveTo(0, 0); context2.lineTo(canvas2.width, 0); context2.lineTo(canvas2.width, canvas2.height); context2.lineTo(0, canvas2.height); context2.lineTo(0, 0);\n");
+	strcat(display_html, "	context2.fillStyle = '#000000'; context2.fill();\n");
+	strcat(display_html, "	context2.closePath();\n");
+#endif
+
+}
+
 void Draw (ESContext *esContext) {
 #ifndef SDLGL
 	ESMatrix modelview;
@@ -1733,16 +1773,7 @@ void Draw (ESContext *esContext) {
 	draw_pointer(esContext, mouse_x, mouse_y, 16, 16, TEXTURE_POINTER);
 	glEnable( GL_DEPTH_TEST );
 
-#ifndef SDLGL
-	eglSwapBuffers(esContext->eglDisplay, esContext->eglSurface);
-#else
-#ifdef SDL2
-	SDL_GL_SwapWindow(MainWindow);
-#else
-	SDL_GL_SwapBuffers();
-#endif
-	SDL_Delay(15);
-#endif
+	display_update();
 #else
 	SDL_Delay(15);
 #endif

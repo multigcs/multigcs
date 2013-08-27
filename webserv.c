@@ -1,18 +1,37 @@
+
+#include <stdint.h>
 #include <stdio.h>
+#include <math.h>
+#include <sys/stat.h>
+#include <sys/times.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <errno.h>
+#include <time.h>
+#include <curl/curl.h>
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
 #include <fcntl.h>
-#include <signal.h>
+#include <math.h>
+#include <GL/gl.h>
+#include <SDL.h>
+#include <SDL_thread.h>
+#include <SDL_events.h>
+#include <SDL_image.h>
+#include <SDL_opengl.h>
+
+#include <model.h>
+#include <userdata.h>
+#include <gl_draw.h>
+#include <draw.h>
+#include <main.h>
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <SDL.h>
-#include <SDL_thread.h>
-#include <SDL_events.h>
-#include <model.h>
 
 
 extern uint16_t webport;
@@ -222,7 +241,8 @@ void webserv_child_show_hud (int fd) {
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
 	content[0] = 0;
-	strcat(content, "<html><head><title>MultiGCS</title><script language=\"Javascript\">\n");
+	strcat(content, "<html><head><title>MultiGCS</title>\n");
+	strcat(content, "<script language=\"Javascript\">\n");
 	strcat(content, "function xmlhttpGet() {\n");
 	strcat(content, "    var xmlHttpReq = false;\n");
 	strcat(content, "    var self = this;\n");
@@ -270,7 +290,8 @@ void webserv_child_show_hud (int fd) {
 	strcat(content, "	eval(str);\n");
 	strcat(content, "}\n");
 	strcat(content, "\n");
-	strcat(content, "</script></head><body>\n");
+	strcat(content, "</script>\n");
+	strcat(content, "</head><body>\n");
 	strcat(content, "<style type=\"text/css\">\n");
 	strcat(content, "body {\n");
 	strcat(content, "	background-color:#000000;\n");
@@ -544,8 +565,6 @@ void webserv_child_kml_feed (int fd, char *servername) {
 	strcat(content, "	<Document>\n");
 	strcat(content, "		<Placemark>\n");
 	strcat(content, "			<name>Model</name>\n");
-
-
 	strcat(content, "			<Model id=\"model_10\">\n");
 	strcat(content, "				<extrude>1</extrude>\n");
 	strcat(content, "				<altitudeMode>absolute</altitudeMode>\n");
@@ -623,7 +642,7 @@ void webserv_child (int fd) {
 //	printf("webserv: ###########################\n");
 //	printf("webserv: servername: %s\n", servername);
 //	printf("webserv: ###########################\n");
-//	printf("%s\n", buffer);
+	printf("%s\n", buffer);
 //	printf("webserv: ###########################\n");
 
 
@@ -803,6 +822,98 @@ void webserv_child (int fd) {
 		} else if (strncmp(buffer + 4,"/plane.dae", 4) == 0) {
 			sprintf(tmp_str, "%s/plane.dae", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/xml");
+#ifdef HTML_DRAWING
+		} else if (strncmp(buffer + 4,"/gui.html", 9) == 0) {
+			char display_html3[10000];
+			display_html3[0] = 0;
+			strcat(display_html3, "	<script>\n");
+			strcat(display_html3, "	function draw_box (context, x1, y1, x2, y2, color) {\n");
+			strcat(display_html3, "		context.beginPath();\n");
+			strcat(display_html3, "		context.moveTo(x1, y1); context.lineTo(x2, y1); context.lineTo(x2, y2); context.lineTo(x1, y2); context.lineTo(x1, y1);\n");
+			strcat(display_html3, "		context.fillStyle = color; context.fill();\n");
+			strcat(display_html3, "		context.closePath();\n");
+			strcat(display_html3, "	}\n");
+			strcat(display_html3, "	function draw_rect (context, x1, y1, x2, y2, color) {\n");
+			strcat(display_html3, "		context.beginPath();\n");
+			strcat(display_html3, "		context.moveTo(x1, y1); context.lineTo(x2, y1); context.lineTo(x2, y2); context.lineTo(x1, y2); context.lineTo(x1, y1);\n");
+			strcat(display_html3, "		context.strokeStyle = color; context.stroke();\n");
+			strcat(display_html3, "		context.closePath();\n");
+			strcat(display_html3, "	}\n");
+			strcat(display_html3, "	function draw_tria (context, x1, y1, x2, y2, x3, y3, color) {\n");
+			strcat(display_html3, "		context.beginPath();\n");
+			strcat(display_html3, "		context.moveTo(x1, y1); context.lineTo(x2, y2); context.lineTo(x3, y3); context.lineTo(x1, y1);\n");
+			strcat(display_html3, "		context.strokeStyle = color; context.stroke();\n");
+			strcat(display_html3, "		context.closePath();\n");
+			strcat(display_html3, "	}\n");
+			strcat(display_html3, "	function draw_triaFilled (context, x1, y1, x2, y2, x3, y3, color) {\n");
+			strcat(display_html3, "		context.beginPath();\n");
+			strcat(display_html3, "		context.moveTo(x1, y1); context.lineTo(x2, y2); context.lineTo(x3, y3); context.lineTo(x1, y1);\n");
+			strcat(display_html3, "		context.fillStyle = color; context.fill();\n");
+			strcat(display_html3, "		context.closePath();\n");
+			strcat(display_html3, "	}\n");
+			strcat(display_html3, "	function draw_line (context, x1, y1, x2, y2, color) {\n");
+			strcat(display_html3, "		context.beginPath();\n");
+			strcat(display_html3, "		context.moveTo(x1, y1); context.lineTo(x2, y2);\n");
+			strcat(display_html3, "		context.strokeStyle = color; context.stroke();\n");
+			strcat(display_html3, "		context.closePath();\n");
+			strcat(display_html3, "	}\n");
+			strcat(display_html3, "	function draw_text (context, x1, y1, font, text, color) {\n");
+			strcat(display_html3, "		context.beginPath();\n");
+			strcat(display_html3, "		context.fillStyle = color;\n");
+			strcat(display_html3, "		context.font = font;\n");
+			strcat(display_html3, "		context.fillText(text, x1, y1);\n");
+			strcat(display_html3, "		context.closePath();\n");
+			strcat(display_html3, "	}\n");
+			strcat(display_html3, "</script>\n");
+			strcat(display_html3, "<script language=\"Javascript\">\n");
+			strcat(display_html3, "function xmlhttpGet() {\n");
+			strcat(display_html3, "    var xmlHttpReq = false;\n");
+			strcat(display_html3, "    var self = this;\n");
+			strcat(display_html3, "    if (window.XMLHttpRequest) {\n");
+			strcat(display_html3, "        self.xmlHttpReq = new XMLHttpRequest();\n");
+			strcat(display_html3, "    } else if (window.ActiveXObject) {\n");
+			strcat(display_html3, "        self.xmlHttpReq = new ActiveXObject(\"Microsoft.XMLHTTP\");\n");
+			strcat(display_html3, "    }\n");
+			strcat(display_html3, "    self.xmlHttpReq.open('GET', \"/gui-update.js\", true);\n");
+			strcat(display_html3, "    self.xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');\n");
+			strcat(display_html3, "    self.xmlHttpReq.onreadystatechange = function() {\n");
+			strcat(display_html3, "        if (self.xmlHttpReq.readyState == 4) {\n");
+			strcat(display_html3, "            updatepage(self.xmlHttpReq.responseText);\n");
+			strcat(display_html3, "        }\n");
+			strcat(display_html3, "    }\n");
+			strcat(display_html3, "    self.xmlHttpReq.send();\n");
+			strcat(display_html3, "    setTimeout(xmlhttpGet, 1000);\n");
+			strcat(display_html3, "}\n");
+			strcat(display_html3, "function updatepage(str){\n");
+			strcat(display_html3, "	eval(str);\n");
+			strcat(display_html3, "}\n");
+			strcat(display_html3, "\n");
+			strcat(display_html3, "</script>\n");
+			strcat(display_html3, "<body onload=\"JavaScript:xmlhttpGet();\">\n");
+			strcat(display_html3, "	<div style=\"position: relative;\">\n");
+			strcat(display_html3, "		<canvas id=\"myCanvas\" width=\"1024\" height=\"720\" style=\"position: absolute; left: 10; top: 70; z-index: 1;\"></canvas>\n");
+			strcat(display_html3, "		<canvas id=\"myCanvas2\" width=\"1024\" height=\"720\" style=\"position: absolute; left: 10; top: 70; z-index: 0;\"></canvas>\n");
+			strcat(display_html3, "	</div>\n");
+			strcat(display_html3, "</body>\n");
+			sprintf(buffer, header_str, strlen(display_html3), "text/html");
+			write(fd, buffer, strlen(buffer));
+			write(fd, display_html3, strlen(display_html3));
+		} else if (strncmp(buffer + 4,"/gui-update.js", 14) == 0) {
+			sprintf(buffer, header_str, strlen(display_html2), "text/plain");
+			write(fd, buffer, strlen(buffer));
+			write(fd, display_html2, strlen(display_html2));
+#endif
+		} else if (strncmp(buffer + 4,"/usr/share/multigcs/", 20) == 0) {
+			int n;
+			for (n = 5; n < strlen(buffer); n++) {
+				if (buffer[n] == ' ') {
+					buffer[n] = 0;
+					break;
+				}
+			}
+			printf("## %s ##\n", buffer + 4);
+			webserv_child_dump_file(fd, buffer + 4, "image/jpg");
+
 
 		// HTML5 HUD-View + Map
 		} else if (strncmp(buffer + 4,"/hud.html", 9) == 0) {
