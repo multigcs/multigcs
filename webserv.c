@@ -642,7 +642,7 @@ void webserv_child (int fd) {
 //	printf("webserv: ###########################\n");
 //	printf("webserv: servername: %s\n", servername);
 //	printf("webserv: ###########################\n");
-	printf("%s\n", buffer);
+//	printf("%s\n", buffer);
 //	printf("webserv: ###########################\n");
 
 
@@ -935,6 +935,9 @@ void webserv_child (int fd) {
 				webserv_child_dump_file(fd, tmp_str, "image/png");
 			}
 		} else if (strncmp(buffer + 4,"/marker.png", 11) == 0) {
+			sprintf(tmp_str, "%s/MAPS/marker.png", BASE_DIR);
+			webserv_child_dump_file(fd, tmp_str, "image/png");
+		} else if (strncmp(buffer + 4,"/img/marker.png", 15) == 0) {
 			sprintf(tmp_str, "%s/MAPS/marker.png", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "image/png");
 		} else if (strncmp(buffer + 4,"/lonlat.txt", 11) == 0) {
