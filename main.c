@@ -488,6 +488,9 @@ void sys_message (char *msg) {
 }
 
 void setup_save (void) {
+	if (clientmode == 1) {
+		return;
+	}
         FILE *fr;
         int n = 0;
 	if (calibration_mode > 0) {
