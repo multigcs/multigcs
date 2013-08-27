@@ -149,7 +149,6 @@ int main(int argc, char* argv[]) {
 
 			printf("Something received\n");
 
-
 			// Something received - print out all bytes and parse packet
 			mavlink_message_t msg;
 			mavlink_status_t status;

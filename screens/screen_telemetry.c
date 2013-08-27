@@ -180,8 +180,8 @@ void screen_telemetry (ESContext *esContext) {
 	float data[] = {80.0, 20.0, 60.0, 30.0, 60.0, 14.0, 10.0, 90.0};
 	draw_value_barchannels(esContext, -0.2, 0.1, "Channels", 0, 100, 8, data);
 
-
-
+	draw_value_barmeter(esContext, 0.3, 0.0, 0.6, 0.8, "SATS", "", 0, 0.0, 10.0, 4.0, 3.0, ModelData.numSat);
+	draw_value_barmeter(esContext, 0.8, 0.0, 1.1, 0.8, "HEART", "", 0, 0.0, 100.0, 40.0, 20.0, ModelData.heartbeat);
 
 #ifdef SDLGL
 	glPopMatrix();

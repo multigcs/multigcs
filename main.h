@@ -101,6 +101,7 @@ extern struct list_element *LogLinesEnd;
 extern float volt_min;
 extern int8_t speak;
 extern uint8_t fullscreen;
+extern uint8_t borderless;
 extern uint16_t heartbeat_timer;
 extern uint16_t blink_timer;
 extern uint16_t speak_timer;

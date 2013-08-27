@@ -1179,6 +1179,9 @@ int glInit ( ESContext *esContext ) {
 	} else {
 		video_flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
 	}
+	if (borderless == 1) {
+		video_flags |= SDL_WINDOW_BORDERLESS;
+	}
 	if ((MainWindow = SDL_CreateWindow("Multi-GCS", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_w, screen_h, video_flags)) == NULL) {
 		fprintf(stderr, "* Couldn't create MainWindow: %s\n", SDL_GetError());
 		SDL_Quit();

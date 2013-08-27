@@ -101,6 +101,7 @@ char modeltypes[5][15] = {
 	"BOAT",
 };
 uint8_t fullscreen = 0;
+uint8_t borderless = 0;
 uint16_t screen_w = SCREEN_W;
 uint16_t screen_h = SCREEN_H;
 uint16_t screen_border_x = 0;
@@ -510,6 +511,7 @@ void setup_save (void) {
 	        fprintf(fr, "screen_border_y     %i\n", screen_border_y);
 	        fprintf(fr, "keep_ratio   %f\n", keep_ratio);
 	        fprintf(fr, "fullscreen   %i\n", fullscreen);
+	        fprintf(fr, "borderless   %i\n", borderless);
 	        fprintf(fr, "lat          %0.8f\n", lat);
 	        fprintf(fr, "lon          %0.8f\n", lon);
 	        fprintf(fr, "zoom         %i\n", zoom);
@@ -620,6 +622,8 @@ void setup_load (void) {
 					speak = atoi(val);
 	                        } else if (strcmp(var, "fullscreen") == 0) {
 					fullscreen = atoi(val);
+	                        } else if (strcmp(var, "borderless") == 0) {
+					borderless = atoi(val);
 	                        } else if (strcmp(var, "lat") == 0) {
 					lat = atof(val);
 	                        } else if (strcmp(var, "lon") == 0) {
