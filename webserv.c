@@ -43,6 +43,10 @@ extern char mapnames[20][4][200];
 #define BUFSIZE 18096
 #define PI 3.14159265
 
+static float blender_first_lat = 0.0;
+static float blender_first_long = 0.0;
+static float blender_first_alt = 0.0;
+
 uint8_t webserv_running = 0;
 SDL_Thread *thread_webserv = NULL;
 int listenfd;
@@ -87,13 +91,19 @@ void webserv_child_dump_file (int fd, char *file, char *type) {
 	close(file_fd);
 }
 
-void webserv_child_dump_attitude (int fd) {
-	static char buffer[BUFSIZE + 1];
-	char content[BUFSIZE + 1];
+void webserv_child_dump_blender (int fd) {
+	static char buffer[1024];
+	char content[1024];
 	char tmp_str[100];
 
+	if (blender_first_lat == 0.0 || blender_first_long == 0.0) {
+		blender_first_lat = ModelData.p_lat;
+		blender_first_long = ModelData.p_long;
+		blender_first_alt = ModelData.p_alt;
+	}
+
 	content[0] = 0;
-	sprintf(tmp_str, "%f %f %f %f %f\n", ModelData.pitch, ModelData.roll, ModelData.yaw, 0.0, 0.0);
+	sprintf(tmp_str, "%f %f %f %f %f %f\n", ModelData.pitch, ModelData.roll, ModelData.yaw, (ModelData.p_lat - blender_first_lat), (ModelData.p_long - blender_first_long), (ModelData.p_alt - blender_first_alt));
 	strcat(content, tmp_str);
 
 	sprintf(buffer, header_str, strlen(content), "text/plain");
@@ -825,12 +835,15 @@ void webserv_child (int fd) {
 		// Misc
 		if (strncmp(buffer + 4,"/modeldata", 10) == 0) {
 			webserv_child_dump_modeldata(fd);
-		} else if (strncmp(buffer + 4,"/attitude", 9) == 0) {
-			webserv_child_dump_attitude(fd);
+		} else if (strncmp(buffer + 4,"/blender.txt", 12) == 0) {
+			webserv_child_dump_blender(fd);
+
 		} else if (strncmp(buffer + 4,"/blender-export.py", 18) == 0) {
 			sprintf(tmp_str, "%s/blender-export.py", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/plain");
-
+			blender_first_lat = ModelData.p_lat;
+			blender_first_long = ModelData.p_long;
+			blender_first_alt = ModelData.p_alt;
 		} else if (strncmp(buffer + 4,"/screenshot", 11) == 0) {
 			webserv_child_dump_screen(fd);
 

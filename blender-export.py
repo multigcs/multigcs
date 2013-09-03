@@ -7,11 +7,10 @@ import math
 import httplib2
 
 
-class ArduinoChangesLocation(bpy.types.Operator):
+class MultiGCSlive(bpy.types.Operator):
     '''Operator which changes selected objects location'''
-    '''from Arduino and in real time.'''
-    bl_idname = "wm.arduino_changes_location"
-    bl_label = "Arduino changes location"
+    bl_idname = "wm.multigcs_changes_location"
+    bl_label = "multigcs changes location"
 
     _timer = None
 
@@ -21,23 +20,24 @@ class ArduinoChangesLocation(bpy.types.Operator):
 
         if event.type == 'TIMER':
 
-            URL = "http://127.0.0.1:8080/attitude"
-            
+            URL = "http://127.0.0.1:8080/blender.txt"
             h = httplib2.Http(".cache")
             resp, content = h.request(URL, "GET")
 
-            page = content
-
-
-            Coords=[0.0,0.0,0.0] # Inicial location
-            CoordsNumber=3
+            Coords=[0.0,0.0,0.0,0.0,0.0,0.0] # Inicial location
+            CoordsNumber=6
             for i in range(CoordsNumber):
-                Coords[i] = Coords[i] + (float)(page.split()[i])
+                Coords[i] = Coords[i] + (float)(content.split()[i])
             objects = context.selected_objects
             for object in objects:
-                object.rotation_euler[0] = Coords[0] * 3.14159 / 180.0
-                object.rotation_euler[1] = Coords[1] * 3.14159 / 180.0
+                object.rotation_euler[0] = Coords[1] * 3.14159 / 180.0 * -1
+                object.rotation_euler[1] = Coords[0] * 3.14159 / 180.0
                 object.rotation_euler[2] = Coords[2] * 3.14159 / 180.0 * -1
+
+                object.location.x = Coords[3] * -200.0
+                object.location.y = Coords[4] * 200.0
+                object.location.z = Coords[5] / 40.0
+
 
 
         return {'PASS_THROUGH'}
@@ -53,16 +53,16 @@ class ArduinoChangesLocation(bpy.types.Operator):
 
 
 def register():
-    bpy.utils.register_class(ArduinoChangesLocation)
+    bpy.utils.register_class(MultiGCSlive)
 
 
 def unregister():
-    bpy.utils.unregister_class(ArduinoChangesLocation)
+    bpy.utils.unregister_class(MultiGCSlive)
 
 
 if __name__ == "__main__":
     register()
 
     # test call
-    bpy.ops.wm.arduino_changes_location()
+    bpy.ops.wm.multigcs_changes_location()
     
