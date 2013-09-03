@@ -129,6 +129,7 @@ uint8_t hud_view_video = 0;
 uint8_t hud_view_tunnel = 0;
 uint8_t hud_view_mark = 0;
 uint16_t webport = 8080;
+float gearth_interval = 1;
 uint8_t clientmode = 0;
 char clientmode_server[1024];
 uint16_t clientmode_port = 8080;
@@ -541,6 +542,7 @@ void setup_save (void) {
 	        fprintf(fr, "hud_view_tunnel %i\n", hud_view_tunnel);
 	        fprintf(fr, "map_view     %i\n", map_view);
 	        fprintf(fr, "webport     %i\n", webport);
+	        fprintf(fr, "gearth_interval     %f\n", gearth_interval);
 	        fprintf(fr, "touchscreen_device       %s\n", touchscreen_device);
 		fprintf(fr, "calibration_mode         %i\n", calibration_mode);
 		fprintf(fr, "calibration_min_x        %i\n", calibration_min_x);
@@ -693,6 +695,8 @@ void setup_load (void) {
 	                                map_view = atoi(val);
 	                        } else if (strcmp(var, "webport") == 0) {
 	                                webport = atoi(val);
+	                        } else if (strcmp(var, "gearth_interval") == 0) {
+	                                gearth_interval = atoi(val);
 	                        } else if (strcmp(var, "[waypoints]") == 0) {
 	                                mode = 1;
 	                        }

@@ -570,7 +570,8 @@ void webserv_child_kml_live (int fd, char *servername) {
 	sprintf(tmp_str, "			<href>http://%s/model.kml</href>\n", servername);
 	strcat(content, tmp_str);
 	strcat(content, "			<refreshMode>onInterval</refreshMode>\n");
-	strcat(content, "			<refreshInterval>.3</refreshInterval>\n");
+	sprintf(tmp_str, "			<refreshInterval>%f</refreshInterval>\n", gearth_interval);
+	strcat(content, tmp_str);
 	strcat(content, "		</Link>\n");
 	strcat(content, "	</NetworkLink>\n");
 	strcat(content, "</kml>\n");
@@ -857,18 +858,17 @@ void webserv_child (int fd) {
 			webserv_child_kml_feed(fd, servername);
 		} else if (strncmp(buffer + 4,"/plane.dae", 4) == 0) {
 #ifdef SDLGL
-//			if (get_background_model(tmp_str) == 0) {
-//				if (obj3d_collada.name[0] == 0) {
-//					printf("webserv: convert '%s' to collada-format\n", tmp_str);
-//					object3d_load_data(&obj3d_collada, tmp_str);
-//					object3d_save_as_collada(&obj3d_collada, "/tmp/plane.dae");
-//					object3d_free(&obj3d_collada);
-//				}
-//				webserv_child_dump_file(fd, "/tmp/plane.dae", "text/xml");
-//			} else {
+			if (get_background_model(tmp_str) == 0) {
+				if (obj3d_collada.name[0] == 0) {
+					printf("webserv: convert '%s' to collada-format\n", tmp_str);
+					object3d_load_data(&obj3d_collada, tmp_str);
+					object3d_save_as_collada(&obj3d_collada, "/tmp/plane.dae");
+				}
+				webserv_child_dump_file(fd, "/tmp/plane.dae", "text/xml");
+			} else {
 				sprintf(tmp_str, "%s/plane.dae", BASE_DIR);
 				webserv_child_dump_file(fd, tmp_str, "text/xml");
-//			}
+			}
 #else
 			sprintf(tmp_str, "%s/plane.dae", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/xml");
@@ -1047,6 +1047,7 @@ int webserv_thread (void *data) {
 
 void webserv_init (void) {
 	printf("webserv: init thread\n");
+	obj3d_collada.name[0] = 0;
 	webserv_running = 1;
 #ifdef SDL2
 	thread_webserv = SDL_CreateThread(webserv_thread, NULL, NULL);
@@ -1069,5 +1070,10 @@ void webserv_exit (void) {
 	if (listenfd >= 0) {
 		close(listenfd);
 	}
+#ifdef SDLGL
+	if (obj3d_collada.name[0] != 0) {
+		object3d_free(&obj3d_collada);
+	}
+#endif
 }
 

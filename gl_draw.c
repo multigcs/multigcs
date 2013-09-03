@@ -214,14 +214,22 @@ void object3d_load (Object3d *o3d, char *filename) {
 
 void object3d_save_as_collada (Object3d *o3d, char *filename) {
 	FILE *fr2;
+	float collada_scale = 1.0;
 	fr2 = fopen(filename, "w");
 	fprintf(fr2, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n");
 	fprintf(fr2, "<COLLADA xmlns=\"http://www.collada.org/2005/11/COLLADASchema\" version=\"1.4.1\">\n");
+	fprintf(fr2, "    <asset>\n");
+	fprintf(fr2, "        <contributor>\n");
+	fprintf(fr2, "            <authoring_tool>MultiGCS</authoring_tool>\n");
+	fprintf(fr2, "        </contributor>\n");
+	fprintf(fr2, "        <created>2009-10-17T10:23:04Z</created>\n");
+	fprintf(fr2, "        <modified>2009-10-17T10:23:04Z</modified>\n");
+	fprintf(fr2, "        <up_axis>Z_UP</up_axis>\n");
+	fprintf(fr2, "    </asset>\n");
 	fprintf(fr2, "    <library_visual_scenes>\n");
 	fprintf(fr2, "        <visual_scene id=\"ID1\">\n");
-	fprintf(fr2, "            <node name=\"SketchUp\">\n");
+	fprintf(fr2, "            <node name=\"MultiGCS\">\n");
 	fprintf(fr2, "                <node id=\"ID2\" name=\"instance_0\">\n");
-	fprintf(fr2, "                    <matrix>0 1 0 0.851428 -1 0 0 0.8320829 0 -0 1 11.02362 0 0 0 1</matrix>\n");
 	fprintf(fr2, "                    <instance_node url=\"#ID3\" />\n");
 	fprintf(fr2, "                </node>\n");
 	fprintf(fr2, "            </node>\n");
@@ -242,7 +250,7 @@ void object3d_save_as_collada (Object3d *o3d, char *filename) {
 	fprintf(fr2, "                    <float_array id=\"ID10\" count=\"%i\">\n", (o3d->cords_num - 1) * 3);
 	uint32_t num = 1;
 	for (num = 1; num < o3d->cords_num; num++) {
-		fprintf(fr2, "	%f %f %f\n", o3d->cords[num].x / o3d->scale * 100.0, o3d->cords[num].y / o3d->scale * 100.0, o3d->cords[num].z / o3d->scale * 100.0);
+		fprintf(fr2, "	%f %f %f\n", o3d->cords[num].x / o3d->scale * collada_scale, o3d->cords[num].y / o3d->scale * collada_scale, o3d->cords[num].z / o3d->scale * collada_scale);
 	}
 	fprintf(fr2, "                    </float_array>\n");
 	fprintf(fr2, "                    <technique_common>\n");

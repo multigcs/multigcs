@@ -142,6 +142,7 @@ extern int size_y;
 extern int last_y;
 extern int touch_fd;
 extern uint16_t webport;
+extern float gearth_interval;
 extern uint8_t clientmode;
 extern char clientmode_server[1024];
 extern uint16_t clientmode_port;
