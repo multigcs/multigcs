@@ -47,6 +47,8 @@ static float blender_first_lat = 0.0;
 static float blender_first_long = 0.0;
 static float blender_first_alt = 0.0;
 
+Object3d obj3d_collada;
+
 uint8_t webserv_running = 0;
 SDL_Thread *thread_webserv = NULL;
 int listenfd;
@@ -636,6 +638,7 @@ void webserv_child_kml_feed (int fd, char *servername) {
 	write(fd, content, strlen(content));
 }
 
+extern uint8_t get_background_model (char *filename);
 
 void webserv_child (int fd) {
 	char buffer[BUFSIZE + 1];
@@ -660,7 +663,7 @@ void webserv_child (int fd) {
 			*strstr(servername, "\r") = 0;
 		}
 	} else {
-		strcpy(servername, "");
+		servername[0] = 0;
 	}
 
 //	printf("webserv: ###########################\n");
@@ -853,8 +856,24 @@ void webserv_child (int fd) {
 		} else if (strncmp(buffer + 4,"/model.kml", 8) == 0) {
 			webserv_child_kml_feed(fd, servername);
 		} else if (strncmp(buffer + 4,"/plane.dae", 4) == 0) {
+#ifdef SDLGL
+//			if (get_background_model(tmp_str) == 0) {
+//				if (obj3d_collada.name[0] == 0) {
+//					printf("webserv: convert '%s' to collada-format\n", tmp_str);
+//					object3d_load_data(&obj3d_collada, tmp_str);
+//					object3d_save_as_collada(&obj3d_collada, "/tmp/plane.dae");
+//					object3d_free(&obj3d_collada);
+//				}
+//				webserv_child_dump_file(fd, "/tmp/plane.dae", "text/xml");
+//			} else {
+				sprintf(tmp_str, "%s/plane.dae", BASE_DIR);
+				webserv_child_dump_file(fd, tmp_str, "text/xml");
+//			}
+#else
 			sprintf(tmp_str, "%s/plane.dae", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/xml");
+#endif
+
 #ifdef HTML_DRAWING
 		} else if (strncmp(buffer + 4,"/gui.html", 9) == 0) {
 			char display_html3[10000];

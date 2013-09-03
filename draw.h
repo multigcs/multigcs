@@ -20,6 +20,7 @@ typedef struct {
 	char name[1024];
 	Object3dCord *cords;
 	Object3dFace *faces;
+	uint32_t cords_num;
 	uint32_t faces_num;
 	uint32_t cordsID;
 	uint32_t facesID;
@@ -30,9 +31,11 @@ typedef struct {
 extern SrtmCache AltCache[MAX_ALTCACHE];
 extern const GLfloat DEG2RAD;
 
+void object3d_load_data (Object3d *o3d, char *filename);
 void object3d_load (Object3d *o3d, char *filename);
 void object3d_free (Object3d *o3d);
 void object3d_draw (Object3d *o3d, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+void object3d_save_as_collada (Object3d *o3d, char *filename);
 
 void draw_image_uncache (char *file);
 void draw_line_f (ESContext *esContext, float x1, float y1, float x2, float y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a);

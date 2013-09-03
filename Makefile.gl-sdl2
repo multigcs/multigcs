@@ -13,7 +13,7 @@ LIBS += $(shell pkg-config --libs sdl2) $(shell pkg-config --libs SDL2_image) $(
 
 
 CFLAGS += -DSDLGL -O3 -Wall -DSDL2
-#CFLAGS += -ggdb
+CFLAGS += -ggdb
 #CFLAGS +=  -pg
 
 ## ldd gcs  | grep -v /opt | awk '{print $1}' | xargs -r -l dpkg -S  | cut -d":" -f1 | sort -u | tr  "\n" "," ##

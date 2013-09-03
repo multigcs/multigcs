@@ -56,12 +56,12 @@ void esMatrixMultiply(ESMatrix *result, ESMatrix *srcA, ESMatrix *srcB) {
 
 #define GL_OBJECT_USING_BUFFER
 
-void object3d_load (Object3d *o3d, char *filename) {
+void object3d_load_data (Object3d *o3d, char *filename) {
 	FILE *fr;
 	char line[1025];
-	uint32_t obj_cords_num = 1;
 	o3d->cords = malloc(sizeof(Object3dCord));
 	o3d->faces = malloc(sizeof(Object3dFace));
+	o3d->cords_num = 1;
 	o3d->faces_num = 1;
 	o3d->scale = 0.0;
 	fr = fopen (filename, "r");
@@ -73,11 +73,11 @@ void object3d_load (Object3d *o3d, char *filename) {
 				float py = 0.0;
 				float pz = 0.0;
 		                sscanf (line + 2, "%f %f %f", &px, &py, &pz);
-				o3d->cords = realloc(o3d->cords, sizeof(Object3dCord) * (obj_cords_num + 1));
-				o3d->cords[obj_cords_num].x = px;
-				o3d->cords[obj_cords_num].y = py;
-				o3d->cords[obj_cords_num].z = pz;
-				obj_cords_num++;
+				o3d->cords = realloc(o3d->cords, sizeof(Object3dCord) * (o3d->cords_num + 1));
+				o3d->cords[o3d->cords_num].x = px;
+				o3d->cords[o3d->cords_num].y = py;
+				o3d->cords[o3d->cords_num].z = pz;
+				o3d->cords_num++;
 				if (px > o3d->scale) {
 					o3d->scale = px;
 				}
@@ -127,31 +127,168 @@ void object3d_load (Object3d *o3d, char *filename) {
 //		o3d->scale *= 2.0;
 //		o3d->scale /= 2.0;
 	}
-#ifdef GL_OBJECT_USING_BUFFER
-	glGenBuffersARB(1, &o3d->cordsID);
-	glBindBufferARB(GL_ARRAY_BUFFER_ARB, o3d->cordsID);
-	glBufferDataARB(GL_ARRAY_BUFFER_ARB, obj_cords_num * sizeof(float) * 3, o3d->cords, GL_STATIC_DRAW_ARB);
+}
 
-	glGenBuffersARB(1, &o3d->facesID);
-	glBindBufferARB(GL_ARRAY_BUFFER_ARB, o3d->facesID);
-	glBufferDataARB(GL_ARRAY_BUFFER_ARB, o3d->faces_num * sizeof(uint32_t) * 4, o3d->faces, GL_STATIC_DRAW_ARB);
+void object3d_load (Object3d *o3d, char *filename) {
+	FILE *fr;
+	char line[1025];
+	o3d->cords = malloc(sizeof(Object3dCord));
+	o3d->faces = malloc(sizeof(Object3dFace));
+	o3d->cords_num = 1;
+	o3d->faces_num = 1;
+	o3d->scale = 0.0;
+	fr = fopen (filename, "r");
+	if (fr != 0) {
+		strncpy(o3d->name, filename, 1023);
+	        while(fgets(line, 1024, fr) != NULL) {
+			if (strncmp(line, "v ", 2) == 0) {
+				float px = 0.0;
+				float py = 0.0;
+				float pz = 0.0;
+		                sscanf (line + 2, "%f %f %f", &px, &py, &pz);
+				o3d->cords = realloc(o3d->cords, sizeof(Object3dCord) * (o3d->cords_num + 1));
+				o3d->cords[o3d->cords_num].x = px;
+				o3d->cords[o3d->cords_num].y = py;
+				o3d->cords[o3d->cords_num].z = pz;
+				o3d->cords_num++;
+				if (px > o3d->scale) {
+					o3d->scale = px;
+				}
+				if (py > o3d->scale) {
+					o3d->scale = py;
+				}
+				if (pz > o3d->scale) {
+					o3d->scale = pz;
+				}
+			} else if (strncmp(line, "f ", 2) == 0) {
+				int p1v = 0;
+				int p1t = 0;
+				int p1n = 0;
+				int p2v = 0;
+				int p2t = 0;
+				int p2n = 0;
+				int p3v = 0;
+				int p3t = 0;
+				int p3n = 0;
+				int p4v = 0;
+				int p4t = 0;
+				int p4n = 0;
+
+				if (sscanf(line + 2, "%i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i", &p1v, &p1t, &p1n, &p2v, &p2t, &p2n, &p3v, &p3t, &p3n, &p4v, &p4t, &p4n) >= 9) {
+				} else if (sscanf(line + 2, "%i//%i %i//%i %i//%i %i//%i", &p1v, &p1t, &p2v, &p2t, &p3v, &p3t, &p4v, &p4t) >= 6) {
+				} else if (sscanf(line + 2, "%i/%i %i/%i %i/%i %i/%i", &p1v, &p1t, &p2v, &p2t, &p3v, &p3t, &p4v, &p4t) >= 6) {
+				} else if (sscanf(line + 2, "%i %i %i %i", &p1v, &p2v, &p3v, &p4v) >= 3) {
+				}
+
+				o3d->faces = realloc(o3d->faces, sizeof(Object3dFace) * (o3d->faces_num + 1));
+				o3d->faces[o3d->faces_num].a = p1v;
+				o3d->faces[o3d->faces_num].b = p2v;
+				o3d->faces[o3d->faces_num].c = p3v;
+#ifdef GL_OBJECT_USING_BUFFER
+				if (p4v == 0) {
+					o3d->faces[o3d->faces_num].d = p3v;
+				} else {
+					o3d->faces[o3d->faces_num].d = p4v;
+				}
 #else
-	free(o3d->cords);
-	free(o3d->faces);
+				o3d->faces[o3d->faces_num].d = p4v;
 #endif
+				o3d->faces_num++;
+			}
+		}
+		fclose(fr);
+//		o3d->scale *= 2.0;
+//		o3d->scale /= 2.0;
+
+#ifdef GL_OBJECT_USING_BUFFER
+		glGenBuffersARB(1, &o3d->cordsID);
+		glBindBufferARB(GL_ARRAY_BUFFER_ARB, o3d->cordsID);
+		glBufferDataARB(GL_ARRAY_BUFFER_ARB, o3d->cords_num * sizeof(float) * 3, o3d->cords, GL_STATIC_DRAW_ARB);
+
+		glGenBuffersARB(1, &o3d->facesID);
+		glBindBufferARB(GL_ARRAY_BUFFER_ARB, o3d->facesID);
+		glBufferDataARB(GL_ARRAY_BUFFER_ARB, o3d->faces_num * sizeof(uint32_t) * 4, o3d->faces, GL_STATIC_DRAW_ARB);
+#endif
+	}
+}
+
+void object3d_save_as_collada (Object3d *o3d, char *filename) {
+	FILE *fr2;
+	fr2 = fopen(filename, "w");
+	fprintf(fr2, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n");
+	fprintf(fr2, "<COLLADA xmlns=\"http://www.collada.org/2005/11/COLLADASchema\" version=\"1.4.1\">\n");
+	fprintf(fr2, "    <library_visual_scenes>\n");
+	fprintf(fr2, "        <visual_scene id=\"ID1\">\n");
+	fprintf(fr2, "            <node name=\"SketchUp\">\n");
+	fprintf(fr2, "                <node id=\"ID2\" name=\"instance_0\">\n");
+	fprintf(fr2, "                    <matrix>0 1 0 0.851428 -1 0 0 0.8320829 0 -0 1 11.02362 0 0 0 1</matrix>\n");
+	fprintf(fr2, "                    <instance_node url=\"#ID3\" />\n");
+	fprintf(fr2, "                </node>\n");
+	fprintf(fr2, "            </node>\n");
+	fprintf(fr2, "        </visual_scene>\n");
+	fprintf(fr2, "    </library_visual_scenes>\n");
+	fprintf(fr2, "\n");
+	fprintf(fr2, "    <library_nodes>\n");
+	fprintf(fr2, "        <node id=\"ID3\" name=\"component_0\">\n");
+	fprintf(fr2, "            <instance_geometry url=\"#ID4\">\n");
+	fprintf(fr2, "            </instance_geometry>\n");
+	fprintf(fr2, "        </node>\n");
+	fprintf(fr2, "    </library_nodes>\n");
+	fprintf(fr2, "\n");
+	fprintf(fr2, "    <library_geometries>\n");
+	fprintf(fr2, "        <geometry id=\"ID4\">\n");
+	fprintf(fr2, "            <mesh>\n");
+	fprintf(fr2, "                <source id=\"ID7\">\n");
+	fprintf(fr2, "                    <float_array id=\"ID10\" count=\"%i\">\n", (o3d->cords_num - 1) * 3);
+	uint32_t num = 1;
+	for (num = 1; num < o3d->cords_num; num++) {
+		fprintf(fr2, "	%f %f %f\n", o3d->cords[num].x / o3d->scale * 100.0, o3d->cords[num].y / o3d->scale * 100.0, o3d->cords[num].z / o3d->scale * 100.0);
+	}
+	fprintf(fr2, "                    </float_array>\n");
+	fprintf(fr2, "                    <technique_common>\n");
+	fprintf(fr2, "                        <accessor count=\"%i\" source=\"#ID10\" stride=\"3\">\n", o3d->cords_num - 1);
+	fprintf(fr2, "                            <param name=\"X\" type=\"float\" />\n");
+	fprintf(fr2, "                            <param name=\"Y\" type=\"float\" />\n");
+	fprintf(fr2, "                            <param name=\"Z\" type=\"float\" />\n");
+	fprintf(fr2, "                        </accessor>\n");
+	fprintf(fr2, "                    </technique_common>\n");
+	fprintf(fr2, "                </source>\n");
+	fprintf(fr2, "                <vertices id=\"ID9\">\n");
+	fprintf(fr2, "                    <input semantic=\"POSITION\" source=\"#ID7\" />\n");
+	fprintf(fr2, "                </vertices>\n");
+	fprintf(fr2, "                <triangles count=\"%i\">\n", o3d->faces_num - 1);
+	fprintf(fr2, "                    <input offset=\"0\" semantic=\"VERTEX\" source=\"#ID9\" />\n");
+	fprintf(fr2, "                    <p>\n");
+	for (num = 1; num < o3d->faces_num; num++) {
+		fprintf(fr2, "	%i %i %i\n", o3d->faces[num].a - 1, o3d->faces[num].b - 1, o3d->faces[num].c - 1);
+	}
+	fprintf(fr2, "                    </p>\n");
+	fprintf(fr2, "                </triangles>\n");
+	fprintf(fr2, "            </mesh>\n");
+	fprintf(fr2, "        </geometry>\n");
+	fprintf(fr2, "    </library_geometries>\n");
+	fprintf(fr2, "    <scene>\n");
+	fprintf(fr2, "        <instance_visual_scene url=\"#ID1\" />\n");
+	fprintf(fr2, "    </scene>\n");
+	fprintf(fr2, "</COLLADA>\n");
+	fclose(fr2);
 }
 
 void object3d_free (Object3d *o3d) {
 #ifdef GL_OBJECT_USING_BUFFER
-	glDeleteBuffersARB(1, &o3d->cordsID);
-	o3d->cordsID = 0;
-	glDeleteBuffersARB(1, &o3d->facesID);
-	o3d->facesID = 0;
-#else
+	if (o3d->cordsID != 0 && o3d->facesID != 0) {
+		glDeleteBuffersARB(1, &o3d->cordsID);
+		o3d->cordsID = 0;
+		glDeleteBuffersARB(1, &o3d->facesID);
+		o3d->facesID = 0;
+	}
+#endif
+
 	free(o3d->cords);
 	free(o3d->faces);
-#endif
+
 	o3d->faces_num = 0;
+	o3d->cords_num = 0;
 	o3d->scale = 0.0;
 	o3d->name[0] = 0;
 }
@@ -159,17 +296,19 @@ void object3d_free (Object3d *o3d) {
 void object3d_draw (Object3d *o3d, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
 #ifdef GL_OBJECT_USING_BUFFER
-	glBindBufferARB(GL_ARRAY_BUFFER_ARB, o3d->cordsID);
-	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, o3d->facesID);
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3, GL_FLOAT, 0, 0);
-	glPushMatrix();
-	glScalef(1.0 / o3d->scale, 1.0 / o3d->scale, 1.0 / o3d->scale);
-	glDrawElements(GL_QUADS, o3d->faces_num * 4, GL_UNSIGNED_INT, 0);
-	glPopMatrix();
-	glDisableClientState(GL_VERTEX_ARRAY);
-	glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+	if (o3d->cordsID != 0 && o3d->facesID != 0) {
+		glBindBufferARB(GL_ARRAY_BUFFER_ARB, o3d->cordsID);
+		glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, o3d->facesID);
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glVertexPointer(3, GL_FLOAT, 0, 0);
+		glPushMatrix();
+		glScalef(1.0 / o3d->scale, 1.0 / o3d->scale, 1.0 / o3d->scale);
+		glDrawElements(GL_QUADS, o3d->faces_num * 4, GL_UNSIGNED_INT, 0);
+		glPopMatrix();
+		glDisableClientState(GL_VERTEX_ARRAY);
+		glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+		glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
+	}
 #else
 	uint32_t num = 1;
 	for (num = 1; num < o3d->faces_num; num++) {
