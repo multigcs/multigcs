@@ -87,6 +87,20 @@ void webserv_child_dump_file (int fd, char *file, char *type) {
 	close(file_fd);
 }
 
+void webserv_child_dump_attitude (int fd) {
+	static char buffer[BUFSIZE + 1];
+	char content[BUFSIZE + 1];
+	char tmp_str[100];
+
+	content[0] = 0;
+	sprintf(tmp_str, "%f %f %f %f %f\n", ModelData.pitch, ModelData.roll, ModelData.yaw, 0.0, 0.0);
+	strcat(content, tmp_str);
+
+	sprintf(buffer, header_str, strlen(content), "text/plain");
+	write(fd, buffer, strlen(buffer));
+	write(fd, content, strlen(content));
+}
+
 void webserv_child_dump_modeldata (int fd) {
 	static char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
@@ -811,6 +825,12 @@ void webserv_child (int fd) {
 		// Misc
 		if (strncmp(buffer + 4,"/modeldata", 10) == 0) {
 			webserv_child_dump_modeldata(fd);
+		} else if (strncmp(buffer + 4,"/attitude", 9) == 0) {
+			webserv_child_dump_attitude(fd);
+		} else if (strncmp(buffer + 4,"/blender-export.py", 18) == 0) {
+			sprintf(tmp_str, "%s/blender-export.py", BASE_DIR);
+			webserv_child_dump_file(fd, tmp_str, "text/plain");
+
 		} else if (strncmp(buffer + 4,"/screenshot", 11) == 0) {
 			webserv_child_dump_screen(fd);
 

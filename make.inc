@@ -45,6 +45,7 @@ install:
 	cp -a textures/marker.png $(BASE_DIR)/MAPS/marker.png
 	cp -a map.js $(BASE_DIR)/MAPS/map.js
 	cp -a webserv-index.html $(BASE_DIR)/index.html
+	cp -a blender-export.py $(BASE_DIR)/blender-export.py
 	cp -a mavlink/ParameterMetaData*.xml $(BASE_DIR)/mavlink/
 	touch $(BASE_DIR)/setup.cfg
 	chmod 0755 /usr/bin/gl-gcs
@@ -73,6 +74,7 @@ deb: gcs
 	cp -a WMM2010.COF package$(BASE_DIR)/MAPS
 	cp -a textures/marker.png package$(BASE_DIR)/MAPS/marker.png
 	cp -a webserv-index.html package$(BASE_DIR)/index.html
+	cp -a blender-export.py package$(BASE_DIR)/blender-export.py
 	cp -a map.js package$(BASE_DIR)/MAPS/map.js
 	cp -a mavlink/ParameterMetaData*.xml $(BASE_DIR)/mavlink/
 	touch package$(BASE_DIR)/setup.cfg
