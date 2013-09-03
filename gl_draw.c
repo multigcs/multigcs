@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
+#include <sys/times.h>
 #include <curl/curl.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -214,69 +215,100 @@ void object3d_load (Object3d *o3d, char *filename) {
 void object3d_save_as_collada (Object3d *o3d, char *filename) {
 	FILE *fr2;
 	float collada_scale = 1.0;
+	time_t liczba_sekund;
+	struct tm strukt;
+	time(&liczba_sekund);
+	localtime_r(&liczba_sekund, &strukt); 
+
 	fr2 = fopen(filename, "w");
 	fprintf(fr2, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n");
 	fprintf(fr2, "<COLLADA xmlns=\"http://www.collada.org/2005/11/COLLADASchema\" version=\"1.4.1\">\n");
+
 	fprintf(fr2, "    <asset>\n");
 	fprintf(fr2, "        <contributor>\n");
 	fprintf(fr2, "            <authoring_tool>MultiGCS</authoring_tool>\n");
 	fprintf(fr2, "        </contributor>\n");
-	fprintf(fr2, "        <created>2009-10-17T10:23:04Z</created>\n");
-	fprintf(fr2, "        <modified>2009-10-17T10:23:04Z</modified>\n");
+	fprintf(fr2, "        <created>%d-%d-%dT%d:%d:%dZ</created>\n", strukt.tm_year + 1900, strukt.tm_mon + 1, strukt.tm_mday, strukt.tm_hour, strukt.tm_min, strukt.tm_sec);
 	fprintf(fr2, "        <up_axis>Z_UP</up_axis>\n");
 	fprintf(fr2, "    </asset>\n");
-	fprintf(fr2, "    <library_visual_scenes>\n");
-	fprintf(fr2, "        <visual_scene id=\"ID1\">\n");
-	fprintf(fr2, "            <node name=\"MultiGCS\">\n");
-	fprintf(fr2, "                <node id=\"ID2\" name=\"instance_0\">\n");
-	fprintf(fr2, "                    <instance_node url=\"#ID3\" />\n");
-	fprintf(fr2, "                </node>\n");
-	fprintf(fr2, "            </node>\n");
-	fprintf(fr2, "        </visual_scene>\n");
-	fprintf(fr2, "    </library_visual_scenes>\n");
-	fprintf(fr2, "\n");
-	fprintf(fr2, "    <library_nodes>\n");
-	fprintf(fr2, "        <node id=\"ID3\" name=\"component_0\">\n");
-	fprintf(fr2, "            <instance_geometry url=\"#ID4\">\n");
-	fprintf(fr2, "            </instance_geometry>\n");
-	fprintf(fr2, "        </node>\n");
-	fprintf(fr2, "    </library_nodes>\n");
-	fprintf(fr2, "\n");
+
+	fprintf(fr2, "    <library_effects>\n");
+	fprintf(fr2, "      <effect id=\"EFFECT1\">\n");
+	fprintf(fr2, "        <profile_COMMON>\n");
+	fprintf(fr2, "          <technique sid=\"common\">\n");
+	fprintf(fr2, "            <phong>\n");
+	fprintf(fr2, "              <ambient>\n");
+	fprintf(fr2, "                <color>1.0 1.0 1.0 1.0</color>\n");
+	fprintf(fr2, "              </ambient>\n");
+	fprintf(fr2, "              <transparency>\n");
+	fprintf(fr2, "                <float>0.8</float>\n");
+	fprintf(fr2, "              </transparency>\n");
+	fprintf(fr2, "            </phong>\n");
+	fprintf(fr2, "          </technique>\n");
+	fprintf(fr2, "        </profile_COMMON>\n");
+	fprintf(fr2, "      </effect>\n");
+	fprintf(fr2, "    </library_effects>\n");
+
+	fprintf(fr2, "    <library_materials>\n");
+	fprintf(fr2, "      <material id=\"MATERIAL1\">\n");
+	fprintf(fr2, "        <instance_effect url=\"#EFFECT1\"/>\n");
+	fprintf(fr2, "      </material>\n");
+	fprintf(fr2, "    </library_materials>\n");
+
 	fprintf(fr2, "    <library_geometries>\n");
-	fprintf(fr2, "        <geometry id=\"ID4\">\n");
+	fprintf(fr2, "        <geometry id=\"GEOMETRY1\">\n");
 	fprintf(fr2, "            <mesh>\n");
-	fprintf(fr2, "                <source id=\"ID7\">\n");
-	fprintf(fr2, "                    <float_array id=\"ID10\" count=\"%i\">\n", (o3d->cords_num) * 3);
+	fprintf(fr2, "                <source id=\"MESH_SOURCE1\">\n");
+	fprintf(fr2, "                    <float_array id=\"CORDS1\" count=\"%i\">", (o3d->cords_num) * 3);
 	uint32_t num = 1;
 	for (num = 0; num < o3d->cords_num; num++) {
-		fprintf(fr2, "	%f %f %f\n", o3d->cords[num].x / o3d->scale * collada_scale, o3d->cords[num].y / o3d->scale * collada_scale, o3d->cords[num].z / o3d->scale * collada_scale);
+		fprintf(fr2, "%f %f %f ", o3d->cords[num].x / o3d->scale * collada_scale, o3d->cords[num].y / o3d->scale * collada_scale, o3d->cords[num].z / o3d->scale * collada_scale);
 	}
-	fprintf(fr2, "                    </float_array>\n");
+	fprintf(fr2, "</float_array>\n");
 	fprintf(fr2, "                    <technique_common>\n");
-	fprintf(fr2, "                        <accessor count=\"%i\" source=\"#ID10\" stride=\"3\">\n", o3d->cords_num);
+	fprintf(fr2, "                        <accessor count=\"%i\" source=\"#CORDS1\" stride=\"3\">\n", o3d->cords_num);
 	fprintf(fr2, "                            <param name=\"X\" type=\"float\" />\n");
 	fprintf(fr2, "                            <param name=\"Y\" type=\"float\" />\n");
 	fprintf(fr2, "                            <param name=\"Z\" type=\"float\" />\n");
 	fprintf(fr2, "                        </accessor>\n");
 	fprintf(fr2, "                    </technique_common>\n");
 	fprintf(fr2, "                </source>\n");
-	fprintf(fr2, "                <vertices id=\"ID9\">\n");
-	fprintf(fr2, "                    <input semantic=\"POSITION\" source=\"#ID7\" />\n");
+	fprintf(fr2, "                <vertices id=\"VERTICES1\">\n");
+	fprintf(fr2, "                    <input semantic=\"POSITION\" source=\"#MESH_SOURCE1\" />\n");
 	fprintf(fr2, "                </vertices>\n");
-	fprintf(fr2, "                <triangles count=\"%i\">\n", o3d->faces_num);
-	fprintf(fr2, "                    <input offset=\"0\" semantic=\"VERTEX\" source=\"#ID9\" />\n");
-	fprintf(fr2, "                    <p>\n");
+	fprintf(fr2, "                <triangles count=\"%i\" material=\"MATERIAL1\">\n", o3d->faces_num);
+	fprintf(fr2, "                    <input offset=\"0\" semantic=\"VERTEX\" source=\"#VERTICES1\" />\n");
+	fprintf(fr2, "                    <p>");
 	for (num = 0; num < o3d->faces_num; num++) {
-		fprintf(fr2, "	%i %i %i\n", o3d->faces[num].a, o3d->faces[num].b, o3d->faces[num].c);
+		fprintf(fr2, "%i %i %i ", o3d->faces[num].a, o3d->faces[num].b, o3d->faces[num].c);
 	}
-	fprintf(fr2, "                    </p>\n");
+	fprintf(fr2, "</p>\n");
 	fprintf(fr2, "                </triangles>\n");
 	fprintf(fr2, "            </mesh>\n");
 	fprintf(fr2, "        </geometry>\n");
 	fprintf(fr2, "    </library_geometries>\n");
+
+	fprintf(fr2, "    <library_nodes>\n");
+	fprintf(fr2, "        <node id=\"NODE1\">\n");
+	fprintf(fr2, "            <instance_geometry url=\"#GEOMETRY1\">\n");
+	fprintf(fr2, "            </instance_geometry>\n");
+	fprintf(fr2, "        </node>\n");
+	fprintf(fr2, "    </library_nodes>\n");
+
+	fprintf(fr2, "    <library_visual_scenes>\n");
+	fprintf(fr2, "        <visual_scene id=\"SCENE1\">\n");
+	fprintf(fr2, "            <node name=\"MultiGCS\">\n");
+	fprintf(fr2, "                <node id=\"SCENE_NODE1\">\n");
+	fprintf(fr2, "                    <instance_node url=\"#NODE1\" />\n");
+	fprintf(fr2, "                </node>\n");
+	fprintf(fr2, "            </node>\n");
+	fprintf(fr2, "        </visual_scene>\n");
+	fprintf(fr2, "    </library_visual_scenes>\n");
+
 	fprintf(fr2, "    <scene>\n");
-	fprintf(fr2, "        <instance_visual_scene url=\"#ID1\" />\n");
+	fprintf(fr2, "        <instance_visual_scene url=\"#SCENE1\" />\n");
 	fprintf(fr2, "    </scene>\n");
+
 	fprintf(fr2, "</COLLADA>\n");
 	fclose(fr2);
 }
