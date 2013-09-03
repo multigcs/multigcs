@@ -61,8 +61,8 @@ void object3d_load_data (Object3d *o3d, char *filename) {
 	char line[1025];
 	o3d->cords = malloc(sizeof(Object3dCord));
 	o3d->faces = malloc(sizeof(Object3dFace));
-	o3d->cords_num = 1;
-	o3d->faces_num = 1;
+	o3d->cords_num = 0;
+	o3d->faces_num = 0;
 	o3d->scale = 0.0;
 	fr = fopen (filename, "r");
 	if (fr != 0) {
@@ -108,17 +108,17 @@ void object3d_load_data (Object3d *o3d, char *filename) {
 				}
 
 				o3d->faces = realloc(o3d->faces, sizeof(Object3dFace) * (o3d->faces_num + 1));
-				o3d->faces[o3d->faces_num].a = p1v;
-				o3d->faces[o3d->faces_num].b = p2v;
-				o3d->faces[o3d->faces_num].c = p3v;
+				o3d->faces[o3d->faces_num].a = p1v - 1;
+				o3d->faces[o3d->faces_num].b = p2v - 1;
+				o3d->faces[o3d->faces_num].c = p3v - 1;
 #ifdef GL_OBJECT_USING_BUFFER
 				if (p4v == 0) {
-					o3d->faces[o3d->faces_num].d = p3v;
+					o3d->faces[o3d->faces_num].d = p3v - 1;
 				} else {
-					o3d->faces[o3d->faces_num].d = p4v;
+					o3d->faces[o3d->faces_num].d = p4v - 1;
 				}
 #else
-				o3d->faces[o3d->faces_num].d = p4v;
+				o3d->faces[o3d->faces_num].d = p4v - 1;
 #endif
 				o3d->faces_num++;
 			}
@@ -134,8 +134,8 @@ void object3d_load (Object3d *o3d, char *filename) {
 	char line[1025];
 	o3d->cords = malloc(sizeof(Object3dCord));
 	o3d->faces = malloc(sizeof(Object3dFace));
-	o3d->cords_num = 1;
-	o3d->faces_num = 1;
+	o3d->cords_num = 0;
+	o3d->faces_num = 0;
 	o3d->scale = 0.0;
 	fr = fopen (filename, "r");
 	if (fr != 0) {
@@ -181,17 +181,17 @@ void object3d_load (Object3d *o3d, char *filename) {
 				}
 
 				o3d->faces = realloc(o3d->faces, sizeof(Object3dFace) * (o3d->faces_num + 1));
-				o3d->faces[o3d->faces_num].a = p1v;
-				o3d->faces[o3d->faces_num].b = p2v;
-				o3d->faces[o3d->faces_num].c = p3v;
+				o3d->faces[o3d->faces_num].a = p1v - 1;
+				o3d->faces[o3d->faces_num].b = p2v - 1;
+				o3d->faces[o3d->faces_num].c = p3v - 1;
 #ifdef GL_OBJECT_USING_BUFFER
 				if (p4v == 0) {
-					o3d->faces[o3d->faces_num].d = p3v;
+					o3d->faces[o3d->faces_num].d = p3v - 1;
 				} else {
-					o3d->faces[o3d->faces_num].d = p4v;
+					o3d->faces[o3d->faces_num].d = p4v - 1;
 				}
 #else
-				o3d->faces[o3d->faces_num].d = p4v;
+				o3d->faces[o3d->faces_num].d = p4v - 1;
 #endif
 				o3d->faces_num++;
 			}
@@ -199,7 +199,6 @@ void object3d_load (Object3d *o3d, char *filename) {
 		fclose(fr);
 //		o3d->scale *= 2.0;
 //		o3d->scale /= 2.0;
-
 #ifdef GL_OBJECT_USING_BUFFER
 		glGenBuffersARB(1, &o3d->cordsID);
 		glBindBufferARB(GL_ARRAY_BUFFER_ARB, o3d->cordsID);
@@ -247,14 +246,14 @@ void object3d_save_as_collada (Object3d *o3d, char *filename) {
 	fprintf(fr2, "        <geometry id=\"ID4\">\n");
 	fprintf(fr2, "            <mesh>\n");
 	fprintf(fr2, "                <source id=\"ID7\">\n");
-	fprintf(fr2, "                    <float_array id=\"ID10\" count=\"%i\">\n", (o3d->cords_num - 1) * 3);
+	fprintf(fr2, "                    <float_array id=\"ID10\" count=\"%i\">\n", (o3d->cords_num) * 3);
 	uint32_t num = 1;
-	for (num = 1; num < o3d->cords_num; num++) {
+	for (num = 0; num < o3d->cords_num; num++) {
 		fprintf(fr2, "	%f %f %f\n", o3d->cords[num].x / o3d->scale * collada_scale, o3d->cords[num].y / o3d->scale * collada_scale, o3d->cords[num].z / o3d->scale * collada_scale);
 	}
 	fprintf(fr2, "                    </float_array>\n");
 	fprintf(fr2, "                    <technique_common>\n");
-	fprintf(fr2, "                        <accessor count=\"%i\" source=\"#ID10\" stride=\"3\">\n", o3d->cords_num - 1);
+	fprintf(fr2, "                        <accessor count=\"%i\" source=\"#ID10\" stride=\"3\">\n", o3d->cords_num);
 	fprintf(fr2, "                            <param name=\"X\" type=\"float\" />\n");
 	fprintf(fr2, "                            <param name=\"Y\" type=\"float\" />\n");
 	fprintf(fr2, "                            <param name=\"Z\" type=\"float\" />\n");
@@ -264,11 +263,11 @@ void object3d_save_as_collada (Object3d *o3d, char *filename) {
 	fprintf(fr2, "                <vertices id=\"ID9\">\n");
 	fprintf(fr2, "                    <input semantic=\"POSITION\" source=\"#ID7\" />\n");
 	fprintf(fr2, "                </vertices>\n");
-	fprintf(fr2, "                <triangles count=\"%i\">\n", o3d->faces_num - 1);
+	fprintf(fr2, "                <triangles count=\"%i\">\n", o3d->faces_num);
 	fprintf(fr2, "                    <input offset=\"0\" semantic=\"VERTEX\" source=\"#ID9\" />\n");
 	fprintf(fr2, "                    <p>\n");
-	for (num = 1; num < o3d->faces_num; num++) {
-		fprintf(fr2, "	%i %i %i\n", o3d->faces[num].a - 1, o3d->faces[num].b - 1, o3d->faces[num].c - 1);
+	for (num = 0; num < o3d->faces_num; num++) {
+		fprintf(fr2, "	%i %i %i\n", o3d->faces[num].a, o3d->faces[num].b, o3d->faces[num].c);
 	}
 	fprintf(fr2, "                    </p>\n");
 	fprintf(fr2, "                </triangles>\n");
@@ -291,10 +290,8 @@ void object3d_free (Object3d *o3d) {
 		o3d->facesID = 0;
 	}
 #endif
-
 	free(o3d->cords);
 	free(o3d->faces);
-
 	o3d->faces_num = 0;
 	o3d->cords_num = 0;
 	o3d->scale = 0.0;
@@ -319,8 +316,8 @@ void object3d_draw (Object3d *o3d, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	}
 #else
 	uint32_t num = 1;
-	for (num = 1; num < o3d->faces_num; num++) {
-		if (o3d->faces[num].d == 0) {
+	for (num = 0; num < o3d->faces_num; num++) {
+		if (o3d->faces[num].d == -1) {
 			glBegin(GL_TRIANGLES);
 		} else {
 			glBegin(GL_QUADS);
