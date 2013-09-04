@@ -112,15 +112,14 @@ void object3d_load_data (Object3d *o3d, char *filename) {
 				o3d->faces[o3d->faces_num].a = p1v - 1;
 				o3d->faces[o3d->faces_num].b = p2v - 1;
 				o3d->faces[o3d->faces_num].c = p3v - 1;
-#ifdef GL_OBJECT_USING_BUFFER
-				if (p4v == 0) {
-					o3d->faces[o3d->faces_num].d = p3v - 1;
-				} else {
-					o3d->faces[o3d->faces_num].d = p4v - 1;
+
+				if (p4v != 0) {
+					o3d->faces_num++;
+					o3d->faces = realloc(o3d->faces, sizeof(Object3dFace) * (o3d->faces_num + 1));
+					o3d->faces[o3d->faces_num].a = p1v - 1;
+					o3d->faces[o3d->faces_num].b = p3v - 1;
+					o3d->faces[o3d->faces_num].c = p4v - 1;
 				}
-#else
-				o3d->faces[o3d->faces_num].d = p4v - 1;
-#endif
 				o3d->faces_num++;
 			}
 		}
@@ -185,15 +184,13 @@ void object3d_load (Object3d *o3d, char *filename) {
 				o3d->faces[o3d->faces_num].a = p1v - 1;
 				o3d->faces[o3d->faces_num].b = p2v - 1;
 				o3d->faces[o3d->faces_num].c = p3v - 1;
-#ifdef GL_OBJECT_USING_BUFFER
-				if (p4v == 0) {
-					o3d->faces[o3d->faces_num].d = p3v - 1;
-				} else {
-					o3d->faces[o3d->faces_num].d = p4v - 1;
+				if (p4v != 0) {
+					o3d->faces_num++;
+					o3d->faces = realloc(o3d->faces, sizeof(Object3dFace) * (o3d->faces_num + 1));
+					o3d->faces[o3d->faces_num].a = p1v - 1;
+					o3d->faces[o3d->faces_num].b = p3v - 1;
+					o3d->faces[o3d->faces_num].c = p4v - 1;
 				}
-#else
-				o3d->faces[o3d->faces_num].d = p4v - 1;
-#endif
 				o3d->faces_num++;
 			}
 		}
@@ -241,7 +238,7 @@ void object3d_save_as_collada (Object3d *o3d, char *filename) {
 	fprintf(fr2, "                <color>1.0 1.0 1.0 1.0</color>\n");
 	fprintf(fr2, "              </ambient>\n");
 	fprintf(fr2, "              <transparency>\n");
-	fprintf(fr2, "                <float>0.8</float>\n");
+	fprintf(fr2, "                <float>0.3</float>\n");
 	fprintf(fr2, "              </transparency>\n");
 	fprintf(fr2, "            </phong>\n");
 	fprintf(fr2, "          </technique>\n");
@@ -340,7 +337,7 @@ void object3d_draw (Object3d *o3d, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 		glVertexPointer(3, GL_FLOAT, 0, 0);
 		glPushMatrix();
 		glScalef(1.0 / o3d->scale, 1.0 / o3d->scale, 1.0 / o3d->scale);
-		glDrawElements(GL_QUADS, o3d->faces_num * 4, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, o3d->faces_num * 4, GL_UNSIGNED_INT, 0);
 		glPopMatrix();
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
@@ -349,17 +346,10 @@ void object3d_draw (Object3d *o3d, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #else
 	uint32_t num = 1;
 	for (num = 0; num < o3d->faces_num; num++) {
-		if (o3d->faces[num].d == -1) {
-			glBegin(GL_TRIANGLES);
-		} else {
-			glBegin(GL_QUADS);
-		}
+		glBegin(GL_TRIANGLES);
 		glVertex3f(o3d->cords[o3d->faces[num].a].x / o3d->scale, o3d->cords[o3d->faces[num].a].y / o3d->scale, o3d->cords[o3d->faces[num].a].z / o3d->scale);
 		glVertex3f(o3d->cords[o3d->faces[num].b].x / o3d->scale, o3d->cords[o3d->faces[num].b].y / o3d->scale, o3d->cords[o3d->faces[num].b].z / o3d->scale);
 		glVertex3f(o3d->cords[o3d->faces[num].c].x / o3d->scale, o3d->cords[o3d->faces[num].c].y / o3d->scale, o3d->cords[o3d->faces[num].c].z / o3d->scale);
-		if (o3d->faces[num].d != 0) {
-			glVertex3f(o3d->cords[o3d->faces[num].d].x / o3d->scale, o3d->cords[o3d->faces[num].d].y / o3d->scale, o3d->cords[o3d->faces[num].d].z / o3d->scale);
-		}
 		glEnd();
 	}
 #endif
