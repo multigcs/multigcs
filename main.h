@@ -39,6 +39,7 @@
 #define TEXTURE_PLAYER_PAUSE BASE_DIR"/textures/player_pause.png"
 #define TEXTURE_PLAYER_FFW BASE_DIR"/textures/player_ffw.png"
 #define TEXTURE_PLAYER_OPEN BASE_DIR"/textures/player_open.png"
+#define TEXTURE_PLAYER_KML BASE_DIR"/textures/player_kml.png"
 
 
 #define ALIGN_LEFT	0
@@ -194,7 +195,8 @@ extern char display_html2[HTML_MAX];
 extern ESContext *GlobalesContext;
 
 void LogAppend(char *line);
-void LogSave(char *file);
+void LogInit(void);
+void LogSave(void);
 void draw_text_f (ESContext *esContext, float x1, float y1, float w, float h, char *file, char *text);
 void reset_telemetrie (void);
 void stop_telemetrie (void);
@@ -215,6 +217,7 @@ void ShutDown (ESContext *esContext);
 void Draw (ESContext *esContext);
 void next_point (float x_origin, float y_origin, float winkel, float r1, float *nx1, float *ny1);
 void next_point_ll (ESContext *esContext, float x_origin, float y_origin, float winkel, float r1, float *nx1, float *ny1);
+void logplay_export_kml (char *logfile, char *kmlfile);
 
 #endif
 

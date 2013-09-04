@@ -9,6 +9,7 @@
 #include <time.h>
 #include <curl/curl.h>
 #include <stdio.h>
+#include <dirent.h>
 #include <stdint.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -53,13 +54,13 @@ uint8_t webserv_running = 0;
 SDL_Thread *thread_webserv = NULL;
 int listenfd;
 
-#define header_str "HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %ld\nConnection: close\nContent-Type: %s\n\n"
+#define header_str "HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %i\nConnection: close\nContent-Type: %s\n\n"
 
 void webserv_child_dump_screen (int fd) {
 	static char buffer[BUFSIZE + 1];
 	int file_fd;
-	long len;
-	long ret;
+	int len;
+	int ret;
 	save_screenshot2();
 	if ((file_fd = open("/tmp/dump.png",O_RDONLY)) == -1) {
 		return;
@@ -77,8 +78,8 @@ void webserv_child_dump_screen (int fd) {
 void webserv_child_dump_file (int fd, char *file, char *type) {
 	static char buffer[BUFSIZE + 1];
 	int file_fd;
-	long len;
-	long ret;
+	int len;
+	int ret;
 	if ((file_fd = open(file,O_RDONLY)) == -1) {
 		printf("webserv: file not found: %s\n", file);
 		return;
@@ -554,6 +555,95 @@ void webserv_child_hud_redraw (int fd) {
 	write(fd, content, strlen(content));
 }
 
+void webserv_child_kml_index (int fd, char *servername) {
+	static char buffer[BUFSIZE + 1];
+	char content[BUFSIZE + 1];
+	char tmp_str[512];
+	content[0] = 0;
+
+	strcat(content, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+	strcat(content, "<kml xmlns=\"http://earth.google.com/kml/2.2\">\n");
+
+	strcat(content, "  <Document>\n");
+	strcat(content, "    <name>MultiGCS</name>\n");
+	strcat(content, "    <description>Flight-Data</description>\n");
+
+	strcat(content, "	<Folder>\n");
+	strcat(content, "	 <name>Livedata</name>\n");
+
+	strcat(content, "	<NetworkLink>\n");
+	sprintf(tmp_str, "		<name>%s</name>\n", "Liveview");
+	strcat(content, tmp_str);
+	strcat(content, "		<visibility>0</visibility>\n");
+	strcat(content, "		<open>0</open>\n");
+	strcat(content, "		<flyToView>0</flyToView>\n");
+	strcat(content, "		<Link>\n");
+	sprintf(tmp_str, "			<href>http://%s/live.kml</href>\n", servername);
+	strcat(content, tmp_str);
+	strcat(content, "		</Link>\n");
+	strcat(content, "	</NetworkLink>\n");
+
+	strcat(content, "	</Folder>\n");
+	strcat(content, "	<Folder>\n");
+	strcat(content, "	 <name>Logdata</name>\n");
+
+	struct tm strukt;
+	DIR *dir = NULL;
+	struct dirent *dir_entry = NULL;
+	struct stat statbuf;
+	char new_path[400];
+	char tmp_str2[400];
+	char directory[400];
+	sprintf(directory, "%s/logs", BASE_DIR);
+	if ((dir = opendir(directory)) != NULL) {
+		while ((dir_entry = readdir(dir)) != 0) {
+			if (dir_entry->d_name[1] != '.') {
+				sprintf(new_path, "%s/%s", directory, dir_entry->d_name);
+				if (lstat(new_path, &statbuf) == 0) {
+					if (statbuf.st_mode&S_IFDIR) {
+					} else {
+						time_t liczba_sekund = (time_t)(atoi(dir_entry->d_name));
+						localtime_r(&liczba_sekund, &strukt);
+						FILE *f;
+						int pos;
+						int end;
+						f = fopen(new_path, "r");
+						pos = ftell(f);
+						fseek(f, 0, SEEK_END);
+						end = ftell(f);
+						fclose(f);
+						if ((end - pos) < 1024) {
+							sprintf(tmp_str2, "%02d.%02d.%d %02d:%02d:%02d (%iB)", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, (end - pos));
+						} else {
+							sprintf(tmp_str2, "%02d.%02d.%d %02d:%02d:%02d (%iKB)", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, (end - pos) / 1024);
+						}
+						strcat(content, "	<NetworkLink>\n");
+						sprintf(tmp_str, "		<name>%s</name>\n", tmp_str2);
+						strcat(content, tmp_str);
+						strcat(content, "		<visibility>0</visibility>\n");
+						strcat(content, "		<open>0</open>\n");
+						strcat(content, "		<flyToView>0</flyToView>\n");
+						strcat(content, "		<Link>\n");
+						sprintf(tmp_str, "			<href>http://%s/logkml/%s</href>\n", servername, dir_entry->d_name);
+						strcat(content, tmp_str);
+						strcat(content, "		</Link>\n");
+						strcat(content, "	</NetworkLink>\n");
+					}
+				}
+			}
+		}
+		closedir(dir);
+		dir = NULL;
+	}
+	strcat(content, "	</Folder>\n");
+	strcat(content, "  </Document>\n");
+	strcat(content, "</kml>\n");
+
+	sprintf(buffer, header_str, strlen(content), "text/xml");
+	write(fd, buffer, strlen(buffer));
+	write(fd, content, strlen(content));
+}
+
 void webserv_child_kml_live (int fd, char *servername) {
 	static char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
@@ -576,7 +666,7 @@ void webserv_child_kml_live (int fd, char *servername) {
 	strcat(content, "	</NetworkLink>\n");
 	strcat(content, "</kml>\n");
 
-	sprintf(buffer, header_str, strlen(content), "application/vnd.google-earth.kml");
+	sprintf(buffer, header_str, strlen(content), "text/xml");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
@@ -634,7 +724,7 @@ void webserv_child_kml_feed (int fd, char *servername) {
 	strcat(content, "	</Document>\n");
 	strcat(content, "</kml>\n");
 
-	sprintf(buffer, header_str, strlen(content), "application/vnd.google-earth.kml");
+	sprintf(buffer, header_str, strlen(content), "text/xml");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
@@ -852,7 +942,9 @@ void webserv_child (int fd) {
 			webserv_child_dump_screen(fd);
 
 		// Google-Earth Live-Feed (Model-Position)
-		} else if (strncmp(buffer + 4,"/live.kml", 4) == 0) {
+		} else if (strncmp(buffer + 4,"/index.kml", 10) == 0) {
+			webserv_child_kml_index(fd, servername);
+		} else if (strncmp(buffer + 4,"/live.kml", 9) == 0) {
 			webserv_child_kml_live(fd, servername);
 		} else if (strncmp(buffer + 4,"/model.kml", 8) == 0) {
 			webserv_child_kml_feed(fd, servername);
@@ -873,6 +965,68 @@ void webserv_child (int fd) {
 			sprintf(tmp_str, "%s/plane.dae", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/xml");
 #endif
+
+
+		} else if (strncmp(buffer + 4,"/logkml/", 8) == 0) {
+			int n;
+			for (n = 5; n < strlen(buffer); n++) {
+				if (buffer[n] == ' ') {
+					buffer[n] = 0;
+					break;
+				}
+			}
+			if (buffer[12] == 0) {
+				content[0] = 0;
+				struct tm strukt;
+				DIR *dir = NULL;
+				struct dirent *dir_entry = NULL;
+				struct stat statbuf;
+				char new_path[400];
+				char tmp_str2[400];
+				char directory[400];
+				sprintf(directory, "%s/logs", BASE_DIR);
+				if ((dir = opendir(directory)) != NULL) {
+					while ((dir_entry = readdir(dir)) != 0) {
+						if (dir_entry->d_name[1] != '.') {
+							sprintf(new_path, "%s/%s", directory, dir_entry->d_name);
+							if (lstat(new_path, &statbuf) == 0) {
+								if (statbuf.st_mode&S_IFDIR) {
+								} else {
+									time_t liczba_sekund = (time_t)(atoi(dir_entry->d_name));
+									localtime_r(&liczba_sekund, &strukt);
+									FILE *f;
+									int pos;
+									int end;
+									f = fopen(new_path, "r");
+									pos = ftell(f);
+									fseek(f, 0, SEEK_END);
+									end = ftell(f);
+									fclose(f);
+									if ((end - pos) < 1024) {
+										sprintf(tmp_str, "%02d.%02d.%d %02d:%02d:%02d (%iB)", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, (end - pos));
+									} else {
+										sprintf(tmp_str, "%02d.%02d.%d %02d:%02d:%02d (%iKB)", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, (end - pos) / 1024);
+									}
+									sprintf(tmp_str2, "<A href=\"%s\">%s</A><BR>", dir_entry->d_name, tmp_str);
+									strcat(content, tmp_str2);
+								}
+							}
+						}
+					}
+					closedir(dir);
+					dir = NULL;
+				}
+				sprintf(buffer, header_str, strlen(content), "text/html");
+				write(fd, buffer, strlen(buffer));
+				write(fd, content, strlen(content));
+			} else {
+				char tmp_str2[400];
+				sprintf(tmp_str, "%s/logs/%s", BASE_DIR, buffer + 12);
+				sprintf(tmp_str2, "/tmp/%s.kml", buffer + 12);
+				logplay_export_kml(tmp_str, tmp_str2);
+				webserv_child_dump_file(fd, tmp_str2, "text/xml");
+			}
+
 
 #ifdef HTML_DRAWING
 		} else if (strncmp(buffer + 4,"/gui.html", 9) == 0) {

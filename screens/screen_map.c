@@ -644,6 +644,7 @@ uint8_t map_uav2home (char *name, float x, float y, int8_t button, float data) {
 
 uint8_t map_export_kml (char *name, float x, float y, int8_t button, float data) {
 	// draw log
+/*
 	if (LogLines != NULL) {
 		int r_tim = 0;
 		float r_lat = 0.0;
@@ -705,8 +706,8 @@ uint8_t map_export_kml (char *name, float x, float y, int8_t button, float data)
 		} else {
 			printf("map: Can not save kml-file: %s\n", filename);
 		}
-
 	}
+*/
 	return 0;
 }
 
@@ -1977,6 +1978,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 #endif
 	if (nav_map != 1 && map_show_log == 1) {
 		// draw log
+/*
 		if (LogLines != NULL) {
 			int r_tim = 0;
 			float r_lat = 0.0;
@@ -2010,6 +2012,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				}
 			}
 		}
+*/
 	}
 
 

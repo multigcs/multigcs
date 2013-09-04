@@ -5,9 +5,27 @@ body {
 	background-color:#000000;
 	color:#FFFFFF;
 }
+a:link {
+	text-decoration:none; font-weight:bold; color:#e00000;
+}
+a:visited {
+	text-decoration:none; font-weight:bold; color:#800000;
+}
+a:hover {
+	text-decoration:none; font-weight:bold; background-color:#ff0;
+}
+a:active {
+	text-decoration:none; font-weight:bold; background-color:#cff;
+}
+a:focus {
+	text-decoration:none; font-weight:bold; background-color:#080;
+}
+
 </style>
 
 
+<H2>MultiGCS</H2>
+<HR>
 <H3>Misc</H3>
 <A href="/modeldata">/modeldata</A> (Model-Data / Telemetry-Data)<BR>
 <A href="/screenshot">/screenshot</A> (take a screenshot of the GUI)<BR>
@@ -16,10 +34,12 @@ body {
 <A href="/blender-export.py">/blender-export.py</A> (blender export script)<BR>
 <A href="/blender.txt">/blender.txt</A> (attitude and position data)<BR>
 
-<H3>Google-Earth Live-Feed (Model-Position)</H3>
+<H3>Google-Earth Livefeed and Logs</H3>
+<A href="/index.kml">/index.kml</A><BR>
 <A href="/live.kml">/live.kml</A><BR>
 <A href="/model.kml">/model.kml</A> (called by live.kml)<BR>
 <A href="/plane.dae">/plane.dae</A> (called by model.kml)<BR>
+<A href="/logkml/">/logkml/</A> (list of all logfiles)<BR>
 
 <H3>HTML5 HUD-View + Map</H3>
 <A href="/hud.html">/hud.html</A><BR>
