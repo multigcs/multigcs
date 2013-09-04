@@ -337,7 +337,7 @@ void object3d_draw (Object3d *o3d, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 		glVertexPointer(3, GL_FLOAT, 0, 0);
 		glPushMatrix();
 		glScalef(1.0 / o3d->scale, 1.0 / o3d->scale, 1.0 / o3d->scale);
-		glDrawElements(GL_TRIANGLES, o3d->faces_num * 4, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, o3d->faces_num * 3, GL_UNSIGNED_INT, 0);
 		glPopMatrix();
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
