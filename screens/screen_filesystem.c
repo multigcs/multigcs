@@ -86,6 +86,7 @@ void filesystem_reset_filter (void) {
 
 uint8_t filesystem_name_cancel (char *name, float x, float y, int8_t button, float data) {
 	show_filesystem = 0;
+	(*save_callback)("", x, y, button, 1.0);
 	return 0;
 }
 

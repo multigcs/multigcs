@@ -182,6 +182,66 @@ uint8_t draw_button (ESContext *esContext, char *name, uint8_t view_mode, char *
 	return 2;
 }
 
+uint8_t draw_image_button (ESContext *esContext, char *name, uint8_t view_mode, char *image, float x, float y, float z, float w, float h, uint8_t align_x, uint8_t align_y, uint8_t (*callback) (char *, float, float, int8_t, float), float data) {
+#ifdef CONSOLE_ONLY
+	return 0;
+#endif
+
+char text[1024];
+char font[1024];
+strcpy(text, "img");
+strcpy(font, FONT_GREEN);
+
+	uint16_t n = 0;
+	float x1 = x - w / 2.0;
+	float y1 = y;
+	float x2 = x + w / 2.0;
+	float y2 = y + h;
+	float z1 = z;
+	if (align_x == ALIGN_CENTER) {
+		x1 = x - w / 2.0;
+		x2 = x + w / 2.0;
+	} else if (align_x == ALIGN_RIGHT) {
+		x1 = x - w;
+		x2 = x;
+	} else if (align_x == ALIGN_LEFT) {
+		x1 = x;
+		x2 = x + w;
+	}
+	if (align_y == ALIGN_CENTER) {
+		y1 = y - h / 2;
+		y2 = y + h / 2;
+	}
+
+	draw_image_f3(esContext, x1, y1, x2, y2, 0.0, image);
+//	draw_rect_f3(esContext, x1 - 0.01, y1 - 0.01, z1, x2 + 0.01, y2 + 0.01, z1, 255, 0, 0, 255);
+	for (n = 0; n < MAX_BUTTONS; n++) {
+		if (strcmp(Buttons[n].name, name) == 0) {
+			Buttons[n].view_mode = view_mode;
+			Buttons[n].x1 = x1 - 0.01;
+			Buttons[n].y1 = y1 - 0.01;
+			Buttons[n].x2 = x2 + 0.01;
+			Buttons[n].y2 = y2 + 0.01;
+			Buttons[n].data = data;
+			Buttons[n].callback = callback;
+			Buttons[n].type = 0;
+			return 0;
+		} else if (Buttons[n].name[0] == 0) {
+			strcpy(Buttons[n].name, name);
+			Buttons[n].view_mode = view_mode;
+			Buttons[n].x1 = x1 - 0.01;
+			Buttons[n].y1 = y1 - 0.01;
+			Buttons[n].x2 = x2 + 0.01;
+			Buttons[n].y2 = y2 + 0.01;
+			Buttons[n].data = data;
+			Buttons[n].callback = callback;
+			Buttons[n].type = 0;
+			return 1;
+		}
+	}
+	return 2;
+}
+
 int next_power_of_two (int n) {
 	double logbase2 = log((double) n) / log(2.0);
 	return (int)(pow(2, ceil(logbase2)) + 0.5);

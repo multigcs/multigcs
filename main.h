@@ -33,6 +33,14 @@
 #define TEXTURE_SPEAKER BASE_DIR"/textures/speaker.png"
 #define TEXTURE_SPEAKER_MUTE BASE_DIR"/textures/speaker_mute.png"
 
+#define TEXTURE_PLAYER_REW BASE_DIR"/textures/player_rew.png"
+#define TEXTURE_PLAYER_STOP BASE_DIR"/textures/player_stop.png"
+#define TEXTURE_PLAYER_PLAY BASE_DIR"/textures/player_play.png"
+#define TEXTURE_PLAYER_PAUSE BASE_DIR"/textures/player_pause.png"
+#define TEXTURE_PLAYER_FFW BASE_DIR"/textures/player_ffw.png"
+#define TEXTURE_PLAYER_OPEN BASE_DIR"/textures/player_open.png"
+
+
 #define ALIGN_LEFT	0
 #define ALIGN_TOP	0
 #define ALIGN_CENTER	1
@@ -67,6 +75,12 @@ typedef struct {
 	char command[128];
 	uint8_t type;
 } WayPoint;
+
+enum {
+	LOGGING_OFF,
+	LOGGING_ON,
+	LOGGING_PLAY,
+};
 
 enum {
 	BUTTON_RELEASE,
@@ -165,6 +179,7 @@ extern char keyboard_key[100];
 extern uint8_t keyboard_shift;
 extern uint8_t keyboard_altgr;
 extern char blender_export_filename[2048];
+extern uint8_t logmode;
 
 //#define HTML_DRAWING
 

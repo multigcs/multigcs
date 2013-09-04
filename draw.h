@@ -63,6 +63,7 @@ int loadImage(const char *filename);
 void draw_scrollbar (ESContext *esContext, uint16_t page, uint16_t page_max, uint8_t (*callback) (char *, float, float, int8_t, float));
 void draw_title (ESContext *esContext, char *text);
 uint8_t draw_button (ESContext *esContext, char *name, uint8_t view_mode, char *text, char *font, float x, float y, float z, float h, uint8_t align_x, uint8_t align_y, uint8_t (*callback) (char *, float, float, int8_t, float), float data);
+uint8_t draw_image_button (ESContext *esContext, char *name, uint8_t view_mode, char *image, float x, float y, float z, float w, float h, uint8_t align_x, uint8_t align_y, uint8_t (*callback) (char *, float, float, int8_t, float), float data);
 
 #ifdef SDLGL
 uint32_t getpixel(SDL_Surface *surface, int x, int y);

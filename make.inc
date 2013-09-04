@@ -32,6 +32,7 @@ install:
 	mkdir -p $(BASE_DIR)/rcflow_presets
 	mkdir -p $(BASE_DIR)/scripts
 	mkdir -p $(BASE_DIR)/mavlink
+	mkdir -p $(BASE_DIR)/logs
 	cp -a textures/* $(BASE_DIR)/textures/
 	cp -a fonts/* $(BASE_DIR)/fonts/
 	cp -a rcflow_presets/* $(BASE_DIR)/rcflow_presets/
@@ -60,6 +61,8 @@ deb: gcs
 	mkdir -p package$(BASE_DIR)/fonts
 	mkdir -p package$(BASE_DIR)/rcflow_presets
 	mkdir -p package$(BASE_DIR)/scripts
+	mkdir -p package$(BASE_DIR)/mavlink
+	mkdir -p package/$(BASE_DIR)/logs
 	mkdir -p package/usr/bin
 	mkdir -p package/DEBIAN
 	cp -a textures/* package$(BASE_DIR)/textures/

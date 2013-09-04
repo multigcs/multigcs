@@ -18,9 +18,6 @@
 #include <mwi21.h>
 #include <my_mavlink.h>
 
-void LogAppend(char *line);
-void LogSave(char *file);
-
 extern uint8_t redraw_flag;
 
 int mwi21_serial_fd = -1;

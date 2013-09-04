@@ -172,6 +172,15 @@ struct list_element *LogLines = NULL;
 struct list_element *LogLinesEnd = NULL;
 uint8_t contrast = 0;
 uint8_t connection_found = 0;
+uint8_t logmode = LOGGING_OFF;
+uint8_t log_open = 0;
+uint8_t log_play = 0;
+uint8_t play_pause = 0;
+uint32_t play_msec = 0;
+uint32_t start_sec = 0;
+uint8_t logplay_open = 0;
+char logplay_file[1024];
+uint8_t logplay_filelist = 0;
 
 #ifdef HTML_DRAWING
 char display_html[HTML_MAX];
@@ -1361,6 +1370,142 @@ static uint8_t screen_next (char *name, float x, float y, int8_t button, float d
 	return 0;
 }
 
+static uint8_t logging_set_mode (char *name, float x, float y, int8_t button, float data) {
+	if (logmode == 0) {
+		logmode = 1;
+	} else if (logmode == 1) {
+		logmode = 2;
+	} else {
+		logmode = 0;
+	}
+	return 0;
+}
+
+static uint8_t screen_play_pause (char *name, float x, float y, int8_t button, float data) {
+	play_pause = 1 - play_pause;
+	return 0;
+}
+
+static uint8_t screen_play_step (char *name, float x, float y, int8_t button, float data) {
+	play_pause = 1;
+	play_msec += (uint32_t)data;
+	if (data < 0.0) {
+		log_play = 2;
+	}
+	return 0;
+}
+
+static uint8_t screen_play (char *name, float x, float y, int8_t button, float data) {
+	log_play = 1 - log_play;
+	play_pause = 0;
+	play_msec = 0;
+	return 0;
+}
+
+static uint8_t screen_play_open (char *name, float x, float y, int8_t button, float data) {
+	logplay_open = 1 - logplay_open;
+	logplay_filelist = 0;
+	log_play = 0;
+	play_pause = 0;
+	play_msec = 0;
+	return 0;
+}
+
+uint8_t screen_play_open_ok (char *name, float x, float y, int8_t button, float data) {
+	printf("## open logfile: %s ##\n", name);
+	strcpy(logplay_file, name);
+	logplay_open = 0;
+	logplay_filelist = 0;
+	return 0;
+}
+
+uint8_t screen_play_updown (char *name, float x, float y, int8_t button, float data) {
+	if (data < 0.0 && logplay_filelist == 0) {
+		return 0;
+	}
+	logplay_filelist += (int)data;
+	return 0;
+}
+
+void draw_player (ESContext *esContext, float x1, float y1) {
+	float w = 1.2;
+	float h = 0.2;
+	float x = x1 - w / 2.0;
+	float y = y1 - h / 2.0;
+	float max = 6.0;
+	char tmp_str[20];
+
+	draw_box_f3(esContext, x, y, 0.002, x + w, y + h, 0.002, 0, 0, 0, 127);
+	draw_box_f3(esContext, x + 0.01, y + 0.01, 0.002, x + w - 0.01, y + h / 2 - 0.01, 0.002, 0, 0, 0, 127);
+	draw_image_button(esContext, "rew", view_mode, TEXTURE_PLAYER_REW    , x + w / max * 1, y + h / 4 * 3, 0.003, h / 2, h / 2, ALIGN_CENTER, ALIGN_CENTER, screen_play_step, -100.0);
+	if (log_play == 1) {
+		draw_image_button(esContext, "stop", view_mode, TEXTURE_PLAYER_STOP  , x + w / max * 2, y + h / 4 * 3, 0.003, h / 2, h / 2, ALIGN_CENTER, ALIGN_CENTER, screen_play, 0.0);
+	} else {
+		draw_image_button(esContext, "play", view_mode, TEXTURE_PLAYER_PLAY  , x + w / max * 2, y + h / 4 * 3, 0.003, h / 2, h / 2, ALIGN_CENTER, ALIGN_CENTER, screen_play, 0.0);
+	}
+	draw_image_button(esContext, "pause", view_mode, TEXTURE_PLAYER_PAUSE, x + w / max * 3, y + h / 4 * 3, 0.003, h / 2, h / 2, ALIGN_CENTER, ALIGN_CENTER, screen_play_pause, 0.0);
+	draw_image_button(esContext, "ffw", view_mode, TEXTURE_PLAYER_FFW    , x + w / max * 4, y + h / 4 * 3, 0.003, h / 2, h / 2, ALIGN_CENTER, ALIGN_CENTER, screen_play_step, 100.0);
+	draw_image_button(esContext, "open", view_mode, TEXTURE_PLAYER_OPEN  , x + w / max * 5, y + h / 4 * 3, 0.003, h / 2, h / 2, ALIGN_CENTER, ALIGN_CENTER, screen_play_open, 0.0);
+
+	struct tm strukt;
+	time_t liczba_sekund = (time_t)(play_msec / 1000 + start_sec);
+	localtime_r(&liczba_sekund, &strukt); 
+//	sprintf(tmp_str, "%0.4i.%0.3is", play_msec / 1000, play_msec % 1000);
+	sprintf(tmp_str, "%0.2d.%0.2d.%d %0.2d:%0.2d:%0.2d.%0.3i", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, play_msec % 1000);
+	draw_button(esContext, "timer", view_mode, tmp_str, FONT_GREEN, x + w / 2, y + h / 4 * 1, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, screen_play, 0.0);
+	if (logplay_open == 1) {
+		draw_box_f3(esContext, x, -0.8, 0.002, x + w, y, 0.002, 0, 0, 0, 200);
+		DIR *dir = NULL;
+		struct dirent *dir_entry = NULL;
+		struct stat statbuf;
+		char new_path[400];
+		char directory[400];
+		int n = 0;
+		int n2 = 0;
+		draw_button(esContext, "up", view_mode, "[^]", FONT_GREEN, x + w - 0.1, -0.8 + 0.05, 0.001, 0.06, ALIGN_CENTER, ALIGN_CENTER, screen_play_updown, -1.0);
+		draw_button(esContext, "down", view_mode, "[v]", FONT_GREEN, x + w - 0.1, y - 0.05, 0.001, 0.06, ALIGN_CENTER, ALIGN_CENTER, screen_play_updown, 1.0);
+		sprintf(directory, "%s/logs", BASE_DIR);
+		if ((dir = opendir(directory)) != NULL) {
+			while ((dir_entry = readdir(dir)) != 0) {
+				if (dir_entry->d_name[1] != '.') {
+					sprintf(new_path, "%s/%s", directory, dir_entry->d_name);
+					if (lstat(new_path, &statbuf) == 0) {
+						if (statbuf.st_mode&S_IFDIR) {
+						} else {
+							if (logplay_filelist == n2) {
+								time_t liczba_sekund = (time_t)(atoi(dir_entry->d_name));
+								localtime_r(&liczba_sekund, &strukt);
+								FILE *f;
+								int pos;
+								int end;
+								f = fopen(new_path, "r");
+								pos = ftell(f);
+								fseek(f, 0, SEEK_END);
+								end = ftell(f);
+								fclose(f);
+								if ((end - pos) < 1024) {
+									sprintf(tmp_str, "%0.2d.%0.2d.%d %0.2d:%0.2d:%0.2d (%iB)", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, (end - pos));
+								} else {
+									sprintf(tmp_str, "%0.2d.%0.2d.%d %0.2d:%0.2d:%0.2d (%iKB)", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, (end - pos) / 1024);
+								}
+								draw_button(esContext, new_path, view_mode, tmp_str, FONT_WHITE, x + 0.05, -0.8 + n * 0.1 + 0.15, 0.002, 0.06, 0, 0, screen_play_open_ok, 0.0);
+							}
+							n++;
+						}
+					}
+				}
+				if (n > 10) {
+					n2++;
+					n = 0;
+				}
+			}
+			closedir(dir);
+			dir = NULL;
+		}
+	}
+}
+
+
 void display_update (void) {
 #ifndef SDLGL
 	eglSwapBuffers(esContext->eglDisplay, esContext->eglSurface);
@@ -1394,6 +1539,174 @@ void display_update (void) {
 	strcat(display_html, "	context2.closePath();\n");
 #endif
 
+}
+
+void Logging (void) {
+	if (logmode == LOGGING_PLAY) {
+		char line[512];
+		static char last_line[512];
+		static FILE *fr = NULL;
+		if (log_play == 2 && log_open == 1) {
+			log_play = 1;
+			log_open = 0;
+			fclose(fr);
+			fr = NULL;
+		}
+		if (log_play == 0 && log_open == 1) {
+			log_open = 0;
+			fclose(fr);
+			fr = NULL;
+		}
+		if (log_play == 1) {
+			if (log_open == 0 && logplay_file[0] != 0) {
+				log_open = 1;
+				start_sec = 0;
+				fr = fopen(logplay_file, "r");
+				if (fgets(line, 500, fr) != NULL) {
+					strcpy(last_line, line);
+				} else {
+					log_open = 0;
+					log_play = 0;
+					fclose(fr);
+					fr = NULL;
+				}
+			}
+			struct timeval tv;
+			gettimeofday(&tv, NULL);  
+			uint64_t sec = tv.tv_sec;
+			uint64_t micros = tv.tv_usec / 1000;
+			uint32_t lsec = 0;
+			uint32_t lmicros = 0;
+			if (fr != NULL) {
+				while (1 == 1) {
+					if (last_line[3] == ';') {
+						sscanf(last_line + 4, "%i.%i;", &lsec, &lmicros);
+						if (start_sec == 0) {
+							start_sec = lsec;
+						}
+					} else {
+						if (fgets(line, 500, fr) != NULL) {
+							strcpy(last_line, line);
+							printf("NEXT_LINE: %s\n", line);
+							continue;
+						} else {
+							printf("######## file end ########\n");
+							log_open = 0;
+							log_play = 0;
+							fclose(fr);
+							fr = NULL;
+							break;
+						}
+					}
+					if (play_msec >= (lsec - start_sec) * 1000 + lmicros) {
+						if (strncmp(last_line, "GPS;", 4) == 0) {
+							sscanf(last_line, "GPS;%i.%i;%f;%f;%f", &lsec, &lmicros, &ModelData.p_lat, &ModelData.p_long, &ModelData.p_alt);
+						} else if (strncmp(last_line, "ATT;", 4) == 0) {
+							sscanf(last_line, "ATT;%i.%i;%f;%f;%f", &lsec, &lmicros, &ModelData.pitch, &ModelData.roll, &ModelData.yaw);
+						}
+						if (fgets(line, 500, fr) != NULL) {
+							strcpy(last_line, line);
+							printf("NEXT_LINE: %s\n", line);
+							continue;
+						} else {
+							printf("######## file end ########\n");
+							log_open = 0;
+							log_play = 0;
+							fclose(fr);
+							fr = NULL;
+							break;
+						}
+					} else {
+						break;
+					}
+				}
+			}
+			if (play_pause == 0) {
+				play_msec += 40;
+			}
+		}
+	} else if (logmode == LOGGING_ON) {
+		char line[512];
+		static float last_lat = 0.0;
+		static float last_lon = 0.0;
+		static float last_alt = 0.0;
+		static int8_t last_sats = 0;
+		static float last_pitch = 0.0;
+		static float last_roll = 0.0;
+		static float last_yaw = 0.0;
+		static int16_t last_radio[8];
+		static float last_ampere = 0.0;
+		static float last_voltage = 0.0;
+		static uint8_t last_mode = 0;
+		static uint8_t last_armed = 0;
+		static uint8_t last_status = 0;
+		static uint8_t last_modeltype = 0;
+		static uint8_t last_teletype = 0;
+		static uint8_t last_heartbeat = 0;
+		uint8_t n= 0;
+		uint8_t logflag = 0;
+
+		struct timeval tv;
+		gettimeofday(&tv, NULL);  
+		uint64_t sec = tv.tv_sec;
+		uint64_t micros = tv.tv_usec / 1000;
+
+		if (last_lat != ModelData.p_lat || last_lon != ModelData.p_long || (int)last_alt != (int)ModelData.p_alt) {
+			sprintf(line, "GPS;%i.%0.3i;%f;%f;%0.1f;%0.1f;%i;%i", sec, micros, ModelData.p_lat, ModelData.p_long, ModelData.p_alt, (float)ModelData.speed, ModelData.gpsfix, ModelData.numSat);
+			LogAppend(line);
+			last_lat = ModelData.p_lat;
+			last_lon = ModelData.p_long;
+			last_alt = ModelData.p_alt;
+			last_sats = ModelData.numSat;
+		}
+		if ((int)last_pitch != (int)ModelData.pitch || (int)last_roll != (int)ModelData.roll || (int)last_yaw != (int)ModelData.yaw) {
+			sprintf(line, "ATT;%i.%0.3i;%f;%f;%f", sec, micros, ModelData.pitch, ModelData.roll, ModelData.yaw);
+			LogAppend(line);
+			last_pitch = ModelData.pitch;
+			last_roll = ModelData.roll;
+			last_yaw = ModelData.yaw;
+		}
+		logflag = 0;
+		for (n = 0; n < 8; n++) {
+			if (last_radio[n] != ModelData.radio[n]) {
+				logflag = 1;
+				last_radio[n] = ModelData.radio[n];
+			}
+		}
+		if (logflag == 1) {
+			logflag = 0;
+			sprintf(line, "RC0;%i.%0.3i;%i;%i;%i;%i;%i;%i;%i;%i", sec, micros, ModelData.radio[0], ModelData.radio[1], ModelData.radio[2], ModelData.radio[3], ModelData.radio[4], ModelData.radio[5], ModelData.radio[6], ModelData.radio[7]);
+			LogAppend(line);
+		}
+		if (last_voltage != ModelData.voltage || last_voltage != ModelData.voltage) {
+			sprintf(line, "AV0;%i.%0.3i;%f;%f;%f;%f;%f;%f;%f;%f;%i;%i", sec, micros, ModelData.ampere, ModelData.voltage, ModelData.voltage_zell[0], ModelData.voltage_zell[1], ModelData.voltage_zell[2], ModelData.voltage_zell[3], ModelData.voltage_zell[4], ModelData.voltage_zell[5], ModelData.temperature[0], ModelData.temperature[1]);
+			LogAppend(line);
+			last_ampere = ModelData.ampere;
+			last_voltage = ModelData.voltage;
+		}
+		if (last_mode != ModelData.mode || last_armed != ModelData.armed || last_status != ModelData.status) {
+			sprintf(line, "AM0;%i.%0.3i;%i;%i;%i", sec, micros, ModelData.mode, ModelData.armed, ModelData.status);
+			LogAppend(line);
+			last_mode = ModelData.mode;
+			last_armed = ModelData.armed;
+			last_status = ModelData.status;
+		}
+		if (last_modeltype != ModelData.modeltype || last_teletype != ModelData.teletype) {
+			sprintf(line, "MT0;%i.%0.3i;%i;%i", sec, micros, ModelData.modeltype, ModelData.teletype);
+			LogAppend(line);
+			last_modeltype = ModelData.modeltype;
+			last_teletype = ModelData.teletype;
+		}
+		if (last_heartbeat == 0 && ModelData.heartbeat > 0) {
+			sprintf(line, "HB0;%i.%0.3i;%i", sec, micros, ModelData.heartbeat);
+			LogAppend(line);
+			last_heartbeat = 1;
+		} if (last_heartbeat != 0 && ModelData.heartbeat == 0) {
+			sprintf(line, "HB0;%i.%0.3i;0", micros);
+			LogAppend(line);
+			last_heartbeat = 0;
+		}
+	}
 }
 
 void Draw (ESContext *esContext) {
@@ -1435,19 +1748,7 @@ void Draw (ESContext *esContext) {
 		}
 	}
 
-	// Log Model-Position
-	static float last_lat = 0.0;
-	static float last_lon = 0.0;
-	static float last_alt = 0.0;
-	if (last_lat != ModelData.p_lat || last_lon != ModelData.p_long || last_alt != ModelData.p_alt) {
-		char line[100];
-		sprintf(line, "GPS;%i;%f;%f;%0.1f;%0.1f", (int)time(0), ModelData.p_lat, ModelData.p_long, ModelData.p_alt, (float)ModelData.speed);
-		LogAppend(line);
-		last_lat = ModelData.p_lat;
-		last_lon = ModelData.p_long;
-		last_alt = ModelData.p_alt;
-	}
-
+	Logging();
 
 	if (strcmp(keyboard_key, "escape") == 0) {
 		ShutDown( esContext );
@@ -1750,9 +2051,6 @@ void Draw (ESContext *esContext) {
 	draw_button(esContext, "<<", view_mode, "[<<]", FONT_WHITE, -1.3, -0.95, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, screen_last, 0.0);
 	draw_button(esContext, ">>", view_mode, "[>>]", FONT_WHITE, 1.3, -0.95, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, screen_next, 0.0);
 
-
-
-
 	if (message > 0) {
 		draw_text_f(esContext, 0.0 - strlen(message_txt) * 0.04 * 0.6 / 2 - 0.012, -0.98, 0.04, 0.04, FONT_BLACK_BG, message_txt);
 	}
@@ -1770,6 +2068,18 @@ void Draw (ESContext *esContext) {
 		draw_image(esContext, esContext->width - 40, esContext->height - 40, 16, 16, TEXTURE_SPEAKER);
 	} else {
 		draw_image(esContext, esContext->width - 40, esContext->height - 40, 16, 16, TEXTURE_SPEAKER_MUTE);
+	}
+	if (logmode == 2) {
+		draw_button(esContext, "log", view_mode, "[P]", FONT_GREEN, 1.35, 0.85, 0.003, 0.04, ALIGN_CENTER, ALIGN_TOP, logging_set_mode, 0.0);
+	} else if (logmode == 1) {
+		draw_button(esContext, "log", view_mode, "[L]", FONT_GREEN, 1.35, 0.85, 0.003, 0.04, ALIGN_CENTER, ALIGN_TOP, logging_set_mode, 0.0);
+	} else {
+		draw_button(esContext, "log", view_mode, "[L]", FONT_WHITE, 1.35, 0.85, 0.003, 0.04, ALIGN_CENTER, ALIGN_TOP, logging_set_mode, 0.0);
+	}
+
+	// LogPlay
+	if (logmode == LOGGING_PLAY) {
+		draw_player(esContext, 0.0, 0.85);
 	}
 
 #ifndef CONSOLE_ONLY
@@ -1790,7 +2100,7 @@ void ShutDown ( ESContext *esContext ) {
 	gui_running = 0;
 	SDL_Delay(600);
 	char file[200];
-	sprintf(file, "%s/%i.log", BASE_DIR, startup_time);
+	sprintf(file, "%s/logs/%i.log", BASE_DIR, startup_time);
 	LogSave(file);
 	setup_save();
 	stop_telemetrie();
@@ -1880,22 +2190,7 @@ int main ( int argc, char *argv[] ) {
 
 	keyboard_key[0] = 0;
 
-	LogInit("startup");
-
-        FILE *fr;
-        char line[201];
-	fr = fopen ("test.log", "r");
-	if (fr != 0) {
-	        while(fgets(line, 200, fr) != NULL) {
-			if (strlen(line) > 0) {
-				line[strlen(line) - 1] = 0;
-			}
-			LogAppend(line);
-		}
-	        fclose(fr);
-	} else {
-		printf("log: Can not load log-file: %s\n", "test.log");
-	}
+	LogInit("");
 
 	setup_waypoints();
 	setup_load();
