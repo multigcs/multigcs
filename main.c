@@ -1450,8 +1450,8 @@ void draw_player (ESContext *esContext, float x1, float y1) {
 	struct tm strukt;
 	time_t liczba_sekund = (time_t)(play_msec / 1000 + start_sec);
 	localtime_r(&liczba_sekund, &strukt); 
-//	sprintf(tmp_str, "%0.4i.%0.3is", play_msec / 1000, play_msec % 1000);
-	sprintf(tmp_str, "%0.2d.%0.2d.%d %0.2d:%0.2d:%0.2d.%0.3i", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, play_msec % 1000);
+//	sprintf(tmp_str, "%04i.%03is", play_msec / 1000, play_msec % 1000);
+	sprintf(tmp_str, "%02d.%02d.%d %02d:%02d:%02d.%03i", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, play_msec % 1000);
 	draw_button(esContext, "timer", view_mode, tmp_str, FONT_GREEN, x + w / 2, y + h / 4 * 1, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, screen_play, 0.0);
 	if (logplay_open == 1) {
 		draw_box_f3(esContext, x, -0.8, 0.002, x + w, y, 0.002, 0, 0, 0, 200);
@@ -1484,9 +1484,9 @@ void draw_player (ESContext *esContext, float x1, float y1) {
 								end = ftell(f);
 								fclose(f);
 								if ((end - pos) < 1024) {
-									sprintf(tmp_str, "%0.2d.%0.2d.%d %0.2d:%0.2d:%0.2d (%iB)", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, (end - pos));
+									sprintf(tmp_str, "%02d.%02d.%d %02d:%02d:%02d (%iB)", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, (end - pos));
 								} else {
-									sprintf(tmp_str, "%0.2d.%0.2d.%d %0.2d:%0.2d:%0.2d (%iKB)", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, (end - pos) / 1024);
+									sprintf(tmp_str, "%02d.%02d.%d %02d:%02d:%02d (%iKB)", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, (end - pos) / 1024);
 								}
 								draw_button(esContext, new_path, view_mode, tmp_str, FONT_WHITE, x + 0.05, -0.8 + n * 0.1 + 0.15, 0.002, 0.06, 0, 0, screen_play_open_ok, 0.0);
 							}
@@ -1573,8 +1573,8 @@ void Logging (void) {
 			}
 			struct timeval tv;
 			gettimeofday(&tv, NULL);  
-			uint64_t sec = tv.tv_sec;
-			uint64_t micros = tv.tv_usec / 1000;
+			uint32_t sec = tv.tv_sec;
+			uint32_t micros = tv.tv_usec / 1000;
 			uint32_t lsec = 0;
 			uint32_t lmicros = 0;
 			if (fr != NULL) {
@@ -1648,11 +1648,11 @@ void Logging (void) {
 
 		struct timeval tv;
 		gettimeofday(&tv, NULL);  
-		uint64_t sec = tv.tv_sec;
-		uint64_t micros = tv.tv_usec / 1000;
+		uint32_t sec = tv.tv_sec;
+		uint32_t micros = tv.tv_usec / 1000;
 
 		if (last_lat != ModelData.p_lat || last_lon != ModelData.p_long || (int)last_alt != (int)ModelData.p_alt) {
-			sprintf(line, "GPS;%i.%0.3i;%f;%f;%0.1f;%0.1f;%i;%i", sec, micros, ModelData.p_lat, ModelData.p_long, ModelData.p_alt, (float)ModelData.speed, ModelData.gpsfix, ModelData.numSat);
+			sprintf(line, "GPS;%i.%03i;%f;%f;%f;%f;%i;%i", sec, micros, ModelData.p_lat, ModelData.p_long, ModelData.p_alt, ModelData.speed, ModelData.gpsfix, ModelData.numSat);
 			LogAppend(line);
 			last_lat = ModelData.p_lat;
 			last_lon = ModelData.p_long;
@@ -1660,7 +1660,7 @@ void Logging (void) {
 			last_sats = ModelData.numSat;
 		}
 		if ((int)last_pitch != (int)ModelData.pitch || (int)last_roll != (int)ModelData.roll || (int)last_yaw != (int)ModelData.yaw) {
-			sprintf(line, "ATT;%i.%0.3i;%f;%f;%f", sec, micros, ModelData.pitch, ModelData.roll, ModelData.yaw);
+			sprintf(line, "ATT;%i.%03i;%f;%f;%f", sec, micros, ModelData.pitch, ModelData.roll, ModelData.yaw);
 			LogAppend(line);
 			last_pitch = ModelData.pitch;
 			last_roll = ModelData.roll;
@@ -1675,34 +1675,34 @@ void Logging (void) {
 		}
 		if (logflag == 1) {
 			logflag = 0;
-			sprintf(line, "RC0;%i.%0.3i;%i;%i;%i;%i;%i;%i;%i;%i", sec, micros, ModelData.radio[0], ModelData.radio[1], ModelData.radio[2], ModelData.radio[3], ModelData.radio[4], ModelData.radio[5], ModelData.radio[6], ModelData.radio[7]);
+			sprintf(line, "RC0;%i.%03i;%i;%i;%i;%i;%i;%i;%i;%i", sec, micros, ModelData.radio[0], ModelData.radio[1], ModelData.radio[2], ModelData.radio[3], ModelData.radio[4], ModelData.radio[5], ModelData.radio[6], ModelData.radio[7]);
 			LogAppend(line);
 		}
 		if (last_voltage != ModelData.voltage || last_voltage != ModelData.voltage) {
-			sprintf(line, "AV0;%i.%0.3i;%f;%f;%f;%f;%f;%f;%f;%f;%i;%i", sec, micros, ModelData.ampere, ModelData.voltage, ModelData.voltage_zell[0], ModelData.voltage_zell[1], ModelData.voltage_zell[2], ModelData.voltage_zell[3], ModelData.voltage_zell[4], ModelData.voltage_zell[5], ModelData.temperature[0], ModelData.temperature[1]);
+			sprintf(line, "AV0;%i.%03i;%f;%f;%f;%f;%f;%f;%f;%f;%i;%i", sec, micros, ModelData.ampere, ModelData.voltage, ModelData.voltage_zell[0], ModelData.voltage_zell[1], ModelData.voltage_zell[2], ModelData.voltage_zell[3], ModelData.voltage_zell[4], ModelData.voltage_zell[5], ModelData.temperature[0], ModelData.temperature[1]);
 			LogAppend(line);
 			last_ampere = ModelData.ampere;
 			last_voltage = ModelData.voltage;
 		}
 		if (last_mode != ModelData.mode || last_armed != ModelData.armed || last_status != ModelData.status) {
-			sprintf(line, "AM0;%i.%0.3i;%i;%i;%i", sec, micros, ModelData.mode, ModelData.armed, ModelData.status);
+			sprintf(line, "AM0;%i.%03i;%i;%i;%i", sec, micros, ModelData.mode, ModelData.armed, ModelData.status);
 			LogAppend(line);
 			last_mode = ModelData.mode;
 			last_armed = ModelData.armed;
 			last_status = ModelData.status;
 		}
 		if (last_modeltype != ModelData.modeltype || last_teletype != ModelData.teletype) {
-			sprintf(line, "MT0;%i.%0.3i;%i;%i", sec, micros, ModelData.modeltype, ModelData.teletype);
+			sprintf(line, "MT0;%i.%03i;%i;%i", sec, micros, ModelData.modeltype, ModelData.teletype);
 			LogAppend(line);
 			last_modeltype = ModelData.modeltype;
 			last_teletype = ModelData.teletype;
 		}
 		if (last_heartbeat == 0 && ModelData.heartbeat > 0) {
-			sprintf(line, "HB0;%i.%0.3i;%i", sec, micros, ModelData.heartbeat);
+			sprintf(line, "HB0;%i.%03i;%i", sec, micros, ModelData.heartbeat);
 			LogAppend(line);
 			last_heartbeat = 1;
 		} if (last_heartbeat != 0 && ModelData.heartbeat == 0) {
-			sprintf(line, "HB0;%i.%0.3i;0", micros);
+			sprintf(line, "HB0;%i.%03i;0", micros);
 			LogAppend(line);
 			last_heartbeat = 0;
 		}
