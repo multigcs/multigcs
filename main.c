@@ -1388,6 +1388,7 @@ static uint8_t logging_set_mode (char *name, float x, float y, int8_t button, fl
 
 
 void logplay_export_kml (char *logfile, char *kmlfile) {
+	printf("logplay: %s -> %s\n", logfile, kmlfile);
 	if (logfile[0] != 0) {
 		float p_lat = 0.0;
 		float p_long = 0.0;
@@ -1442,11 +1443,11 @@ void logplay_export_kml (char *logfile, char *kmlfile) {
 				fprintf(fr, "        <tessellate>1</tessellate>\n");
 				fprintf(fr, "        <altitudeMode>absolute</altitudeMode>\n");
 //				fprintf(fr, "        <altitudeMode>relativeToGround</altitudeMode>\n");
-				fprintf(fr, "        <coordinates>\n");
+				fprintf(fr, "        <coordinates>");
 				while (fgets(line, 500, log_fr) != NULL) {
 					if (strncmp(line, "GPS;", 4) == 0) {
 						sscanf(line, "GPS;%i.%i;%f;%f;%f", &lsec, &lmicros, &p_lat, &p_long, &p_alt);
-						fprintf(fr, "%f, %f, %f\n", p_long, p_lat, p_alt);
+						fprintf(fr, " %f,%f,%f \n", p_long, p_lat, p_alt);
 					} else if (strncmp(line, "ATT;", 4) == 0) {
 						sscanf(line, "ATT;%i.%i;%f;%f;%f", &lsec, &lmicros, &pitch, &roll, &yaw);
 					}

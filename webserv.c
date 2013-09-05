@@ -555,6 +555,70 @@ void webserv_child_hud_redraw (int fd) {
 	write(fd, content, strlen(content));
 }
 
+void webserv_child_kml_wp (int fd, char *servername) {
+	static char buffer[BUFSIZE + 1];
+	int n = 0;
+	char content[BUFSIZE + 1];
+	char tmp_str[512];
+	content[0] = 0;
+
+	strcat(content, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+	strcat(content, "<kml xmlns=\"http://earth.google.com/kml/2.2\">\n");
+
+	strcat(content, "  <Document>\n");
+	strcat(content, "    <name>Waypoint-List</name>\n");
+
+	for (n = 0; n < MAX_WAYPOINTS; n++) {
+		if (WayPoints[n].name[0] != 0) {
+			strcat(content, "    <Placemark>\n");
+			sprintf(tmp_str, "      <name>%s</name>\n", WayPoints[n].name);
+			strcat(content, tmp_str);
+			sprintf(tmp_str, "      <description>%s</description>\n", WayPoints[n].command);
+			strcat(content, tmp_str);
+			strcat(content, "      <Point>\n");
+			sprintf(tmp_str, "        <coordinates>%f,%f,%f</coordinates>\n", WayPoints[n].p_long, WayPoints[n].p_lat, WayPoints[n].p_alt);
+			strcat(content, tmp_str);
+			strcat(content, "      </Point>\n");
+			strcat(content, "    </Placemark>\n");
+		}
+	}
+
+	strcat(content, "    <Style id=\"greenLineYellowPoly\">\n");
+	strcat(content, "      <LineStyle>\n");
+	strcat(content, "        <color>7f00ff00</color>\n");
+	strcat(content, "        <width>4</width>\n");
+	strcat(content, "      </LineStyle>\n");
+	strcat(content, "      <PolyStyle>\n");
+	strcat(content, "        <color>7f00ffff</color>\n");
+	strcat(content, "      </PolyStyle>\n");
+	strcat(content, "    </Style>\n");
+	strcat(content, "    <Placemark>\n");
+	strcat(content, "      <name>Route</name>\n");
+	strcat(content, "      <description>Datalog</description>\n");
+	strcat(content, "      <styleUrl>#greenLineYellowPoly</styleUrl>\n");
+	strcat(content, "      <LineString>\n");
+	strcat(content, "        <extrude>1</extrude>\n");
+	strcat(content, "        <tessellate>1</tessellate>\n");
+	strcat(content, "        <altitudeMode>absolute</altitudeMode>\n");
+	strcat(content, "        <coordinates>");
+	for (n = 0; n < MAX_WAYPOINTS; n++) {
+		if (WayPoints[n].name[0] != 0) {
+			sprintf(tmp_str, " %f,%f,%f \n", WayPoints[n].p_long, WayPoints[n].p_lat, WayPoints[n].p_alt);
+			strcat(content, tmp_str);
+		}
+	}
+	strcat(content, "        </coordinates>\n");
+	strcat(content, "      </LineString>\n");
+	strcat(content, "    </Placemark>\n");
+
+	strcat(content, "  </Document>\n");
+	strcat(content, "</kml>\n");
+
+	sprintf(buffer, header_str, strlen(content), "text/xml");
+	write(fd, buffer, strlen(buffer));
+	write(fd, content, strlen(content));
+}
+
 void webserv_child_kml_index (int fd, char *servername) {
 	static char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
@@ -568,9 +632,6 @@ void webserv_child_kml_index (int fd, char *servername) {
 	strcat(content, "    <name>MultiGCS</name>\n");
 	strcat(content, "    <description>Flight-Data</description>\n");
 
-	strcat(content, "	<Folder>\n");
-	strcat(content, "	 <name>Livedata</name>\n");
-
 	strcat(content, "	<NetworkLink>\n");
 	sprintf(tmp_str, "		<name>%s</name>\n", "Liveview");
 	strcat(content, tmp_str);
@@ -583,7 +644,18 @@ void webserv_child_kml_index (int fd, char *servername) {
 	strcat(content, "		</Link>\n");
 	strcat(content, "	</NetworkLink>\n");
 
-	strcat(content, "	</Folder>\n");
+	strcat(content, "	<NetworkLink>\n");
+	sprintf(tmp_str, "		<name>%s</name>\n", "Waypoints");
+	strcat(content, tmp_str);
+	strcat(content, "		<visibility>0</visibility>\n");
+	strcat(content, "		<open>0</open>\n");
+	strcat(content, "		<flyToView>0</flyToView>\n");
+	strcat(content, "		<Link>\n");
+	sprintf(tmp_str, "			<href>http://%s/wp.kml</href>\n", servername);
+	strcat(content, tmp_str);
+	strcat(content, "		</Link>\n");
+	strcat(content, "	</NetworkLink>\n");
+
 	strcat(content, "	<Folder>\n");
 	strcat(content, "	 <name>Logdata</name>\n");
 
@@ -944,6 +1016,8 @@ void webserv_child (int fd) {
 		// Google-Earth Live-Feed (Model-Position)
 		} else if (strncmp(buffer + 4,"/index.kml", 10) == 0) {
 			webserv_child_kml_index(fd, servername);
+		} else if (strncmp(buffer + 4,"/wp.kml", 7) == 0) {
+			webserv_child_kml_wp(fd, servername);
 		} else if (strncmp(buffer + 4,"/live.kml", 9) == 0) {
 			webserv_child_kml_live(fd, servername);
 		} else if (strncmp(buffer + 4,"/model.kml", 8) == 0) {
