@@ -57,7 +57,7 @@ int listenfd;
 #define header_str "HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %i\nConnection: close\nContent-Type: %s\n\n"
 
 void webserv_child_dump_screen (int fd) {
-	static char buffer[BUFSIZE + 1];
+	char buffer[BUFSIZE + 1];
 	int file_fd;
 	int len;
 	int ret;
@@ -76,7 +76,7 @@ void webserv_child_dump_screen (int fd) {
 }
 
 void webserv_child_dump_file (int fd, char *file, char *type) {
-	static char buffer[BUFSIZE + 1];
+	char buffer[BUFSIZE + 1];
 	int file_fd;
 	int len;
 	int ret;
@@ -95,7 +95,7 @@ void webserv_child_dump_file (int fd, char *file, char *type) {
 }
 
 void webserv_child_dump_blender (int fd) {
-	static char buffer[1024];
+	char buffer[1024];
 	char content[1024];
 	char tmp_str[100];
 
@@ -115,7 +115,7 @@ void webserv_child_dump_blender (int fd) {
 }
 
 void webserv_child_dump_modeldata (int fd) {
-	static char buffer[BUFSIZE + 1];
+	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[100];
 
@@ -254,7 +254,7 @@ void webserv_child_dump_modeldata (int fd) {
 }
 
 void webserv_child_show_lonlat (int fd) {
-	static char buffer[BUFSIZE + 1];
+	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	sprintf(content, "%f, %f", ModelData.p_long, ModelData.p_lat);
 	sprintf(buffer, header_str, strlen(content), "text/plain");
@@ -264,7 +264,7 @@ void webserv_child_show_lonlat (int fd) {
 
 
 void webserv_child_show_hud (int fd) {
-	static char buffer[BUFSIZE + 1];
+	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
 	content[0] = 0;
@@ -530,7 +530,7 @@ void webserv_child_show_hud (int fd) {
 }
 
 void webserv_child_hud_redraw (int fd) {
-	static char buffer[BUFSIZE + 1];
+	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
 	content[0] = 0;
@@ -556,7 +556,7 @@ void webserv_child_hud_redraw (int fd) {
 }
 
 void webserv_child_kml_wp (int fd, char *servername) {
-	static char buffer[BUFSIZE + 1];
+	char buffer[BUFSIZE + 1];
 	int n = 0;
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
@@ -620,7 +620,7 @@ void webserv_child_kml_wp (int fd, char *servername) {
 }
 
 void webserv_child_kml_index (int fd, char *servername) {
-	static char buffer[BUFSIZE + 1];
+	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
 	content[0] = 0;
@@ -717,7 +717,7 @@ void webserv_child_kml_index (int fd, char *servername) {
 }
 
 void webserv_child_kml_live (int fd, char *servername) {
-	static char buffer[BUFSIZE + 1];
+	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
 	content[0] = 0;
@@ -744,7 +744,7 @@ void webserv_child_kml_live (int fd, char *servername) {
 }
 
 void webserv_child_kml_feed (int fd, char *servername) {
-	static char buffer[BUFSIZE + 1];
+	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
 	content[0] = 0;
