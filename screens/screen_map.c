@@ -21,6 +21,7 @@
 #include <screen_map.h>
 #include <my_mavlink.h>
 #include <screen_wpedit.h>
+#include <logging.h>
 
 volatile float lat = 50.29;
 volatile float lon = 9.12;
@@ -639,75 +640,6 @@ uint8_t map_uav2home (char *name, float x, float y, int8_t button, float data) {
 	ModelData.p_lat = WayPoints[0].p_lat;
 	ModelData.p_long = WayPoints[0].p_long;
 	ModelData.p_alt = WayPoints[0].p_alt;
-	return 0;
-}
-
-uint8_t map_export_kml (char *name, float x, float y, int8_t button, float data) {
-	// draw log
-/*
-	if (LogLines != NULL) {
-		int r_tim = 0;
-		float r_lat = 0.0;
-		float r_lon = 0.0;
-		float r_alt = 0.0;
-		float r_vel = 0.0;
-		struct list_element *liste = LogLines;
-	        FILE *fr;
-		char filename[100];
-		sprintf(filename, "%s/%i.kml", BASE_DIR, 0);
-	        fr = fopen(filename, "w");
-		if (fr != 0) {
-			fprintf(fr, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-			fprintf(fr, "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
-			fprintf(fr, "  <Document>\n");
-//			fprintf(fr, "    <name>%s</name>\n", rctransmitter_name);
-			fprintf(fr, "    <description>Flight-Data</description>\n");
-			fprintf(fr, "    <Style id=\"yellowLineGreenPoly\">\n");
-			fprintf(fr, "      <LineStyle>\n");
-			fprintf(fr, "        <color>7f00ffff</color>\n");
-			fprintf(fr, "        <width>4</width>\n");
-			fprintf(fr, "      </LineStyle>\n");
-			fprintf(fr, "      <PolyStyle>\n");
-			fprintf(fr, "        <color>7f00ff00</color>\n");
-			fprintf(fr, "      </PolyStyle>\n");
-			fprintf(fr, "    </Style>\n");
-			fprintf(fr, "    <Placemark>\n");
-			fprintf(fr, "      <name>Absolute Extruded</name>\n");
-			fprintf(fr, "      <description>Datalog</description>\n");
-			fprintf(fr, "      <styleUrl>#yellowLineGreenPoly</styleUrl>\n");
-			fprintf(fr, "      <LineString>\n");
-			fprintf(fr, "        <extrude>1</extrude>\n");
-			fprintf(fr, "        <tessellate>1</tessellate>\n");
-//			fprintf(fr, "        <altitudeMode>absolute</altitudeMode>\n");
-			fprintf(fr, "        <altitudeMode>relativeToGround</altitudeMode>\n");
-			fprintf(fr, "        <coordinates>\n");
-			if (liste->line != NULL) {
-				if (strncmp(liste->line, "GPS;", 4) == 0) {
-					sscanf(liste->line, "GPS;%i;%f;%f;%f;%f", &r_tim, &r_lat, &r_lon, &r_alt, &r_vel);
-					fprintf(fr, "%f, %f, %f\n", r_lon, r_lat, r_alt);
-				}
-			}
-			while (liste->next != NULL) {
-				liste=liste->next;
-				if (liste->line != NULL) {
-					if (strncmp(liste->line, "GPS;", 4) == 0) {
-						sscanf(liste->line, "GPS;%i;%f;%f;%f;%f", &r_tim, &r_lat, &r_lon, &r_alt, &r_vel);
-						fprintf(fr, "%f, %f, %f\n", r_lon, r_lat, r_alt);
-					}
-				}
-			}
-			fprintf(fr, "        </coordinates>\n");
-			fprintf(fr, "      </LineString>\n");
-			fprintf(fr, "    </Placemark>\n");
-			fprintf(fr, "  </Document>\n");
-			fprintf(fr, "</kml>\n");
-
-		        fclose(fr);
-		} else {
-			printf("map: Can not save kml-file: %s\n", filename);
-		}
-	}
-*/
 	return 0;
 }
 
@@ -1984,44 +1916,57 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 	}
 #endif
+/*
 	if (nav_map != 1 && map_show_log == 1) {
 		// draw log
-/*
-		if (LogLines != NULL) {
-			int r_tim = 0;
-			float r_lat = 0.0;
-			float r_lon = 0.0;
-			float r_alt = 0.0;
-			float r_vel = 0.0;
-			struct list_element *liste = LogLines;
-			flag = 0;
-			if (liste->line != NULL) {
-				if (strncmp(liste->line, "GPS;", 4) == 0) {
-					sscanf(liste->line, "GPS;%i;%f;%f;%f;%f", &r_tim, &r_lat, &r_lon, &r_alt, &r_vel);
-					last_lat = r_lat;
-					last_lon = r_lon;
-					last_alt = r_alt;
-					flag = 1;
-				}
-			}
-			while (liste->next != NULL) {
-				liste=liste->next;
-				if (liste->line != NULL) {
-					if (strncmp(liste->line, "GPS;", 4) == 0) {
-						sscanf(liste->line, "GPS;%i;%f;%f;%f;%f", &r_tim, &r_lat, &r_lon, &r_alt, &r_vel);
-						if (flag != 0) {
-							mark_route(esContext, last_lat, last_lon, last_alt, r_lat, r_lon, r_alt, 0, lat, lon, zoom);
-						}
-						last_lat = r_lat;
-						last_lon = r_lon;
-						last_alt = r_alt;
-						flag = 1;
+		FILE *log_fr = NULL;
+		log_fr = fopen(logplay_file, "r");
+		if (log_fr != 0) {
+			char line[512];
+			float p_lat = 0.0;
+			float p_long = 0.0;
+			float p_alt = 0.0;
+			float last_lat = 0.0;
+			float last_long = 0.0;
+			float last_alt = 0.0;
+			float speed = 0.0;
+			uint8_t gpsfix = 0;
+			uint8_t numSat = 0;
+			uint32_t lsec = 0;
+			uint32_t lmicros = 0;
+
+			last_lat = 0.0;
+			last_lon = 0.0;
+			last_alt = 0.0;
+
+			while (fgets(line, 500, log_fr) != NULL) {
+				if (strncmp(line, "GPS;", 4) == 0) {
+					sscanf(line, "GPS;%i.%i;%f;%f;%f", &lsec, &lmicros, &p_lat, &p_long, &p_alt);
+					if (last_lat != 0.0) {
+						mark_route(esContext, last_lat, last_lon, last_alt, p_long, p_lat, p_alt, 1, lat, lon, zoom);
 					}
+					last_lat = p_long;
+					last_lon = p_lat;
+					last_alt = p_alt;
+				} else if (strncmp(line, "GPS,", 4) == 0) {
+					float dn = 0.0;
+					float dn2 = 0.0;
+					float dn4 = 0.0;
+					uint32_t dn3 = 0;
+					sscanf(line, "GPS,%i,%i,%i,%f,%f,%f,%f,%f,%f,%f", &gpsfix, &dn3, &numSat, &dn, &p_lat, &p_long, &dn2, &p_alt, &speed, &dn4);
+					if (last_lat != 0.0) {
+						mark_route(esContext, last_lat, last_lon, last_alt, p_long, p_lat, p_alt, 1, lat, lon, zoom);
+					}
+					last_lat = p_long;
+					last_lon = p_lat;
+					last_alt = p_alt;
 				}
 			}
+
+			fclose(log_fr);
 		}
-*/
 	}
+*/
 
 
 	// rotate map back
@@ -2287,7 +2232,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		draw_button(esContext, "map_downloader", VIEW_MODE_MAP, "MD", FONT_WHITE, 1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_downloader, 0.0);
 */
 
-//		draw_button(esContext, "map_export_kml", VIEW_MODE_MAP, "KML", FONT_WHITE, 0.9, -0.96, 0.002, 0.06, 1, 0, map_export_kml, 1.0);
 //		map_view = 0;
 	}
 	glEnable( GL_DEPTH_TEST );

@@ -98,7 +98,7 @@ void logplay_export_kml (char *logfile, char *kmlfile) {
 		float last_p_lat = 0.0;
 		float last_p_alt = 0.0;
 		uint16_t point_nr = 0;
-	        FILE *fr;
+	        FILE *fr = NULL;
 		FILE *log_fr = NULL;
 		log_fr = fopen(logfile, "r");
 		if (log_fr != 0) {
