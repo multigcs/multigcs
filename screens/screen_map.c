@@ -1715,8 +1715,16 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		glPushMatrix();
 		glRotatef(-90.0, 1.0, 0.0, 0.0);
 		glTranslatef(0.0, 0.0015, -0.0068);
-		glRotatef(-ModelData.roll, 0.0, 1.0, 0.0);
-		glRotatef(-ModelData.pitch, 1.0, 0.0, 0.0);
+
+		if (view_stab == 1) {
+			glRotatef(0.0, 1.0, 0.0, 0.0);
+		} else if (view_stab == 2) {
+			glRotatef(45.0, 1.0, 0.0, 0.0);
+		} else {
+			glRotatef(-ModelData.roll, 0.0, 1.0, 0.0);
+			glRotatef(-ModelData.pitch, 1.0, 0.0, 0.0);
+		}
+
 		glRotatef(ModelData.yaw, 0.0, 0.0, 1.0);
 		glTranslatef(0.0, 0.0, 2.0 - 0.00 - (ModelData.p_alt - ModelData.alt_offset) / alt_zoom);
 		glTranslatef(-offset_x1, offset_y1, 0.0);

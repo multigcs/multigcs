@@ -36,6 +36,16 @@ uint8_t view_hud (char *name, float x, float y, int8_t button, float data) {
 	return 0;
 }
 
+
+uint8_t view_hud_stab (char *name, float x, float y, int8_t button, float data) {
+	if (view_stab < 2) {
+		view_stab++;
+	} else {
+		view_stab = 0;
+	}
+	return 0;
+}
+
 uint8_t view_hud_bw (char *name, float x, float y, int8_t button, float data) {
 	contrast = 1 - contrast;
 	return 0;
@@ -1225,6 +1235,8 @@ void screen_hud (ESContext *esContext) {
 			draw_button(esContext, "view_hud_mark", VIEW_MODE_HUD, "MARK", FONT_GREEN, -1.35, 0.8, 0.002, 0.06, 0, 0, view_hud_mark, 0);
 		if (hud_view_map == 1) {
 			draw_button(esContext, "view_hud_map", VIEW_MODE_HUD, "MAP", FONT_GREEN, -1.15, 0.9, 0.002, 0.06, 0, 0, view_hud_map, 0);
+		} else if (hud_view_map == 2) {
+			draw_button(esContext, "view_hud_map", VIEW_MODE_HUD, "MAP", FONT_PINK, -1.15, 0.9, 0.002, 0.06, 0, 0, view_hud_map, 0);
 		} else {
 			draw_button(esContext, "view_hud_map", VIEW_MODE_HUD, "MAP", FONT_PINK, -1.15, 0.9, 0.002, 0.06, 0, 0, view_hud_map, 0);
 		}
@@ -1234,6 +1246,15 @@ void screen_hud (ESContext *esContext) {
 //			draw_button(esContext, "view_map_tunnel", VIEW_MODE_HUD, "TUNNEL", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_tunnel, 0);
 //		}
 		hud_view_tunnel = 0;
+
+		if (view_stab == 1) {
+			draw_button(esContext, "view_hud_stab", VIEW_MODE_HUD, "STAB", FONT_GREEN, -1.0, 0.8, 0.002, 0.06, 0, 0, view_hud_stab, 0);
+		} else if (view_stab == 2) {
+			draw_button(esContext, "view_hud_stab", VIEW_MODE_HUD, "STAB", FONT_PINK, -1.0, 0.8, 0.002, 0.06, 0, 0, view_hud_stab, 0);
+		} else {
+			draw_button(esContext, "view_hud_stab", VIEW_MODE_HUD, "STAB", FONT_WHITE, -1.0, 0.8, 0.002, 0.06, 0, 0, view_hud_stab, 0);
+		}
+
 	} else {
 		draw_button(esContext, "view_hud_map", VIEW_MODE_HUD, "MAP", FONT_WHITE, -1.15, 0.9, 0.002, 0.06, 0, 0, view_hud_map, 0);
 		draw_button(esContext, "view_map_bw", VIEW_MODE_HUD, "BW", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_bw, 0);

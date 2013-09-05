@@ -163,6 +163,7 @@ extern char clientmode_server[1024];
 extern uint16_t clientmode_port;
 extern volatile uint8_t gui_running;
 extern uint8_t hud_view;
+extern uint8_t view_stab;
 extern uint8_t hud_view_map;
 extern uint8_t hud_view_video;
 extern uint8_t hud_view_tunnel;

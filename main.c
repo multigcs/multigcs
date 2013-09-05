@@ -125,6 +125,7 @@ int calibration_max_y = 3000;
 int touch_fd = -1;
 volatile uint8_t gui_running = 1;
 uint8_t hud_view = 0;
+uint8_t view_stab = 0;
 uint8_t hud_view_map = 0;
 uint8_t hud_view_video = 0;
 uint8_t hud_view_tunnel = 0;

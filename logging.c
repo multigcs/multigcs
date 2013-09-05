@@ -56,6 +56,7 @@ uint8_t logplay_play = 0;
 uint8_t logplay_pause = 0;
 uint32_t logplay_msec = 0;
 uint32_t logplay_startsec = 0;
+uint32_t logplay_starttime = 0;
 uint8_t logplay_list = 0;
 uint8_t logplay_filelist = 0;
 char logplay_file[1024];
@@ -140,6 +141,15 @@ void logplay_export_kml (char *logfile, char *kmlfile) {
 						fprintf(fr, " %f,%f,%f \n", p_long, p_lat, p_alt);
 					} else if (strncmp(line, "ATT;", 4) == 0) {
 						sscanf(line, "ATT;%i.%i;%f;%f;%f", &lsec, &lmicros, &pitch, &roll, &yaw);
+					} else if (strncmp(line, "GPS,", 4) == 0) {
+						float dn = 0.0;
+						float dn2 = 0.0;
+						float dn4 = 0.0;
+						uint32_t dn3 = 0;
+						sscanf(line, "GPS,%i,%i,%i,%f,%f,%f,%f,%f,%f,%f", &gpsfix, &dn3, &numSat, &dn, &p_lat, &p_long, &dn2, &p_alt, &speed, &dn4);
+						fprintf(fr, " %f,%f,%f \n", p_long, p_lat, p_alt);
+					} else if (strncmp(line, "ATT,", 4) == 0) {
+						sscanf(line, "ATT,%f,%f,%f", &pitch, &roll, &yaw);
 					}
 				}
 				fprintf(fr, "        </coordinates>\n");
@@ -420,7 +430,7 @@ void logplay_export_kml (char *logfile, char *kmlfile) {
 
 uint8_t logplay_cmd_kml (char *name, float x, float y, int8_t button, float data) {
 	logplay_export_kml(logplay_file, "/tmp/export.kml");
-	system("googleearth /tmp/export.kml &");
+	system("(googleearth /tmp/export.kml || google-earth /tmp/export.kml) &");
 	return 0;
 }
 
@@ -439,9 +449,14 @@ uint8_t logplay_cmd_step (char *name, float x, float y, int8_t button, float dat
 }
 
 uint8_t logplay_cmd_play (char *name, float x, float y, int8_t button, float data) {
-	logplay_play = 1 - logplay_play;
-	logplay_pause = 0;
-	logplay_msec = 0;
+	if (logplay_file[0] != 0) {
+		logplay_play = 1 - logplay_play;
+		logplay_pause = 0;
+		logplay_msec = 0;
+		logplay_starttime = 0;
+	} else {
+		logplay_list = 1;
+	}
 	return 0;
 }
 
@@ -621,8 +636,9 @@ void Logging (void) {
 			gettimeofday(&tv, NULL);  
 			uint32_t sec = tv.tv_sec;
 			uint32_t micros = tv.tv_usec / 1000;
-			uint32_t lsec = 0;
-			uint32_t lmicros = 0;
+			static uint32_t lsec = 0;
+			static uint32_t lmicros = 0;
+
 			if (fr != NULL) {
 				while (1 == 1) {
 					if (last_line[3] == ';') {
@@ -630,10 +646,23 @@ void Logging (void) {
 						if (logplay_startsec == 0) {
 							logplay_startsec = lsec;
 						}
+					} else if (last_line[3] == ',') {
+						if (logplay_startsec == 0) {
+							logplay_startsec = lsec;
+						}
 					} else {
 						if (fgets(line, 500, fr) != NULL) {
 							strcpy(last_line, line);
-							printf("NEXT_LINE: %s\n", line);
+//							printf("NEXT_LINE: %s\n", line);
+
+							if (strncmp(last_line, "GPS,", 4) == 0) {
+								lmicros += 200;
+								if (lmicros >= 1000) {
+									lsec += 1;
+									lmicros = 0;
+								}
+//								printf("%i %i\n", logplay_msec, (lsec - logplay_startsec) * 1000 + lmicros);
+							}
 							continue;
 						} else {
 							printf("######## file end ########\n");
@@ -644,15 +673,44 @@ void Logging (void) {
 							break;
 						}
 					}
+//					printf("%i %i\n", logplay_msec, (lsec - logplay_startsec) * 1000 + lmicros);
 					if (logplay_msec >= (lsec - logplay_startsec) * 1000 + lmicros) {
 						if (strncmp(last_line, "GPS;", 4) == 0) {
-							sscanf(last_line, "GPS;%i.%i;%f;%f;%f", &lsec, &lmicros, &ModelData.p_lat, &ModelData.p_long, &ModelData.p_alt);
+							float p_lat = 0.0;
+							float p_long = 0.0;
+							sscanf(last_line, "GPS;%i.%i;%f;%f;%f", &lsec, &lmicros, &p_lat, &p_long, &ModelData.p_alt);
+							if (p_lat != 0.0 && p_long != 0.0) {
+								ModelData.p_lat = p_lat;
+								ModelData.p_long = p_long;
+							}
 						} else if (strncmp(last_line, "ATT;", 4) == 0) {
 							sscanf(last_line, "ATT;%i.%i;%f;%f;%f", &lsec, &lmicros, &ModelData.pitch, &ModelData.roll, &ModelData.yaw);
+						} else if (strncmp(last_line, "GPS,", 4) == 0) {
+							float dn = 0.0;
+							float dn2 = 0.0;
+							float dn4 = 0.0;
+							uint32_t dn3 = 0;
+							float p_lat = 0.0;
+							float p_long = 0.0;
+							sscanf(last_line, "GPS,%i,%i,%i,%f,%f,%f,%f,%f,%f,%f", &ModelData.gpsfix, &dn3, &ModelData.numSat, &dn, &p_lat, &p_long, &dn2, &ModelData.p_alt, &ModelData.speed, &dn4);
+							if (p_lat != 0.0 && p_long != 0.0) {
+								ModelData.p_lat = p_lat;
+								ModelData.p_long = p_long;
+							}
+						} else if (strncmp(last_line, "ATT,", 4) == 0) {
+							sscanf(last_line, "ATT,%f,%f,%f", &ModelData.pitch, &ModelData.roll, &ModelData.yaw);
 						}
 						if (fgets(line, 500, fr) != NULL) {
 							strcpy(last_line, line);
-							printf("NEXT_LINE: %s\n", line);
+//							printf("NEXT_LINE: %s\n", line);
+							if (strncmp(last_line, "GPS,", 4) == 0) {
+								lmicros += 200;
+								if (lmicros >= 1000) {
+									lsec += 1;
+									lmicros = 0;
+								}
+//								printf("%i %i\n", logplay_msec, (lsec - logplay_startsec) * 1000 + lmicros);
+							}
 							continue;
 						} else {
 							printf("######## file end ########\n");
@@ -668,9 +726,20 @@ void Logging (void) {
 				}
 			}
 			if (logplay_pause == 0) {
-				logplay_msec += 40;
+				struct timeval tv;
+				gettimeofday(&tv, NULL);  
+
+				if (logplay_starttime == 0) {
+					logplay_starttime = tv.tv_sec;
+				}
+
+				logplay_msec = (tv.tv_sec - logplay_starttime) * 1000 + tv.tv_usec / 1000;
+
 			}
 		}
+
+
+
 	} else if (logmode == LOGGING_ON) {
 		char line[512];
 		static float last_lat = 0.0;
