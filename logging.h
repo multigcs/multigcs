@@ -13,7 +13,7 @@ extern char *Logdata;
 
 
 uint8_t logging_set_mode (char *name, float x, float y, int8_t button, float data);
-void logplay_export_kml (char *logfile, char *kmlfile);
+void logplay_export_kml (char *logfile, char *kmlfile, uint8_t type);
 uint8_t logplay_cmd_kml (char *name, float x, float y, int8_t button, float data);
 uint8_t logplay_cmd_pause (char *name, float x, float y, int8_t button, float data);
 uint8_t logplay_cmd_step (char *name, float x, float y, int8_t button, float data);

@@ -77,8 +77,7 @@ uint8_t logging_set_mode (char *name, float x, float y, int8_t button, float dat
 	return 0;
 }
 
-
-void logplay_export_kml (char *logfile, char *kmlfile) {
+void logplay_export_kml (char *logfile, char *kmlfile, uint8_t type) {
 	printf("logplay: %s -> %s\n", logfile, kmlfile);
 	if (logfile[0] != 0) {
 		float p_lat = 0.0;
@@ -97,6 +96,11 @@ void logplay_export_kml (char *logfile, char *kmlfile) {
 		float last_p_long = 0.0;
 		float last_p_lat = 0.0;
 		float last_p_alt = 0.0;
+		float last_pitch = 0.0;
+		float last_roll = 0.0;
+		float last_yaw = 0.0;
+		uint32_t last_lsec = 0;
+		uint32_t last_lmicros = 0;
 		uint16_t point_nr = 0;
 	        FILE *fr = NULL;
 		FILE *log_fr = NULL;
@@ -110,12 +114,14 @@ void logplay_export_kml (char *logfile, char *kmlfile) {
 				fprintf(fr, "<kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\">\n");
 
 				fprintf(fr, "  <Document>\n");
-//				fprintf(fr, "    <name>%s</name>\n", rctransmitter_name);
+				fprintf(fr, "    <name>%s</name>\n", "MultiGCS");
 				fprintf(fr, "    <description>Flight-Data</description>\n");
 
-
+if (type & (1<<0)) {
 				fprintf(fr, "   <Folder>\n");
 				fprintf(fr, "    <name>Route</name>\n");
+				fprintf(fr, "    <open>0</open>\n");
+				fprintf(fr, "    <visibility>0</visibility>\n");
 				fprintf(fr, "    <Style id=\"yellowLineGreenPoly\">\n");
 				fprintf(fr, "      <LineStyle>\n");
 				fprintf(fr, "        <color>7f00ffff</color>\n");
@@ -156,10 +162,12 @@ void logplay_export_kml (char *logfile, char *kmlfile) {
 				fprintf(fr, "      </LineString>\n");
 				fprintf(fr, "    </Placemark>\n");
 				fprintf(fr, "   </Folder>\n");
-
-/*
+}
+if (type & (1<<1)) {
 				fprintf(fr, "   <Folder>\n");
 				fprintf(fr, "    <name>Arrows</name>\n");
+				fprintf(fr, "    <open>0</open>\n");
+				fprintf(fr, "    <visibility>0</visibility>\n");
 				fseek(log_fr, 0, SEEK_SET);
 				while (fgets(line, 500, log_fr) != NULL) {
 					if (strncmp(line, "GPS;", 4) == 0) {
@@ -191,6 +199,8 @@ void logplay_export_kml (char *logfile, char *kmlfile) {
 						fprintf(fr, "      <styleUrl>#STYLE%i</styleUrl>\n", point_nr);
 						fprintf(fr, "      <description><![CDATA[%i.%03i<BR>alt=%fm<BR>pitch=%f<BR>roll=%f<BR>yaw=%f]]></description>\n", lsec, lmicros, p_alt, pitch, roll, yaw);
 						fprintf(fr, "      <Point>\n");
+						fprintf(fr, "        <extrude>1</extrude>\n");
+						fprintf(fr, "        <altitudeMode>absolute</altitudeMode>\n");
 						fprintf(fr, "        <coordinates>%f, %f, %f</coordinates>\n", p_long, p_lat, p_alt);
 						fprintf(fr, "      </Point>\n");
 						fprintf(fr, "      <LookAt>\n");
@@ -208,10 +218,8 @@ void logplay_export_kml (char *logfile, char *kmlfile) {
 					}
 				}
 				fprintf(fr, "   </Folder>\n");
-*/
-
-/*
-
+}
+if (type & (1<<2)) {
 				fprintf(fr, "    <Style id=\"multiTrack_n\">\n");
 				fprintf(fr, "      <IconStyle>\n");
 				fprintf(fr, "        <Icon>\n");
@@ -273,6 +281,8 @@ void logplay_export_kml (char *logfile, char *kmlfile) {
 
 				fprintf(fr, "    <Folder>\n");
 				fprintf(fr, "      <name>Tracks</name>\n");
+				fprintf(fr, "      <open>0</open>\n");
+				fprintf(fr, "      <visibility>0</visibility>\n");
 				fprintf(fr, "      <Placemark>\n");
 				fprintf(fr, "        <name>2010-05-28T01:16:35.000Z</name>\n");
 				fprintf(fr, "        <styleUrl>#multiTrack</styleUrl>\n");
@@ -416,8 +426,115 @@ void logplay_export_kml (char *logfile, char *kmlfile) {
 				fprintf(fr, "        </gx:Track>\n");
 				fprintf(fr, "      </Placemark>\n");
 				fprintf(fr, "    </Folder>\n");
-*/
+}
+if (type & (1<<3)) {
 
+				fprintf(fr, "   <Folder>\n");
+				fprintf(fr, "    <name>Tour</name>\n");
+				fprintf(fr, "    <open>0</open>\n");
+				fprintf(fr, "    <visibility>0</visibility>\n");
+
+				fprintf(fr, "    <gx:Tour>\n");
+				fprintf(fr, "      <name>Play me!</name>\n");
+				fprintf(fr, "      <gx:Playlist>\n");
+				fprintf(fr, "        <gx:AnimatedUpdate>\n");
+				fprintf(fr, "          <Update>\n");
+				fprintf(fr, "            <targetHref></targetHref>\n");
+				fprintf(fr, "            <Change>\n");
+				fprintf(fr, "                <IconStyle targetId=\"iconstyle\">\n");
+				fprintf(fr, "                  <scale>10.0</scale>\n");
+				fprintf(fr, "                </IconStyle>\n");
+				fprintf(fr, "            </Change>\n");
+				fprintf(fr, "          </Update>\n");
+				fprintf(fr, "        </gx:AnimatedUpdate>\n");
+				fprintf(fr, "\n");
+
+				last_p_long = 0.0;
+				last_yaw = 0.0;
+
+				fseek(log_fr, 0, SEEK_SET);
+				while (fgets(line, 500, log_fr) != NULL) {
+					if (strncmp(line, "GPS;", 4) == 0) {
+
+						sscanf(line, "GPS;%i.%i;%f;%f;%f", &lsec, &lmicros, &p_lat, &p_long, &p_alt);
+					} else if (strncmp(line, "ATT;", 4) == 0) {
+						sscanf(line, "ATT;%i.%i;%f;%f;%f", &lsec, &lmicros, &pitch, &roll, &yaw, &speed, &gpsfix, &numSat);
+
+/*
+						if (last_yaw != 0.0 && last_p_long != 0.0) {
+							fprintf(fr, "        <gx:FlyTo>\n");
+							fprintf(fr, "          <gx:duration>%i.%03i</gx:duration>\n", lsec - last_lsec, lmicros - last_lmicros);
+							fprintf(fr, "          <Camera>\n");
+							fprintf(fr, "            <longitude>%f</longitude>\n", last_p_long);
+							fprintf(fr, "            <latitude>%f</latitude>\n", last_p_lat);
+							fprintf(fr, "            <altitude>%f</altitude>\n", last_p_alt);
+							fprintf(fr, "            <heading>%f</heading>\n", last_yaw);
+							fprintf(fr, "            <tilt>%f</tilt>\n", last_pitch + 90.0);
+							fprintf(fr, "            <roll>%f</roll>\n", last_roll);
+							fprintf(fr, "            <altitudeMode>absolute</altitudeMode>\n");
+							fprintf(fr, "          </Camera>\n");
+							fprintf(fr, "        </gx:FlyTo>\n");
+						}
+*/
+						fprintf(fr, "        <gx:FlyTo>\n");
+						fprintf(fr, "          <gx:duration>0.1</gx:duration>\n");
+						fprintf(fr, "          <Camera>\n");
+						fprintf(fr, "            <longitude>%f</longitude>\n", p_long);
+						fprintf(fr, "            <latitude>%f</latitude>\n", p_lat);
+						fprintf(fr, "            <altitude>%f</altitude>\n", p_alt);
+						fprintf(fr, "            <heading>%f</heading>\n", yaw);
+						fprintf(fr, "            <tilt>%f</tilt>\n", pitch + 90.0);
+						fprintf(fr, "            <roll>%f</roll>\n", roll);
+						fprintf(fr, "            <altitudeMode>absolute</altitudeMode>\n");
+						fprintf(fr, "          </Camera>\n");
+						fprintf(fr, "        </gx:FlyTo>\n");
+
+
+						last_p_long = p_long;
+						last_p_lat = p_lat;
+						last_p_alt = p_alt;
+						last_pitch = pitch;
+						last_roll = roll;
+						last_yaw = yaw;
+						last_lsec = lsec;
+						last_lmicros = lmicros;
+
+					} else if (strncmp(line, "GPS,", 4) == 0) {
+						float dn = 0.0;
+						float dn2 = 0.0;
+						float dn4 = 0.0;
+						uint32_t dn3 = 0;
+						float p_lat = 0.0;
+						float p_long = 0.0;
+						sscanf(line, "GPS,%i,%i,%i,%f,%f,%f,%f,%f,%f,%f", &gpsfix, &dn3, &numSat, &dn, &p_lat, &p_long, &dn2, &p_alt, &speed, &dn4);
+					} else if (strncmp(line, "ATT,", 4) == 0) {
+						sscanf(line, "ATT,%f,%f,%f", &pitch, &roll, &yaw);
+
+						fprintf(fr, "        <gx:FlyTo>\n");
+						fprintf(fr, "          <gx:duration>0.1</gx:duration>\n");
+						fprintf(fr, "          <Camera>\n");
+						fprintf(fr, "            <longitude>%f</longitude>\n", p_long);
+						fprintf(fr, "            <latitude>%f</latitude>\n", p_lat);
+						fprintf(fr, "            <altitude>%f</altitude>\n", p_alt);
+						fprintf(fr, "            <heading>%f</heading>\n", yaw);
+						fprintf(fr, "            <tilt>%f</tilt>\n", pitch + 90.0);
+						fprintf(fr, "            <roll>%f</roll>\n", roll);
+						fprintf(fr, "            <altitudeMode>absolute</altitudeMode>\n");
+						fprintf(fr, "          </Camera>\n");
+						fprintf(fr, "        </gx:FlyTo>\n");
+
+					}
+				}
+
+				fprintf(fr, "        <gx:Wait>\n");
+				fprintf(fr, "          <gx:duration>2.4</gx:duration>  <!-- waiting for the AnimatedUpdate to complete -->\n");
+				fprintf(fr, "        </gx:Wait>\n");
+				fprintf(fr, "\n");
+				fprintf(fr, "      </gx:Playlist>\n");
+				fprintf(fr, "    </gx:Tour>\n");
+				fprintf(fr, "\n");
+				fprintf(fr, "    </Folder>\n");
+}
 
 				fprintf(fr, "  </Document>\n");
 				fprintf(fr, "</kml>\n");
@@ -429,7 +546,7 @@ void logplay_export_kml (char *logfile, char *kmlfile) {
 }
 
 uint8_t logplay_cmd_kml (char *name, float x, float y, int8_t button, float data) {
-	logplay_export_kml(logplay_file, "/tmp/export.kml");
+	logplay_export_kml(logplay_file, "/tmp/export.kml", 0);
 	system("(googleearth /tmp/export.kml || google-earth /tmp/export.kml) &");
 	return 0;
 }

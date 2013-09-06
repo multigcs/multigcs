@@ -110,9 +110,6 @@ struct list_element {
 	struct list_element *next;
 };
 
-extern struct list_element *LogLines;
-extern struct list_element *LogLinesEnd;
-
 extern float volt_min;
 extern int8_t speak;
 extern uint8_t fullscreen;
@@ -195,9 +192,6 @@ extern char display_html2[HTML_MAX];
 
 extern ESContext *GlobalesContext;
 
-void LogAppend(char *line);
-void LogInit(void);
-void LogSave(void);
 void draw_text_f (ESContext *esContext, float x1, float y1, float w, float h, char *file, char *text);
 void reset_telemetrie (void);
 void stop_telemetrie (void);
@@ -218,7 +212,6 @@ void ShutDown (ESContext *esContext);
 void Draw (ESContext *esContext);
 void next_point (float x_origin, float y_origin, float winkel, float r1, float *nx1, float *ny1);
 void next_point_ll (ESContext *esContext, float x_origin, float y_origin, float winkel, float r1, float *nx1, float *ny1);
-void logplay_export_kml (char *logfile, char *kmlfile);
 
 #endif
 

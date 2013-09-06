@@ -33,6 +33,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <logging.h>
 
 
 extern uint16_t webport;
@@ -576,6 +577,8 @@ void webserv_child_kml_wp (int fd, char *servername) {
 			sprintf(tmp_str, "      <description>%s</description>\n", WayPoints[n].command);
 			strcat(content, tmp_str);
 			strcat(content, "      <Point>\n");
+			strcat(content, "        <extrude>1</extrude>\n");
+			strcat(content, "        <altitudeMode>absolute</altitudeMode>\n");
 			sprintf(tmp_str, "        <coordinates>%f,%f,%f</coordinates>\n", WayPoints[n].p_long, WayPoints[n].p_lat, WayPoints[n].p_alt);
 			strcat(content, tmp_str);
 			strcat(content, "      </Point>\n");
@@ -636,6 +639,7 @@ void webserv_child_kml_index (int fd, char *servername) {
 	sprintf(tmp_str, "		<name>%s</name>\n", "Liveview");
 	strcat(content, tmp_str);
 	strcat(content, "		<visibility>0</visibility>\n");
+	strcat(content, "		<refreshVisibility>0</refreshVisibility>\n");
 	strcat(content, "		<open>0</open>\n");
 	strcat(content, "		<flyToView>0</flyToView>\n");
 	strcat(content, "		<Link>\n");
@@ -645,9 +649,23 @@ void webserv_child_kml_index (int fd, char *servername) {
 	strcat(content, "	</NetworkLink>\n");
 
 	strcat(content, "	<NetworkLink>\n");
+	sprintf(tmp_str, "		<name>%s</name>\n", "Pilotview");
+	strcat(content, tmp_str);
+	strcat(content, "		<visibility>0</visibility>\n");
+	strcat(content, "		<refreshVisibility>0</refreshVisibility>\n");
+	strcat(content, "		<open>0</open>\n");
+	strcat(content, "		<flyToView>0</flyToView>\n");
+	strcat(content, "		<Link>\n");
+	sprintf(tmp_str, "			<href>http://%s/live-pilot.kml</href>\n", servername);
+	strcat(content, tmp_str);
+	strcat(content, "		</Link>\n");
+	strcat(content, "	</NetworkLink>\n");
+
+	strcat(content, "	<NetworkLink>\n");
 	sprintf(tmp_str, "		<name>%s</name>\n", "Waypoints");
 	strcat(content, tmp_str);
 	strcat(content, "		<visibility>0</visibility>\n");
+	strcat(content, "		<refreshVisibility>0</refreshVisibility>\n");
 	strcat(content, "		<open>0</open>\n");
 	strcat(content, "		<flyToView>0</flyToView>\n");
 	strcat(content, "		<Link>\n");
@@ -693,6 +711,7 @@ void webserv_child_kml_index (int fd, char *servername) {
 						sprintf(tmp_str, "		<name>%s</name>\n", tmp_str2);
 						strcat(content, tmp_str);
 						strcat(content, "		<visibility>0</visibility>\n");
+						strcat(content, "		<refreshVisibility>0</refreshVisibility>\n");
 						strcat(content, "		<open>0</open>\n");
 						strcat(content, "		<flyToView>0</flyToView>\n");
 						strcat(content, "		<Link>\n");
@@ -716,7 +735,7 @@ void webserv_child_kml_index (int fd, char *servername) {
 	write(fd, content, strlen(content));
 }
 
-void webserv_child_kml_live (int fd, char *servername) {
+void webserv_child_kml_live (int fd, uint8_t mode, char *servername) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
@@ -727,11 +746,17 @@ void webserv_child_kml_live (int fd, char *servername) {
 	strcat(content, "	<NetworkLink>\n");
 	strcat(content, "		<name>MultiGCS</name>\n");
 	strcat(content, "		<open>1</open>\n");
-//	strcat(content, "		<flyToView>1</flyToView>\n");
+	strcat(content, "		<flyToView>1</flyToView>\n");
 	strcat(content, "		<Link>\n");
-	sprintf(tmp_str, "			<href>http://%s/model.kml</href>\n", servername);
+	if (mode == 0) {
+		sprintf(tmp_str, "			<href>http://%s/model.kml</href>\n", servername);
+	} else {
+		sprintf(tmp_str, "			<href>http://%s/pilot.kml</href>\n", servername);
+	}
 	strcat(content, tmp_str);
 	strcat(content, "			<refreshMode>onInterval</refreshMode>\n");
+	strcat(content, "			<viewRefreshMode>onStop</viewRefreshMode>\n");
+	strcat(content, "			<refreshVisibility>0</refreshVisibility>\n");
 	sprintf(tmp_str, "			<refreshInterval>%f</refreshInterval>\n", gearth_interval);
 	strcat(content, tmp_str);
 	strcat(content, "		</Link>\n");
@@ -743,7 +768,7 @@ void webserv_child_kml_live (int fd, char *servername) {
 	write(fd, content, strlen(content));
 }
 
-void webserv_child_kml_feed (int fd, char *servername) {
+void webserv_child_kml_feed (int fd, uint8_t mode, char *servername) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
@@ -753,45 +778,55 @@ void webserv_child_kml_feed (int fd, char *servername) {
 	strcat(content, "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
 	strcat(content, "	<Document>\n");
 	strcat(content, "		<Placemark>\n");
-	strcat(content, "			<name>Model</name>\n");
-	strcat(content, "			<Model id=\"model_10\">\n");
-	strcat(content, "				<extrude>1</extrude>\n");
-	strcat(content, "				<altitudeMode>absolute</altitudeMode>\n");
-//	strcat(content, "				<altitudeMode>relativeToGround</altitudeMode>\n");
-	strcat(content, "				<Location>\n");
-	sprintf(tmp_str, "					<longitude>%f</longitude>\n", ModelData.p_long);
-	strcat(content, tmp_str);
-	sprintf(tmp_str, "					<latitude>%f</latitude>\n", ModelData.p_lat);
-	strcat(content, tmp_str);
-	sprintf(tmp_str, "					<altitude>%f</altitude>\n", ModelData.p_alt);
-	strcat(content, tmp_str);
-	strcat(content, "				</Location>\n");
-	strcat(content, "				<Orientation>\n");
-	sprintf(tmp_str, "					<tilt>%f</tilt>\n", ModelData.pitch * -1);
-	strcat(content, tmp_str);
-	sprintf(tmp_str, "					<roll>%f</roll>\n", ModelData.roll * -1);
-	strcat(content, tmp_str);
-	sprintf(tmp_str, "					<heading>%f</heading>\n", ModelData.yaw);
-	strcat(content, tmp_str);
-	strcat(content, "				</Orientation>\n");
-	strcat(content, "				<Scale>\n");
-	strcat(content, "					<x>15</x>\n");
-	strcat(content, "					<y>15</y>\n");
-	strcat(content, "					<z>15</z>\n");
-	strcat(content, "				</Scale>\n");
-	strcat(content, "				<Link>\n");
-	strcat(content, "					<href>plane.dae</href>\n");
-	strcat(content, "				</Link>\n");
-	strcat(content, "			</Model>\n");
+	if (mode == 0) {
+		strcat(content, "			<name>Model</name>\n");
+		strcat(content, "			<Model id=\"model_10\">\n");
+		strcat(content, "				<extrude>1</extrude>\n");
+		strcat(content, "				<altitudeMode>absolute</altitudeMode>\n");
+		strcat(content, "				<Location>\n");
+		sprintf(tmp_str, "					<longitude>%f</longitude>\n", ModelData.p_long);
+		strcat(content, tmp_str);
+		sprintf(tmp_str, "					<latitude>%f</latitude>\n", ModelData.p_lat);
+		strcat(content, tmp_str);
+		sprintf(tmp_str, "					<altitude>%f</altitude>\n", ModelData.p_alt);
+		strcat(content, tmp_str);
+		strcat(content, "				</Location>\n");
+		strcat(content, "				<Orientation>\n");
+		sprintf(tmp_str, "					<tilt>%f</tilt>\n", ModelData.pitch * -1);
+		strcat(content, tmp_str);
+		sprintf(tmp_str, "					<roll>%f</roll>\n", ModelData.roll * -1);
+		strcat(content, tmp_str);
+		sprintf(tmp_str, "					<heading>%f</heading>\n", ModelData.yaw);
+		strcat(content, tmp_str);
+		strcat(content, "				</Orientation>\n");
+		strcat(content, "				<Scale>\n");
+		strcat(content, "					<x>15</x>\n");
+		strcat(content, "					<y>15</y>\n");
+		strcat(content, "					<z>15</z>\n");
+		strcat(content, "				</Scale>\n");
+		strcat(content, "				<Link>\n");
+		strcat(content, "					<href>plane.dae</href>\n");
+		strcat(content, "				</Link>\n");
+		strcat(content, "			</Model>\n");
+	} else {
+		strcat(content, "			<name>Pilot-View</name>\n");
+		strcat(content, "			<Camera>\n");
+		strcat(content, "				<altitudeMode>absolute</altitudeMode>\n");
+		sprintf(tmp_str, "				<longitude>%f</longitude>\n", ModelData.p_long);
+		strcat(content, tmp_str);
+		sprintf(tmp_str, "				<latitude>%f</latitude>\n", ModelData.p_lat);
+		strcat(content, tmp_str);
+		sprintf(tmp_str, "				<altitude>%f</altitude>\n", ModelData.p_alt);
+		strcat(content, tmp_str);
+		sprintf(tmp_str, "				<heading>%f</heading>\n", ModelData.yaw);
+		strcat(content, tmp_str);
+		sprintf(tmp_str, "				<tilt>%f</tilt>\n", ModelData.pitch + 90.0);
+		strcat(content, tmp_str);
+		sprintf(tmp_str, "				<roll>%f</roll>\n", ModelData.roll * -1);
+		strcat(content, tmp_str);
+		strcat(content, "			</Camera>\n");
+	}
 
-//	strcat(content, "			<LookAt>\n");
-//	sprintf(tmp_str, "				<longitude>%f</longitude>\n", ModelData.p_long);
-//	strcat(content, tmp_str);
-//	sprintf(tmp_str, "				<latitude>%f</latitude>\n", ModelData.p_lat);
-//	strcat(content, tmp_str);
-//	sprintf(tmp_str, "				<heading>%f</heading>\n", ModelData.yaw);
-//	strcat(content, tmp_str);
-//	strcat(content, "			</LookAt>\n");
 	strcat(content, "		</Placemark>\n");
 	strcat(content, "	</Document>\n");
 	strcat(content, "</kml>\n");
@@ -1019,10 +1054,23 @@ void webserv_child (int fd) {
 		} else if (strncmp(buffer + 4,"/wp.kml", 7) == 0) {
 			webserv_child_kml_wp(fd, servername);
 		} else if (strncmp(buffer + 4,"/live.kml", 9) == 0) {
-			webserv_child_kml_live(fd, servername);
+			webserv_child_kml_live(fd, 0, servername);
+		} else if (strncmp(buffer + 4,"/live-pilot.kml", 15) == 0) {
+			webserv_child_kml_live(fd, 1, servername);
 		} else if (strncmp(buffer + 4,"/model.kml", 8) == 0) {
-			webserv_child_kml_feed(fd, servername);
-		} else if (strncmp(buffer + 4,"/plane.dae", 4) == 0) {
+			webserv_child_kml_feed(fd, 0, servername);
+		} else if (strncmp(buffer + 4,"/pilot.kml", 8) == 0) {
+			webserv_child_kml_feed(fd, 1, servername);
+
+		} else if (strncmp(buffer + 4,"/simple.dae", 11) == 0) {
+#ifdef SDLGL
+			sprintf(tmp_str, "%s/simple.dae", BASE_DIR);
+			webserv_child_dump_file(fd, tmp_str, "text/xml");
+#else
+			sprintf(tmp_str, "%s/plane.dae", BASE_DIR);
+			webserv_child_dump_file(fd, tmp_str, "text/xml");
+#endif
+		} else if (strncmp(buffer + 4,"/plane.dae", 10) == 0) {
 #ifdef SDLGL
 			if (get_background_model(tmp_str) == 0) {
 				if (obj3d_collada.name[0] == 0) {
@@ -1097,7 +1145,7 @@ void webserv_child (int fd) {
 				char tmp_str2[400];
 				sprintf(tmp_str, "%s/logs/%s", BASE_DIR, buffer + 12);
 				sprintf(tmp_str2, "/tmp/%s.kml", buffer + 12);
-				logplay_export_kml(tmp_str, tmp_str2);
+				logplay_export_kml(tmp_str, tmp_str2, 255);
 				webserv_child_dump_file(fd, tmp_str2, "text/xml");
 			}
 
