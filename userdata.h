@@ -1,7 +1,11 @@
 
 #include <stdint.h>
 #ifdef SDLGL
+#ifndef OSX
+#define NO_SDL_GLEXT
 #include <GL/gl.h>
+#include <GL/glext.h>
+#endif
 #else
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>

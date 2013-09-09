@@ -16,8 +16,12 @@
 #include <string.h>
 #include <fcntl.h>
 #include <math.h>
-#include <GL/gl.h>
 #include <png.h>
+#ifndef OSX
+#define NO_SDL_GLEXT
+#include <GL/gl.h>
+#include <GL/glext.h>
+#endif
 #include <SDL.h>
 #include <SDL_thread.h>
 #include <SDL_events.h>
@@ -39,8 +43,6 @@
 #include <sys/times.h>
 #include <stdlib.h>
 #include <math.h>
-#include <linux/version.h>
-#include <linux/input.h>
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>

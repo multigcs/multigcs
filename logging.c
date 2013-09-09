@@ -5,8 +5,6 @@
 #include <time.h>
 #include <sys/times.h>
 #include <math.h>
-#include <linux/version.h>
-#include <linux/input.h>
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>

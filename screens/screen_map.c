@@ -9,9 +9,15 @@
 #include <unistd.h>
 #include <time.h>
 #include <curl/curl.h>
+
+#ifndef OSX
+#define NO_SDL_GLEXT
 #include <GL/gl.h>
+#include <GL/glext.h>
 #include <GL/glu.h>
+#endif
 #include <SDL.h>
+#include <SDL_opengl.h>
 
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>

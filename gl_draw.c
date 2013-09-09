@@ -16,9 +16,11 @@
 #include <string.h>
 #include <fcntl.h>
 #include <math.h>
+#ifndef OSX
 #define NO_SDL_GLEXT
 #include <GL/glew.h>
 #include <GL/gl.h>
+#endif
 #include <SDL.h>
 #include <SDL_thread.h>
 #include <SDL_events.h>

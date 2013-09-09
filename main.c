@@ -5,8 +5,6 @@
 #include <time.h>
 #include <sys/times.h>
 #include <math.h>
-#include <linux/version.h>
-#include <linux/input.h>
 #include <string.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -25,10 +23,13 @@
 #ifndef SDLGL
 #include "esUtil.h"
 #else
+#ifndef OSX
+#define NO_SDL_GLEXT
+#include <GL/gl.h>
+#include <GL/glext.h>
+#endif
 #include <SDL_image.h>
 #include <SDL_opengl.h>
-#include "GL/gl.h"
-#include "GL/glext.h"
 #endif
 
 #include <model.h>
@@ -68,11 +69,13 @@
 #include "screen_rcflow.h"
 
 // V4L
+#ifndef OSX
 #ifdef SDLGL
 int videodev_start (void);
 int videodev_stop (void);
 SDL_Surface *videodev_loop (void);
 void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, SDL_Surface *screen);
+#endif
 #endif
 
 Model ModelData;
@@ -1770,8 +1773,10 @@ void ShutDown ( ESContext *esContext ) {
 	SDL_KillThread(thread);
 #endif
 
+#ifndef OSX
 #ifdef SDLGL
 	videodev_stop();
+#endif
 #endif
 	system("killall -9 espeak 2> /dev/nnull > /dev/nnull");
 
@@ -1891,8 +1896,10 @@ int main ( int argc, char *argv[] ) {
 //	printf( "* Extensions : %s\n", glGetString( GL_EXTENSIONS ) );
 
 
+#ifndef OSX
 #ifdef SDLGL
 	videodev_start();
+#endif
 #endif
 
 	// preload map on startup for faster view-changes

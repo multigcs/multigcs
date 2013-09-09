@@ -412,9 +412,11 @@ void screen_hud (ESContext *esContext) {
 	//printf("hud#1\n");
 
 #ifdef SDLGL
+#ifndef OSX
 	if (hud_view_video == 1) {
 		draw_surface_f3(esContext, -1.4, -1.0, 1.4, 1.0, -0.001, videodev_loop());
 	}
+#endif
 	if (hud_view_map == 1) {
 		if (hud_view_video == 1) {
 			display_map(esContext, lat, lon, zoom, 4, 1, 0.0, 0.0, 0.5);
