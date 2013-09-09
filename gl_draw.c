@@ -1330,8 +1330,9 @@ void draw_char_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 }
 
 int gl_init (uint16_t w, uint16_t h) {
+#ifndef OSX
 	glewInit();
-
+#endif
 	glClear( GL_COLOR_BUFFER_BIT );
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();

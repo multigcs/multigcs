@@ -1,5 +1,4 @@
 
-#include <libudev.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <libgen.h>
