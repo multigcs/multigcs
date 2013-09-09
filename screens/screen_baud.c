@@ -51,11 +51,6 @@ uint8_t baud_name_save (char *name, float x, float y, int8_t button, float data)
 }
 
 void screen_baud (ESContext *esContext) {
-#ifndef SDLGL
-	ESMatrix modelview;
-	UserData *userData = esContext->userData;
-#endif
-
 	if (show_baud != view_mode) {
 		return;
 	}

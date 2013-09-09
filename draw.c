@@ -26,6 +26,7 @@
 #include <model.h>
 #include <userdata.h>
 
+#define NO_SDL_GLEXT
 #include <SDL_opengl.h>
 #include <gl_draw.h>
 
@@ -34,6 +35,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <unistd.h>
+#include <sys/stat.h>
 #include <sys/times.h>
 #include <stdlib.h>
 #include <math.h>
@@ -197,7 +199,6 @@ strcpy(font, FONT_GREEN);
 	float y1 = y;
 	float x2 = x + w / 2.0;
 	float y2 = y + h;
-	float z1 = z;
 	if (align_x == ALIGN_CENTER) {
 		x1 = x - w / 2.0;
 		x2 = x + w / 2.0;

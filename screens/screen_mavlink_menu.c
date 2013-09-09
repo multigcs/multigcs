@@ -502,10 +502,6 @@ uint8_t mavlink_param_upload_all (char *name, float x, float y, int8_t button, f
 }
 
 void screen_mavlink_menu (ESContext *esContext) {
-#ifndef SDLGL
-	ESMatrix modelview;
-	UserData *userData = esContext->userData;
-#endif
 	int16_t row = 0;
 	int16_t col = 0;
 	int16_t row2 = 0;

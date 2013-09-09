@@ -571,7 +571,6 @@ void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2
 
 inline void draw_char_f3_fast (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, int8_t tex_num, char num) {
 	UserData *userData = esContext->userData;
-	int8_t n = 0;
 	int nnn = 0;
 	GLfloat vVertices[20];
 	GLushort indices[] = {0, 1, 2, 0, 2, 3};
@@ -824,13 +823,13 @@ int glesInit ( ESContext *esContext ) {
 		"  gl_FragColor = u_color;                    \n"
 		"}                                            \n";
 
-	userData->programObject = esLoadProgram ( vShaderStr, fShaderStr );
+	userData->programObject = esLoadProgram ( (const char *)vShaderStr, (const char *)fShaderStr );
 	userData->positionLoc = glGetAttribLocation ( userData->programObject, "a_position" );
 	userData->mvpLoc = glGetUniformLocation( userData->programObject, "u_mvpMatrix" );
 	userData->texCoordLoc = glGetAttribLocation ( userData->programObject, "a_texCoord" );
 	userData->samplerLoc = glGetUniformLocation ( userData->programObject, "s_texture" );
 
-	userData->programObject2 = esLoadProgram ( vShaderStr2, fShaderStr2 );
+	userData->programObject2 = esLoadProgram ( (const char *)vShaderStr2, (const char *)fShaderStr2 );
 	userData->positionLoc2 = glGetAttribLocation ( userData->programObject2, "a_position" );
 	userData->mvpLoc2 = glGetUniformLocation( userData->programObject2, "u_mvpMatrix" );
 	userData->colorLoc2 = glGetUniformLocation ( userData->programObject2, "u_color" );

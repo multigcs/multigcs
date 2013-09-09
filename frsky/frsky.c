@@ -143,12 +143,15 @@ int thread_serial_frsky (void *unused) {
 								} else if (buffer_user[1] == 0x24) {
 									int16_t acc_x = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
 //									printf("############## Acc-x: %f\n", (float)acc_x / 100.0);
+									ModelData.acc_x = acc_x / 10.0;
 								} else if (buffer_user[1] == 0x25) {
 									int16_t acc_y = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
 //									printf("############## Acc-y: %f\n", (float)acc_y / 100.0);
+									ModelData.acc_y = acc_y / 10.0;
 								} else if (buffer_user[1] == 0x26) {
 									int16_t acc_z = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
 //									printf("############## Acc-z: %f\n", (float)acc_z / 100.0);
+									ModelData.acc_z = acc_z / 10.0;
 								} else if (buffer_user[1] == 0x01) {
 									GPS_alt = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
 								} else if (buffer_user[1] == 0x01 + 8) {

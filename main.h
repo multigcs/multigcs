@@ -8,6 +8,7 @@
 #ifndef SDLGL
 #include "gles_draw.h"
 #else
+#define NO_SDL_GLEXT
 #include <SDL_image.h>
 #include <SDL_opengl.h>
 #include "gl_draw.h"

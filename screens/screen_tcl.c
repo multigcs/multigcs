@@ -151,11 +151,6 @@ extern char cli_buffer[CLI_MAX_LINES][CLI_MAX_BUFFER];
 
 
 void screen_tcl (ESContext *esContext) {
-#ifndef SDLGL
-	ESMatrix modelview;
-	UserData *userData = esContext->userData;
-#endif
-
 	static uint8_t startup = 0;
 	if (startup == 0) {
 		startup = 1;

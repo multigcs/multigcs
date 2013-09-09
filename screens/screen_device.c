@@ -85,11 +85,6 @@ uint8_t device_name_save (char *name, float x, float y, int8_t button, float dat
 }
 
 void screen_device (ESContext *esContext) {
-#ifndef SDLGL
-	ESMatrix modelview;
-	UserData *userData = esContext->userData;
-#endif
-
 	if (show_device != view_mode) {
 		return;
 	}

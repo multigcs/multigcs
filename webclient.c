@@ -18,10 +18,10 @@ void webclient_update (char *server, uint16_t port) {
 	char tmp_str[100];
 	char sendline[100];
 	char recvline[1024];
-	struct sockaddr_in servaddr,cliaddr;
+	struct sockaddr_in servaddr;
 
 	if ((sockfd = socket(AF_INET,SOCK_STREAM,0)) < 0) {
-		return(1);
+		return;
 	}
 
 	bzero(&servaddr, sizeof(servaddr));

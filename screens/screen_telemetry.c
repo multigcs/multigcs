@@ -93,16 +93,10 @@ void draw_value_bar (ESContext *esContext, float x1, float y1, float x2, float y
 
 
 void draw_value_bar2 (ESContext *esContext, float x1, float y1, float x2, float y2, uint8_t type, float min, float max, float warning, float critical, float value) {
-	char tmp_str[1024];
-//	draw_box_f(esContext, x1, y1, x2, y2, 100, 100, 100, 125);
-
 	float x_diff = x2 - x1;
 	float y_diff = y2 - y1;
 	float v_diff = max - min;
 
-	float y_warning = y2 - (y_diff / v_diff * (warning - min));
-	float y_critical = y2 - (y_diff / v_diff * (critical - min));
-	float y_max = y2 - (y_diff / v_diff * (max - min));
 	float y_value = y2 - (y_diff / v_diff * (value - min));
 
 
@@ -149,11 +143,6 @@ void draw_value_barmeter (ESContext *esContext, float x1, float y1, float x2, fl
 
 
 void screen_telemetry (ESContext *esContext) {
-	char tmp_str[1024];
-#ifndef SDLGL
-	UserData *userData = esContext->userData;
-#endif
-
 	glDisable( GL_DEPTH_TEST );
 
 #ifdef SDLGL

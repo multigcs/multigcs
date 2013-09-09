@@ -104,10 +104,12 @@ deb: gcs
 	mv package.deb multigcs-$(DEB_VERSION_NAME)_$(DEB_VERSION)_$(ARCH).deb
 
 %.o: %.c
-	gcc -DBASE_DIR="\"$(BASE_DIR)\"" -c $(CFLAGS) $< -o $@ ${INCDIR}
+	@echo "$< -> $@"
+	@gcc -DBASE_DIR="\"$(BASE_DIR)\"" -c $(CFLAGS) $< -o $@ ${INCDIR}
 
 gcs: ${COMMONSRC} ${COMMONHDR} ${GCS}
-	gcc -DBASE_DIR="\"$(BASE_DIR)\"" $(CFLAGS) ${COMMONSRC} ${GCS} -o $@ ${INCDIR} ${LIBS}
+	@echo "linking $@"
+	@gcc -DBASE_DIR="\"$(BASE_DIR)\"" $(CFLAGS) ${COMMONSRC} ${GCS} -o $@ ${INCDIR} ${LIBS}
 
 font-generator: font-generator.c
 	gcc -DBASE_DIR="\"$(BASE_DIR)\"" -o font-generator font-generator.c -Wall -O -I/usr/include/SDL -lSDL_ttf -lpng

@@ -16,16 +16,18 @@
 #include <string.h>
 #include <fcntl.h>
 #include <math.h>
-#include <GL/gl.h>
 #include <SDL.h>
 #include <SDL_thread.h>
 #include <SDL_events.h>
 #include <SDL_image.h>
-#include <SDL_opengl.h>
 
 #include <model.h>
 #include <userdata.h>
+#ifndef SDLGL
+#include <gles_draw.h>
+#else
 #include <gl_draw.h>
+#endif
 #include <draw.h>
 #include <main.h>
 
@@ -110,7 +112,7 @@ void webserv_child_dump_blender (int fd) {
 	sprintf(tmp_str, "%f %f %f %f %f %f\n", ModelData.pitch, ModelData.roll, ModelData.yaw, (ModelData.p_lat - blender_first_lat), (ModelData.p_long - blender_first_long), (ModelData.p_alt - blender_first_alt));
 	strcat(content, tmp_str);
 
-	sprintf(buffer, header_str, strlen(content), "text/plain");
+	sprintf(buffer, header_str, (int)strlen(content), "text/plain");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
@@ -248,7 +250,7 @@ void webserv_child_dump_modeldata (int fd) {
 	sprintf(tmp_str, "compid=%i\n", ModelData.compid);
 	strcat(content, tmp_str);
 
-	sprintf(buffer, header_str, strlen(content), "text/plain");
+	sprintf(buffer, header_str, (int)strlen(content), "text/plain");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 
@@ -258,7 +260,7 @@ void webserv_child_show_lonlat (int fd) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	sprintf(content, "%f, %f", ModelData.p_long, ModelData.p_lat);
-	sprintf(buffer, header_str, strlen(content), "text/plain");
+	sprintf(buffer, header_str, (int)strlen(content), "text/plain");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
@@ -525,7 +527,7 @@ void webserv_child_show_hud (int fd) {
 //	strcat(content, "setTimeout(xmlhttpGet, 5000);\n");
 	strcat(content, "</script></body></html>\n");
 
-	sprintf(buffer, header_str, strlen(content), "text/html");
+	sprintf(buffer, header_str, (int)strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
@@ -551,7 +553,7 @@ void webserv_child_hud_redraw (int fd) {
 	sprintf(tmp_str, "	drawCompas(context, 300, 500, 150, %f);\n", ModelData.yaw);
 	strcat(content, tmp_str);
 
-	sprintf(buffer, header_str, strlen(content), "text/html");
+	sprintf(buffer, header_str, (int)strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
@@ -617,7 +619,7 @@ void webserv_child_kml_wp (int fd, char *servername) {
 	strcat(content, "  </Document>\n");
 	strcat(content, "</kml>\n");
 
-	sprintf(buffer, header_str, strlen(content), "text/xml");
+	sprintf(buffer, header_str, (int)strlen(content), "text/xml");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
@@ -730,7 +732,7 @@ void webserv_child_kml_index (int fd, char *servername) {
 	strcat(content, "  </Document>\n");
 	strcat(content, "</kml>\n");
 
-	sprintf(buffer, header_str, strlen(content), "text/xml");
+	sprintf(buffer, header_str, (int)strlen(content), "text/xml");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
@@ -763,7 +765,7 @@ void webserv_child_kml_live (int fd, uint8_t mode, char *servername) {
 	strcat(content, "	</NetworkLink>\n");
 	strcat(content, "</kml>\n");
 
-	sprintf(buffer, header_str, strlen(content), "text/xml");
+	sprintf(buffer, header_str, (int)strlen(content), "text/xml");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
@@ -831,7 +833,7 @@ void webserv_child_kml_feed (int fd, uint8_t mode, char *servername) {
 	strcat(content, "	</Document>\n");
 	strcat(content, "</kml>\n");
 
-	sprintf(buffer, header_str, strlen(content), "text/xml");
+	sprintf(buffer, header_str, (int)strlen(content), "text/xml");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
@@ -1023,12 +1025,12 @@ void webserv_child (int fd) {
 				}
 			}
 			sprintf(content, "OK\n");
-			sprintf(buffer, header_str, strlen(content), "text/plain");
+			sprintf(buffer, header_str, (int)strlen(content), "text/plain");
 			write(fd, buffer, strlen(buffer));
 			write(fd, content, strlen(content));
 		} else {
 			sprintf(content, "UNKNOWN\n");
-			sprintf(buffer, header_str, strlen(content), "text/plain");
+			sprintf(buffer, header_str, (int)strlen(content), "text/plain");
 			write(fd, buffer, strlen(buffer));
 			write(fd, content, strlen(content));
 		}
@@ -1138,7 +1140,7 @@ void webserv_child (int fd) {
 					closedir(dir);
 					dir = NULL;
 				}
-				sprintf(buffer, header_str, strlen(content), "text/html");
+				sprintf(buffer, header_str, (int)strlen(content), "text/html");
 				write(fd, buffer, strlen(buffer));
 				write(fd, content, strlen(content));
 			} else {

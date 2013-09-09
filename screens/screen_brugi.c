@@ -33,7 +33,6 @@
 static int16_t brugi_selected = -1;
 static BrugiValue *slider_value = NULL;
 static char *slider_name = NULL;
-static float slider_lastvalue = 0.0;
 
 uint8_t brugi_gyrocal (char *name, float x, float y, int8_t button, float data) {
 	brugi_send_cmd("GC\n");

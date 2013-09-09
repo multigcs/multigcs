@@ -34,7 +34,7 @@
 #include <model.h>
 
 #include <geomag70.h>
-
+#include <webclient.h>
 #include "my_mavlink.h"
 #include <userdata.h>
 #include <main.h>
@@ -234,6 +234,8 @@ SDL_Surface* CreateSurface(int width,int height) {
 #ifdef SDLGL
 	const SDL_PixelFormat fmt = *(WinScreen->format);
 	return SDL_CreateRGBSurface(0,width,height, fmt.BitsPerPixel, fmt.Rmask,fmt.Gmask,fmt.Bmask,fmt.Amask );
+#else
+	return NULL;
 #endif
 }
 
@@ -1327,7 +1329,7 @@ static uint8_t screen_next (char *name, float x, float y, int8_t button, float d
 
 
 
-void display_update (void) {
+void display_update (ESContext *esContext) {
 #ifndef SDLGL
 	eglSwapBuffers(esContext->eglDisplay, esContext->eglSurface);
 #else
@@ -1741,7 +1743,7 @@ void Draw (ESContext *esContext) {
 	draw_pointer(esContext, mouse_x, mouse_y, 16, 16, TEXTURE_POINTER);
 	glEnable( GL_DEPTH_TEST );
 
-	display_update();
+	display_update(esContext);
 #else
 	SDL_Delay(15);
 #endif

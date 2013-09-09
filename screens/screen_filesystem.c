@@ -103,11 +103,6 @@ uint8_t filesystem_dir_open (char *name, float x, float y, int8_t button, float 
 }
 
 void screen_filesystem (ESContext *esContext) {
-#ifndef SDLGL
-	ESMatrix modelview;
-	UserData *userData = esContext->userData;
-#endif
-
 	if (show_filesystem != view_mode) {
 		return;
 	}

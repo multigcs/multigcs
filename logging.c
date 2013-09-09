@@ -12,6 +12,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <dirent.h>
+#include <unistd.h>
+#include <sys/stat.h>
 #include <errno.h>
 #include <getopt.h>
 #include <ctype.h>
@@ -24,11 +26,6 @@
 
 #ifndef SDLGL
 #include "esUtil.h"
-#else
-#include <SDL_image.h>
-#include <SDL_opengl.h>
-#include "GL/gl.h"
-#include "GL/glext.h"
 #endif
 
 #include <model.h>
@@ -87,8 +84,8 @@ void logplay_export_kml (char *logfile, char *kmlfile, uint8_t type) {
 		float roll = 0.0;
 		float yaw = 0.0;
 		float speed = 0.0;
-		uint8_t gpsfix = 0;
-		uint8_t numSat = 0;
+		int gpsfix = 0;
+		int numSat = 0;
 		char line[512];
 		char filename[512];
 		uint32_t lsec = 0;
@@ -96,11 +93,11 @@ void logplay_export_kml (char *logfile, char *kmlfile, uint8_t type) {
 		float last_p_long = 0.0;
 		float last_p_lat = 0.0;
 		float last_p_alt = 0.0;
-		float last_pitch = 0.0;
-		float last_roll = 0.0;
-		float last_yaw = 0.0;
-		uint32_t last_lsec = 0;
-		uint32_t last_lmicros = 0;
+//		float last_pitch = 0.0;
+//		float last_roll = 0.0;
+//		float last_yaw = 0.0;
+//		uint32_t last_lsec = 0;
+//		uint32_t last_lmicros = 0;
 		uint16_t point_nr = 0;
 	        FILE *fr = NULL;
 		FILE *log_fr = NULL;
@@ -384,7 +381,7 @@ if (type & (1<<2)) {
 					if (strncmp(line, "GPS;", 4) == 0) {
 						sscanf(line, "GPS;%i.%i;%f;%f;%f", &lsec, &lmicros, &p_lat, &p_long, &p_alt);
 					} else if (strncmp(line, "ATT;", 4) == 0) {
-						sscanf(line, "ATT;%i.%i;%f;%f;%f", &lsec, &lmicros, &pitch, &roll, &yaw, &speed, &gpsfix, &numSat);
+						sscanf(line, "ATT;%i.%i;%f;%f;%f", &lsec, &lmicros, &pitch, &roll, &yaw);
 						fprintf(fr, "<gx:value>%f</gx:value>\n", speed);
 						point_nr++;
 					}
@@ -399,7 +396,7 @@ if (type & (1<<2)) {
 					if (strncmp(line, "GPS;", 4) == 0) {
 						sscanf(line, "GPS;%i.%i;%f;%f;%f", &lsec, &lmicros, &p_lat, &p_long, &p_alt);
 					} else if (strncmp(line, "ATT;", 4) == 0) {
-						sscanf(line, "ATT;%i.%i;%f;%f;%f", &lsec, &lmicros, &pitch, &roll, &yaw, &speed, &gpsfix, &numSat);
+						sscanf(line, "ATT;%i.%i;%f;%f;%f", &lsec, &lmicros, &pitch, &roll, &yaw);
 						fprintf(fr, "<gx:value>%i</gx:value>\n", gpsfix);
 						point_nr++;
 					}
@@ -413,7 +410,7 @@ if (type & (1<<2)) {
 					if (strncmp(line, "GPS;", 4) == 0) {
 						sscanf(line, "GPS;%i.%i;%f;%f;%f", &lsec, &lmicros, &p_lat, &p_long, &p_alt);
 					} else if (strncmp(line, "ATT;", 4) == 0) {
-						sscanf(line, "ATT;%i.%i;%f;%f;%f", &lsec, &lmicros, &pitch, &roll, &yaw, &speed, &gpsfix, &numSat);
+						sscanf(line, "ATT;%i.%i;%f;%f;%f", &lsec, &lmicros, &pitch, &roll, &yaw);
 						fprintf(fr, "<gx:value>%i</gx:value>\n", numSat);
 						point_nr++;
 					}
@@ -450,7 +447,7 @@ if (type & (1<<3)) {
 				fprintf(fr, "\n");
 
 				last_p_long = 0.0;
-				last_yaw = 0.0;
+//				last_yaw = 0.0;
 
 				fseek(log_fr, 0, SEEK_SET);
 				while (fgets(line, 500, log_fr) != NULL) {
@@ -458,7 +455,7 @@ if (type & (1<<3)) {
 
 						sscanf(line, "GPS;%i.%i;%f;%f;%f", &lsec, &lmicros, &p_lat, &p_long, &p_alt);
 					} else if (strncmp(line, "ATT;", 4) == 0) {
-						sscanf(line, "ATT;%i.%i;%f;%f;%f", &lsec, &lmicros, &pitch, &roll, &yaw, &speed, &gpsfix, &numSat);
+						sscanf(line, "ATT;%i.%i;%f;%f;%f", &lsec, &lmicros, &pitch, &roll, &yaw);
 
 /*
 						if (last_yaw != 0.0 && last_p_long != 0.0) {
@@ -490,14 +487,14 @@ if (type & (1<<3)) {
 						fprintf(fr, "        </gx:FlyTo>\n");
 
 
-						last_p_long = p_long;
-						last_p_lat = p_lat;
-						last_p_alt = p_alt;
-						last_pitch = pitch;
-						last_roll = roll;
-						last_yaw = yaw;
-						last_lsec = lsec;
-						last_lmicros = lmicros;
+//						last_p_long = p_long;
+//						last_p_lat = p_lat;
+//						last_p_alt = p_alt;
+//						last_pitch = pitch;
+//						last_roll = roll;
+//						last_yaw = yaw;
+//						last_lsec = lsec;
+//						last_lmicros = lmicros;
 
 					} else if (strncmp(line, "GPS,", 4) == 0) {
 						float dn = 0.0;
@@ -751,8 +748,6 @@ void Logging (void) {
 			}
 			struct timeval tv;
 			gettimeofday(&tv, NULL);  
-			uint32_t sec = tv.tv_sec;
-			uint32_t micros = tv.tv_usec / 1000;
 			static uint32_t lsec = 0;
 			static uint32_t lmicros = 0;
 
@@ -809,7 +804,11 @@ void Logging (void) {
 							uint32_t dn3 = 0;
 							float p_lat = 0.0;
 							float p_long = 0.0;
-							sscanf(last_line, "GPS,%i,%i,%i,%f,%f,%f,%f,%f,%f,%f", &ModelData.gpsfix, &dn3, &ModelData.numSat, &dn, &p_lat, &p_long, &dn2, &ModelData.p_alt, &ModelData.speed, &dn4);
+							int gpsfix = 0;
+							int numSat = 0;
+							sscanf(last_line, "GPS,%i,%i,%i,%f,%f,%f,%f,%f,%f,%f", &gpsfix, &dn3, &numSat, &dn, &p_lat, &p_long, &dn2, &ModelData.p_alt, &ModelData.speed, &dn4);
+							ModelData.gpsfix = gpsfix;
+							ModelData.numSat = numSat;
 							if (p_lat != 0.0 && p_long != 0.0) {
 								ModelData.p_lat = p_lat;
 								ModelData.p_long = p_long;
@@ -883,7 +882,7 @@ void Logging (void) {
 		uint32_t sec = tv.tv_sec;
 		uint32_t micros = tv.tv_usec / 1000;
 
-		if (last_lat != ModelData.p_lat || last_lon != ModelData.p_long || (int)last_alt != (int)ModelData.p_alt) {
+		if (last_lat != ModelData.p_lat || last_lon != ModelData.p_long || (int)last_alt != (int)ModelData.p_alt || last_sats != ModelData.numSat) {
 			sprintf(line, "GPS;%i.%03i;%f;%f;%f;%f;%i;%i", sec, micros, ModelData.p_lat, ModelData.p_long, ModelData.p_alt, ModelData.speed, ModelData.gpsfix, ModelData.numSat);
 			LogAppend(line);
 			last_lat = ModelData.p_lat;
@@ -910,7 +909,7 @@ void Logging (void) {
 			sprintf(line, "RC0;%i.%03i;%i;%i;%i;%i;%i;%i;%i;%i", sec, micros, ModelData.radio[0], ModelData.radio[1], ModelData.radio[2], ModelData.radio[3], ModelData.radio[4], ModelData.radio[5], ModelData.radio[6], ModelData.radio[7]);
 			LogAppend(line);
 		}
-		if (last_voltage != ModelData.voltage || last_voltage != ModelData.voltage) {
+		if (last_voltage != ModelData.voltage || last_voltage != ModelData.voltage || last_ampere != ModelData.ampere) {
 			sprintf(line, "AV0;%i.%03i;%f;%f;%f;%f;%f;%f;%f;%f;%i;%i", sec, micros, ModelData.ampere, ModelData.voltage, ModelData.voltage_zell[0], ModelData.voltage_zell[1], ModelData.voltage_zell[2], ModelData.voltage_zell[3], ModelData.voltage_zell[4], ModelData.voltage_zell[5], ModelData.temperature[0], ModelData.temperature[1]);
 			LogAppend(line);
 			last_ampere = ModelData.ampere;
@@ -934,7 +933,7 @@ void Logging (void) {
 			LogAppend(line);
 			last_heartbeat = 1;
 		} if (last_heartbeat != 0 && ModelData.heartbeat == 0) {
-			sprintf(line, "HB0;%i.%03i;0", micros);
+			sprintf(line, "HB0;%i.%03i;0", sec, micros);
 			LogAppend(line);
 			last_heartbeat = 0;
 		}

@@ -16,6 +16,8 @@
 #include <string.h>
 #include <fcntl.h>
 #include <math.h>
+#define NO_SDL_GLEXT
+#include <GL/glew.h>
 #include <GL/gl.h>
 #include <SDL.h>
 #include <SDL_thread.h>
@@ -28,6 +30,8 @@
 #include <gl_draw.h>
 #include <draw.h>
 #include <main.h>
+
+
 
 #ifdef SDL2
 SDL_Window *MainWindow = NULL;
@@ -201,7 +205,6 @@ void object3d_load (Object3d *o3d, char *filename) {
 		glGenBuffersARB(1, &o3d->cordsID);
 		glBindBufferARB(GL_ARRAY_BUFFER_ARB, o3d->cordsID);
 		glBufferDataARB(GL_ARRAY_BUFFER_ARB, o3d->cords_num * sizeof(float) * 3, o3d->cords, GL_STATIC_DRAW_ARB);
-
 		glGenBuffersARB(1, &o3d->facesID);
 		glBindBufferARB(GL_ARRAY_BUFFER_ARB, o3d->facesID);
 		glBufferDataARB(GL_ARRAY_BUFFER_ARB, o3d->faces_num * sizeof(uint32_t) * 4, o3d->faces, GL_STATIC_DRAW_ARB);
@@ -1325,6 +1328,8 @@ void draw_char_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 }
 
 int gl_init (uint16_t w, uint16_t h) {
+	glewInit();
+
 	glClear( GL_COLOR_BUFFER_BIT );
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
@@ -1333,13 +1338,15 @@ int gl_init (uint16_t w, uint16_t h) {
 	gluPerspective(53.0, aspect, 0.001, 7.0);
 //	glOrtho(-1.0 * aspect, 1.0 * aspect, -1.0, 1.0, -5.5, 5.5);
 
-	glMatrixMode( GL_MODELVIEW );
+	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
 	glClearDepth(1.0);
-	glEnable( GL_DEPTH_TEST );
-	glDepthFunc( GL_LEQUAL );
-	glDepthMask( GL_TRUE );
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+	glDepthMask(GL_TRUE);
+
+	glEnable(GL_VERTEX_ARRAY);
 
 	// Transparenz-Aktivieren
 	glEnable(GL_BLEND);
