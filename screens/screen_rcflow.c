@@ -682,14 +682,14 @@ void rcflow_undo_save (void) {
 	int16_t n = 0;
 	char tmp_str[128];
 	printf("rcflow: undo_save \n");
-	sprintf(tmp_str, "mkdir -p %s/models", BASE_DIR);
+	sprintf(tmp_str, "mkdir -p %s/.multigcs/models", getenv("HOME"));
 	system(tmp_str);
 	for (n = MAX_UNDO - 1; n >= 0; n--) {
-		sprintf(tmp_str, "mv %s/models/rcflow_undo%i.bin %s/models/rcflow_undo%i.bin 2>/dev/null", BASE_DIR, n, BASE_DIR, n + 1);
+		sprintf(tmp_str, "mv %s/.multigcs/models/rcflow_undo%i.bin %s/.multigcs/models/rcflow_undo%i.bin 2>/dev/null", getenv("HOME"), n, getenv("HOME"), n + 1);
 		system(tmp_str);
 	}
         FILE *fr;
-	sprintf(tmp_str, "%s/models/rcflow_undo0.bin", BASE_DIR);
+	sprintf(tmp_str, "%s/.multigcs/models/rcflow_undo0.bin", getenv("HOME"));
         fr = fopen(tmp_str, "w");
 	if (fr != 0) {
 		fwrite(&RcPlugin[0], sizeof(RcFlowPlugin) * MAX_PLUGINS, 1, fr);
@@ -707,7 +707,7 @@ uint8_t rcflow_redo (char *name, float x, float y, int8_t button, float data) {
 	}
 	printf("rcflow: redo %i\n", undo);
         FILE *fr;
-	sprintf(tmp_str, "%s/models/rcflow_undo%i.bin", BASE_DIR, undo);
+	sprintf(tmp_str, "%s/.multigcs/models/rcflow_undo%i.bin", getenv("HOME"), undo);
         fr = fopen(tmp_str, "r");
 	if (fr != 0) {
 		fread(&RcPlugin[0], sizeof(RcFlowPlugin) * MAX_PLUGINS, 1, fr);
@@ -724,7 +724,7 @@ uint8_t rcflow_undo (char *name, float x, float y, int8_t button, float data) {
 	}
 	printf("rcflow: undo %i\n", undo);
         FILE *fr;
-	sprintf(tmp_str, "%s/models/rcflow_undo%i.bin", BASE_DIR, undo);
+	sprintf(tmp_str, "%s/.multigcs/models/rcflow_undo%i.bin", getenv("HOME"), undo);
         fr = fopen(tmp_str, "r");
 	if (fr != 0) {
 		fread(&RcPlugin[0], sizeof(RcFlowPlugin) * MAX_PLUGINS, 1, fr);
@@ -914,7 +914,7 @@ uint8_t rcflow_load_xml (char *name, float x, float y, int8_t button, float data
 uint8_t rcflow_load (char *name, float x, float y, int8_t button, float data) {
 	reset_buttons();
 	char tmp_str[128];
-	sprintf(tmp_str, "%s/models", BASE_DIR);
+	sprintf(tmp_str, "%s/.multigcs/models", getenv("HOME"));
 	filesystem_set_dir(tmp_str);
 	filesystem_set_callback(rcflow_load_xml);
 	filesystem_reset_filter();
@@ -943,9 +943,9 @@ uint8_t rcflow_save_xml (char *name, float x, float y, int8_t button, float data
 		strcat(name, ".xml");
 	}
 	strcpy(setup_name, name);
-	sprintf(tmp_str, "mkdir -p %s/models", BASE_DIR);
+	sprintf(tmp_str, "mkdir -p %s/.multigcs/models", getenv("HOME"));
 	system(tmp_str);
-	sprintf(tmp_str, "%s/models/%s", BASE_DIR, name);
+	sprintf(tmp_str, "%s/.multigcs/models/%s", getenv("HOME"), name);
         fr = fopen(tmp_str, "w");
 	if (fr != 0) {
 		fprintf(fr, "<rcflow>\n");
@@ -2717,7 +2717,7 @@ uint8_t rcflow_init (char *port, uint32_t baud) {
 		strcpy(RcPlugin[plugin].input[10].name, "ch11");
 		strcpy(RcPlugin[plugin].input[11].name, "ch12");
 		plugin++;
-		sprintf(tmp_str, "%s/models/rcflow.xml", BASE_DIR);
+		sprintf(tmp_str, "%s/.multigcs/models/rcflow.xml", getenv("HOME"));
 		rcflow_parseDoc(tmp_str);
 		rcflow_undo_save();
 	}

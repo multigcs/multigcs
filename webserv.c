@@ -686,7 +686,7 @@ void webserv_child_kml_index (int fd, char *servername) {
 	char new_path[400];
 	char tmp_str2[400];
 	char directory[400];
-	sprintf(directory, "%s/logs", BASE_DIR);
+	sprintf(directory, "%s/.multigcs/logs", getenv("HOME"));
 	if ((dir = opendir(directory)) != NULL) {
 		while ((dir_entry = readdir(dir)) != 0) {
 			if (dir_entry->d_name[1] != '.') {
@@ -1066,10 +1066,10 @@ void webserv_child (int fd) {
 
 		} else if (strncmp(buffer + 4,"/simple.dae", 11) == 0) {
 #ifdef SDLGL
-			sprintf(tmp_str, "%s/simple.dae", BASE_DIR);
+			sprintf(tmp_str, "%s/webserv/simple.dae", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/xml");
 #else
-			sprintf(tmp_str, "%s/plane.dae", BASE_DIR);
+			sprintf(tmp_str, "%s/webserv/plane.dae", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/xml");
 #endif
 		} else if (strncmp(buffer + 4,"/plane.dae", 10) == 0) {
@@ -1082,11 +1082,11 @@ void webserv_child (int fd) {
 				}
 				webserv_child_dump_file(fd, "/tmp/plane.dae", "text/xml");
 			} else {
-				sprintf(tmp_str, "%s/plane.dae", BASE_DIR);
+				sprintf(tmp_str, "%s/webserv/plane.dae", BASE_DIR);
 				webserv_child_dump_file(fd, tmp_str, "text/xml");
 			}
 #else
-			sprintf(tmp_str, "%s/plane.dae", BASE_DIR);
+			sprintf(tmp_str, "%s/webserv/plane.dae", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/xml");
 #endif
 
@@ -1108,7 +1108,7 @@ void webserv_child (int fd) {
 				char new_path[400];
 				char tmp_str2[400];
 				char directory[400];
-				sprintf(directory, "%s/logs", BASE_DIR);
+				sprintf(directory, "%s/.multigcs/logs", getenv("HOME"));
 				if ((dir = opendir(directory)) != NULL) {
 					while ((dir_entry = readdir(dir)) != 0) {
 						if (dir_entry->d_name[1] != '.') {
@@ -1145,7 +1145,7 @@ void webserv_child (int fd) {
 				write(fd, content, strlen(content));
 			} else {
 				char tmp_str2[400];
-				sprintf(tmp_str, "%s/logs/%s", BASE_DIR, buffer + 12);
+				sprintf(tmp_str, "%s/.multigcs/logs/%s", getenv("HOME"), buffer + 12);
 				sprintf(tmp_str2, "/tmp/%s.kml", buffer + 12);
 				logplay_export_kml(tmp_str, tmp_str2, 255);
 				webserv_child_dump_file(fd, tmp_str2, "text/xml");
@@ -1251,7 +1251,7 @@ void webserv_child (int fd) {
 		} else if (strncmp(buffer + 4,"/hudredraw.js", 13) == 0) {
 			webserv_child_hud_redraw(fd);
 		} else if (strncmp(buffer + 4,"/map.js", 7) == 0) {
-			sprintf(tmp_str, "%s/MAPS/map.js", BASE_DIR);
+			sprintf(tmp_str, "%s/webserv/map.js", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/html");
 		} else if (strncmp(buffer + 4,"/tile/", 6) == 0) {
 			int tx = 0;
@@ -1265,10 +1265,10 @@ void webserv_child (int fd) {
 				webserv_child_dump_file(fd, tmp_str, "image/png");
 			}
 		} else if (strncmp(buffer + 4,"/marker.png", 11) == 0) {
-			sprintf(tmp_str, "%s/MAPS/marker.png", BASE_DIR);
+			sprintf(tmp_str, "%s/webserv/marker.png", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "image/png");
 		} else if (strncmp(buffer + 4,"/img/marker.png", 15) == 0) {
-			sprintf(tmp_str, "%s/MAPS/marker.png", BASE_DIR);
+			sprintf(tmp_str, "%s/webserv/marker.png", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "image/png");
 		} else if (strncmp(buffer + 4,"/lonlat.txt", 11) == 0) {
 			webserv_child_show_lonlat(fd);

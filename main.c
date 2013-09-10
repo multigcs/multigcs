@@ -477,7 +477,7 @@ void setup_save (void) {
 	}
 //        printf("** saving file\n");
 	char filename[1024];
-	sprintf(filename, "%s/setup.cfg", BASE_DIR);
+	sprintf(filename, "%s/.multigcs/setup.cfg", getenv("HOME"));
         fr = fopen(filename, "w");
 	if (fr != 0) {
 	        fprintf(fr, "model_name   %s\n", ModelData.name);
@@ -569,7 +569,7 @@ void setup_load (void) {
 	strcpy(frsky_port, "/dev/ttyUSB30");;
 	frsky_baud = 9600;
 	char filename[1024];
-	sprintf(filename, "%s/setup.cfg", BASE_DIR);
+	sprintf(filename, "%s/.multigcs/setup.cfg", getenv("HOME"));
         fr = fopen (filename, "r");
 	if (fr != 0) {
 	        while(fgets(line, 100, fr) != NULL) {
@@ -1823,6 +1823,14 @@ int main ( int argc, char *argv[] ) {
 	UserData userData;
 #endif
 
+	char cmd_str[1024];
+	sprintf(cmd_str, "mkdir -p %s/.multigcs/MAPS/part/", getenv("HOME"));
+	system(cmd_str);
+	sprintf(cmd_str, "mkdir -p %s/.multigcs/logs/", getenv("HOME"));
+	system(cmd_str);
+	sprintf(cmd_str, "mkdir -p %s/.multigcs/models/", getenv("HOME"));
+	system(cmd_str);
+
 	if (argc >= 3 && strcmp(argv[1], "-c") == 0) {
 		strcpy(clientmode_server, argv[2]);
 		if (argc >= 4) {
@@ -1838,7 +1846,7 @@ int main ( int argc, char *argv[] ) {
 	localtime_r(&liczba_sekund, &strukt); 
 //	printf("DATE: %d.%d %d\n", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900); 
 
-	sprintf(tmp_name, "%s/MAPS/WMM2010.COF", BASE_DIR);
+	sprintf(tmp_name, "%s/WMM2010.COF", BASE_DIR);
 	init_declination(tmp_name, strukt.tm_year + 1900, strukt.tm_mon + 1, strukt.tm_mday);
 
 	uint16_t n = 0;

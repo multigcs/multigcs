@@ -144,9 +144,9 @@ static uint8_t model_save_xml (char *name, float x, float y, int8_t button, floa
 	int16_t n = 0;
         FILE *fr;
 	char tmp_str[128];
-	sprintf(tmp_str, "mkdir -p %s/models", BASE_DIR);
+	sprintf(tmp_str, "mkdir -p %s/.multigcs/models", getenv("HOME"));
 	system(tmp_str);
-	sprintf(tmp_str, "%s/models/%s", BASE_DIR, name);
+	sprintf(tmp_str, "%s/.multigcs/models/%s", getenv("HOME"), name);
         fr = fopen(tmp_str, "w");
 	if (fr != 0) {
 		fprintf(fr, "<rcflow>\n");
@@ -408,7 +408,7 @@ static uint8_t model_load_xml (char *name, float x, float y, int8_t button, floa
 static uint8_t model_load (char *name, float x, float y, int8_t button, float data) {
 	reset_buttons();
 	char tmp_str[128];
-	sprintf(tmp_str, "%s/models", BASE_DIR);
+	sprintf(tmp_str, "%s/.multigcs/models", getenv("HOME"));
 	filesystem_set_dir(tmp_str);
 	filesystem_set_callback(model_load_xml);
 	filesystem_reset_filter();
@@ -483,7 +483,7 @@ void screen_model (ESContext *esContext) {
 
 
 #ifdef SDLGL
-	sprintf(tmp_str, "%s/%s.obj", BASE_DIR, modeltypes[ModelData.modeltype]);
+	sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, modeltypes[ModelData.modeltype]);
 	if (file_exists(tmp_str) != 0) {
 		static uint8_t startup = 0;
 		static float rotate = 0.0;
@@ -528,7 +528,7 @@ void screen_model (ESContext *esContext) {
 
 
 #ifdef SDLGL
-	sprintf(tmp_str, "%s/%s.obj", BASE_DIR, teletypes[ModelData.teletype]);
+	sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, teletypes[ModelData.teletype]);
 	if (file_exists(tmp_str) != 0) {
 		static uint8_t startup = 0;
 		static float rotate = 0.0;

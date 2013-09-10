@@ -635,7 +635,7 @@ void logplay_draw_control (ESContext *esContext, float x1, float y1) {
 		int n2 = 0;
 		draw_button(esContext, "up", view_mode, "[^]", FONT_GREEN, x + w - 0.1, -0.8 + 0.05, 0.001, 0.06, ALIGN_CENTER, ALIGN_CENTER, logplay_cmd_play_updown, -1.0);
 		draw_button(esContext, "down", view_mode, "[v]", FONT_GREEN, x + w - 0.1, y - 0.05, 0.001, 0.06, ALIGN_CENTER, ALIGN_CENTER, logplay_cmd_play_updown, 1.0);
-		sprintf(directory, "%s/logs", BASE_DIR);
+		sprintf(directory, "%s/.multigcs/logs", getenv("HOME"));
 		if ((dir = opendir(directory)) != NULL) {
 			while ((dir_entry = readdir(dir)) != 0) {
 				if (dir_entry->d_name[1] != '.') {
@@ -678,7 +678,7 @@ void logplay_draw_control (ESContext *esContext, float x1, float y1) {
 
 void LogSave (void) {
 	char file[1024];
-	sprintf(file, "%s/logs/%i.log", BASE_DIR, log_startup_time);
+	sprintf(file, "%s/.multigcs/logs/%i.log", getenv("HOME"), log_startup_time);
 	if (Logdata != NULL) {
 		if (strlen(Logdata) > 200) {
 		        FILE *fr;

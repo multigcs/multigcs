@@ -295,7 +295,7 @@ void download_map_range (float from_lat, float from_lon, float to_lat, float to_
 		for (y_n = 0; y_n < tiles_y && mapthread_running == 1; y_n++) {
 			for (x_n = 0; x_n < tiles_x && mapthread_running == 1; x_n++) {
 				if (strcmp(mapnames[map_type][MAP_TYPE], "GOOGLE") == 0) {
-					sprintf(tile_name, "%s/MAPS/google_%i_%i_%i.png", BASE_DIR, zoom, tile_x + x_n, tile_y + y_n);
+					sprintf(tile_name, "%s/.multigcs/MAPS/google_%i_%i_%i.png", getenv("HOME"), zoom, tile_x + x_n, tile_y + y_n);
 					if (file_exists(tile_name) == 0) {
 						/* Google-Maps */
 						google_tile_long1 = tilex2long(tile_x + x_n, zoom);
@@ -303,18 +303,18 @@ void download_map_range (float from_lat, float from_lon, float to_lat, float to_
 						google_tile_long = google_tile_long1 + (google_tile_long2 - google_tile_long1) / 2;
 						google_tile_lat = tiley2lat(tile_y + y_n + 1, zoom);
 
-						sprintf(tile_name, "%s/MAPS/tobig_google_%i_%i_%i.png", BASE_DIR, zoom, tile_x + x_n, tile_y + y_n);
+						sprintf(tile_name, "%s/.multigcs/MAPS/tobig_google_%i_%i_%i.png", getenv("HOME"), zoom, tile_x + x_n, tile_y + y_n);
 						sprintf(tile_url, mapnames[map_type][MAP_URL], google_tile_lat, google_tile_long, zoom, 256, 356);
 						printf("map: %s -> %s\n", tile_url, tile_name);
 						file_download(tile_name, tile_url);
 						// Crop map-image for titles
-						sprintf(tmp_str2, mapnames[map_type][MAP_FILE], BASE_DIR, zoom, tile_x + x_n, tile_y + y_n);
+						sprintf(tmp_str2, mapnames[map_type][MAP_FILE], getenv("HOME"), zoom, tile_x + x_n, tile_y + y_n);
 						sprintf(tmp_str, "convert -crop 256x256+0+50 %s %s", tile_name, tmp_str2);
 						system(tmp_str);
 					}
 				} else {
 					if (zoom <= 18) {
-						sprintf(tile_name, mapnames[map_type][MAP_FILE], BASE_DIR, zoom, tile_x + x_n, tile_y + y_n);
+						sprintf(tile_name, mapnames[map_type][MAP_FILE], getenv("HOME"), zoom, tile_x + x_n, tile_y + y_n);
 						if (file_exists(tile_name) == 0) {
 							if (strcmp(mapnames[map_type][MAP_TYPE], "ZYX") == 0) {
 								sprintf(tile_url, mapnames[map_type][MAP_URL], zoom, tile_y + y_n, tile_x + x_n);
@@ -397,7 +397,7 @@ void get_maps (uint8_t mode) {
 						return;
 					}
 					if (strcmp(mapnames[map_type][MAP_TYPE], "GOOGLE") == 0) {
-						sprintf(tile_name, "%s/MAPS/google_%i_%i_%i.png", BASE_DIR, zoom, tile_x + x_n, tile_y + y_n);
+						sprintf(tile_name, "%s/.multigcs/MAPS/google_%i_%i_%i.png", getenv("HOME"), zoom, tile_x + x_n, tile_y + y_n);
 						if (file_exists(tile_name) == 0) {
 							sprintf(status_txt, "getting map-tile: %i_%i_%i.png (%i/%i)", zoom, tile_x + x_n, tile_y + y_n, tiles_num + 1, tiles_need);
 							printf("map: %s\n", status_txt);
@@ -406,18 +406,18 @@ void get_maps (uint8_t mode) {
 							google_tile_long2 = tilex2long(tile_x + x_n + 1, zoom);
 							google_tile_long = google_tile_long1 + (google_tile_long2 - google_tile_long1) / 2;
 							google_tile_lat = tiley2lat(tile_y + y_n + 1, zoom);
-							sprintf(tile_name, "%s/MAPS/tobig_google_%i_%i_%i.png", BASE_DIR, zoom, tile_x + x_n, tile_y + y_n);
+							sprintf(tile_name, "%s/.multigcs/MAPS/tobig_google_%i_%i_%i.png", getenv("HOME"), zoom, tile_x + x_n, tile_y + y_n);
 							sprintf(tile_url, mapnames[map_type][MAP_URL], google_tile_lat, google_tile_long, zoom, 256, 356);
 							printf("map: %s -> %s\n", tile_url, tile_name);
 							file_download(tile_name, tile_url);
 							// Crop map-image for titles
-							sprintf(tmp_str2, "%s/MAPS/google_%i_%i_%i.png", BASE_DIR, zoom, tile_x + x_n, tile_y + y_n);
+							sprintf(tmp_str2, "%s/.multigcs/MAPS/google_%i_%i_%i.png", getenv("HOME"), zoom, tile_x + x_n, tile_y + y_n);
 							sprintf(tmp_str, "convert -crop 256x256+0+50 %s %s", tile_name, tmp_str2);
 							system(tmp_str);
 						}
 					} else {
 						if (zoom <= 18) {
-							sprintf(tile_name, mapnames[map_type][MAP_FILE], BASE_DIR, zoom, tile_x + x_n, tile_y + y_n);
+							sprintf(tile_name, mapnames[map_type][MAP_FILE], getenv("HOME"), zoom, tile_x + x_n, tile_y + y_n);
 							if (file_exists(tile_name) == 0) {
 								sprintf(status_txt, "getting map-tile: %s", tile_name);
 								sys_message(status_txt);
@@ -438,7 +438,7 @@ void get_maps (uint8_t mode) {
 						}
 					}
 					if (omapnames[omap_type][MAP_FILE][0] != 0) {
-						sprintf(tile_name, omapnames[omap_type][MAP_FILE], BASE_DIR, zoom, tile_x + x_n, tile_y + y_n);
+						sprintf(tile_name, omapnames[omap_type][MAP_FILE], getenv("HOME"), zoom, tile_x + x_n, tile_y + y_n);
 						if (file_exists(tile_name) == 0) {
 							sprintf(tmp_str2, "%s_org.png", tile_name);
 							sprintf(tile_url, omapnames[omap_type][MAP_URL], zoom, tile_x + x_n, tile_y + y_n);
@@ -456,7 +456,7 @@ void get_maps (uint8_t mode) {
 		}
 	}
 	if (strcmp(mapnames[map_type][MAP_NAME], "GAPI") == 0 || strcmp(mapnames[map_type][MAP_TYPE], "GOOGLE") == 0) {
-		sprintf(tile_name, "%s/MAPS/google.png", BASE_DIR);
+		sprintf(tile_name, "%s/.multigcs/MAPS/google.png", getenv("HOME"));
 		sprintf(tile_url, "http://maps.gstatic.com/intl/de_ALL/mapfiles/poweredby.png");
 		if (file_exists(tile_name) == 0) {
 			file_download(tile_name, tile_url);
@@ -470,14 +470,14 @@ void get_srtm (void) {
 	int8_t lat_m = (int)lat;
 	int8_t lon_m = (int)lon;
 	sprintf(file, "N%02iE%03i.hgt", lat_m, lon_m);
-	sprintf(file2, "%s/MAPS/%s", BASE_DIR, file);
+	sprintf(file2, "%s/.multigcs/MAPS/%s", getenv("HOME"), file);
 	if (file_exists(file2) == 0) {
 		printf("map: getting srtm-data: %s\n", file);
 		char cmd_str[1024];
-		sprintf(cmd_str, "mkdir -p %s/MAPS/part/ ; wget -q -O %s/MAPS/part/%s.zip http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/Eurasia/%s.zip", BASE_DIR, BASE_DIR, file, file);
+		sprintf(cmd_str, "mkdir -p %s/.multigcs/MAPS/part/ ; wget -q -O %s/.multigcs/MAPS/part/%s.zip http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/Eurasia/%s.zip", getenv("HOME"), getenv("HOME"), file, file);
 		printf("map: %s\n", cmd_str);
 		system(cmd_str);
-		sprintf(cmd_str, "cd %s/MAPS/part/ ; unzip %s.zip ; rm -rf %s.zip ; mv %s ../", BASE_DIR, file, file, file);
+		sprintf(cmd_str, "cd %s/.multigcs/MAPS/part/ ; unzip %s.zip ; rm -rf %s.zip ; mv %s ../", getenv("HOME"), file, file, file);
 		system(cmd_str);
 	}
 }
@@ -1303,7 +1303,7 @@ void draw_notam (ESContext *esContext, float lat, float lon, uint8_t zoom) {
 	int min_lat = y2lat(esContext->height, lat, zoom);
 	int max_lon = x2long(esContext->width, lon, zoom);
 	char tmp_str[128];
-	sprintf(tmp_str, "%s/MAPS/Airspace.txt", BASE_DIR);
+	sprintf(tmp_str, "%s/.multigcs/MAPS/Airspace.txt", getenv("HOME"));
 	if (file_exists(tmp_str) == 0) {
 		char status_txt[2024];
 		sprintf(status_txt, "getting Airspace-Data: Airspace.txt");
@@ -1443,7 +1443,7 @@ void draw_waypoints_cup (ESContext *esContext, float lat, float lon, uint8_t zoo
 	int min_lon = x2long(0, lon, zoom);
 	int min_lat = y2lat(esContext->height, lat, zoom);
 	int max_lon = x2long(esContext->width, lon, zoom);
-	sprintf(tmp_str, "%s/MAPS/Waypoints_Germany.cup", BASE_DIR);
+	sprintf(tmp_str, "%s/.multigcs/MAPS/Waypoints_Germany.cup", getenv("HOME"));
 	if (file_exists(tmp_str) == 0) {
 		char status_txt[2024];
 		sprintf(status_txt, "getting Airspace-Data: %s", tmp_str);
@@ -1705,7 +1705,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	if (zoom <= 18 && _map_view != 4) {
 		for (y_n = -MAP_OVERLAY; y_n < tiles_y + MAP_OVERLAY; y_n++) {
 			for (x_n = -MAP_OVERLAY; x_n < tiles_x + MAP_OVERLAY; x_n++) {
-				sprintf(tile_name, mapnames[map_type][MAP_FILE], BASE_DIR, zoom, tile_x + x_n, tile_y + y_n);
+				sprintf(tile_name, mapnames[map_type][MAP_FILE], getenv("HOME"), zoom, tile_x + x_n, tile_y + y_n);
 				if (file_exists(tile_name) != 0) {
 					if (draw_tiles == 0) {
 						tile_name[0] = 0;
@@ -1723,7 +1723,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 					draw_image(esContext, x_n * 256, y_n * 256, 256, 256, tmp_str);
 				}
 				if (draw_tiles != 0 && omapnames[omap_type][MAP_FILE][0] != 0) {
-					sprintf(tile_name, omapnames[omap_type][MAP_FILE], BASE_DIR, zoom, tile_x + x_n, tile_y + y_n);
+					sprintf(tile_name, omapnames[omap_type][MAP_FILE], getenv("HOME"), zoom, tile_x + x_n, tile_y + y_n);
 					if (file_exists(tile_name) != 0) {
 						if (_map_view == 1) {
 							draw_image_srtm(esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, zoom), tilex2long(tile_x + x_n, zoom), tiley2lat(tile_y + y_n + 1, zoom), tilex2long(tile_x + x_n + 1, zoom), 0.0, 0.0, 0.0);
@@ -2026,7 +2026,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 
 
 	if (strcmp(mapnames[map_type][MAP_NAME], "GAPI") == 0 || strcmp(mapnames[map_type][MAP_TYPE], "GOOGLE") == 0) {
-		sprintf(tile_name, "%s/MAPS/google.png", BASE_DIR);
+		sprintf(tile_name, "%s/.multigcs/MAPS/google.png", getenv("HOME"));
 		if (file_exists(tile_name) != 0) {
 			draw_image(esContext, 1, screen_h - 30, 62, 29, tile_name);
 		}
