@@ -8,8 +8,8 @@ EXTRA_OBJECTS = gl_draw.o
 INCDIR = -I/usr/local/include
 LIBS = -L/usr/local/lib
 
-INCDIR += $(shell pkg-config --cflags sdl2) $(shell pkg-config --cflags SDL2_image) -framework OpenGL 
-LIBS += $(shell pkg-config --libs sdl2) $(shell pkg-config --libs SDL2_image) 
+INCDIR += $(shell pkg-config --cflags sdl2) $(shell pkg-config --cflags SDL2_image) 
+LIBS += $(shell pkg-config --libs sdl2) $(shell pkg-config --libs SDL2_image) -framework OpenGL 
 
 
 CFLAGS += -DOSX -DSDLGL -O3 -Wall -DSDL2
