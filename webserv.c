@@ -1273,7 +1273,7 @@ void webserv_child (int fd) {
 		} else if (strncmp(buffer + 4,"/lonlat.txt", 11) == 0) {
 			webserv_child_show_lonlat(fd);
 		} else {
-			sprintf(tmp_str, "%s/index.html", BASE_DIR);
+			sprintf(tmp_str, "%s/webserv/index.html", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/html");
 		}
 	}
