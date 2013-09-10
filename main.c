@@ -1781,7 +1781,7 @@ void ShutDown ( ESContext *esContext ) {
 	videodev_stop();
 #endif
 #endif
-	system("killall -9 espeak 2> /dev/nnull > /dev/nnull");
+	system("killall -9 espeak 2> /dev/null > /dev/null");
 
 	printf("texture-cache: clear\n");
 	int16_t n = 0;
