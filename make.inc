@@ -27,29 +27,21 @@ clean:
 install:
 	cp -a gcs /usr/bin/gl-gcs
 	cp -a gcs.sh /usr/bin/gcs
-
 	mkdir -p $(BASE_DIR)
 	cp -a WMM2010.COF $(BASE_DIR)/
 	cp -a map-services.xml $(BASE_DIR)/
 	cp -a clean-badmaps.sh $(BASE_DIR)/clean-badmaps.sh
-
 	mkdir -p $(BASE_DIR)/obj3d
-
 	mkdir -p $(BASE_DIR)/textures
 	cp -a textures/* $(BASE_DIR)/textures/
-
 	mkdir -p $(BASE_DIR)/fonts
 	cp -a fonts/* $(BASE_DIR)/fonts/
-
 	mkdir -p $(BASE_DIR)/rcflow_presets
 	cp -a rcflow_presets/* $(BASE_DIR)/rcflow_presets/
-
 	mkdir -p $(BASE_DIR)/scripts
 	cp -a screens/screen_tcl.tcl $(BASE_DIR)/scripts/screen_tcl.tcl
-
 	mkdir -p $(BASE_DIR)/mavlink
 	cp -a mavlink/ParameterMetaData*.xml $(BASE_DIR)/mavlink/
-
 	mkdir -p $(BASE_DIR)/webserv
 	cp -a textures/marker.png $(BASE_DIR)/webserv/marker.png
 	cp -a map.js $(BASE_DIR)/webserv/map.js
@@ -57,14 +49,41 @@ install:
 	cp -a blender-export.py $(BASE_DIR)/webserv/blender-export.py
 	cp -a plane.dae $(BASE_DIR)/webserv/plane.dae
 	cp -a simple.dae $(BASE_DIR)/webserv/simple.dae
-
 	chmod 0755 /usr/bin/gl-gcs
 	chmod 0755 /usr/bin/gcs
 	chmod 0755 $(BASE_DIR)/clean-badmaps.sh
 
 deb: gcs
 	rm -rf package/
-	echo "....."
+	mkdir -p package/usr/bin
+	cp -a gcs package/usr/bin/gl-gcs
+	cp -a gcs.sh package/usr/bin/gcs
+	mkdir -p package$(BASE_DIR)
+	cp -a WMM2010.COF package$(BASE_DIR)/
+	cp -a map-services.xml package$(BASE_DIR)/
+	cp -a clean-badmaps.sh package$(BASE_DIR)/clean-badmaps.sh
+	mkdir -p package$(BASE_DIR)/obj3d
+	mkdir -p package$(BASE_DIR)/textures
+	cp -a textures/* package$(BASE_DIR)/textures/
+	mkdir -p package$(BASE_DIR)/fonts
+	cp -a fonts/* package$(BASE_DIR)/fonts/
+	mkdir -p package$(BASE_DIR)/rcflow_presets
+	cp -a rcflow_presets/* package$(BASE_DIR)/rcflow_presets/
+	mkdir -p package$(BASE_DIR)/scripts
+	cp -a screens/screen_tcl.tcl package$(BASE_DIR)/scripts/screen_tcl.tcl
+	mkdir -p package$(BASE_DIR)/mavlink
+	cp -a mavlink/ParameterMetaData*.xml package$(BASE_DIR)/mavlink/
+	mkdir -p package$(BASE_DIR)/webserv
+	cp -a textures/marker.png package$(BASE_DIR)/webserv/marker.png
+	cp -a map.js package$(BASE_DIR)/webserv/map.js
+	cp -a webserv-index.html package$(BASE_DIR)/webserv/index.html
+	cp -a blender-export.py package$(BASE_DIR)/webserv/blender-export.py
+	cp -a plane.dae package$(BASE_DIR)/webserv/plane.dae
+	cp -a simple.dae package$(BASE_DIR)/webserv/simple.dae
+	chmod 0755 package/usr/bin/gl-gcs
+	chmod 0755 package/usr/bin/gcs
+	chmod 0755 package$(BASE_DIR)/clean-badmaps.sh
+	mkdir -p package/DEBIAN/
 	echo "Package: multigcs" > package/DEBIAN/control
 	echo "Source: multigcs" >> package/DEBIAN/control
 	echo "Version: $(DEB_VERSION)" >> package/DEBIAN/control
