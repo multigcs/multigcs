@@ -63,6 +63,8 @@ then
 	png2icns multigcs.icns multigcs.iconset/icon_*png 2>/dev/null
 fi
 
+cp multigcs.icns multigcs.app/Contents/
+
 #tiffutil -cathidpicheck multigcs.iconset/icon_32x32.png multigcs.iconset/icon_32x32@2x.png -out multigcs.tiff
 
 
