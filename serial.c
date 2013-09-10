@@ -29,6 +29,7 @@ int serial_close (int fd) {
 int serial_open (char *mdevice, uint32_t baud) {
 	int fd = -1;
 	int baudr = 9600;
+#ifndef OSX
 	switch(baud) {
 		case      50 : baudr = B50;
                    break;
@@ -80,6 +81,9 @@ int serial_open (char *mdevice, uint32_t baud) {
                    return(1);
                    break;
 	}
+#else
+	baudr = baud;
+#endif
 	printf("	Try to open Serial-Port: %s (%i)...", mdevice, baud);
 	if ((fd = open(mdevice, O_RDWR | O_NOCTTY )) >= 0) {
 		tcgetattr(fd, &newtio);
@@ -101,6 +105,7 @@ int serial_open (char *mdevice, uint32_t baud) {
 int serial_open9b (char *mdevice, uint32_t baud) {
 	int fd = -1;
 	int baudr = 9600;
+#ifndef OSX
 	switch(baud) {
 		case      50 : baudr = B50;
                    break;
@@ -152,6 +157,9 @@ int serial_open9b (char *mdevice, uint32_t baud) {
                    return(1);
                    break;
 	}
+#else
+	baudr = baud;
+#endif
 	printf("	Try to open Serial-Port: %s (%i)...", mdevice, baud);
 	if ((fd = open(mdevice, O_RDWR | O_NOCTTY )) >= 0) {
 		tcgetattr(fd, &newtio);
