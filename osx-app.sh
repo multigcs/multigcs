@@ -45,32 +45,33 @@ echo "## $device ##"
 
 mkdir -p /Volumes/multigcs/.background
 cp icon.png /Volumes/multigcs/.background/icon.png
-convert -modulate 10 icon.png /Volumes/multigcs/.background/multigcs.png
+cp dmg-background.png /Volumes/multigcs/.background/dmg-background.png
 ln -s /Applications /Volumes/multigcs/Applications
 
 
-title="multigcs"
-backgroundPictureName="multigcs.png"
 applicationName="multigcs"
-finalDMGName="multigcs"
+dmg_back="dmg-background.png"
+dmg_width=522
+dmg_height=361
+dmg_topleft_x=200
+dmg_topleft_y=200
+dmg_bottomright_x=`expr $dmg_topleft_x + $dmg_width`
+dmg_bottomright_y=`expr $dmg_topleft_y + $dmg_height`
 
 echo '
    tell application "Finder"
-     tell disk "'${title}'"
+     tell disk "'${applicationName}'"
            open
            set current view of container window to icon view
            set toolbar visible of container window to false
            set statusbar visible of container window to false
-           set the bounds of container window to {400, 100, 885, 430}
+           set the bounds of container window to {'${dmg_topleft_x}', '${dmg_topleft_y}', '${dmg_bottomright_x}', '${dmg_bottomright_y}'}
            set theViewOptions to the icon view options of container window
            set arrangement of theViewOptions to not arranged
-           set icon size of theViewOptions to 72
-           set position of item "'${applicationName}'" of container window to {100, 100}
-           set position of item "Applications" of container window to {375, 100}
-           set background picture of theViewOptions to file ".background:'${backgroundPictureName}'"
-           make new alias file at container window to POSIX file "/Applications" with properties {name:"Applications"}
-           set position of item "'${applicationName}'" of container window to {100, 100}
-           set position of item "Applications" of container window to {375, 100}
+           set icon size of theViewOptions to 104
+           set background picture of theViewOptions to file ".background:'${dmg_back}'"
+           set position of item "'${applicationName}'" of container window to {120, 180}
+           set position of item "'Applications'" of container window to {400, 180}
            close
            open
            update without registering applications
@@ -80,11 +81,11 @@ echo '
    end tell
 ' | osascript
 
-chmod -Rf go-w /Volumes/"${title}"
+chmod -Rf go-w /Volumes/"${applicationName}"
 sync
 sync
 hdiutil detach ${device}
-hdiutil convert "multigcs.temp.dmg" -format UDZO -imagekey zlib-level=9 -o "${finalDMGName}"
+hdiutil convert "multigcs.temp.dmg" -format UDZO -imagekey zlib-level=9 -o "${applicationName}"
 rm -f multigcs.temp.dmg
 
 
