@@ -36,6 +36,6 @@ done
 
 #hdiutil create -srcfolder "multigcs.app" -volname "multigcs" -fs HFS+ -fsargs "-c c=64,a=16,e=16" -format UDRW -size 15M multigcs.temp.dmg
 
-device=$(hdiutil attach -readwrite -noverify -noautoopen "pack.temp.dmg" | egrep '^/dev/' | sed 1q | awk '{print $1}')
+device=$(hdiutil attach -readwrite -noverify -noautoopen "multigcs.temp.dmg" | egrep '^/dev/' | sed 1q | awk '{print $1}')
 
 
