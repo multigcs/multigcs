@@ -4,11 +4,12 @@
 DEB_DEPENDS = tcl8.5, espeak, coreutils, bluez, imagemagick, libasound2,libasyncns0,libattr1,libc6,libcaca0,libcap2,libcomerr2,libcurl3,libdbus-1-3,libdirectfb-1.2-9,libdrm2,libegl1-mesa,libffi5,libflac8,libgbm1,libgcrypt11,libglapi-mesa,libgles2-mesa,libgnutls26,libgpg-error0,libgssapi-krb5-2,libice6,libidn11,libjson0,libk5crypto3,libkeyutils1,libkrb5-3,libkrb5support0,libldap-2.4-2,libncursesw5,libogg0,libp11-kit0,libpng12-0,libpulse0,librtmp0,libsasl2-2,libsdl1.2debian,libslang2,libsm6,libsndfile1,libssh2-1,libssl1.0.0,libtasn1-3,libtinfo5,libts-0.0-0,libudev0,libuuid1,libvorbis0a,libvorbisenc2,libwayland0,libwrap0,libx11-6,libx11-xcb1,libxau6,libxcb-dri2-0,libxcb-render0,libxcb-shape0,libxcb-xfixes0,libxcb1,libxdmcp6,libxext6,libxi6,libxtst6,zlib1g
 DEB_VERSION_NAME = glesX11
 EXTRA_OBJECTS = gles_draw.o
+BASE_DIR = /usr/share/multigcs
 
 
 INCDIR = 
 LIBS = 
-CFLAGS+=-DMESA -ggdb -O3 -Wall
+CFLAGS+=-DMESA -ggdb -O3 -Wall -DBASE_DIR="\"$(BASE_DIR)\""
 
 INCDIR+= $(shell pkg-config --cflags sdl) $(shell pkg-config --cflags SDL_image) $(shell pkg-config --cflags egl) $(shell pkg-config --cflags glesv2)
 LIBS+= $(shell pkg-config --libs sdl) $(shell pkg-config --libs SDL_image) $(shell pkg-config --libs egl) $(shell pkg-config --libs glesv2)
