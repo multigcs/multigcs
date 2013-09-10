@@ -24,3 +24,62 @@ COMMONHRD=
 
 include make.inc
 
+
+app: gcs
+	rm -rf multigcs.app/Contents/MacOS/
+	mkdir -p multigcs.app/Contents/MacOS/bin
+	mkdir -p multigcs.app/Contents/Resources
+	cp -a gcs.sh multigcs.app/Contents/MacOS/bin/gcs.sh
+	mkdir -p multigcs.app/Contents/MacOS/share
+	cp -a WMM2010.COF multigcs.app/Contents/MacOS/share/
+	cp -a map-services.xml multigcs.app/Contents/MacOS/share/
+	cp -a clean-badmaps.sh multigcs.app/Contents/MacOS/share/clean-badmaps.sh
+	mkdir -p multigcs.app/Contents/MacOS/share/obj3d
+	mkdir -p multigcs.app/Contents/MacOS/share/textures
+	cp -a textures/* multigcs.app/Contents/MacOS/share/textures/
+	mkdir -p multigcs.app/Contents/MacOS/share/fonts
+	cp -a fonts/* multigcs.app/Contents/MacOS/share/fonts/
+	mkdir -p multigcs.app/Contents/MacOS/share/rcflow_presets
+	cp -a rcflow_presets/* multigcs.app/Contents/MacOS/share/rcflow_presets/
+	mkdir -p multigcs.app/Contents/MacOS/share/scripts
+	cp -a screens/screen_tcl.tcl multigcs.app/Contents/MacOS/share/scripts/screen_tcl.tcl
+	mkdir -p multigcs.app/Contents/MacOS/share/mavlink
+	cp -a mavlink/ParameterMetaData*.xml multigcs.app/Contents/MacOS/share/mavlink/
+	mkdir -p multigcs.app/Contents/MacOS/share/webserv
+	cp -a textures/marker.png multigcs.app/Contents/MacOS/share/webserv/marker.png
+	cp -a map.js multigcs.app/Contents/MacOS/share/webserv/map.js
+	cp -a webserv-index.html multigcs.app/Contents/MacOS/share/webserv/index.html
+	cp -a blender-export.py multigcs.app/Contents/MacOS/share/webserv/blender-export.py
+	cp -a plane.dae multigcs.app/Contents/MacOS/share/webserv/plane.dae
+	cp -a simple.dae multigcs.app/Contents/MacOS/share/webserv/simple.dae
+
+	sh osx-app.sh
+
+	echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" > multigcs.app/Contents/Info.plist
+	echo "<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">" >> multigcs.app/Contents/Info.plist
+	echo "<plist version=\"1.0\">" >> multigcs.app/Contents/Info.plist
+	echo "<dict>" >> multigcs.app/Contents/Info.plist
+	echo "  <key>CFBundleGetInfoString</key>" >> multigcs.app/Contents/Info.plist
+	echo "  <string>multigcs</string>" >> multigcs.app/Contents/Info.plist
+	echo "  <key>CFBundleExecutable</key>" >> multigcs.app/Contents/Info.plist
+	echo "  <string>multigcs</string>" >> multigcs.app/Contents/Info.plist
+	echo "  <key>CFBundleIdentifier</key>" >> multigcs.app/Contents/Info.plist
+	echo "  <string>org.multixmedia.www</string>" >> multigcs.app/Contents/Info.plist
+	echo "  <key>CFBundleName</key>" >> multigcs.app/Contents/Info.plist
+	echo "  <string>multigcs</string>" >> multigcs.app/Contents/Info.plist
+	echo "  <key>CFBundleIconFile</key>" >> multigcs.app/Contents/Info.plist
+	echo "  <string>multigcs.icns</string>" >> multigcs.app/Contents/Info.plist
+	echo "  <key>CFBundleShortVersionString</key>" >> multigcs.app/Contents/Info.plist
+	echo "  <string>0.1</string>" >> multigcs.app/Contents/Info.plist
+	echo "  <key>CFBundleInfoDictionaryVersion</key>" >> multigcs.app/Contents/Info.plist
+	echo "  <string>6.0</string>" >> multigcs.app/Contents/Info.plist
+	echo "  <key>CFBundlePackageType</key>" >> multigcs.app/Contents/Info.plist
+	echo "  <string>APPL</string>" >> multigcs.app/Contents/Info.plist
+	echo "  <key>IFMajorVersion</key>" >> multigcs.app/Contents/Info.plist
+	echo "  <integer>0</integer>" >> multigcs.app/Contents/Info.plist
+	echo "  <key>IFMinorVersion</key>" >> multigcs.app/Contents/Info.plist
+	echo "  <integer>1</integer>" >> multigcs.app/Contents/Info.plist
+	echo "</dict>" >> multigcs.app/Contents/Info.plist
+	echo "</plist>" >> multigcs.app/Contents/Info.plist
+
+

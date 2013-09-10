@@ -191,6 +191,18 @@ void screen_system (ESContext *esContext) {
 		strcpy(mask, "---.---.---.---");
 		strcpy(dnsserver, "---.---.---.---");
 		strcpy(gateway, "---.---.---.---");
+
+#ifdef OSX
+		if((cmd = popen("LANG=C ifconfig en0 | grep \"inet \" | sed \"s|[a-zA-Z:]||g\"", "r")) != NULL) {
+			while(!feof(cmd)) {
+				if(fgets(buffer, 1024, cmd) != NULL) {
+					sscanf(buffer, "%s %s %s", (char *)&ip, (char *)&bcast, (char *)&mask);
+		//			printf("## %s, %s, %s ##\n", ip, bcast, mask);
+				}
+			}
+			pclose(cmd);
+		}
+#else
 		if((cmd = popen("LANG=C ifconfig eth0 | grep \"inet addr:\" | sed \"s|[a-zA-Z:]||g\"", "r")) != NULL) {
 			while(!feof(cmd)) {
 				if(fgets(buffer, 1024, cmd) != NULL) {
@@ -200,7 +212,6 @@ void screen_system (ESContext *esContext) {
 			}
 			pclose(cmd);
 		}
-
 		if((cmd = popen("grep \"^nameserver \" /etc/resolv.conf | cut -d\" \" -f2", "r")) != NULL) {
 			while(!feof(cmd)) {
 				if(fgets(dnsserver, 1024, cmd) != NULL) {
@@ -208,7 +219,6 @@ void screen_system (ESContext *esContext) {
 			}
 		}
 		pclose(cmd);
-
 		if((cmd = popen("route -n | grep \" 0.0.0.0.*255.255.255.0 \" | cut -d\" \" -f1", "r")) != NULL) {
 			while(!feof(cmd)) {
 				if(fgets(gateway, 1024, cmd) != NULL) {
@@ -216,6 +226,7 @@ void screen_system (ESContext *esContext) {
 			}
 		}
 		pclose(cmd);
+#endif
 
 		if((cmd = popen("hostname", "r")) != NULL) {
 			while(!feof(cmd)) {
