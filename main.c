@@ -16,6 +16,9 @@
 #include <termios.h>
 
 #include <png.h>
+#ifdef OSX
+#include <SDL_main.h>
+#endif
 #include <SDL.h>
 #include <SDL_thread.h>
 #include <SDL_events.h>
@@ -1378,7 +1381,7 @@ void Draw (ESContext *esContext) {
 	static uint16_t timer = 0;
 	timer++;
 #else
-	uint16_t timer = times(0);
+	uint16_t timer = time(0);
 #endif
 
 	if (ModelData.heartbeat != 0) {
