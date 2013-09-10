@@ -13,6 +13,32 @@ echo "cd \`dirname \$0\`" >> multigcs.app/Contents/MacOS/multigcs
 echo "./multigcs.bin" >> multigcs.app/Contents/MacOS/multigcs
 chmod 755 multigcs.app/Contents/MacOS/multigcs
 
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" > multigcs.app/Contents/Info.plist
+echo "<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">" >> multigcs.app/Contents/Info.plist
+echo "<plist version=\"1.0\">" >> multigcs.app/Contents/Info.plist
+echo "<dict>" >> multigcs.app/Contents/Info.plist
+echo "  <key>CFBundleGetInfoString</key>" >> multigcs.app/Contents/Info.plist
+echo "  <string>multigcs</string>" >> multigcs.app/Contents/Info.plist
+echo "  <key>CFBundleExecutable</key>" >> multigcs.app/Contents/Info.plist
+echo "  <string>multigcs</string>" >> multigcs.app/Contents/Info.plist
+echo "  <key>CFBundleIdentifier</key>" >> multigcs.app/Contents/Info.plist
+echo "  <string>org.multixmedia.www</string>" >> multigcs.app/Contents/Info.plist
+echo "  <key>CFBundleName</key>" >> multigcs.app/Contents/Info.plist
+echo "  <string>multigcs</string>" >> multigcs.app/Contents/Info.plist
+echo "  <key>CFBundleIconFile</key>" >> multigcs.app/Contents/Info.plist
+echo "  <string>multigcs.icns</string>" >> multigcs.app/Contents/Info.plist
+echo "  <key>CFBundleShortVersionString</key>" >> multigcs.app/Contents/Info.plist
+echo "  <string>0.1</string>" >> multigcs.app/Contents/Info.plist
+echo "  <key>CFBundleInfoDictionaryVersion</key>" >> multigcs.app/Contents/Info.plist
+echo "  <string>6.0</string>" >> multigcs.app/Contents/Info.plist
+echo "  <key>CFBundlePackageType</key>" >> multigcs.app/Contents/Info.plist
+echo "  <string>APPL</string>" >> multigcs.app/Contents/Info.plist
+echo "  <key>IFMajorVersion</key>" >> multigcs.app/Contents/Info.plist
+echo "  <integer>0</integer>" >> multigcs.app/Contents/Info.plist
+echo "  <key>IFMinorVersion</key>" >> multigcs.app/Contents/Info.plist
+echo "  <integer>1</integer>" >> multigcs.app/Contents/Info.plist
+echo "</dict>" >> multigcs.app/Contents/Info.plist
+echo "</plist>" >> multigcs.app/Contents/Info.plist
 
 otool -L multigcs.app/Contents/MacOS/multigcs.bin | awk '{print $1}' | grep "\.dylib$" | grep -v "^/usr/lib/" | grep -v "^/System/" | while read LIB
 do
@@ -25,12 +51,17 @@ do
 
 done
 
-mkdir -p multigcs.iconset/
-for size in 16x16 32x32 128x128 256x256 512x512
-do
-	convert -scale $size icon.png multigcs.iconset/icon_${size}.png 2>/dev/null
-	convert -scale $size icon.png multigcs.iconset/icon_${size}@2x.png 2>/dev/null
-done
+if ! test -e multigcs.icns
+then
+	rm -rf multigcs.iconset/
+	mkdir -p multigcs.iconset/
+	for size in 16x16 32x32 128x128 256x256 512x512
+	do
+		convert -scale $size! icon.png multigcs.iconset/icon_${size}.png 2>/dev/null
+	#	convert -scale $size! icon.png multigcs.iconset/icon_${size}@2x.png 2>/dev/null
+	done
+	png2icns multigcs.icns multigcs.iconset/icon_*png 2>/dev/null
+fi
 
 #tiffutil -cathidpicheck multigcs.iconset/icon_32x32.png multigcs.iconset/icon_32x32@2x.png -out multigcs.tiff
 
