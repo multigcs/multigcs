@@ -25,6 +25,8 @@
  * in this Software without prior written authorization of the copyright holder.
  */
 
+#ifndef OSX
+
 #include <SDL.h>
 #include <assert.h>
 #include <stdint.h>
@@ -639,3 +641,19 @@ int videodev_start (void) {
 	start_capturing();
 	return 0;
 }
+
+#else
+#include <SDL.h>
+
+int videodev_stop (void) {
+	return -1;
+}
+
+int videodev_start (void) {
+	return -1;
+}
+
+SDL_Surface *videodev_loop (void) {
+}
+
+#endif
