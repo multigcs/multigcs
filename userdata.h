@@ -6,6 +6,11 @@
 #include <GL/gl.h>
 #include <GL/glext.h>
 #endif
+#include <SDL.h>
+#include <SDL_thread.h>
+#include <SDL_events.h>
+#include <SDL_image.h>
+#include <SDL_opengl.h>
 #else
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
