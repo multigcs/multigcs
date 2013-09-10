@@ -20,6 +20,8 @@
 #define NO_SDL_GLEXT
 #include <GL/glew.h>
 #include <GL/gl.h>
+#else
+#include <OpenGL/glu.h>
 #endif
 #include <SDL.h>
 #include <SDL_thread.h>
