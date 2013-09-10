@@ -35,6 +35,8 @@ done
 #tiffutil -cathidpicheck multigcs.iconset/icon_32x32.png multigcs.iconset/icon_32x32@2x.png -out multigcs.tiff
 
 
+umount /Volumes/multigcs
+
 rm -rf multigcs.temp.dmg multigcs.dmg
 hdiutil create -srcfolder "multigcs.app" -volname "multigcs" -fs HFS+ -fsargs "-c c=64,a=16,e=16" -format UDRW -size 15M multigcs.temp.dmg
 
@@ -43,10 +45,10 @@ echo "## $device ##"
 
 mkdir -p /Volumes/multigcs/.background
 cp icon.png /Volumes/multigcs/.background/
-convert -modulate 10 /Volumes/multigcs/.background/multigcs-app-bg.png
+convert -modulate 10 /Volumes/multigcs/.background/multigcs.png
 
 title="multigcs"
-backgroundPictureName="multigcs-app-bg.png"
+backgroundPictureName="multigcs.png"
 applicationName="multigcs"
 finalDMGName="multigcs"
 
