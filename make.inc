@@ -1,6 +1,7 @@
 
 ARCH = `dpkg --print-architecture`
 DEB_VERSION = 0.9-`date +%s`
+BASE_DIR = /usr/share/multigcs
 
 
 INCDIR += -I./ -ICommon -Iscreens -Imavlink -Igps -Imwi21 -Isimplebgc -Ibrugi -Ijeti -Iopenpilot -Ifrsky
@@ -161,7 +162,7 @@ app: gcs
 
 %.o: %.c
 	@echo "$< -> $@"
-	@gcc -DBASE_DIR="\"$(BASE_DIR)\"" -c $(CFLAGS) $< -o $@ ${INCDIR}
+	@gcc -c $(CFLAGS) $< -o $@ ${INCDIR}
 
 gcs: ${COMMONSRC} ${COMMONHDR} ${GCS}
 	@echo "linking $@"
