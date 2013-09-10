@@ -44,11 +44,11 @@ device=$(hdiutil attach -readwrite -noverify -noautoopen "multigcs.temp.dmg" | e
 echo "## $device ##"
 
 mkdir -p /Volumes/multigcs/.background
-cp icon.png /Volumes/multigcs/.background/
+cp icon.png /Volumes/multigcs/.background/icon.png
 convert -modulate 10 icon.png /Volumes/multigcs/.background/multigcs.png
 
 title="multigcs"
-backgroundPictureName="multigcs.png"
+backgroundPictureName="icon.png"
 applicationName="multigcs"
 finalDMGName="multigcs"
 
