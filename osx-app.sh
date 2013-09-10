@@ -40,12 +40,15 @@ done
 device=$(hdiutil attach -readwrite -noverify -noautoopen "multigcs.temp.dmg" | egrep '^/dev/' | sed 1q | awk '{print $1}')
 echo "## $device ##"
 
-#mkdir -p .background
-#cp icon.png .background/
+mkdir -p /Volumes/multigcs/.background
+cp icon.png /Volumes/multigcs/.background/
+
 
 title="multigcs"
 backgroundPictureName="multigcs.png"
 applicationName="multigcs"
+finalDMGName="multigcs"
+
 echo '
    tell application "Finder"
      tell disk "'${title}'"
@@ -57,6 +60,10 @@ echo '
            set theViewOptions to the icon view options of container window
            set arrangement of theViewOptions to not arranged
            set icon size of theViewOptions to 72
+           set position of item "'${applicationName}'" of container window to {100, 100}
+           set position of item "Applications" of container window to {375, 100}
+           close
+           open
            set background picture of theViewOptions to file ".background:'${backgroundPictureName}'"
            make new alias file at container window to POSIX file "/Applications" with properties {name:"Applications"}
            set position of item "'${applicationName}'" of container window to {100, 100}
@@ -68,5 +75,12 @@ echo '
    end tell
 ' | osascript
 
+chmod -Rf go-w /Volumes/"${title}"
+sync
+sync
+hdiutil detach ${device}
+hdiutil convert "multigcs.temp.dmg" -format UDZO -imagekey zlib-level=9 -o "${finalDMGName}"
+rm -f multigcs.temp.dmg
 
+umount /Volumes/multigcs
 
