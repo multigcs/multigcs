@@ -732,7 +732,7 @@ void webserv_child_kml_index (int fd, char *servername) {
 	strcat(content, "  </Document>\n");
 	strcat(content, "</kml>\n");
 
-	sprintf(buffer, header_str, (int)strlen(content), "text/xml");
+	sprintf(buffer, header_str, (int)strlen(content), "application/vnd.google-earth.kml+xml");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
