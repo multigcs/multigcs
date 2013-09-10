@@ -119,6 +119,7 @@ static uint8_t model_device_change (char *name, float x, float y, int8_t button,
 	device_add_filter("ttyUSB");
 	device_add_filter("ttyACM");
 	device_add_filter("ttyS");
+	device_add_filter("cu.");
 	device_set_mode(view_mode);
 	return 0;
 }

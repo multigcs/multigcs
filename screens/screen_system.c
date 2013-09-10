@@ -90,6 +90,7 @@ uint8_t system_device_change (char *name, float x, float y, int8_t button, float
 	device_add_filter("ttyUSB");
 	device_add_filter("ttyACM");
 	device_add_filter("ttyS");
+	device_add_filter("cu.");
 	device_set_mode(VIEW_MODE_SYSTEM);
 	return 0;
 }
