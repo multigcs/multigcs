@@ -1,7 +1,6 @@
 
 ARCH = `dpkg --print-architecture`
 DEB_VERSION = 0.9-`date +%s`
-BASE_DIR = /usr/share/multigcs
 
 
 INCDIR += -I./ -ICommon -Iscreens -Imavlink -Igps -Imwi21 -Isimplebgc -Ibrugi -Ijeti -Iopenpilot -Ifrsky
