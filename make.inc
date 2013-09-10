@@ -8,7 +8,7 @@ INCDIR += -I./ -ICommon -Iscreens -Imavlink -Igps -Imwi21 -Isimplebgc -Ibrugi -I
 INCDIR += -I/usr/include/tcl8.5
 INCDIR += $(shell pkg-config --cflags libcurl) $(shell pkg-config --cflags libxml-2.0) $(shell pkg-config --cflags x11) $(shell pkg-config --cflags libpng)
 
-LIBS += -lm -ludev -ltcl8.5
+LIBS += -lm -ltcl8.5
 LIBS += $(shell pkg-config --libs libcurl) $(shell pkg-config --libs libxml-2.0) $(shell pkg-config --libs x11) $(shell pkg-config --libs libpng)
 
 
