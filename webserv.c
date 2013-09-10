@@ -1042,7 +1042,7 @@ void webserv_child (int fd) {
 			webserv_child_dump_blender(fd);
 
 		} else if (strncmp(buffer + 4,"/blender-export.py", 18) == 0) {
-			sprintf(tmp_str, "%s/blender-export.py", BASE_DIR);
+			sprintf(tmp_str, "%s/webserv/blender-export.py", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/plain");
 			blender_first_lat = ModelData.p_lat;
 			blender_first_long = ModelData.p_long;
