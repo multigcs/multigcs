@@ -15,6 +15,7 @@ dmg_bottomright_x=`expr $dmg_topleft_x + $dmg_width`
 dmg_bottomright_y=`expr $dmg_topleft_y + $dmg_height`
 
 
+mkdir -p ${applicationName}.app/Contents/Resources
 mkdir -p ${applicationName}.app/Contents/MacOS/lib
 cp "$EXE" ${applicationName}.app/Contents/MacOS/${applicationName}.bin
 
