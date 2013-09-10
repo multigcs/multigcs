@@ -25,4 +25,14 @@ do
 
 done
 
+mkdir -p multigcs.iconset/
+for size in 16x16 32x32 128x128 256x256 512x512
+do
+	convert -scale $size icon.png multigcs.iconset/icon_${size}.png
+	convert -scale $size icon.png multigcs.iconset/icon_${size}@2x.png
+done
+
+#tiffutil -cathidpicheck multigcs.iconset/icon_32x32.png multigcs.iconset/icon_32x32@2x.png -out multigcs.tiff
+
+hdiutil create -srcfolder "multigcs.app" -volname "multigcs" -fs HFS+ -fsargs "-c c=64,a=16,e=16" -format UDRW -size 15M multigcs.temp.dmg
 

@@ -53,8 +53,6 @@ app: gcs
 	cp -a plane.dae multigcs.app/Contents/MacOS/share/webserv/plane.dae
 	cp -a simple.dae multigcs.app/Contents/MacOS/share/webserv/simple.dae
 
-	sh osx-app.sh
-
 	echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" > multigcs.app/Contents/Info.plist
 	echo "<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">" >> multigcs.app/Contents/Info.plist
 	echo "<plist version=\"1.0\">" >> multigcs.app/Contents/Info.plist
@@ -81,5 +79,7 @@ app: gcs
 	echo "  <integer>1</integer>" >> multigcs.app/Contents/Info.plist
 	echo "</dict>" >> multigcs.app/Contents/Info.plist
 	echo "</plist>" >> multigcs.app/Contents/Info.plist
+
+	sh osx-app.sh
 
 
