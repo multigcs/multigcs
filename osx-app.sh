@@ -70,7 +70,8 @@ do
 		do
 			echo "	#### $LIB ####"
 			LIBNAME="`echo "$LIB" | sed "s|.*/||g"`"
-			test -e ${applicationName}.app/Contents/MacOS/lib/$LIBNAME || cp -v $LIB ${applicationName}.app/Contents/MacOS/lib
+			test -e ${applicationName}.app/Contents/MacOS/lib/$LIBNAME || cp -v $LIB ${applicationName}.app/Contents/MacOS/lib/$LIBNAME
+			chmod +w ${applicationName}.app/Contents/MacOS/lib/$LIBNAME
 			install_name_tool -change "$LIB" @executable_path/lib/$LIBNAME $LIBFILE
 		done
 	done
