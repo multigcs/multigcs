@@ -55,11 +55,32 @@ otool -L ${applicationName}.app/Contents/MacOS/${applicationName}.bin | awk '{pr
 do
 	echo "$LIB"
 	LIBNAME="`echo "$LIB" | sed "s|.*/||g"`"
-
 	cp $LIB ${applicationName}.app/Contents/MacOS/lib
-
 	install_name_tool -change "$LIB" @executable_path/lib/$LIBNAME ${applicationName}.app/Contents/MacOS/${applicationName}.bin
+done
 
+N=0
+while test "$N" -lt "100"
+do
+	echo $N
+	ls ${applicationName}.app/Contents/MacOS/lib/*.dylib | while read LIBFILE
+	do
+		otool -L $LIBFILE | awk '{print $1}' | grep "\.dylib$" | grep -v "^/usr/lib/" | grep -v "^/System/" | while read LIB
+		do
+			echo "$LIB"
+			LIBNAME="`echo "$LIB" | sed "s|.*/||g"`"
+			cp $LIB ${applicationName}.app/Contents/MacOS/lib
+			install_name_tool -change "$LIB" @executable_path/lib/$LIBNAME ${applicationName}.app/Contents/MacOS/${applicationName}.bin
+		done
+	done
+done
+
+otool -L ${applicationName}.app/Contents/MacOS/${applicationName}.bin | awk '{print $1}' | grep "\.dylib$" | grep -v "^/usr/lib/" | grep -v "^/System/" | while read LIB
+do
+	echo "$LIB"
+	LIBNAME="`echo "$LIB" | sed "s|.*/||g"`"
+	cp $LIB ${applicationName}.app/Contents/MacOS/lib
+	install_name_tool -change "$LIB" @executable_path/lib/$LIBNAME ${applicationName}.app/Contents/MacOS/${applicationName}.bin
 done
 
 if ! test -e ${applicationName}.icns

@@ -154,7 +154,7 @@ void screen_telemetry (ESContext *esContext) {
 #endif
 
 
-	draw_title(esContext, "Telemtry");
+	draw_title(esContext, "Telemetry");
 
 	draw_value_barmeter(esContext, -1.2, -0.8, -0.9, 0.0, "SPEED", "km/h", 0, 0.0, 200.0, 0.0, 0.0, ModelData.speed);
 	draw_value_barmeter(esContext, -0.7, -0.8, -0.4, 0.0, "ALT", "m", 0, -10.0, 999.0, 0.0, 0.0, ModelData.p_alt);
