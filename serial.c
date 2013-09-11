@@ -64,6 +64,7 @@ int serial_open (char *mdevice, uint32_t baud) {
                    break;
 		case  115200 : baudr = B115200;
                    break;
+#ifndef OSX
 		case  230400 : baudr = B230400;
                    break;
 		case  460800 : baudr = B460800;
@@ -76,6 +77,7 @@ int serial_open (char *mdevice, uint32_t baud) {
                    break;
 		case 1000000 : baudr = B1000000;
                    break;
+#endif
 		default      : printf("invalid baudrate\n");
                    return(1);
                    break;
@@ -136,6 +138,7 @@ int serial_open9b (char *mdevice, uint32_t baud) {
                    break;
 		case  115200 : baudr = B115200;
                    break;
+#ifndef OSX
 		case  230400 : baudr = B230400;
                    break;
 		case  460800 : baudr = B460800;
@@ -148,6 +151,7 @@ int serial_open9b (char *mdevice, uint32_t baud) {
                    break;
 		case 1000000 : baudr = B1000000;
                    break;
+#endif
 		default      : printf("invalid baudrate\n");
                    return(1);
                    break;
