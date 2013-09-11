@@ -520,6 +520,9 @@ void screen_mavlink_menu (ESContext *esContext) {
 	row2 = 0;
 	for (row = 0; row < 500 - 1; row++) {
 		if (strlen(MavLinkVars[row].name) > 3) {
+
+printf("## %s ##\n", MavLinkVars[row].name);
+
 			strcpy(tmp_str, MavLinkVars[row].name);
 			for (n = 0; n < strlen(tmp_str) ; n++) {
 				if (tmp_str[n] == '_') {
