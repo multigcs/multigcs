@@ -847,7 +847,11 @@ void Logging (void) {
 					logplay_starttime = tv.tv_sec;
 				}
 
+#ifndef OSX
 				logplay_msec = (tv.tv_sec - logplay_starttime) * 1000 + tv.tv_usec / 1000;
+#else
+				logplay_msec++;
+#endif
 
 			}
 		}
@@ -878,7 +882,11 @@ void Logging (void) {
 		struct timeval tv;
 		gettimeofday(&tv, NULL);  
 		uint32_t sec = tv.tv_sec;
+#ifndef OSX
 		uint32_t micros = tv.tv_usec / 1000;
+#else
+		uint32_t micros = 0;
+#endif
 
 		if (last_lat != ModelData.p_lat || last_lon != ModelData.p_long || (int)last_alt != (int)ModelData.p_alt || last_sats != ModelData.numSat) {
 			sprintf(line, "GPS;%i.%03i;%f;%f;%f;%f;%i;%i", sec, micros, ModelData.p_lat, ModelData.p_long, ModelData.p_alt, ModelData.speed, ModelData.gpsfix, ModelData.numSat);

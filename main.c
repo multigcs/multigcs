@@ -1381,11 +1381,11 @@ void Draw (ESContext *esContext) {
 	static uint16_t timer = 0;
 	timer++;
 #else
-#ifndef OSX
+#ifdef OSX
 	static uint16_t timer = 0;
 	timer++;
 #else
-	uint16_t timer = time(0);
+	uint16_t timer = times(0);
 #endif
 #endif
 
