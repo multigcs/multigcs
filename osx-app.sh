@@ -60,7 +60,7 @@ do
 done
 
 N=0
-while test "$N" -lt "3"
+while test "$N" -lt "10"
 do
 	echo $N
 	ls ${applicationName}.app/Contents/MacOS/lib/*.dylib | while read LIBFILE
@@ -68,15 +68,16 @@ do
 		echo "## $LIBFILE ##"
 		otool -L $LIBFILE | awk '{print $1}' | grep "\.dylib$" | grep -v "@executable_path" | grep "^/opt/" | grep -v "^/System/" | while read LIB
 		do
-			echo "#### $LIB ####"
+			echo "	#### $LIB ####"
 			LIBNAME="`echo "$LIB" | sed "s|.*/||g"`"
 			test -e ${applicationName}.app/Contents/MacOS/lib/$LIBNAME || cp -v $LIB ${applicationName}.app/Contents/MacOS/lib
-			install_name_tool -change "$LIB" @executable_path/lib/$LIBNAME ${applicationName}.app/Contents/MacOS/${applicationName}.bin
+			install_name_tool -change "$LIB" @executable_path/lib/$LIBNAME $LIBFILE
 		done
 	done
 	N="`expr $N + 1`"
 done
 
+exit 0
 
 if ! test -e ${applicationName}.icns
 then
