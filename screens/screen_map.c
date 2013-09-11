@@ -464,21 +464,103 @@ void get_maps (uint8_t mode) {
 	}
 }
 
+
+#include "unzip.h"
+
+#define UNZIP_OK 0
+#define UNZIP_ERROPEN 1
+#define UNZIP_ERRNOTFOUND 2
+#define UNZIP_ERRCREATE 3
+#define UNZIP_ERRREAD 4
+#define UNZIP_ERRWRITE 5
+
+int unzipFile( char* zipfile, char* filename, char* outfile ) {
+  unzFile uf = 0;
+  FILE* fout = 0;
+  int result, bytes;
+  char buffer[1024];
+
+  uf = unzOpen( zipfile );
+  if( !uf )
+  {
+    printf( "Can not open file '%s' !\n", zipfile );
+    return UNZIP_ERROPEN;
+  }
+
+  if( unzLocateFile( uf, filename, 0 ) != UNZ_OK )
+  {
+    printf( "Can not find '%s' inside the zipfile !\n", filename );
+    unzCloseCurrentFile(uf);
+    return UNZIP_ERRNOTFOUND;
+  }
+  
+  if( unzOpenCurrentFile( uf) != UNZ_OK )
+  {
+    printf( "Can not open '%s' inside the zipfile !\n", filename );
+    unzCloseCurrentFile(uf);
+    return UNZIP_ERRNOTFOUND;
+  }
+
+  fout = fopen( outfile,"wb" );
+  if( !fout )
+  {
+    printf( "Can not create file '%s' !\n", outfile );
+    unzCloseCurrentFile(uf);
+    return UNZIP_ERRCREATE;
+  }
+
+  result = UNZIP_OK;
+  for(;;)
+  {
+    bytes = unzReadCurrentFile( uf, buffer, sizeof(buffer) );
+    if( bytes == 0 ) break; /* finish */
+    if( bytes < 0 )
+    {
+      printf( "Error reading %s %d!\n", filename, bytes );
+      result = UNZIP_ERRREAD;
+      break;
+    }
+    else
+      if( fwrite( buffer, 1, bytes, fout )!= bytes )
+      {
+        printf("error in writing extracted file\n");
+        result = UNZIP_ERRWRITE;
+        break;
+      }
+  }
+  
+  fclose( fout );
+  unzCloseCurrentFile( uf );
+
+  return result;
+}
+
+
 void get_srtm (void) {
-	char file[256];
-	char file2[256];
+	char file[1024];
+	char file2[1024];
+	char source[1024];
+	char target[1024];
 	int8_t lat_m = (int)lat;
 	int8_t lon_m = (int)lon;
 	sprintf(file, "N%02iE%03i.hgt", lat_m, lon_m);
 	sprintf(file2, "%s/.multigcs/MAPS/%s", getenv("HOME"), file);
 	if (file_exists(file2) == 0) {
 		printf("map: getting srtm-data: %s\n", file);
-		char cmd_str[1024];
-		sprintf(cmd_str, "mkdir -p %s/.multigcs/MAPS/part/ ; wget -q -O %s/.multigcs/MAPS/part/%s.zip http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/Eurasia/%s.zip", getenv("HOME"), getenv("HOME"), file, file);
-		printf("map: %s\n", cmd_str);
-		system(cmd_str);
-		sprintf(cmd_str, "cd %s/.multigcs/MAPS/part/ ; unzip %s.zip ; rm -rf %s.zip ; mv %s ../", getenv("HOME"), file, file, file);
-		system(cmd_str);
+
+		sprintf(target, "mkdir -p %s/.multigcs/MAPS/part/", getenv("HOME"));
+		mkdir(target, 0755);
+
+		sprintf(source, "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/Eurasia/%s.zip", file);
+		sprintf(target, "%s/.multigcs/MAPS/part/%s.zip", getenv("HOME"), file);
+		file_download(target, source);
+
+		sprintf(source, "%s/.multigcs/MAPS/part/%s.zip", getenv("HOME"), file);
+		sprintf(target, "%s/.multigcs/MAPS/%s", getenv("HOME"), file);
+		unzipFile(source, file, target);
+
+//		unlink(source);
+
 	}
 }
 
