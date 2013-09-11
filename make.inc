@@ -6,10 +6,10 @@ BASE_DIR = /usr/share/multigcs
 
 INCDIR += -I./ -ICommon -Iscreens -Imavlink -Igps -Imwi21 -Isimplebgc -Ibrugi -Ijeti -Iopenpilot -Ifrsky -Iminizip
 INCDIR += -I/usr/include/tcl8.5
-INCDIR += $(shell pkg-config --cflags libcurl) $(shell pkg-config --cflags libxml-2.0) $(shell pkg-config --cflags x11) $(shell pkg-config --cflags libpng)
+INCDIR += $(shell pkg-config --cflags libcurl) $(shell pkg-config --cflags libxml-2.0) $(shell pkg-config --cflags x11) $(shell pkg-config --cflags libpng) $(shell pkg-config --cflags zlib)
 
 LIBS += -lm -ltcl8.5
-LIBS += $(shell pkg-config --libs libcurl) $(shell pkg-config --libs libxml-2.0) $(shell pkg-config --libs x11) $(shell pkg-config --libs libpng)
+LIBS += $(shell pkg-config --libs libcurl) $(shell pkg-config --libs libxml-2.0) $(shell pkg-config --libs x11) $(shell pkg-config --libs libpng) $(shell pkg-config --libs zlib)
 
 
 
