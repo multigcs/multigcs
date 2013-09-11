@@ -517,11 +517,12 @@ void screen_mavlink_menu (ESContext *esContext) {
 
 	draw_title(esContext, "MavLink-Parameter");
 
+printf("#########\n");
 	row2 = 0;
 	for (row = 0; row < 500 - 1; row++) {
 		if (strlen(MavLinkVars[row].name) > 3) {
 
-printf("## %s ##\n", MavLinkVars[row].name);
+printf("## %s (%i) ##\n", MavLinkVars[row].name, row);
 
 			strcpy(tmp_str, MavLinkVars[row].name);
 			for (n = 0; n < strlen(tmp_str) ; n++) {
