@@ -84,6 +84,18 @@ int serial_open (char *mdevice, uint32_t baud) {
 	}
 	printf("	Try to open Serial-Port: %s (%i)...", mdevice, baud);
 	if ((fd = open(mdevice, O_RDWR | O_NOCTTY )) >= 0) {
+
+#ifdef OSX
+		struct termios theTermios;
+		memset(&theTermios, 0, sizeof(struct termios));
+		cfmakeraw(&theTermios);
+		cfsetspeed(&theTermios, 115200);
+		theTermios.c_cflag = CREAD | CLOCAL;     // turn on READ
+		theTermios.c_cflag |= CS8;
+		theTermios.c_cc[VMIN] = 0;
+		theTermios.c_cc[VTIME] = 10;     // 1 sec timeout
+		ioctl(fd, TIOCSETA, &theTermios);
+#else
 		tcgetattr(fd, &newtio);
 		memset(&newtio, 0, sizeof(newtio));  /* clear the new struct */
 		newtio.c_cflag = baudr | CS8 | CLOCAL | CREAD;
@@ -93,6 +105,7 @@ int serial_open (char *mdevice, uint32_t baud) {
 		newtio.c_cc[VMIN] = 0;      /* block untill n bytes are received */
 		newtio.c_cc[VTIME] = 0;     /* block untill a timer expires (n * 100 mSec.) */
 		tcsetattr(fd, TCSANOW, &newtio);
+endif
 		printf("..Ok\n");
 		return fd;
 	}
