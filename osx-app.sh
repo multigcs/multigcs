@@ -78,8 +78,6 @@ do
 	N="`expr $N + 1`"
 done
 
-exit 0
-
 if ! test -e ${applicationName}.icns
 then
 	rm -rf ${applicationName}.iconset/
