@@ -74,6 +74,7 @@ do
 			install_name_tool -change "$LIB" @executable_path/lib/$LIBNAME ${applicationName}.app/Contents/MacOS/${applicationName}.bin
 		done
 	done
+	N="`expr $N + 1`"
 done
 
 otool -L ${applicationName}.app/Contents/MacOS/${applicationName}.bin | awk '{print $1}' | grep "\.dylib$" | grep -v "^/usr/lib/" | grep -v "^/System/" | while read LIB
