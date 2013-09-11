@@ -104,6 +104,7 @@ uint32_t nn = 0;
                     printf("%i (%x):%d\n", buf[0], res);
                 }
             }
+usleep(100000);
         }
 
 #else
