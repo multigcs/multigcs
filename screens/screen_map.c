@@ -536,7 +536,7 @@ void get_srtm (void) {
 	if (file_exists(file2) == 0) {
 		printf("map: getting srtm-data: %s\n", file);
 
-		sprintf(target, "mkdir -p %s/.multigcs/MAPS/part/", getenv("HOME"));
+		sprintf(target, "%s/.multigcs/MAPS/part/", getenv("HOME"));
 		mkdir(target, 0755);
 
 		sprintf(source, "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/Eurasia/%s.zip", file);
@@ -547,7 +547,7 @@ void get_srtm (void) {
 		sprintf(target, "%s/.multigcs/MAPS/%s", getenv("HOME"), file);
 		unzipFile(source, file, target);
 
-//		unlink(source);
+		unlink(source);
 
 	}
 }

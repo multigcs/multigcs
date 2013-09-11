@@ -1815,7 +1815,7 @@ void ShutDown ( ESContext *esContext ) {
 #endif
 
 	printf("tempfile: remove\n");
-	system("rm -rf /tmp/gcs.run");
+	unlink("/tmp/gcs.run");
 }
 
 
@@ -1828,13 +1828,13 @@ int main ( int argc, char *argv[] ) {
 	UserData userData;
 #endif
 
-	char cmd_str[1024];
-	sprintf(cmd_str, "mkdir -p %s/.multigcs/MAPS/part/", getenv("HOME"));
-	system(cmd_str);
-	sprintf(cmd_str, "mkdir -p %s/.multigcs/logs/", getenv("HOME"));
-	system(cmd_str);
-	sprintf(cmd_str, "mkdir -p %s/.multigcs/models/", getenv("HOME"));
-	system(cmd_str);
+	char dir[1024];
+	sprintf(dir, "%s/.multigcs/MAPS/part/", getenv("HOME"));
+	mkdir(dir, 0755);
+	sprintf(dir, "%s/.multigcs/logs/", getenv("HOME"));
+	mkdir(dir, 0755);
+	sprintf(dir, "%s/.multigcs/models/", getenv("HOME"));
+	mkdir(dir, 0755);
 
 	if (argc >= 3 && strcmp(argv[1], "-c") == 0) {
 		strcpy(clientmode_server, argv[2]);
