@@ -65,9 +65,10 @@ do
 	echo $N
 	ls ${applicationName}.app/Contents/MacOS/lib/*.dylib | while read LIBFILE
 	do
+		echo "## $LIBFILE ##"
 		otool -L $LIBFILE | awk '{print $1}' | grep "\.dylib$" | grep "^/opt/" | grep -v "^/System/" | while read LIB
 		do
-			echo "$LIB"
+			echo "#### $LIB ####"
 			LIBNAME="`echo "$LIB" | sed "s|.*/||g"`"
 			cp $LIB ${applicationName}.app/Contents/MacOS/lib
 			install_name_tool -change "$LIB" @executable_path/lib/$LIBNAME ${applicationName}.app/Contents/MacOS/${applicationName}.bin
