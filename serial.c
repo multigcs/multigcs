@@ -96,19 +96,6 @@ int serial_open (char *mdevice, uint32_t baud) {
 		theTermios.c_cc[VTIME] = 10;     // 1 sec timeout
 		ioctl(fd, TIOCSETA, &theTermios);
 
-char buf[1025];
-int res = 0;
-uint32_t nn = 0;
-        while(nn++ < 999999) {
-            while((res = read(fd,buf,1)) == 0) {
-                if(res > 0) {
-                    buf[res]=0;
-                    printf("%i (%x):%d\n", buf[0], res);
-                }
-            }
-usleep(100000);
-        }
-
 #else
 		tcgetattr(fd, &newtio);
 		memset(&newtio, 0, sizeof(newtio));  /* clear the new struct */
