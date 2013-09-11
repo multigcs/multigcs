@@ -1381,7 +1381,13 @@ void Draw (ESContext *esContext) {
 	static uint16_t timer = 0;
 	timer++;
 #else
-	uint16_t timer = time(0);
+//	uint16_t timer = time(0);
+
+	struct timeval tv;
+	gettimeofday(&tv, NULL);  
+
+	uint16_t timer = tv.tv_sec % 1000 + tv.tv_usec / 10000;
+	printf("%i %i\n", timer, times(0));
 #endif
 
 	if (ModelData.heartbeat != 0) {
