@@ -43,13 +43,13 @@ enum {
 
 typedef struct {
 	char name[200];
-	char image[200];
+	char image[512];
 	uint8_t modeltype;
 	uint8_t teletype;
-	char teledevice[20];
+	char teledevice[200];
 	uint32_t telebaud;
-	char telebtaddr[20];
-	char telebtpin[20];
+	char telebtaddr[200];
+	char telebtpin[200];
 	uint8_t mode;
 	uint8_t status;
 	uint8_t armed;
