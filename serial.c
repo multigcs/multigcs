@@ -94,7 +94,7 @@ int serial_open (char *mdevice, uint32_t baud) {
 		tcsetattr(fd, TCSANOW, &newtio);
 #else
 	printf("	Try to open Serial-Port: %s (%i)...", mdevice, baud);
-	if ((fd = open(mdevice, O_RDWR | O_NOCTTY )) >= 0) {
+	if ((fd = open(mdevice, O_RDWR | O_NOCTTY | O_NONBLOCK )) >= 0) {
 		struct termios theTermios;
 		memset(&theTermios, 0, sizeof(struct termios));
 		cfmakeraw(&theTermios);
@@ -102,6 +102,7 @@ int serial_open (char *mdevice, uint32_t baud) {
 		theTermios.c_cflag = CS8 | CREAD | CLOCAL;
 		theTermios.c_cc[VMIN] = 0;
 		theTermios.c_cc[VTIME] = 0;
+		ioctl(fd, TIOCEXCL);
 		ioctl(fd, TIOCSETA, &theTermios);
 #endif
 		printf("..Ok\n");
