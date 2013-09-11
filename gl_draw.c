@@ -924,9 +924,7 @@ void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2
 				TexCache[tex_num].atime = time(0);
 			} else {
 //				printf("could not load image: %s\n", file);
-				char del_cmd[1024];
-				sprintf(del_cmd, "rm \"%s\"", file);
-				system(del_cmd);
+				unlink(file);
 			}
 		}
 	}
@@ -1008,9 +1006,7 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 				TexCache[tex_num].atime = time(0);
 			} else {
 //				printf("could not load image: %s\n", file);
-				char del_cmd[200];
-				sprintf(del_cmd, "rm %s", file);
-				system(del_cmd);
+				unlink(file);
 			}
 		}
 	}
@@ -1234,9 +1230,7 @@ void draw_text_f3_fast (ESContext *esContext, float x1, float y1, float z1, floa
 
 			} else {
 				printf("could not load image: %s\n", file);
-				char del_cmd[200];
-				sprintf(del_cmd, "rm %s", file);
-				system(del_cmd);
+				unlink(file);
 			}    
 		}
 	}
@@ -1292,9 +1286,7 @@ void draw_char_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 				TexCache[tex_num].atime = time(0);
 			} else {
 				printf("could not load image: %s\n", file);
-				char del_cmd[200];
-				sprintf(del_cmd, "rm %s", file);
-				system(del_cmd);
+				unlink(file);
 			}
 		}
 	}
