@@ -741,7 +741,7 @@ void gcs_update (void) {
 		last_connection = time(0);
 		for (n = 0; n < res; n++) {
 			c = serial_buf[n];
-			printf("%i (%x)  \n", c, c);
+//			printf("%i (%x)  \n", c, c);
 			if(mavlink_parse_char(0, c, &msg, &status)) {
 				gcs_handleMessage(&msg);
 			}

@@ -28,6 +28,7 @@ int serial_close (int fd) {
 
 int serial_open (char *mdevice, uint32_t baud) {
 	int fd = -1;
+#ifndef OSX
 	int baudr = 9600;
 	switch(baud) {
 		case      50 : baudr = B50;
@@ -64,7 +65,6 @@ int serial_open (char *mdevice, uint32_t baud) {
                    break;
 		case  115200 : baudr = B115200;
                    break;
-#ifndef OSX
 		case  230400 : baudr = B230400;
                    break;
 		case  460800 : baudr = B460800;
@@ -77,26 +77,12 @@ int serial_open (char *mdevice, uint32_t baud) {
                    break;
 		case 1000000 : baudr = B1000000;
                    break;
-#endif
 		default      : printf("invalid baudrate\n");
                    return(1);
                    break;
 	}
 	printf("	Try to open Serial-Port: %s (%i)...", mdevice, baud);
 	if ((fd = open(mdevice, O_RDWR | O_NOCTTY )) >= 0) {
-
-#ifdef OSX
-		struct termios theTermios;
-		memset(&theTermios, 0, sizeof(struct termios));
-		cfmakeraw(&theTermios);
-		cfsetspeed(&theTermios, 115200);
-		theTermios.c_cflag = CREAD | CLOCAL;     // turn on READ
-		theTermios.c_cflag |= CS8;
-		theTermios.c_cc[VMIN] = 0;
-		theTermios.c_cc[VTIME] = 10;     // 1 sec timeout
-		ioctl(fd, TIOCSETA, &theTermios);
-
-#else
 		tcgetattr(fd, &newtio);
 		memset(&newtio, 0, sizeof(newtio));  /* clear the new struct */
 		newtio.c_cflag = baudr | CS8 | CLOCAL | CREAD;
@@ -106,6 +92,17 @@ int serial_open (char *mdevice, uint32_t baud) {
 		newtio.c_cc[VMIN] = 0;      /* block untill n bytes are received */
 		newtio.c_cc[VTIME] = 0;     /* block untill a timer expires (n * 100 mSec.) */
 		tcsetattr(fd, TCSANOW, &newtio);
+#else
+	printf("	Try to open Serial-Port: %s (%i)...", mdevice, baud);
+	if ((fd = open(mdevice, O_RDWR | O_NOCTTY )) >= 0) {
+		struct termios theTermios;
+		memset(&theTermios, 0, sizeof(struct termios));
+		cfmakeraw(&theTermios);
+		cfsetspeed(&theTermios, baud);
+		theTermios.c_cflag = CS8 | CREAD | CLOCAL;
+		theTermios.c_cc[VMIN] = 0;
+		theTermios.c_cc[VTIME] = 0;
+		ioctl(fd, TIOCSETA, &theTermios);
 #endif
 		printf("..Ok\n");
 		return fd;
