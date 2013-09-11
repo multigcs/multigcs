@@ -65,7 +65,7 @@ do
 	echo $N
 	ls ${applicationName}.app/Contents/MacOS/lib/*.dylib | while read LIBFILE
 	do
-		otool -L $LIBFILE | awk '{print $1}' | grep "\.dylib$" | grep -v "^/usr/lib/" | grep -v "^/System/" | while read LIB
+		otool -L $LIBFILE | awk '{print $1}' | grep "\.dylib$" | grep "^/opt/" | grep -v "^/System/" | while read LIB
 		do
 			echo "$LIB"
 			LIBNAME="`echo "$LIB" | sed "s|.*/||g"`"
