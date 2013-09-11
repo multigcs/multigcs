@@ -119,7 +119,7 @@ usleep(100000);
 		newtio.c_cc[VMIN] = 0;      /* block untill n bytes are received */
 		newtio.c_cc[VTIME] = 0;     /* block untill a timer expires (n * 100 mSec.) */
 		tcsetattr(fd, TCSANOW, &newtio);
-endif
+#endif
 		printf("..Ok\n");
 		return fd;
 	}
