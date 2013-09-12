@@ -14,7 +14,7 @@ dmg_topleft_y=200
 dmg_bottomright_x=`expr $dmg_topleft_x + $dmg_width`
 dmg_bottomright_y=`expr $dmg_topleft_y + $dmg_height`
 
-
+echo "## create structure ##"
 mkdir -p ${applicationName}.app/Contents/Resources
 mkdir -p ${applicationName}.app/Contents/MacOS/lib
 cp "$EXE" ${applicationName}.app/Contents/MacOS/${applicationName}.bin
@@ -51,14 +51,15 @@ echo "  <integer>1</integer>" >> ${applicationName}.app/Contents/Info.plist
 echo "</dict>" >> ${applicationName}.app/Contents/Info.plist
 echo "</plist>" >> ${applicationName}.app/Contents/Info.plist
 
+
+echo "## copy libs/depends ##"
 otool -L ${applicationName}.app/Contents/MacOS/${applicationName}.bin | awk '{print $1}' | grep "\.dylib$" | grep -v "^/usr/lib/" | grep -v "^/System/" | while read LIB
 do
-	echo "$LIB"
+#	echo "$LIB"
 	LIBNAME="`echo "$LIB" | sed "s|.*/||g"`"
 	cp $LIB ${applicationName}.app/Contents/MacOS/lib
 	install_name_tool -change "$LIB" @executable_path/lib/$LIBNAME ${applicationName}.app/Contents/MacOS/${applicationName}.bin
 done
-
 N=0
 while test "$N" -lt "30"
 do
@@ -78,6 +79,7 @@ do
 	N="`expr $N + 1`"
 done
 
+echo "## create/copy icons ##"
 if ! test -e ${applicationName}.icns
 then
 	rm -rf ${applicationName}.iconset/
@@ -89,25 +91,24 @@ then
 	done
 	png2icns ${applicationName}.icns ${applicationName}.iconset/icon_*png 2>/dev/null
 fi
+cp ${applicationName}.icns ${applicationName}.app/Contents/Resources/
 
-cp ${applicationName}.icns ${applicationName}.app/Contents/Resources
 
-#tiffutil -cathidpicheck ${applicationName}.iconset/icon_32x32.png ${applicationName}.iconset/icon_32x32@2x.png -out ${applicationName}.tiff
-
+echo "## creating dmg-image ##"
 umount /Volumes/${applicationName} 2>/dev/null
-
 rm -rf ${applicationName}.temp.dmg ${applicationName}.dmg
 hdiutil create -srcfolder "${applicationName}.app" -volname "${applicationName}" -fs HFS+ -fsargs "-c c=64,a=16,e=16" -format UDRW -size 25M ${applicationName}.temp.dmg
 
+echo "## mounting dmg-image ##"
 device=$(hdiutil attach -readwrite -noverify -noautoopen "${applicationName}.temp.dmg" | egrep '^/dev/' | sed 1q | awk '{print $1}')
-#echo "## $device ##"
 
+echo "## copy background-image ##"
 mkdir -p /Volumes/${applicationName}/.background
 cp icon.png /Volumes/${applicationName}/.background/icon.png
 cp dmg-background.png /Volumes/${applicationName}/.background/dmg-background.png
+
+echo "## configure dmg-image ##"
 ln -s /Applications /Volumes/${applicationName}/Applications
-
-
 echo '
    tell application "Finder"
      tell disk "'${applicationName}'"
@@ -131,7 +132,7 @@ echo '
    end tell
 ' | osascript
 
-#chmod -Rf go-w /Volumes/"${applicationName}"
+echo "## unmounting/compressing dmg-image ##"
 sync
 hdiutil detach ${device} 2>/dev/null
 hdiutil convert "${applicationName}.temp.dmg" -format UDZO -imagekey zlib-level=9 -o "${applicationName}"
