@@ -654,6 +654,7 @@ int videodev_start (void) {
 }
 
 SDL_Surface *videodev_loop (void) {
+	return NULL;
 }
 
 #endif
