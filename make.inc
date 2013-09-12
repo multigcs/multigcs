@@ -1,6 +1,6 @@
 
 ARCH = `dpkg --print-architecture`
-DEB_VERSION = 0.9-`date +%s`
+VERSION = 0.9-`date +%s`
 BASE_DIR = /usr/share/multigcs
 
 
@@ -89,7 +89,7 @@ deb: gcs
 	mkdir -p package/DEBIAN/
 	echo "Package: multigcs" > package/DEBIAN/control
 	echo "Source: multigcs" >> package/DEBIAN/control
-	echo "Version: $(DEB_VERSION)" >> package/DEBIAN/control
+	echo "Version: $(VERSION)" >> package/DEBIAN/control
 	echo "Architecture: $(ARCH)" >> package/DEBIAN/control
 	echo "Maintainer: Oliver Dippel <oliver@multixmedia.org>" >> package/DEBIAN/control
 	echo "Depends: $(DEB_DEPENDS)" >> package/DEBIAN/control
@@ -100,7 +100,7 @@ deb: gcs
 	chmod -R -s package/ -R
 	chmod 0755 package/DEBIAN/ -R
 	dpkg-deb --build package
-	mv package.deb multigcs-$(DEB_VERSION_NAME)_$(DEB_VERSION)_$(ARCH).deb
+	mv package.deb multigcs-$(VERSION_NAME)_$(VERSION)_$(ARCH).deb
 
 %.o: %.c
 	@echo "$< -> $@"
