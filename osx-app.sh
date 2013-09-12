@@ -60,9 +60,9 @@ do
 done
 
 N=0
-while test "$N" -lt "10"
+while test "$N" -lt "30"
 do
-	echo $N
+#	echo $N
 	ls ${applicationName}.app/Contents/MacOS/lib/*.dylib | while read LIBFILE
 	do
 #		echo "## $LIBFILE ##"
