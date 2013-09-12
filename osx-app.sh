@@ -98,7 +98,7 @@ cp ${applicationName}.icns ${applicationName}.app/Contents/Resources
 umount /Volumes/${applicationName}
 
 rm -rf ${applicationName}.temp.dmg ${applicationName}.dmg
-hdiutil create -srcfolder "${applicationName}.app" -volname "${applicationName}" -fs HFS+ -fsargs "-c c=64,a=16,e=16" -format UDRW -size 15M ${applicationName}.temp.dmg
+hdiutil create -srcfolder "${applicationName}.app" -volname "${applicationName}" -fs HFS+ -fsargs "-c c=64,a=16,e=16" -format UDRW -size 25M ${applicationName}.temp.dmg
 
 device=$(hdiutil attach -readwrite -noverify -noautoopen "${applicationName}.temp.dmg" | egrep '^/dev/' | sed 1q | awk '{print $1}')
 echo "## $device ##"
