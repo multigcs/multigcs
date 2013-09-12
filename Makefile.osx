@@ -60,6 +60,5 @@ app: gcs
 	cp -a plane.dae multigcs.app/Contents/MacOS/share/webserv/plane.dae
 	cp -a simple.dae multigcs.app/Contents/MacOS/share/webserv/simple.dae
 
-	sh osx-app.sh
-
+	sh osx-app.sh multigcs $(VERSION)
 

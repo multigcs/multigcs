@@ -5,7 +5,8 @@
 
 EXE="gcs"
 
-applicationName="multigcs"
+applicationName="$1"
+version="$2"
 dmg_back="dmg-background.png"
 dmg_width=522
 dmg_height=361
@@ -39,7 +40,7 @@ echo "  <string>${applicationName}</string>" >> ${applicationName}.app/Contents/
 echo "  <key>CFBundleIconFile</key>" >> ${applicationName}.app/Contents/Info.plist
 echo "  <string>${applicationName}.icns</string>" >> ${applicationName}.app/Contents/Info.plist
 echo "  <key>CFBundleShortVersionString</key>" >> ${applicationName}.app/Contents/Info.plist
-echo "  <string>0.1</string>" >> ${applicationName}.app/Contents/Info.plist
+echo "  <string>${version}</string>" >> ${applicationName}.app/Contents/Info.plist
 echo "  <key>CFBundleInfoDictionaryVersion</key>" >> ${applicationName}.app/Contents/Info.plist
 echo "  <string>6.0</string>" >> ${applicationName}.app/Contents/Info.plist
 echo "  <key>CFBundlePackageType</key>" >> ${applicationName}.app/Contents/Info.plist
@@ -138,7 +139,7 @@ echo '
 echo "## unmounting/compressing dmg-image ##"
 sync
 hdiutil detach ${device} 2>/dev/null
-hdiutil convert "${applicationName}.temp.dmg" -format UDZO -imagekey zlib-level=9 -o "${applicationName}"
+hdiutil convert "${applicationName}.temp.dmg" -format UDZO -imagekey zlib-level=9 -o "${applicationName}-${version}"
 rm -f ${applicationName}.temp.dmg
 
 
