@@ -104,11 +104,11 @@ deb: gcs
 
 %.o: %.c
 	@echo "$< -> $@"
-	$(COMP) -c $(CFLAGS) $< -o $@ ${INCDIR}
+	@$(COMP) -c $(CFLAGS) $< -o $@ ${INCDIR}
 
 gcs: ${COMMONSRC} ${COMMONHDR} ${GCS}
 	@echo "linking $@"
-	$(COMP) -DBASE_DIR="\"$(BASE_DIR)\"" $(CFLAGS) ${COMMONSRC} ${GCS} -o $@ ${INCDIR} ${LIBS}
+	@$(COMP) -DBASE_DIR="\"$(BASE_DIR)\"" $(CFLAGS) ${COMMONSRC} ${GCS} -o $@ ${INCDIR} ${LIBS}
 
 font-generator: font-generator.c
 	$(COMP) -DBASE_DIR="\"$(BASE_DIR)\"" -o font-generator font-generator.c -Wall -O -I/usr/include/SDL -lSDL_ttf -lpng

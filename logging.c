@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <sys/times.h>
+#include <sys/time.h>
 #include <math.h>
 #include <string.h>
 #include <fcntl.h>
@@ -85,7 +86,6 @@ void logplay_export_kml (char *logfile, char *kmlfile, uint8_t type) {
 		int gpsfix = 0;
 		int numSat = 0;
 		char line[512];
-		char filename[512];
 		uint32_t lsec = 0;
 		uint32_t lmicros = 0;
 		float last_p_long = 0.0;
@@ -101,8 +101,7 @@ void logplay_export_kml (char *logfile, char *kmlfile, uint8_t type) {
 		FILE *log_fr = NULL;
 		log_fr = fopen(logfile, "r");
 		if (log_fr != 0) {
-			sprintf(filename, kmlfile);
-		        fr = fopen(filename, "w");
+		        fr = fopen(kmlfile, "w");
 			if (fr != 0) {
 				fprintf(fr, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 //				fprintf(fr, "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
@@ -684,7 +683,7 @@ void LogSave (void) {
 		        FILE *fr;
 		        fr = fopen(file, "w");
 			if (fr != 0) {
-				fprintf(fr, Logdata);
+				fprintf(fr, "%s", Logdata);
 			        fclose(fr);
 			}
 		}

@@ -134,8 +134,7 @@ void draw_value_barchannels (ESContext *esContext, float x1, float y1, char *tit
 
 void draw_value_barmeter (ESContext *esContext, float x1, float y1, float x2, float y2, char *title, char *unit, uint8_t type, float min, float max, float warning, float critical, float value) {
 	char tmp_str[1024];
-	sprintf(tmp_str, title);
-	draw_text_f(esContext, x1, y1, 0.08, 0.08, FONT_WHITE, tmp_str);
+	draw_text_f(esContext, x1, y1, 0.08, 0.08, FONT_WHITE, title);
 	draw_value_bar(esContext, x1, y1 + 0.11, x2, y2 - 0.16, 0, min, max, warning, critical, value);
 	sprintf(tmp_str, "%0.1f%s", value, unit);
 	draw_text_f(esContext, (x1 + (x2 - x1) / 2) - strlen(tmp_str) * 0.1 / 2.0 * 0.6, y2 - 0.13, 0.08, 0.08, FONT_WHITE, tmp_str);

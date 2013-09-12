@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <sys/times.h>
+#include <sys/stat.h>
 #include <math.h>
 #include <string.h>
 #include <fcntl.h>

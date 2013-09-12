@@ -312,7 +312,7 @@ static uint8_t baseflightcli_load_cmix (char *name, float x, float y, int8_t but
 	char tmp_str[400];
 	sprintf(tmp_str, "cmix load %s\n", bf_mixer[(int)bf_set_value[nn].value].name);
 	write(baseflightcli_fd, tmp_str, strlen(tmp_str));
-	printf(tmp_str);
+//	printf(tmp_str);
 
 	sprintf(tmp_str, "dump\n");
 	write(baseflightcli_fd, tmp_str, strlen(tmp_str));
@@ -332,7 +332,7 @@ static uint8_t baseflightcli_mixer_set (char *name, float x, float y, int8_t but
 	char tmp_str[400];
 	sprintf(tmp_str, "mixer %s\n", bf_mixer[(int)bf_set_value[nn].value].name);
 	write(baseflightcli_fd, tmp_str, strlen(tmp_str));
-	printf(tmp_str);
+//	printf(tmp_str);
 	return 0;
 }
 
@@ -353,7 +353,7 @@ static uint8_t baseflightcli_aux_toggle (char *name, float x, float y, int8_t bu
 	char tmp_str[400];
 	sprintf(tmp_str, "aux %i %i\n", aux_n, new);
 	write(baseflightcli_fd, tmp_str, strlen(tmp_str));
-	printf(tmp_str);
+//	printf(tmp_str);
 	return 0;
 }
 
@@ -365,7 +365,7 @@ static uint8_t baseflightcli_defaults (char *name, float x, float y, int8_t butt
 	char tmp_str[400];
 	sprintf(tmp_str, "defaults\n");
 	write(baseflightcli_fd, tmp_str, strlen(tmp_str));
-	printf(tmp_str);
+//	printf(tmp_str);
 	baseflightcli_startup = 0;
 	return 0;
 }
@@ -560,7 +560,7 @@ uint8_t baseflightcli_toggle (char *name, float x, float y, int8_t button, float
 		}
 	}
 	write(baseflightcli_fd, tmp_str, strlen(tmp_str));
-	printf(tmp_str);
+//	printf(tmp_str);
 	return 0;
 }
 
@@ -632,7 +632,7 @@ uint8_t baseflightcli_slider_move (char *name, float x, float y, int8_t button, 
 		sprintf(tmp_str, "set %s=%f\n", bf_set_value[nn].name, bf_set_value[nn].value);
 	}
 	write(baseflightcli_fd, tmp_str, strlen(tmp_str));
-	printf(tmp_str);
+//	printf(tmp_str);
 	return 0;
 }
 

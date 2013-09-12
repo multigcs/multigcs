@@ -1427,7 +1427,7 @@ void draw_notam (ESContext *esContext, float lat, float lon, uint8_t zoom) {
 					if (strstr(line + 3, "MSL") > 0) {
 						dp_top = atof(line + 3);
 					} else {
-						dp_top = atof(line + 3) * 0,3048;
+						dp_top = atof(line + 3) * 0.3048;
 					}
 				} else if (strncmp(line, "DP ", 3) == 0) {
 					dp_lat_g = atoi(line + 3);
@@ -1767,8 +1767,8 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	if (zoom == 19) {
 		zoom = 18;
 //		glScalef( 2.0, 2.0, 1.0 );
-	} else {
-		zoom = zoom;
+//	} else {
+//		zoom = zoom;
 	}
 
 	// draw Titles
