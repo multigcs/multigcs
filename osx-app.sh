@@ -94,8 +94,7 @@ cp ${applicationName}.icns ${applicationName}.app/Contents/Resources
 
 #tiffutil -cathidpicheck ${applicationName}.iconset/icon_32x32.png ${applicationName}.iconset/icon_32x32@2x.png -out ${applicationName}.tiff
 
-
-umount /Volumes/${applicationName}
+umount /Volumes/${applicationName} 2>/dev/null
 
 rm -rf ${applicationName}.temp.dmg ${applicationName}.dmg
 hdiutil create -srcfolder "${applicationName}.app" -volname "${applicationName}" -fs HFS+ -fsargs "-c c=64,a=16,e=16" -format UDRW -size 25M ${applicationName}.temp.dmg
@@ -132,10 +131,9 @@ echo '
    end tell
 ' | osascript
 
-chmod -Rf go-w /Volumes/"${applicationName}"
+#chmod -Rf go-w /Volumes/"${applicationName}"
 sync
-sync
-hdiutil detach ${device}
+hdiutil detach ${device} 2>/dev/null
 hdiutil convert "${applicationName}.temp.dmg" -format UDZO -imagekey zlib-level=9 -o "${applicationName}"
 rm -f ${applicationName}.temp.dmg
 
