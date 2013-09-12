@@ -5,6 +5,7 @@ DEB_DEPENDS = tcl8.5, espeak, coreutils, bluez, imagemagick, libasound2,libasync
 DEB_VERSION_NAME = glesX11
 EXTRA_OBJECTS = gles_draw.o
 BASE_DIR = /usr/share/multigcs
+COMP = gcc
 
 
 INCDIR = 

@@ -11,6 +11,7 @@ DEB_DEPENDS = tcl8.5, espeak, coreutils, bluez, imagemagick, ia32-libs,lib32asou
 DEB_VERSION_NAME = sdl
 EXTRA_OBJECTS = gl_draw.o
 BASE_DIR = /usr/share/multigcs
+COMP = gcc
 
 INCDIR = -I/usr/local/include
 LIBS = -L/usr/local/lib

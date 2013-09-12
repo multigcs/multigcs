@@ -5,18 +5,18 @@ DEB_DEPENDS = tcl8.5, espeak, coreutils, bluez, imagemagick, ia32-libs,lib32asou
 DEB_VERSION_NAME = sdl
 EXTRA_OBJECTS = gl_draw.o
 BASE_DIR = /usr/share/multigcs
-COMP = gcc
+COMP = clang
+
+INCDIR = -I/usr/local/include
+LIBS = -L/usr/local/lib
+
+INCDIR += $(shell pkg-config --cflags sdl2) $(shell pkg-config --cflags SDL2_image) $(shell pkg-config --cflags gl) $(shell pkg-config --cflags glu) $(shell pkg-config --cflags glew)
+LIBS += $(shell pkg-config --libs sdl2) $(shell pkg-config --libs SDL2_image) $(shell pkg-config --libs gl) $(shell pkg-config --libs glu) $(shell pkg-config --libs glew)
 
 
-INCDIR = 
-LIBS = 
-CFLAGS += -DSDLGL -O3 -Wall -DBASE_DIR="\"$(BASE_DIR)\""
-#CFLAGS += -ggdb
+CFLAGS += -DSDLGL -O3 -Wall -DSDL2 -DBASE_DIR="\"$(BASE_DIR)\""
+CFLAGS += -ggdb
 #CFLAGS +=  -pg
-
-INCDIR += $(shell pkg-config --cflags sdl) $(shell pkg-config --cflags SDL_image) $(shell pkg-config --cflags gl) $(shell pkg-config --cflags glu)
-LIBS += $(shell pkg-config --libs sdl) $(shell pkg-config --libs SDL_image) $(shell pkg-config --libs gl) $(shell pkg-config --libs glu) $(shell pkg-config --libs glew)
-
 
 ## ldd gcs  | grep -v /opt | awk '{print $1}' | xargs -r -l dpkg -S  | cut -d":" -f1 | sort -u | tr  "\n" "," ##
 

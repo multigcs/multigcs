@@ -5,7 +5,7 @@ DEB_DEPENDS = tcl8.5, espeak, coreutils, imagemagick, bluez, input-utils, gcc-4.
 DEB_VERSION_NAME = rpi
 EXTRA_OBJECTS = gles_draw.o
 BASE_DIR = /usr/share/multigcs
-
+COMP = gcc
 
 INCDIR = -I$(SDKSTAGE)/opt/vc/include -I$(SDKSTAGE)/opt/vc/include/interface/vcos/pthreads
 LIBS = -lbcm_host -L$(SDKSTAGE)/opt/vc/lib
