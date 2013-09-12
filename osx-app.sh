@@ -65,10 +65,10 @@ do
 	echo $N
 	ls ${applicationName}.app/Contents/MacOS/lib/*.dylib | while read LIBFILE
 	do
-		echo "## $LIBFILE ##"
+#		echo "## $LIBFILE ##"
 		otool -L $LIBFILE | awk '{print $1}' | grep "\.dylib$" | grep -v "@executable_path" | grep "^/opt/" | grep -v "^/System/" | while read LIB
 		do
-			echo "	#### $LIB ####"
+#			echo "	#### $LIB ####"
 			LIBNAME="`echo "$LIB" | sed "s|.*/||g"`"
 			test -e ${applicationName}.app/Contents/MacOS/lib/$LIBNAME || cp -v $LIB ${applicationName}.app/Contents/MacOS/lib/$LIBNAME
 			chmod +w ${applicationName}.app/Contents/MacOS/lib/$LIBNAME
@@ -101,7 +101,7 @@ rm -rf ${applicationName}.temp.dmg ${applicationName}.dmg
 hdiutil create -srcfolder "${applicationName}.app" -volname "${applicationName}" -fs HFS+ -fsargs "-c c=64,a=16,e=16" -format UDRW -size 25M ${applicationName}.temp.dmg
 
 device=$(hdiutil attach -readwrite -noverify -noautoopen "${applicationName}.temp.dmg" | egrep '^/dev/' | sed 1q | awk '{print $1}')
-echo "## $device ##"
+#echo "## $device ##"
 
 mkdir -p /Volumes/${applicationName}/.background
 cp icon.png /Volumes/${applicationName}/.background/icon.png
