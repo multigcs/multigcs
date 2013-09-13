@@ -137,7 +137,8 @@ void screen_tracker (ESContext *esContext) {
 	}
 
 
-	draw_button(esContext, "tRELOAD", view_mode, "RELOAD", FONT_WHITE, -0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, tracker_cmd, 0.0);
+	draw_button(esContext, "tLOAD", view_mode, "LOAD", FONT_WHITE, -0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, tracker_cmd, 0.0);
 	draw_button(esContext, "tHOME", view_mode, "SET_HOME", FONT_WHITE, 0.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, tracker_cmd, 0.0);
+	draw_button(esContext, "tSAVE", view_mode, "SAVE", FONT_WHITE, 0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, tracker_cmd, 0.0);
 }
 
