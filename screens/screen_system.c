@@ -23,6 +23,7 @@
 #include <my_mavlink.h>
 #include <my_gps.h>
 #include <frsky.h>
+#include <tracker.h>
 #include <openpilot.h>
 #include <mwi21.h>
 #include <jeti.h>
@@ -52,6 +53,10 @@ uint8_t system_baud_set (char *name, float x, float y, int8_t button, float data
                 frsky_baud = atoi(name);
 		frsky_exit();
 		frsky_init(frsky_port, frsky_baud);
+        } else if (strcmp(baud_selected, "tracker") == 0) {
+                tracker_baud = atoi(name);
+		tracker_exit();
+		tracker_init(tracker_port, tracker_baud);
 	}
 	return 0;
 }
@@ -73,6 +78,8 @@ uint8_t system_device_set (char *name, float x, float y, int8_t button, float da
                 strncpy(jeti_port, name, 1023);
         } else if (strcmp(port_selected, "frsky") == 0) {
                 strncpy(frsky_port, name, 1023);
+        } else if (strcmp(port_selected, "tracker") == 0) {
+                strncpy(tracker_port, name, 1023);
 	}
 	if (strcmp(name, "UNSET") != 0) {
 		system_baud_change(port_selected, x, y, button, data);
@@ -261,86 +268,93 @@ void screen_system (ESContext *esContext) {
 	if (ModelData.teletype == TELETYPE_AUTOQUAD || ModelData.teletype == TELETYPE_ARDUPILOT || ModelData.teletype == TELETYPE_MEGAPIRATE_NG) {
 		if (mavlink_connection_status() != 0) {
 			sprintf(tmp_str, "MAVLINK %s (%i / %i)", telemetrie_port, telemetrie_baud, (uint8_t)(time(0)) - mavlink_connection_status());
-			draw_button(esContext, "mavlink_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
+			draw_button(esContext, "mavlink_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 		} else {
 			sprintf(tmp_str, "MAVLINK %s (%i)", telemetrie_port, telemetrie_baud);
-			draw_button(esContext, "mavlink_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
+			draw_button(esContext, "mavlink_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 		}
 	} else {
-		draw_button(esContext, "mavlink_connection_status", VIEW_MODE_SYSTEM, "MAVLINK", FONT_TRANS, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
+		draw_button(esContext, "mavlink_connection_status", VIEW_MODE_SYSTEM, "MAVLINK", FONT_TRANS, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 	}
 	if (ModelData.teletype == TELETYPE_MULTIWII_21 || ModelData.teletype == TELETYPE_BASEFLIGHT) {
 		if (mwi21_connection_status() != 0) {
 			sprintf(tmp_str, "MULTIWII21 %s (%i / %i)", telemetrie_port, telemetrie_baud, (uint8_t)(time(0)) - mwi21_connection_status());
-			draw_button(esContext, "mwi21_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
+			draw_button(esContext, "mwi21_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 		} else {
 			sprintf(tmp_str, "MULTIWII21 %s (%i)", telemetrie_port, telemetrie_baud);
-			draw_button(esContext, "mwi21_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
+			draw_button(esContext, "mwi21_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 		}
 	} else {
-		draw_button(esContext, "mwi21_connection_status", VIEW_MODE_SYSTEM, "MULTIWII21", FONT_TRANS, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
+		draw_button(esContext, "mwi21_connection_status", VIEW_MODE_SYSTEM, "MULTIWII21", FONT_TRANS, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 	}
 	if (ModelData.teletype == TELETYPE_BASEFLIGHT) {
 		if (mwi21_connection_status() != 0) {
 			sprintf(tmp_str, "BASEFLIGHT %s (%i / %i)", telemetrie_port, telemetrie_baud, (uint8_t)(time(0)) - mwi21_connection_status());
-			draw_button(esContext, "mwi21_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
+			draw_button(esContext, "mwi21_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 		} else {
 			sprintf(tmp_str, "BASEFLIGHT %s (%i)", telemetrie_port, telemetrie_baud);
-			draw_button(esContext, "mwi21_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
+			draw_button(esContext, "mwi21_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 		}
 	} else {
-		draw_button(esContext, "mwi21_connection_status", VIEW_MODE_SYSTEM, "BASEFLIGHT", FONT_TRANS, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
+		draw_button(esContext, "mwi21_connection_status", VIEW_MODE_SYSTEM, "BASEFLIGHT", FONT_TRANS, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 	}
 	if (ModelData.teletype == TELETYPE_OPENPILOT) {
 		if (openpilot_connection_status() != 0) {
 			sprintf(tmp_str, "OPENPILOT %s (%i / %i)", telemetrie_port, telemetrie_baud, (uint8_t)(time(0)) - openpilot_connection_status());
-			draw_button(esContext, "openpilot_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
+			draw_button(esContext, "openpilot_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 		} else {
 			sprintf(tmp_str, "OPENPILOT %s (%i)", telemetrie_port, telemetrie_baud);
-			draw_button(esContext, "openpilot_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
+			draw_button(esContext, "openpilot_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 		}
 	} else {
-		draw_button(esContext, "openpilot_connection_status", VIEW_MODE_SYSTEM, "OPENPILOT", FONT_TRANS, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
+		draw_button(esContext, "openpilot_connection_status", VIEW_MODE_SYSTEM, "OPENPILOT", FONT_TRANS, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 	}
 	if (ModelData.teletype == TELETYPE_GPS_NMEA) {
 		if (gps_connection_status() != 0) {
 			sprintf(tmp_str, "NMEA-GPS %s (%i / %i)", telemetrie_port, telemetrie_baud, (uint8_t)(time(0)) - gps_connection_status());
-			draw_button(esContext, "gps_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
+			draw_button(esContext, "gps_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 		} else {
 			sprintf(tmp_str, "NMEA-GPS %s (%i)", telemetrie_port, telemetrie_baud);
-			draw_button(esContext, "gps_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
+			draw_button(esContext, "gps_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 		}
 	} else {
-		draw_button(esContext, "gps_connection_status", VIEW_MODE_SYSTEM, "NMEA-GPS", FONT_TRANS, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
+		draw_button(esContext, "gps_connection_status", VIEW_MODE_SYSTEM, "NMEA-GPS", FONT_TRANS, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 	}
 
 	if (frsky_connection_status() != 0) {
 		sprintf(tmp_str, "FRSKY %s (%i / %i)", frsky_port, frsky_baud, (uint8_t)(time(0)) - frsky_connection_status());
-		draw_button(esContext, "frsky", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
+		draw_button(esContext, "frsky", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
 	} else {
 		sprintf(tmp_str, "FRSKY %s (%i)", frsky_port, frsky_baud);
-		draw_button(esContext, "frsky", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
+		draw_button(esContext, "frsky", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
 	}
 	if (jeti_connection_status() != 0) {
 		sprintf(tmp_str, "JETI %s (%i / %i)", jeti_port, jeti_baud, (uint8_t)(time(0)) - jeti_connection_status());
-		draw_button(esContext, "jeti", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
+		draw_button(esContext, "jeti", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
 	} else {
 		sprintf(tmp_str, "JETI %s (%i)", jeti_port, jeti_baud);
-		draw_button(esContext, "jeti", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
+		draw_button(esContext, "jeti", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
 	}
 	if (gcsgps_connection_status() != 0) {
 		sprintf(tmp_str, "GCS-GPS %s (%i / %i)", gcs_gps_port, gcs_gps_baud, (uint8_t)(time(0)) - gcsgps_connection_status());
-		draw_button(esContext, "gcs_gps", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
+		draw_button(esContext, "gcs_gps", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
 	} else {
 		sprintf(tmp_str, "GCS-GPS %s (%i)", gcs_gps_port, gcs_gps_baud);
-		draw_button(esContext, "gcs_gps", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
+		draw_button(esContext, "gcs_gps", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
 	}
 	if (rcflow_connection_status() != 0) {
 		sprintf(tmp_str, "RCFLOW %s (%i / %i)", rcflow_port, rcflow_baud, (uint8_t)(time(0)) - rcflow_connection_status());
-		draw_button(esContext, "rcflow", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
+		draw_button(esContext, "rcflow", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
 	} else {
 		sprintf(tmp_str, "RCFLOW %s (%i)", rcflow_port, rcflow_baud);
-		draw_button(esContext, "rcflow", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.35 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
+		draw_button(esContext, "rcflow", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
+	}
+	if (tracker_connection_status() != 0) {
+		sprintf(tmp_str, "TRACKER %s (%i / %i)", tracker_port, tracker_baud, (uint8_t)(time(0)) - tracker_connection_status());
+		draw_button(esContext, "tracker", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
+	} else {
+		sprintf(tmp_str, "TRACKER %s (%i)", tracker_port, tracker_baud);
+		draw_button(esContext, "tracker", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
 	}
 
 	draw_button(esContext, "_border_x", VIEW_MODE_SYSTEM, "X-Border", FONT_GREEN, 0.55, 0.4, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_x, 0.0);

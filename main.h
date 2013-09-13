@@ -59,6 +59,7 @@ enum {
 	VIEW_MODE_RCFLOW,
 	VIEW_MODE_VIDEOLIST,
 	VIEW_MODE_TCL,
+	VIEW_MODE_TRACKER,
 	VIEW_MODE_SYSTEM,
 	VIEW_MODE_LAST,
 	VIEW_MODE_WPEDIT,
@@ -133,6 +134,8 @@ extern char jeti_port[1024];
 extern uint32_t jeti_baud;
 extern char frsky_port[1024];
 extern uint32_t frsky_baud;
+extern char tracker_port[1024];
+extern uint32_t tracker_baud;
 extern uint8_t message;
 extern char message_txt[1024];
 extern WayPoint WayPoints[MAX_WAYPOINTS];

@@ -1,0 +1,207 @@
+
+#include <stdint.h>
+#include <stdio.h>
+#include <math.h>
+#include <sys/stat.h>
+#include <sys/signal.h>
+#include <sys/types.h>
+#include <sys/time.h>
+#include <sys/times.h>
+#include <sys/ioctl.h>
+#include <fcntl.h>
+#include <termios.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <time.h>
+#include<arpa/inet.h>
+#include<sys/socket.h>
+#include <userdata.h>
+#include <serial.h>
+#include <model.h>
+#include <main.h>
+#include <tracker.h>
+#include <SDL.h>
+
+extern void get_dir (float lat_from, float lon_from, float alt_from, float lat_to, float lon_to, float alt_to, float *angle, float *dist1, float *angle_up, float *dist2);
+
+static SDL_Thread *sdl_thread_serial_tracker = NULL;
+static uint8_t last = 0;
+static uint8_t new = 0;
+static uint8_t mode = 0;
+static int serial_fd_tracker = -1;
+static uint8_t tracker_thread_running = 0;
+static uint32_t last_connection = 1;
+float tracker_lat = 0.0;
+float tracker_long = 0.0;
+float tracker_alt = 0.0;
+float tracker_pan_dir = 0.0;
+float tracker_pan_dir_trimmed = 0.0;
+float tracker_pitch_dir = 0.0;
+float tracker_pitch_dir_trimmed = 0.0;
+
+Tracker TrackerData[TRACKER_MAX];
+
+uint8_t tracker_connection_status (void) {
+	if (serial_fd_tracker == -1) {
+		return 0;
+	}
+	return last_connection;
+}
+
+void tracker_set_home (void) {
+	tracker_lat = ModelData.p_lat;
+	tracker_long = ModelData.p_long;
+	tracker_alt = ModelData.p_alt;
+}
+
+int thread_serial_tracker (void *unused) {
+	uint8_t nn = 0;
+	uint8_t read_buffer[201];
+	uint8_t read_num = 0;
+	while (gui_running == 1 && tracker_thread_running == 1) {
+		if (serial_fd_tracker != -1) {
+			while ((read_num = read(serial_fd_tracker, read_buffer, 200)) > 0) {
+				for (nn = 0; nn < read_num; nn++) {
+					new = read_buffer[nn];
+					printf("##: %i (0x%x)\n", new, new);
+					last = new;
+				}
+			}
+		}
+
+		if (tracker_lat != 0.0 && tracker_long != 0.0) {
+			float angle = 0.0;
+			float dist1 = 0.0;
+			float angle_up = 0.0;
+			float dist2 = 0.0;
+			get_dir(tracker_lat, tracker_long, tracker_alt, ModelData.p_lat, ModelData.p_long, ModelData.p_alt, &angle, &dist1, &angle_up, &dist2);
+			float direction = angle - TrackerData[TRACKER_PAN_TRIM].value;
+			if (direction >= 180.0) {
+				direction -= 360.0;
+			} else if (direction <= -180.0) {
+				direction += 360.0;
+			}
+			tracker_pan_dir = angle;
+			if (tracker_pan_dir >= 180.0) {
+				tracker_pan_dir -= 360.0;
+			} else if (tracker_pan_dir <= -180.0) {
+				tracker_pan_dir += 360.0;
+			}
+			float direction_up = angle_up - TrackerData[TRACKER_PITCH_TRIM].value;
+			if (direction_up >= 180.0) {
+				direction_up -= 360.0;
+			} else if (direction_up <= -180.0) {
+				direction_up += 360.0;
+			}
+			tracker_pitch_dir = angle_up;
+			if (tracker_pitch_dir >= 180.0) {
+				tracker_pitch_dir -= 360.0;
+			} else if (tracker_pitch_dir <= -180.0) {
+				tracker_pitch_dir += 360.0;
+			}
+			if (direction > TrackerData[TRACKER_PAN_ANGLE_MAX].value) {
+				direction = TrackerData[TRACKER_PAN_ANGLE_MAX].value;
+			} else if (direction < TrackerData[TRACKER_PAN_ANGLE_MIN].value) {
+				direction = TrackerData[TRACKER_PAN_ANGLE_MIN].value;
+			}
+			tracker_pan_dir_trimmed = direction;
+			if (direction_up > TrackerData[TRACKER_PITCH_ANGLE_MAX].value) {
+				direction_up = TrackerData[TRACKER_PITCH_ANGLE_MAX].value;
+			} else if (direction_up < TrackerData[TRACKER_PITCH_ANGLE_MIN].value) {
+				direction_up = TrackerData[TRACKER_PITCH_ANGLE_MIN].value;
+			}
+			tracker_pitch_dir_trimmed = direction_up;
+
+//			float pulse_pan = (tracker_pan_dir_trimmed - TrackerData[TRACKER_PAN_ANGLE_MIN].value) * (TrackerData[TRACKER_PAN_PULSE_MAX].value - TrackerData[TRACKER_PAN_PULSE_MIN].value) / (TrackerData[TRACKER_PAN_ANGLE_MAX].value - TrackerData[TRACKER_PAN_ANGLE_MIN].value) + TrackerData[TRACKER_PAN_PULSE_MIN].value;
+//			float pulse_pitch = (tracker_pitch_dir_trimmed - TrackerData[TRACKER_PITCH_ANGLE_MIN].value) * (TrackerData[TRACKER_PITCH_PULSE_MAX].value - TrackerData[TRACKER_PITCH_PULSE_MIN].value) / (TrackerData[TRACKER_PITCH_ANGLE_MAX].value - TrackerData[TRACKER_PITCH_ANGLE_MIN].value) + TrackerData[TRACKER_PITCH_PULSE_MIN].value;
+//			printf("%fGrad %fGrad - %0.3fkm %0.0fm - %i %i\n", direction, direction_up, dist1, dist2, (int)pulse_pan, (int)pulse_pitch);
+
+		} else {
+			tracker_set_home();
+		}
+
+
+		usleep(100000);
+	}
+	printf("tracker: exit thread\n");
+	return 0;
+}
+
+uint8_t tracker_mode_get (void) {
+	return mode;
+}
+
+uint8_t tracker_init (char *port, uint32_t baud) {
+	static uint8_t startup = 0;
+	printf("tracker: init\n");
+	tracker_thread_running = 1;
+	if (startup == 0) {
+		startup = 1;
+		TrackerData[TRACKER_PAN_ANGLE_MIN].min = -180.0;
+		TrackerData[TRACKER_PAN_ANGLE_MIN].max = 180.0;
+		TrackerData[TRACKER_PAN_ANGLE_MIN].value = -90.0;
+		strcpy(TrackerData[TRACKER_PAN_ANGLE_MIN].name, "PAN_ANGLE_MIN");
+		TrackerData[TRACKER_PAN_ANGLE_MAX].min = -180.0;
+		TrackerData[TRACKER_PAN_ANGLE_MAX].max = 180.0;
+		TrackerData[TRACKER_PAN_ANGLE_MAX].value = 90.0;
+		strcpy(TrackerData[TRACKER_PAN_ANGLE_MAX].name, "PAN_ANGLE_MAX");
+		TrackerData[TRACKER_PAN_PULSE_MIN].min = 900.0;
+		TrackerData[TRACKER_PAN_PULSE_MIN].max = 2100.0;
+		TrackerData[TRACKER_PAN_PULSE_MIN].value = 1000.0;
+		strcpy(TrackerData[TRACKER_PAN_PULSE_MIN].name, "PAN_PULSE_MIN");
+		TrackerData[TRACKER_PAN_PULSE_MAX].min = 900.0;
+		TrackerData[TRACKER_PAN_PULSE_MAX].max = 2100.0;
+		TrackerData[TRACKER_PAN_PULSE_MAX].value = 2000.0;
+		strcpy(TrackerData[TRACKER_PAN_PULSE_MAX].name, "PAN_PULSE_MAX");
+		TrackerData[TRACKER_PAN_TRIM].min = -180.0;
+		TrackerData[TRACKER_PAN_TRIM].max = 180.0;
+		TrackerData[TRACKER_PAN_TRIM].value = 0.0;
+		strcpy(TrackerData[TRACKER_PAN_TRIM].name, "PAN_TRIM");
+		TrackerData[TRACKER_PITCH_ANGLE_MIN].min = -180.0;
+		TrackerData[TRACKER_PITCH_ANGLE_MIN].max = 180.0;
+		TrackerData[TRACKER_PITCH_ANGLE_MIN].value = -90.0;
+		strcpy(TrackerData[TRACKER_PITCH_ANGLE_MIN].name, "PITCH_ANGLE_MIN");
+		TrackerData[TRACKER_PITCH_ANGLE_MAX].min = -180.0;
+		TrackerData[TRACKER_PITCH_ANGLE_MAX].max = 180.0;
+		TrackerData[TRACKER_PITCH_ANGLE_MAX].value = 90.0;
+		strcpy(TrackerData[TRACKER_PITCH_ANGLE_MAX].name, "PITCH_ANGLE_MAX");
+		TrackerData[TRACKER_PITCH_PULSE_MIN].min = 900.0;
+		TrackerData[TRACKER_PITCH_PULSE_MIN].max = 2100.0;
+		TrackerData[TRACKER_PITCH_PULSE_MIN].value = 1000.0;
+		strcpy(TrackerData[TRACKER_PITCH_PULSE_MIN].name, "PITCH_PULSE_MIN");
+		TrackerData[TRACKER_PITCH_PULSE_MAX].min = 900.0;
+		TrackerData[TRACKER_PITCH_PULSE_MAX].max = 2100.0;
+		TrackerData[TRACKER_PITCH_PULSE_MAX].value = 2000.0;
+		strcpy(TrackerData[TRACKER_PITCH_PULSE_MAX].name, "PITCH_PULSE_MAX");
+		TrackerData[TRACKER_PITCH_TRIM].min = -180.0;
+		TrackerData[TRACKER_PITCH_TRIM].max = 180.0;
+		TrackerData[TRACKER_PITCH_TRIM].value = 0.0;
+		strcpy(TrackerData[TRACKER_PITCH_TRIM].name, "PITCH_TRIM");
+	}
+	printf("tracker: init serial port...\n");
+	serial_fd_tracker = serial_open(port, baud);
+//	if (serial_fd_tracker != -1) {
+#ifdef SDL2
+		sdl_thread_serial_tracker = SDL_CreateThread(thread_serial_tracker, NULL, NULL);
+#else
+		sdl_thread_serial_tracker = SDL_CreateThread(thread_serial_tracker, NULL);
+#endif
+		if ( sdl_thread_serial_tracker == NULL ) {
+			fprintf(stderr, "* Unable to create thread_serial_tracker: %s\n", SDL_GetError());
+			return 1;
+		}
+//	}
+	return 0;
+}
+
+void tracker_exit (void) {
+	if ( sdl_thread_serial_tracker != NULL ) {
+		printf("tracker: wait thread\n");
+		SDL_WaitThread(sdl_thread_serial_tracker, NULL);
+		sdl_thread_serial_tracker = NULL;
+	}
+	serial_close(serial_fd_tracker);
+}
+
+
+

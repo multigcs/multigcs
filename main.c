@@ -50,6 +50,7 @@
 #include "openpilot.h"
 #include "jeti.h"
 #include "frsky.h"
+#include "tracker.h"
 #include "webserv.h"
 #include "logging.h"
 #include "screen_background.h"
@@ -71,6 +72,7 @@
 #include "screen_cli.h"
 #include "screen_baseflightcli.h"
 #include "screen_rcflow.h"
+#include "screen_tracker.h"
 
 // V4L
 #ifndef OSX
@@ -160,6 +162,8 @@ char jeti_port[1024];
 uint32_t jeti_baud = 9600;
 char frsky_port[1024];
 uint32_t frsky_baud = 9600;
+char tracker_port[1024];
+uint32_t tracker_baud = 38400;
 char gcs_gps_port[1024];
 uint32_t gcs_gps_baud = 9600;
 char rcflow_port[1024];
@@ -218,6 +222,8 @@ void save_screenshot (void) {
 		strncpy(name, "system", 99);
 	} else if (view_mode == VIEW_MODE_TCL) {
 		strncpy(name, "tcl", 99);
+	} else if (view_mode == VIEW_MODE_TRACKER) {
+		strncpy(name, "tracker", 99);
 	} else if (view_mode == VIEW_MODE_FCMENU) {
 		strncpy(name, teletypes[ModelData.teletype], 99);
 	}
@@ -508,6 +514,8 @@ void setup_save (void) {
 	        fprintf(fr, "jeti_baud %i\n", jeti_baud);
 	        fprintf(fr, "frsky_port %s\n", frsky_port);
 	        fprintf(fr, "frsky_baud %i\n", frsky_baud);
+	        fprintf(fr, "tracker_port %s\n", tracker_port);
+	        fprintf(fr, "tracker_baud %i\n", tracker_baud);
 	        fprintf(fr, "volt_min     %0.1f\n", volt_min);
 	        fprintf(fr, "speak        %i\n", speak);
 	        fprintf(fr, "hud_view     %i\n", hud_view);
@@ -569,6 +577,8 @@ void setup_load (void) {
 	jeti_baud = 9600;
 	strncpy(frsky_port, "/dev/ttyUSB30", 1023);
 	frsky_baud = 9600;
+	strncpy(tracker_port, "/dev/ttyUSB40", 1023);
+	tracker_baud = 38400;
 	char filename[1024];
 	sprintf(filename, "%s/.multigcs/setup.cfg", getenv("HOME"));
         fr = fopen (filename, "r");
@@ -638,6 +648,10 @@ void setup_load (void) {
 	                                strncpy(frsky_port, val, 1023);
 	                        } else if (strcmp(var, "frsky_baud") == 0) {
 	                                frsky_baud = atoi(val);
+	                        } else if (strcmp(var, "tracker_port") == 0) {
+	                                strncpy(tracker_port, val, 1023);
+	                        } else if (strcmp(var, "tracker_baud") == 0) {
+	                                tracker_baud = atoi(val);
 	                        } else if (strcmp(var, "map_type") == 0) {
 	                                map_type = atoi(val);
 	                        } else if (strcmp(var, "center_map") == 0) {
@@ -1667,8 +1681,11 @@ void Draw (ESContext *esContext) {
 		screen_background(esContext);
 		screen_system(esContext);
 	} else if (view_mode == VIEW_MODE_TCL) {
-//		screen_background(esContext);
+		screen_background(esContext);
 		screen_tcl(esContext);
+	} else if (view_mode == VIEW_MODE_TRACKER) {
+		screen_background(esContext);
+		screen_tracker(esContext);
 	} else if (view_mode == VIEW_MODE_FCMENU) {
 		screen_background(esContext);
 		if (ModelData.teletype == TELETYPE_MULTIWII_21) {
@@ -1771,6 +1788,7 @@ void ShutDown ( ESContext *esContext ) {
 	setup_save();
 	stop_telemetrie();
 	frsky_exit();
+	tracker_exit();
 	jeti_exit();
 	gcs_gps_exit();
 	webserv_exit();
@@ -1950,6 +1968,8 @@ int main ( int argc, char *argv[] ) {
 	gcs_gps_init(gcs_gps_port, gcs_gps_baud);
 	rcflow_exit();
 	rcflow_init(rcflow_port, rcflow_baud);
+	tracker_exit();
+	tracker_init(tracker_port, tracker_baud);
 
 	printf("telemetry: init thread\n");
 	reset_telemetrie();
