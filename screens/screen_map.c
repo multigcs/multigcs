@@ -88,7 +88,7 @@ void map_parseMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t map_service) {
 		if ((!xmlStrcmp(cur->name, (const xmlChar *)"name"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
-				strcpy(mapnames[map_service][MAP_NAME], (char *)key);
+				strncpy(mapnames[map_service][MAP_NAME], (char *)key, 199);
 			} else {
 				mapnames[map_service][MAP_NAME][0] = 0;
 			}
@@ -96,7 +96,7 @@ void map_parseMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t map_service) {
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"url"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
-				strcpy(mapnames[map_service][MAP_URL], (char *)key);
+				strncpy(mapnames[map_service][MAP_URL], (char *)key, 199);
 			} else {
 				mapnames[map_service][MAP_URL][0] = 0;
 			}
@@ -104,7 +104,7 @@ void map_parseMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t map_service) {
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"file"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
-				strcpy(mapnames[map_service][MAP_FILE], (char *)key);
+				strncpy(mapnames[map_service][MAP_FILE], (char *)key, 199);
 			} else {
 				mapnames[map_service][MAP_FILE][0] = 0;
 			}
@@ -112,7 +112,7 @@ void map_parseMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t map_service) {
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"type"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
-				strcpy(mapnames[map_service][MAP_TYPE], (char *)key);
+				strncpy(mapnames[map_service][MAP_TYPE], (char *)key, 199);
 			} else {
 				mapnames[map_service][MAP_TYPE][0] = 0;
 			}
@@ -130,7 +130,7 @@ void map_parseOverlayMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t omap_ser
 		if ((!xmlStrcmp(cur->name, (const xmlChar *)"name"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
-				strcpy(omapnames[omap_service][MAP_NAME], (char *)key);
+				strncpy(omapnames[omap_service][MAP_NAME], (char *)key, 199);
 			} else {
 				omapnames[omap_service][MAP_NAME][0] = 0;
 			}
@@ -138,7 +138,7 @@ void map_parseOverlayMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t omap_ser
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"url"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
-				strcpy(omapnames[omap_service][MAP_URL], (char *)key);
+				strncpy(omapnames[omap_service][MAP_URL], (char *)key, 199);
 			} else {
 				omapnames[omap_service][MAP_URL][0] = 0;
 			}
@@ -146,7 +146,7 @@ void map_parseOverlayMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t omap_ser
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"file"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
-				strcpy(omapnames[omap_service][MAP_FILE], (char *)key);
+				strncpy(omapnames[omap_service][MAP_FILE], (char *)key, 199);
 			} else {
 				omapnames[omap_service][MAP_FILE][0] = 0;
 			}
@@ -154,7 +154,7 @@ void map_parseOverlayMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t omap_ser
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"type"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
-				strcpy(omapnames[omap_service][MAP_TYPE], (char *)key);
+				strncpy(omapnames[omap_service][MAP_TYPE], (char *)key, 199);
 			} else {
 				omapnames[omap_service][MAP_TYPE][0] = 0;
 			}
@@ -735,8 +735,8 @@ uint8_t map_del (char *name, float x, float y, int8_t button, float data) {
 			WayPoints[n].p_long = WayPoints[n2].p_long;
 			WayPoints[n].p_alt = WayPoints[n2].p_alt;
 			WayPoints[n].yaw = WayPoints[n2].yaw;
-			strcpy(WayPoints[n].name, WayPoints[n2].name);
-			strcpy(WayPoints[n].command, WayPoints[n2].command);
+			strncpy(WayPoints[n].name, WayPoints[n2].name, 127);
+			strncpy(WayPoints[n].command, WayPoints[n2].command, 127);
 			n2++;
 		}
 	}
@@ -1385,7 +1385,7 @@ void draw_notam (ESContext *esContext, float lat, float lon, uint8_t zoom) {
 	        while(fgets(line, 200, fr) != NULL) {
 			if (strncmp(line, "AN ", 3) == 0) {
 				flag1 = 1;
-				strcpy(ap_name, line + 3);
+				strncpy(ap_name, line + 3, 49);
 				dp_x_min = 10000.0;
 				dp_x_max = -10000.0;
 				dp_y_min = 10000.0;
@@ -1531,7 +1531,7 @@ void draw_waypoints_cup (ESContext *esContext, float lat, float lon, uint8_t zoo
 					strncpy(tmp_str, line + last_p + 1, n - last_p - 1);
 					tmp_str[n - last_p - 1] = 0;
 					if (pn == 0) {
-						strcpy(wp_name, tmp_str);
+						strncpy(wp_name, tmp_str, 49);
 					} else if (pn == 3) {
 						float min = atof(tmp_str + 2);
 						tmp_str[2] = 0;
@@ -1544,7 +1544,7 @@ void draw_waypoints_cup (ESContext *esContext, float lat, float lon, uint8_t zoo
 //						wp_alt = atof(tmp_str);
 					} else if (pn == 10) {
 						if ((int)wp_lat >= min_lat && (int)wp_lat <= max_lat && (int)wp_lon >= min_lon && (int)wp_lon <= max_lon) {
-							strcpy(wp_name2, tmp_str);
+							strncpy(wp_name2, tmp_str, 49);
 							mark_poi(esContext, wp_lat, wp_lon, wp_name, 0, lat, lon, zoom);
 						}
 					}

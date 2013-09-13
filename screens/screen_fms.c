@@ -28,8 +28,8 @@ uint8_t fms_del (char *name, float x, float y, int8_t button, float data) {
 			WayPoints[n].p_long = WayPoints[n2].p_long;
 			WayPoints[n].p_alt = WayPoints[n2].p_alt;
 			WayPoints[n].yaw = WayPoints[n2].yaw;
-			strcpy(WayPoints[n].name, WayPoints[n2].name);
-			strcpy(WayPoints[n].command, WayPoints[n2].command);
+			strncpy(WayPoints[n].name, WayPoints[n2].name, 127);
+			strncpy(WayPoints[n].command, WayPoints[n2].command, 127);
 			n2++;
 		}
 	}

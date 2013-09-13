@@ -17,8 +17,8 @@
 static int8_t filesystem_page = 0;
 static uint8_t show_filesystem = 0;
 static uint8_t (*save_callback) (char *, float, float, int8_t, float);
-static char filesystem_rootdir[200];
-static char filesystem_filter[FILTER_MAX][200];
+static char filesystem_rootdir[1024];
+static char filesystem_filter[FILTER_MAX][1024];
 static uint8_t filesystem_filter_num = 0;
 
 void filesystem_set_callback (uint8_t (*callback) (char *, float, float, int8_t, float)) {
@@ -46,7 +46,7 @@ uint8_t filesystem_get_mode (void) {
 }
 
 void filesystem_set_dir (char *rootdir) {
-	strcpy(filesystem_rootdir, rootdir);
+	strncpy(filesystem_rootdir, rootdir, 1023);
 	filesystem_page = 0;
 }
 
@@ -70,7 +70,7 @@ uint8_t filesystem_filter_match (char *filename) {
 
 void filesystem_add_filter (char *filter) {
 	if (filesystem_filter_num < FILTER_MAX) {
-		strcpy(filesystem_filter[filesystem_filter_num++], filter);
+		strncpy(filesystem_filter[filesystem_filter_num++], filter, 1023);
 	} else {
 		printf("ERROR: to many filters\n");
 	}
@@ -97,7 +97,7 @@ uint8_t filesystem_name_save (char *name, float x, float y, int8_t button, float
 }
 
 uint8_t filesystem_dir_open (char *name, float x, float y, int8_t button, float data) {
-	strcpy(filesystem_rootdir, name);
+	strncpy(filesystem_rootdir, name, 1023);
 	filesystem_page = 0;
 	return 0;
 }

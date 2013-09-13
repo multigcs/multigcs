@@ -213,8 +213,8 @@ void gcs_handleMessage(mavlink_message_t* msg) {
 			if (time_start == 0 && blender_export_filename[0] != 0) {
 				time_start = packet.time_boot_ms;
 				char blender_object[1024];
-//				strcpy(blender_object, "Camera");
-				strcpy(blender_object, "Cube");
+//				strncpy(blender_object, "Camera", 1023);
+				strncpy(blender_object, "Cube", 1023);
 				if ((blenderpy_fr = fopen(blender_export_filename, "w")) != 0) {
 					fprintf(blenderpy_fr, "import bpy\n");
 					fprintf(blenderpy_fr, "\n");
@@ -542,8 +542,8 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			WayPoints[1 + packet.seq + 1].p_long = 0.0;
 			WayPoints[1 + packet.seq + 1].p_alt = 0.0;
 			WayPoints[1 + packet.seq + 1].yaw = 0.0;
-			strcpy(WayPoints[1 + packet.seq + 1].name, "");
-			strcpy(WayPoints[1 + packet.seq + 1].command, "");
+			WayPoints[1 + packet.seq + 1].name[0] = 0;
+			WayPoints[1 + packet.seq + 1].command[0] = 0;
 
 
 

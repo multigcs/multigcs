@@ -861,7 +861,7 @@ void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2
 	char tmp_str2[1024];
 	int n2;
 	int n3 = 0;
-	strcpy(tmp_str2, file);
+	strncpy(tmp_str2, file, 1023);
 	for (n2 = 0; n2 < strlen(tmp_str2); n2++) {
 		if (tmp_str2[n2] == '/') {
 			n3 = n2 + 1;
@@ -920,7 +920,7 @@ void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2
 //			printf("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
 //			if ( (TexCache[tex_num].texture = loadPNG(file)) != 0 ) { 
 			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) { 
-				strcpy(TexCache[tex_num].name, file);
+				strncpy(TexCache[tex_num].name, file, 1023);
 				TexCache[tex_num].atime = time(0);
 			} else {
 //				printf("could not load image: %s\n", file);
@@ -1002,7 +1002,7 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 //			printf("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
 //			if ( (TexCache[tex_num].texture = loadPNG(file)) != 0 ) {
 			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) {
-				strcpy(TexCache[tex_num].name, file);
+				strncpy(TexCache[tex_num].name, file, 1023);
 				TexCache[tex_num].atime = time(0);
 			} else {
 //				printf("could not load image: %s\n", file);
@@ -1171,19 +1171,19 @@ void draw_text_f3_fast (ESContext *esContext, float x1, float y1, float z1, floa
 #ifdef HTML_DRAWING
 	char color[100];
 	if (strcmp(file, FONT_GREEN_BG) == 0) {
-		strcpy(color, "green");
+		strncpy(color, "green", 99);
 	} else if (strcmp(file, FONT_TRANS) == 0) {
-		strcpy(color, "gray");
+		strncpy(color, "gray", 99);
 	} else if (strcmp(file, FONT_BLACK_BG) == 0) {
-		strcpy(color, "black");
+		strncpy(color, "black", 99);
 	} else if (strcmp(file, FONT_WHITE) == 0) {
-		strcpy(color, "white");
+		strncpy(color, "white", 99);
 	} else if (strcmp(file, FONT_GREEN) == 0) {
-		strcpy(color, "green");
+		strncpy(color, "green", 99);
 	} else if (strcmp(file, FONT_PINK) == 0) {
-		strcpy(color, "red");
+		strncpy(color, "red", 99);
 	} else {
-		strcpy(color, "white");
+		strncpy(color, "white", 99);
 	}
 	char tmp_str[1024];
 	sprintf(tmp_str, "	draw_text(context, %0.0f, %0.0f, 'bold %0.0fpx Arial', \"%s\", '%s');\n", x1 * X_CAL, y1 * Y_CAL + (h * 300.0), h * 300.0, text, color);
@@ -1225,7 +1225,7 @@ void draw_text_f3_fast (ESContext *esContext, float x1, float y1, float z1, floa
 		if (tex_num >= 0) {
 //			printf("loading font %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
 			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) { 
-				strcpy(TexCache[tex_num].name, file);
+				strncpy(TexCache[tex_num].name, file, 1023);
 				TexCache[tex_num].atime = time(0);
 
 			} else {
@@ -1282,7 +1282,7 @@ void draw_char_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 //			printf("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
 //			if ( (TexCache[tex_num].texture = loadPNG(file)) != 0 ) { 
 			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) { 
-				strcpy(TexCache[tex_num].name, file);
+				strncpy(TexCache[tex_num].name, file, 1023);
 				TexCache[tex_num].atime = time(0);
 			} else {
 				printf("could not load image: %s\n", file);

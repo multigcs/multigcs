@@ -582,7 +582,7 @@ uint8_t logplay_cmd_open (char *name, float x, float y, int8_t button, float dat
 
 uint8_t logplay_cmd_open_ok (char *name, float x, float y, int8_t button, float data) {
 	printf("## open logfile: %s ##\n", name);
-	strcpy(logplay_file, name);
+	strncpy(logplay_file, name, 1023);
 	logplay_list = 0;
 	logplay_filelist = 0;
 	return 0;
@@ -735,7 +735,7 @@ void Logging (void) {
 				logplay_startsec = 0;
 				fr = fopen(logplay_file, "r");
 				if (fgets(line, 500, fr) != NULL) {
-					strcpy(last_line, line);
+					strncpy(last_line, line, 1023);
 				} else {
 					logplay_open = 0;
 					logplay_play = 0;
@@ -761,7 +761,7 @@ void Logging (void) {
 						}
 					} else {
 						if (fgets(line, 500, fr) != NULL) {
-							strcpy(last_line, line);
+							strncpy(last_line, line, 1023);
 //							printf("NEXT_LINE: %s\n", line);
 
 							if (strncmp(last_line, "GPS,", 4) == 0) {
@@ -814,7 +814,7 @@ void Logging (void) {
 							sscanf(last_line, "ATT,%f,%f,%f", &ModelData.pitch, &ModelData.roll, &ModelData.yaw);
 						}
 						if (fgets(line, 500, fr) != NULL) {
-							strcpy(last_line, line);
+							strncpy(last_line, line, 1023);
 //							printf("NEXT_LINE: %s\n", line);
 							if (strncmp(last_line, "GPS,", 4) == 0) {
 								lmicros += 200;

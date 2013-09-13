@@ -59,7 +59,7 @@ uint8_t device_filter_match (char *filename) {
 
 void device_add_filter (char *filter) {
 	if (device_filter_num < FILTER_MAX) {
-		strcpy(device_filter[device_filter_num++], filter);
+		strncpy(device_filter[device_filter_num++], filter, 199);
 	} else {
 		printf("ERROR: to many filters\n");
 	}

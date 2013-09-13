@@ -89,17 +89,17 @@ void baseflightcli_add_value (char *vname, uint8_t type, float vval, float vmin,
 	}
 	if (flag == 0) {
 //		printf("add(%i): %s = %f\n", flag2, vname, vval);
-		strcpy(bf_set_value[flag2].name, vname);
+		strncpy(bf_set_value[flag2].name, vname, 199);
 		bf_set_value[flag2].value = vval;
 		if (vmin != 0.0 || vmax != 0.0) {
 			bf_set_value[flag2].min = vmin;
 			bf_set_value[flag2].max = vmax;
 		}
 		bf_set_value[flag2].type = type;
-		strcpy(bf_set_value[flag2].group, "ETC");
+		strncpy(bf_set_value[flag2].group, "ETC", 199);
 		for (n3 = 0; n3 < 50; n3++) {
 			if (bf_set_groups[n3].filter[0] != 0 && strstr(bf_set_value[flag2].name, bf_set_groups[n3].filter) > 0) {
-				strcpy(bf_set_value[flag2].group, bf_set_groups[n3].name);
+				strncpy(bf_set_value[flag2].group, bf_set_groups[n3].name, 199);
 				break;
 			}
 		}
@@ -113,7 +113,7 @@ void baseflightcli_add_value (char *vname, uint8_t type, float vval, float vmin,
 		if (flag == 0) {
 			for (n3 = 0; n3 < 50; n3++) {
 				if (groupnames[n3][0] == 0) {
-					strcpy(groupnames[n3], bf_set_value[flag2].group);
+					strncpy(groupnames[n3], bf_set_value[flag2].group, 199);
 					break;
 				}
 			}
@@ -149,7 +149,7 @@ void baseflightcli_update (void) {
 					char tmp_str[400];
 					for (n = 18; n < strlen(baseflightcli_buffer) + 1; n++) {
 						if (baseflightcli_buffer[n] == ' ' || baseflightcli_buffer[n] == '\n' || baseflightcli_buffer[n] == 0) {
-							strcpy(bf_mixer[n2++].name, tmp_str);
+							strncpy(bf_mixer[n2++].name, tmp_str, 199);
 							bf_mixer[n2].name[0] = 0;
 							nn = 0;
 							tmp_str[nn] = 0;
@@ -181,15 +181,15 @@ void baseflightcli_update (void) {
 						}
 					}
 				} else if (strncmp(baseflightcli_buffer, "Naze", 4) == 0) {
-					strcpy(baseflightcli_version, baseflightcli_buffer);
+					strncpy(baseflightcli_version, baseflightcli_buffer, 199);
 				} else if (strncmp(baseflightcli_buffer, "feature ", 8) == 0) {
 					char tmp_var[400];
 					float tmp_val = 0.0;
 					if (baseflightcli_buffer[8] == '-') {
-						strcpy(tmp_var, baseflightcli_buffer + 9);
+						strncpy(tmp_var, baseflightcli_buffer + 9, 399);
 						tmp_val = 0.0;
 					} else {
-						strcpy(tmp_var, baseflightcli_buffer + 8);
+						strncpy(tmp_var, baseflightcli_buffer + 8, 399);
 						tmp_val = 1.0;
 					}
 					char tmp_str[400];
@@ -233,8 +233,8 @@ void baseflightcli_update (void) {
 				} else if (strstr(baseflightcli_buffer, "=") > 0) {
 					if (strncmp(baseflightcli_buffer, "set ", 4) == 0) {
 						char tmp_str[400];
-						strcpy(tmp_str, baseflightcli_buffer + 4);
-						strcpy(baseflightcli_buffer, tmp_str);
+						strncpy(tmp_str, baseflightcli_buffer + 4, 399);
+						strncpy(baseflightcli_buffer, tmp_str, 199);
 					}
 					char vname[101];
 					char vchar = ' ';
@@ -610,7 +610,7 @@ uint8_t baseflightcli_slider_move (char *name, float x, float y, int8_t button, 
 	}
 
 	char tmp_str[400];
-	strcpy(tmp_str, "map ");
+	strncpy(tmp_str, "map ", 399);
 	if (strncmp(bf_set_value[nn].name, "map_", 4) == 0) {
 		for (n = 1; n <= 8; n++) {
 			for (nn = 0; nn < 399; nn++) {

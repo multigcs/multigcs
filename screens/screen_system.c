@@ -57,7 +57,7 @@ uint8_t system_baud_set (char *name, float x, float y, int8_t button, float data
 }
 
 uint8_t system_baud_change (char *name, float x, float y, int8_t button, float data) {
-	strcpy(baud_selected, name);
+	strncpy(baud_selected, name, 99);
 	baud_set_callback(system_baud_set);
 	baud_set_mode(VIEW_MODE_SYSTEM);
 	return 0;
@@ -66,25 +66,25 @@ uint8_t system_baud_change (char *name, float x, float y, int8_t button, float d
 uint8_t system_device_set (char *name, float x, float y, int8_t button, float data) {
 	printf("DEVICE: %s_port = %s\n", port_selected, name);
         if (strcmp(port_selected, "gcs_gps") == 0) {
-                strcpy(gcs_gps_port, name);
+                strncpy(gcs_gps_port, name, 1023);
         } else if (strcmp(port_selected, "rcflow") == 0) {
-                strcpy(rcflow_port, name);
+                strncpy(rcflow_port, name, 1023);
         } else if (strcmp(port_selected, "jeti") == 0) {
-                strcpy(jeti_port, name);
+                strncpy(jeti_port, name, 1023);
         } else if (strcmp(port_selected, "frsky") == 0) {
-                strcpy(frsky_port, name);
+                strncpy(frsky_port, name, 1023);
 	}
 	if (strcmp(name, "UNSET") != 0) {
 		system_baud_change(port_selected, x, y, button, data);
 	} else {
-		strcpy(baud_selected, name);
+		strncpy(baud_selected, name, 99);
 		system_baud_set("1200", x, y, button, data);
 	}
 	return 0;
 }
 
 uint8_t system_device_change (char *name, float x, float y, int8_t button, float data) {
-	strcpy(port_selected, name);
+	strncpy(port_selected, name, 99);
 	device_set_callback(system_device_set);
 	device_reset_filter();
 	device_add_filter("ttyUSB");

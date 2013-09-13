@@ -16,17 +16,17 @@ uint8_t get_background_model (char *filename) {
 	char tmp_str[1024];
 	sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, modeltypes[ModelData.modeltype]);
 	if (file_exists(tmp_str) != 0) {
-		strcpy(filename, tmp_str);
+		strncpy(filename, tmp_str, 1023);
 		return 0;
 	}
 	sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, teletypes[ModelData.teletype]);
 	if (file_exists(tmp_str) != 0) {
-		strcpy(filename, tmp_str);
+		strncpy(filename, tmp_str, 1023);
 		return 0;
 	}
 	sprintf(tmp_str, "%s/obj3d/bg.obj", BASE_DIR);
 	if (file_exists(tmp_str) != 0) {
-		strcpy(filename, tmp_str);
+		strncpy(filename, tmp_str, 1023);
 		return 0;
 	}
 	filename[0] = 0;

@@ -896,21 +896,21 @@ void webserv_child (int fd) {
 					printf("webserv: ## %s ### %s (%i)##\n", tmp_str, tmp_str + start, start);
 
 					if (strcmp(tmp_str, "name") == 0) {
-						strcpy(ModelData.name, tmp_str + start);
+						strncpy(ModelData.name, tmp_str + start, 199);
 					} else if (strcmp(tmp_str, "image") == 0) {
-						strcpy(ModelData.image, tmp_str + start);
+						strncpy(ModelData.image, tmp_str + start, 511);
 					} else if (strcmp(tmp_str, "modeltype") == 0) {
 						ModelData.modeltype = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "teletype") == 0) {
 						ModelData.teletype = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "teledevice") == 0) {
-						strcpy(ModelData.teledevice, tmp_str + start);
+						strncpy(ModelData.teledevice, tmp_str + start, 199);
 					} else if (strcmp(tmp_str, "telebaud") == 0) {
 						ModelData.telebaud = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "telebtaddr") == 0) {
-						strcpy(ModelData.telebtaddr, tmp_str + start);
+						strncpy(ModelData.telebtaddr, tmp_str + start, 199);
 					} else if (strcmp(tmp_str, "telebtpin") == 0) {
-						strcpy(ModelData.telebtpin, tmp_str + start);
+						strncpy(ModelData.telebtpin, tmp_str + start, 199);
 					} else if (strcmp(tmp_str, "mode") == 0) {
 						ModelData.mode = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "status") == 0) {

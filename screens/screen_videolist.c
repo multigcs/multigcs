@@ -10,8 +10,8 @@
 #include <screen_filesystem.h>
 
 uint8_t videolist_startup = 0;
-char videolist_path[401];
-char videolist_lastfile[401];
+char videolist_path[1024];
+char videolist_lastfile[1024];
 
 uint8_t videolist_null (char *name, float x, float y, int8_t button, float data) {
 	return 0;
@@ -19,7 +19,7 @@ uint8_t videolist_null (char *name, float x, float y, int8_t button, float data)
 
 uint8_t videolist_file_play (char *name, float x, float y, int8_t button, float data) {
 	char cmd[401];
-	strcpy(videolist_lastfile, name);
+	strncpy(videolist_lastfile, name, 1023);
 	sprintf(cmd, "echo \"%s\" > /tmp/gcs.playfile", name);
 	system(cmd);
 	SDL_Event user_event;
@@ -29,10 +29,9 @@ uint8_t videolist_file_play (char *name, float x, float y, int8_t button, float 
 }
 
 void screen_videolist (ESContext *esContext) {
-
 	if (videolist_startup == 0) {
 		if (videolist_lastfile[0] != 0) {
-			strcpy(videolist_path, videolist_lastfile);
+			strncpy(videolist_path, videolist_lastfile, 1023);
 			dirname(videolist_path);
 		} else {
 			sprintf(videolist_path, "/media");

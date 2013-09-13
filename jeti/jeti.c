@@ -53,8 +53,8 @@ uint8_t jeti_right (char *name, float x, float y, int8_t button, float data) {
 }
 
 void jeti_init (char *mdevice, uint32_t baud) {
-	strcpy(jeti_line1, "--- Jeti Box ---");
-	strcpy(jeti_line2, " wait for data  ");
+	strncpy(jeti_line1, "--- Jeti Box ---", 16);
+	strncpy(jeti_line2, " wait for data  ", 16);
 	printf("jeti: init serial port...\n");
 	jeti_serial_fd = serial_open9b(mdevice, baud);
 }
@@ -95,8 +95,8 @@ void jeti_update (void) {
 			}
 		}
 	} else {
-		strcpy(jeti_line2, "----------------");
-		strcpy(jeti_line2, " no connection  ");
+		strncpy(jeti_line2, "----------------", 16);
+		strncpy(jeti_line2, " no connection  ", 16);
 	}
 }
 

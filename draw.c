@@ -171,7 +171,7 @@ uint8_t draw_button (ESContext *esContext, char *name, uint8_t view_mode, char *
 			Buttons[n].type = 0;
 			return 0;
 		} else if (Buttons[n].name[0] == 0) {
-			strcpy(Buttons[n].name, name);
+			strncpy(Buttons[n].name, name, 99);
 			Buttons[n].view_mode = view_mode;
 			Buttons[n].x1 = x1 - 0.01;
 			Buttons[n].y1 = y1 - 0.01;
@@ -193,8 +193,8 @@ uint8_t draw_image_button (ESContext *esContext, char *name, uint8_t view_mode, 
 
 char text[1024];
 char font[1024];
-strcpy(text, "img");
-strcpy(font, FONT_GREEN);
+strncpy(text, "img", 1023);
+strncpy(font, FONT_GREEN, 1023);
 
 	uint16_t n = 0;
 	float x1 = x - w / 2.0;
@@ -230,7 +230,7 @@ strcpy(font, FONT_GREEN);
 			Buttons[n].type = 0;
 			return 0;
 		} else if (Buttons[n].name[0] == 0) {
-			strcpy(Buttons[n].name, name);
+			strncpy(Buttons[n].name, name, 100);
 			Buttons[n].view_mode = view_mode;
 			Buttons[n].x1 = x1 - 0.01;
 			Buttons[n].y1 = y1 - 0.01;
@@ -738,7 +738,7 @@ int16_t get_altitude (float lat, float lon) {
 			FILE *fr;
 			fr = fopen(file, "r");
 			if (fr != 0) {
-				strcpy(AltCache[alt_num].name, file);
+				strncpy(AltCache[alt_num].name, file, 1023);
 				AltCache[alt_num].atime = time(0);
 				for (py = 0; py < 1201; py++) {
 					for (px = 0; px < 1201; px++) {

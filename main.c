@@ -199,27 +199,27 @@ void save_screenshot (void) {
 	char name[100];
 	char tmp_str[100];
 	if (view_mode == VIEW_MODE_HUD) {
-		strcpy(name, "hud");
+		strncpy(name, "hud", 99);
 	} else if (view_mode == VIEW_MODE_TELEMETRY) {
-		strcpy(name, "telemetry");
+		strncpy(name, "telemetry", 99);
 	} else if (view_mode == VIEW_MODE_MODEL) {
-		strcpy(name, "model");
+		strncpy(name, "model", 99);
 	} else if (view_mode == VIEW_MODE_RCFLOW) {
-		strcpy(name, "rcflow");
+		strncpy(name, "rcflow", 99);
 	} else if (view_mode == VIEW_MODE_FMS) {
-		strcpy(name, "fms");
+		strncpy(name, "fms", 99);
 	} else if (view_mode == VIEW_MODE_WPEDIT) {
-		strcpy(name, "fms");
+		strncpy(name, "fms", 99);
 	} else if (view_mode == VIEW_MODE_MAP) {
-		strcpy(name, "map");
+		strncpy(name, "map", 99);
 	} else if (view_mode == VIEW_MODE_VIDEOLIST) {
-		strcpy(name, "video");
+		strncpy(name, "video", 99);
 	} else if (view_mode == VIEW_MODE_SYSTEM) {
-		strcpy(name, "system");
+		strncpy(name, "system", 99);
 	} else if (view_mode == VIEW_MODE_TCL) {
-		strcpy(name, "tcl");
+		strncpy(name, "tcl", 99);
 	} else if (view_mode == VIEW_MODE_FCMENU) {
-		strcpy(name, teletypes[ModelData.teletype]);
+		strncpy(name, teletypes[ModelData.teletype], 99);
 	}
 
 #ifdef SDL2
@@ -276,7 +276,7 @@ uint8_t set_button (char *name, uint8_t view_mode, float x1, float y1, float x2,
 			Buttons[n].type = type;
 			return 0;
 		} else if (Buttons[n].name[0] == 0) {
-			strcpy(Buttons[n].name, name);
+			strncpy(Buttons[n].name, name, 1023);
 			Buttons[n].view_mode = view_mode;
 			Buttons[n].x1 = x1;
 			Buttons[n].y1 = y1;
@@ -385,7 +385,7 @@ void reset_telemetrie (void) {
 }
 
 void set_telemetrie (char *device, uint32_t baud) {
-	strcpy(telemetrie_port, device);
+	strncpy(telemetrie_port, device, 1023);
 	telemetrie_baud = baud;
 	reset_telemetrie();
 }
@@ -413,8 +413,8 @@ void setup_waypoints (void) {
 	WayPoints[0].wait = 0.0;
 	WayPoints[0].orbit = 0.0;
 	WayPoints[0].type = 1;
-	strcpy(WayPoints[0].name, "HOME");
-	strcpy(WayPoints[0].command, "");
+	strncpy(WayPoints[0].name, "HOME", 127);
+	strncpy(WayPoints[0].command, "", 127);
 
 	WayPoints[1].p_lat = 50.29057;
 	WayPoints[1].p_long = 9.12704;
@@ -424,8 +424,8 @@ void setup_waypoints (void) {
 	WayPoints[1].wait = 0.0;
 	WayPoints[1].orbit = 0.0;
 	WayPoints[1].type = 2;
-	strcpy(WayPoints[1].name, "WP0");
-	strcpy(WayPoints[1].command, "");
+	strncpy(WayPoints[1].name, "WP0", 127);
+	strncpy(WayPoints[1].command, "", 127);
 
 	WayPoints[2].p_lat = 50.28745;
 	WayPoints[2].p_long = 9.12207;
@@ -435,8 +435,8 @@ void setup_waypoints (void) {
 	WayPoints[2].wait = 0.0;
 	WayPoints[2].orbit = 0.0;
 	WayPoints[2].type = 2;
-	strcpy(WayPoints[2].name, "WP1");
-	strcpy(WayPoints[2].command, "WAYPOINT");
+	strncpy(WayPoints[2].name, "WP1", 127);
+	strncpy(WayPoints[2].command, "WAYPOINT", 127);
 
 	WayPoints[3].p_lat = 50.28745;
 	WayPoints[3].p_long = 9.12754;
@@ -445,10 +445,10 @@ void setup_waypoints (void) {
 	WayPoints[3].radius = 2.0;
 	WayPoints[3].wait = 5000.0;
 	WayPoints[3].orbit = 10.0;
-	strcpy(WayPoints[3].name, "WP2-Orbit");
-	strcpy(WayPoints[3].command, "WAYPOINT");
+	strncpy(WayPoints[3].name, "WP2-Orbit", 127);
+	strncpy(WayPoints[3].command, "WAYPOINT", 127);
 
-	strcpy(WayPoints[0].name, "UAV");
+	strncpy(WayPoints[0].name, "UAV", 127);
 	ModelData.p_lat = WayPoints[0].p_lat;
 	ModelData.p_long = WayPoints[0].p_long;
 	ModelData.p_alt = WayPoints[0].p_alt;
@@ -459,7 +459,7 @@ void setup_waypoints (void) {
 }
 
 void sys_message (char *msg) {
-	strcpy(message_txt, msg);
+	strncpy(message_txt, msg, 1023);
 	if (message_txt[strlen(message_txt) - 1] == '\n') {
 		message_txt[strlen(message_txt) - 1] = 0;
 	}
@@ -556,18 +556,18 @@ void setup_load (void) {
         int wp_num = 0;
 	blender_export_filename[0] = 0;
 #ifdef RPI_NO_X
-	strcpy(gcs_gps_port, "/dev/ttyAMA0");;
+	strncpy(gcs_gps_port, "/dev/ttyAMA0", 1023);
 #else
-	strcpy(gcs_gps_port, "/dev/ttyUSB20");;
+	strncpy(gcs_gps_port, "/dev/ttyUSB20", 1023);
 #endif
 	gcs_gps_baud = 9600;
-	strcpy(rcflow_port, "/dev/ttyUSB21");;
+	strncpy(rcflow_port, "/dev/ttyUSB21", 1023);
 	rcflow_baud = 115200;
-	strcpy(telemetrie_port, "/dev/rfcomm0");;
+	strncpy(telemetrie_port, "/dev/rfcomm0", 1023);
 	telemetrie_baud = 115200;
-	strcpy(jeti_port, "/dev/ttyUSB10");;
+	strncpy(jeti_port, "/dev/ttyUSB10", 1023);
 	jeti_baud = 9600;
-	strcpy(frsky_port, "/dev/ttyUSB30");;
+	strncpy(frsky_port, "/dev/ttyUSB30", 1023);
 	frsky_baud = 9600;
 	char filename[1024];
 	sprintf(filename, "%s/.multigcs/setup.cfg", getenv("HOME"));
@@ -583,7 +583,7 @@ void setup_load (void) {
 					view_mode = atoi(val);
 					view_mode_next = view_mode;
 	                        } else if (strcmp(var, "model_name") == 0) {
-	                                strcpy(ModelData.name, val);
+	                                strncpy(ModelData.name, val, 199);
 	                        } else if (strcmp(var, "volt_min") == 0) {
 					volt_min = atof(val);
 	                        } else if (strcmp(var, "contrast") == 0) {
@@ -613,29 +613,29 @@ void setup_load (void) {
 	                        } else if (strcmp(var, "waypoint_active") == 0) {
 	                                waypoint_active = atoi(val);
 	                        } else if (strcmp(var, "gcs_gps_port") == 0) {
-	                                strcpy(gcs_gps_port, val);
+	                                strncpy(gcs_gps_port, val, 1023);
 	                        } else if (strcmp(var, "gcs_gps_baud") == 0) {
 	                                gcs_gps_baud = atoi(val);
 	                        } else if (strcmp(var, "rcflow_port") == 0) {
-	                                strcpy(rcflow_port, val);
+	                                strncpy(rcflow_port, val, 1023);
 	                        } else if (strcmp(var, "rcflow_baud") == 0) {
 	                                rcflow_baud = atoi(val);
 	                        } else if (strcmp(var, "telemetrie_port") == 0) {
-	                                strcpy(telemetrie_port, val);
+	                                strncpy(telemetrie_port, val, 1023);
 	                        } else if (strcmp(var, "telemetrie_baud") == 0) {
 	                                telemetrie_baud = atoi(val);
 	                        } else if (strcmp(var, "telemetrie_port") == 0) {
-	                                strcpy(telemetrie_port, val);
+	                                strncpy(telemetrie_port, val, 1023);
 	                        } else if (strcmp(var, "telemetrie_baud") == 0) {
 	                                telemetrie_baud = atoi(val);
 	                        } else if (strcmp(var, "telemetrie_type") == 0) {
 	                                ModelData.teletype = atoi(val);
 	                        } else if (strcmp(var, "jeti_port") == 0) {
-	                                strcpy(jeti_port, val);
+	                                strncpy(jeti_port, val, 1023);
 	                        } else if (strcmp(var, "jeti_baud") == 0) {
 	                                jeti_baud = atoi(val);
 	                        } else if (strcmp(var, "frsky_port") == 0) {
-	                                strcpy(frsky_port, val);
+	                                strncpy(frsky_port, val, 1023);
 	                        } else if (strcmp(var, "frsky_baud") == 0) {
 	                                frsky_baud = atoi(val);
 	                        } else if (strcmp(var, "map_type") == 0) {
@@ -643,7 +643,7 @@ void setup_load (void) {
 	                        } else if (strcmp(var, "center_map") == 0) {
 	                                center_map = atoi(val);
 	                        } else if (strcmp(var, "touchscreen_device") == 0) {
-	                                strcpy(touchscreen_device, val);
+	                                strncpy(touchscreen_device, val, 1023);
 	                        } else if (strcmp(var, "calibration_mode") == 0) {
 	                                calibration_mode = atoi(val);
 	                        } else if (strcmp(var, "calibration_min_x") == 0) {
@@ -655,9 +655,9 @@ void setup_load (void) {
 	                        } else if (strcmp(var, "calibration_max_y") == 0) {
 	                                calibration_max_y = atoi(val);
 	                        } else if (strcmp(var, "videolist_lastfile") == 0) {
-	                                strcpy(videolist_lastfile, val);
+	                                strncpy(videolist_lastfile, val, 1023);
 	                        } else if (strcmp(var, "blender_export_filename") == 0) {
-	                                strcpy(blender_export_filename, val);
+	                                strncpy(blender_export_filename, val, 1023);
 	                        } else if (strcmp(var, "hud_view") == 0) {
 	                                hud_view = atoi(val);
 	                        } else if (strcmp(var, "hud_view_map") == 0) {
@@ -686,9 +686,9 @@ void setup_load (void) {
 	                                        WayPoints[wp_num].type = 0;
 	                                }
 	                        } else if (strcmp(var, "name") == 0) {
-	                                strcpy(WayPoints[wp_num].name, val);
+	                                strncpy(WayPoints[wp_num].name, val, 127);
 	                        } else if (strcmp(var, "command") == 0) {
-	                                strcpy(WayPoints[wp_num].command, val);
+	                                strncpy(WayPoints[wp_num].command, val, 127);
 	                        } else if (strcmp(var, "lat") == 0) {
 	                                WayPoints[wp_num].p_lat = atof(val);
 	                        } else if (strcmp(var, "lon") == 0) {
@@ -716,13 +716,13 @@ void setup_load (void) {
 		calibration_mode = 1;
 	}
 
-	strcpy(WayPoints[0].name, ModelData.name);
+	strncpy(WayPoints[0].name, ModelData.name, 127);
 	ModelData.p_lat = WayPoints[0].p_lat;
 	ModelData.p_long = WayPoints[0].p_long;
 	ModelData.p_alt = WayPoints[0].p_alt;
 	ModelData.yaw = WayPoints[0].yaw;
 
-	strcpy(ModelData.teledevice, telemetrie_port);
+	strncpy(ModelData.teledevice, telemetrie_port, 199);
 	ModelData.telebaud = telemetrie_baud;
 
 }
@@ -779,7 +779,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 #endif
 	} else if (event.type == SDL_KEYUP) {
 		char keyname[1024];
-		strcpy(keyname, SDL_GetKeyName(event.key.keysym.sym));
+		strncpy(keyname, SDL_GetKeyName(event.key.keysym.sym), 1023);
 		int n = 0;
 		for(n = 0; n < strlen(keyname); n++ ) {
 			keyname[n] = tolower(keyname[n]);
@@ -811,7 +811,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 		}
 	} else if (event.type == SDL_KEYDOWN) {
 		char keyname[1024];
-		strcpy(keyname, SDL_GetKeyName(event.key.keysym.sym));
+		strncpy(keyname, SDL_GetKeyName(event.key.keysym.sym), 1023);
 		int n = 0;
 		for(n = 0; n < strlen(keyname); n++ ) {
 			keyname[n] = tolower(keyname[n]);
@@ -892,7 +892,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 		} else if (strcmp(keyname, "world 20") == 0) {
 			strcpy(keyboard_key, "´");
 		} else {
-			strcpy(keyboard_key, keyname);
+			strncpy(keyboard_key, keyname, 99);
 			int n = 0;
 			for(n = 0; n < strlen(keyboard_key); n++ ) {
 				keyboard_key[n] = tolower(keyboard_key[n]);
@@ -1076,7 +1076,7 @@ printf("## keyname: %s ##\n", keyname);
 							WayPoints[n].yaw = 0.0;
 							WayPoints[n].orbit = 0.0;
 							sprintf(WayPoints[n].name, "WP%i", n);
-							strcpy(WayPoints[n].command, "WAYPOINT");
+							strncpy(WayPoints[n].command, "WAYPOINT", 127);
 							break;
 						}
 					}
@@ -1122,7 +1122,7 @@ printf("## keyname: %s ##\n", keyname);
 						WayPoints[n].yaw = 0.0;
 						WayPoints[n].orbit = 0.0;
 						sprintf(WayPoints[n].name, "WP%i", n);
-						strcpy(WayPoints[n].command, "WAYPOINT");
+						strncpy(WayPoints[n].command, "WAYPOINT", 127);
 //						printf("GPS;%i;%f;%f;%0.1f;%0.1f\n", time(0), mouse_lat, mouse_long, 25.0, 10.0);
 						break;
 					}
@@ -1350,7 +1350,7 @@ void display_update (ESContext *esContext) {
 
 #ifdef HTML_DRAWING
 
-	strcpy(display_html2, display_html);
+	strncpy(display_html2, display_html, HTML_MAX - 1);
 
 	display_html[0] = 0;
 	strcat(display_html, "	var canvas = document.getElementById('myCanvas');\n");
@@ -1838,7 +1838,7 @@ int main ( int argc, char *argv[] ) {
 	mkdir(dir, 0755);
 
 	if (argc >= 3 && strcmp(argv[1], "-c") == 0) {
-		strcpy(clientmode_server, argv[2]);
+		strncpy(clientmode_server, argv[2], 1023);
 		if (argc >= 4) {
 			clientmode_port = atoi(argv[3]);
 		}
@@ -1867,7 +1867,7 @@ int main ( int argc, char *argv[] ) {
 	setup_waypoints();
 	setup_load();
 
-	strcpy(tmp_name, ModelData.name);
+	strncpy(tmp_name, ModelData.name, 200);
 
 
 #ifdef RPI_NO_X

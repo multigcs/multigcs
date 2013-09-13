@@ -395,7 +395,7 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 		if (tex_num != -1) {
 //			printf("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
 			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) {
-				strcpy(TexCache[tex_num].name, file);
+				strncpy(TexCache[tex_num].name, file, 1023);
 				TexCache[tex_num].atime = time(0);
 			} else {
 				printf("could not load image: %s\n", file);
@@ -522,7 +522,7 @@ void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2
 		if (tex_num != -1) {
 //			printf("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
 			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) { 
-				strcpy(TexCache[tex_num].name, file);
+				strncpy(TexCache[tex_num].name, file, 1023);
 				TexCache[tex_num].atime = time(0);
 			} else {
 				printf("could not load image: %s\n", file);
@@ -644,7 +644,7 @@ void draw_text_f3_fast (ESContext *esContext, float x1, float y1, float z1, floa
 		if (tex_num > 0) {
 //			printf("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
 			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) { 
-				strcpy(TexCache[tex_num].name, file);
+				strncpy(TexCache[tex_num].name, file, 1023);
 				TexCache[tex_num].atime = time(0);
 			} else {
 				printf("could not load image: %s\n", file);
@@ -707,7 +707,7 @@ void draw_char_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 		if (tex_num != -1) {
 //			printf("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
 			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) { 
-				strcpy(TexCache[tex_num].name, file);
+				strncpy(TexCache[tex_num].name, file, 1023);
 				TexCache[tex_num].atime = time(0);
 
 			} else {

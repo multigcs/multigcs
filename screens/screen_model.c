@@ -109,7 +109,7 @@ static uint8_t model_baud_change (char *name, float x, float y, int8_t button, f
 
 
 static uint8_t model_device_set (char *name, float x, float y, int8_t button, float data) {
-	strcpy(ModelData.teledevice, name);
+	strncpy(ModelData.teledevice, name, 199);
 	return 0;
 }
 
@@ -126,7 +126,7 @@ static uint8_t model_device_change (char *name, float x, float y, int8_t button,
 
 
 static uint8_t model_name_set (char *name, float x, float y, int8_t button, float data) {
-	strcpy(ModelData.name, name);
+	strncpy(ModelData.name, name, 199);
 	return 0;
 }
 
@@ -187,11 +187,11 @@ static uint8_t model_save_xml (char *name, float x, float y, int8_t button, floa
 }
 
 uint8_t model_save (char *name, float x, float y, int8_t button, float data) {
-	char tmp_str[100];
+	char tmp_str[200];
 	reset_buttons();
 	keyboard_set_callback(model_save_xml);
 	if (strstr(ModelData.name, ".xml\0") > 0) {
-		strcpy(tmp_str, ModelData.name);
+		strncpy(tmp_str, ModelData.name, 199);
 	} else {
 		sprintf(tmp_str, "%s.xml", ModelData.name);
 	}
@@ -220,7 +220,7 @@ static void model_parseTelemetry (xmlDocPtr doc, xmlNodePtr cur) {
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"device"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
-				strcpy(ModelData.teledevice, (char *)key);
+				strncpy(ModelData.teledevice, (char *)key, 199);
 			}
 			xmlFree(key);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"baud"))) {
@@ -232,13 +232,13 @@ static void model_parseTelemetry (xmlDocPtr doc, xmlNodePtr cur) {
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"bluetooth_addr"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
-				strcpy(ModelData.telebtaddr, (char *)key);
+				strncpy(ModelData.telebtaddr, (char *)key, 199);
 			}
 			xmlFree(key);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"bluetooth_pin"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
-				strcpy(ModelData.telebtpin, (char *)key);
+				strncpy(ModelData.telebtpin, (char *)key, 199);
 			}
 			xmlFree(key);
 		}
@@ -254,7 +254,7 @@ static void model_parseMavlinkParam (xmlDocPtr doc, xmlNodePtr cur, uint16_t par
 		if ((!xmlStrcmp(cur->name, (const xmlChar *)"name"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
-				strcpy(MavLinkVars[param].name, (char *)key);
+				strncpy(MavLinkVars[param].name, (char *)key, 199);
 			}
 			xmlFree(key);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"value"))) {
@@ -360,13 +360,13 @@ static void model_parseDoc (char *docname) {
 		die("Document is Empty!!!\n");
 		return;
 	}
-	strcpy(ModelData.name, basename(docname));
+	strncpy(ModelData.name, basename(docname), 199);
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
 		if ((!xmlStrcmp(cur->name, (const xmlChar *)"name"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
-				strcpy(ModelData.name, (char *)key);
+				strncpy(ModelData.name, (char *)key, 199);
 				if (strstr(ModelData.name, ".xml\0") <= 0) {
 					strcat(ModelData.name, ".xml");
 				}
@@ -375,7 +375,7 @@ static void model_parseDoc (char *docname) {
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"image"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
-				strcpy(ModelData.image, (char *)key);
+				strncpy(ModelData.image, (char *)key, 511);
 			}
 			xmlFree(key);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"type"))) {
@@ -419,7 +419,7 @@ static uint8_t model_load (char *name, float x, float y, int8_t button, float da
 
 
 static uint8_t model_image_set (char *name, float x, float y, int8_t button, float data) {
-	strcpy(ModelData.image, name);
+	strncpy(ModelData.image, name, 511);
 	reset_buttons();
 	return 0;
 }
