@@ -39,4 +39,4 @@ void tracker_exit (void);
 uint8_t tracker_connection_status (void);
 extern void tracker_setup_load(void);
 extern void tracker_setup_save(void);
-
+extern void tracker_setup_defaults (void);

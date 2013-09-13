@@ -28,6 +28,7 @@
 #include <screen_map.h>
 #include <my_mavlink.h>
 #include <screen_wpedit.h>
+#include <tracker.h>
 #include <logging.h>
 
 volatile float lat = 50.29;
@@ -879,6 +880,71 @@ void draw_quad (ESContext *esContext, float mark_lat, float mark_long, float mar
 	draw_circle_f3(esContext, x1 - size, y1 + size, mark_z, 0.015, 0, 0, 0, 255);
 	draw_circle_f3(esContext, x1 + size, y1 - size, mark_z, 0.015, 0, 0, 0, 255);
 	draw_circle_f3(esContext, x1 - size, y1 - size, mark_z, 0.015, 0, 0, 0, 255);
+
+#ifdef SDLGL
+	glPopMatrix();
+#endif
+
+#ifdef SDLGL
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+#else
+	esMatrixLoadIdentity(&modelview);
+	if (map_view != 1 && map_view != 3) {
+		esTranslate( &modelview, -offset_x1, offset_y1, 0.0 );
+	}
+	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
+#endif
+
+	draw_line_f3(esContext, x1, y1, 0.0, x1, y1, mark_z, 0, 0, 255, 255);
+
+#ifdef SDLGL
+	glPopMatrix();
+#endif
+
+}
+
+void draw_tracker (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, float pitch, float yaw, float lat, float lon, uint8_t zoom) {
+	ESMatrix modelview;
+#ifndef SDLGL
+	UserData *userData = esContext->userData;
+#endif
+	int mark_x = long2x(mark_long, lon, zoom);
+	int mark_y = lat2y(mark_lat, lat, zoom);
+	float x1 = (float)mark_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
+	float y1 = (float)mark_y / (float)esContext->height * 2.0 - 1.0;
+	float mark_z = mark_alt / alt_zoom - 0.022;
+	if (map_view == 0) {
+		mark_z = 0.001;
+	}
+
+#ifdef SDLGL
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+#else
+	esMatrixLoadIdentity(&modelview);
+	if (map_view != 1 && map_view != 3) {
+		esTranslate( &modelview, -offset_x1, offset_y1, 0.0 );
+	}
+#endif
+	esTranslate( &modelview, x1, -y1, -2.0 + mark_z);
+	esRotate( &modelview, yaw, 0.0, 0.0, 1.0 );
+	esRotate( &modelview, pitch, 1.0, 0.0, 0.0 );
+	esTranslate( &modelview, -x1, y1, 2.02 - mark_z);
+#ifndef SDLGL
+	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
+#endif
+
+	// Arrow
+	draw_line_f3(esContext, x1, y1 - 0.1, mark_z, x1, y1, mark_z, 0, 0, 0, 255);
+	draw_line_f3(esContext, x1, y1 - 0.1, mark_z, x1 - 0.02, y1 - 0.1 + 0.02, mark_z, 0, 0, 0, 255);
+	draw_line_f3(esContext, x1, y1 - 0.1, mark_z, x1 + 0.02, y1 - 0.1 + 0.02, mark_z, 0, 0, 0, 255);
+
+	// View-Line
+	draw_line_f3(esContext, x1, y1 - 10.0, mark_z, x1, y1, mark_z, 255, 255, 255, 128);
+
+	// Position
+	draw_circle_f3(esContext, x1, y1, mark_z, 0.015, 0, 0, 0, 255);
 
 #ifdef SDLGL
 	glPopMatrix();
@@ -1889,6 +1955,10 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			}
 		}
 	}
+
+	// Mark Tracker-Position
+	draw_tracker(esContext, tracker_lat, tracker_long, tracker_alt, tracker_pitch_dir, tracker_pan_dir, lat, lon, zoom);
+
 
 	// drawing Waypoint-Route
 	float last_lat = ModelData.p_lat;

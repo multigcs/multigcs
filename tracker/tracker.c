@@ -41,6 +41,50 @@ float tracker_pitch_dir_trimmed = 0.0;
 
 Tracker TrackerData[TRACKER_MAX];
 
+
+void tracker_setup_defaults (void) {
+	TrackerData[TRACKER_PAN_ANGLE_MIN].min = -180.0;
+	TrackerData[TRACKER_PAN_ANGLE_MIN].max = 180.0;
+	TrackerData[TRACKER_PAN_ANGLE_MIN].value = -90.0;
+	strcpy(TrackerData[TRACKER_PAN_ANGLE_MIN].name, "PAN_ANGLE_MIN");
+	TrackerData[TRACKER_PAN_ANGLE_MAX].min = -180.0;
+	TrackerData[TRACKER_PAN_ANGLE_MAX].max = 180.0;
+	TrackerData[TRACKER_PAN_ANGLE_MAX].value = 90.0;
+	strcpy(TrackerData[TRACKER_PAN_ANGLE_MAX].name, "PAN_ANGLE_MAX");
+	TrackerData[TRACKER_PAN_PULSE_MIN].min = 900.0;
+	TrackerData[TRACKER_PAN_PULSE_MIN].max = 2100.0;
+	TrackerData[TRACKER_PAN_PULSE_MIN].value = 1000.0;
+	strcpy(TrackerData[TRACKER_PAN_PULSE_MIN].name, "PAN_PULSE_MIN");
+	TrackerData[TRACKER_PAN_PULSE_MAX].min = 900.0;
+	TrackerData[TRACKER_PAN_PULSE_MAX].max = 2100.0;
+	TrackerData[TRACKER_PAN_PULSE_MAX].value = 2000.0;
+	strcpy(TrackerData[TRACKER_PAN_PULSE_MAX].name, "PAN_PULSE_MAX");
+	TrackerData[TRACKER_PAN_TRIM].min = -180.0;
+	TrackerData[TRACKER_PAN_TRIM].max = 180.0;
+	TrackerData[TRACKER_PAN_TRIM].value = 0.0;
+	strcpy(TrackerData[TRACKER_PAN_TRIM].name, "PAN_TRIM");
+	TrackerData[TRACKER_PITCH_ANGLE_MIN].min = -180.0;
+	TrackerData[TRACKER_PITCH_ANGLE_MIN].max = 180.0;
+	TrackerData[TRACKER_PITCH_ANGLE_MIN].value = -90.0;
+	strcpy(TrackerData[TRACKER_PITCH_ANGLE_MIN].name, "PITCH_ANGLE_MIN");
+	TrackerData[TRACKER_PITCH_ANGLE_MAX].min = -180.0;
+	TrackerData[TRACKER_PITCH_ANGLE_MAX].max = 180.0;
+	TrackerData[TRACKER_PITCH_ANGLE_MAX].value = 90.0;
+	strcpy(TrackerData[TRACKER_PITCH_ANGLE_MAX].name, "PITCH_ANGLE_MAX");
+	TrackerData[TRACKER_PITCH_PULSE_MIN].min = 900.0;
+	TrackerData[TRACKER_PITCH_PULSE_MIN].max = 2100.0;
+	TrackerData[TRACKER_PITCH_PULSE_MIN].value = 1000.0;
+	strcpy(TrackerData[TRACKER_PITCH_PULSE_MIN].name, "PITCH_PULSE_MIN");
+	TrackerData[TRACKER_PITCH_PULSE_MAX].min = 900.0;
+	TrackerData[TRACKER_PITCH_PULSE_MAX].max = 2100.0;
+	TrackerData[TRACKER_PITCH_PULSE_MAX].value = 2000.0;
+	strcpy(TrackerData[TRACKER_PITCH_PULSE_MAX].name, "PITCH_PULSE_MAX");
+	TrackerData[TRACKER_PITCH_TRIM].min = -180.0;
+	TrackerData[TRACKER_PITCH_TRIM].max = 180.0;
+	TrackerData[TRACKER_PITCH_TRIM].value = 0.0;
+	strcpy(TrackerData[TRACKER_PITCH_TRIM].name, "PITCH_TRIM");
+}
+
 void tracker_setup_save (void) {
         FILE *fr;
 	int n = 0;
@@ -66,6 +110,7 @@ void tracker_setup_load (void) {
 	float min = 0.0;
 	float max = 0.0;
 	float value = 0.0;
+	tracker_setup_defaults();
 	sprintf(filename, "%s/.multigcs/tracker.cfg", getenv("HOME"));
         fr = fopen("/home/odippel/.multigcs/tracker.cfg", "r");
 	if (fr != 0) {
@@ -176,52 +221,8 @@ uint8_t tracker_mode_get (void) {
 }
 
 uint8_t tracker_init (char *port, uint32_t baud) {
-	static uint8_t startup = 0;
 	printf("tracker: init\n");
 	tracker_thread_running = 1;
-	if (startup == 0) {
-		startup = 1;
-		TrackerData[TRACKER_PAN_ANGLE_MIN].min = -180.0;
-		TrackerData[TRACKER_PAN_ANGLE_MIN].max = 180.0;
-		TrackerData[TRACKER_PAN_ANGLE_MIN].value = -90.0;
-		strcpy(TrackerData[TRACKER_PAN_ANGLE_MIN].name, "PAN_ANGLE_MIN");
-		TrackerData[TRACKER_PAN_ANGLE_MAX].min = -180.0;
-		TrackerData[TRACKER_PAN_ANGLE_MAX].max = 180.0;
-		TrackerData[TRACKER_PAN_ANGLE_MAX].value = 90.0;
-		strcpy(TrackerData[TRACKER_PAN_ANGLE_MAX].name, "PAN_ANGLE_MAX");
-		TrackerData[TRACKER_PAN_PULSE_MIN].min = 900.0;
-		TrackerData[TRACKER_PAN_PULSE_MIN].max = 2100.0;
-		TrackerData[TRACKER_PAN_PULSE_MIN].value = 1000.0;
-		strcpy(TrackerData[TRACKER_PAN_PULSE_MIN].name, "PAN_PULSE_MIN");
-		TrackerData[TRACKER_PAN_PULSE_MAX].min = 900.0;
-		TrackerData[TRACKER_PAN_PULSE_MAX].max = 2100.0;
-		TrackerData[TRACKER_PAN_PULSE_MAX].value = 2000.0;
-		strcpy(TrackerData[TRACKER_PAN_PULSE_MAX].name, "PAN_PULSE_MAX");
-		TrackerData[TRACKER_PAN_TRIM].min = -180.0;
-		TrackerData[TRACKER_PAN_TRIM].max = 180.0;
-		TrackerData[TRACKER_PAN_TRIM].value = 0.0;
-		strcpy(TrackerData[TRACKER_PAN_TRIM].name, "PAN_TRIM");
-		TrackerData[TRACKER_PITCH_ANGLE_MIN].min = -180.0;
-		TrackerData[TRACKER_PITCH_ANGLE_MIN].max = 180.0;
-		TrackerData[TRACKER_PITCH_ANGLE_MIN].value = -90.0;
-		strcpy(TrackerData[TRACKER_PITCH_ANGLE_MIN].name, "PITCH_ANGLE_MIN");
-		TrackerData[TRACKER_PITCH_ANGLE_MAX].min = -180.0;
-		TrackerData[TRACKER_PITCH_ANGLE_MAX].max = 180.0;
-		TrackerData[TRACKER_PITCH_ANGLE_MAX].value = 90.0;
-		strcpy(TrackerData[TRACKER_PITCH_ANGLE_MAX].name, "PITCH_ANGLE_MAX");
-		TrackerData[TRACKER_PITCH_PULSE_MIN].min = 900.0;
-		TrackerData[TRACKER_PITCH_PULSE_MIN].max = 2100.0;
-		TrackerData[TRACKER_PITCH_PULSE_MIN].value = 1000.0;
-		strcpy(TrackerData[TRACKER_PITCH_PULSE_MIN].name, "PITCH_PULSE_MIN");
-		TrackerData[TRACKER_PITCH_PULSE_MAX].min = 900.0;
-		TrackerData[TRACKER_PITCH_PULSE_MAX].max = 2100.0;
-		TrackerData[TRACKER_PITCH_PULSE_MAX].value = 2000.0;
-		strcpy(TrackerData[TRACKER_PITCH_PULSE_MAX].name, "PITCH_PULSE_MAX");
-		TrackerData[TRACKER_PITCH_TRIM].min = -180.0;
-		TrackerData[TRACKER_PITCH_TRIM].max = 180.0;
-		TrackerData[TRACKER_PITCH_TRIM].value = 0.0;
-		strcpy(TrackerData[TRACKER_PITCH_TRIM].name, "PITCH_TRIM");
-	}
 	tracker_setup_load();
 	printf("tracker: init serial port...\n");
 	serial_fd_tracker = serial_open(port, baud);
