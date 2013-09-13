@@ -205,12 +205,20 @@ int thread_serial_tracker (void *unused) {
 //			float pulse_pitch = (tracker_pitch_dir_trimmed - TrackerData[TRACKER_PITCH_ANGLE_MIN].value) * (TrackerData[TRACKER_PITCH_PULSE_MAX].value - TrackerData[TRACKER_PITCH_PULSE_MIN].value) / (TrackerData[TRACKER_PITCH_ANGLE_MAX].value - TrackerData[TRACKER_PITCH_ANGLE_MIN].value) + TrackerData[TRACKER_PITCH_PULSE_MIN].value;
 //			printf("%fGrad %fGrad - %0.3fkm %0.0fm - %i %i\n", direction, direction_up, dist1, dist2, (int)pulse_pan, (int)pulse_pitch);
 
+
+			if (serial_fd_tracker != -1) {
+				char tmp_str[1024];
+				sprintf(tmp_str, "%i %i\n", (int)direction, (int)direction_up);
+				printf("%s\n", tmp_str);
+				write(serial_fd_tracker, tmp_str, strlen(tmp_str));
+			}
+
 		} else {
 			tracker_set_home();
 		}
 
 
-		usleep(100000);
+		usleep(50000);
 	}
 	printf("tracker: exit thread\n");
 	return 0;
@@ -226,7 +234,7 @@ uint8_t tracker_init (char *port, uint32_t baud) {
 	tracker_setup_load();
 	printf("tracker: init serial port...\n");
 	serial_fd_tracker = serial_open(port, baud);
-//	if (serial_fd_tracker != -1) {
+	if (serial_fd_tracker != -1) {
 #ifdef SDL2
 		sdl_thread_serial_tracker = SDL_CreateThread(thread_serial_tracker, NULL, NULL);
 #else
@@ -236,7 +244,7 @@ uint8_t tracker_init (char *port, uint32_t baud) {
 			fprintf(stderr, "* Unable to create thread_serial_tracker: %s\n", SDL_GetError());
 			return 1;
 		}
-//	}
+	}
 	return 0;
 }
 
