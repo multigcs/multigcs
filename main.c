@@ -1031,12 +1031,35 @@ printf("## keyname: %s ##\n", keyname);
 		if (waypoint_active < 1) {
 			waypoint_active = 1;
 		}
+
+#ifdef SDL2
+	} else if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEWHEEL) {
+		if (event.type == SDL_MOUSEWHEEL) {
+
+			if (event.button.x > 0) {
+				event.button.button = 4;
+			} else if (event.button.x < 0) {
+				event.button.button = 5;
+			}
+			event.button.x = mouse_x;
+			event.button.y = mouse_y;
+		}
+#else
 	} else if (event.type == SDL_MOUSEBUTTONDOWN) {
+#endif
 		float bx = (float)event.button.x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 		float by = (float)event.button.y / (float)esContext->height * 2.0 - 1.0;
+#ifdef SDL2
+		if (event.type != SDL_MOUSEWHEEL) {
+			if (check_button(view_mode, bx, by, event.button.button, BUTTON_PRESS) != -1) {
+				return;
+			}
+		}
+#else
 		if (check_button(view_mode, bx, by, event.button.button, BUTTON_PRESS) != -1) {
 			return;
 		}
+#endif
 		bx += offset_x1;
 		by += offset_y1;
 		if (event.button.button == 1) {
