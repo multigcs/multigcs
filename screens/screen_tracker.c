@@ -38,15 +38,11 @@ uint8_t tracker_cmd (char *name, float x, float y, int8_t button, float data) {
 		tracker_setup_save();
 	} else if (strcmp(name + 1, "LOAD") == 0) {
 		tracker_setup_load();
+	} else if (strcmp(name + 1, "HOME") == 0) {
+		tracker_set_home();
 	}
 	return 0;
 }
-
-uint8_t tracker_home (char *name, float x, float y, int8_t button, float data) {
-	tracker_set_home();
-	return 0;
-}
-
 
 uint8_t tracker_move (char *name, float x, float y, int8_t button, float data) {
 	int n = 0;
@@ -141,6 +137,7 @@ void screen_tracker (ESContext *esContext) {
 	}
 
 
-	draw_button(esContext, "set_home", view_mode, "SET_HOME", FONT_WHITE, 0.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, tracker_home, 0.0);
+	draw_button(esContext, "tRELOAD", view_mode, "RELOAD", FONT_WHITE, -0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, tracker_cmd, 0.0);
+	draw_button(esContext, "tHOME", view_mode, "SET_HOME", FONT_WHITE, 0.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, tracker_cmd, 0.0);
 }
 
