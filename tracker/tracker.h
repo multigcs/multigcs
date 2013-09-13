@@ -37,3 +37,6 @@ uint8_t tracker_mode_get (void);
 uint8_t tracker_init (char *port, uint32_t baud);
 void tracker_exit (void);
 uint8_t tracker_connection_status (void);
+extern void tracker_setup_load(void);
+extern void tracker_setup_save(void);
+

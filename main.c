@@ -1960,15 +1960,10 @@ int main ( int argc, char *argv[] ) {
 		webserv_init();
 	}
 
-	frsky_exit();
 	frsky_init(frsky_port, frsky_baud);
-	jeti_exit();
 	jeti_init(jeti_port, jeti_baud);
-	gcs_gps_exit();
 	gcs_gps_init(gcs_gps_port, gcs_gps_baud);
-	rcflow_exit();
 	rcflow_init(rcflow_port, rcflow_baud);
-	tracker_exit();
 	tracker_init(tracker_port, tracker_baud);
 
 	printf("telemetry: init thread\n");

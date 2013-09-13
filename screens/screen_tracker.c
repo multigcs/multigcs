@@ -34,6 +34,10 @@ uint8_t tracker_cmd (char *name, float x, float y, int8_t button, float data) {
 		TrackerData[TRACKER_PAN_TRIM].value = tracker_pan_dir;
 	} else if (strcmp(name + 1, "PITCH_TRIM") == 0) {
 		TrackerData[TRACKER_PITCH_TRIM].value = tracker_pitch_dir;
+	} else if (strcmp(name + 1, "SAVE") == 0) {
+		tracker_setup_save();
+	} else if (strcmp(name + 1, "LOAD") == 0) {
+		tracker_setup_load();
 	}
 	return 0;
 }

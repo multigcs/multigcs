@@ -41,6 +41,50 @@ float tracker_pitch_dir_trimmed = 0.0;
 
 Tracker TrackerData[TRACKER_MAX];
 
+void tracker_setup_save (void) {
+        FILE *fr;
+	int n = 0;
+	char filename[1024];
+	sprintf(filename, "%s/.multigcs/tracker.cfg", getenv("HOME"));
+        fr = fopen(filename, "w");
+	if (fr != 0) {
+		for (n = 0; n < TRACKER_MAX; n++) {
+		        fprintf(fr, "%s %f %f %f\n", TrackerData[n].name, TrackerData[n].min, TrackerData[n].max, TrackerData[n].value);
+		}
+	        fclose(fr);
+	} else {
+		printf("Can not save setup-file: %s\n", filename);
+	}
+}
+
+void tracker_setup_load (void) {
+        FILE *fr;
+	int n = 0;
+	char filename[1024];
+	char name[101];
+        char line[101];
+	float min = 0.0;
+	float max = 0.0;
+	float value = 0.0;
+	sprintf(filename, "%s/.multigcs/tracker.cfg", getenv("HOME"));
+        fr = fopen("/home/odippel/.multigcs/tracker.cfg", "r");
+	if (fr != 0) {
+	        while(fgets(line, 100, fr) != NULL) {
+		        sscanf(line, "%s %f %f %f\n", name, &min, &max, &value);
+			for (n = 0; n < TRACKER_MAX; n++) {
+				if (strcmp(TrackerData[n].name, name) == 0) {
+					TrackerData[n].min = min;
+					TrackerData[n].max = max;
+					TrackerData[n].value = value;
+				}
+			}
+		}
+	        fclose(fr);
+	} else {
+		printf("Can not load setup-file: %s\n", filename);
+	}
+}
+
 uint8_t tracker_connection_status (void) {
 	if (serial_fd_tracker == -1) {
 		return 0;
@@ -178,6 +222,7 @@ uint8_t tracker_init (char *port, uint32_t baud) {
 		TrackerData[TRACKER_PITCH_TRIM].value = 0.0;
 		strcpy(TrackerData[TRACKER_PITCH_TRIM].name, "PITCH_TRIM");
 	}
+	tracker_setup_load();
 	printf("tracker: init serial port...\n");
 	serial_fd_tracker = serial_open(port, baud);
 //	if (serial_fd_tracker != -1) {
@@ -201,6 +246,7 @@ void tracker_exit (void) {
 		sdl_thread_serial_tracker = NULL;
 	}
 	serial_close(serial_fd_tracker);
+	tracker_setup_save();
 }
 
 
