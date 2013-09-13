@@ -657,7 +657,7 @@ void setup_load (void) {
 	                        } else if (strcmp(var, "center_map") == 0) {
 	                                center_map = atoi(val);
 	                        } else if (strcmp(var, "touchscreen_device") == 0) {
-	                                strncpy(touchscreen_device, val, 1023);
+	                                strncpy(touchscreen_device, val, 200);
 	                        } else if (strcmp(var, "calibration_mode") == 0) {
 	                                calibration_mode = atoi(val);
 	                        } else if (strcmp(var, "calibration_min_x") == 0) {
