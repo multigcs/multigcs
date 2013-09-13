@@ -112,7 +112,7 @@ void tracker_setup_load (void) {
 	float value = 0.0;
 	tracker_setup_defaults();
 	sprintf(filename, "%s/.multigcs/tracker.cfg", getenv("HOME"));
-        fr = fopen("/home/odippel/.multigcs/tracker.cfg", "r");
+        fr = fopen(filename, "r");
 	if (fr != 0) {
 	        while(fgets(line, 100, fr) != NULL) {
 		        sscanf(line, "%s %f %f %f\n", name, &min, &max, &value);
