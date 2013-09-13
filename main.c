@@ -1871,11 +1871,15 @@ int main ( int argc, char *argv[] ) {
 #endif
 
 	char dir[1024];
-	sprintf(dir, "%s/.multigcs/MAPS/part/", getenv("HOME"));
+	sprintf(dir, "%s/.multigcs", getenv("HOME"));
 	mkdir(dir, 0755);
-	sprintf(dir, "%s/.multigcs/logs/", getenv("HOME"));
+	sprintf(dir, "%s/.multigcs/MAPS", getenv("HOME"));
 	mkdir(dir, 0755);
-	sprintf(dir, "%s/.multigcs/models/", getenv("HOME"));
+	sprintf(dir, "%s/.multigcs/MAPS/part", getenv("HOME"));
+	mkdir(dir, 0755);
+	sprintf(dir, "%s/.multigcs/logs", getenv("HOME"));
+	mkdir(dir, 0755);
+	sprintf(dir, "%s/.multigcs/models", getenv("HOME"));
 	mkdir(dir, 0755);
 
 	if (argc >= 3 && strcmp(argv[1], "-c") == 0) {
