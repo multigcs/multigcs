@@ -120,12 +120,13 @@ void draw_value_bar2 (ESContext *esContext, float x1, float y1, float x2, float 
 
 }
 
-void draw_value_barchannels (ESContext *esContext, float x1, float y1, char *title, float min, float max, uint8_t num, float *values) {
+void draw_value_barchannels (ESContext *esContext, float x1, float y1, char *title, float min, float max, uint8_t num, int16_t *values) {
 	char tmp_str[10];
 	draw_text_f(esContext, x1, y1, 0.08, 0.08, FONT_WHITE, title);
 	uint8_t n = 0;
 	for (n = 0; n < num; n++) {
-		draw_value_bar2(esContext, x1 + 0.02 + n * 0.05, y1 + 0.1, x1 + 0.04 + n * 0.05, y1 + 0.4, 1, 0.0, 100.0, 0.0, 0.0, values[n]);
+		draw_value_bar2(esContext, x1 + 0.02 + n * 0.05, y1 + 0.1, x1 + 0.04 + n * 0.05, y1 + 0.4, 1, 0.0, 200.0, 0.0, 0.0, (float)values[n] + 100.0);
+printf("%i\n", values[n]);
 		sprintf(tmp_str, "%i", n + 1);
 		draw_text_f(esContext, x1 + 0.04 + n * 0.05 - 0.036, y1 + 0.4, 0.05, 0.05, FONT_WHITE, tmp_str);
 	}
@@ -165,8 +166,7 @@ void screen_telemetry (ESContext *esContext) {
 	draw_value_barmeter(esContext, -0.7, 0.0, -0.4, 0.8, "RSSI(RX)", "", 0, 0.0, 100.0, 40.0, 20.0, ModelData.rssi_rx);
 
 
-	float data[] = {80.0, 20.0, 60.0, 30.0, 60.0, 14.0, 10.0, 90.0};
-	draw_value_barchannels(esContext, -0.2, 0.1, "Channels", 0, 100, 8, data);
+	draw_value_barchannels(esContext, -0.2, 0.1, "Channels", 0, 100, 8, ModelData.radio);
 
 	draw_value_barmeter(esContext, 0.3, 0.0, 0.6, 0.8, "SATS", "", 0, 0.0, 10.0, 4.0, 3.0, ModelData.numSat);
 	draw_value_barmeter(esContext, 0.8, 0.0, 1.1, 0.8, "HEART", "", 0, 0.0, 100.0, 40.0, 20.0, ModelData.heartbeat);
