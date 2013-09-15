@@ -148,7 +148,7 @@ int thread_serial_tracker (void *unused) {
 	uint8_t read_buffer[201];
 	uint8_t read_num = 0;
 	while (gui_running == 1 && tracker_thread_running == 1) {
-		if (serial_fd_tracker != -1) {
+/*		if (serial_fd_tracker != -1) {
 			while ((read_num = read(serial_fd_tracker, read_buffer, 200)) > 0) {
 				for (nn = 0; nn < read_num; nn++) {
 					new = read_buffer[nn];
@@ -157,7 +157,7 @@ int thread_serial_tracker (void *unused) {
 				}
 			}
 		}
-
+*/
 		if (tracker_lat != 0.0 && tracker_long != 0.0) {
 			float angle = 0.0;
 			float dist1 = 0.0;
@@ -209,7 +209,7 @@ int thread_serial_tracker (void *unused) {
 			if (serial_fd_tracker != -1) {
 				char tmp_str[1024];
 				sprintf(tmp_str, "%i %i\n", (int)direction, (int)direction_up);
-				printf("%s\n", tmp_str);
+//				printf("%s\n", tmp_str);
 				write(serial_fd_tracker, tmp_str, strlen(tmp_str));
 			}
 
