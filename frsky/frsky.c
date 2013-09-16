@@ -269,11 +269,13 @@ uint8_t frsky_mode_get (void) {
 }
 
 void frsky_mode (uint8_t new_mode) {
-	mode = new_mode;
-	if (mode == 1) {
-		printf("frsky: extented telemtry\n");
-	} else {
-		printf("frsky: normal telemtry\n");
+	if (mode != new_mode) {
+		mode = new_mode;
+		if (mode == 1) {
+			printf("frsky: extented telemtry\n");
+		} else {
+			printf("frsky: normal telemtry\n");
+		}
 	}
 }
 
