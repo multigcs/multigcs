@@ -49,7 +49,7 @@ void mavlink_meta_get_option (int id, char *name, char *entry) {
 	MavLinkVars[n].min = atof(MavLinkVars[n].values);
 	for (n2 = 0; n2 < strlen(MavLinkVars[n].values); n2++) {
 		if (MavLinkVars[n].values[n2] == ',') {
-			strncpy(tmp_str3, MavLinkVars[n].values + n3, 1027);
+			strncpy(tmp_str3, MavLinkVars[n].values + n3, 1023);
 			for (n4 = 0; n4 < strlen(tmp_str3); n4++) {
 				if (tmp_str3[n4] == ',') {
 					tmp_str3[n4] = 0;
@@ -57,16 +57,16 @@ void mavlink_meta_get_option (int id, char *name, char *entry) {
 				}
 			}
 			if (atoi(tmp_str3) == id) {
-				strncpy(entry, tmp_str3, 1027);
+				strncpy(entry, tmp_str3, 1023);
 //				break;
 			}
 			n3 = n2 + 1;
 		}
 	}
-	strncpy(tmp_str3, MavLinkVars[n].values + n3, 1027);
+	strncpy(tmp_str3, MavLinkVars[n].values + n3, 1023);
 	MavLinkVars[n].max = atof(tmp_str3);
 	if (atoi(tmp_str3) == id) {
-		strncpy(entry, tmp_str3, 1027);
+		strncpy(entry, tmp_str3, 1023);
 	}
 }
 
@@ -89,7 +89,7 @@ void mavlink_meta_get_bits (int id, char *name, char *entry) {
 	MavLinkVars[n].min = atof(MavLinkVars[n].bits);
 	for (n2 = 0; n2 < strlen(MavLinkVars[n].bits); n2++) {
 		if (MavLinkVars[n].bits[n2] == ',') {
-			strncpy(tmp_str3, MavLinkVars[n].bits + n3, 1027);
+			strncpy(tmp_str3, MavLinkVars[n].bits + n3, 1023);
 			for (n4 = 0; n4 < strlen(tmp_str3); n4++) {
 				if (tmp_str3[n4] == ',') {
 					tmp_str3[n4] = 0;
@@ -97,16 +97,16 @@ void mavlink_meta_get_bits (int id, char *name, char *entry) {
 				}
 			}
 			if (atoi(tmp_str3) == id) {
-				strncpy(entry, tmp_str3, 1027);
+				strncpy(entry, tmp_str3, 1023);
 //				break;
 			}
 			n3 = n2 + 1;
 		}
 	}
-	strncpy(tmp_str3, MavLinkVars[n].bits + n3, 1027);
+	strncpy(tmp_str3, MavLinkVars[n].bits + n3, 1023);
 	MavLinkVars[n].max = atof(tmp_str3);
 	if (atoi(tmp_str3) == id) {
-		strncpy(entry, tmp_str3, 1027);
+		strncpy(entry, tmp_str3, 1023);
 	}
 }
 
@@ -422,7 +422,7 @@ uint8_t mavlink_aux_toggle (char *name, float x, float y, int8_t button, float d
 }
 
 uint8_t mavlink_select_main (char *name, float x, float y, int8_t button, float data) {
-	strncpy(select_section, name + 8, 1027);
+	strncpy(select_section, name + 8, 1023);
 	set_sel = 0;
 	reset_buttons();
 	return 0;
@@ -520,7 +520,7 @@ void screen_mavlink_menu (ESContext *esContext) {
 	row2 = 0;
 	for (row = 0; row < 500 - 1; row++) {
 		if (strlen(MavLinkVars[row].name) > 3) {
-			strncpy(tmp_str, MavLinkVars[row].name, 1027);
+			strncpy(tmp_str, MavLinkVars[row].name, 1023);
 			for (n = 0; n < strlen(tmp_str) ; n++) {
 				if (tmp_str[n] == '_') {
 					tmp_str[n] = 0;
@@ -537,7 +537,7 @@ void screen_mavlink_menu (ESContext *esContext) {
 			if (flag2 == 0) {
 				for (row2 = 0; row2 < 500 - 1; row2++) {
 					if (main_groups[row2][0] == 0) {
-						strncpy(main_groups[row2], tmp_str, 1027);
+						strncpy(main_groups[row2], tmp_str, 1023);
 						break;
 					}
 				}
