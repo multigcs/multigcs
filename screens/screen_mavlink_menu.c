@@ -16,7 +16,7 @@ float set_sel = 0.0;
 float sel2 = 0.0;
 float set_sel2 = 0.0;
 
-static char select_section[128];
+static char select_section[1024];
 static int option_menu = -1;
 static int bits_menu = -1;
 static int param_menu = -1;
