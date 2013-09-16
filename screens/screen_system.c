@@ -238,12 +238,13 @@ void screen_overview (ESContext *esContext) {
 	} else {
 		draw_button(esContext, "LOGGING", setup.view_mode, "LOGGING", FONT_WHITE, 0.8, -0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
 	}
+#ifndef OSX
 	if (logplay == 1) {
 		draw_button(esContext, "LOGPLAYER", setup.view_mode, "LOGPLAYER", FONT_GREEN, 0.8, -0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
 	} else {
 		draw_button(esContext, "LOGPLAYER", setup.view_mode, "LOGPLAYER", FONT_WHITE, 0.8, -0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
 	}
-
+#endif
 
 }
 
