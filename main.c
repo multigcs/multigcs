@@ -110,77 +110,36 @@ char modeltypes[5][15] = {
 	"CAR",
 	"BOAT",
 };
-uint8_t fullscreen = 0;
-uint8_t borderless = 0;
-uint16_t screen_w = SCREEN_W;
-uint16_t screen_h = SCREEN_H;
-uint16_t screen_border_x = 0;
-uint16_t screen_border_y = 0;
-float keep_ratio = 0.0;
+
+GcsSetup setup;
+
 char keyboard_key[100];
 uint8_t keyboard_shift = 0;
 uint8_t keyboard_altgr = 0;
-char blender_export_filename[2048];
 SDL_Event event;
-char touchscreen_device[200];
-uint8_t calibration_mode = 1;
-uint16_t calibration_timeout = 200;
-int calibration_min_x = 1000;
-int calibration_max_x = 3000;
 int last_x = 0;
 int last_y = 0;
-int calibration_min_y = 1000;
-int calibration_max_y = 3000;
 int touch_fd = -1;
 volatile uint8_t gui_running = 1;
-uint8_t hud_view = 0;
-uint8_t view_stab = 0;
-uint8_t hud_view_map = 0;
-uint8_t hud_view_video = 0;
-uint8_t hud_view_tunnel = 0;
-uint8_t hud_view_mark = 0;
-uint16_t webport = 8080;
-float gearth_interval = 1;
-uint8_t clientmode = 0;
-char clientmode_server[1024];
-uint16_t clientmode_port = 8080;
 float gcs_roll = 0.0;
 float gcs_pitch = 0.0;
 float gcs_yaw = 0.0;
-float volt_min = 11.0;
-int8_t speak = 1;
 uint16_t heartbeat_timer = 0;
 uint16_t heartbeat_rc_timer = 0;
 uint16_t blink_timer = 0;
 uint16_t speak_timer = 0;
 uint16_t msg_timer = 0;
-uint8_t map_mark = 0;
 uint8_t redraw_flag = 1;
 uint16_t mouse_x = 0;
 uint16_t mouse_y = 0;
-char jeti_port[1024];
-uint32_t jeti_baud = 9600;
-char frsky_port[1024];
-uint32_t frsky_baud = 9600;
-char tracker_port[1024];
-uint32_t tracker_baud = 38400;
-char gcs_gps_port[1024];
-uint32_t gcs_gps_baud = 9600;
-char rcflow_port[1024];
-uint32_t rcflow_baud = 115200;
-char telemetrie_port[1024];
-uint32_t telemetrie_baud = 57600;
-uint8_t telemetrie_type = 0;
 uint8_t message = 0;
 char message_txt[1024];
 WayPoint WayPoints[MAX_WAYPOINTS];
 int8_t waypoint_active = 0;
-uint8_t view_mode = 0;
 uint8_t view_mode_last = 255;
 uint8_t view_mode_next = 0;
 float trans_count = 0.0;
 Button Buttons[MAX_BUTTONS];
-uint8_t contrast = 0;
 uint8_t connection_found = 0;
 
 #ifdef HTML_DRAWING
@@ -202,29 +161,29 @@ void SDL_KillThread(SDL_Thread *thread) {
 void save_screenshot (void) {
 	char name[100];
 	char tmp_str[100];
-	if (view_mode == VIEW_MODE_HUD) {
+	if (setup.view_mode == VIEW_MODE_HUD) {
 		strncpy(name, "hud", 99);
-	} else if (view_mode == VIEW_MODE_TELEMETRY) {
+	} else if (setup.view_mode == VIEW_MODE_TELEMETRY) {
 		strncpy(name, "telemetry", 99);
-	} else if (view_mode == VIEW_MODE_MODEL) {
+	} else if (setup.view_mode == VIEW_MODE_MODEL) {
 		strncpy(name, "model", 99);
-	} else if (view_mode == VIEW_MODE_RCFLOW) {
+	} else if (setup.view_mode == VIEW_MODE_RCFLOW) {
 		strncpy(name, "rcflow", 99);
-	} else if (view_mode == VIEW_MODE_FMS) {
+	} else if (setup.view_mode == VIEW_MODE_FMS) {
 		strncpy(name, "fms", 99);
-	} else if (view_mode == VIEW_MODE_WPEDIT) {
+	} else if (setup.view_mode == VIEW_MODE_WPEDIT) {
 		strncpy(name, "fms", 99);
-	} else if (view_mode == VIEW_MODE_MAP) {
+	} else if (setup.view_mode == VIEW_MODE_MAP) {
 		strncpy(name, "map", 99);
-	} else if (view_mode == VIEW_MODE_VIDEOLIST) {
+	} else if (setup.view_mode == VIEW_MODE_VIDEOLIST) {
 		strncpy(name, "video", 99);
-	} else if (view_mode == VIEW_MODE_SYSTEM) {
+	} else if (setup.view_mode == VIEW_MODE_SYSTEM) {
 		strncpy(name, "system", 99);
-	} else if (view_mode == VIEW_MODE_TCL) {
+	} else if (setup.view_mode == VIEW_MODE_TCL) {
 		strncpy(name, "tcl", 99);
-	} else if (view_mode == VIEW_MODE_TRACKER) {
+	} else if (setup.view_mode == VIEW_MODE_TRACKER) {
 		strncpy(name, "tracker", 99);
-	} else if (view_mode == VIEW_MODE_FCMENU) {
+	} else if (setup.view_mode == VIEW_MODE_FCMENU) {
 		strncpy(name, teletypes[ModelData.teletype], 99);
 	}
 
@@ -347,7 +306,7 @@ int8_t check_button (uint8_t view_mode, float x, float y, uint8_t button, uint8_
 }
 
 uint8_t need_bluetooth (void) {
-	if (strstr(telemetrie_port, "/dev/rfcomm") > 0) {
+	if (strstr(setup.telemetrie_port, "/dev/rfcomm") > 0) {
 		return 1;
 	}
 	return 0;
@@ -368,31 +327,31 @@ void stop_telemetrie (void) {
 void reset_telemetrie (void) {
 	stop_telemetrie();
 	if (ModelData.teletype == TELETYPE_MULTIWII_21) {
-		mwi21_init(telemetrie_port, telemetrie_baud);
+		mwi21_init(setup.telemetrie_port, setup.telemetrie_baud);
 	} else if (ModelData.teletype == TELETYPE_SIMPLEBGC) {
-		simplebgc_init(telemetrie_port, telemetrie_baud);
+		simplebgc_init(setup.telemetrie_port, setup.telemetrie_baud);
 	} else if (ModelData.teletype == TELETYPE_BRUGI) {
-		brugi_init(telemetrie_port, telemetrie_baud);
+		brugi_init(setup.telemetrie_port, setup.telemetrie_baud);
 	} else if (ModelData.teletype == TELETYPE_BASEFLIGHT) {
-		mwi21_init(telemetrie_port, telemetrie_baud);
+		mwi21_init(setup.telemetrie_port, setup.telemetrie_baud);
 	} else if (ModelData.teletype == TELETYPE_GPS_NMEA) {
-		gps_init(telemetrie_port, telemetrie_baud);
+		gps_init(setup.telemetrie_port, setup.telemetrie_baud);
 	} else if (ModelData.teletype == TELETYPE_OPENPILOT) {
-		openpilot_init(telemetrie_port, telemetrie_baud);
+		openpilot_init(setup.telemetrie_port, setup.telemetrie_baud);
 	} else if (ModelData.teletype == TELETYPE_CLI) {
-		cli_init(telemetrie_port, telemetrie_baud);
+		cli_init(setup.telemetrie_port, setup.telemetrie_baud);
 	} else if (ModelData.teletype == TELETYPE_BASEFLIGHTCLI) {
-		baseflightcli_init(telemetrie_port, telemetrie_baud);
+		baseflightcli_init(setup.telemetrie_port, setup.telemetrie_baud);
 	} else if (ModelData.teletype == TELETYPE_FRSKY) {
 		frsky_mode(1);
 	} else {
-		mavlink_init(telemetrie_port, telemetrie_baud);
+		mavlink_init(setup.telemetrie_port, setup.telemetrie_baud);
 	}
 }
 
 void set_telemetrie (char *device, uint32_t baud) {
-	strncpy(telemetrie_port, device, 1023);
-	telemetrie_baud = baud;
+	strncpy(setup.telemetrie_port, device, 1023);
+	setup.telemetrie_baud = baud;
 	reset_telemetrie();
 }
 
@@ -479,8 +438,8 @@ void setup_save (void) {
 	}
         FILE *fr;
         int n = 0;
-	if (calibration_mode > 0) {
-		calibration_mode = 1;
+	if (setup.calibration_mode > 0) {
+		setup.calibration_mode = 1;
 	}
 //        printf("** saving file\n");
 	char filename[1024];
@@ -488,50 +447,49 @@ void setup_save (void) {
         fr = fopen(filename, "w");
 	if (fr != 0) {
 	        fprintf(fr, "model_name   %s\n", ModelData.name);
-	        fprintf(fr, "view_mode    %i\n", view_mode);
-	        fprintf(fr, "contrast     %i\n", contrast);
-	        fprintf(fr, "screen_w     %i\n", screen_w);
-	        fprintf(fr, "screen_h     %i\n", screen_h);
-	        fprintf(fr, "screen_border_x     %i\n", screen_border_x);
-	        fprintf(fr, "screen_border_y     %i\n", screen_border_y);
-	        fprintf(fr, "keep_ratio   %f\n", keep_ratio);
-	        fprintf(fr, "fullscreen   %i\n", fullscreen);
-	        fprintf(fr, "borderless   %i\n", borderless);
+	        fprintf(fr, "view_mode    %i\n", setup.view_mode);
+	        fprintf(fr, "contrast     %i\n", setup.contrast);
+	        fprintf(fr, "screen_w     %i\n", setup.screen_w);
+	        fprintf(fr, "screen_h     %i\n", setup.screen_h);
+	        fprintf(fr, "screen_border_x     %i\n", setup.screen_border_x);
+	        fprintf(fr, "screen_border_y     %i\n", setup.screen_border_y);
+	        fprintf(fr, "keep_ratio   %f\n", setup.keep_ratio);
+	        fprintf(fr, "fullscreen   %i\n", setup.fullscreen);
+	        fprintf(fr, "borderless   %i\n", setup.borderless);
 	        fprintf(fr, "lat          %0.8f\n", lat);
 	        fprintf(fr, "lon          %0.8f\n", lon);
 	        fprintf(fr, "zoom         %i\n", zoom);
 	        fprintf(fr, "map_type     %i\n", map_type);
 	        fprintf(fr, "center_map     %i\n", center_map);
 	        fprintf(fr, "waypoint_active     %i\n", waypoint_active);
-	        fprintf(fr, "gcs_gps_port     %s\n", gcs_gps_port);
-	        fprintf(fr, "gcs_gps_baud     %i\n", gcs_gps_baud);
-	        fprintf(fr, "rcflow_port     %s\n", rcflow_port);
-	        fprintf(fr, "rcflow_baud     %i\n", rcflow_baud);
-	        fprintf(fr, "telemetrie_port %s\n", telemetrie_port);
-	        fprintf(fr, "telemetrie_baud %i\n", telemetrie_baud);
+	        fprintf(fr, "gcs_gps_port     %s\n", setup.gcs_gps_port);
+	        fprintf(fr, "gcs_gps_baud     %i\n", setup.gcs_gps_baud);
+	        fprintf(fr, "rcflow_port     %s\n", setup.rcflow_port);
+	        fprintf(fr, "rcflow_baud     %i\n", setup.rcflow_baud);
+	        fprintf(fr, "telemetrie_port %s\n", setup.telemetrie_port);
+	        fprintf(fr, "telemetrie_baud %i\n", setup.telemetrie_baud);
 	        fprintf(fr, "telemetrie_type %i\n", ModelData.teletype);
-	        fprintf(fr, "jeti_port %s\n", jeti_port);
-	        fprintf(fr, "jeti_baud %i\n", jeti_baud);
-	        fprintf(fr, "frsky_port %s\n", frsky_port);
-	        fprintf(fr, "frsky_baud %i\n", frsky_baud);
-	        fprintf(fr, "tracker_port %s\n", tracker_port);
-	        fprintf(fr, "tracker_baud %i\n", tracker_baud);
-	        fprintf(fr, "volt_min     %0.1f\n", volt_min);
-	        fprintf(fr, "speak        %i\n", speak);
-	        fprintf(fr, "hud_view     %i\n", hud_view);
-	        fprintf(fr, "hud_view_map %i\n", hud_view_map);
-	        fprintf(fr, "hud_view_tunnel %i\n", hud_view_tunnel);
-	        fprintf(fr, "map_view     %i\n", map_view);
-	        fprintf(fr, "webport     %i\n", webport);
-	        fprintf(fr, "gearth_interval     %f\n", gearth_interval);
-	        fprintf(fr, "touchscreen_device       %s\n", touchscreen_device);
-		fprintf(fr, "calibration_mode         %i\n", calibration_mode);
-		fprintf(fr, "calibration_min_x        %i\n", calibration_min_x);
-		fprintf(fr, "calibration_max_x        %i\n", calibration_max_x);
-		fprintf(fr, "calibration_min_y        %i\n", calibration_min_y);
-		fprintf(fr, "calibration_max_y        %i\n", calibration_max_y);
+	        fprintf(fr, "jeti_port %s\n", setup.jeti_port);
+	        fprintf(fr, "jeti_baud %i\n", setup.jeti_baud);
+	        fprintf(fr, "frsky_port %s\n", setup.frsky_port);
+	        fprintf(fr, "frsky_baud %i\n", setup.frsky_baud);
+	        fprintf(fr, "tracker_port %s\n", setup.tracker_port);
+	        fprintf(fr, "tracker_baud %i\n", setup.tracker_baud);
+	        fprintf(fr, "volt_min     %0.1f\n", setup.volt_min);
+	        fprintf(fr, "speak        %i\n", setup.speak);
+	        fprintf(fr, "hud_view_screen %i\n", setup.hud_view_screen);
+	        fprintf(fr, "hud_view_map    %i\n", setup.hud_view_map);
+	        fprintf(fr, "hud_view_tunnel %i\n", setup.hud_view_tunnel);
+	        fprintf(fr, "map_view        %i\n", map_view);
+	        fprintf(fr, "webport         %i\n", setup.webport);
+	        fprintf(fr, "gearth_interval %f\n", setup.gearth_interval);
+	        fprintf(fr, "touchscreen_device       %s\n", setup.touchscreen_device);
+		fprintf(fr, "calibration_mode         %i\n", setup.calibration_mode);
+		fprintf(fr, "calibration_min_x        %i\n", setup.calibration_min_x);
+		fprintf(fr, "calibration_max_x        %i\n", setup.calibration_max_x);
+		fprintf(fr, "calibration_min_y        %i\n", setup.calibration_min_y);
+		fprintf(fr, "calibration_max_y        %i\n", setup.calibration_max_y);
 		fprintf(fr, "videolist_lastfile       %s\n", videolist_lastfile);
-		fprintf(fr, "blender_export_filename  %s\n", blender_export_filename);
 	        fprintf(fr, "\n");
 	        fprintf(fr, "[waypoints]\n");
 	        for (n = 0; n < MAX_WAYPOINTS; n++) {
@@ -557,28 +515,56 @@ void setup_save (void) {
 
 void setup_load (void) {
         FILE *fr;
-        char line[101];
-        char var[101];
-        char val[101];
+        char line[1024];
+        char var[1024];
+        char val[1024];
         int mode = 0;
         int wp_num = 0;
-	blender_export_filename[0] = 0;
 #ifdef RPI_NO_X
-	strncpy(gcs_gps_port, "/dev/ttyAMA0", 1023);
+	strncpy(setup.gcs_gps_port, "/dev/ttyAMA0", 1023);
+	setup.gcs_gps_baud = 9600;
 #else
-	strncpy(gcs_gps_port, "/dev/ttyUSB20", 1023);
+	strncpy(setup.gcs_gps_port, "/dev/ttyUSB20", 1023);
+	setup.gcs_gps_baud = 9600;
 #endif
-	gcs_gps_baud = 9600;
-	strncpy(rcflow_port, "/dev/ttyUSB21", 1023);
-	rcflow_baud = 115200;
-	strncpy(telemetrie_port, "/dev/rfcomm0", 1023);
-	telemetrie_baud = 115200;
-	strncpy(jeti_port, "/dev/ttyUSB10", 1023);
-	jeti_baud = 9600;
-	strncpy(frsky_port, "/dev/ttyUSB30", 1023);
-	frsky_baud = 9600;
-	strncpy(tracker_port, "/dev/ttyUSB40", 1023);
-	tracker_baud = 38400;
+	strncpy(setup.telemetrie_port, "/dev/ttyUSB22", 1023);
+	setup.telemetrie_baud = 115200;
+	strncpy(setup.rcflow_port, "/dev/ttyUSB21", 1023);
+	setup.rcflow_baud = 115200;
+	strncpy(setup.jeti_port, "/dev/ttyUSB10", 1023);
+	setup.jeti_baud = 9600;
+	strncpy(setup.frsky_port, "/dev/ttyUSB30", 1023);
+	setup.frsky_baud = 9600;
+	strncpy(setup.tracker_port, "/dev/ttyUSB40", 1023);
+	setup.tracker_baud = 38400;
+
+	setup.fullscreen = 0;
+	setup.borderless = 0;
+	setup.screen_w = SCREEN_W;
+	setup.screen_h = SCREEN_H;
+	setup.screen_border_x = 0;
+	setup.screen_border_y = 0;
+	setup.keep_ratio = 0.0;
+	setup.touchscreen_device[0] = 0;
+	keyboard_key[0] = 0;
+	setup.calibration_mode = 1;
+	setup.calibration_min_x = 1000;
+	setup.calibration_max_x = 3000;
+	setup.calibration_min_y = 1000;
+	setup.calibration_max_y = 3000;
+	setup.hud_view_screen = 0;
+	setup.hud_view_stab = 0;
+	setup.hud_view_map = 0;
+	setup.hud_view_video = 0;
+	setup.hud_view_tunnel = 0;
+	setup.hud_view_mark = 0;
+	setup.webport = 8080;
+	setup.gearth_interval = 1.0;
+	setup.volt_min = 11.0;
+	setup.speak = 0;
+	setup.view_mode = 0;
+	setup.contrast = 0;
+
 	char filename[1024];
 	sprintf(filename, "%s/.multigcs/setup.cfg", getenv("HOME"));
         fr = fopen (filename, "r");
@@ -590,30 +576,30 @@ void setup_load (void) {
 //	                printf ("       %s      %s\n", var, val);
 	                if (mode == 0) {
 	                        if (strcmp(var, "view_mode") == 0) {
-					view_mode = atoi(val);
-					view_mode_next = view_mode;
+					setup.view_mode = atoi(val);
+					view_mode_next = setup.view_mode;
 	                        } else if (strcmp(var, "model_name") == 0) {
 	                                strncpy(ModelData.name, val, 199);
 	                        } else if (strcmp(var, "volt_min") == 0) {
-					volt_min = atof(val);
+					setup.volt_min = atof(val);
 	                        } else if (strcmp(var, "contrast") == 0) {
-					contrast = atoi(val);
+					setup.contrast = atoi(val);
 	                        } else if (strcmp(var, "screen_w") == 0) {
-					screen_w = atoi(val);
+					setup.screen_w = atoi(val);
 	                        } else if (strcmp(var, "screen_h") == 0) {
-					screen_h = atoi(val);
+					setup.screen_h = atoi(val);
 	                        } else if (strcmp(var, "screen_border_x") == 0) {
-					screen_border_x = atoi(val);
+					setup.screen_border_x = atoi(val);
 	                        } else if (strcmp(var, "screen_border_y") == 0) {
-					screen_border_y = atoi(val);
+					setup.screen_border_y = atoi(val);
 	                        } else if (strcmp(var, "keep_ratio") == 0) {
-					keep_ratio = atof(val);
+					setup.keep_ratio = atof(val);
 	                        } else if (strcmp(var, "speak") == 0) {
-					speak = atoi(val);
+					setup.speak = atoi(val);
 	                        } else if (strcmp(var, "fullscreen") == 0) {
-					fullscreen = atoi(val);
+					setup.fullscreen = atoi(val);
 	                        } else if (strcmp(var, "borderless") == 0) {
-					borderless = atoi(val);
+					setup.borderless = atoi(val);
 	                        } else if (strcmp(var, "lat") == 0) {
 					lat = atof(val);
 	                        } else if (strcmp(var, "lon") == 0) {
@@ -623,67 +609,65 @@ void setup_load (void) {
 	                        } else if (strcmp(var, "waypoint_active") == 0) {
 	                                waypoint_active = atoi(val);
 	                        } else if (strcmp(var, "gcs_gps_port") == 0) {
-	                                strncpy(gcs_gps_port, val, 1023);
+	                                strncpy(setup.gcs_gps_port, val, 1023);
 	                        } else if (strcmp(var, "gcs_gps_baud") == 0) {
-	                                gcs_gps_baud = atoi(val);
+	                                setup.gcs_gps_baud = atoi(val);
 	                        } else if (strcmp(var, "rcflow_port") == 0) {
-	                                strncpy(rcflow_port, val, 1023);
+	                                strncpy(setup.rcflow_port, val, 1023);
 	                        } else if (strcmp(var, "rcflow_baud") == 0) {
-	                                rcflow_baud = atoi(val);
+	                                setup.rcflow_baud = atoi(val);
 	                        } else if (strcmp(var, "telemetrie_port") == 0) {
-	                                strncpy(telemetrie_port, val, 1023);
+	                                strncpy(setup.telemetrie_port, val, 1023);
 	                        } else if (strcmp(var, "telemetrie_baud") == 0) {
-	                                telemetrie_baud = atoi(val);
+	                                setup.telemetrie_baud = atoi(val);
 	                        } else if (strcmp(var, "telemetrie_port") == 0) {
-	                                strncpy(telemetrie_port, val, 1023);
+	                                strncpy(setup.telemetrie_port, val, 1023);
 	                        } else if (strcmp(var, "telemetrie_baud") == 0) {
-	                                telemetrie_baud = atoi(val);
+	                                setup.telemetrie_baud = atoi(val);
 	                        } else if (strcmp(var, "telemetrie_type") == 0) {
 	                                ModelData.teletype = atoi(val);
 	                        } else if (strcmp(var, "jeti_port") == 0) {
-	                                strncpy(jeti_port, val, 1023);
+	                                strncpy(setup.jeti_port, val, 1023);
 	                        } else if (strcmp(var, "jeti_baud") == 0) {
-	                                jeti_baud = atoi(val);
+	                                setup.jeti_baud = atoi(val);
 	                        } else if (strcmp(var, "frsky_port") == 0) {
-	                                strncpy(frsky_port, val, 1023);
+	                                strncpy(setup.frsky_port, val, 1023);
 	                        } else if (strcmp(var, "frsky_baud") == 0) {
-	                                frsky_baud = atoi(val);
+	                                setup.frsky_baud = atoi(val);
 	                        } else if (strcmp(var, "tracker_port") == 0) {
-	                                strncpy(tracker_port, val, 1023);
+	                                strncpy(setup.tracker_port, val, 1023);
 	                        } else if (strcmp(var, "tracker_baud") == 0) {
-	                                tracker_baud = atoi(val);
+	                                setup.tracker_baud = atoi(val);
 	                        } else if (strcmp(var, "map_type") == 0) {
 	                                map_type = atoi(val);
 	                        } else if (strcmp(var, "center_map") == 0) {
 	                                center_map = atoi(val);
 	                        } else if (strcmp(var, "touchscreen_device") == 0) {
-	                                strncpy(touchscreen_device, val, 200);
+	                                strncpy(setup.touchscreen_device, val, 200);
 	                        } else if (strcmp(var, "calibration_mode") == 0) {
-	                                calibration_mode = atoi(val);
+	                                setup.calibration_mode = atoi(val);
 	                        } else if (strcmp(var, "calibration_min_x") == 0) {
-	                                calibration_min_x = atoi(val);
+	                                setup.calibration_min_x = atoi(val);
 	                        } else if (strcmp(var, "calibration_max_x") == 0) {
-	                                calibration_max_x = atoi(val);
+	                                setup.calibration_max_x = atoi(val);
 	                        } else if (strcmp(var, "calibration_min_y") == 0) {
-	                                calibration_min_y = atoi(val);
+	                                setup.calibration_min_y = atoi(val);
 	                        } else if (strcmp(var, "calibration_max_y") == 0) {
-	                                calibration_max_y = atoi(val);
+	                                setup.calibration_max_y = atoi(val);
 	                        } else if (strcmp(var, "videolist_lastfile") == 0) {
 	                                strncpy(videolist_lastfile, val, 1023);
-	                        } else if (strcmp(var, "blender_export_filename") == 0) {
-	                                strncpy(blender_export_filename, val, 1023);
-	                        } else if (strcmp(var, "hud_view") == 0) {
-	                                hud_view = atoi(val);
+	                        } else if (strcmp(var, "hud_view_screen") == 0) {
+	                                setup.hud_view_screen = atoi(val);
 	                        } else if (strcmp(var, "hud_view_map") == 0) {
-	                                hud_view_map = atoi(val);
+	                                setup.hud_view_map = atoi(val);
 	                        } else if (strcmp(var, "hud_view_tunnel") == 0) {
-	                                hud_view_tunnel = atoi(val);
+	                                setup.hud_view_tunnel = atoi(val);
 	                        } else if (strcmp(var, "map_view") == 0) {
 	                                map_view = atoi(val);
 	                        } else if (strcmp(var, "webport") == 0) {
-	                                webport = atoi(val);
+	                                setup.webport = atoi(val);
 	                        } else if (strcmp(var, "gearth_interval") == 0) {
-	                                gearth_interval = atoi(val);
+	                                setup.gearth_interval = atoi(val);
 	                        } else if (strcmp(var, "[waypoints]") == 0) {
 	                                mode = 1;
 	                        }
@@ -726,8 +710,8 @@ void setup_load (void) {
 	} else {
 		printf("setup: Can not load setup-file: %s\n", filename);
 	}
-	if (calibration_mode > 0) {
-		calibration_mode = 1;
+	if (setup.calibration_mode > 0) {
+		setup.calibration_mode = 1;
 	}
 
 	strncpy(WayPoints[0].name, ModelData.name, 127);
@@ -736,8 +720,8 @@ void setup_load (void) {
 	ModelData.p_alt = WayPoints[0].p_alt;
 	ModelData.yaw = WayPoints[0].yaw;
 
-	strncpy(ModelData.teledevice, telemetrie_port, 199);
-	ModelData.telebaud = telemetrie_baud;
+	strncpy(ModelData.teledevice, setup.telemetrie_port, 199);
+	ModelData.telebaud = setup.telemetrie_baud;
 
 }
 
@@ -912,18 +896,15 @@ void check_events (ESContext *esContext, SDL_Event event) {
 				keyboard_key[n] = tolower(keyboard_key[n]);
 			}
 		}
-
-printf("## keyname: %s ##\n", keyname);
-
+		printf("## keyname: %s ##\n", keyname);
 		redraw_flag = 1;
 	} else if (event.type == SDL_MOUSEMOTION) {
 		event.type = 0;
 		mouse_x = event.button.x;
 		mouse_y = event.button.y;
-		map_mark = 0;
 		float bx = (float)event.button.x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 		float by = (float)event.button.y / (float)esContext->height * 2.0 - 1.0;
-		if (check_button(view_mode, bx, by, event.button.button, BUTTON_MOVE) != -1) {
+		if (check_button(setup.view_mode, bx, by, event.button.button, BUTTON_MOVE) != -1) {
 			redraw_flag = 1;
 			return;
 		}
@@ -951,7 +932,7 @@ printf("## keyname: %s ##\n", keyname);
 				offset_x1 -= x1 - mousestart_x;
 				offset_y1 -= y1 - mousestart_y;
 			}
-		} else	if (view_mode == VIEW_MODE_MAP) {
+		} else	if (setup.view_mode == VIEW_MODE_MAP) {
 			float x1 = (float)event.button.x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 			float y1 = (float)event.button.y / (float)esContext->height * 2.0 - 1.0;
 			if (x1 > -0.3 && x1 < -0.0 && y1 > 0.9 && y1 < 0.95) {
@@ -963,16 +944,6 @@ printf("## keyname: %s ##\n", keyname);
 			} else if (x1 < 0.6 && x1 > 0.3 && y1 > 0.9 && y1 < 0.95) {
 				return;
 			}
-			if (event.button.y > 0 && event.button.y < 60 && event.button.x > 60 && event.button.x < esContext->width - 60) {
-				map_mark = 1;
-			} else if (event.button.y > esContext->height - 60 && event.button.y < esContext->height && event.button.x > 60 && event.button.x < esContext->width - 60) {
-				map_mark = 2;
-			} else if (event.button.x > 0 && event.button.x < 60 && event.button.y > 60 && event.button.y < esContext->height - 60) {
-				map_mark = 3;
-			} else if (event.button.x > esContext->width - 60 && event.button.x < esContext->width && event.button.y > 60 && event.button.y < esContext->height - 60) {
-				map_mark = 4;
-			}
-
 			x1 += offset_x1;
 			y1 += offset_y1;
 			int16_t bx = (x1 / aspect + 1.0) / 2.0 * (float)esContext->width;
@@ -980,21 +951,18 @@ printf("## keyname: %s ##\n", keyname);
 			float mouse_long = x2long(bx, lon, zoom);
 			float mouse_lat = y2lat(by, lat, zoom);
 			int mouse_alt = get_altitude(mouse_lat, mouse_long);
-
 			int ret_dd = 0;
 			int ret_dm = 0;
 			get_declination(mouse_lat, mouse_long, mouse_alt, &ret_dd, &ret_dm);
-
 			char msg[200];
 			sprintf(msg, "POS: %f, %f (ALT_G:%im MAG_D:%id%02im)\n", mouse_lat, mouse_long, mouse_alt, ret_dd, ret_dm);
 			sys_message(msg);
-
 		}
 		redraw_flag = 1;
 	} else if (event.type == SDL_MOUSEBUTTONUP) {
 		float bx = (float)event.button.x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 		float by = (float)event.button.y / (float)esContext->height * 2.0 - 1.0;
-		if (check_button(view_mode, bx, by, event.button.button, BUTTON_RELEASE) != -1) {
+		if (check_button(setup.view_mode, bx, by, event.button.button, BUTTON_RELEASE) != -1) {
 			return;
 		}
 		if (mousemode == 1) {
@@ -1051,12 +1019,12 @@ printf("## keyname: %s ##\n", keyname);
 		float by = (float)event.button.y / (float)esContext->height * 2.0 - 1.0;
 #ifdef SDL2
 		if (event.type != SDL_MOUSEWHEEL) {
-			if (check_button(view_mode, bx, by, event.button.button, BUTTON_PRESS) != -1) {
+			if (check_button(setup.view_mode, bx, by, event.button.button, BUTTON_PRESS) != -1) {
 				return;
 			}
 		}
 #else
-		if (check_button(view_mode, bx, by, event.button.button, BUTTON_PRESS) != -1) {
+		if (check_button(setup.view_mode, bx, by, event.button.button, BUTTON_PRESS) != -1) {
 			return;
 		}
 #endif
@@ -1065,12 +1033,12 @@ printf("## keyname: %s ##\n", keyname);
 		if (event.button.button == 1) {
 			if (event.button.y > esContext->height - 40 && event.button.y < esContext->height) {
 				if (event.button.x > esContext->width - 40 && event.button.x < esContext->width) {
-					speak = 1 - speak;
+					setup.speak = 1 - setup.speak;
 					return;
 				}
 			}
 		}
-		if (view_mode == VIEW_MODE_MAP) {
+		if (setup.view_mode == VIEW_MODE_MAP) {
 			float x1 = (float)event.button.x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 			float y1 = (float)event.button.y / (float)esContext->height * 2.0 - 1.0;
 			x1 += offset_x1;
@@ -1178,7 +1146,7 @@ printf("## keyname: %s ##\n", keyname);
 					zoom--;
 				}
 			}
-		} else if (view_mode == VIEW_MODE_FCMENU) {
+		} else if (setup.view_mode == VIEW_MODE_FCMENU) {
 			if (event.button.button == 1) {
 			} else if (event.button.button == 2) {
 			} else if (event.button.button == 3) {
@@ -1234,8 +1202,8 @@ int touchscreen_thread (void *data) {
 			static int8_t touch = 0;
 			static int8_t touch_x = 0;
 			static int8_t touch_y = 0;
-			int diff_x = calibration_max_x - calibration_min_x;
-			int diff_y = calibration_max_y - calibration_min_y;
+			int diff_x = setup.calibration_max_x - setup.calibration_min_x;
+			int diff_y = setup.calibration_max_y - setup.calibration_min_y;
 			rd = read(touch_fd, ev, sizeof(struct input_event) * 64);
 			if (rd >= (int)sizeof(struct input_event)) {
 				for (i = 0; i < rd / sizeof(struct input_event); i++) {
@@ -1251,13 +1219,13 @@ int touchscreen_thread (void *data) {
 								touch_y = 0;
 							}
 						} else if (ev[i].code == 0) {
-							if (calibration_mode == 1 || calibration_mode == 3) {
-								calibration_max_x = (int)ev[i].value;
-							} else if (calibration_mode == 2 || calibration_mode == 4) {
-								calibration_min_x = (int)ev[i].value;
+							if (setup.calibration_mode == 1 || setup.calibration_mode == 3) {
+								setup.calibration_max_x = (int)ev[i].value;
+							} else if (setup.calibration_mode == 2 || setup.calibration_mode == 4) {
+								setup.calibration_min_x = (int)ev[i].value;
 							}
-							diff_x = calibration_max_x - calibration_min_x;
-							last_x = screen_w - ((int)ev[i].value - calibration_min_x) * (screen_w - 120) / diff_x - 60;
+							diff_x = setup.calibration_max_x - setup.calibration_min_x;
+							last_x = setup.screen_w - ((int)ev[i].value - setup.calibration_min_x) * (setup.screen_w - 120) / diff_x - 60;
 							if (touch == 0) {
 								user_event.type=SDL_MOUSEMOTION;
 								user_event.button.x = last_x;
@@ -1266,13 +1234,13 @@ int touchscreen_thread (void *data) {
 							}
 							touch_x = 1;
 						} else if (ev[i].code == 1) {
-							if (calibration_mode == 1 || calibration_mode == 2) {
-								calibration_max_y = (int)ev[i].value;
-							} else if (calibration_mode == 3 || calibration_mode == 4) {
-								calibration_min_y = (int)ev[i].value;
+							if (setup.calibration_mode == 1 || setup.calibration_mode == 2) {
+								setup.calibration_max_y = (int)ev[i].value;
+							} else if (setup.calibration_mode == 3 || setup.calibration_mode == 4) {
+								setup.calibration_min_y = (int)ev[i].value;
 							}
-							diff_y = calibration_max_y - calibration_min_y;
-							last_y = screen_h - ((int)ev[i].value - calibration_min_y) * (screen_h - 120) / diff_y - 60;
+							diff_y = setup.calibration_max_y - setup.calibration_min_y;
+							last_y = setup.screen_h - ((int)ev[i].value - setup.calibration_min_y) * (setup.screen_h - 120) / diff_y - 60;
 							if (touch == 0) {
 								user_event.type=SDL_MOUSEMOTION;
 								user_event.button.x = last_x;
@@ -1291,10 +1259,10 @@ int touchscreen_thread (void *data) {
 							touch_x = 0;
 							touch_y = 0;
 						} else if (touch == 1 && touch_x > 0 && touch_y > 0) {
-							if (calibration_mode > 0) {
-								calibration_mode++;
-								if (calibration_mode > 5) {
-									calibration_mode = 0;
+							if (setup.calibration_mode > 0) {
+								setup.calibration_mode++;
+								if (setup.calibration_mode > 5) {
+									setup.calibration_mode = 0;
 									setup_save();
 								}
 							} else {
@@ -1352,7 +1320,7 @@ void transition_rotate_end (ESContext *esContext, float trans_count) {
 
 static uint8_t screen_last (char *name, float x, float y, int8_t button, float data) {
 	if (view_mode_next > 0) {
-		view_mode_next = view_mode - 1;
+		view_mode_next = setup.view_mode - 1;
 	} else {
 		view_mode_next = VIEW_MODE_LAST - 1;
 	}
@@ -1362,7 +1330,7 @@ static uint8_t screen_last (char *name, float x, float y, int8_t button, float d
 }
 
 static uint8_t screen_next (char *name, float x, float y, int8_t button, float data) {
-	view_mode_next = view_mode + 1;
+	view_mode_next = setup.view_mode + 1;
 	if (view_mode_next > VIEW_MODE_LAST - 1) {
 		view_mode_next = 0;
 	}
@@ -1432,7 +1400,7 @@ void Draw (ESContext *esContext) {
 	}
 
 	// set RTL-Waypoints to HOME-Position
-	if (view_mode != VIEW_MODE_WPEDIT) {
+	if (setup.view_mode != VIEW_MODE_WPEDIT) {
 		uint16_t n = 0;
 		for (n = 0; n < MAX_WAYPOINTS; n++) {
 			if (WayPoints[n].p_lat != 0.0 && strcmp(WayPoints[n].command, "RTL") == 0) {
@@ -1487,18 +1455,18 @@ void Draw (ESContext *esContext) {
 			map_type = 0;
 		}
 	} else if (strcmp(keyboard_key, "tab") == 0) {
-		view_mode_next = view_mode + 1;
+		view_mode_next = setup.view_mode + 1;
 		if (view_mode_next > VIEW_MODE_LAST - 1) {
 			view_mode_next = 0;
 		}
 		trans_count = 1.0;
 		setup_save();
 	} else if (strcmp(keyboard_key, "s") == 0) {
-		if (view_mode == VIEW_MODE_FMS || view_mode == VIEW_MODE_MAP) {
+		if (setup.view_mode == VIEW_MODE_FMS || setup.view_mode == VIEW_MODE_MAP) {
 			send_waypoints();
 		}
 	} else if (strcmp(keyboard_key, "r") == 0) {
-		if (view_mode == VIEW_MODE_FMS || view_mode == VIEW_MODE_MAP) {
+		if (setup.view_mode == VIEW_MODE_FMS || setup.view_mode == VIEW_MODE_MAP) {
 			read_waypoints();
 		}
 	} else if (strcmp(keyboard_key, "print screen") == 0 || strcmp(keyboard_key, "printscreen") == 0) {
@@ -1594,7 +1562,7 @@ void Draw (ESContext *esContext) {
 		blink_timer = timer;
 		redraw_flag = 1;
 	}
-	if (speak == 1) {
+	if (setup.speak == 1) {
 		static uint8_t speak = 0;
 		if (timer - speak_timer > 200 || timer < speak_timer) {
 			speak += 5;
@@ -1606,7 +1574,7 @@ void Draw (ESContext *esContext) {
 				system("#espeak -v en \"lost rc\" > /dev/null 2> /dev/null &");
 			} else 	if (ModelData.heartbeat == 0 && connection_found == 1) {
 				system("#espeak -v en \"lost heartbeat\" > /dev/null 2> /dev/null &");
-			} else 	if (ModelData.voltage < volt_min) {
+			} else 	if (ModelData.voltage < setup.volt_min) {
 				system("#espeak -v en \"low battery\" > /dev/null 2> /dev/null &");
 			}
 		}
@@ -1632,14 +1600,14 @@ void Draw (ESContext *esContext) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 #endif
 
-	if (view_mode_last != view_mode) {
-		view_mode_last = view_mode;
+	if (view_mode_last != setup.view_mode) {
+		view_mode_last = setup.view_mode;
 		reset_buttons();
 	}
 
 #ifndef CONSOLE_ONLY
 #ifdef RPI_NO_X
-	if (calibration_mode > 0) {
+	if (setup.calibration_mode > 0) {
 		screen_calibration(esContext);
 #ifndef SDLGL
 		eglSwapBuffers(esContext->eglDisplay, esContext->eglSurface);
@@ -1662,54 +1630,54 @@ void Draw (ESContext *esContext) {
 		if (trans_count < 90.0) {
 			transition_rotate_begin(esContext, trans_count);
 		} else if (trans_count < 180.0) {
-			view_mode = view_mode_next;
+			setup.view_mode = view_mode_next;
 			transition_rotate_begin(esContext, trans_count + 180);
 		} else {
 			trans_count = 0.0;
 		}
 	}
 #else
-	view_mode = view_mode_next;
+	setup.view_mode = view_mode_next;
 #endif
 
 
-	if (view_mode == VIEW_MODE_HUD) {
+	if (setup.view_mode == VIEW_MODE_HUD) {
 		screen_hud(esContext);
-	} else if (view_mode == VIEW_MODE_TELEMETRY) {
+	} else if (setup.view_mode == VIEW_MODE_TELEMETRY) {
 		screen_background(esContext);
 		screen_telemetry(esContext);
-	} else if (view_mode == VIEW_MODE_MODEL) {
+	} else if (setup.view_mode == VIEW_MODE_MODEL) {
 		screen_background(esContext);
 		screen_model(esContext);
-	} else if (view_mode == VIEW_MODE_RCFLOW) {
+	} else if (setup.view_mode == VIEW_MODE_RCFLOW) {
 //		screen_background(esContext);
 		screen_rcflow(esContext);
-	} else if (view_mode == VIEW_MODE_FMS) {
+	} else if (setup.view_mode == VIEW_MODE_FMS) {
 		screen_fms(esContext);
-	} else if (view_mode == VIEW_MODE_WPEDIT) {
+	} else if (setup.view_mode == VIEW_MODE_WPEDIT) {
 		if (wpedit_last_mode == VIEW_MODE_MAP) {
 			screen_map(esContext, lat, lon, zoom);
 			draw_box_f3(esContext, -1.5, -1.0, 0.002, 1.5, 1.0, 0.002, 0, 0, 0, 200);
 		}
 		screen_wpedit(esContext);
-	} else if (view_mode == VIEW_MODE_MAP) {
+	} else if (setup.view_mode == VIEW_MODE_MAP) {
 		if (map_view == 3) {
 			map_view = 0;
 		}
 		screen_map(esContext, lat, lon, zoom);
-	} else if (view_mode == VIEW_MODE_VIDEOLIST) {
+	} else if (setup.view_mode == VIEW_MODE_VIDEOLIST) {
 		screen_background(esContext);
 		screen_videolist(esContext);
-	} else if (view_mode == VIEW_MODE_SYSTEM) {
+	} else if (setup.view_mode == VIEW_MODE_SYSTEM) {
 		screen_background(esContext);
 		screen_system(esContext);
-	} else if (view_mode == VIEW_MODE_TCL) {
+	} else if (setup.view_mode == VIEW_MODE_TCL) {
 		screen_background(esContext);
 		screen_tcl(esContext);
-	} else if (view_mode == VIEW_MODE_TRACKER) {
+	} else if (setup.view_mode == VIEW_MODE_TRACKER) {
 		screen_background(esContext);
 		screen_tracker(esContext);
-	} else if (view_mode == VIEW_MODE_FCMENU) {
+	} else if (setup.view_mode == VIEW_MODE_FCMENU) {
 		screen_background(esContext);
 		if (ModelData.teletype == TELETYPE_MULTIWII_21) {
 			screen_mwi_menu(esContext);
@@ -1735,7 +1703,7 @@ void Draw (ESContext *esContext) {
 		if (trans_count < 90.0) {
 			transition_rotate_end(esContext, trans_count);
 		} else if (trans_count < 180.0) {
-			view_mode = view_mode_next;
+			setup.view_mode = view_mode_next;
 			transition_rotate_end(esContext, trans_count + 180);
 		} else {
 			trans_count = 0.0;
@@ -1756,8 +1724,8 @@ void Draw (ESContext *esContext) {
 	}
 
 
-	draw_button(esContext, "<<", view_mode, "[<<]", FONT_WHITE, -1.3, -0.95, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, screen_last, 0.0);
-	draw_button(esContext, ">>", view_mode, "[>>]", FONT_WHITE, 1.3, -0.95, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, screen_next, 0.0);
+	draw_button(esContext, "<<", setup.view_mode, "[<<]", FONT_WHITE, -1.3, -0.95, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, screen_last, 0.0);
+	draw_button(esContext, ">>", setup.view_mode, "[>>]", FONT_WHITE, 1.3, -0.95, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, screen_next, 0.0);
 
 	if (message > 0) {
 		draw_text_f(esContext, 0.0 - strlen(message_txt) * 0.04 * 0.6 / 2 - 0.012, -0.98, 0.04, 0.04, FONT_BLACK_BG, message_txt);
@@ -1767,22 +1735,22 @@ void Draw (ESContext *esContext) {
 			draw_text_f(esContext, 1.2 - strlen("LOST_RC") * 0.06 * 0.6, 0.9, 0.06, 0.06, FONT_PINK, "LOST_RC");
 		} else if (ModelData.heartbeat == 0 && connection_found == 1) {
 			draw_text_f(esContext, 1.2 - strlen("LOST_CON") * 0.06 * 0.6, 0.9, 0.06, 0.06, FONT_PINK, "LOST_CON");
-		} else if (ModelData.voltage > 1.0 && ModelData.voltage < volt_min) {
+		} else if (ModelData.voltage > 1.0 && ModelData.voltage < setup.volt_min) {
 			draw_text_f(esContext, 1.2 - strlen("LOW_BAT") * 0.06 * 0.6, 0.9, 0.06, 0.06, FONT_PINK, "LOW_BAT");
 		}
 	}
 	// Speaker
-	if (speak == 1) {
+	if (setup.speak == 1) {
 		draw_image(esContext, esContext->width - 40, esContext->height - 40, 16, 16, TEXTURE_SPEAKER);
 	} else {
 		draw_image(esContext, esContext->width - 40, esContext->height - 40, 16, 16, TEXTURE_SPEAKER_MUTE);
 	}
 	if (logmode == 2) {
-		draw_button(esContext, "log", view_mode, "[P]", FONT_GREEN, 1.35, 0.85, 0.003, 0.04, ALIGN_CENTER, ALIGN_TOP, logging_set_mode, 0.0);
+		draw_button(esContext, "log", setup.view_mode, "[P]", FONT_GREEN, 1.35, 0.85, 0.003, 0.04, ALIGN_CENTER, ALIGN_TOP, logging_set_mode, 0.0);
 	} else if (logmode == 1) {
-		draw_button(esContext, "log", view_mode, "[L]", FONT_GREEN, 1.35, 0.85, 0.003, 0.04, ALIGN_CENTER, ALIGN_TOP, logging_set_mode, 0.0);
+		draw_button(esContext, "log", setup.view_mode, "[L]", FONT_GREEN, 1.35, 0.85, 0.003, 0.04, ALIGN_CENTER, ALIGN_TOP, logging_set_mode, 0.0);
 	} else {
-		draw_button(esContext, "log", view_mode, "[L]", FONT_WHITE, 1.35, 0.85, 0.003, 0.04, ALIGN_CENTER, ALIGN_TOP, logging_set_mode, 0.0);
+		draw_button(esContext, "log", setup.view_mode, "[L]", FONT_WHITE, 1.35, 0.85, 0.003, 0.04, ALIGN_CENTER, ALIGN_TOP, logging_set_mode, 0.0);
 	}
 
 	// LogPlay
@@ -1906,9 +1874,6 @@ int main ( int argc, char *argv[] ) {
 		TexCache[n].texture = 0;
 	}
 
-	touchscreen_device[0] = 0;
-	keyboard_key[0] = 0;
-
 	setup_waypoints();
 	setup_load();
 
@@ -1916,7 +1881,7 @@ int main ( int argc, char *argv[] ) {
 
 
 #ifdef RPI_NO_X
-	if ((touch_fd = open(touchscreen_device, O_RDONLY)) >= 0) {
+	if ((touch_fd = open(setup.touchscreen_device, O_RDONLY)) >= 0) {
 		printf("touch: init thread\n");
 #ifdef SDL2
 		thread = SDL_CreateThread(touchscreen_thread, NULL, NULL);
@@ -1928,7 +1893,7 @@ int main ( int argc, char *argv[] ) {
 			return 0;
 		}
 	} else {
-		calibration_mode = 0;
+		setup.calibration_mode = 0;
 	}
 #endif
 
@@ -1937,7 +1902,7 @@ int main ( int argc, char *argv[] ) {
 #ifndef SDLGL
 	esInitContext ( &esContext );
 	esContext.userData = &userData;
-	esCreateWindow ( &esContext, "GL-GCS", screen_w, screen_h, ES_WINDOW_RGB );
+	esCreateWindow ( &esContext, "GL-GCS", setup.screen_w, setup.screen_h, ES_WINDOW_RGB );
 
 	if (! glesInit(&esContext)) {
 		return 0;
@@ -1987,11 +1952,11 @@ int main ( int argc, char *argv[] ) {
 		webserv_init();
 	}
 
-	frsky_init(frsky_port, frsky_baud);
-	jeti_init(jeti_port, jeti_baud);
-	gcs_gps_init(gcs_gps_port, gcs_gps_baud);
-	rcflow_init(rcflow_port, rcflow_baud);
-	tracker_init(tracker_port, tracker_baud);
+	frsky_init(setup.frsky_port, setup.frsky_baud);
+	jeti_init(setup.jeti_port, setup.jeti_baud);
+	gcs_gps_init(setup.gcs_gps_port, setup.gcs_gps_baud);
+	rcflow_init(setup.rcflow_port, setup.rcflow_baud);
+	tracker_init(setup.tracker_port, setup.tracker_baud);
 
 	printf("telemetry: init thread\n");
 	reset_telemetrie();

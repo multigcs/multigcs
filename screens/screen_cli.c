@@ -148,7 +148,7 @@ void screen_cli (ESContext *esContext) {
 
 	draw_box_f3(esContext, -1.3, -0.8, 0.002, 1.27, 0.87, 0.002, 90, 90, 90, 200);
 	draw_rect_f3(esContext, -1.3, -0.8, 0.002, 1.27, 0.87, 0.002, 255, 255, 255, 255);
-	set_button("cli", view_mode, -1.3, -0.8, 1.27, 0.87, cli_move, (float)0, 2);
+	set_button("cli", setup.view_mode, -1.3, -0.8, 1.27, 0.87, cli_move, (float)0, 2);
 	draw_scrollbar(esContext, CLI_MAX_LINES - 25 - cli_history, CLI_MAX_LINES - 25, cli_scroll);
 
 	for (nn = CLI_MAX_LINES - 25 - cli_history; nn < CLI_MAX_LINES - cli_history && nn2 < 25; nn++) {

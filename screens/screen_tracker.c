@@ -119,9 +119,9 @@ void screen_tracker (ESContext *esContext) {
 		for (n = 0; n < TRACKER_TYPE_LAST; n++) {
 			sprintf(tmp_str, "tSETTYPE_%s", trackername[n]);
 			if (n == trackertype) {
-				draw_button(esContext, tmp_str, view_mode, trackername[n], FONT_GREEN, -0.8, -0.75 + n * 0.15, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, tracker_cmd, (float)n);
+				draw_button(esContext, tmp_str, setup.view_mode, trackername[n], FONT_GREEN, -0.8, -0.75 + n * 0.15, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, tracker_cmd, (float)n);
 			} else {
-				draw_button(esContext, tmp_str, view_mode, trackername[n], FONT_WHITE, -0.8, -0.75 + n * 0.15, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, tracker_cmd, (float)n);
+				draw_button(esContext, tmp_str, setup.view_mode, trackername[n], FONT_WHITE, -0.8, -0.75 + n * 0.15, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, tracker_cmd, (float)n);
 			}
 		}
 	} else {
@@ -157,17 +157,17 @@ void screen_tracker (ESContext *esContext) {
 				draw_line_f3(esContext, SLIDER_START + ((val - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 - 0.01, 0.002, SLIDER_START + ((val - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 + 0.1 + 0.01, 0.002, 0, 255, 255, 127);
 			}
 			sprintf(tmp_str, "S%s", TrackerData[n].name);
-			set_button(tmp_str, view_mode, SLIDER_START, -0.75 + n * 0.15, SLIDER_START + SLIDER_LEN, -0.75 + n * 0.15 + 0.1, tracker_move, (float)n, 1);
+			set_button(tmp_str, setup.view_mode, SLIDER_START, -0.75 + n * 0.15, SLIDER_START + SLIDER_LEN, -0.75 + n * 0.15 + 0.1, tracker_move, (float)n, 1);
 			sprintf(tmp_str, "T%s", TrackerData[n].name);
 			sprintf(tmp_str2, "%s: %0.1f", TrackerData[n].name, TrackerData[n].value);
-			draw_button(esContext, tmp_str, view_mode, tmp_str2, FONT_WHITE, -1.2, -0.75 + n * 0.15 + 0.02, 0.003, 0.06, ALIGN_LEFT, ALIGN_TOP, tracker_cmd, 0.0);
+			draw_button(esContext, tmp_str, setup.view_mode, tmp_str2, FONT_WHITE, -1.2, -0.75 + n * 0.15 + 0.02, 0.003, 0.06, ALIGN_LEFT, ALIGN_TOP, tracker_cmd, 0.0);
 		}
 	}
 
-	draw_button(esContext, "tLOAD", view_mode, "LOAD", FONT_WHITE, -0.8, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, tracker_cmd, 0.0);
-	draw_button(esContext, "tSAVE", view_mode, "SAVE", FONT_WHITE, -0.4, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, tracker_cmd, 0.0);
-	draw_button(esContext, "tTYPE", view_mode, "TYPE", FONT_WHITE, 0.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, tracker_cmd, 0.0);
-	draw_button(esContext, "tHOME", view_mode, "SET_HOME", FONT_WHITE, 0.4, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, tracker_cmd, 0.0);
-	draw_button(esContext, "tDEFAULTS", view_mode, "DEFAULTS", FONT_WHITE, 0.8, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, tracker_cmd, 0.0);
+	draw_button(esContext, "tLOAD", setup.view_mode, "LOAD", FONT_WHITE, -0.8, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, tracker_cmd, 0.0);
+	draw_button(esContext, "tSAVE", setup.view_mode, "SAVE", FONT_WHITE, -0.4, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, tracker_cmd, 0.0);
+	draw_button(esContext, "tTYPE", setup.view_mode, "TYPE", FONT_WHITE, 0.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, tracker_cmd, 0.0);
+	draw_button(esContext, "tHOME", setup.view_mode, "SET_HOME", FONT_WHITE, 0.4, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, tracker_cmd, 0.0);
+	draw_button(esContext, "tDEFAULTS", setup.view_mode, "DEFAULTS", FONT_WHITE, 0.8, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, tracker_cmd, 0.0);
 }
 

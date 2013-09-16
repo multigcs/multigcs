@@ -74,7 +74,7 @@ void screen_keyboard (ESContext *esContext) {
 	UserData *userData = esContext->userData;
 #endif
 
-	if (show_keyboard != view_mode) {
+	if (show_keyboard != setup.view_mode) {
 		return;
 	}
 
@@ -101,19 +101,19 @@ void screen_keyboard (ESContext *esContext) {
 			sprintf(tmp_str2, "[END]");
 		}
 		sprintf(tmp_str, "set_char_%i", n);
-		draw_button(esContext, tmp_str, view_mode, tmp_str2, FONT_WHITE, -0.9 + n * 0.08, -0.6, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, keyboard_pos_char, n);
+		draw_button(esContext, tmp_str, setup.view_mode, tmp_str2, FONT_WHITE, -0.9 + n * 0.08, -0.6, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, keyboard_pos_char, n);
 		if (n == new_name_cnt) {
-			draw_button(esContext, "mark", view_mode, "^", FONT_WHITE, -0.9 + n * 0.08, -0.5, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, keyboard_pos_char, n);
+			draw_button(esContext, "mark", setup.view_mode, "^", FONT_WHITE, -0.9 + n * 0.08, -0.5, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, keyboard_pos_char, n);
 		}
 	}
-	draw_button(esContext, "rcname_save", view_mode, "[OK]", FONT_WHITE, 0.4, -0.6, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, keyboard_name_save, 0);
-	draw_button(esContext, "rcname_cancel", view_mode, "[CANCEL]", FONT_WHITE, 0.6, -0.6, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, keyboard_name_cancel, 0);
+	draw_button(esContext, "rcname_save", setup.view_mode, "[OK]", FONT_WHITE, 0.4, -0.6, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, keyboard_name_save, 0);
+	draw_button(esContext, "rcname_cancel", setup.view_mode, "[CANCEL]", FONT_WHITE, 0.6, -0.6, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, keyboard_name_cancel, 0);
 	uint8_t x = 0;
 	uint8_t y = 0;
 	for (n = 33; n < 150; n++) {
 		sprintf(tmp_str2, "%c", n);
 		sprintf(tmp_str, "add_char_%i", n);
-		draw_button(esContext, tmp_str, view_mode, tmp_str2, FONT_WHITE, -1.1 + x * 0.14, -0.3 + y * 0.14, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, keyboard_add_char, n);
+		draw_button(esContext, tmp_str, setup.view_mode, tmp_str2, FONT_WHITE, -1.1 + x * 0.14, -0.3 + y * 0.14, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, keyboard_add_char, n);
 		if (x > 14) {
 			y++;
 			x = 0;
@@ -123,7 +123,7 @@ void screen_keyboard (ESContext *esContext) {
 	}
 	sprintf(tmp_str2, "[END]");
 	sprintf(tmp_str, "add_char_%i", 0);
-	draw_button(esContext, tmp_str, view_mode, tmp_str2, FONT_WHITE, -1.1 + x * 0.14, -0.3 + y * 0.14, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, keyboard_add_char, 0);
+	draw_button(esContext, tmp_str, setup.view_mode, tmp_str2, FONT_WHITE, -1.1 + x * 0.14, -0.3 + y * 0.14, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, keyboard_add_char, 0);
 
 
 	if (keyboard_key[0] != 0) {

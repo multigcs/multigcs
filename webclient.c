@@ -11,6 +11,9 @@
 #include <arpa/inet.h>
 #include <model.h>
 
+uint8_t clientmode = 0;
+char clientmode_server[1024];
+uint16_t clientmode_port = 8080;
 
 void webclient_update (char *server, uint16_t port) {
 	int sockfd;

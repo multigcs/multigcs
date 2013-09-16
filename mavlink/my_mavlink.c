@@ -42,18 +42,13 @@ uint8_t autoPilot = 3;
 int c, res;
 char serial_buf[255];
 static uint32_t last_connection = 1;
-
 static int8_t GPS_found = 0;
 uint16_t mavlink_timeout = 0;
 uint16_t mavlink_maxparam = 0;
 uint16_t mavlink_foundparam = 0;
 uint8_t mavlink_udp_active = 0;
-
 SDL_Thread *thread_udp = NULL;
-FILE *blenderpy_fr = NULL;
-
 int mavlink_udp (void *data);
-
 
 int mavlink_update (void) {
 	gcs_update();
@@ -100,12 +95,6 @@ void mavlink_exit (void) {
 	if (serial_fd_mavlink >= 0) {
 		close(serial_fd_mavlink);
 		serial_fd_mavlink = -1;
-	}
-	if (blenderpy_fr != NULL) {
-		fprintf(blenderpy_fr, "\n");
-		fprintf(blenderpy_fr, "bpy.context.scene.frame_end = frm\n");
-		fclose(blenderpy_fr);
-		blenderpy_fr = NULL;
 	}
 }
 
@@ -209,44 +198,6 @@ void gcs_handleMessage(mavlink_message_t* msg) {
 			mavlink_update_yaw = 1;
 //			printf("ATT;%i;%0.2f;%0.2f;%0.2f\n", time(0), toDeg(packet.roll), toDeg(packet.pitch), toDeg(packet.yaw));
 
-			static uint32_t time_start = 0;
-			if (time_start == 0 && blender_export_filename[0] != 0) {
-				time_start = packet.time_boot_ms;
-				char blender_object[1024];
-//				strncpy(blender_object, "Camera", 1023);
-				strncpy(blender_object, "Cube", 1023);
-				if ((blenderpy_fr = fopen(blender_export_filename, "w")) != 0) {
-					fprintf(blenderpy_fr, "import bpy\n");
-					fprintf(blenderpy_fr, "\n");
-					fprintf(blenderpy_fr, "frm = 0\n");
-					fprintf(blenderpy_fr, "\n");
-					fprintf(blenderpy_fr, "def rotate(obj, x, y, z):\n");
-					fprintf(blenderpy_fr, "     obj.rotation_euler[0] = x\n");
-					fprintf(blenderpy_fr, "     obj.rotation_euler[1] = y\n");
-					fprintf(blenderpy_fr, "     obj.rotation_euler[2] = z\n");
-					fprintf(blenderpy_fr, "     obj.keyframe_insert(data_path=\"rotation_euler\", frame=frm)\n");
-					fprintf(blenderpy_fr, "\n");
-					fprintf(blenderpy_fr, "def locate(obj, x, y, z):\n");
-					fprintf(blenderpy_fr, "     obj.location.x = x\n");
-					fprintf(blenderpy_fr, "     obj.location.y = y\n");
-					fprintf(blenderpy_fr, "     obj.location.z = z\n");
-					fprintf(blenderpy_fr, "     obj.keyframe_insert(data_path=\"location\", frame=frm)\n");
-					fprintf(blenderpy_fr, "\n");
-					fprintf(blenderpy_fr, "obj1 = bpy.data.objects['%s']\n", blender_object);
-					fprintf(blenderpy_fr, "\n");
-				} else {
-					blenderpy_fr = NULL;
-				}
-			}
-			if (blenderpy_fr != NULL) {
-				static uint32_t frame_number = 0;
-				if (frame_number != (packet.time_boot_ms - time_start) / 25) {
-					frame_number = (packet.time_boot_ms - time_start) / 25;
-					fprintf(blenderpy_fr, "frm = %i\n", frame_number);
-				}
-				fprintf(blenderpy_fr, "rotate(obj1, %f, %f, %f)\n", packet.pitch + 90.0, packet.roll, packet.yaw * -1.0);
-			}
-
 			redraw_flag = 1;
 			break;
 		}
@@ -266,9 +217,6 @@ void gcs_handleMessage(mavlink_message_t* msg) {
 				ModelData.numSat = packet.satellites_visible;
 				ModelData.gpsfix = packet.fix_type;
 				redraw_flag = 1;
-				if (blenderpy_fr != NULL) {
-					fprintf(blenderpy_fr, "locate(obj1, %f, %f, %f)\n", ModelData.p_long / 180.0, ModelData.p_lat / 180.0, ModelData.p_alt / 100.0);
-				}
 			}
 			break;
 		}

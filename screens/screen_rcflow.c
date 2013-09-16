@@ -919,7 +919,7 @@ uint8_t rcflow_load (char *name, float x, float y, int8_t button, float data) {
 	filesystem_set_callback(rcflow_load_xml);
 	filesystem_reset_filter();
 	filesystem_add_filter(".xml\0");
-	filesystem_set_mode(view_mode);
+	filesystem_set_mode(setup.view_mode);
 	return 0;
 }
 
@@ -1015,7 +1015,7 @@ uint8_t rcflow_save (char *name, float x, float y, int8_t button, float data) {
 	reset_buttons();
 	keyboard_set_callback(rcflow_save_xml);
 	keyboard_set_text(setup_name);
-	keyboard_set_mode(view_mode);
+	keyboard_set_mode(setup.view_mode);
 	return 0;
 }
 
@@ -1566,7 +1566,7 @@ uint8_t rcflow_plugin_title_edit (char *name, float x, float y, int8_t button, f
 	edit_title = (int16_t)data;
 	keyboard_set_callback(rcflow_plugin_title_set);
 	keyboard_set_text(name + 5);
-	keyboard_set_mode(view_mode);
+	keyboard_set_mode(setup.view_mode);
 	return 0;
 }
 
@@ -1782,13 +1782,13 @@ void rcflow_draw_switch (ESContext *esContext, char *name, float x, float y, flo
 		draw_box_f3c2(esContext, x - (w / 2), y, 0.001, x - (w / 2) + w, y + 0.025, 0.001, 255, 255, 255, 200, 25, 25, 25, 150);
 		draw_box_f3c2(esContext, x - (w / 2), y + 0.025, 0.001, x - (w / 2) + w, y + 0.05, 0.001, 25, 25, 25, 150, 255, 255, 255, 200);
 #endif
-		draw_button(esContext, tmp_str, view_mode, "ON", FONT_GREEN, x, y, 0.002, 0.05, ALIGN_CENTER, ALIGN_TOP, rcflow_switch_change, 0.0);
+		draw_button(esContext, tmp_str, setup.view_mode, "ON", FONT_GREEN, x, y, 0.002, 0.05, ALIGN_CENTER, ALIGN_TOP, rcflow_switch_change, 0.0);
 	} else {
 #ifndef SIMPLE_DRAW
 		draw_box_f3c2(esContext, x - (w / 2), y, 0.001, x - (w / 2) + w, y + 0.025, 0.001, 25, 25, 25, 150, 255, 255, 255, 200);
 		draw_box_f3c2(esContext, x - (w / 2), y + 0.025, 0.001, x - (w / 2) + w, y + 0.05, 0.001, 255, 255, 255, 200, 25, 25, 25, 150);
 #endif
-		draw_button(esContext, tmp_str, view_mode, "OFF", FONT_WHITE, x, y, 0.002, 0.05, ALIGN_CENTER, ALIGN_TOP, rcflow_switch_change, 0.0);
+		draw_button(esContext, tmp_str, setup.view_mode, "OFF", FONT_WHITE, x, y, 0.002, 0.05, ALIGN_CENTER, ALIGN_TOP, rcflow_switch_change, 0.0);
 	}
 #ifndef SIMPLE_DRAW
 	draw_rect_f3(esContext, x - (w / 2), y, 0.001, x - (w / 2) + w, y + 0.05, 0.001, 0, 0, 0, 255);
@@ -1872,7 +1872,7 @@ void rcflow_draw_slider (ESContext *esContext, char *name, float x, float y, flo
 #endif
 	}
 	sprintf(tmp_str, "slider_%s", name);
-	set_button(tmp_str, view_mode, x - (w / 2), y, x - (w / 2) + w, y + 0.05, rcflow_slider_move, (float)0, 1);
+	set_button(tmp_str, setup.view_mode, x - (w / 2), y, x - (w / 2) + w, y + 0.05, rcflow_slider_move, (float)0, 1);
 }
 
 void rcflow_draw_vplugin (ESContext *esContext, uint8_t id, uint8_t vnum) {
@@ -1895,13 +1895,13 @@ void rcflow_draw_vplugin (ESContext *esContext, uint8_t id, uint8_t vnum) {
 #endif
 	draw_rect_f3(esContext, RcPlugin[id].x_virt - 0.12, RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - 0.02, 0.001, RcPlugin[id].x_virt + 0.12, RcPlugin[id].y_virt + num_max / 2 * LINK_SPACE - 0.02, 0.001, 200, 200, 200, 155);
 	if (lock == 0 || del_plugin == 1) {
-		set_button(RcPlugin[id].name, view_mode, RcPlugin[id].x_virt - 0.12, RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - 0.02, RcPlugin[id].x_virt + 0.12, RcPlugin[id].y_virt + num_max / 2 * LINK_SPACE - 0.02, rcflow_plugin_move, (float)id, 1);
+		set_button(RcPlugin[id].name, setup.view_mode, RcPlugin[id].x_virt - 0.12, RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - 0.02, RcPlugin[id].x_virt + 0.12, RcPlugin[id].y_virt + num_max / 2 * LINK_SPACE - 0.02, rcflow_plugin_move, (float)id, 1);
 	}
 	sprintf(tmp_str, "name_%s", RcPlugin[id].name);
 	if (RcPlugin[id].title[0] != 0) {
-		draw_button(esContext, tmp_str, view_mode, RcPlugin[id].title, FONT_GREEN, RcPlugin[id].x_virt, RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - 0.02, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_title_edit, (float)id);
+		draw_button(esContext, tmp_str, setup.view_mode, RcPlugin[id].title, FONT_GREEN, RcPlugin[id].x_virt, RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - 0.02, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_title_edit, (float)id);
 	} else {
-		draw_button(esContext, tmp_str, view_mode, RcPlugin[id].name, FONT_GREEN, RcPlugin[id].x_virt, RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - 0.02, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_title_edit, (float)id);
+		draw_button(esContext, tmp_str, setup.view_mode, RcPlugin[id].name, FONT_GREEN, RcPlugin[id].x_virt, RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - 0.02, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_title_edit, (float)id);
 	}
 	// Output-Sliders
 	if (RcPlugin[id].type == RCFLOW_PLUGIN_ADC || RcPlugin[id].type == RCFLOW_PLUGIN_SW || RcPlugin[id].type == RCFLOW_PLUGIN_ENC || RcPlugin[id].type == RCFLOW_PLUGIN_VADC || RcPlugin[id].type == RCFLOW_PLUGIN_VSW) {
@@ -1965,7 +1965,7 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 				draw_box_f3(esContext, RcPlugin[id].x - 0.12 - 0.15 + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y, 0.001, RcPlugin[id].x - 0.12 + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y, 0.001, 100, 100, 100, 255);
 			}
 #endif
-			set_button(tmp_str, view_mode, RcPlugin[id].x - 0.12 - 0.15 + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y, RcPlugin[id].x - 0.12 + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.1 + canvas_y, rcflow_link_mark, (float)1, 0);
+			set_button(tmp_str, setup.view_mode, RcPlugin[id].x - 0.12 - 0.15 + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y, RcPlugin[id].x - 0.12 + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.1 + canvas_y, rcflow_link_mark, (float)1, 0);
 			draw_text_f3(esContext, RcPlugin[id].x - 0.12 - 0.15 + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y, 0.005, 0.03, 0.03, FONT_GREEN, RcPlugin[id].input[input].name);
 #ifndef SIMPLE_DRAW
 			if (RcPlugin[id].input[input].type == RCFLOW_INOUT_TYPE_LINEAR) {
@@ -1995,7 +1995,7 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 				draw_box_f3(esContext, RcPlugin[id].x + 0.12 + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y, 0.001, RcPlugin[id].x + 0.12 + 0.15 + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y, 0.001, 100, 100, 100, 255);
 			}
 #endif
-			set_button(tmp_str, view_mode, RcPlugin[id].x + 0.12 + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y, RcPlugin[id].x + 0.12 + 0.15 + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.1 + canvas_y, rcflow_link_mark, (float)0, 0);
+			set_button(tmp_str, setup.view_mode, RcPlugin[id].x + 0.12 + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y, RcPlugin[id].x + 0.12 + 0.15 + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.1 + canvas_y, rcflow_link_mark, (float)0, 0);
 			draw_text_f3(esContext, RcPlugin[id].x + 0.12 + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y, 0.005, 0.03, 0.03, FONT_GREEN, RcPlugin[id].output[output].name);
 #ifndef SIMPLE_DRAW
 			sprintf(tmp_str, "%i", RcPlugin[id].output[output].value);
@@ -2027,13 +2027,13 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 	}
 
 	if (lock == 0 || del_plugin == 1) {
-		set_button(RcPlugin[id].name, view_mode, RcPlugin[id].x - 0.12 + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE - 0.02 + canvas_y, RcPlugin[id].x + 0.12 + canvas_x, RcPlugin[id].y + num_max / 2 * LINK_SPACE - 0.02 + canvas_y, rcflow_plugin_move, (float)id, 1);
+		set_button(RcPlugin[id].name, setup.view_mode, RcPlugin[id].x - 0.12 + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE - 0.02 + canvas_y, RcPlugin[id].x + 0.12 + canvas_x, RcPlugin[id].y + num_max / 2 * LINK_SPACE - 0.02 + canvas_y, rcflow_plugin_move, (float)id, 1);
 	}
 	sprintf(tmp_str, "name_%s", RcPlugin[id].name);
 	if (RcPlugin[id].title[0] != 0) {
-		draw_button(esContext, tmp_str, view_mode, RcPlugin[id].title, FONT_GREEN, RcPlugin[id].x + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE - 0.02 + canvas_y, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_title_edit, (float)id);
+		draw_button(esContext, tmp_str, setup.view_mode, RcPlugin[id].title, FONT_GREEN, RcPlugin[id].x + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE - 0.02 + canvas_y, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_title_edit, (float)id);
 	} else {
-		draw_button(esContext, tmp_str, view_mode, RcPlugin[id].name, FONT_GREEN, RcPlugin[id].x + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE - 0.02 + canvas_y, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_title_edit, (float)id);
+		draw_button(esContext, tmp_str, setup.view_mode, RcPlugin[id].name, FONT_GREEN, RcPlugin[id].x + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE - 0.02 + canvas_y, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_title_edit, (float)id);
 	}
 	if (RcPlugin[id].type == RCFLOW_PLUGIN_INPUT) {
 	} else if (RcPlugin[id].type == RCFLOW_PLUGIN_OUTPUT) {
@@ -2043,7 +2043,7 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 	} else if (RcPlugin[id].type == RCFLOW_PLUGIN_TCL) {
 	} else if (RcPlugin[id].type == RCFLOW_PLUGIN_CURVE) {
 		sprintf(tmp_str, "preset_%s", RcPlugin[id].name);
-		draw_button(esContext, tmp_str, view_mode, "PRESET", FONT_GREEN, RcPlugin[id].x + canvas_x, RcPlugin[id].y + num_max / 2 * LINK_SPACE + canvas_y, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_curve_preset, (float)id);
+		draw_button(esContext, tmp_str, setup.view_mode, "PRESET", FONT_GREEN, RcPlugin[id].x + canvas_x, RcPlugin[id].y + num_max / 2 * LINK_SPACE + canvas_y, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_curve_preset, (float)id);
 	}
 	// Input-Sliders
 	if (RcPlugin[id].type != RCFLOW_PLUGIN_TCL) {
@@ -2067,7 +2067,7 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 	if (RcPlugin[id].type == RCFLOW_PLUGIN_TCL) {
 
 		sprintf(tmp_str, "script_view_%s", RcPlugin[id].name);
-		draw_button(esContext, tmp_str, view_mode, "[SCRIPT]", FONT_GREEN, RcPlugin[id].x + canvas_x - 0.1, RcPlugin[id].y - num_max / 2 * LINK_SPACE + 1.0 * LINK_SPACE + 0.04 + canvas_y, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, rcflow_sript_view, (float)id);
+		draw_button(esContext, tmp_str, setup.view_mode, "[SCRIPT]", FONT_GREEN, RcPlugin[id].x + canvas_x - 0.1, RcPlugin[id].y - num_max / 2 * LINK_SPACE + 1.0 * LINK_SPACE + 0.04 + canvas_y, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, rcflow_sript_view, (float)id);
 
 	} else if (RcPlugin[id].type == RCFLOW_PLUGIN_CURVE) {
 		float pos = 1.0 + ((float)(RcPlugin[id].input[0].value + 1000) * 6 / 2000.0);
@@ -2836,7 +2836,7 @@ while (read(rcflow_fd, buf, 1) > 0) {
 		uint16_t menu_y4 = 0;
 
 		if (menu_set == 0) {
-			draw_button(esContext, "m0", view_mode, "Geber", FONT_PINK, -1.3, -0.7 + menu_y0++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set, 0);
+			draw_button(esContext, "m0", setup.view_mode, "Geber", FONT_PINK, -1.3, -0.7 + menu_y0++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set, 0);
 			for (type = 0; type < RCFLOW_PLUGIN_LAST; type++) {
 				tlist = 0;
 				for (plugin = 0; plugin < MAX_PLUGINS; plugin++) {
@@ -2860,9 +2860,9 @@ while (read(rcflow_fd, buf, 1) > 0) {
 									if (tlist == 0) {
 										tlist = 1;
 										if (menu_set_type == RcPlugin[plugin].type) {
-											draw_button(esContext, plugintype_names[RcPlugin[plugin].type], view_mode, plugintype_names[RcPlugin[plugin].type], FONT_PINK, -0.9, -0.7 + menu_y1++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_type, RcPlugin[plugin].type);
+											draw_button(esContext, plugintype_names[RcPlugin[plugin].type], setup.view_mode, plugintype_names[RcPlugin[plugin].type], FONT_PINK, -0.9, -0.7 + menu_y1++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_type, RcPlugin[plugin].type);
 										} else {
-											draw_button(esContext, plugintype_names[RcPlugin[plugin].type], view_mode, plugintype_names[RcPlugin[plugin].type], FONT_GREEN, -0.9, -0.7 + menu_y1++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_type, RcPlugin[plugin].type);
+											draw_button(esContext, plugintype_names[RcPlugin[plugin].type], setup.view_mode, plugintype_names[RcPlugin[plugin].type], FONT_GREEN, -0.9, -0.7 + menu_y1++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_type, RcPlugin[plugin].type);
 										}
 									}
 									if (plist == 0) {
@@ -2870,24 +2870,24 @@ while (read(rcflow_fd, buf, 1) > 0) {
 										if (menu_set_type == RcPlugin[plugin].type) {
 											if (menu_set_plugin == plugin) {
 												if (RcPlugin[plugin].title[0] == 0) {
-													draw_button(esContext, RcPlugin[plugin].name, view_mode, RcPlugin[plugin].name, FONT_PINK, -0.5, -0.7 + menu_y2++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_plugin, plugin);
+													draw_button(esContext, RcPlugin[plugin].name, setup.view_mode, RcPlugin[plugin].name, FONT_PINK, -0.5, -0.7 + menu_y2++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_plugin, plugin);
 												} else {
-													draw_button(esContext, RcPlugin[plugin].name, view_mode, RcPlugin[plugin].title, FONT_PINK, -0.5, -0.7 + menu_y2++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_plugin, plugin);
+													draw_button(esContext, RcPlugin[plugin].name, setup.view_mode, RcPlugin[plugin].title, FONT_PINK, -0.5, -0.7 + menu_y2++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_plugin, plugin);
 												}
 											} else {
 												if (RcPlugin[plugin].title[0] == 0) {
-													draw_button(esContext, RcPlugin[plugin].name, view_mode, RcPlugin[plugin].name, FONT_GREEN, -0.5, -0.7 + menu_y2++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_plugin, plugin);
+													draw_button(esContext, RcPlugin[plugin].name, setup.view_mode, RcPlugin[plugin].name, FONT_GREEN, -0.5, -0.7 + menu_y2++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_plugin, plugin);
 												} else {
-													draw_button(esContext, RcPlugin[plugin].name, view_mode, RcPlugin[plugin].title, FONT_GREEN, -0.5, -0.7 + menu_y2++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_plugin, plugin);
+													draw_button(esContext, RcPlugin[plugin].name, setup.view_mode, RcPlugin[plugin].title, FONT_GREEN, -0.5, -0.7 + menu_y2++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_plugin, plugin);
 												}
 											}
 										}
 									}
 									if (menu_set_type == RcPlugin[plugin].type && menu_set_plugin == plugin) {
 										if (menu_set_input == input) {
-											draw_button(esContext, RcPlugin[plugin].input[input].name, view_mode, RcPlugin[plugin].input[input].name, FONT_PINK, -0.1, -0.7 + menu_y3++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_input, input);
+											draw_button(esContext, RcPlugin[plugin].input[input].name, setup.view_mode, RcPlugin[plugin].input[input].name, FONT_PINK, -0.1, -0.7 + menu_y3++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_input, input);
 										} else {
-											draw_button(esContext, RcPlugin[plugin].input[input].name, view_mode, RcPlugin[plugin].input[input].name, FONT_GREEN, -0.1, -0.7 + menu_y3++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_input, input);
+											draw_button(esContext, RcPlugin[plugin].input[input].name, setup.view_mode, RcPlugin[plugin].input[input].name, FONT_GREEN, -0.1, -0.7 + menu_y3++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_input, input);
 										}
 									}
 								}
@@ -2914,9 +2914,9 @@ while (read(rcflow_fd, buf, 1) > 0) {
 							sprintf(tmp_str, "%s_v", RcPlugin[plugin2].output[output].name);
 							sprintf(tmp_str2, "%s = %i", RcPlugin[plugin2].output[output].name, RcPlugin[plugin2].output[0].value);
 							if (linked == 1) {
-								draw_button(esContext, tmp_str, view_mode, tmp_str2, FONT_PINK, 0.5, -0.7 + menu_y4++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_input, input);
+								draw_button(esContext, tmp_str, setup.view_mode, tmp_str2, FONT_PINK, 0.5, -0.7 + menu_y4++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_input, input);
 							} else {
-								draw_button(esContext, tmp_str, view_mode, tmp_str2, FONT_GREEN, 0.5, -0.7 + menu_y4++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_input, input);
+								draw_button(esContext, tmp_str, setup.view_mode, tmp_str2, FONT_GREEN, 0.5, -0.7 + menu_y4++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_input, input);
 							}
 						}
 					}
@@ -2941,29 +2941,29 @@ while (read(rcflow_fd, buf, 1) > 0) {
 							sprintf(tmp_str, "%s_v", RcPlugin[plugin2].output[output].name);
 							sprintf(tmp_str2, "%s = %i", RcPlugin[plugin2].output[output].name, RcPlugin[plugin2].output[0].value);
 							if (linked == 1) {
-								draw_button(esContext, tmp_str, view_mode, tmp_str2, FONT_PINK, 1.0, -0.7 + menu_y4++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_input, input);
+								draw_button(esContext, tmp_str, setup.view_mode, tmp_str2, FONT_PINK, 1.0, -0.7 + menu_y4++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_input, input);
 							} else {
-								draw_button(esContext, tmp_str, view_mode, tmp_str2, FONT_GREEN, 1.0, -0.7 + menu_y4++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_input, input);
+								draw_button(esContext, tmp_str, setup.view_mode, tmp_str2, FONT_GREEN, 1.0, -0.7 + menu_y4++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_input, input);
 							}
 						}
 					}
 				}
 			}
 		} else {
-			draw_button(esContext, "m0", view_mode, "Geber", FONT_GREEN, -1.3, -0.7 + menu_y0++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set, 0);
+			draw_button(esContext, "m0", setup.view_mode, "Geber", FONT_GREEN, -1.3, -0.7 + menu_y0++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set, 0);
 		}
 		if (menu_set == 1) {
 			menu_y1 = 0;
-			draw_button(esContext, "m1", view_mode, "Reverse", FONT_PINK, -1.3, -0.7 + menu_y0++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set, 1);
+			draw_button(esContext, "m1", setup.view_mode, "Reverse", FONT_PINK, -1.3, -0.7 + menu_y0++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set, 1);
 			if (menu_set_reverse == 0) {
-				draw_button(esContext, "r0", view_mode, "Inputs", FONT_PINK, -0.9, -0.7 + menu_y1++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_reverse, 0);
+				draw_button(esContext, "r0", setup.view_mode, "Inputs", FONT_PINK, -0.9, -0.7 + menu_y1++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_reverse, 0);
 				for (plugin2 = 0; plugin2 < MAX_PLUGINS; plugin2++) {
 					if (RcPlugin[plugin2].name[0] != 0 && RcPlugin[plugin2].type == RCFLOW_PLUGIN_ADC) {
 						for (output = 0; output < MAX_OUTPUTS; output++) {
 							if (RcPlugin[plugin2].output[output].name[0] != 0) {
 								sprintf(tmp_str, "o_%i_%i", plugin2, output);
 								sprintf(tmp_str2, "%s = %i (%i)", RcPlugin[plugin2].output[output].name, RcPlugin[plugin2].output[output].value, RcPlugin[plugin2].output[output].option);
-								draw_button(esContext, tmp_str, view_mode, tmp_str2, FONT_GREEN, 0.3, -0.7 + menu_y4++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_reverse_dir, output);
+								draw_button(esContext, tmp_str, setup.view_mode, tmp_str2, FONT_GREEN, 0.3, -0.7 + menu_y4++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_reverse_dir, output);
 							}
 						}
 					}
@@ -2975,37 +2975,37 @@ while (read(rcflow_fd, buf, 1) > 0) {
 							if (RcPlugin[plugin2].output[output].name[0] != 0) {
 								sprintf(tmp_str, "o_%i_%i", plugin2, output);
 								sprintf(tmp_str2, "%s = %i (%i)", RcPlugin[plugin2].output[output].name, RcPlugin[plugin2].output[output].value, RcPlugin[plugin2].output[output].option);
-								draw_button(esContext, tmp_str, view_mode, tmp_str2, FONT_GREEN, 0.8, -0.7 + menu_y4++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_reverse_dir, output);
+								draw_button(esContext, tmp_str, setup.view_mode, tmp_str2, FONT_GREEN, 0.8, -0.7 + menu_y4++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_reverse_dir, output);
 							}
 						}
 					}
 				}
 			} else {
-				draw_button(esContext, "r0", view_mode, "Inputs", FONT_GREEN, -0.9, -0.7 + menu_y1++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_reverse, 0);
+				draw_button(esContext, "r0", setup.view_mode, "Inputs", FONT_GREEN, -0.9, -0.7 + menu_y1++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_reverse, 0);
 			}
 			if (menu_set_reverse == 1) {
-				draw_button(esContext, "r1", view_mode, "Outputs", FONT_PINK, -0.9, -0.7 + menu_y1++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_reverse, 1);
+				draw_button(esContext, "r1", setup.view_mode, "Outputs", FONT_PINK, -0.9, -0.7 + menu_y1++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_reverse, 1);
 				for (plugin2 = 0; plugin2 < MAX_PLUGINS; plugin2++) {
 					if (RcPlugin[plugin2].name[0] != 0 && RcPlugin[plugin2].type == RCFLOW_PLUGIN_PPM) {
 						for (input = 0; input < MAX_INPUTS; input++) {
 							if (RcPlugin[plugin2].input[input].name[0] != 0) {
 								sprintf(tmp_str, "i_%i_%i", plugin2, input);
 								sprintf(tmp_str2, "%s = %i (%i)", RcPlugin[plugin2].input[input].name, RcPlugin[plugin2].input[input].value, RcPlugin[plugin2].input[input].option);
-								draw_button(esContext, tmp_str, view_mode, tmp_str2, FONT_GREEN, 0.3, -0.7 + menu_y4++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_reverse_dir, input);
+								draw_button(esContext, tmp_str, setup.view_mode, tmp_str2, FONT_GREEN, 0.3, -0.7 + menu_y4++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_reverse_dir, input);
 							}
 						}
 					}
 				}
 			} else {
-				draw_button(esContext, "r1", view_mode, "Outputs", FONT_GREEN, -0.9, -0.7 + menu_y1++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_reverse, 1);
+				draw_button(esContext, "r1", setup.view_mode, "Outputs", FONT_GREEN, -0.9, -0.7 + menu_y1++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_reverse, 1);
 			}
 		} else {
-			draw_button(esContext, "m1", view_mode, "Reverse", FONT_GREEN, -1.3, -0.7 + menu_y0++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set, 1);
+			draw_button(esContext, "m1", setup.view_mode, "Reverse", FONT_GREEN, -1.3, -0.7 + menu_y0++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set, 1);
 		}
 		if (menu_set == 2) {
-			draw_button(esContext, "m2", view_mode, "PPM", FONT_PINK, -1.3, -0.7 + menu_y0++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set, 2);
+			draw_button(esContext, "m2", setup.view_mode, "PPM", FONT_PINK, -1.3, -0.7 + menu_y0++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set, 2);
 		} else {
-			draw_button(esContext, "m2", view_mode, "PPM", FONT_GREEN, -1.3, -0.7 + menu_y0++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set, 2);
+			draw_button(esContext, "m2", setup.view_mode, "PPM", FONT_GREEN, -1.3, -0.7 + menu_y0++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set, 2);
 		}
 
 
@@ -3013,7 +3013,7 @@ while (read(rcflow_fd, buf, 1) > 0) {
 
 		// Drawing
 		glDisable( GL_DEPTH_TEST );
-		set_button("canvas", view_mode, -1.5, -0.9, 1.5, 1.0, rcflow_canvas_move, (float)0, 2);
+		set_button("canvas", setup.view_mode, -1.5, -0.9, 1.5, 1.0, rcflow_canvas_move, (float)0, 2);
 
 		// Draw Plugins
 		for (plugin = 0; plugin < MAX_PLUGINS; plugin++) {
@@ -3036,51 +3036,51 @@ while (read(rcflow_fd, buf, 1) > 0) {
 #endif
 		draw_box_f3(esContext, -1.3 - 0.05, 0.9 - 0.05, 0.001, -1.3 + 0.05, 0.9 + 0.05, 0.001, 255, 255, 255, 200);
 		draw_box_f3(esContext, -1.3 - 0.007 - canvas_x / 40.0, 0.9 - 0.007 - canvas_y / 40.0, 0.001, -1.3 + 0.007 - canvas_x / 40.0, 0.9 + 0.007 - canvas_y / 40.0, 0.001, 0, 0, 0, 255);
-		set_button("canvas_center", view_mode, -1.3 - 0.05, 0.9 - 0.05, -1.3 + 0.05, 0.9 + 0.05, rcflow_canvas_center, (float)0, 0);
+		set_button("canvas_center", setup.view_mode, -1.3 - 0.05, 0.9 - 0.05, -1.3 + 0.05, 0.9 + 0.05, rcflow_canvas_center, (float)0, 0);
 		sprintf(tmp_str, "RC-Flow/Setup (%s)", setup_name);
 		draw_title(esContext, tmp_str);
 		if (link_select_from[0] != 0 && link_select_to[0] != 0) {
-			draw_button(esContext, "add_link", view_mode, "[LINK]", FONT_GREEN, 0.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_link_add, 0.0);
+			draw_button(esContext, "add_link", setup.view_mode, "[LINK]", FONT_GREEN, 0.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_link_add, 0.0);
 		} else if (link_select_from[0] != 0 || link_select_to[0] != 0) {
-			draw_button(esContext, "add_link", view_mode, "[LINK]", FONT_PINK, 0.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_link_add, 0.0);
+			draw_button(esContext, "add_link", setup.view_mode, "[LINK]", FONT_PINK, 0.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_link_add, 0.0);
 		} else {
-			draw_button(esContext, "add_link", view_mode, "[LINK]", FONT_TRANS, 0.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_link_add, 0.0);
+			draw_button(esContext, "add_link", setup.view_mode, "[LINK]", FONT_TRANS, 0.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_link_add, 0.0);
 		}
 		if (del_plugin == 0) {
-			draw_button(esContext, "plugin_del", view_mode, "[DEL]", FONT_WHITE, -0.3, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_del, 0.0);
+			draw_button(esContext, "plugin_del", setup.view_mode, "[DEL]", FONT_WHITE, -0.3, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_del, 0.0);
 		} else {
-			draw_button(esContext, "plugin_del", view_mode, "[DEL]", FONT_GREEN, -0.3, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_del, 0.0);
+			draw_button(esContext, "plugin_del", setup.view_mode, "[DEL]", FONT_GREEN, -0.3, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_del, 0.0);
 		}
-		draw_button(esContext, "plugin_add", view_mode, "[ADD]", FONT_GREEN, 0.3, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_select, 0.0);
+		draw_button(esContext, "plugin_add", setup.view_mode, "[ADD]", FONT_GREEN, 0.3, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_select, 0.0);
 	}
 
-	draw_button(esContext, "virtview", view_mode, "[VIRT]", FONT_GREEN, -1.1, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_virt_view, 0.0);
-	draw_button(esContext, "load", view_mode, "[LOAD]", FONT_GREEN, 0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_load, 0.0);
+	draw_button(esContext, "virtview", setup.view_mode, "[VIRT]", FONT_GREEN, -1.1, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_virt_view, 0.0);
+	draw_button(esContext, "load", setup.view_mode, "[LOAD]", FONT_GREEN, 0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_load, 0.0);
 	if (unsave == 0) {
-		draw_button(esContext, "save", view_mode, "[SAVE]", FONT_GREEN, 0.85, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_save, 0.0);
+		draw_button(esContext, "save", setup.view_mode, "[SAVE]", FONT_GREEN, 0.85, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_save, 0.0);
 	} else {
-		draw_button(esContext, "save", view_mode, "[SAVE]", FONT_PINK, 0.85, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_save, 0.0);
+		draw_button(esContext, "save", setup.view_mode, "[SAVE]", FONT_PINK, 0.85, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_save, 0.0);
 	}
 	if (lock == 0) {
 		lock_timer = 0;
-		draw_button(esContext, "lock", view_mode, "[LOCK]", FONT_WHITE, 1.1, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_lock, 0.0);
+		draw_button(esContext, "lock", setup.view_mode, "[LOCK]", FONT_WHITE, 1.1, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_lock, 0.0);
 	} else if (lock_timer > 0) {
 		lock_timer--;
-		draw_button(esContext, "lock", view_mode, "[LOCK]", FONT_PINK, 1.1, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_lock, 0.0);
+		draw_button(esContext, "lock", setup.view_mode, "[LOCK]", FONT_PINK, 1.1, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_lock, 0.0);
 	} else {
-		draw_button(esContext, "lock", view_mode, "[LOCK]", FONT_GREEN, 1.1, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_lock, 0.0);
+		draw_button(esContext, "lock", setup.view_mode, "[LOCK]", FONT_GREEN, 1.1, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_lock, 0.0);
 	}
 	if (undo_timer > 0) {
-		draw_button(esContext, "undo", view_mode, "[UNDO]", FONT_PINK, -0.85, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_undo, 0.0);
+		draw_button(esContext, "undo", setup.view_mode, "[UNDO]", FONT_PINK, -0.85, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_undo, 0.0);
 	} else if (undo < MAX_UNDO) {
-		draw_button(esContext, "undo", view_mode, "[UNDO]", FONT_GREEN, -0.85, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_undo, 0.0);
+		draw_button(esContext, "undo", setup.view_mode, "[UNDO]", FONT_GREEN, -0.85, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_undo, 0.0);
 	} else {
-		draw_button(esContext, "undo", view_mode, "[UNDO]", FONT_TRANS, -0.85, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_undo, 0.0);
+		draw_button(esContext, "undo", setup.view_mode, "[UNDO]", FONT_TRANS, -0.85, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_undo, 0.0);
 	}
 	if (undo > 0) {
-		draw_button(esContext, "redo", view_mode, "[REDO]", FONT_GREEN, -0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_redo, 0.0);
+		draw_button(esContext, "redo", setup.view_mode, "[REDO]", FONT_GREEN, -0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_redo, 0.0);
 	} else {
-		draw_button(esContext, "redo", view_mode, "[REDO]", FONT_TRANS, -0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_redo, 0.0);
+		draw_button(esContext, "redo", setup.view_mode, "[REDO]", FONT_TRANS, -0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_redo, 0.0);
 	}
 	if (unsave == 1) {
 		unsave = 2;
@@ -3097,58 +3097,58 @@ while (read(rcflow_fd, buf, 1) > 0) {
 		draw_box_f3(esContext, -1.5, -1.0, 0.002, 1.5, 1.0, 0.002, 0, 0, 0, 200);
 		draw_title(esContext, "Plugins");
 		plugin = 0;
-		draw_button(esContext, "add_vadc", view_mode, "Virtual-ADC", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_VADC);
+		draw_button(esContext, "add_vadc", setup.view_mode, "Virtual-ADC", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_VADC);
 		plugin++;
-		draw_button(esContext, "add_vsw", view_mode, "Virtual-Switch", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_VSW);
+		draw_button(esContext, "add_vsw", setup.view_mode, "Virtual-Switch", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_VSW);
 		plugin++;
-		draw_button(esContext, "add_input", view_mode, "Input", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_INPUT);
+		draw_button(esContext, "add_input", setup.view_mode, "Input", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_INPUT);
 		plugin++;
-		draw_button(esContext, "add_output", view_mode, "Output", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_OUTPUT);
+		draw_button(esContext, "add_output", setup.view_mode, "Output", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_OUTPUT);
 		plugin++;
-		draw_button(esContext, "add_mixer", view_mode, "Mixer", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_MIXER);
+		draw_button(esContext, "add_mixer", setup.view_mode, "Mixer", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_MIXER);
 		plugin++;
-		draw_button(esContext, "add_atv", view_mode, "ATV", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_ATV);
+		draw_button(esContext, "add_atv", setup.view_mode, "ATV", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_ATV);
 		plugin++;
-		draw_button(esContext, "add_limit", view_mode, "Limiter", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_LIMIT);
+		draw_button(esContext, "add_limit", setup.view_mode, "Limiter", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_LIMIT);
 		plugin++;
-		draw_button(esContext, "add_delay", view_mode, "Delay (Slowmotion)", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_DELAY);
+		draw_button(esContext, "add_delay", setup.view_mode, "Delay (Slowmotion)", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_DELAY);
 		plugin++;
-		draw_button(esContext, "add_curve", view_mode, "Curve (7-Point)", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_CURVE);
+		draw_button(esContext, "add_curve", setup.view_mode, "Curve (7-Point)", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_CURVE);
 		plugin++;
-		draw_button(esContext, "add_butter", view_mode, "BUTTERFLY", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_BUTTERFLY);
+		draw_button(esContext, "add_butter", setup.view_mode, "BUTTERFLY", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_BUTTERFLY);
 		plugin++;
-		draw_button(esContext, "add_tcl", view_mode, "TCL (Script)", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_TCL);
+		draw_button(esContext, "add_tcl", setup.view_mode, "TCL (Script)", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_TCL);
 		plugin++;
 
 		plugin = 0;
-		draw_button(esContext, "add_expo", view_mode, "Expo", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_EXPO);
+		draw_button(esContext, "add_expo", setup.view_mode, "Expo", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_EXPO);
 		plugin++;
-		draw_button(esContext, "add_heli120", view_mode, "Heli-120 (Swashplate)", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_H120);
+		draw_button(esContext, "add_heli120", setup.view_mode, "Heli-120 (Swashplate)", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_H120);
 		plugin++;
-		draw_button(esContext, "add_switch", view_mode, "Switch (Changeover)", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_SWITCH);
+		draw_button(esContext, "add_switch", setup.view_mode, "Switch (Changeover)", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_SWITCH);
 		plugin++;
-		draw_button(esContext, "add_range", view_mode, "Range (Linear to Switch)", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_RANGESW);
+		draw_button(esContext, "add_range", setup.view_mode, "Range (Linear to Switch)", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_RANGESW);
 		plugin++;
-		draw_button(esContext, "add_alarm", view_mode, "Alarm", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_ALARM);
+		draw_button(esContext, "add_alarm", setup.view_mode, "Alarm", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_ALARM);
 		plugin++;
-		draw_button(esContext, "add_timer", view_mode, "Timer (Set / Reset)", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_TIMER);
+		draw_button(esContext, "add_timer", setup.view_mode, "Timer (Set / Reset)", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_TIMER);
 		plugin++;
-		draw_button(esContext, "add_and", view_mode, "LOGIC_AND", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_AND);
+		draw_button(esContext, "add_and", setup.view_mode, "LOGIC_AND", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_AND);
 		plugin++;
-		draw_button(esContext, "add_or", view_mode, "LOGIC_OR", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_OR);
+		draw_button(esContext, "add_or", setup.view_mode, "LOGIC_OR", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_OR);
 		plugin++;
-		draw_button(esContext, "add_pulse", view_mode, "Pulse (Short Pulse)", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_PULSE);
+		draw_button(esContext, "add_pulse", setup.view_mode, "Pulse (Short Pulse)", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_PULSE);
 		plugin++;
-		draw_button(esContext, "add_sinus", view_mode, "Sinus (Auto-Input)", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_SINUS);
+		draw_button(esContext, "add_sinus", setup.view_mode, "Sinus (Auto-Input)", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_SINUS);
 		plugin++;
 
 		plugin++;
 		plugin++;
-		draw_button(esContext, "back", view_mode, "[BACK]", FONT_GREEN, 0.0, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)255);
+		draw_button(esContext, "back", setup.view_mode, "[BACK]", FONT_GREEN, 0.0, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)255);
 		plugin++;
 	}
 
-	draw_button(esContext, "update", view_mode, "[UPDATE]", FONT_GREEN, 0.0, 0.8, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_update, 0.0);
+	draw_button(esContext, "update", setup.view_mode, "[UPDATE]", FONT_GREEN, 0.0, 0.8, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_update, 0.0);
 
 	static int cursor_pos = -1;
 
@@ -3253,8 +3253,8 @@ while (read(rcflow_fd, buf, 1) > 0) {
 		new_text[n2] = 0;
 		strcpy(rcflow_sript_view_text, new_text);
 
-		draw_button(esContext, "script_save", view_mode, "[SAVE]", FONT_GREEN, 0.0 - 0.15, 0.6, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_sript_view_save, (float)-1);
-		draw_button(esContext, "script_close", view_mode, "[CANCEL]", FONT_GREEN, 0.0 + 0.15, 0.6, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_sript_view, (float)-1);
+		draw_button(esContext, "script_save", setup.view_mode, "[SAVE]", FONT_GREEN, 0.0 - 0.15, 0.6, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_sript_view_save, (float)-1);
+		draw_button(esContext, "script_close", setup.view_mode, "[CANCEL]", FONT_GREEN, 0.0 + 0.15, 0.6, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_sript_view, (float)-1);
 	} else {
 		cursor_pos = -1;
 	}

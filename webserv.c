@@ -38,7 +38,6 @@
 #include <logging.h>
 
 
-extern uint16_t webport;
 extern void save_screenshot2 (void);
 extern volatile uint8_t zoom;
 extern uint8_t map_type;
@@ -759,7 +758,7 @@ void webserv_child_kml_live (int fd, uint8_t mode, char *servername) {
 	strcat(content, "			<refreshMode>onInterval</refreshMode>\n");
 	strcat(content, "			<viewRefreshMode>onStop</viewRefreshMode>\n");
 	strcat(content, "			<refreshVisibility>0</refreshVisibility>\n");
-	sprintf(tmp_str, "			<refreshInterval>%f</refreshInterval>\n", gearth_interval);
+	sprintf(tmp_str, "			<refreshInterval>%f</refreshInterval>\n", setup.gearth_interval);
 	strcat(content, tmp_str);
 	strcat(content, "		</Link>\n");
 	strcat(content, "	</NetworkLink>\n");
@@ -1289,7 +1288,7 @@ int webserv_thread (void *data) {
 	static struct sockaddr_in serv_addr;
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-	serv_addr.sin_port = htons(webport);
+	serv_addr.sin_port = htons(setup.webport);
 
 	if ((listenfd = socket(AF_INET, SOCK_STREAM,0)) < 0) {
 		return(1);
@@ -1335,7 +1334,7 @@ void webserv_init (void) {
 	if (thread_webserv == NULL) {
 		fprintf(stderr, "webserv: thread konnte nicht gestartet werden: %s\n", SDL_GetError());
 	}
-	printf("webserv: running on Port: %i\n", webport);
+	printf("webserv: running on Port: %i\n", setup.webport);
 }
 
 void webserv_exit (void) {

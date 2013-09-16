@@ -26,54 +26,54 @@ uint8_t hud_altitude_null (char *name, float x, float y, int8_t button, float da
 }
 
 uint8_t view_hud (char *name, float x, float y, int8_t button, float data) {
-	if (hud_view == 0) {
-		hud_view = 1;
-	} else if (hud_view == 1) {
-		hud_view = 2;
+	if (setup.hud_view_screen == 0) {
+		setup.hud_view_screen = 1;
+	} else if (setup.hud_view_screen == 1) {
+		setup.hud_view_screen = 2;
 	} else {
-		hud_view = 0;
+		setup.hud_view_screen = 0;
 	}
 	return 0;
 }
 
 
 uint8_t view_hud_stab (char *name, float x, float y, int8_t button, float data) {
-	if (view_stab < 2) {
-		view_stab++;
+	if (setup.hud_view_stab < 2) {
+		setup.hud_view_stab++;
 	} else {
-		view_stab = 0;
+		setup.hud_view_stab = 0;
 	}
 	return 0;
 }
 
 uint8_t view_hud_bw (char *name, float x, float y, int8_t button, float data) {
-	contrast = 1 - contrast;
+	setup.contrast = 1 - setup.contrast;
 	return 0;
 }
 
 uint8_t view_hud_mark (char *name, float x, float y, int8_t button, float data) {
-	hud_view_mark = 1;	
+	setup.hud_view_mark = 1;	
 	return 0;
 }
 
 uint8_t view_hud_tunnel (char *name, float x, float y, int8_t button, float data) {
-	hud_view_tunnel = 1 - hud_view_tunnel;
+	setup.hud_view_tunnel = 1 - setup.hud_view_tunnel;
 	return 0;
 }
 
 uint8_t view_hud_map (char *name, float x, float y, int8_t button, float data) {
-	if (hud_view_map == 0) {
-		hud_view_map = 1;
-	} else if (hud_view_map == 1) {
-		hud_view_map = 2;
+	if (setup.hud_view_map == 0) {
+		setup.hud_view_map = 1;
+	} else if (setup.hud_view_map == 1) {
+		setup.hud_view_map = 2;
 	} else {
-		hud_view_map = 0;
+		setup.hud_view_map = 0;
 	}
 	return 0;
 }
 
 uint8_t view_hud_video (char *name, float x, float y, int8_t button, float data) {
-	hud_view_video = 1 - hud_view_video;
+	setup.hud_view_video = 1 - setup.hud_view_video;
 	return 0;
 }
 
@@ -203,12 +203,12 @@ void draw_altiude_rule (ESContext *esContext, float ti_x, float ti_y, float w, f
 #endif
 
 	float ax1 = ti_x;
-	if (hud_view == 0 || hud_view == 1) {
+	if (setup.hud_view_screen == 0 || setup.hud_view_screen == 1) {
 		ax1 = 0.65;
 	}
 	float ax = ax1 + 0.04;
 
-	if (contrast == 1) {
+	if (setup.contrast == 1) {
 		draw_box_f3(esContext, ax1, 0.0, 0.001, ax1 + 0.17, 0.0 + 7 * 0.1, 0.001, 0, 0, 0, 255);
 		draw_box_f3(esContext, ax1, 0.0, 0.001, ax1 + 0.17, 0.0 - 7 * 0.1, 0.001, 0, 0, 0, 255);
 	} else {
@@ -280,7 +280,7 @@ void draw_altiude_rule (ESContext *esContext, float ti_x, float ti_y, float w, f
 	}
 
 	sprintf(tmp_str, "%0.1f", (ModelData.p_alt - ModelData.alt_offset) - ground_alt);
-	if (contrast == 1) {
+	if (setup.contrast == 1) {
 		draw_text_f3(esContext, ax + 0.15 - strlen(tmp_str) * 0.07 * 0.6 - 0.05, 0.7, 0.0025, 0.07, 0.07, FONT_WHITE, tmp_str);
 	} else {
 		draw_text_f3(esContext, ax + 0.15 - strlen(tmp_str) * 0.07 * 0.6 - 0.05, 0.7, 0.0025, 0.07, 0.07, FONT_PINK, tmp_str);
@@ -308,7 +308,7 @@ void draw_altiude_rule (ESContext *esContext, float ti_x, float ti_y, float w, f
 	draw_line_f3(esContext, ax - 0.02, 0.0, 0.002, ax, 0.02, 0.002, 255, 255, 255, 255);
 
 	sprintf(tmp_str, "%0.1f", (ModelData.p_alt - ModelData.alt_offset));
-	if (contrast == 1) {
+	if (setup.contrast == 1) {
 		draw_text_f3(esContext, ax + 0.15 - strlen(tmp_str) * 0.07 * 0.6 - 0.05, -0.77, 0.0025, 0.07, 0.07, FONT_WHITE, tmp_str);
 	} else {
 		draw_text_f3(esContext, ax + 0.15 - strlen(tmp_str) * 0.07 * 0.6 - 0.05, -0.77, 0.0025, 0.07, 0.07, FONT_PINK, tmp_str);
@@ -340,13 +340,13 @@ void draw_speed_rule (ESContext *esContext, float ti_x, float ti_y, float w, flo
 #endif
 
 	float ax1 = ti_x;
-	if (hud_view == 0 || hud_view == 1) {
+	if (setup.hud_view_screen == 0 || setup.hud_view_screen == 1) {
 		ax1 = -0.65;
 	}
 	float ax = ax1 - 0.04;
 	ax1 -= 0.17;
 
-	if (contrast == 1) {
+	if (setup.contrast == 1) {
 		draw_box_f3(esContext, ax1, 0.0, 0.001, ax1 + 0.17, 0.0 + 7 * 0.1, 0.001, 0, 0, 0, 255);
 		draw_box_f3(esContext, ax1, 0.0, 0.001, ax1 + 0.17, 0.0 - 7 * 0.1, 0.001, 0, 0, 0, 255);
 	} else {
@@ -376,7 +376,7 @@ void draw_speed_rule (ESContext *esContext, float ti_x, float ti_y, float w, flo
 	draw_line_f3(esContext, ax + 0.02, 0.0, 0.002, ax, 0.02, 0.002, 255, 255, 255, 255);
 
 	sprintf(tmp_str, "%0.1f", speed);
-	if (contrast == 1) {
+	if (setup.contrast == 1) {
 		draw_text_f3(esContext, ax1, -0.77, 0.0025, 0.07, 0.07, FONT_WHITE, tmp_str);
 	} else {
 		draw_text_f3(esContext, ax1, -0.77, 0.0025, 0.07, 0.07, FONT_PINK, tmp_str);
@@ -413,18 +413,18 @@ void screen_hud (ESContext *esContext) {
 
 #ifdef SDLGL
 #ifndef OSX
-	if (hud_view_video == 1) {
+	if (setup.hud_view_video == 1) {
 		draw_surface_f3(esContext, -1.4, -1.0, 1.4, 1.0, -0.001, videodev_loop());
 	}
 #endif
-	if (hud_view_map == 1) {
-		if (hud_view_video == 1) {
+	if (setup.hud_view_map == 1) {
+		if (setup.hud_view_video == 1) {
 			display_map(esContext, lat, lon, zoom, 4, 1, 0.0, 0.0, 0.5);
 		} else {
 			display_map(esContext, lat, lon, zoom, 3, 1, 0.5, 0.0, 0.5);
 		}
-	} else if (hud_view_map == 2) {
-		if (hud_view_video == 1) {
+	} else if (setup.hud_view_map == 2) {
+		if (setup.hud_view_video == 1) {
 			display_map(esContext, lat, lon, zoom, 4, 1, 0.3, 0.3, 0.5);
 		} else {
 			display_map(esContext, lat, lon, zoom, 3, 0, 0.7, 0.7, 1.0);
@@ -463,8 +463,8 @@ void screen_hud (ESContext *esContext) {
 
 	//printf("hud#2\n");
 
-	if (hud_view_map == 0 && hud_view_video != 1) {
-		if (contrast == 1) {
+	if (setup.hud_view_map == 0 && setup.hud_view_video != 1) {
+		if (setup.contrast == 1) {
 			draw_box_f3(esContext, -2.5f, -2.5f, -0.001, 2.5f, 0.0f, -0.001, 127, 127, 127, 255);
 			draw_box_f3(esContext, -2.5f, 0.0f, -0.001, 2.5f, 2.5f, -0.001, 255, 255, 255, 255);
 		} else {
@@ -696,7 +696,7 @@ void screen_hud (ESContext *esContext) {
 	//printf("hud#5\n");
 
 
-	if (contrast == 1) {
+	if (setup.contrast == 1) {
 		draw_box_f3(esContext, -0.005, -0.2, 0.001, 0.005, 0.2, 0.001, 0, 0, 0, 255);
 		draw_box_f3(esContext, -0.2, -0.005, 0.001, 0.2, 0.005, 0.001, 0, 0, 0, 255);
 	} else {
@@ -715,7 +715,7 @@ void screen_hud (ESContext *esContext) {
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
 
-	if (hud_view == 0) {
+	if (setup.hud_view_screen == 0) {
 		draw_image(esContext, 0, 0, esContext->width, esContext->height, TEXTURE_HUD_FRAME);
 	}
 
@@ -768,7 +768,7 @@ void screen_hud (ESContext *esContext) {
 		if (last_armed != ModelData.armed) {
 			system("#espeak -v en \"armed\" > /dev/null 2> /dev/null &");
 		}
-		if (contrast == 1) {
+		if (setup.contrast == 1) {
 			draw_text_f(esContext, -1.0 - strlen("ARMED") * 0.07 * 0.6 / 2.0, -0.92, 0.07, 0.07, FONT_WHITE, "ARMED");
 		} else {
 			draw_text_f(esContext, -1.0 - strlen("ARMED") * 0.07 * 0.6 / 2.0, -0.92, 0.07, 0.07, FONT_GREEN, "ARMED");
@@ -792,20 +792,20 @@ void screen_hud (ESContext *esContext) {
 	// Yaw
 	float compas_r = 0.9;
 	float compas_y = 1.5;
-	if (hud_view == 0) {
+	if (setup.hud_view_screen == 0) {
 		draw_circleFilled_f(esContext, 0.0, compas_y, compas_r + 0.01, 0, 0, 0, 255);
 	} else {
 		draw_circleFilled_f(esContext, 0.0, compas_y, compas_r + 0.01, 0, 0, 0, 127);
 	}
 	draw_line_f(esContext, 0.0, compas_y - compas_r, 0.0, compas_y, 255, 255, 255, 255);
 	sprintf(tmp_str, "%0.1f", ModelData.yaw);
-	if (contrast == 1) {
+	if (setup.contrast == 1) {
 		draw_text_f(esContext, -0.2 - strlen(tmp_str) * 0.07 * 0.6 / 2.0 - 0.01, 0.9, 0.07, 0.07, FONT_WHITE, tmp_str);
 	} else {
 		draw_text_f(esContext, -0.2 - strlen(tmp_str) * 0.07 * 0.6 / 2.0 - 0.01, 0.9, 0.07, 0.07, FONT_PINK, tmp_str);
 	}
 	sprintf(tmp_str, "MAG");
-	if (contrast == 1) {
+	if (setup.contrast == 1) {
 		draw_text_f(esContext, 0.2 - strlen(tmp_str) * 0.07 * 0.6 / 2.0 - 0.01, 0.9, 0.07, 0.07, FONT_WHITE, tmp_str);
 	} else {
 		draw_text_f(esContext, 0.2 - strlen(tmp_str) * 0.07 * 0.6 / 2.0 - 0.01, 0.9, 0.07, 0.07, FONT_GREEN, tmp_str);
@@ -814,7 +814,7 @@ void screen_hud (ESContext *esContext) {
 	//printf("hud#7\n");
 
 	// Yaw-Arrow
-	if (contrast == 1) {
+	if (setup.contrast == 1) {
 		draw_line_f(esContext, -0.05, compas_y - compas_r - 0.05, 0.0, compas_y - compas_r - 0.05 + 0.05, 0, 0, 0, 255);
 		draw_line_f(esContext, 0.05, compas_y - compas_r - 0.05, 0.0, compas_y - compas_r - 0.05 + 0.05, 0, 0, 0, 255);
 		draw_line_f(esContext, -0.05, compas_y - compas_r - 0.05, 0.05, compas_y - compas_r - 0.05, 0, 0, 0, 255);
@@ -889,7 +889,7 @@ void screen_hud (ESContext *esContext) {
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
 	// Next-Waypoint-Arrow
-	if (contrast == 1) {
+	if (setup.contrast == 1) {
 		draw_line_f(esContext, -0.05, compas_y - compas_r - 0.05, 0.0, compas_y - compas_r, 255, 255, 255, 255);
 		draw_line_f(esContext, 0.05, compas_y - compas_r - 0.05, 0.0, compas_y - compas_r, 255, 255, 255, 255);
 		draw_line_f(esContext, -0.05, compas_y - compas_r - 0.05, 0.05, compas_y - compas_r - 0.05, 255, 255, 255, 255);
@@ -918,7 +918,7 @@ void screen_hud (ESContext *esContext) {
 #endif
 	sprintf(tmp_str, "%0.1f", (angle2));
 	if (angle2 > 0.0) {
-		if (contrast == 1) {
+		if (setup.contrast == 1) {
 			draw_line_f(esContext, 0.0, 0.85, 0.1, 0.85, 255, 255, 255, 255);
 			draw_line_f(esContext, 0.05, 0.85 - 0.01, 0.1, 0.85, 255, 255, 255, 255);
 			draw_line_f(esContext, 0.05, 0.85 + 0.01, 0.1, 0.85, 255, 255, 255, 255);
@@ -930,7 +930,7 @@ void screen_hud (ESContext *esContext) {
 			draw_text_f3(esContext, 0.11, 0.85 - 0.02, 0.002, 0.04, 0.04, FONT_GREEN, tmp_str);
 		}
 	} else {
-		if (contrast == 1) {
+		if (setup.contrast == 1) {
 			draw_line_f(esContext, 0.0, 0.85, -0.1, 0.85, 255, 255, 255, 255);
 			draw_line_f(esContext, -0.05, 0.85 - 0.01, -0.1, 0.85, 255, 255, 255, 255);
 			draw_line_f(esContext, -0.05, 0.85 + 0.01, -0.1, 0.85, 255, 255, 255, 255);
@@ -980,7 +980,7 @@ void screen_hud (ESContext *esContext) {
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
 	if (angle_home > 0.0) {
-		if (contrast == 1) {
+		if (setup.contrast == 1) {
 			draw_line_f(esContext, 0.0, 0.9, 0.05, 0.9, 255, 255, 255, 255);
 			draw_line_f(esContext, 0.025, 0.9 - 0.01, 0.05, 0.9, 255, 255, 255, 255);
 			draw_line_f(esContext, 0.025, 0.9 + 0.01, 0.05, 0.9, 255, 255, 255, 255);
@@ -990,7 +990,7 @@ void screen_hud (ESContext *esContext) {
 			draw_line_f(esContext, 0.025, 0.9 + 0.01, 0.05, 0.9, 0xff, 0x33, 0xfc, 255);
 		}
 	} else {
-		if (contrast == 1) {
+		if (setup.contrast == 1) {
 			draw_line_f(esContext, 0.0, 0.9, -0.05, 0.9, 255, 255, 255, 255);
 			draw_line_f(esContext, -0.025, 0.9 - 0.01, -0.05, 0.9, 255, 255, 255, 255);
 			draw_line_f(esContext, -0.025, 0.9 + 0.01, -0.05, 0.9, 255, 255, 255, 255);
@@ -1013,7 +1013,7 @@ void screen_hud (ESContext *esContext) {
 #endif
 	//printf("hud#9b\n");
 
-	if (hud_view == 0 || hud_view == 1) {
+	if (setup.hud_view_screen == 0 || setup.hud_view_screen == 1) {
 		// Turn-Indicator
 		draw_turning_indicator(esContext, 1.15, 0.25, 0.4, 0.1);
 
@@ -1225,33 +1225,33 @@ void screen_hud (ESContext *esContext) {
 		draw_button(esContext, "jeti_right", VIEW_MODE_HUD, ">", FONT_GREEN_BG, jetibox_x + 0.37, jetibox_y + 0.15, 0.002, 0.05, 0, 0, jeti_right, 0);
 	}
 
-	if (hud_view == 0) {
+	if (setup.hud_view_screen == 0) {
 		draw_button(esContext, "view_hud", VIEW_MODE_HUD, "VIEW", FONT_WHITE, -1.35, 0.9, 0.002, 0.06, 0, 0, view_hud, 0);
-	} else if (hud_view == 1) {
+	} else if (setup.hud_view_screen == 1) {
 		draw_button(esContext, "view_hud", VIEW_MODE_HUD, "VIEW", FONT_PINK, -1.35, 0.9, 0.002, 0.06, 0, 0, view_hud, 0);
 	} else {
 		draw_button(esContext, "view_hud", VIEW_MODE_HUD, "VIEW", FONT_GREEN, -1.35, 0.9, 0.002, 0.06, 0, 0, view_hud, 0);
 	}
 #ifdef SDLGL
-	if (hud_view_map != 0) {
+	if (setup.hud_view_map != 0) {
 			draw_button(esContext, "view_hud_mark", VIEW_MODE_HUD, "MARK", FONT_GREEN, -1.35, 0.8, 0.002, 0.06, 0, 0, view_hud_mark, 0);
-		if (hud_view_map == 1) {
+		if (setup.hud_view_map == 1) {
 			draw_button(esContext, "view_hud_map", VIEW_MODE_HUD, "MAP", FONT_GREEN, -1.15, 0.9, 0.002, 0.06, 0, 0, view_hud_map, 0);
-		} else if (hud_view_map == 2) {
+		} else if (setup.hud_view_map == 2) {
 			draw_button(esContext, "view_hud_map", VIEW_MODE_HUD, "MAP", FONT_PINK, -1.15, 0.9, 0.002, 0.06, 0, 0, view_hud_map, 0);
 		} else {
 			draw_button(esContext, "view_hud_map", VIEW_MODE_HUD, "MAP", FONT_PINK, -1.15, 0.9, 0.002, 0.06, 0, 0, view_hud_map, 0);
 		}
-//		if (hud_view_tunnel == 1) {
+//		if (setup.hud_view_tunnel == 1) {
 //			draw_button(esContext, "view_map_tunnel", VIEW_MODE_HUD, "TUNNEL", FONT_GREEN, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_tunnel, 0);
 //		} else {
 //			draw_button(esContext, "view_map_tunnel", VIEW_MODE_HUD, "TUNNEL", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_tunnel, 0);
 //		}
-		hud_view_tunnel = 0;
+		setup.hud_view_tunnel = 0;
 
-		if (view_stab == 1) {
+		if (setup.hud_view_stab == 1) {
 			draw_button(esContext, "view_hud_stab", VIEW_MODE_HUD, "STAB", FONT_GREEN, -1.0, 0.8, 0.002, 0.06, 0, 0, view_hud_stab, 0);
-		} else if (view_stab == 2) {
+		} else if (setup.hud_view_stab == 2) {
 			draw_button(esContext, "view_hud_stab", VIEW_MODE_HUD, "STAB", FONT_PINK, -1.0, 0.8, 0.002, 0.06, 0, 0, view_hud_stab, 0);
 		} else {
 			draw_button(esContext, "view_hud_stab", VIEW_MODE_HUD, "STAB", FONT_WHITE, -1.0, 0.8, 0.002, 0.06, 0, 0, view_hud_stab, 0);
@@ -1261,7 +1261,7 @@ void screen_hud (ESContext *esContext) {
 		draw_button(esContext, "view_hud_map", VIEW_MODE_HUD, "MAP", FONT_WHITE, -1.15, 0.9, 0.002, 0.06, 0, 0, view_hud_map, 0);
 		draw_button(esContext, "view_map_bw", VIEW_MODE_HUD, "BW", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_bw, 0);
 	}
-	if (hud_view_video == 1) {
+	if (setup.hud_view_video == 1) {
 		draw_button(esContext, "view_hud_video", VIEW_MODE_HUD, "VID", FONT_GREEN, -1.15, 0.8, 0.002, 0.06, 0, 0, view_hud_video, 0);
 	} else {
 		draw_button(esContext, "view_hud_video", VIEW_MODE_HUD, "VID", FONT_WHITE, -1.15, 0.8, 0.002, 0.06, 0, 0, view_hud_video, 0);

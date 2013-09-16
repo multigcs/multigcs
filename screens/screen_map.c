@@ -368,8 +368,8 @@ void get_maps (uint8_t mode) {
 	char tmp_str[2024];
 	char tmp_str2[2024];
 	char status_txt[2024];
-	uint8_t tiles_x = (screen_w + 255) / 256;
-	uint8_t tiles_y = (screen_h + 255) / 256;
+	uint8_t tiles_x = (setup.screen_w + 255) / 256;
+	uint8_t tiles_y = (setup.screen_h + 255) / 256;
 	uint8_t tiles_num = 0;
 	uint8_t tiles_need = 0;
 	float google_tile_long1 = 0;
@@ -1638,8 +1638,8 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	int x_n = 0;
 	int y_n = 0;
 	char tile_name[1024];
-	uint8_t tiles_x = (screen_w + 255) / 256;
-	uint8_t tiles_y = (screen_h + 255) / 256;
+	uint8_t tiles_x = (setup.screen_w + 255) / 256;
+	uint8_t tiles_y = (setup.screen_h + 255) / 256;
 	uint8_t tiles_num = 0;
 	int16_t n = 0;
 
@@ -1787,9 +1787,9 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		glRotatef(-90.0, 1.0, 0.0, 0.0);
 		glTranslatef(0.0, 0.0015, -0.0068);
 
-		if (view_stab == 1) {
+		if (setup.hud_view_stab == 1) {
 			glRotatef(0.0, 1.0, 0.0, 0.0);
-		} else if (view_stab == 2) {
+		} else if (setup.hud_view_stab == 2) {
 			glRotatef(45.0, 1.0, 0.0, 0.0);
 		} else {
 			glRotatef(-ModelData.roll, 0.0, 1.0, 0.0);
@@ -1981,7 +1981,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			}
 		}
 		if (map_view == 3 || map_view == 4 || _map_view == 5) {
-			if (hud_view_tunnel == 1) {
+			if (setup.hud_view_tunnel == 1) {
 				mark_tunnel(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset) + 10.6, WayPoints[waypoint_active].p_lat, WayPoints[waypoint_active].p_long, WayPoints[waypoint_active].p_alt, 5, lat, lon, zoom);
 			}
 		} else {
@@ -2003,7 +2003,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	//	mark_route(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset), WayPoints[waypoint_active].p_lat, WayPoints[waypoint_active].p_long, WayPoints[waypoint_active].p_alt, 1, lat, lon, zoom);
 	} else {
 		if (map_view == 3 || map_view == 4 || _map_view == 5) {
-			if (hud_view_tunnel == 1) {
+			if (setup.hud_view_tunnel == 1) {
 				mark_tunnel(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset) + 10.6, WayPoints[waypoint_active].p_lat, WayPoints[waypoint_active].p_long, WayPoints[waypoint_active].p_alt, 5, lat, lon, zoom);
 			}
 		} else {
@@ -2043,8 +2043,8 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			}
 		}
 		mark_point(esContext, ny2, nx2, mark_alt, "", "", 5, 0.1, 0.0, lat, lon, zoom);
-		if (hud_view_mark == 1) {
-			hud_view_mark = 0;
+		if (setup.hud_view_mark == 1) {
+			setup.hud_view_mark = 0;
 			for (n = 0; n < MAX_WAYPOINTS; n++) {
 				if (WayPoints[n].p_lat == 0.0) {
 					WayPoints[n].p_lat = ny2;
@@ -2168,7 +2168,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	if (strcmp(mapnames[map_type][MAP_NAME], "GAPI") == 0 || strcmp(mapnames[map_type][MAP_TYPE], "GOOGLE") == 0) {
 		sprintf(tile_name, "%s/.multigcs/MAPS/google.png", getenv("HOME"));
 		if (file_exists(tile_name) != 0) {
-			draw_image(esContext, 1, screen_h - 30, 62, 29, tile_name);
+			draw_image(esContext, 1, setup.screen_h - 30, 62, 29, tile_name);
 		}
 		draw_text_f3(esContext, -1.2, 0.955, 0.003, 0.025, 0.04, FONT_GREEN, "Grafiken (c)2012 AeroWest, DigitalGlobe, GeoBasis-DE/BKG, GeoContent, GeoEye, TerraMetrics, Kartendaten (c)2012 GeoBasis-DE/BKG ((c)2009), Google");
 	}

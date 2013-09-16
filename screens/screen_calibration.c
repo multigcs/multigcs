@@ -3,6 +3,8 @@
 #include <main.h>
 #include <screen_calibration.h>
 
+static uint16_t calibration_timeout = 200;
+
 void screen_calibration (ESContext *esContext) {
 	char tmp_str[100];
 #ifdef SDLGL
@@ -19,27 +21,27 @@ void screen_calibration (ESContext *esContext) {
 	draw_title(esContext, "Calibration");
 
 	tmp_str[0] = 0;
-	if (calibration_mode == 1) {
+	if (setup.calibration_mode == 1) {
 		draw_line(esContext, 60 - 20, 60 - 20, 60 + 20, 60 + 20, 255, 255, 255, 255);
 		draw_line(esContext, 60 - 20, 60 + 20, 60 + 20, 60 - 20, 255, 255, 255, 255);
 		sprintf(tmp_str, "Step 1/5");
-	} else if (calibration_mode == 2) {
+	} else if (setup.calibration_mode == 2) {
 		draw_line(esContext, esContext->width - 60 - 20, 60 - 20, esContext->width - 60 + 20, 60 + 20, 255, 255, 255, 255);
 		draw_line(esContext, esContext->width - 60 - 20, 60 + 20, esContext->width - 60 + 20, 60 - 20, 255, 255, 255, 255);
 		sprintf(tmp_str, "Step 2/5");
-	} else if (calibration_mode == 3) {
+	} else if (setup.calibration_mode == 3) {
 		draw_line(esContext, 60 - 20, esContext->height - 60 - 20, 60 + 20, esContext->height - 60 + 20, 255, 255, 255, 255);
 		draw_line(esContext, 60 - 20, esContext->height - 60 + 20, 60 + 20, esContext->height - 60 - 20, 255, 255, 255, 255);
 		sprintf(tmp_str, "Step 3/5");
-	} else if (calibration_mode == 4) {
+	} else if (setup.calibration_mode == 4) {
 		draw_line(esContext, esContext->width - 60 - 20, esContext->height - 60 - 20, esContext->width - 60 + 20, esContext->height - 60 + 20, 255, 255, 255, 255);
 		draw_line(esContext, esContext->width - 60 - 20, esContext->height - 60 + 20, esContext->width - 60 + 20, esContext->height - 60 - 20, 255, 255, 255, 255);
 		sprintf(tmp_str, "Step 4/5");
-	} else if (calibration_mode == 5) {
+	} else if (setup.calibration_mode == 5) {
 		if (calibration_timeout > 0) {
 			calibration_timeout--;
 		} else {
-			calibration_mode = 1;
+			setup.calibration_mode = 1;
 			calibration_timeout = 200;
 		}
 		sprintf(tmp_str, "OK ? (%i)", calibration_timeout);

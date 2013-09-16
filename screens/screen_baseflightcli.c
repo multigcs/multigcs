@@ -854,12 +854,12 @@ void screen_baseflightcli (ESContext *esContext) {
 							draw_box_f3c2(esContext, SLIDER_START, -0.8 + nn2 * 0.07, 0.001, SLIDER_START + SLIDER_LEN, -0.8 + nn2 * 0.07 + 0.06, 0.001, 55, 255, 55, 220, 175, 145, 85, 100);
 						}
 						sprintf(tmp_str, "slider_%s", bf_set_value[nn].name);
-						set_button(tmp_str, view_mode, SLIDER_START, -0.8 + nn2 * 0.07, SLIDER_START + SLIDER_LEN, -0.8 + nn2 * 0.07 + 0.06, baseflightcli_toggle, (float)nn, 0);
+						set_button(tmp_str, setup.view_mode, SLIDER_START, -0.8 + nn2 * 0.07, SLIDER_START + SLIDER_LEN, -0.8 + nn2 * 0.07 + 0.06, baseflightcli_toggle, (float)nn, 0);
 					} else {
 						draw_button(esContext, "minmax", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.7, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, baseflightcli_null, (float)nn);
 						draw_box_f3c2(esContext, SLIDER_START, -0.8 + nn2 * 0.07, 0.001, SLIDER_START + ((bf_set_value[nn].value - bf_set_value[nn].min) * SLIDER_LEN / (bf_set_value[nn].max - bf_set_value[nn].min)), -0.8 + nn2 * 0.07 + 0.06, 0.001, 255, 255, 55, 220, 175, 145, 85, 100);
 						sprintf(tmp_str, "slider_%s", bf_set_value[nn].name);
-						set_button(tmp_str, view_mode, SLIDER_START, -0.8 + nn2 * 0.07, SLIDER_START + SLIDER_LEN, -0.8 + nn2 * 0.07 + 0.06, baseflightcli_slider_move, (float)nn, 1);
+						set_button(tmp_str, setup.view_mode, SLIDER_START, -0.8 + nn2 * 0.07, SLIDER_START + SLIDER_LEN, -0.8 + nn2 * 0.07 + 0.06, baseflightcli_slider_move, (float)nn, 1);
 					}
 
 					draw_rect_f3(esContext, SLIDER_START, -0.8 + nn2 * 0.07, 0.001, SLIDER_START + SLIDER_LEN, -0.8 + nn2 * 0.07 + 0.06, 0.001, 155, 155, 155, 127);

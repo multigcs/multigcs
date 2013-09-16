@@ -103,7 +103,7 @@ static uint8_t model_baud_set (char *name, float x, float y, int8_t button, floa
 
 static uint8_t model_baud_change (char *name, float x, float y, int8_t button, float data) {
 	baud_set_callback(model_baud_set);
-	baud_set_mode(view_mode);
+	baud_set_mode(setup.view_mode);
 	return 0;
 }
 
@@ -120,7 +120,7 @@ static uint8_t model_device_change (char *name, float x, float y, int8_t button,
 	device_add_filter("ttyACM");
 	device_add_filter("ttyS");
 	device_add_filter("cu.");
-	device_set_mode(view_mode);
+	device_set_mode(setup.view_mode);
 	return 0;
 }
 
@@ -133,7 +133,7 @@ static uint8_t model_name_set (char *name, float x, float y, int8_t button, floa
 static uint8_t model_name_edit (char *name, float x, float y, int8_t button, float data) {
 	keyboard_set_callback(model_name_set);
 	keyboard_set_text(ModelData.name);
-	keyboard_set_mode(view_mode);
+	keyboard_set_mode(setup.view_mode);
 	return 0;
 }
 
@@ -196,7 +196,7 @@ uint8_t model_save (char *name, float x, float y, int8_t button, float data) {
 		sprintf(tmp_str, "%s.xml", ModelData.name);
 	}
 	keyboard_set_text(tmp_str);
-	keyboard_set_mode(view_mode);
+	keyboard_set_mode(setup.view_mode);
 	return 0;
 }
 
@@ -413,7 +413,7 @@ static uint8_t model_load (char *name, float x, float y, int8_t button, float da
 	filesystem_set_callback(model_load_xml);
 	filesystem_reset_filter();
 	filesystem_add_filter(".xml\0");
-	filesystem_set_mode(view_mode);
+	filesystem_set_mode(setup.view_mode);
 	return 0;
 }
 
@@ -432,7 +432,7 @@ static uint8_t model_image_change (char *name, float x, float y, int8_t button, 
 	filesystem_set_callback(model_image_set);
 	filesystem_reset_filter();
 	filesystem_add_filter(".png\0");
-	filesystem_set_mode(view_mode);
+	filesystem_set_mode(setup.view_mode);
 	return 0;
 }
 

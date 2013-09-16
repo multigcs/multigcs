@@ -1331,7 +1331,7 @@ int gl_init (uint16_t w, uint16_t h) {
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
 
-	glViewport(0 + screen_border_x / 2, 0 + screen_border_y / 2, w - screen_border_x, h - screen_border_y);
+	glViewport(0 + setup.screen_border_x / 2, 0 + setup.screen_border_y / 2, w - setup.screen_border_x, h - setup.screen_border_y);
 	gluPerspective(53.0, aspect, 0.001, 7.0);
 //	glOrtho(-1.0 * aspect, 1.0 * aspect, -1.0, 1.0, -5.5, 5.5);
 
@@ -1385,7 +1385,7 @@ void glResize (ESContext *esContext, int w, int h) {
 #ifndef SDL2
 	const SDL_PixelFormat fmt = *(WinScreen->format);
 	Uint32 video_flags;
-	if (fullscreen == 1) {
+	if (setup.fullscreen == 1) {
 		video_flags = SDL_OPENGLBLIT | SDL_FULLSCREEN;
 	} else {
 		video_flags = SDL_OPENGLBLIT | SDL_RESIZABLE;
@@ -1396,19 +1396,19 @@ void glResize (ESContext *esContext, int w, int h) {
 		exit(1);
 	}
 #endif
-	if (keep_ratio == 0.0) {
+	if (setup.keep_ratio == 0.0) {
 		aspect = (GLfloat)w / (GLfloat)h;
 	} else {
-		aspect = keep_ratio;
+		aspect = setup.keep_ratio;
 	}
 	gl_init(w, h);
-	screen_w = w;
-	screen_h = h;
-	esContext->width = screen_w;
-	esContext->height = screen_h;
+	setup.screen_w = w;
+	setup.screen_h = h;
+	esContext->width = setup.screen_w;
+	esContext->height = setup.screen_h;
 
 	char tmp_str[100];
-	sprintf(tmp_str, "Resize: %ix%i", screen_w, screen_h);
+	sprintf(tmp_str, "Resize: %ix%i", setup.screen_w, setup.screen_h);
 	sys_message(tmp_str);
 }
 
@@ -1425,15 +1425,15 @@ int glInit ( ESContext *esContext ) {
 		exit( 1 );
 	}
 #ifdef SDL2
-	if (fullscreen == 1) {
+	if (setup.fullscreen == 1) {
 		video_flags = SDL_WINDOW_FULLSCREEN | SDL_WINDOW_OPENGL;
 	} else {
 		video_flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
 	}
-	if (borderless == 1) {
+	if (setup.borderless == 1) {
 		video_flags |= SDL_WINDOW_BORDERLESS;
 	}
-	if ((MainWindow = SDL_CreateWindow("Multi-GCS", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_w, screen_h, video_flags)) == NULL) {
+	if ((MainWindow = SDL_CreateWindow("Multi-GCS", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, setup.screen_w, setup.screen_h, video_flags)) == NULL) {
 		fprintf(stderr, "* Couldn't create MainWindow: %s\n", SDL_GetError());
 		SDL_Quit();
 		exit(1);
@@ -1447,13 +1447,13 @@ int glInit ( ESContext *esContext ) {
 	} else {
 		bpp = 16;
 	}
-	if (fullscreen == 1) {
+	if (setup.fullscreen == 1) {
 		video_flags = SDL_OPENGLBLIT | SDL_FULLSCREEN;
 	} else {
 		video_flags = SDL_OPENGLBLIT | SDL_RESIZABLE;
 	}
 	SDL_WM_SetCaption("Multi-GCS", "");
-	if ((WinScreen = SDL_SetVideoMode(screen_w, screen_h, bpp, video_flags)) == NULL) {
+	if ((WinScreen = SDL_SetVideoMode(setup.screen_w, setup.screen_h, bpp, video_flags)) == NULL) {
 		fprintf(stderr, "* Couldn't set GL mode: %s\n", SDL_GetError());
 		SDL_Quit();
 		exit(1);
@@ -1485,16 +1485,16 @@ int glInit ( ESContext *esContext ) {
 
 	printf("* GL-Screen BPP: %d\n", WinScreen->format->BitsPerPixel);
 
-	if (keep_ratio == 0.0) {
-		aspect = (GLfloat)screen_w / (GLfloat)screen_h;
+	if (setup.keep_ratio == 0.0) {
+		aspect = (GLfloat)setup.screen_w / (GLfloat)setup.screen_h;
 	} else {
-		aspect = keep_ratio;
+		aspect = setup.keep_ratio;
 	}
 	printf("* aspect: %f\n", aspect);
-	gl_init(screen_w, screen_h);
+	gl_init(setup.screen_w, setup.screen_h);
 
-	esContext->width = screen_w;
-	esContext->height = screen_h;
+	esContext->width = setup.screen_w;
+	esContext->height = setup.screen_h;
 
 	return GL_TRUE;
 }
@@ -1526,6 +1526,6 @@ void draw_graph_value (ESContext *esContext, float px1, float py1, float px2, fl
 }
 
 void resize_border (void) {
-	glViewport(0 + screen_border_x / 2, 0 + screen_border_y / 2, screen_w - screen_border_x, screen_h - screen_border_y);
+	glViewport(0 + setup.screen_border_x / 2, 0 + setup.screen_border_y / 2, setup.screen_w - setup.screen_border_x, setup.screen_h - setup.screen_border_y);
 }
 

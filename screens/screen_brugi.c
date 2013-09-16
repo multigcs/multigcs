@@ -111,7 +111,7 @@ static uint8_t edit_value (ESContext *esContext, char *name, uint8_t type, Brugi
 	draw_button(esContext, name, VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.2, -0.8, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, brugi_select, -1.0);
 	draw_box_f3c2(esContext, SLIDER_START, -0.7 + 3 * 0.14, 0.001, SLIDER_START + SLIDER_LEN, -0.7 + 3 * 0.14 + 0.1, 0.001, 55, 55, 55, 220, 75, 45, 85, 100);
 	draw_box_f3c2(esContext, SLIDER_START, -0.7 + 3 * 0.14, 0.001, SLIDER_START + ((value->value - value->min) * SLIDER_LEN / (value->max - value->min)), -0.7 + 3 * 0.14 + 0.1, 0.001, 255, 255, 55, 220, 175, 145, 85, 100);
-	set_button(tmp_str, view_mode, SLIDER_START, -0.7 + 3 * 0.14, SLIDER_START + SLIDER_LEN, -0.7 + 3 * 0.14 + 0.1, brugi_slider_move, (float)3, 1);
+	set_button(tmp_str, setup.view_mode, SLIDER_START, -0.7 + 3 * 0.14, SLIDER_START + SLIDER_LEN, -0.7 + 3 * 0.14 + 0.1, brugi_slider_move, (float)3, 1);
 
 	return 0;
 }

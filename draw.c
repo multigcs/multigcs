@@ -102,15 +102,15 @@ void draw_scrollbar (ESContext *esContext, uint16_t page, uint16_t page_max, uin
 	if (page_max > 0) {
 		draw_box_f3(esContext, 1.3, -0.77, 0.002, 1.35, 0.77, 0.002, 255, 255, 255, 128);
 		if (page > 0) {
-			set_button("down", view_mode, 1.3, -0.77, 1.35, -0.67, callback, -1.0, 0);
-			set_button("down2", view_mode, 1.3, -0.77, 1.35, 0.0, callback, -3.0, 0);
+			set_button("down", setup.view_mode, 1.3, -0.77, 1.35, -0.67, callback, -1.0, 0);
+			set_button("down2", setup.view_mode, 1.3, -0.77, 1.35, 0.0, callback, -3.0, 0);
 		}
 		draw_box_f3(esContext, 1.3, -0.77, 0.002, 1.35, -0.67, 0.002, 255, 255, 255, 128);
 		draw_box_f3(esContext, 1.3, -0.77, 0.002, 1.35, -0.67, 0.002, 255, 255, 255, 128);
 		draw_rect_f3(esContext, 1.3, -0.77, 0.002, 1.35, -0.67, 0.002, 255, 255, 255, 128);
 		if (page < page_max) {
-			set_button("up", view_mode, 1.3, 0.67, 1.35, 0.77, callback, 1.0, 0);
-			set_button("up2", view_mode, 1.3, 0.0, 1.35, 0.77, callback, 3.0, 0);
+			set_button("up", setup.view_mode, 1.3, 0.67, 1.35, 0.77, callback, 1.0, 0);
+			set_button("up2", setup.view_mode, 1.3, 0.0, 1.35, 0.77, callback, 3.0, 0);
 		}
 		if (page < 0) {
 			page = 0;
@@ -161,7 +161,7 @@ uint8_t draw_button (ESContext *esContext, char *name, uint8_t view_mode, char *
 //	draw_rect_f3(esContext, x1 - 0.01, y1 - 0.01, z1, x2 + 0.01, y2 + 0.01, z1, 255, 255, 255, 64);
 	for (n = 0; n < MAX_BUTTONS; n++) {
 		if (strcmp(Buttons[n].name, name) == 0) {
-			Buttons[n].view_mode = view_mode;
+			Buttons[n].view_mode = setup.view_mode;
 			Buttons[n].x1 = x1 - 0.01;
 			Buttons[n].y1 = y1 - 0.01;
 			Buttons[n].x2 = x2 + 0.01;
@@ -172,7 +172,7 @@ uint8_t draw_button (ESContext *esContext, char *name, uint8_t view_mode, char *
 			return 0;
 		} else if (Buttons[n].name[0] == 0) {
 			strncpy(Buttons[n].name, name, 99);
-			Buttons[n].view_mode = view_mode;
+			Buttons[n].view_mode = setup.view_mode;
 			Buttons[n].x1 = x1 - 0.01;
 			Buttons[n].y1 = y1 - 0.01;
 			Buttons[n].x2 = x2 + 0.01;
@@ -220,7 +220,7 @@ strncpy(font, FONT_GREEN, 1023);
 //	draw_rect_f3(esContext, x1 - 0.01, y1 - 0.01, z1, x2 + 0.01, y2 + 0.01, z1, 255, 0, 0, 255);
 	for (n = 0; n < MAX_BUTTONS; n++) {
 		if (strcmp(Buttons[n].name, name) == 0) {
-			Buttons[n].view_mode = view_mode;
+			Buttons[n].view_mode = setup.view_mode;
 			Buttons[n].x1 = x1 - 0.01;
 			Buttons[n].y1 = y1 - 0.01;
 			Buttons[n].x2 = x2 + 0.01;
@@ -231,7 +231,7 @@ strncpy(font, FONT_GREEN, 1023);
 			return 0;
 		} else if (Buttons[n].name[0] == 0) {
 			strncpy(Buttons[n].name, name, 100);
-			Buttons[n].view_mode = view_mode;
+			Buttons[n].view_mode = setup.view_mode;
 			Buttons[n].x1 = x1 - 0.01;
 			Buttons[n].y1 = y1 - 0.01;
 			Buttons[n].x2 = x2 + 0.01;
@@ -592,7 +592,7 @@ void draw_circleMeter_f3 (ESContext *esContext, float x, float y, float z, float
 	start3 = (offset2 - offset1) * start3 / 100.0 + offset1;
 	value = (offset2 - offset1) * value / 100.0 + offset1;
 	if (type == 2) {
-		if (contrast == 1) {
+		if (setup.contrast == 1) {
 	//		draw_circleFilled_f3_part_end(esContext, x, y, z, radius, radius - width, offset1, 255, 255, 255, 255);
 			draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, offset1, start2, 255, 255, 255, 255);
 			draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, start2, start3, 255, 255, 0, 255);
@@ -610,7 +610,7 @@ void draw_circleMeter_f3 (ESContext *esContext, float x, float y, float z, float
 			draw_circlePointer_f3(esContext, x, y, z + 0.0001, radius - width, radius / 20.0, value, 255, 255, 255, 255);
 		}
 	} else {
-		if (contrast == 1) {
+		if (setup.contrast == 1) {
 	//		draw_circleFilled_f3_part_end(esContext, x, y, z, radius, radius - width, offset1, 127, 127, 127, 255);
 			draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, offset1, start2, 127, 127, 127, 255);
 			draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, start2, start3, 200, 200, 200, 255);

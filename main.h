@@ -112,77 +112,66 @@ struct list_element {
 	struct list_element *next;
 };
 
-extern float volt_min;
-extern int8_t speak;
-extern uint8_t fullscreen;
-extern uint8_t borderless;
-extern uint16_t heartbeat_timer;
-extern uint16_t blink_timer;
-extern uint16_t speak_timer;
-extern uint16_t msg_timer;
-extern uint8_t map_mark;
-extern uint8_t redraw_flag;
-extern uint16_t mouse_x;
-extern uint16_t mouse_y;
-extern char gcs_gps_port[1024];
-extern uint32_t gcs_gps_baud;
-extern char rcflow_port[1024];
-extern uint32_t rcflow_baud;
-extern char telemetrie_port[1024];
-extern uint32_t telemetrie_baud;
-extern char jeti_port[1024];
-extern uint32_t jeti_baud;
-extern char frsky_port[1024];
-extern uint32_t frsky_baud;
-extern char tracker_port[1024];
-extern uint32_t tracker_baud;
-extern uint8_t message;
-extern char message_txt[1024];
-extern WayPoint WayPoints[MAX_WAYPOINTS];
-extern int8_t waypoint_active;
-extern uint8_t view_mode;
-extern uint8_t view_mode_next;
-extern float trans_count;
+typedef struct {
+	char gcs_gps_port[1024];
+	uint32_t gcs_gps_baud;
+	char rcflow_port[1024];
+	uint32_t rcflow_baud;
+	char telemetrie_port[1024];
+	uint32_t telemetrie_baud;
+	char jeti_port[1024];
+	uint32_t jeti_baud;
+	char frsky_port[1024];
+	uint32_t frsky_baud;
+	char tracker_port[1024];
+	uint32_t tracker_baud;
+
+	int8_t waypoint_active;
+
+	uint8_t fullscreen;
+	uint8_t borderless;
+	uint8_t view_mode;
+	uint8_t hud_view_screen;
+	uint8_t hud_view_stab;
+	uint8_t hud_view_map;
+	uint8_t hud_view_video;
+	uint8_t hud_view_tunnel;
+	uint8_t hud_view_mark;
+	uint8_t contrast;
+	uint16_t screen_w;
+	uint16_t screen_h;
+	uint16_t screen_border_x;
+	uint16_t screen_border_y;
+	float keep_ratio;
+
+	char touchscreen_device[200];
+	uint8_t calibration_mode;
+	int calibration_min_x;
+	int calibration_max_x;
+	int calibration_min_y;
+	int calibration_max_y;
+
+	int8_t speak;
+	float volt_min;
+
+	uint16_t webport;
+	float gearth_interval;
+} GcsSetup;
+
 extern Button Buttons[MAX_BUTTONS];
-extern SDL_Event event;
-extern char touchscreen_device[200];
-extern uint8_t calibration_mode;
-extern uint16_t calibration_timeout;
-extern int calibration_min_x;
-extern int calibration_max_x;
-extern int size_x;
-extern int last_x;
-extern int calibration_min_y;
-extern int calibration_max_y;
-extern int size_y;
-extern int last_y;
-extern int touch_fd;
-extern uint16_t webport;
-extern float gearth_interval;
-extern uint8_t clientmode;
-extern char clientmode_server[1024];
-extern uint16_t clientmode_port;
+extern WayPoint WayPoints[MAX_WAYPOINTS];
+extern GcsSetup setup;
+
 extern volatile uint8_t gui_running;
-extern uint8_t hud_view;
-extern uint8_t view_stab;
-extern uint8_t hud_view_map;
-extern uint8_t hud_view_video;
-extern uint8_t hud_view_tunnel;
-extern uint8_t hud_view_mark;
-extern float gcs_roll;
-extern float gcs_pitch;
-extern float gcs_yaw;
-extern uint8_t contrast;
-extern uint16_t screen_w;
-extern uint16_t screen_h;
-extern uint16_t screen_border_x;
-extern uint16_t screen_border_y;
-extern float keep_ratio;
+extern uint8_t redraw_flag;
+extern int8_t waypoint_active;
+extern uint8_t view_mode_next;
 extern char keyboard_key[100];
 extern uint8_t keyboard_shift;
 extern uint8_t keyboard_altgr;
-extern char blender_export_filename[2048];
-extern uint8_t logmode;
+extern float gcs_roll;
+extern float gcs_pitch;
+extern float gcs_yaw;
 
 //#define HTML_DRAWING
 

@@ -85,7 +85,7 @@ uint8_t device_name_save (char *name, float x, float y, int8_t button, float dat
 }
 
 void screen_device (ESContext *esContext) {
-	if (show_device != view_mode) {
+	if (show_device != setup.view_mode) {
 		return;
 	}
 
@@ -111,7 +111,7 @@ void screen_device (ESContext *esContext) {
 					} else if (device_filter_match(dir_entry->d_name) == 1) {
 						if (device_page == n2) {
 							sprintf(tmp_str, "%s", dir_entry->d_name);
-							draw_button(esContext, new_path, view_mode, tmp_str, FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, device_name_save, 0.0);
+							draw_button(esContext, new_path, setup.view_mode, tmp_str, FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, device_name_save, 0.0);
 						}
 						n++;
 					}
@@ -126,18 +126,18 @@ void screen_device (ESContext *esContext) {
 		dir = NULL;
 	}
 
-	draw_button(esContext, "UNSET", view_mode, "UNSET", FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, device_name_save, 0.0);
+	draw_button(esContext, "UNSET", setup.view_mode, "UNSET", FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, device_name_save, 0.0);
 
 	if (device_page > 0) {
 		sprintf(tmp_str, "^ (%i/%i)", device_page, n2);
-		draw_button(esContext, "up", view_mode, tmp_str, FONT_WHITE, 0.0, -0.9, 0.002, 0.08, 1, 0, device_page_move, -1.0);
+		draw_button(esContext, "up", setup.view_mode, tmp_str, FONT_WHITE, 0.0, -0.9, 0.002, 0.08, 1, 0, device_page_move, -1.0);
 	}
 	if (n2 > device_page) {
 		sprintf(tmp_str, "v (%i/%i)", device_page, n2);
-		draw_button(esContext, "down", view_mode, tmp_str, FONT_WHITE, 0.0, 0.8, 0.002, 0.08, 1, 0, device_page_move, +1.0);
+		draw_button(esContext, "down", setup.view_mode, tmp_str, FONT_WHITE, 0.0, 0.8, 0.002, 0.08, 1, 0, device_page_move, +1.0);
 	}
 
-	draw_button(esContext, "show", view_mode, "[CANCEL]", FONT_WHITE, 0.0, 0.9, 0.002, 0.06, 1, 0, device_name_cancel, 0.0);
+	draw_button(esContext, "show", setup.view_mode, "[CANCEL]", FONT_WHITE, 0.0, 0.9, 0.002, 0.06, 1, 0, device_name_cancel, 0.0);
 
 }
 

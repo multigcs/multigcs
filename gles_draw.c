@@ -829,7 +829,7 @@ int glesInit ( ESContext *esContext ) {
 	aspect = (GLfloat)esContext->width / (GLfloat)esContext->height;
 	esMatrixLoadIdentity( &userData->perspective );
 
-	glViewport(0 + screen_border_x / 2, 0 + screen_border_y / 2, esContext->width - screen_border_x, esContext->height - screen_border_y);
+	glViewport(0 + setup.screen_border_x / 2, 0 + setup.screen_border_y / 2, esContext->width - setup.screen_border_x, esContext->height - setup.screen_border_y);
 	esPerspective(&userData->perspective, 53.0f, aspect, 1.0f, 20.0f);
 
 	glClearColor ( 0.0f, 0.0f, 0.0f, 1.0f );
@@ -1025,5 +1025,5 @@ void draw_trifan_f3 (ESContext *esContext, float *poly_array, uint16_t len, uint
 }
 
 void resize_border (void) {
-	glViewport(0 + screen_border_x / 2, 0 + screen_border_y / 2, screen_w - screen_border_x, screen_h - screen_border_y);
+	glViewport(0 + setup.screen_border_x / 2, 0 + setup.screen_border_y / 2, setup.screen_w - setup.screen_border_x, setup.screen_h - setup.screen_border_y);
 }

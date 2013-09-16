@@ -64,7 +64,7 @@ void screen_background (ESContext *esContext) {
 		glMatrixMode( GL_MODELVIEW );
 		glLoadIdentity();
 	} else {
-		if (contrast == 1) {
+		if (setup.contrast == 1) {
 			draw_box_f3(esContext, -1.5, -1.0, 0.0, 1.5, 1.0, 0.0, 0, 0, 0, 255);
 		} else {
 			sprintf(tmp_str, "%s", ModelData.image);
@@ -83,7 +83,7 @@ void screen_background (ESContext *esContext) {
 		}
 	}
 #else
-	if (contrast == 1) {
+	if (setup.contrast == 1) {
 		draw_box_f3(esContext, -1.5, -1.0, 0.0, 1.5, 1.0, 0.0, 0, 0, 0, 255);
 	} else {
 		sprintf(tmp_str, "%s", ModelData.image);

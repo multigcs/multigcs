@@ -22,13 +22,13 @@ uint8_t write_wp (char *name, float x, float y, int8_t button, float data) {
 
 uint8_t wpedit_waypoint_edit (char *name, float x, float y, int8_t button, float data) {
 	wpedit_last_mode = (uint8_t)data;
-	view_mode = VIEW_MODE_WPEDIT;
+	setup.view_mode = VIEW_MODE_WPEDIT;
 	view_mode_next = VIEW_MODE_WPEDIT;
 	return 0;
 }
 
 uint8_t wpedit_back (char *name, float x, float y, int8_t button, float data) {
-	view_mode = wpedit_last_mode;
+	setup.view_mode = wpedit_last_mode;
 	view_mode_next = wpedit_last_mode;
 	return 0;
 }
