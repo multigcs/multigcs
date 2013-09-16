@@ -15,7 +15,10 @@
 #include <GL/gl.h>
 #include <GL/glext.h>
 #include <GL/glu.h>
+#else
+#include <OpenGL/glu.h>
 #endif
+
 #include <SDL.h>
 #include <SDL_opengl.h>
 
