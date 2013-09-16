@@ -141,6 +141,7 @@ uint8_t view_mode_next = 0;
 float trans_count = 0.0;
 Button Buttons[MAX_BUTTONS];
 uint8_t connection_found = 0;
+uint8_t view_overview = 0;
 
 #ifdef HTML_DRAWING
 char display_html[HTML_MAX];
@@ -1318,6 +1319,11 @@ void transition_rotate_end (ESContext *esContext, float trans_count) {
 #endif
 }
 
+static uint8_t overview_show (char *name, float x, float y, int8_t button, float data) {
+	view_overview = 1 - view_overview;
+	return 0;
+}
+
 static uint8_t screen_last (char *name, float x, float y, int8_t button, float data) {
 	if (view_mode_next > 0) {
 		view_mode_next = setup.view_mode - 1;
@@ -1641,7 +1647,9 @@ void Draw (ESContext *esContext) {
 #endif
 
 
-	if (setup.view_mode == VIEW_MODE_HUD) {
+	if (view_overview == 1) {
+		screen_overview(esContext);
+	} else if (setup.view_mode == VIEW_MODE_HUD) {
 		screen_hud(esContext);
 	} else if (setup.view_mode == VIEW_MODE_TELEMETRY) {
 		screen_background(esContext);
@@ -1739,22 +1747,14 @@ void Draw (ESContext *esContext) {
 			draw_text_f(esContext, 1.2 - strlen("LOW_BAT") * 0.06 * 0.6, 0.9, 0.06, 0.06, FONT_PINK, "LOW_BAT");
 		}
 	}
-	// Speaker
-	if (setup.speak == 1) {
-		draw_image(esContext, esContext->width - 40, esContext->height - 40, 16, 16, TEXTURE_SPEAKER);
+	if (view_overview == 1) {
+		draw_button(esContext, "M", setup.view_mode, "[M]", FONT_GREEN, 1.3, 0.90, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_show, 0.0);
 	} else {
-		draw_image(esContext, esContext->width - 40, esContext->height - 40, 16, 16, TEXTURE_SPEAKER_MUTE);
-	}
-	if (logmode == 2) {
-		draw_button(esContext, "log", setup.view_mode, "[P]", FONT_GREEN, 1.35, 0.85, 0.003, 0.04, ALIGN_CENTER, ALIGN_TOP, logging_set_mode, 0.0);
-	} else if (logmode == 1) {
-		draw_button(esContext, "log", setup.view_mode, "[L]", FONT_GREEN, 1.35, 0.85, 0.003, 0.04, ALIGN_CENTER, ALIGN_TOP, logging_set_mode, 0.0);
-	} else {
-		draw_button(esContext, "log", setup.view_mode, "[L]", FONT_WHITE, 1.35, 0.85, 0.003, 0.04, ALIGN_CENTER, ALIGN_TOP, logging_set_mode, 0.0);
+		draw_button(esContext, "M", setup.view_mode, "[M]", FONT_WHITE, 1.3, 0.90, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_show, 0.0);
 	}
 
 	// LogPlay
-	if (logmode == LOGGING_PLAY) {
+	if (logplay == 1) {
 		logplay_draw_control(esContext, 0.0, 0.85);
 	}
 

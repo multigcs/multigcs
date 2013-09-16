@@ -46,7 +46,8 @@
 
 char *Logdata = NULL;
 int log_startup_time = 0;
-uint8_t logmode = LOGGING_OFF;
+uint8_t logmode = 0;
+uint8_t logplay = 0;
 uint8_t logplay_open = 0;
 uint8_t logplay_play = 0;
 uint8_t logplay_pause = 0;
@@ -57,21 +58,6 @@ uint8_t logplay_list = 0;
 uint8_t logplay_filelist = 0;
 char logplay_file[1024];
 
-
-uint8_t logging_set_mode (char *name, float x, float y, int8_t button, float data) {
-	if (logmode == 0) {
-		logmode = 1;
-		LogSave();
-		LogInit();
-	} else if (logmode == 1) {
-		LogSave();
-		logmode = 2;
-	} else {
-		LogSave();
-		logmode = 0;
-	}
-	return 0;
-}
 
 void logplay_export_kml (char *logfile, char *kmlfile, uint8_t type) {
 	printf("logplay: %s -> %s\n", logfile, kmlfile);
@@ -606,6 +592,7 @@ void logplay_draw_control (ESContext *esContext, float x1, float y1) {
 
 	draw_box_f3(esContext, x, y, 0.002, x + w, y + h, 0.002, 0, 0, 0, 127);
 	draw_box_f3(esContext, x + 0.01, y + 0.01, 0.002, x + w - 0.01, y + h / 2 - 0.01, 0.002, 0, 0, 0, 127);
+	draw_rect_f3(esContext, x, y, 0.002, x + w, y + h, 0.002, 255, 255, 255, 127);
 	draw_image_button(esContext, "rew", setup.view_mode, TEXTURE_PLAYER_REW    , x + w / max * 1, y + h / 4 * 3, 0.003, h / 2, h / 2, ALIGN_CENTER, ALIGN_CENTER, logplay_cmd_step, -100.0);
 	if (logplay_play == 1) {
 		draw_image_button(esContext, "stop", setup.view_mode, TEXTURE_PLAYER_STOP  , x + w / max * 2, y + h / 4 * 3, 0.003, h / 2, h / 2, ALIGN_CENTER, ALIGN_CENTER, logplay_cmd_play, 0.0);
@@ -705,7 +692,6 @@ void LogInit (void) {
 }
 
 void LogAppend (char *line) {
-
 	if (Logdata != NULL) {
 		Logdata = realloc(Logdata, (int)(strlen(Logdata) + strlen(line) + 2));
 		strcat(Logdata, line);
@@ -714,7 +700,7 @@ void LogAppend (char *line) {
 }
 
 void Logging (void) {
-	if (logmode == LOGGING_PLAY) {
+	if (logplay == 1) {
 		char line[512];
 		static char last_line[512];
 		static FILE *fr = NULL;
@@ -854,10 +840,7 @@ void Logging (void) {
 
 			}
 		}
-
-
-
-	} else if (logmode == LOGGING_ON) {
+	} else if (logmode == 1) {
 		char line[512];
 		static float last_lat = 0.0;
 		static float last_lon = 0.0;

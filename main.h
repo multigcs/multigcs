@@ -80,12 +80,6 @@ typedef struct {
 } WayPoint;
 
 enum {
-	LOGGING_OFF,
-	LOGGING_ON,
-	LOGGING_PLAY,
-};
-
-enum {
 	BUTTON_RELEASE,
 	BUTTON_PRESS,
 	BUTTON_MOVE,

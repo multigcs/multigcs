@@ -27,6 +27,7 @@
 #include <openpilot.h>
 #include <mwi21.h>
 #include <jeti.h>
+#include <logging.h>
 #include <screen_device.h>
 #include <screen_baud.h>
 
@@ -34,6 +35,40 @@ static char port_selected[100];
 static char baud_selected[100];
 static uint8_t resize = 0;
 
+static char view_names[VIEW_MODE_LAST][100] = {
+	"HUD",
+	"TELEMETRY",
+	"MAP",
+	"FMS",
+	"MODEL",
+	"FCMENU",
+	"RCFLOW",
+	"VIDEOLIST",
+	"TCL",
+	"TRACKER",
+	"SYSTEM",
+};
+
+extern uint8_t view_overview;
+
+uint8_t option_cmd (char *name, float x, float y, int8_t button, float data) {
+	printf("OPTION: %s %i\n", name, (int)data);
+	if (strcmp(name, "SPEAK") == 0) {
+		setup.speak = 1 - setup.speak;
+	} else if (strcmp(name, "LOGGING") == 0) {
+		logmode = 1 - logmode;
+	} else if (strcmp(name, "LOGPLAYER") == 0) {
+		logplay = 1 - logplay;
+	}
+	return 0;
+}
+
+uint8_t overview_set (char *name, float x, float y, int8_t button, float data) {
+	view_overview = 0;
+	setup.view_mode = (int)data;
+	view_mode_next = (int)data;
+	return 0;
+}
 
 uint8_t system_baud_set (char *name, float x, float y, int8_t button, float data) {
 	printf("BAUD: %s_baud = %s\n", baud_selected, name);
@@ -165,6 +200,51 @@ uint8_t system_set_border_y (char *name, float x, float y, int8_t button, float 
 	}
 	resize_border();
 	return 0;
+}
+
+
+void screen_overview (ESContext *esContext) {
+#ifndef SDLGL
+	ESMatrix modelview;
+	UserData *userData = esContext->userData;
+#endif
+	char tmp_str[1024];
+	uint8_t n = 0;
+
+#ifndef SDLGL
+	esMatrixLoadIdentity( &modelview );
+	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
+#endif
+
+	reset_buttons();
+
+	draw_button(esContext, "Screens", setup.view_mode, "Screens", FONT_PINK, -0.8, -0.6 + -2 * 0.1, 0.002, 0.08, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)0);
+
+	for (n = 0; n < VIEW_MODE_LAST; n++) {
+		sprintf(tmp_str, "%s", view_names[n]);
+		draw_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_WHITE, -0.8, -0.6 + n * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)n);
+	}
+
+	draw_button(esContext, "Options", setup.view_mode, "Options", FONT_PINK, 0.8, -0.6 + -2 * 0.1, 0.002, 0.08, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)0);
+
+	n = 0;
+	if (setup.speak == 1) {
+		draw_button(esContext, "SPEAK", setup.view_mode, "SPEAK", FONT_GREEN, 0.8, -0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+	} else {
+		draw_button(esContext, "SPEAK", setup.view_mode, "SPEAK", FONT_WHITE, 0.8, -0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+	}
+	if (logmode == 1) {
+		draw_button(esContext, "LOGGING", setup.view_mode, "LOGGING", FONT_GREEN, 0.8, -0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+	} else {
+		draw_button(esContext, "LOGGING", setup.view_mode, "LOGGING", FONT_WHITE, 0.8, -0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+	}
+	if (logplay == 1) {
+		draw_button(esContext, "LOGPLAYER", setup.view_mode, "LOGPLAYER", FONT_GREEN, 0.8, -0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+	} else {
+		draw_button(esContext, "LOGPLAYER", setup.view_mode, "LOGPLAYER", FONT_WHITE, 0.8, -0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+	}
+
+
 }
 
 

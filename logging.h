@@ -1,5 +1,6 @@
 
 extern uint8_t logmode;
+extern uint8_t logplay;
 extern uint8_t logplay_open;
 extern uint8_t logplay_play;
 extern uint8_t logplay_pause;
