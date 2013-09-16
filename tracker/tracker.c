@@ -218,7 +218,7 @@ int thread_serial_tracker (void *unused) {
 
 			if (serial_fd_tracker != -1) {
 				char tmp_str[1024];
-				sprintf(tmp_str, "%i %i\n", (int)direction, (int)direction_up);
+				sprintf(tmp_str, "%i %i\n", (int)direction / 2 * -1, (int)direction_up * -1 + 90);
 //				printf("%s\n", tmp_str);
 				write(serial_fd_tracker, tmp_str, strlen(tmp_str));
 			}
