@@ -302,7 +302,10 @@ void frsky_exit (void) {
 		SDL_WaitThread(sdl_thread_serial_frsky, NULL);
 		sdl_thread_serial_frsky = NULL;
 	}
-	serial_close(serial_fd_frsky);
+	if (serial_fd_frsky >= 0) {
+		serial_close(serial_fd_frsky);
+		serial_fd_frsky = -1;
+	}
 }
 
 

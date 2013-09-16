@@ -1,8 +1,6 @@
 
-
 #include <stdint.h>
 #include <stdio.h>
-#include <string.h>
 #include <math.h>
 #include <sys/stat.h>
 #include <sys/signal.h>
@@ -15,9 +13,17 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <time.h>
+#include<arpa/inet.h>
+#include<sys/socket.h>
+#include <userdata.h>
 #include <serial.h>
 #include <jeti.h>
+#include <model.h>
+#include <main.h>
+#include <SDL.h>
 
+static SDL_Thread *sdl_thread_serial_jeti = NULL;
+static uint8_t jeti_thread_running = 0;
 int jeti_serial_fd = -1;
 char jeti_serial_buf[255];
 struct termios newtio;
@@ -50,19 +56,6 @@ uint8_t jeti_down (char *name, float x, float y, int8_t button, float data) {
 
 uint8_t jeti_right (char *name, float x, float y, int8_t button, float data) {
 	return 0;
-}
-
-void jeti_init (char *mdevice, uint32_t baud) {
-	strncpy(jeti_line1, "--- Jeti Box ---", 16);
-	strncpy(jeti_line2, " wait for data  ", 16);
-	printf("jeti: init serial port...\n");
-	jeti_serial_fd = serial_open9b(mdevice, baud);
-}
-
-void jeti_exit (void) {
-	if (jeti_serial_fd >= 0) {
-		close(jeti_serial_fd);
-	}
 }
 
 void jeti_update (void) {
@@ -100,5 +93,46 @@ void jeti_update (void) {
 	}
 }
 
+int thread_serial_jeti (void *unused) {
+	while (gui_running == 1 && jeti_thread_running == 1) {
+		jeti_update();
+		usleep(1000000);
+	}
+	printf("jeti: exit thread\n");
+	return 0;
+}
+
+uint8_t jeti_init (char *mdevice, uint32_t baud) {
+	strncpy(jeti_line1, "--- Jeti Box ---", 16);
+	strncpy(jeti_line2, " wait for data  ", 16);
+	printf("jeti: init\n");
+	jeti_thread_running = 1;
+	printf("jeti: init serial port...\n");
+	jeti_serial_fd = serial_open9b(mdevice, baud);
+	if (jeti_serial_fd != -1) {
+#ifdef SDL2
+		sdl_thread_serial_jeti = SDL_CreateThread(thread_serial_jeti, NULL, NULL);
+#else
+		sdl_thread_serial_jeti = SDL_CreateThread(thread_serial_jeti, NULL);
+#endif
+		if ( sdl_thread_serial_jeti == NULL ) {
+			fprintf(stderr, "* Unable to create thread_serial_jeti: %s\n", SDL_GetError());
+			return 1;
+		}
+	}
+	return 0;
+}
+
+void jeti_exit (void) {
+	if ( sdl_thread_serial_jeti != NULL ) {
+		printf("jeti: wait thread\n");
+		SDL_WaitThread(sdl_thread_serial_jeti, NULL);
+		sdl_thread_serial_jeti = NULL;
+	}
+	if (jeti_serial_fd >= 0) {
+		close(jeti_serial_fd);
+		jeti_serial_fd = -1;
+	}
+}
 
 

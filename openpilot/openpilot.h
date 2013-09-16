@@ -213,6 +213,7 @@ typedef struct {
 } SystemSettingsData;
 
 
+extern void openpilot_update (void);
 extern uint8_t openpilot_init (char *port, uint32_t baud);
 extern void openpilot_exit (void);
 extern void openpilot_defaults_StabilizationSettings (StabilizationSettingsData *data);

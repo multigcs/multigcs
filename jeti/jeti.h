@@ -9,7 +9,7 @@ extern char jeti_line2[17];
 extern int jeti_serial_fd;
 extern uint8_t jeti_ok;
 
-void jeti_init (char *mdevice, uint32_t baud);
+uint8_t jeti_init (char *mdevice, uint32_t baud);
 void jeti_exit (void);
 void jeti_update (void);
 uint8_t jeti_left (char *name, float x, float y, int8_t button, float data);

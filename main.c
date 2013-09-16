@@ -1173,19 +1173,28 @@ void check_events (ESContext *esContext, SDL_Event event) {
 
 int telemetrie_thread (void *data) {
 	while (gui_running == 1) {
-		mavlink_update();
-		mwi21_update();
-		jeti_update();
-		cli_update();
-		baseflightcli_update();
-		simplebgc_update();
-		brugi_update();
-
 		if (clientmode == 1) {
 			webclient_update(clientmode_server, clientmode_port);
-			SDL_Delay(100);
+			SDL_Delay(99);
+		} else if (ModelData.teletype == TELETYPE_MULTIWII_21) {
+			mwi21_update();
+		} else if (ModelData.teletype == TELETYPE_SIMPLEBGC) {
+			simplebgc_update();
+		} else if (ModelData.teletype == TELETYPE_BRUGI) {
+			brugi_update();
+		} else if (ModelData.teletype == TELETYPE_BASEFLIGHT) {
+			mwi21_update();
+		} else if (ModelData.teletype == TELETYPE_GPS_NMEA) {
+			gps_update();
+		} else if (ModelData.teletype == TELETYPE_OPENPILOT) {
+			openpilot_update();
+		} else if (ModelData.teletype == TELETYPE_CLI) {
+			cli_update();
+		} else if (ModelData.teletype == TELETYPE_BASEFLIGHTCLI) {
+			baseflightcli_update();
+		} else {
+			mavlink_update();
 		}
-
 		SDL_Delay(1);
 	}
 	printf("telemetry: exit thread\n");
