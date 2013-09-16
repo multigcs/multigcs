@@ -28,6 +28,8 @@
 #define SLIDER_START	-0.2
 #define SLIDER_LEN	1.4
 
+static uint8_t set_type = 0;
+
 uint8_t tracker_cmd (char *name, float x, float y, int8_t button, float data) {
 	if (strcmp(name + 1, "PAN_TRIM") == 0) {
 		TrackerData[TRACKER_PAN_TRIM].value = tracker_pan_dir;
@@ -41,6 +43,13 @@ uint8_t tracker_cmd (char *name, float x, float y, int8_t button, float data) {
 		tracker_setup_defaults();
 	} else if (strcmp(name + 1, "HOME") == 0) {
 		tracker_set_home();
+	} else if (strncmp(name + 1, "SETTYPE_", 8) == 0) {
+		set_type = 0;
+		trackertype = (uint8_t)data;
+		reset_buttons();
+	} else if (strcmp(name + 1, "TYPE") == 0) {
+		set_type = 1 - set_type;
+		reset_buttons();
 	}
 	return 0;
 }
@@ -98,57 +107,67 @@ void screen_tracker (ESContext *esContext) {
 	ESMatrix modelview;
 	UserData *userData = esContext->userData;
 #endif
-	draw_title(esContext, "Antenna-Tracker");
+	sprintf(tmp_str, "Antenna-Tracker (%s)", trackername[trackertype]);
+	draw_title(esContext, tmp_str);
 #ifndef SDLGL
 	esMatrixLoadIdentity(&modelview);
 	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
 
-	for (n = 0; n < TRACKER_MAX; n++) {
-		draw_box_f3c2(esContext, SLIDER_START, -0.75 + n * 0.15, 0.002, SLIDER_START + SLIDER_LEN, -0.75 + n * 0.15 + 0.1, 0.002, 55, 55, 55, 220, 75, 45, 85, 100);
-
-		if (strcmp(TrackerData[n].name, "PAN_TRIM") == 0 || strcmp(TrackerData[n].name, "PITCH_TRIM") == 0) {
-			draw_box_f3c2(esContext, SLIDER_START + SLIDER_LEN / 2.0, -0.75 + n * 0.15, 0.002, SLIDER_START + ((TrackerData[n].value - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 + 0.1, 0.002, 55, 255, 155, 220, 81, 145, 185, 100);
-
-		} else if (strcmp(TrackerData[n].name, "PAN_ANGLE_MIN") == 0 || strcmp(TrackerData[n].name, "PAN_ANGLE_MAX") == 0 || strcmp(TrackerData[n].name, "PITCH_ANGLE_MIN") == 0 || strcmp(TrackerData[n].name, "PITCH_ANGLE_MAX") == 0) {
-			draw_box_f3c2(esContext, SLIDER_START + SLIDER_LEN / 2.0, -0.75 + n * 0.15, 0.002, SLIDER_START + ((TrackerData[n].value - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 + 0.1, 0.002, 55, 155, 155, 220, 81, 45, 185, 100);
-
-		} else {
-			draw_box_f3c2(esContext, SLIDER_START + SLIDER_LEN / 2.0, -0.75 + n * 0.15, 0.002, SLIDER_START + ((TrackerData[n].value - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 + 0.1, 0.002, 255, 255, 55, 220, 175, 145, 85, 100);
+	if (set_type == 1) {
+		for (n = 0; n < TRACKER_TYPE_LAST; n++) {
+			sprintf(tmp_str, "tSETTYPE_%s", trackername[n]);
+			if (n == trackertype) {
+				draw_button(esContext, tmp_str, view_mode, trackername[n], FONT_GREEN, -0.8, -0.75 + n * 0.15, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, tracker_cmd, (float)n);
+			} else {
+				draw_button(esContext, tmp_str, view_mode, trackername[n], FONT_WHITE, -0.8, -0.75 + n * 0.15, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, tracker_cmd, (float)n);
+			}
 		}
-
-		if (strcmp(TrackerData[n].name, "PAN_TRIM") == 0) {
-			draw_line_f3(esContext, SLIDER_START + ((tracker_pan_dir - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 - 0.01, 0.002, SLIDER_START + ((tracker_pan_dir - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 + 0.1 + 0.01, 0.002, 255, 0, 0, 127);
-			draw_line_f3(esContext, SLIDER_START + ((tracker_pan_dir_trimmed - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 - 0.01, 0.002, SLIDER_START + ((tracker_pan_dir_trimmed - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 + 0.1 + 0.01, 0.002, 0, 255, 0, 127);
-		} else if (strcmp(TrackerData[n].name, "PITCH_TRIM") == 0) {
-			draw_line_f3(esContext, SLIDER_START + ((tracker_pitch_dir - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 - 0.01, 0.002, SLIDER_START + ((tracker_pitch_dir - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 + 0.1 + 0.01, 0.002, 255, 0, 0, 127);
-			draw_line_f3(esContext, SLIDER_START + ((tracker_pitch_dir_trimmed - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 - 0.01, 0.002, SLIDER_START + ((tracker_pitch_dir_trimmed - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 + 0.1 + 0.01, 0.002, 0, 255, 0, 127);
-		} else if (strcmp(TrackerData[n].name, "PAN_ANGLE_MIN") == 0 || strcmp(TrackerData[n].name, "PAN_ANGLE_MAX") == 0) {
-			draw_line_f3(esContext, SLIDER_START + ((tracker_pan_dir_trimmed - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 - 0.01, 0.002, SLIDER_START + ((tracker_pan_dir_trimmed - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 + 0.1 + 0.01, 0.002, 0, 0, 255, 127);
-		} else if (strcmp(TrackerData[n].name, "PITCH_ANGLE_MIN") == 0 || strcmp(TrackerData[n].name, "PITCH_ANGLE_MAX") == 0) {
-			draw_line_f3(esContext, SLIDER_START + ((tracker_pitch_dir_trimmed - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 - 0.01, 0.002, SLIDER_START + ((tracker_pitch_dir_trimmed - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 + 0.1 + 0.01, 0.002, 0, 0, 255, 127);
-		} else if (strcmp(TrackerData[n].name, "PAN_PULSE_MIN") == 0 || strcmp(TrackerData[n].name, "PAN_PULSE_MAX") == 0) {
-			float val = (tracker_pan_dir_trimmed - TrackerData[TRACKER_PAN_ANGLE_MIN].value) * (TrackerData[TRACKER_PAN_PULSE_MAX].value - TrackerData[TRACKER_PAN_PULSE_MIN].value) / (TrackerData[TRACKER_PAN_ANGLE_MAX].value - TrackerData[TRACKER_PAN_ANGLE_MIN].value) + TrackerData[TRACKER_PAN_PULSE_MIN].value;
-			draw_line_f3(esContext, SLIDER_START + ((val - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 - 0.01, 0.002, SLIDER_START + ((val - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 + 0.1 + 0.01, 0.002, 0, 255, 255, 127);
-		} else if (strcmp(TrackerData[n].name, "PITCH_PULSE_MIN") == 0 || strcmp(TrackerData[n].name, "PITCH_PULSE_MAX") == 0) {
-			float val = (tracker_pitch_dir_trimmed - TrackerData[TRACKER_PITCH_ANGLE_MIN].value) * (TrackerData[TRACKER_PITCH_PULSE_MAX].value - TrackerData[TRACKER_PITCH_PULSE_MIN].value) / (TrackerData[TRACKER_PITCH_ANGLE_MAX].value - TrackerData[TRACKER_PITCH_ANGLE_MIN].value) + TrackerData[TRACKER_PITCH_PULSE_MIN].value;
-			draw_line_f3(esContext, SLIDER_START + ((val - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 - 0.01, 0.002, SLIDER_START + ((val - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 + 0.1 + 0.01, 0.002, 0, 255, 255, 127);
+	} else {
+		for (n = 0; n < TRACKER_MAX; n++) {
+			if (trackertype == TRACKER_TYPE_ARDUINO && strstr(TrackerData[n].name, "PULSE") > 0) {
+				continue;
+			}
+			draw_box_f3c2(esContext, SLIDER_START, -0.75 + n * 0.15, 0.002, SLIDER_START + SLIDER_LEN, -0.75 + n * 0.15 + 0.1, 0.002, 55, 55, 55, 220, 75, 45, 85, 100);
+			if (strcmp(TrackerData[n].name, "PAN_TRIM") == 0 || strcmp(TrackerData[n].name, "PITCH_TRIM") == 0) {
+				draw_box_f3c2(esContext, SLIDER_START + SLIDER_LEN / 2.0, -0.75 + n * 0.15, 0.002, SLIDER_START + ((TrackerData[n].value - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 + 0.1, 0.002, 55, 255, 155, 220, 81, 145, 185, 100);
+	
+			} else if (strcmp(TrackerData[n].name, "PAN_ANGLE_MIN") == 0 || strcmp(TrackerData[n].name, "PAN_ANGLE_MAX") == 0 || strcmp(TrackerData[n].name, "PITCH_ANGLE_MIN") == 0 || strcmp(TrackerData[n].name, "PITCH_ANGLE_MAX") == 0) {
+				draw_box_f3c2(esContext, SLIDER_START + SLIDER_LEN / 2.0, -0.75 + n * 0.15, 0.002, SLIDER_START + ((TrackerData[n].value - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 + 0.1, 0.002, 55, 155, 155, 220, 81, 45, 185, 100);
+	
+			} else {
+				draw_box_f3c2(esContext, SLIDER_START + SLIDER_LEN / 2.0, -0.75 + n * 0.15, 0.002, SLIDER_START + ((TrackerData[n].value - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 + 0.1, 0.002, 255, 255, 55, 220, 175, 145, 85, 100);
+			}
+			if (strcmp(TrackerData[n].name, "PAN_TRIM") == 0) {
+				draw_line_f3(esContext, SLIDER_START + ((tracker_pan_dir - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 - 0.01, 0.002, SLIDER_START + ((tracker_pan_dir - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 + 0.1 + 0.01, 0.002, 255, 0, 0, 127);
+				draw_line_f3(esContext, SLIDER_START + ((tracker_pan_dir_trimmed - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 - 0.01, 0.002, SLIDER_START + ((tracker_pan_dir_trimmed - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 + 0.1 + 0.01, 0.002, 0, 255, 0, 127);
+			} else if (strcmp(TrackerData[n].name, "PITCH_TRIM") == 0) {
+				draw_line_f3(esContext, SLIDER_START + ((tracker_pitch_dir - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 - 0.01, 0.002, SLIDER_START + ((tracker_pitch_dir - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 + 0.1 + 0.01, 0.002, 255, 0, 0, 127);
+				draw_line_f3(esContext, SLIDER_START + ((tracker_pitch_dir_trimmed - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 - 0.01, 0.002, SLIDER_START + ((tracker_pitch_dir_trimmed - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 + 0.1 + 0.01, 0.002, 0, 255, 0, 127);
+			} else if (strcmp(TrackerData[n].name, "PAN_ANGLE_MIN") == 0 || strcmp(TrackerData[n].name, "PAN_ANGLE_MAX") == 0) {
+				draw_line_f3(esContext, SLIDER_START + ((tracker_pan_dir_trimmed - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 - 0.01, 0.002, SLIDER_START + ((tracker_pan_dir_trimmed - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 + 0.1 + 0.01, 0.002, 0, 0, 255, 127);
+			} else if (strcmp(TrackerData[n].name, "PITCH_ANGLE_MIN") == 0 || strcmp(TrackerData[n].name, "PITCH_ANGLE_MAX") == 0) {
+				draw_line_f3(esContext, SLIDER_START + ((tracker_pitch_dir_trimmed - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 - 0.01, 0.002, SLIDER_START + ((tracker_pitch_dir_trimmed - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 + 0.1 + 0.01, 0.002, 0, 0, 255, 127);
+			} else if (strcmp(TrackerData[n].name, "PAN_PULSE_MIN") == 0 || strcmp(TrackerData[n].name, "PAN_PULSE_MAX") == 0) {
+				float val = (tracker_pan_dir_trimmed - TrackerData[TRACKER_PAN_ANGLE_MIN].value) * (TrackerData[TRACKER_PAN_PULSE_MAX].value - TrackerData[TRACKER_PAN_PULSE_MIN].value) / (TrackerData[TRACKER_PAN_ANGLE_MAX].value - TrackerData[TRACKER_PAN_ANGLE_MIN].value) + TrackerData[TRACKER_PAN_PULSE_MIN].value;
+				draw_line_f3(esContext, SLIDER_START + ((val - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 - 0.01, 0.002, SLIDER_START + ((val - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 + 0.1 + 0.01, 0.002, 0, 255, 255, 127);
+			} else if (strcmp(TrackerData[n].name, "PITCH_PULSE_MIN") == 0 || strcmp(TrackerData[n].name, "PITCH_PULSE_MAX") == 0) {
+				float val = (tracker_pitch_dir_trimmed - TrackerData[TRACKER_PITCH_ANGLE_MIN].value) * (TrackerData[TRACKER_PITCH_PULSE_MAX].value - TrackerData[TRACKER_PITCH_PULSE_MIN].value) / (TrackerData[TRACKER_PITCH_ANGLE_MAX].value - TrackerData[TRACKER_PITCH_ANGLE_MIN].value) + TrackerData[TRACKER_PITCH_PULSE_MIN].value;
+				draw_line_f3(esContext, SLIDER_START + ((val - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 - 0.01, 0.002, SLIDER_START + ((val - TrackerData[n].min) * SLIDER_LEN / (TrackerData[n].max - TrackerData[n].min)), -0.75 + n * 0.15 + 0.1 + 0.01, 0.002, 0, 255, 255, 127);
+			}
+			sprintf(tmp_str, "S%s", TrackerData[n].name);
+			set_button(tmp_str, view_mode, SLIDER_START, -0.75 + n * 0.15, SLIDER_START + SLIDER_LEN, -0.75 + n * 0.15 + 0.1, tracker_move, (float)n, 1);
+			sprintf(tmp_str, "T%s", TrackerData[n].name);
+			sprintf(tmp_str2, "%s: %0.1f", TrackerData[n].name, TrackerData[n].value);
+			draw_button(esContext, tmp_str, view_mode, tmp_str2, FONT_WHITE, -1.2, -0.75 + n * 0.15 + 0.02, 0.003, 0.06, ALIGN_LEFT, ALIGN_TOP, tracker_cmd, 0.0);
 		}
-
-		sprintf(tmp_str, "S%s", TrackerData[n].name);
-		set_button(tmp_str, view_mode, SLIDER_START, -0.75 + n * 0.15, SLIDER_START + SLIDER_LEN, -0.75 + n * 0.15 + 0.1, tracker_move, (float)n, 1);
-
-		sprintf(tmp_str, "T%s", TrackerData[n].name);
-		sprintf(tmp_str2, "%s: %0.1f", TrackerData[n].name, TrackerData[n].value);
-		draw_button(esContext, tmp_str, view_mode, tmp_str2, FONT_WHITE, -1.2, -0.75 + n * 0.15 + 0.02, 0.003, 0.06, ALIGN_LEFT, ALIGN_TOP, tracker_cmd, 0.0);
 	}
-
 
 	draw_button(esContext, "tLOAD", view_mode, "LOAD", FONT_WHITE, -0.8, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, tracker_cmd, 0.0);
 	draw_button(esContext, "tSAVE", view_mode, "SAVE", FONT_WHITE, -0.4, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, tracker_cmd, 0.0);
+	draw_button(esContext, "tTYPE", view_mode, "TYPE", FONT_WHITE, 0.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, tracker_cmd, 0.0);
 	draw_button(esContext, "tHOME", view_mode, "SET_HOME", FONT_WHITE, 0.4, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, tracker_cmd, 0.0);
 	draw_button(esContext, "tDEFAULTS", view_mode, "DEFAULTS", FONT_WHITE, 0.8, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, tracker_cmd, 0.0);
-
 }
 

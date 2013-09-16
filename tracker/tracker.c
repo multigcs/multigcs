@@ -25,12 +25,14 @@
 extern void get_dir (float lat_from, float lon_from, float alt_from, float lat_to, float lon_to, float alt_to, float *angle, float *dist1, float *angle_up, float *dist2);
 
 static SDL_Thread *sdl_thread_serial_tracker = NULL;
-static uint8_t last = 0;
-static uint8_t new = 0;
+//static uint8_t last = 0;
+//static uint8_t new = 0;
 static uint8_t mode = 0;
 static int serial_fd_tracker = -1;
 static uint8_t tracker_thread_running = 0;
 static uint32_t last_connection = 1;
+char trackername[TRACKER_TYPE_LAST][16] = {"Arduino", "PoloLux"};
+uint8_t trackertype = TRACKER_TYPE_ARDUINO;
 float tracker_lat = 0.0;
 float tracker_long = 0.0;
 float tracker_alt = 0.0;
@@ -40,7 +42,6 @@ float tracker_pitch_dir = 0.0;
 float tracker_pitch_dir_trimmed = 0.0;
 
 Tracker TrackerData[TRACKER_MAX];
-
 
 void tracker_setup_defaults (void) {
 	TrackerData[TRACKER_PAN_ANGLE_MIN].min = -180.0;
@@ -92,8 +93,9 @@ void tracker_setup_save (void) {
 	sprintf(filename, "%s/.multigcs/tracker.cfg", getenv("HOME"));
         fr = fopen(filename, "w");
 	if (fr != 0) {
+		fprintf(fr, "TYPE %i\n", trackertype);
 		for (n = 0; n < TRACKER_MAX; n++) {
-		        fprintf(fr, "%s %f %f %f\n", TrackerData[n].name, TrackerData[n].min, TrackerData[n].max, TrackerData[n].value);
+			fprintf(fr, "%s %f %f %f\n", TrackerData[n].name, TrackerData[n].min, TrackerData[n].max, TrackerData[n].value);
 		}
 	        fclose(fr);
 	} else {
@@ -115,12 +117,20 @@ void tracker_setup_load (void) {
         fr = fopen(filename, "r");
 	if (fr != 0) {
 	        while(fgets(line, 100, fr) != NULL) {
-		        sscanf(line, "%s %f %f %f\n", name, &min, &max, &value);
-			for (n = 0; n < TRACKER_MAX; n++) {
-				if (strcmp(TrackerData[n].name, name) == 0) {
-					TrackerData[n].min = min;
-					TrackerData[n].max = max;
-					TrackerData[n].value = value;
+			if (strncmp(line, "TYPE ", 5) == 0) {
+				if (atoi(line + 5) < TRACKER_TYPE_LAST) {
+					trackertype = atoi(line + 5);
+				} else {
+					printf("tracker: unknown type (%i)\n", atoi(line + 5));
+				}
+			} else {
+			        sscanf(line, "%s %f %f %f\n", name, &min, &max, &value);
+				for (n = 0; n < TRACKER_MAX; n++) {
+					if (strcmp(TrackerData[n].name, name) == 0) {
+						TrackerData[n].min = min;
+						TrackerData[n].max = max;
+						TrackerData[n].value = value;
+					}
 				}
 			}
 		}
@@ -144,9 +154,9 @@ void tracker_set_home (void) {
 }
 
 int thread_serial_tracker (void *unused) {
-	uint8_t nn = 0;
-	uint8_t read_buffer[201];
-	uint8_t read_num = 0;
+//	uint8_t nn = 0;
+//	uint8_t read_buffer[201];
+//	uint8_t read_num = 0;
 	while (gui_running == 1 && tracker_thread_running == 1) {
 /*		if (serial_fd_tracker != -1) {
 			while ((read_num = read(serial_fd_tracker, read_buffer, 200)) > 0) {
