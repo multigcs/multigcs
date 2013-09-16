@@ -513,7 +513,7 @@ void screen_mavlink_menu (ESContext *esContext) {
 	int8_t flag = 0;
 	int8_t flag2 = 0;
 
-	static char main_groups[500][100];
+	static char main_groups[500][1024];
 
 	draw_title(esContext, "MavLink-Parameter");
 
