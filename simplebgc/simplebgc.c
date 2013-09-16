@@ -35,7 +35,6 @@ uint8_t simplebgc_connection_status (void) {
 }
 
 void simplebgc_init (char *port, uint32_t baud) {
-	uint8_t n = 0;
 	printf("init simple-bgc serial port...\n");
 	simplebgc_serial_fd = serial_open(port, baud);
 }

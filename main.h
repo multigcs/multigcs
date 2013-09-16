@@ -111,8 +111,8 @@ typedef struct {
 	uint32_t gcs_gps_baud;
 	char rcflow_port[1024];
 	uint32_t rcflow_baud;
-	char telemetrie_port[1024];
-	uint32_t telemetrie_baud;
+	char telemetry_port[1024];
+	uint32_t telemetry_baud;
 	char jeti_port[1024];
 	uint32_t jeti_baud;
 	char frsky_port[1024];
@@ -180,9 +180,9 @@ extern char display_html2[HTML_MAX];
 extern ESContext *GlobalesContext;
 
 void draw_text_f (ESContext *esContext, float x1, float y1, float w, float h, char *file, char *text);
-void reset_telemetrie (void);
-void stop_telemetrie (void);
-void set_telemetrie (char *device, uint32_t baud);
+void reset_telemetry (void);
+void stop_telemetry (void);
+void set_telemetry (char *device, uint32_t baud);
 uint8_t need_bluetooth (void);
 void reset_buttons (void);
 uint8_t set_button (char *name, uint8_t view_mode, float x1, float y1, float x2, float y2, uint8_t (*callback) (char *, float, float, int8_t, float), float data, uint8_t type);

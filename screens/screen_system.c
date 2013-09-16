@@ -348,10 +348,10 @@ void screen_system (ESContext *esContext) {
 	uint8_t n = 0;
 	if (ModelData.teletype == TELETYPE_AUTOQUAD || ModelData.teletype == TELETYPE_ARDUPILOT || ModelData.teletype == TELETYPE_MEGAPIRATE_NG) {
 		if (mavlink_connection_status() != 0) {
-			sprintf(tmp_str, "MAVLINK %s (%i / %i)", setup.telemetrie_port, setup.telemetrie_baud, (uint8_t)(time(0)) - mavlink_connection_status());
+			sprintf(tmp_str, "MAVLINK %s (%i / %i)", setup.telemetry_port, setup.telemetry_baud, (uint8_t)(time(0)) - mavlink_connection_status());
 			draw_button(esContext, "mavlink_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 		} else {
-			sprintf(tmp_str, "MAVLINK %s (%i)", setup.telemetrie_port, setup.telemetrie_baud);
+			sprintf(tmp_str, "MAVLINK %s (%i)", setup.telemetry_port, setup.telemetry_baud);
 			draw_button(esContext, "mavlink_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 		}
 	} else {
@@ -359,10 +359,10 @@ void screen_system (ESContext *esContext) {
 	}
 	if (ModelData.teletype == TELETYPE_MULTIWII_21 || ModelData.teletype == TELETYPE_BASEFLIGHT) {
 		if (mwi21_connection_status() != 0) {
-			sprintf(tmp_str, "MULTIWII21 %s (%i / %i)", setup.telemetrie_port, setup.telemetrie_baud, (uint8_t)(time(0)) - mwi21_connection_status());
+			sprintf(tmp_str, "MULTIWII21 %s (%i / %i)", setup.telemetry_port, setup.telemetry_baud, (uint8_t)(time(0)) - mwi21_connection_status());
 			draw_button(esContext, "mwi21_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 		} else {
-			sprintf(tmp_str, "MULTIWII21 %s (%i)", setup.telemetrie_port, setup.telemetrie_baud);
+			sprintf(tmp_str, "MULTIWII21 %s (%i)", setup.telemetry_port, setup.telemetry_baud);
 			draw_button(esContext, "mwi21_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 		}
 	} else {
@@ -370,10 +370,10 @@ void screen_system (ESContext *esContext) {
 	}
 	if (ModelData.teletype == TELETYPE_BASEFLIGHT) {
 		if (mwi21_connection_status() != 0) {
-			sprintf(tmp_str, "BASEFLIGHT %s (%i / %i)", setup.telemetrie_port, setup.telemetrie_baud, (uint8_t)(time(0)) - mwi21_connection_status());
+			sprintf(tmp_str, "BASEFLIGHT %s (%i / %i)", setup.telemetry_port, setup.telemetry_baud, (uint8_t)(time(0)) - mwi21_connection_status());
 			draw_button(esContext, "mwi21_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 		} else {
-			sprintf(tmp_str, "BASEFLIGHT %s (%i)", setup.telemetrie_port, setup.telemetrie_baud);
+			sprintf(tmp_str, "BASEFLIGHT %s (%i)", setup.telemetry_port, setup.telemetry_baud);
 			draw_button(esContext, "mwi21_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 		}
 	} else {
@@ -381,10 +381,10 @@ void screen_system (ESContext *esContext) {
 	}
 	if (ModelData.teletype == TELETYPE_OPENPILOT) {
 		if (openpilot_connection_status() != 0) {
-			sprintf(tmp_str, "OPENPILOT %s (%i / %i)", setup.telemetrie_port, setup.telemetrie_baud, (uint8_t)(time(0)) - openpilot_connection_status());
+			sprintf(tmp_str, "OPENPILOT %s (%i / %i)", setup.telemetry_port, setup.telemetry_baud, (uint8_t)(time(0)) - openpilot_connection_status());
 			draw_button(esContext, "openpilot_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 		} else {
-			sprintf(tmp_str, "OPENPILOT %s (%i)", setup.telemetrie_port, setup.telemetrie_baud);
+			sprintf(tmp_str, "OPENPILOT %s (%i)", setup.telemetry_port, setup.telemetry_baud);
 			draw_button(esContext, "openpilot_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 		}
 	} else {
@@ -392,10 +392,10 @@ void screen_system (ESContext *esContext) {
 	}
 	if (ModelData.teletype == TELETYPE_GPS_NMEA) {
 		if (gps_connection_status() != 0) {
-			sprintf(tmp_str, "NMEA-GPS %s (%i / %i)", setup.telemetrie_port, setup.telemetrie_baud, (uint8_t)(time(0)) - gps_connection_status());
+			sprintf(tmp_str, "NMEA-GPS %s (%i / %i)", setup.telemetry_port, setup.telemetry_baud, (uint8_t)(time(0)) - gps_connection_status());
 			draw_button(esContext, "gps_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 		} else {
-			sprintf(tmp_str, "NMEA-GPS %s (%i)", setup.telemetrie_port, setup.telemetrie_baud);
+			sprintf(tmp_str, "NMEA-GPS %s (%i)", setup.telemetry_port, setup.telemetry_baud);
 			draw_button(esContext, "gps_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 		}
 	} else {

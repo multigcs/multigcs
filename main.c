@@ -149,7 +149,7 @@ char display_html2[HTML_MAX];
 #endif
 
 SDL_Thread *thread = NULL;
-SDL_Thread *thread_telemetrie = NULL;
+SDL_Thread *thread_telemetry = NULL;
 
 
 #ifdef SDL2
@@ -307,13 +307,13 @@ int8_t check_button (uint8_t view_mode, float x, float y, uint8_t button, uint8_
 }
 
 uint8_t need_bluetooth (void) {
-	if (strstr(setup.telemetrie_port, "/dev/rfcomm") > 0) {
+	if (strstr(setup.telemetry_port, "/dev/rfcomm") > 0) {
 		return 1;
 	}
 	return 0;
 }
 
-void stop_telemetrie (void) {
+void stop_telemetry (void) {
 	mwi21_exit();
 	mavlink_exit();
 	baseflightcli_exit();
@@ -325,35 +325,35 @@ void stop_telemetrie (void) {
 	frsky_mode(0);
 }
 
-void reset_telemetrie (void) {
-	stop_telemetrie();
+void reset_telemetry (void) {
+	stop_telemetry();
 	if (ModelData.teletype == TELETYPE_MULTIWII_21) {
-		mwi21_init(setup.telemetrie_port, setup.telemetrie_baud);
+		mwi21_init(setup.telemetry_port, setup.telemetry_baud);
 	} else if (ModelData.teletype == TELETYPE_SIMPLEBGC) {
-		simplebgc_init(setup.telemetrie_port, setup.telemetrie_baud);
+		simplebgc_init(setup.telemetry_port, setup.telemetry_baud);
 	} else if (ModelData.teletype == TELETYPE_BRUGI) {
-		brugi_init(setup.telemetrie_port, setup.telemetrie_baud);
+		brugi_init(setup.telemetry_port, setup.telemetry_baud);
 	} else if (ModelData.teletype == TELETYPE_BASEFLIGHT) {
-		mwi21_init(setup.telemetrie_port, setup.telemetrie_baud);
+		mwi21_init(setup.telemetry_port, setup.telemetry_baud);
 	} else if (ModelData.teletype == TELETYPE_GPS_NMEA) {
-		gps_init(setup.telemetrie_port, setup.telemetrie_baud);
+		gps_init(setup.telemetry_port, setup.telemetry_baud);
 	} else if (ModelData.teletype == TELETYPE_OPENPILOT) {
-		openpilot_init(setup.telemetrie_port, setup.telemetrie_baud);
+		openpilot_init(setup.telemetry_port, setup.telemetry_baud);
 	} else if (ModelData.teletype == TELETYPE_CLI) {
-		cli_init(setup.telemetrie_port, setup.telemetrie_baud);
+		cli_init(setup.telemetry_port, setup.telemetry_baud);
 	} else if (ModelData.teletype == TELETYPE_BASEFLIGHTCLI) {
-		baseflightcli_init(setup.telemetrie_port, setup.telemetrie_baud);
+		baseflightcli_init(setup.telemetry_port, setup.telemetry_baud);
 	} else if (ModelData.teletype == TELETYPE_FRSKY) {
 		frsky_mode(1);
 	} else {
-		mavlink_init(setup.telemetrie_port, setup.telemetrie_baud);
+		mavlink_init(setup.telemetry_port, setup.telemetry_baud);
 	}
 }
 
-void set_telemetrie (char *device, uint32_t baud) {
-	strncpy(setup.telemetrie_port, device, 1023);
-	setup.telemetrie_baud = baud;
-	reset_telemetrie();
+void set_telemetry (char *device, uint32_t baud) {
+	strncpy(setup.telemetry_port, device, 1023);
+	setup.telemetry_baud = baud;
+	reset_telemetry();
 }
 
 void setup_waypoints (void) {
@@ -442,69 +442,69 @@ void setup_save (void) {
 	if (setup.calibration_mode > 0) {
 		setup.calibration_mode = 1;
 	}
-//        printf("** saving file\n");
+//	printf("** saving file\n");
 	char filename[1024];
 	sprintf(filename, "%s/.multigcs/setup.cfg", getenv("HOME"));
         fr = fopen(filename, "w");
 	if (fr != 0) {
-	        fprintf(fr, "model_name   %s\n", ModelData.name);
-	        fprintf(fr, "view_mode    %i\n", setup.view_mode);
-	        fprintf(fr, "contrast     %i\n", setup.contrast);
-	        fprintf(fr, "screen_w     %i\n", setup.screen_w);
-	        fprintf(fr, "screen_h     %i\n", setup.screen_h);
-	        fprintf(fr, "screen_border_x     %i\n", setup.screen_border_x);
-	        fprintf(fr, "screen_border_y     %i\n", setup.screen_border_y);
-	        fprintf(fr, "keep_ratio   %f\n", setup.keep_ratio);
-	        fprintf(fr, "fullscreen   %i\n", setup.fullscreen);
-	        fprintf(fr, "borderless   %i\n", setup.borderless);
-	        fprintf(fr, "lat          %0.8f\n", lat);
-	        fprintf(fr, "lon          %0.8f\n", lon);
-	        fprintf(fr, "zoom         %i\n", zoom);
-	        fprintf(fr, "map_type     %i\n", map_type);
-	        fprintf(fr, "center_map     %i\n", center_map);
-	        fprintf(fr, "waypoint_active     %i\n", waypoint_active);
-	        fprintf(fr, "gcs_gps_port     %s\n", setup.gcs_gps_port);
-	        fprintf(fr, "gcs_gps_baud     %i\n", setup.gcs_gps_baud);
-	        fprintf(fr, "rcflow_port     %s\n", setup.rcflow_port);
-	        fprintf(fr, "rcflow_baud     %i\n", setup.rcflow_baud);
-	        fprintf(fr, "telemetrie_port %s\n", setup.telemetrie_port);
-	        fprintf(fr, "telemetrie_baud %i\n", setup.telemetrie_baud);
-	        fprintf(fr, "telemetrie_type %i\n", ModelData.teletype);
-	        fprintf(fr, "jeti_port %s\n", setup.jeti_port);
-	        fprintf(fr, "jeti_baud %i\n", setup.jeti_baud);
-	        fprintf(fr, "frsky_port %s\n", setup.frsky_port);
-	        fprintf(fr, "frsky_baud %i\n", setup.frsky_baud);
-	        fprintf(fr, "tracker_port %s\n", setup.tracker_port);
-	        fprintf(fr, "tracker_baud %i\n", setup.tracker_baud);
-	        fprintf(fr, "volt_min     %0.1f\n", setup.volt_min);
-	        fprintf(fr, "speak        %i\n", setup.speak);
-	        fprintf(fr, "hud_view_screen %i\n", setup.hud_view_screen);
-	        fprintf(fr, "hud_view_map    %i\n", setup.hud_view_map);
-	        fprintf(fr, "hud_view_tunnel %i\n", setup.hud_view_tunnel);
-	        fprintf(fr, "map_view        %i\n", map_view);
-	        fprintf(fr, "webport         %i\n", setup.webport);
-	        fprintf(fr, "gearth_interval %f\n", setup.gearth_interval);
-	        fprintf(fr, "touchscreen_device       %s\n", setup.touchscreen_device);
-		fprintf(fr, "calibration_mode         %i\n", setup.calibration_mode);
-		fprintf(fr, "calibration_min_x        %i\n", setup.calibration_min_x);
-		fprintf(fr, "calibration_max_x        %i\n", setup.calibration_max_x);
-		fprintf(fr, "calibration_min_y        %i\n", setup.calibration_min_y);
-		fprintf(fr, "calibration_max_y        %i\n", setup.calibration_max_y);
-		fprintf(fr, "videolist_lastfile       %s\n", videolist_lastfile);
+	        fprintf(fr, "model_name		%s\n", ModelData.name);
+	        fprintf(fr, "view_mode		%i\n", setup.view_mode);
+	        fprintf(fr, "contrast		%i\n", setup.contrast);
+	        fprintf(fr, "screen_w		%i\n", setup.screen_w);
+	        fprintf(fr, "screen_h		%i\n", setup.screen_h);
+	        fprintf(fr, "screen_border_x		%i\n", setup.screen_border_x);
+	        fprintf(fr, "screen_border_y		%i\n", setup.screen_border_y);
+	        fprintf(fr, "keep_ratio		%f\n", setup.keep_ratio);
+	        fprintf(fr, "fullscreen		%i\n", setup.fullscreen);
+	        fprintf(fr, "borderless		%i\n", setup.borderless);
+	        fprintf(fr, "lat			%0.8f\n", lat);
+	        fprintf(fr, "lon			%0.8f\n", lon);
+	        fprintf(fr, "zoom			%i\n", zoom);
+	        fprintf(fr, "map_type		%i\n", map_type);
+	        fprintf(fr, "center_map		%i\n", center_map);
+	        fprintf(fr, "gcs_gps_port		%s\n", setup.gcs_gps_port);
+	        fprintf(fr, "gcs_gps_baud		%i\n", setup.gcs_gps_baud);
+	        fprintf(fr, "rcflow_port		%s\n", setup.rcflow_port);
+	        fprintf(fr, "rcflow_baud		%i\n", setup.rcflow_baud);
+	        fprintf(fr, "telemetry_port		%s\n", setup.telemetry_port);
+	        fprintf(fr, "telemetry_baud		%i\n", setup.telemetry_baud);
+	        fprintf(fr, "telemetry_type		%i\n", ModelData.teletype);
+	        fprintf(fr, "jeti_port		%s\n", setup.jeti_port);
+	        fprintf(fr, "jeti_baud		%i\n", setup.jeti_baud);
+	        fprintf(fr, "frsky_port		%s\n", setup.frsky_port);
+	        fprintf(fr, "frsky_baud		%i\n", setup.frsky_baud);
+	        fprintf(fr, "tracker_port		%s\n", setup.tracker_port);
+	        fprintf(fr, "tracker_baud		%i\n", setup.tracker_baud);
+	        fprintf(fr, "volt_min		%0.1f\n", setup.volt_min);
+	        fprintf(fr, "speak			%i\n", setup.speak);
+	        fprintf(fr, "hud_view_screen		%i\n", setup.hud_view_screen);
+	        fprintf(fr, "hud_view_map		%i\n", setup.hud_view_map);
+	        fprintf(fr, "hud_view_tunnel		%i\n", setup.hud_view_tunnel);
+	        fprintf(fr, "map_view		%i\n", map_view);
+	        fprintf(fr, "webport			%i\n", setup.webport);
+	        fprintf(fr, "gearth_interval		%f\n", setup.gearth_interval);
+	        fprintf(fr, "touchscreen_device	%s\n", setup.touchscreen_device);
+		fprintf(fr, "calibration_mode	%i\n", setup.calibration_mode);
+		fprintf(fr, "calibration_min_x	%i\n", setup.calibration_min_x);
+		fprintf(fr, "calibration_max_x	%i\n", setup.calibration_max_x);
+		fprintf(fr, "calibration_min_y	%i\n", setup.calibration_min_y);
+		fprintf(fr, "calibration_max_y	%i\n", setup.calibration_max_y);
+		fprintf(fr, "videolist_lastfile	%s\n", videolist_lastfile);
+	        fprintf(fr, "waypoint_active		%i\n", waypoint_active);
 	        fprintf(fr, "\n");
 	        fprintf(fr, "[waypoints]\n");
 	        for (n = 0; n < MAX_WAYPOINTS; n++) {
 	                if (WayPoints[n].p_lat != 0.0) {
-	                        fprintf(fr, "name       %s\n", WayPoints[n].name);
-	                        fprintf(fr, "command    %s\n", WayPoints[n].command);
-	                        fprintf(fr, "lat        %0.8f\n", WayPoints[n].p_lat);
-	                        fprintf(fr, "lon        %0.8f\n", WayPoints[n].p_long);
-	                        fprintf(fr, "alt        %f\n", WayPoints[n].p_alt);
-	                        fprintf(fr, "yaw        %f\n", WayPoints[n].yaw);
-	                        fprintf(fr, "wait       %f\n", WayPoints[n].wait);
-	                        fprintf(fr, "radius     %f\n", WayPoints[n].radius);
-	                        fprintf(fr, "orbit      %f\n", WayPoints[n].orbit);
-	                        fprintf(fr, "type       %i\n", WayPoints[n].type);
+	                        fprintf(fr, "name	%s\n", WayPoints[n].name);
+	                        fprintf(fr, "command	%s\n", WayPoints[n].command);
+	                        fprintf(fr, "lat	%0.8f\n", WayPoints[n].p_lat);
+	                        fprintf(fr, "lon	%0.8f\n", WayPoints[n].p_long);
+	                        fprintf(fr, "alt	%f\n", WayPoints[n].p_alt);
+	                        fprintf(fr, "yaw	%f\n", WayPoints[n].yaw);
+	                        fprintf(fr, "wait	%f\n", WayPoints[n].wait);
+	                        fprintf(fr, "radius	%f\n", WayPoints[n].radius);
+	                        fprintf(fr, "orbit	%f\n", WayPoints[n].orbit);
+	                        fprintf(fr, "type	%i\n", WayPoints[n].type);
 	                        fprintf(fr, "\n");
 	                }
 	        }
@@ -528,8 +528,8 @@ void setup_load (void) {
 	strncpy(setup.gcs_gps_port, "/dev/ttyUSB20", 1023);
 	setup.gcs_gps_baud = 9600;
 #endif
-	strncpy(setup.telemetrie_port, "/dev/ttyUSB22", 1023);
-	setup.telemetrie_baud = 115200;
+	strncpy(setup.telemetry_port, "/dev/ttyUSB22", 1023);
+	setup.telemetry_baud = 115200;
 	strncpy(setup.rcflow_port, "/dev/ttyUSB21", 1023);
 	setup.rcflow_baud = 115200;
 	strncpy(setup.jeti_port, "/dev/ttyUSB10", 1023);
@@ -617,15 +617,15 @@ void setup_load (void) {
 	                                strncpy(setup.rcflow_port, val, 1023);
 	                        } else if (strcmp(var, "rcflow_baud") == 0) {
 	                                setup.rcflow_baud = atoi(val);
-	                        } else if (strcmp(var, "telemetrie_port") == 0) {
-	                                strncpy(setup.telemetrie_port, val, 1023);
-	                        } else if (strcmp(var, "telemetrie_baud") == 0) {
-	                                setup.telemetrie_baud = atoi(val);
-	                        } else if (strcmp(var, "telemetrie_port") == 0) {
-	                                strncpy(setup.telemetrie_port, val, 1023);
-	                        } else if (strcmp(var, "telemetrie_baud") == 0) {
-	                                setup.telemetrie_baud = atoi(val);
-	                        } else if (strcmp(var, "telemetrie_type") == 0) {
+	                        } else if (strcmp(var, "telemetry_port") == 0) {
+	                                strncpy(setup.telemetry_port, val, 1023);
+	                        } else if (strcmp(var, "telemetry_baud") == 0) {
+	                                setup.telemetry_baud = atoi(val);
+	                        } else if (strcmp(var, "telemetry_port") == 0) {
+	                                strncpy(setup.telemetry_port, val, 1023);
+	                        } else if (strcmp(var, "telemetry_baud") == 0) {
+	                                setup.telemetry_baud = atoi(val);
+	                        } else if (strcmp(var, "telemetry_type") == 0) {
 	                                ModelData.teletype = atoi(val);
 	                        } else if (strcmp(var, "jeti_port") == 0) {
 	                                strncpy(setup.jeti_port, val, 1023);
@@ -721,8 +721,8 @@ void setup_load (void) {
 	ModelData.p_alt = WayPoints[0].p_alt;
 	ModelData.yaw = WayPoints[0].yaw;
 
-	strncpy(ModelData.teledevice, setup.telemetrie_port, 199);
-	ModelData.telebaud = setup.telemetrie_baud;
+	strncpy(ModelData.teledevice, setup.telemetry_port, 199);
+	ModelData.telebaud = setup.telemetry_baud;
 
 }
 
@@ -1171,7 +1171,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 	}
 }
 
-int telemetrie_thread (void *data) {
+int telemetry_thread (void *data) {
 	while (gui_running == 1) {
 		if (clientmode == 1) {
 			webclient_update(clientmode_server, clientmode_port);
@@ -1786,7 +1786,7 @@ void ShutDown ( ESContext *esContext ) {
 	SDL_Delay(600);
 	LogSave();
 	setup_save();
-	stop_telemetrie();
+	stop_telemetry();
 	frsky_exit();
 	tracker_exit();
 	jeti_exit();
@@ -1794,7 +1794,7 @@ void ShutDown ( ESContext *esContext ) {
 	webserv_exit();
 	map_exit();
 	printf("telemetry: thread kill\n");
-	SDL_KillThread(thread_telemetrie);
+	SDL_KillThread(thread_telemetry);
 #ifdef RPI_NO_X
 	printf("touch: thread kill\n");
 	SDL_KillThread(thread);
@@ -1968,13 +1968,13 @@ int main ( int argc, char *argv[] ) {
 	tracker_init(setup.tracker_port, setup.tracker_baud);
 
 	printf("telemetry: init thread\n");
-	reset_telemetrie();
+	reset_telemetry();
 #ifdef SDL2
-	thread_telemetrie = SDL_CreateThread(telemetrie_thread, NULL, NULL);
+	thread_telemetry = SDL_CreateThread(telemetry_thread, NULL, NULL);
 #else
-	thread_telemetrie = SDL_CreateThread(telemetrie_thread, NULL);
+	thread_telemetry = SDL_CreateThread(telemetry_thread, NULL);
 #endif
-	if ( thread_telemetrie == NULL ) {
+	if ( thread_telemetry == NULL ) {
 		fprintf(stderr, "telemetry: thread konnte nicht gestartet werden: %s\n", SDL_GetError());
 		return 0;
 	}
