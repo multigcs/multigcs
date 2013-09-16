@@ -50,11 +50,6 @@ uint8_t mavlink_udp_active = 0;
 SDL_Thread *thread_udp = NULL;
 int mavlink_udp (void *data);
 
-int mavlink_update (void) {
-	gcs_update();
-	return(0);
-}
-
 uint8_t mavlink_init (char *port, uint32_t baud) {
 	int n = 0;
 	mavlink_maxparam = 0;
@@ -111,7 +106,7 @@ void mavlink_send_value (char *name, float val, uint8_t type) {
 	send_message(&msg);
 }
 
-void gcs_handleMessage(mavlink_message_t* msg) {
+void mavlink_handleMessage(mavlink_message_t* msg) {
 	mavlink_message_t msg2;
 	char sysmsg_str[1024];
 	switch (msg->msgid) {
@@ -676,7 +671,7 @@ uint8_t mavlink_connection_status (void) {
 	return last_connection;
 }
 
-void gcs_update (void) {
+void mavlink_update (void) {
 	if (serial_fd_mavlink == -1) {
 		return;
 	}
@@ -691,7 +686,7 @@ void gcs_update (void) {
 			c = serial_buf[n];
 //			printf("%i (%x)  \n", c, c);
 			if(mavlink_parse_char(0, c, &msg, &status)) {
-				gcs_handleMessage(&msg);
+				mavlink_handleMessage(&msg);
 			}
 		}
 
@@ -805,7 +800,7 @@ int mavlink_udp (void *data) {
 			int n = 0;
 			for (n = 0; n < recv_len; n++) {
 				if(mavlink_parse_char(1, buf[n], &msg, &status)) {
-					gcs_handleMessage(&msg);
+					mavlink_handleMessage(&msg);
 					mavlink_udp_active = 1;
 				}
 			}
