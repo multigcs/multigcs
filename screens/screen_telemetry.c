@@ -126,7 +126,6 @@ void draw_value_barchannels (ESContext *esContext, float x1, float y1, char *tit
 	uint8_t n = 0;
 	for (n = 0; n < num; n++) {
 		draw_value_bar2(esContext, x1 + 0.02 + n * 0.05, y1 + 0.1, x1 + 0.04 + n * 0.05, y1 + 0.4, 1, 0.0, 200.0, 0.0, 0.0, (float)values[n] + 100.0);
-printf("%i\n", values[n]);
 		sprintf(tmp_str, "%i", n + 1);
 		draw_text_f(esContext, x1 + 0.04 + n * 0.05 - 0.036, y1 + 0.4, 0.05, 0.05, FONT_WHITE, tmp_str);
 	}

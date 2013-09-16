@@ -222,7 +222,11 @@ void screen_overview (ESContext *esContext) {
 
 	for (n = 0; n < VIEW_MODE_LAST; n++) {
 		sprintf(tmp_str, "%s", view_names[n]);
-		draw_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_WHITE, -0.8, -0.6 + n * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)n);
+		if (setup.view_mode == n) {
+			draw_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_GREEN, -0.8, -0.6 + n * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)n);
+		} else {
+			draw_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_WHITE, -0.8, -0.6 + n * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)n);
+		}
 	}
 
 	draw_button(esContext, "Options", setup.view_mode, "Options", FONT_PINK, 0.8, -0.6 + -2 * 0.1, 0.002, 0.08, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)0);

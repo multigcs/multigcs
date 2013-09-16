@@ -680,13 +680,15 @@ uint8_t rcflow_virt_view (char *name, float x, float y, int8_t button, float dat
 
 void rcflow_undo_save (void) {
 	int16_t n = 0;
-	char tmp_str[128];
+	char tmp_str[1024];
+	char tmp_str2[1024];
 	printf("rcflow: undo_save \n");
-	sprintf(tmp_str, "mkdir -p %s/.multigcs/models", getenv("HOME"));
-	system(tmp_str);
+	sprintf(tmp_str, "%s/.multigcs/models", getenv("HOME"));
+	mkdir(tmp_str, 0755);
 	for (n = MAX_UNDO - 1; n >= 0; n--) {
-		sprintf(tmp_str, "mv %s/.multigcs/models/rcflow_undo%i.bin %s/.multigcs/models/rcflow_undo%i.bin 2>/dev/null", getenv("HOME"), n, getenv("HOME"), n + 1);
-		system(tmp_str);
+		sprintf(tmp_str, "%s/.multigcs/models/rcflow_undo%i.bin", getenv("HOME"), n);
+		sprintf(tmp_str2, "%s/.multigcs/models/rcflow_undo%i.bin", getenv("HOME"), n + 1);
+		rename(tmp_str, tmp_str2);
 	}
         FILE *fr;
 	sprintf(tmp_str, "%s/.multigcs/models/rcflow_undo0.bin", getenv("HOME"));
@@ -3260,7 +3262,7 @@ while (read(rcflow_fd, buf, 1) > 0) {
 	}
 
 	if (keyboard_key[0] != 0) {
-		printf("rcflow: ## keyboard_key = %s (%i) ##\n", keyboard_key, keyboard_shift);
+		printf("rcflow: keyboard_key(shift) = %s (%i)\n", keyboard_key, keyboard_shift);
 	}
 
 

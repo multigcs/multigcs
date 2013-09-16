@@ -897,7 +897,6 @@ void check_events (ESContext *esContext, SDL_Event event) {
 				keyboard_key[n] = tolower(keyboard_key[n]);
 			}
 		}
-		printf("## keyname: %s ##\n", keyname);
 		redraw_flag = 1;
 	} else if (event.type == SDL_MOUSEMOTION) {
 		event.type = 0;
@@ -1488,6 +1487,8 @@ void Draw (ESContext *esContext) {
 #ifdef SDLGL
 		save_screenshot();
 #endif
+	} else if (keyboard_key[0] != 0) {
+		printf("## keyboard_key: %s ##\n", keyboard_key);
 	}
 
 	keyboard_key[0] = 0;
