@@ -52,7 +52,7 @@ static char view_names[VIEW_MODE_LAST][100] = {
 extern uint8_t view_overview;
 
 uint8_t option_cmd (char *name, float x, float y, int8_t button, float data) {
-	printf("OPTION: %s %i\n", name, (int)data);
+	view_overview = 0;
 	if (strcmp(name, "SPEAK") == 0) {
 		setup.speak = 1 - setup.speak;
 	} else if (strcmp(name, "LOGGING") == 0) {
