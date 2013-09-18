@@ -1383,7 +1383,6 @@ int gl_init (uint16_t w, uint16_t h) {
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 */
 
-
 	// create Render-Buffer
 	glGenFramebuffers(1, &RB_FramebufferName);
 	glBindFramebuffer(GL_FRAMEBUFFER, RB_FramebufferName);
@@ -1396,10 +1395,9 @@ int gl_init (uint16_t w, uint16_t h) {
 	glBindRenderbuffer(GL_RENDERBUFFER, RB_depthrenderbuffer);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 768);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, RB_depthrenderbuffer);
-	glFramebufferTextureEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, RB_renderedTexture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, RB_renderedTexture, 0);
 	glDrawBuffers(1, RB_DrawBuffers);
 	draw_to_screen();
-
 	return 0;
 }
 
