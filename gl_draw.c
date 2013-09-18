@@ -49,6 +49,7 @@ TextureCache TexCache[MAX_TEXCACHE];
 GLfloat colors[4] = {1.0f, 0.0f, 0.0f, 1.0f};
 float aspect = 1.0;
 
+uint8_t RB_Active = 0;
 GLuint RB_FramebufferName = 0;
 GLuint RB_renderedTexture = 0;
 GLuint RB_depthrenderbuffer = 0;
@@ -1556,6 +1557,7 @@ void resize_border (void) {
 }
 
 void draw_to_buffer (void) {
+	RB_Active = 1;
 	glBindFramebuffer(GL_FRAMEBUFFER, RB_FramebufferName);
 	glViewport(0,0,1024,768); // Render on the whole framebuffer, complete from the lower left corner to the upper right
 	glMatrixMode(GL_MODELVIEW);
@@ -1564,11 +1566,18 @@ void draw_to_buffer (void) {
 }
 
 void draw_to_screen (void) {
+	RB_Active = 0;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0 + setup.screen_border_x / 2, 0 + setup.screen_border_y / 2, setup.screen_w - setup.screen_border_x, setup.screen_h - setup.screen_border_y);
 }
 
+uint8_t draw_target (void) {
+	return RB_Active;
+}
+
 void draw_buffer_to_screen (float x1, float y1, float x2, float y2, float z, float alpha) {
+	y1 = y1 * -1;
+	y2 = y2 * -1;
 	glColor4f(1.0, 1.0, 1.0, alpha);
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, RB_renderedTexture);

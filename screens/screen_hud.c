@@ -19,6 +19,12 @@ uint8_t hud_null (char *name, float x, float y, int8_t button, float data) {
 	return 0;
 }
 
+uint8_t hud_goto_screen (char *name, float x, float y, int8_t button, float data) {
+	setup.view_mode = (int)data;
+	view_mode_next = (int)data;
+	return 0;
+}
+
 uint8_t hud_altitude_null (char *name, float x, float y, int8_t button, float data) {
 	float ground_alt = (float)get_altitude(ModelData.p_lat, ModelData.p_long);
 	ModelData.alt_offset = ModelData.p_alt - ground_alt;
@@ -393,23 +399,13 @@ int16_t graph1_pointer = 0;
 int16_t graph1_size = 128;
 
 
-void screen_hud (ESContext *esContext) {
+void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 	ESMatrix modelview;
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
 #endif
 	char tmp_str[400];
-	char tmp_str2[400];
 	int n = 0;
-	uint8_t i = 0;
-	float angle = 0.0;
-	float dist1 = 0.0;
-	float angle_up = 0.0;
-	float dist2 = 0.0;
-	float angle2 = 0.0;
-	float angle_home = 0.0;
-
-	//printf("hud#1\n");
 
 #ifdef SDLGL
 #ifndef OSX
@@ -433,18 +429,6 @@ void screen_hud (ESContext *esContext) {
 #endif
 	glDisable( GL_DEPTH_TEST );
 
-
-	get_dir(ModelData.p_lat, ModelData.p_long, ModelData.p_alt, WayPoints[waypoint_active].p_lat, WayPoints[waypoint_active].p_long, WayPoints[waypoint_active].p_alt, &angle, &dist1, &angle_up, &dist2);
-	angle2 = angle - ModelData.yaw;
-	if (angle2 > 180.0) {
-		angle2 = angle2 - 360.0;
-	}
-	get_dir(ModelData.p_lat, ModelData.p_long, ModelData.p_alt, WayPoints[0].p_lat, WayPoints[0].p_long, WayPoints[0].p_alt, &angle, &dist1, &angle_up, &dist2);
-	angle_home = angle - ModelData.yaw;
-	if (angle_home > 180.0) {
-		angle_home = angle_home - 360.0;
-	}
-
 	// Horizont / Background
 #ifdef SDLGL
 	glMatrixMode(GL_MODELVIEW);
@@ -460,8 +444,6 @@ void screen_hud (ESContext *esContext) {
 	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
-
-	//printf("hud#2\n");
 
 	if (setup.hud_view_map == 0 && setup.hud_view_video != 1) {
 		if (setup.contrast == 1) {
@@ -481,13 +463,12 @@ void screen_hud (ESContext *esContext) {
 		}
 	}
 
-
-
 #ifdef SDLGL
 	glPopMatrix();
 #endif
 
 
+if (type == 1) {
 	// Pitch & Roll-Winkel
 	for (n = -30 - ((int)(-ModelData.pitch / 10) % 10 * 10); n <= 20 - ((int)((-ModelData.pitch - 3) / 10) % 10 * 10); n += 10) {
 		// Pitch
@@ -527,11 +508,6 @@ void screen_hud (ESContext *esContext) {
 #endif
 	}
 
-
-	//printf("hud#3\n");
-
-
-//	for (n = -40 - ((int)(-ModelData.pitch / 5) % 10 * 5); n <= 30 - ((int)(-ModelData.pitch / 5) % 10 * 5); n += 5) {
 	for (n = -35 - ((int)(-ModelData.pitch / 10) % 10 * 10); n <= 25 - ((int)((-ModelData.pitch - 3) / 10) % 10 * 10); n += 10) {
 		// Pitch
 #ifdef SDLGL
@@ -619,9 +595,6 @@ void screen_hud (ESContext *esContext) {
 #endif
 	}
 
-	//printf("hud#4\n");
-
-
 	// Roll-Zeiger
 #ifdef SDLGL
 	glMatrixMode(GL_MODELVIEW);
@@ -693,9 +666,6 @@ void screen_hud (ESContext *esContext) {
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
 
-	//printf("hud#5\n");
-
-
 	if (setup.contrast == 1) {
 		draw_box_f3(esContext, -0.005, -0.2, 0.001, 0.005, 0.2, 0.001, 0, 0, 0, 255);
 		draw_box_f3(esContext, -0.2, -0.005, 0.001, 0.2, 0.005, 0.001, 0, 0, 0, 255);
@@ -706,6 +676,51 @@ void screen_hud (ESContext *esContext) {
 #ifdef SDLGL
 	glPopMatrix();
 #endif
+
+} else {
+	draw_box_f(esContext, -2.0, -0.01, 2.0, 0.01, 255, 255, 255, 255);
+	if (setup.contrast == 1) {
+		draw_box_f3(esContext, -0.01, -0.2, 0.001, 0.01, 0.2, 0.001, 0, 0, 0, 255);
+		draw_box_f3(esContext, -0.2, -0.01, 0.001, 0.2, 0.01, 0.001, 0, 0, 0, 255);
+	} else {
+		draw_box_f3(esContext, -0.01, -0.2, 0.001, 0.01, 0.2, 0.001, 0xff, 0x33, 0xfc, 255); // pink
+		draw_box_f3(esContext, -0.2, -0.01, 0.001, 0.2, 0.01, 0.001, 0xff, 0x33, 0xfc, 255); // pink
+	}
+}
+
+
+}
+
+
+void screen_hud (ESContext *esContext) {
+	ESMatrix modelview;
+#ifndef SDLGL
+	UserData *userData = esContext->userData;
+#endif
+	char tmp_str[400];
+	char tmp_str2[400];
+	int n = 0;
+	uint8_t i = 0;
+	float angle = 0.0;
+	float dist1 = 0.0;
+	float angle_up = 0.0;
+	float dist2 = 0.0;
+	float angle2 = 0.0;
+	float angle_home = 0.0;
+
+	get_dir(ModelData.p_lat, ModelData.p_long, ModelData.p_alt, WayPoints[waypoint_active].p_lat, WayPoints[waypoint_active].p_long, WayPoints[waypoint_active].p_alt, &angle, &dist1, &angle_up, &dist2);
+	angle2 = angle - ModelData.yaw;
+	if (angle2 > 180.0) {
+		angle2 = angle2 - 360.0;
+	}
+	get_dir(ModelData.p_lat, ModelData.p_long, ModelData.p_alt, WayPoints[0].p_lat, WayPoints[0].p_long, WayPoints[0].p_alt, &angle, &dist1, &angle_up, &dist2);
+	angle_home = angle - ModelData.yaw;
+	if (angle_home > 180.0) {
+		angle_home = angle_home - 360.0;
+	}
+
+
+	hud_draw_horizon(esContext, 1);
 
 
 	// Rahmen
@@ -1270,12 +1285,17 @@ void screen_hud (ESContext *esContext) {
 	draw_text_button(esContext, "view_map_bw", VIEW_MODE_HUD, "BW", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_bw, 0);
 #endif
 
-
-	draw_to_buffer();
-	display_map(esContext, lat, lon, zoom, 0, 1, 0.0, 0.0, 0.0);
-	draw_to_screen();
-	draw_buffer_to_screen(0.9, -0.4, 1.4, -0.85, 0.0, 1.0);
-
+#ifdef SDLGL
+	if (setup.hud_view_screen != 2 && draw_target() == 0) {
+		draw_to_buffer();
+		display_map(esContext, lat, lon, zoom, 0, 1, 0.0, 0.0, 0.0);
+		draw_to_screen();
+		draw_buffer_to_screen(0.9, 0.4, 1.4, 0.85, 0.0, 1.0);
+		draw_rect_f3(esContext, 0.9, 0.4, 0.002, 1.4, 0.85, 0.002, 0, 0, 0, 255);
+		draw_rect_f3(esContext, 0.9 - 0.005, 0.4 - 0.005, 0.002, 1.4 + 0.005, 0.85 + 0.005, 0.002, 255, 255, 255, 255);
+		set_button("goto_map", setup.view_mode, 0.9, 0.4, 1.4, 0.85, hud_goto_screen, (float)VIEW_MODE_MAP, 0);
+	}
+#endif
 
 #ifdef SDLGL
 	glPopMatrix();

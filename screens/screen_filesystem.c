@@ -103,6 +103,11 @@ uint8_t filesystem_dir_open (char *name, float x, float y, int8_t button, float 
 }
 
 void screen_filesystem (ESContext *esContext) {
+#ifdef SDLGL
+	if (draw_target() != 0) {
+		return;
+	}
+#endif
 	if (show_filesystem != setup.view_mode) {
 		return;
 	}

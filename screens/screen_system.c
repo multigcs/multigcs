@@ -30,6 +30,26 @@
 #include <logging.h>
 #include <screen_device.h>
 #include <screen_baud.h>
+#include "screen_wpedit.h"
+#include "screen_map.h"
+#include "screen_brugi.h"
+#include "screen_hud.h"
+#include "screen_graph.h"
+#include "screen_calibration.h"
+#include "screen_telemetry.h"
+#include "screen_fms.h"
+#include "screen_system.h"
+#include "screen_tcl.h"
+#include "screen_mavlink_menu.h"
+#include "screen_mwi_menu.h"
+#include "screen_openpilot_menu.h"
+#include "screen_videolist.h"
+#include "screen_model.h"
+#include "screen_cli.h"
+#include "screen_baseflightcli.h"
+#include "screen_rcflow.h"
+#include "screen_tracker.h"
+
 
 static char port_selected[100];
 static char baud_selected[100];
@@ -202,7 +222,120 @@ uint8_t system_set_border_y (char *name, float x, float y, int8_t button, float 
 	return 0;
 }
 
+#ifdef SDLGL
+void screen_overview (ESContext *esContext) {
+#ifndef SDLGL
+	ESMatrix modelview;
+	UserData *userData = esContext->userData;
+#endif
+	char tmp_str[1024];
+	uint8_t n = 0;
 
+#ifndef SDLGL
+	esMatrixLoadIdentity( &modelview );
+	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
+#endif
+
+	reset_buttons();
+
+	int x = 0;
+	int y = 0;
+	for (n = 0; n < VIEW_MODE_LAST; n++) {
+		if (x >= 4) {
+			x = 0;
+			y += 1;
+		}
+		draw_to_buffer();
+		if (n == VIEW_MODE_HUD) {
+			screen_hud(esContext);
+		} else if (n == VIEW_MODE_TELEMETRY) {
+			screen_telemetry(esContext);
+		} else if (n == VIEW_MODE_MODEL) {
+			screen_model(esContext);
+		} else if (n == VIEW_MODE_RCFLOW) {
+			screen_rcflow(esContext);
+		} else if (n == VIEW_MODE_FMS) {
+			screen_fms(esContext);
+		} else if (n == VIEW_MODE_WPEDIT) {
+			screen_wpedit(esContext);
+		} else if (n == VIEW_MODE_MAP) {
+			screen_map(esContext, lat, lon, zoom);
+		} else if (n == VIEW_MODE_VIDEOLIST) {
+			screen_videolist(esContext);
+		} else if (n == VIEW_MODE_SYSTEM) {
+			screen_system(esContext);
+		} else if (n == VIEW_MODE_TCL) {
+			screen_tcl(esContext);
+		} else if (n == VIEW_MODE_TRACKER) {
+			screen_tracker(esContext);
+		} else if (n == VIEW_MODE_FCMENU) {
+			if (ModelData.teletype == TELETYPE_MULTIWII_21) {
+				screen_mwi_menu(esContext);
+			} else if (ModelData.teletype == TELETYPE_BASEFLIGHT) {
+				screen_mwi_menu(esContext);
+			} else if (ModelData.teletype == TELETYPE_GPS_NMEA) {
+				screen_graph(esContext);
+			} else if (ModelData.teletype == TELETYPE_OPENPILOT) {
+				screen_openpilot(esContext);
+			} else if (ModelData.teletype == TELETYPE_CLI) {
+				screen_cli(esContext);
+			} else if (ModelData.teletype == TELETYPE_BASEFLIGHTCLI) {
+				screen_baseflightcli(esContext);
+			} else if (ModelData.teletype == TELETYPE_BRUGI) {
+				screen_brugi(esContext);
+			} else {
+				screen_mavlink_menu(esContext);
+			}
+		}
+		draw_to_screen();
+//		draw_buffer_to_screen(-1.3 + x * 0.5, -0.8 + y * 0.4, -1.3 + x * 0.5 + 0.5, -0.8 + y * 0.4 + 0.4, 0.002, 1.0);
+		draw_buffer_to_screen(-1.422 + x * 0.71, -0.99 + y * 0.66, -1.422 + x * 0.71 + 0.71, -0.99 + y * 0.66 + 0.66, 0.002, 1.0);
+		sprintf(tmp_str, "%s", view_names[n]);
+		if (setup.view_mode == n) {
+//			draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_GREEN, -1.3 + 0.25 + x * 0.5, -0.8 + y * 0.4, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)n);
+			draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_GREEN, -1.422 + 0.35 + x * 0.71, -0.99 + y * 0.66, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)n);
+		} else {
+//			draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_WHITE, -1.3 + 0.25 + x * 0.5, -0.8 + y * 0.4, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)n);
+			draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_WHITE, -1.422 + 0.35 + x * 0.71, -0.99 + y * 0.66, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)n);
+		}
+		reset_buttons();
+		x++;
+	}
+	x = 0;
+	y = 0;
+	for (n = 0; n < VIEW_MODE_LAST; n++) {
+		if (x >= 4) {
+			x = 0;
+			y += 1;
+		}
+//		draw_rect_f3(esContext, -1.3 + x * 0.5, -0.8 + y * 0.4, 0.002, -1.3 + x * 0.5 + 0.5, -0.8 + y * 0.4 + 0.4, 0.002, 255, 255, 255, 255);
+//		set_button(view_names[n], setup.view_mode, -1.3 + x * 0.5, -0.8 + y * 0.4, -1.3 + x * 0.5 + 0.5, -0.8 + y * 0.4 + 0.4, overview_set, (float)n, 0);
+		draw_rect_f3(esContext, -1.422 + x * 0.71, -0.99 + y * 0.66, 0.002, -1.422 + x * 0.71 + 0.71, -0.99 + y * 0.66 + 0.66, 0.002, 255, 255, 255, 255);
+		set_button(view_names[n], setup.view_mode, -1.422 + x * 0.71, -0.99 + y * 0.66, -1.422 + x * 0.71 + 0.71, -0.99 + y * 0.66 + 0.66, overview_set, (float)n, 0);
+		x++;
+	}
+
+	draw_text_button(esContext, "Options", setup.view_mode, "Options", FONT_PINK, 1.05, 0.6 + -2 * 0.1, 0.002, 0.08, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)0);
+	n = 0;
+	if (setup.speak == 1) {
+		draw_text_button(esContext, "SPEAK", setup.view_mode, "SPEAK", FONT_GREEN, 1.05, 0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+	} else {
+		draw_text_button(esContext, "SPEAK", setup.view_mode, "SPEAK", FONT_WHITE, 1.05, 0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+	}
+	if (logmode == 1) {
+		draw_text_button(esContext, "LOGGING", setup.view_mode, "LOGGING", FONT_GREEN, 1.05, 0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+	} else {
+		draw_text_button(esContext, "LOGGING", setup.view_mode, "LOGGING", FONT_WHITE, 1.05, 0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+	}
+#ifndef OSX
+	if (logplay == 1) {
+		draw_text_button(esContext, "LOGPLAYER", setup.view_mode, "LOGPLAYER", FONT_GREEN, 1.05, 0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+	} else {
+		draw_text_button(esContext, "LOGPLAYER", setup.view_mode, "LOGPLAYER", FONT_WHITE, 1.05, 0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+	}
+#endif
+}
+#else
 void screen_overview (ESContext *esContext) {
 #ifndef SDLGL
 	ESMatrix modelview;
@@ -219,7 +352,6 @@ void screen_overview (ESContext *esContext) {
 	reset_buttons();
 
 	draw_text_button(esContext, "Screens", setup.view_mode, "Screens", FONT_PINK, -0.8, -0.6 + -2 * 0.1, 0.002, 0.08, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)0);
-
 	for (n = 0; n < VIEW_MODE_LAST; n++) {
 		sprintf(tmp_str, "%s", view_names[n]);
 		if (setup.view_mode == n) {
@@ -230,7 +362,6 @@ void screen_overview (ESContext *esContext) {
 	}
 
 	draw_text_button(esContext, "Options", setup.view_mode, "Options", FONT_PINK, 0.8, -0.6 + -2 * 0.1, 0.002, 0.08, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)0);
-
 	n = 0;
 	if (setup.speak == 1) {
 		draw_text_button(esContext, "SPEAK", setup.view_mode, "SPEAK", FONT_GREEN, 0.8, -0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
@@ -249,8 +380,9 @@ void screen_overview (ESContext *esContext) {
 		draw_text_button(esContext, "LOGPLAYER", setup.view_mode, "LOGPLAYER", FONT_WHITE, 0.8, -0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
 	}
 #endif
-
 }
+#endif
+
 
 
 void screen_system (ESContext *esContext) {

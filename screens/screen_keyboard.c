@@ -69,6 +69,11 @@ uint8_t keyboard_add_char (char *name, float x, float y, int8_t button, float da
 }
 
 void screen_keyboard (ESContext *esContext) {
+#ifdef SDLGL
+	if (draw_target() != 0) {
+		return;
+	}
+#endif
 #ifndef SDLGL
 	ESMatrix modelview;
 	UserData *userData = esContext->userData;

@@ -79,6 +79,7 @@ void resize_border (void);
 void glResize (ESContext *esContext, int w, int h);
 void draw_to_buffer (void);
 void draw_to_screen (void);
+uint8_t draw_target (void);
 void draw_buffer_to_screen (float x1, float y1, float x2, float y2, float z, float alpha);
 
 #endif

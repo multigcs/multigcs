@@ -51,7 +51,6 @@ void screen_videolist (ESContext *esContext) {
 	filesystem_set_mode(VIEW_MODE_VIDEOLIST);
 
 	screen_filesystem(esContext);
-
 	draw_title(esContext, "Video-Player");
 
 }

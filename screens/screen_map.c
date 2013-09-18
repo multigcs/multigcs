@@ -31,6 +31,7 @@
 #include <screen_map.h>
 #include <my_mavlink.h>
 #include <screen_wpedit.h>
+#include <screen_hud.h>
 #include <tracker.h>
 #include <logging.h>
 
@@ -50,7 +51,6 @@ float roty = 0.0;
 uint8_t uav_active_waypoint = 0;
 uint8_t center_map = 1;
 uint8_t nav_map = 0;
-uint8_t map_show_log = 0;
 uint8_t map_show_wp = 0;
 uint8_t map_show_notam = 0;
 uint8_t map_show_poi = 0;
@@ -83,6 +83,12 @@ PointOfInterest POIs[MAX_POIS];
 static void die(char *msg) {
 	printf("map: %s", msg);
 	return;
+}
+
+uint8_t map_goto_screen (char *name, float x, float y, int8_t button, float data) {
+	setup.view_mode = (int)data;
+	view_mode_next = (int)data;
+	return 0;
 }
 
 void map_parseMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t map_service) { 
@@ -694,11 +700,6 @@ uint8_t show_poi (char *name, float x, float y, int8_t button, float data) {
 	} else {
 		map_show_poi = 1 - map_show_poi;
 	}
-	return 0;
-}
-
-uint8_t show_log (char *name, float x, float y, int8_t button, float data) {
-	map_show_log = 1 - map_show_log;
 	return 0;
 }
 
@@ -2065,58 +2066,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 	}
 #endif
-/*
-	if (nav_map != 1 && map_show_log == 1) {
-		// draw log
-		FILE *log_fr = NULL;
-		log_fr = fopen(logplay_file, "r");
-		if (log_fr != 0) {
-			char line[512];
-			float p_lat = 0.0;
-			float p_long = 0.0;
-			float p_alt = 0.0;
-			float last_lat = 0.0;
-			float last_long = 0.0;
-			float last_alt = 0.0;
-			float speed = 0.0;
-			uint8_t gpsfix = 0;
-			uint8_t numSat = 0;
-			uint32_t lsec = 0;
-			uint32_t lmicros = 0;
-
-			last_lat = 0.0;
-			last_lon = 0.0;
-			last_alt = 0.0;
-
-			while (fgets(line, 500, log_fr) != NULL) {
-				if (strncmp(line, "GPS;", 4) == 0) {
-					sscanf(line, "GPS;%i.%i;%f;%f;%f", &lsec, &lmicros, &p_lat, &p_long, &p_alt);
-					if (last_lat != 0.0) {
-						mark_route(esContext, last_lat, last_lon, last_alt, p_long, p_lat, p_alt, 1, lat, lon, zoom);
-					}
-					last_lat = p_long;
-					last_lon = p_lat;
-					last_alt = p_alt;
-				} else if (strncmp(line, "GPS,", 4) == 0) {
-					float dn = 0.0;
-					float dn2 = 0.0;
-					float dn4 = 0.0;
-					uint32_t dn3 = 0;
-					sscanf(line, "GPS,%i,%i,%i,%f,%f,%f,%f,%f,%f,%f", &gpsfix, &dn3, &numSat, &dn, &p_lat, &p_long, &dn2, &p_alt, &speed, &dn4);
-					if (last_lat != 0.0) {
-						mark_route(esContext, last_lat, last_lon, last_alt, p_long, p_lat, p_alt, 1, lat, lon, zoom);
-					}
-					last_lat = p_long;
-					last_lon = p_lat;
-					last_alt = p_alt;
-				}
-			}
-
-			fclose(log_fr);
-		}
-	}
-*/
-
 
 	// rotate map back
 #ifndef SDLGL
@@ -2313,31 +2262,26 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 			draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
 			draw_text_button(esContext, "fms_edit", VIEW_MODE_MAP, "EDIT", FONT_WHITE, 1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, wpedit_waypoint_edit, (float)VIEW_MODE_MAP);
+			draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
+			draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
+			draw_text_button(esContext, "map_read_wp", VIEW_MODE_MAP, "READ", FONT_WHITE, 1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, read_wp, 0.0);
+			draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
+			draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
+			draw_text_button(esContext, "map_write_wp", VIEW_MODE_MAP, "WRITE", FONT_WHITE, 1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, write_wp, 0.0);
 		} else {
 			ny++;
 			ny++;
+			ny++;
+			ny++;
 		}
-		draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
-		draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
-		draw_text_button(esContext, "map_read_wp", VIEW_MODE_MAP, "READ", FONT_WHITE, 1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, read_wp, 0.0);
-		draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
-		draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
-		draw_text_button(esContext, "map_write_wp", VIEW_MODE_MAP, "WRITE", FONT_WHITE, 1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, write_wp, 0.0);
 
-		ny++;
+//		ny++;
 		draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 		draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
 		if (map_show_wp == 1) {
 			draw_text_button(esContext, "map_show_wp", VIEW_MODE_MAP, "WP", FONT_GREEN, 1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_wp, 0.0);
 		} else {
 			draw_text_button(esContext, "map_show_wp", VIEW_MODE_MAP, "WP", FONT_WHITE, 1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_wp, 0.0);
-		}
-		draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
-		draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
-		if (map_show_log == 1) {
-			draw_text_button(esContext, "map_show_log", VIEW_MODE_MAP, "LOG", FONT_GREEN, 1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_log, 0.0);
-		} else {
-			draw_text_button(esContext, "map_show_log", VIEW_MODE_MAP, "LOG", FONT_WHITE, 1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_log, 0.0);
 		}
 
 		draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
@@ -2357,28 +2301,21 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 
 
-		ny++;
-		ny++;
-		draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
-		draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
-		if (ModelData.gpsfix > 0) {
+#ifdef SDLGL
+		if (draw_target() == 0) {
+			draw_to_buffer();
+			hud_draw_horizon(esContext, 0);
+			draw_to_screen();
+			draw_buffer_to_screen(0.9, 0.4, 1.4, 0.85, 0.0, 1.0);
+			draw_rect_f3(esContext, 0.9, 0.4, 0.002, 1.4, 0.85, 0.002, 0, 0, 0, 255);
+			draw_rect_f3(esContext, 0.9 - 0.005, 0.4 - 0.005, 0.002, 1.4 + 0.005, 0.85 + 0.005, 0.002, 255, 255, 255, 255);
+			set_button("goto_hud", setup.view_mode, 0.9, 0.4, 1.4, 0.85, map_goto_screen, (float)VIEW_MODE_HUD, 0);
 			sprintf(tmp_str, "Alt: %0.0f", ModelData.p_alt);
-			draw_text_button(esContext, "map_alt", VIEW_MODE_MAP, tmp_str, FONT_GREEN, 1.3, -0.8 + ny * 0.12 - 0.02, 0.003, 0.04, ALIGN_CENTER, ALIGN_CENTER, map_null, 0.0);
+			draw_text_button(esContext, "map_alt", VIEW_MODE_MAP, tmp_str, FONT_GREEN, 0.92, 0.75, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
 			sprintf(tmp_str, "Speed: %0.0f", ModelData.speed);
-			draw_text_button(esContext, "map_speed", VIEW_MODE_MAP, tmp_str, FONT_GREEN, 1.3, -0.8 + ny * 0.12 + 0.03, 0.003, 0.04, ALIGN_CENTER, ALIGN_CENTER, map_null, 0.0);
-		} else {
-			sprintf(tmp_str, "Alt: %0.0f", ModelData.p_alt);
-			draw_text_button(esContext, "map_alt", VIEW_MODE_MAP, tmp_str, FONT_WHITE, 1.3, -0.8 + ny * 0.12 - 0.02, 0.003, 0.04, ALIGN_CENTER, ALIGN_CENTER, map_null, 0.0);
-			sprintf(tmp_str, "Speed: %0.0f", ModelData.speed);
-			draw_text_button(esContext, "map_speed", VIEW_MODE_MAP, tmp_str, FONT_WHITE, 1.3, -0.8 + ny * 0.12 + 0.03, 0.003, 0.04, ALIGN_CENTER, ALIGN_CENTER, map_null, 0.0);
+			draw_text_button(esContext, "map_speed", VIEW_MODE_MAP, tmp_str, FONT_GREEN, 0.92, 0.8, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
 		}
-
-/*
-		ny++;
-		draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
-		draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
-		draw_text_button(esContext, "map_downloader", VIEW_MODE_MAP, "MD", FONT_WHITE, 1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_downloader, 0.0);
-*/
+#endif
 
 //		map_view = 0;
 	}
