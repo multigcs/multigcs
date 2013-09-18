@@ -79,6 +79,10 @@ uint8_t option_cmd (char *name, float x, float y, int8_t button, float data) {
 		logmode = 1 - logmode;
 	} else if (strcmp(name, "LOGPLAYER") == 0) {
 		logplay = 1 - logplay;
+	} else if (strcmp(name, "EXIT") == 0) {
+		SDL_Event user_event;
+		user_event.type=SDL_QUIT;
+		SDL_PushEvent(&user_event);
 	}
 	return 0;
 }
@@ -315,25 +319,26 @@ void screen_overview (ESContext *esContext) {
 		x++;
 	}
 
-	draw_text_button(esContext, "Options", setup.view_mode, "Options", FONT_PINK, 1.05, 0.6 + -2 * 0.1, 0.002, 0.08, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)0);
+	draw_text_button(esContext, "Options", setup.view_mode, "Options", FONT_PINK, 1.05, 0.55 + -2 * 0.1, 0.002, 0.08, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)0);
 	n = 0;
 	if (setup.speak == 1) {
-		draw_text_button(esContext, "SPEAK", setup.view_mode, "SPEAK", FONT_GREEN, 1.05, 0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+		draw_text_button(esContext, "SPEAK", setup.view_mode, "SPEAK", FONT_GREEN, 1.05, 0.55 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
 	} else {
-		draw_text_button(esContext, "SPEAK", setup.view_mode, "SPEAK", FONT_WHITE, 1.05, 0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+		draw_text_button(esContext, "SPEAK", setup.view_mode, "SPEAK", FONT_WHITE, 1.05, 0.55 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
 	}
 	if (logmode == 1) {
-		draw_text_button(esContext, "LOGGING", setup.view_mode, "LOGGING", FONT_GREEN, 1.05, 0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+		draw_text_button(esContext, "LOGGING", setup.view_mode, "LOGGING", FONT_GREEN, 1.05, 0.55 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
 	} else {
-		draw_text_button(esContext, "LOGGING", setup.view_mode, "LOGGING", FONT_WHITE, 1.05, 0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+		draw_text_button(esContext, "LOGGING", setup.view_mode, "LOGGING", FONT_WHITE, 1.05, 0.55 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
 	}
 #ifndef OSX
 	if (logplay == 1) {
-		draw_text_button(esContext, "LOGPLAYER", setup.view_mode, "LOGPLAYER", FONT_GREEN, 1.05, 0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+		draw_text_button(esContext, "LOGPLAYER", setup.view_mode, "LOGPLAYER", FONT_GREEN, 1.05, 0.55 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
 	} else {
-		draw_text_button(esContext, "LOGPLAYER", setup.view_mode, "LOGPLAYER", FONT_WHITE, 1.05, 0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+		draw_text_button(esContext, "LOGPLAYER", setup.view_mode, "LOGPLAYER", FONT_WHITE, 1.05, 0.55 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
 	}
 #endif
+	draw_text_button(esContext, "EXIT", setup.view_mode, "EXIT", FONT_GREEN, 1.05, 0.55 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
 }
 #else
 void screen_overview (ESContext *esContext) {
