@@ -385,6 +385,10 @@ void screen_overview (ESContext *esContext) {
 		draw_text_button(esContext, "LOGPLAYER", setup.view_mode, "LOGPLAYER", FONT_WHITE, 0.8, -0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
 	}
 #endif
+	n++;
+	n++;
+	n++;
+	draw_text_button(esContext, "EXIT", setup.view_mode, "EXIT", FONT_WHITE, 0.8, -0.6 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
 }
 #endif
 
