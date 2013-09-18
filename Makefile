@@ -7,7 +7,7 @@ EXTRA_OBJECTS = gles_draw.o
 BASE_DIR = /usr/share/multigcs
 COMP = gcc
 
-INCDIR = -I$(SDKSTAGE)/opt/vc/include -I$(SDKSTAGE)/opt/vc/include/interface/vcos/pthreads
+INCDIR = -I/opt/vc/include -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vmcs_host/linux
 LIBS = -lbcm_host -L$(SDKSTAGE)/opt/vc/lib
 CFLAGS += -DRPI_NO_X -Ofast -pipe -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -DBASE_DIR="\"$(BASE_DIR)\""
 #CFLAGS += -flto -ffast-math -fno-math-errno -funsafe-math-optimizations -ffinite-math-only -fno-signed-zeros -fno-trapping-math -frounding-math
