@@ -1742,8 +1742,8 @@ void Draw (ESContext *esContext) {
 	}
 
 
-	draw_button(esContext, "<<", setup.view_mode, "[<<]", FONT_WHITE, -1.3, -0.95, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, screen_last, 0.0);
-	draw_button(esContext, ">>", setup.view_mode, "[>>]", FONT_WHITE, 1.3, -0.95, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, screen_next, 0.0);
+	draw_text_button(esContext, "<<", setup.view_mode, "[<<]", FONT_WHITE, -1.3, -0.95, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, screen_last, 0.0);
+	draw_text_button(esContext, ">>", setup.view_mode, "[>>]", FONT_WHITE, 1.3, -0.95, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, screen_next, 0.0);
 
 	if (message > 0) {
 		draw_text_f(esContext, 0.0 - strlen(message_txt) * 0.04 * 0.6 / 2 - 0.012, -0.98, 0.04, 0.04, FONT_BLACK_BG, message_txt);
@@ -1758,9 +1758,9 @@ void Draw (ESContext *esContext) {
 		}
 	}
 	if (view_overview == 1) {
-		draw_button(esContext, "M", setup.view_mode, "[M]", FONT_GREEN, 1.3, 0.90, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_show, 0.0);
+		draw_text_button(esContext, "M", setup.view_mode, "[M]", FONT_GREEN, 1.3, 0.90, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_show, 0.0);
 	} else {
-		draw_button(esContext, "M", setup.view_mode, "[M]", FONT_WHITE, 1.3, 0.90, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_show, 0.0);
+		draw_text_button(esContext, "M", setup.view_mode, "[M]", FONT_WHITE, 1.3, 0.90, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_show, 0.0);
 	}
 
 	// LogPlay

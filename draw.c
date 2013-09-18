@@ -133,7 +133,68 @@ void draw_title (ESContext *esContext, char *text) {
 	draw_text_f3(esContext, 0.0 - strlen(text) * 0.06 * 0.6 / 2.0 - 0.012, -0.95, 0.02, 0.06, 0.06, FONT_GREEN, text);
 }
 
-uint8_t draw_button (ESContext *esContext, char *name, uint8_t view_mode, char *text, char *font, float x, float y, float z, float h, uint8_t align_x, uint8_t align_y, uint8_t (*callback) (char *, float, float, int8_t, float), float data) {
+uint8_t draw_button (ESContext *esContext, char *name, uint8_t view_mode, char *text, char *font, float x1, float y1, float z1, float x2, float y2, float z2, float fh, uint8_t align_x, uint8_t align_y, uint8_t (*callback) (char *, float, float, int8_t, float), float data) {
+#ifdef CONSOLE_ONLY
+	return 0;
+#endif
+	uint16_t n = 0;
+
+	draw_rect_f3(esContext, x1, y1, z1, x2, y2, z1, 128, 128, 128, 32);
+	draw_box_f3c2(esContext, x1, y1, z1, x2, y1 + (y2 - y1) / 3 * 2, z1, 128, 128, 128, 64, 128, 128, 128, 128);
+	draw_box_f3c2(esContext, x1, y1 + (y2 - y1) / 3 * 2, z1, x2, y2, z1, 128, 128, 128, 128, 128, 128, 128, 64);
+
+
+	float tx = x1;
+	float ty = y1;
+
+	if (align_x == ALIGN_CENTER) {
+		tx = x1 + (x2 - x1) / 2 - (strlen(text) * fh * 0.6) / 2;
+	} else if (align_x == ALIGN_RIGHT) {
+		tx = x2 - fh / 4 - (strlen(text) * fh * 0.6);
+	} else if (align_x == ALIGN_LEFT) {
+		tx = x1 + fh / 4;
+	}
+	if (align_y == ALIGN_CENTER) {
+		ty = y1 + (y2 - y1) / 2 - fh / 2;
+	} else if (align_y == ALIGN_TOP) {
+		ty = y1 + fh / 4;
+	} else if (align_y == ALIGN_BOTTOM) {
+		ty = y2 - fh / 4 - fh;
+	}
+
+
+//	draw_text_f3(esContext, x1, y1 + (y2 - y1) / 2 - fh / 2, z1, fh, fh, font, text);
+	draw_text_f3(esContext, tx, ty, z1, fh, fh, font, text);
+
+
+	for (n = 0; n < MAX_BUTTONS; n++) {
+		if (strcmp(Buttons[n].name, name) == 0) {
+			Buttons[n].view_mode = setup.view_mode;
+			Buttons[n].x1 = x1;
+			Buttons[n].y1 = y1;
+			Buttons[n].x2 = x2;
+			Buttons[n].y2 = y2;
+			Buttons[n].data = data;
+			Buttons[n].callback = callback;
+			Buttons[n].type = 0;
+			return 0;
+		} else if (Buttons[n].name[0] == 0) {
+			strncpy(Buttons[n].name, name, 99);
+			Buttons[n].view_mode = setup.view_mode;
+			Buttons[n].x1 = x1;
+			Buttons[n].y1 = y1;
+			Buttons[n].x2 = x2;
+			Buttons[n].y2 = y2;
+			Buttons[n].data = data;
+			Buttons[n].callback = callback;
+			Buttons[n].type = 0;
+			return 1;
+		}
+	}
+	return 2;
+}
+
+uint8_t draw_text_button (ESContext *esContext, char *name, uint8_t view_mode, char *text, char *font, float x, float y, float z, float h, uint8_t align_x, uint8_t align_y, uint8_t (*callback) (char *, float, float, int8_t, float), float data) {
 #ifdef CONSOLE_ONLY
 	return 0;
 #endif

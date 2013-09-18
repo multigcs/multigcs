@@ -46,8 +46,6 @@ uint8_t brugi_connection_status (void) {
 }
 
 void brugi_init (char *port, uint32_t baud) {
-	uint8_t n = 0;
-
 	brugi_setup.vers.scale = 100.0;
 	brugi_setup.vers.offset = 0;
 
@@ -269,11 +267,8 @@ void brugi_update (void) {
 		return;
 	}
 	static uint8_t info_counter = 0;
-	static uint8_t header_found = 0;
-	static uint8_t data_cmd = 0;
 	static uint8_t data_count = 0;
-	static uint8_t data_len = 0;
-	static uint8_t data_buffer[255];
+	static char data_buffer[255];
 	if (info_counter < 250) {
 		info_counter++;
 	} else {

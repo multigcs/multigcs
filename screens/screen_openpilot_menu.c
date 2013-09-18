@@ -339,7 +339,7 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 	draw_title(esContext, "StabilizationSettings");
 
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_ManualRate", VIEW_MODE_FCMENU, "ManualRate", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_ManualRate", VIEW_MODE_FCMENU, "ManualRate", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		draw_line_f3(esContext, -1.3, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 1.25, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 255, 255, 0, 128);
 	}
 	n++;
@@ -348,16 +348,16 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_ManualRate[Roll]", VIEW_MODE_FCMENU, "Roll", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_ManualRate[Roll]", VIEW_MODE_FCMENU, "Roll", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.ManualRate[0]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_ManualRate[Roll]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_ManualRate[Roll]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_ManualRate_Roll, -0.01);
-		draw_button(esContext, "inc_ManualRate[Roll]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_ManualRate_Roll, +0.01);
+		draw_text_button(esContext, "default_ManualRate[Roll]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_ManualRate[Roll]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_ManualRate_Roll, -0.01);
+		draw_text_button(esContext, "inc_ManualRate[Roll]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_ManualRate_Roll, +0.01);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -365,16 +365,16 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_ManualRate[Pitch]", VIEW_MODE_FCMENU, "Pitch", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_ManualRate[Pitch]", VIEW_MODE_FCMENU, "Pitch", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.ManualRate[1]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_ManualRate[Pitch]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_ManualRate[Pitch]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_ManualRate_Pitch, -0.01);
-		draw_button(esContext, "inc_ManualRate[Pitch]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_ManualRate_Pitch, +0.01);
+		draw_text_button(esContext, "default_ManualRate[Pitch]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_ManualRate[Pitch]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_ManualRate_Pitch, -0.01);
+		draw_text_button(esContext, "inc_ManualRate[Pitch]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_ManualRate_Pitch, +0.01);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -382,22 +382,22 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_ManualRate[Yaw]", VIEW_MODE_FCMENU, "Yaw", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_ManualRate[Yaw]", VIEW_MODE_FCMENU, "Yaw", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.ManualRate[2]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_ManualRate[Yaw]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_ManualRate[Yaw]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_ManualRate_Yaw, -0.01);
-		draw_button(esContext, "inc_ManualRate[Yaw]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_ManualRate_Yaw, +0.01);
+		draw_text_button(esContext, "default_ManualRate[Yaw]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_ManualRate[Yaw]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_ManualRate_Yaw, -0.01);
+		draw_text_button(esContext, "inc_ManualRate[Yaw]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_ManualRate_Yaw, +0.01);
 	}
 	n2++;
 	n++;
 	n2 = 0;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_MaximumRate", VIEW_MODE_FCMENU, "MaximumRate", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_MaximumRate", VIEW_MODE_FCMENU, "MaximumRate", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		draw_line_f3(esContext, -1.3, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 1.25, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 255, 255, 0, 128);
 	}
 	n++;
@@ -406,16 +406,16 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_MaximumRate[Roll]", VIEW_MODE_FCMENU, "Roll", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_MaximumRate[Roll]", VIEW_MODE_FCMENU, "Roll", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.MaximumRate[0]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_MaximumRate[Roll]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_MaximumRate[Roll]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_MaximumRate_Roll, -0.01);
-		draw_button(esContext, "inc_MaximumRate[Roll]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_MaximumRate_Roll, +0.01);
+		draw_text_button(esContext, "default_MaximumRate[Roll]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_MaximumRate[Roll]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_MaximumRate_Roll, -0.01);
+		draw_text_button(esContext, "inc_MaximumRate[Roll]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_MaximumRate_Roll, +0.01);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -423,16 +423,16 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_MaximumRate[Pitch]", VIEW_MODE_FCMENU, "Pitch", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_MaximumRate[Pitch]", VIEW_MODE_FCMENU, "Pitch", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.MaximumRate[1]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_MaximumRate[Pitch]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_MaximumRate[Pitch]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_MaximumRate_Pitch, -0.01);
-		draw_button(esContext, "inc_MaximumRate[Pitch]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_MaximumRate_Pitch, +0.01);
+		draw_text_button(esContext, "default_MaximumRate[Pitch]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_MaximumRate[Pitch]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_MaximumRate_Pitch, -0.01);
+		draw_text_button(esContext, "inc_MaximumRate[Pitch]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_MaximumRate_Pitch, +0.01);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -440,22 +440,22 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_MaximumRate[Yaw]", VIEW_MODE_FCMENU, "Yaw", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_MaximumRate[Yaw]", VIEW_MODE_FCMENU, "Yaw", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.MaximumRate[2]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_MaximumRate[Yaw]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_MaximumRate[Yaw]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_MaximumRate_Yaw, -0.01);
-		draw_button(esContext, "inc_MaximumRate[Yaw]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_MaximumRate_Yaw, +0.01);
+		draw_text_button(esContext, "default_MaximumRate[Yaw]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_MaximumRate[Yaw]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_MaximumRate_Yaw, -0.01);
+		draw_text_button(esContext, "inc_MaximumRate[Yaw]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_MaximumRate_Yaw, +0.01);
 	}
 	n2++;
 	n++;
 	n2 = 0;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_RollRatePID", VIEW_MODE_FCMENU, "RollRatePID", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_RollRatePID", VIEW_MODE_FCMENU, "RollRatePID", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		draw_line_f3(esContext, -1.3, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 1.25, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 255, 255, 0, 128);
 	}
 	n++;
@@ -464,16 +464,16 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_RollRatePID[Kp]", VIEW_MODE_FCMENU, "Kp", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_RollRatePID[Kp]", VIEW_MODE_FCMENU, "Kp", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.RollRatePID[0]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_RollRatePID[Kp]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_RollRatePID[Kp]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollRatePID_Kp, -0.01);
-		draw_button(esContext, "inc_RollRatePID[Kp]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollRatePID_Kp, +0.01);
+		draw_text_button(esContext, "default_RollRatePID[Kp]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_RollRatePID[Kp]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollRatePID_Kp, -0.01);
+		draw_text_button(esContext, "inc_RollRatePID[Kp]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollRatePID_Kp, +0.01);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -481,16 +481,16 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_RollRatePID[Ki]", VIEW_MODE_FCMENU, "Ki", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_RollRatePID[Ki]", VIEW_MODE_FCMENU, "Ki", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.RollRatePID[1]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_RollRatePID[Ki]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_RollRatePID[Ki]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollRatePID_Ki, -0.01);
-		draw_button(esContext, "inc_RollRatePID[Ki]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollRatePID_Ki, +0.01);
+		draw_text_button(esContext, "default_RollRatePID[Ki]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_RollRatePID[Ki]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollRatePID_Ki, -0.01);
+		draw_text_button(esContext, "inc_RollRatePID[Ki]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollRatePID_Ki, +0.01);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -498,16 +498,16 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_RollRatePID[Kd]", VIEW_MODE_FCMENU, "Kd", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_RollRatePID[Kd]", VIEW_MODE_FCMENU, "Kd", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.RollRatePID[2]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_RollRatePID[Kd]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_RollRatePID[Kd]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollRatePID_Kd, -0.01);
-		draw_button(esContext, "inc_RollRatePID[Kd]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollRatePID_Kd, +0.01);
+		draw_text_button(esContext, "default_RollRatePID[Kd]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_RollRatePID[Kd]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollRatePID_Kd, -0.01);
+		draw_text_button(esContext, "inc_RollRatePID[Kd]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollRatePID_Kd, +0.01);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -515,22 +515,22 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_RollRatePID[ILimit]", VIEW_MODE_FCMENU, "ILimit", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_RollRatePID[ILimit]", VIEW_MODE_FCMENU, "ILimit", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.RollRatePID[3]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_RollRatePID[ILimit]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_RollRatePID[ILimit]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollRatePID_ILimit, -0.01);
-		draw_button(esContext, "inc_RollRatePID[ILimit]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollRatePID_ILimit, +0.01);
+		draw_text_button(esContext, "default_RollRatePID[ILimit]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_RollRatePID[ILimit]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollRatePID_ILimit, -0.01);
+		draw_text_button(esContext, "inc_RollRatePID[ILimit]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollRatePID_ILimit, +0.01);
 	}
 	n2++;
 	n++;
 	n2 = 0;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_PitchRatePID", VIEW_MODE_FCMENU, "PitchRatePID", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_PitchRatePID", VIEW_MODE_FCMENU, "PitchRatePID", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		draw_line_f3(esContext, -1.3, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 1.25, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 255, 255, 0, 128);
 	}
 	n++;
@@ -539,16 +539,16 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_PitchRatePID[Kp]", VIEW_MODE_FCMENU, "Kp", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_PitchRatePID[Kp]", VIEW_MODE_FCMENU, "Kp", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.PitchRatePID[0]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_PitchRatePID[Kp]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_PitchRatePID[Kp]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchRatePID_Kp, -0.01);
-		draw_button(esContext, "inc_PitchRatePID[Kp]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchRatePID_Kp, +0.01);
+		draw_text_button(esContext, "default_PitchRatePID[Kp]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_PitchRatePID[Kp]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchRatePID_Kp, -0.01);
+		draw_text_button(esContext, "inc_PitchRatePID[Kp]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchRatePID_Kp, +0.01);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -556,16 +556,16 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_PitchRatePID[Ki]", VIEW_MODE_FCMENU, "Ki", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_PitchRatePID[Ki]", VIEW_MODE_FCMENU, "Ki", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.PitchRatePID[1]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_PitchRatePID[Ki]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_PitchRatePID[Ki]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchRatePID_Ki, -0.01);
-		draw_button(esContext, "inc_PitchRatePID[Ki]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchRatePID_Ki, +0.01);
+		draw_text_button(esContext, "default_PitchRatePID[Ki]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_PitchRatePID[Ki]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchRatePID_Ki, -0.01);
+		draw_text_button(esContext, "inc_PitchRatePID[Ki]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchRatePID_Ki, +0.01);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -573,16 +573,16 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_PitchRatePID[Kd]", VIEW_MODE_FCMENU, "Kd", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_PitchRatePID[Kd]", VIEW_MODE_FCMENU, "Kd", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.PitchRatePID[2]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_PitchRatePID[Kd]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_PitchRatePID[Kd]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchRatePID_Kd, -0.01);
-		draw_button(esContext, "inc_PitchRatePID[Kd]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchRatePID_Kd, +0.01);
+		draw_text_button(esContext, "default_PitchRatePID[Kd]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_PitchRatePID[Kd]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchRatePID_Kd, -0.01);
+		draw_text_button(esContext, "inc_PitchRatePID[Kd]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchRatePID_Kd, +0.01);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -590,22 +590,22 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_PitchRatePID[ILimit]", VIEW_MODE_FCMENU, "ILimit", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_PitchRatePID[ILimit]", VIEW_MODE_FCMENU, "ILimit", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.PitchRatePID[3]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_PitchRatePID[ILimit]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_PitchRatePID[ILimit]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchRatePID_ILimit, -0.01);
-		draw_button(esContext, "inc_PitchRatePID[ILimit]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchRatePID_ILimit, +0.01);
+		draw_text_button(esContext, "default_PitchRatePID[ILimit]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_PitchRatePID[ILimit]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchRatePID_ILimit, -0.01);
+		draw_text_button(esContext, "inc_PitchRatePID[ILimit]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchRatePID_ILimit, +0.01);
 	}
 	n2++;
 	n++;
 	n2 = 0;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_YawRatePID", VIEW_MODE_FCMENU, "YawRatePID", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_YawRatePID", VIEW_MODE_FCMENU, "YawRatePID", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		draw_line_f3(esContext, -1.3, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 1.25, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 255, 255, 0, 128);
 	}
 	n++;
@@ -614,16 +614,16 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_YawRatePID[Kp]", VIEW_MODE_FCMENU, "Kp", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_YawRatePID[Kp]", VIEW_MODE_FCMENU, "Kp", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.YawRatePID[0]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_YawRatePID[Kp]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_YawRatePID[Kp]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawRatePID_Kp, -0.01);
-		draw_button(esContext, "inc_YawRatePID[Kp]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawRatePID_Kp, +0.01);
+		draw_text_button(esContext, "default_YawRatePID[Kp]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_YawRatePID[Kp]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawRatePID_Kp, -0.01);
+		draw_text_button(esContext, "inc_YawRatePID[Kp]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawRatePID_Kp, +0.01);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -631,16 +631,16 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_YawRatePID[Ki]", VIEW_MODE_FCMENU, "Ki", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_YawRatePID[Ki]", VIEW_MODE_FCMENU, "Ki", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.YawRatePID[1]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_YawRatePID[Ki]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_YawRatePID[Ki]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawRatePID_Ki, -0.01);
-		draw_button(esContext, "inc_YawRatePID[Ki]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawRatePID_Ki, +0.01);
+		draw_text_button(esContext, "default_YawRatePID[Ki]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_YawRatePID[Ki]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawRatePID_Ki, -0.01);
+		draw_text_button(esContext, "inc_YawRatePID[Ki]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawRatePID_Ki, +0.01);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -648,16 +648,16 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_YawRatePID[Kd]", VIEW_MODE_FCMENU, "Kd", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_YawRatePID[Kd]", VIEW_MODE_FCMENU, "Kd", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.YawRatePID[2]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_YawRatePID[Kd]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_YawRatePID[Kd]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawRatePID_Kd, -0.01);
-		draw_button(esContext, "inc_YawRatePID[Kd]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawRatePID_Kd, +0.01);
+		draw_text_button(esContext, "default_YawRatePID[Kd]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_YawRatePID[Kd]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawRatePID_Kd, -0.01);
+		draw_text_button(esContext, "inc_YawRatePID[Kd]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawRatePID_Kd, +0.01);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -665,22 +665,22 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_YawRatePID[ILimit]", VIEW_MODE_FCMENU, "ILimit", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_YawRatePID[ILimit]", VIEW_MODE_FCMENU, "ILimit", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.YawRatePID[3]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_YawRatePID[ILimit]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_YawRatePID[ILimit]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawRatePID_ILimit, -0.01);
-		draw_button(esContext, "inc_YawRatePID[ILimit]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawRatePID_ILimit, +0.01);
+		draw_text_button(esContext, "default_YawRatePID[ILimit]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_YawRatePID[ILimit]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawRatePID_ILimit, -0.01);
+		draw_text_button(esContext, "inc_YawRatePID[ILimit]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawRatePID_ILimit, +0.01);
 	}
 	n2++;
 	n++;
 	n2 = 0;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_RollPI", VIEW_MODE_FCMENU, "RollPI", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_RollPI", VIEW_MODE_FCMENU, "RollPI", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		draw_line_f3(esContext, -1.3, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 1.25, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 255, 255, 0, 128);
 	}
 	n++;
@@ -689,16 +689,16 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_RollPI[Kp]", VIEW_MODE_FCMENU, "Kp", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_RollPI[Kp]", VIEW_MODE_FCMENU, "Kp", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.RollPI[0]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_RollPI[Kp]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_RollPI[Kp]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollPI_Kp, -0.01);
-		draw_button(esContext, "inc_RollPI[Kp]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollPI_Kp, +0.01);
+		draw_text_button(esContext, "default_RollPI[Kp]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_RollPI[Kp]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollPI_Kp, -0.01);
+		draw_text_button(esContext, "inc_RollPI[Kp]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollPI_Kp, +0.01);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -706,16 +706,16 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_RollPI[Ki]", VIEW_MODE_FCMENU, "Ki", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_RollPI[Ki]", VIEW_MODE_FCMENU, "Ki", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.RollPI[1]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_RollPI[Ki]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_RollPI[Ki]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollPI_Ki, -0.01);
-		draw_button(esContext, "inc_RollPI[Ki]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollPI_Ki, +0.01);
+		draw_text_button(esContext, "default_RollPI[Ki]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_RollPI[Ki]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollPI_Ki, -0.01);
+		draw_text_button(esContext, "inc_RollPI[Ki]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollPI_Ki, +0.01);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -723,22 +723,22 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_RollPI[ILimit]", VIEW_MODE_FCMENU, "ILimit", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_RollPI[ILimit]", VIEW_MODE_FCMENU, "ILimit", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.RollPI[2]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_RollPI[ILimit]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_RollPI[ILimit]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollPI_ILimit, -0.01);
-		draw_button(esContext, "inc_RollPI[ILimit]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollPI_ILimit, +0.01);
+		draw_text_button(esContext, "default_RollPI[ILimit]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_RollPI[ILimit]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollPI_ILimit, -0.01);
+		draw_text_button(esContext, "inc_RollPI[ILimit]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollPI_ILimit, +0.01);
 	}
 	n2++;
 	n++;
 	n2 = 0;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_PitchPI", VIEW_MODE_FCMENU, "PitchPI", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_PitchPI", VIEW_MODE_FCMENU, "PitchPI", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		draw_line_f3(esContext, -1.3, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 1.25, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 255, 255, 0, 128);
 	}
 	n++;
@@ -747,16 +747,16 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_PitchPI[Kp]", VIEW_MODE_FCMENU, "Kp", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_PitchPI[Kp]", VIEW_MODE_FCMENU, "Kp", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.PitchPI[0]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_PitchPI[Kp]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_PitchPI[Kp]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchPI_Kp, -0.01);
-		draw_button(esContext, "inc_PitchPI[Kp]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchPI_Kp, +0.01);
+		draw_text_button(esContext, "default_PitchPI[Kp]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_PitchPI[Kp]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchPI_Kp, -0.01);
+		draw_text_button(esContext, "inc_PitchPI[Kp]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchPI_Kp, +0.01);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -764,16 +764,16 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_PitchPI[Ki]", VIEW_MODE_FCMENU, "Ki", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_PitchPI[Ki]", VIEW_MODE_FCMENU, "Ki", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.PitchPI[1]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_PitchPI[Ki]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_PitchPI[Ki]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchPI_Ki, -0.01);
-		draw_button(esContext, "inc_PitchPI[Ki]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchPI_Ki, +0.01);
+		draw_text_button(esContext, "default_PitchPI[Ki]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_PitchPI[Ki]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchPI_Ki, -0.01);
+		draw_text_button(esContext, "inc_PitchPI[Ki]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchPI_Ki, +0.01);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -781,22 +781,22 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_PitchPI[ILimit]", VIEW_MODE_FCMENU, "ILimit", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_PitchPI[ILimit]", VIEW_MODE_FCMENU, "ILimit", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.PitchPI[2]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_PitchPI[ILimit]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_PitchPI[ILimit]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchPI_ILimit, -0.01);
-		draw_button(esContext, "inc_PitchPI[ILimit]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchPI_ILimit, +0.01);
+		draw_text_button(esContext, "default_PitchPI[ILimit]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_PitchPI[ILimit]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchPI_ILimit, -0.01);
+		draw_text_button(esContext, "inc_PitchPI[ILimit]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchPI_ILimit, +0.01);
 	}
 	n2++;
 	n++;
 	n2 = 0;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_YawPI", VIEW_MODE_FCMENU, "YawPI", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_YawPI", VIEW_MODE_FCMENU, "YawPI", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		draw_line_f3(esContext, -1.3, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 1.25, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 255, 255, 0, 128);
 	}
 	n++;
@@ -805,16 +805,16 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_YawPI[Kp]", VIEW_MODE_FCMENU, "Kp", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_YawPI[Kp]", VIEW_MODE_FCMENU, "Kp", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.YawPI[0]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_YawPI[Kp]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_YawPI[Kp]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawPI_Kp, -0.01);
-		draw_button(esContext, "inc_YawPI[Kp]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawPI_Kp, +0.01);
+		draw_text_button(esContext, "default_YawPI[Kp]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_YawPI[Kp]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawPI_Kp, -0.01);
+		draw_text_button(esContext, "inc_YawPI[Kp]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawPI_Kp, +0.01);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -822,16 +822,16 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_YawPI[Ki]", VIEW_MODE_FCMENU, "Ki", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_YawPI[Ki]", VIEW_MODE_FCMENU, "Ki", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.YawPI[1]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_YawPI[Ki]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_YawPI[Ki]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawPI_Ki, -0.01);
-		draw_button(esContext, "inc_YawPI[Ki]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawPI_Ki, +0.01);
+		draw_text_button(esContext, "default_YawPI[Ki]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_YawPI[Ki]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawPI_Ki, -0.01);
+		draw_text_button(esContext, "inc_YawPI[Ki]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawPI_Ki, +0.01);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -839,22 +839,22 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_YawPI[ILimit]", VIEW_MODE_FCMENU, "ILimit", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_YawPI[ILimit]", VIEW_MODE_FCMENU, "ILimit", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.YawPI[2]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_YawPI[ILimit]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_YawPI[ILimit]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawPI_ILimit, -0.01);
-		draw_button(esContext, "inc_YawPI[ILimit]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawPI_ILimit, +0.01);
+		draw_text_button(esContext, "default_YawPI[ILimit]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_YawPI[ILimit]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawPI_ILimit, -0.01);
+		draw_text_button(esContext, "inc_YawPI[ILimit]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawPI_ILimit, +0.01);
 	}
 	n2++;
 	n++;
 	n2 = 0;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_VbarSensitivity", VIEW_MODE_FCMENU, "VbarSensitivity", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_VbarSensitivity", VIEW_MODE_FCMENU, "VbarSensitivity", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		draw_line_f3(esContext, -1.3, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 1.25, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 255, 255, 0, 128);
 	}
 	n++;
@@ -863,16 +863,16 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_VbarSensitivity[Roll]", VIEW_MODE_FCMENU, "Roll", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_VbarSensitivity[Roll]", VIEW_MODE_FCMENU, "Roll", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.VbarSensitivity[0]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_VbarSensitivity[Roll]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_VbarSensitivity[Roll]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarSensitivity_Roll, -0.01);
-		draw_button(esContext, "inc_VbarSensitivity[Roll]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarSensitivity_Roll, +0.01);
+		draw_text_button(esContext, "default_VbarSensitivity[Roll]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_VbarSensitivity[Roll]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarSensitivity_Roll, -0.01);
+		draw_text_button(esContext, "inc_VbarSensitivity[Roll]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarSensitivity_Roll, +0.01);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -880,16 +880,16 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_VbarSensitivity[Pitch]", VIEW_MODE_FCMENU, "Pitch", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_VbarSensitivity[Pitch]", VIEW_MODE_FCMENU, "Pitch", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.VbarSensitivity[1]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_VbarSensitivity[Pitch]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_VbarSensitivity[Pitch]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarSensitivity_Pitch, -0.01);
-		draw_button(esContext, "inc_VbarSensitivity[Pitch]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarSensitivity_Pitch, +0.01);
+		draw_text_button(esContext, "default_VbarSensitivity[Pitch]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_VbarSensitivity[Pitch]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarSensitivity_Pitch, -0.01);
+		draw_text_button(esContext, "inc_VbarSensitivity[Pitch]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarSensitivity_Pitch, +0.01);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -897,22 +897,22 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_VbarSensitivity[Yaw]", VIEW_MODE_FCMENU, "Yaw", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_VbarSensitivity[Yaw]", VIEW_MODE_FCMENU, "Yaw", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.VbarSensitivity[2]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_VbarSensitivity[Yaw]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_VbarSensitivity[Yaw]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarSensitivity_Yaw, -0.01);
-		draw_button(esContext, "inc_VbarSensitivity[Yaw]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarSensitivity_Yaw, +0.01);
+		draw_text_button(esContext, "default_VbarSensitivity[Yaw]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_VbarSensitivity[Yaw]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarSensitivity_Yaw, -0.01);
+		draw_text_button(esContext, "inc_VbarSensitivity[Yaw]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarSensitivity_Yaw, +0.01);
 	}
 	n2++;
 	n++;
 	n2 = 0;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_VbarRollPI", VIEW_MODE_FCMENU, "VbarRollPI", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_VbarRollPI", VIEW_MODE_FCMENU, "VbarRollPI", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		draw_line_f3(esContext, -1.3, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 1.25, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 255, 255, 0, 128);
 	}
 	n++;
@@ -921,16 +921,16 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_VbarRollPI[Kp]", VIEW_MODE_FCMENU, "Kp", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_VbarRollPI[Kp]", VIEW_MODE_FCMENU, "Kp", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.VbarRollPI[0]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_VbarRollPI[Kp]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_VbarRollPI[Kp]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarRollPI_Kp, -0.01);
-		draw_button(esContext, "inc_VbarRollPI[Kp]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarRollPI_Kp, +0.01);
+		draw_text_button(esContext, "default_VbarRollPI[Kp]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_VbarRollPI[Kp]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarRollPI_Kp, -0.01);
+		draw_text_button(esContext, "inc_VbarRollPI[Kp]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarRollPI_Kp, +0.01);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -938,22 +938,22 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_VbarRollPI[Ki]", VIEW_MODE_FCMENU, "Ki", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_VbarRollPI[Ki]", VIEW_MODE_FCMENU, "Ki", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.VbarRollPI[1]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_VbarRollPI[Ki]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_VbarRollPI[Ki]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarRollPI_Ki, -0.01);
-		draw_button(esContext, "inc_VbarRollPI[Ki]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarRollPI_Ki, +0.01);
+		draw_text_button(esContext, "default_VbarRollPI[Ki]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_VbarRollPI[Ki]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarRollPI_Ki, -0.01);
+		draw_text_button(esContext, "inc_VbarRollPI[Ki]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarRollPI_Ki, +0.01);
 	}
 	n2++;
 	n++;
 	n2 = 0;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_VbarPitchPI", VIEW_MODE_FCMENU, "VbarPitchPI", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_VbarPitchPI", VIEW_MODE_FCMENU, "VbarPitchPI", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		draw_line_f3(esContext, -1.3, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 1.25, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 255, 255, 0, 128);
 	}
 	n++;
@@ -962,16 +962,16 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_VbarPitchPI[Kp]", VIEW_MODE_FCMENU, "Kp", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_VbarPitchPI[Kp]", VIEW_MODE_FCMENU, "Kp", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.VbarPitchPI[0]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_VbarPitchPI[Kp]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_VbarPitchPI[Kp]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarPitchPI_Kp, -0.01);
-		draw_button(esContext, "inc_VbarPitchPI[Kp]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarPitchPI_Kp, +0.01);
+		draw_text_button(esContext, "default_VbarPitchPI[Kp]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_VbarPitchPI[Kp]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarPitchPI_Kp, -0.01);
+		draw_text_button(esContext, "inc_VbarPitchPI[Kp]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarPitchPI_Kp, +0.01);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -979,22 +979,22 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_VbarPitchPI[Ki]", VIEW_MODE_FCMENU, "Ki", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_VbarPitchPI[Ki]", VIEW_MODE_FCMENU, "Ki", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.VbarPitchPI[1]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_VbarPitchPI[Ki]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_VbarPitchPI[Ki]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarPitchPI_Ki, -0.01);
-		draw_button(esContext, "inc_VbarPitchPI[Ki]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarPitchPI_Ki, +0.01);
+		draw_text_button(esContext, "default_VbarPitchPI[Ki]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_VbarPitchPI[Ki]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarPitchPI_Ki, -0.01);
+		draw_text_button(esContext, "inc_VbarPitchPI[Ki]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarPitchPI_Ki, +0.01);
 	}
 	n2++;
 	n++;
 	n2 = 0;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_VbarYawPI", VIEW_MODE_FCMENU, "VbarYawPI", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_VbarYawPI", VIEW_MODE_FCMENU, "VbarYawPI", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		draw_line_f3(esContext, -1.3, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 1.25, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 255, 255, 0, 128);
 	}
 	n++;
@@ -1003,16 +1003,16 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_VbarYawPI[Kp]", VIEW_MODE_FCMENU, "Kp", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_VbarYawPI[Kp]", VIEW_MODE_FCMENU, "Kp", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.VbarYawPI[0]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_VbarYawPI[Kp]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_VbarYawPI[Kp]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarYawPI_Kp, -0.01);
-		draw_button(esContext, "inc_VbarYawPI[Kp]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarYawPI_Kp, +0.01);
+		draw_text_button(esContext, "default_VbarYawPI[Kp]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_VbarYawPI[Kp]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarYawPI_Kp, -0.01);
+		draw_text_button(esContext, "inc_VbarYawPI[Kp]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarYawPI_Kp, +0.01);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -1020,146 +1020,146 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_VbarYawPI[Ki]", VIEW_MODE_FCMENU, "Ki", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_VbarYawPI[Ki]", VIEW_MODE_FCMENU, "Ki", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.VbarYawPI[1]);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "default_VbarYawPI[Ki]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_VbarYawPI[Ki]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarYawPI_Ki, -0.01);
-		draw_button(esContext, "inc_VbarYawPI[Ki]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarYawPI_Ki, +0.01);
+		draw_text_button(esContext, "default_VbarYawPI[Ki]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_VbarYawPI[Ki]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarYawPI_Ki, -0.01);
+		draw_text_button(esContext, "inc_VbarYawPI[Ki]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarYawPI_Ki, +0.01);
 	}
 	n2++;
 	n++;
 	n2 = 0;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_VbarTau", VIEW_MODE_FCMENU, "VbarTau", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_VbarTau", VIEW_MODE_FCMENU, "VbarTau", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.VbarTau);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "val_VbarTau", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_VbarTau", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarTau, -0.01);
-		draw_button(esContext, "inc_VbarTau", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarTau, +0.01);
+		draw_text_button(esContext, "val_VbarTau", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_VbarTau", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarTau, -0.01);
+		draw_text_button(esContext, "inc_VbarTau", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarTau, +0.01);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_GyroTau", VIEW_MODE_FCMENU, "GyroTau", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_GyroTau", VIEW_MODE_FCMENU, "GyroTau", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.GyroTau);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "val_GyroTau", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_GyroTau", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_GyroTau, -0.01);
-		draw_button(esContext, "inc_GyroTau", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_GyroTau, +0.01);
+		draw_text_button(esContext, "val_GyroTau", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_GyroTau", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_GyroTau, -0.01);
+		draw_text_button(esContext, "inc_GyroTau", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_GyroTau, +0.01);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_DerivativeGamma", VIEW_MODE_FCMENU, "DerivativeGamma", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_DerivativeGamma", VIEW_MODE_FCMENU, "DerivativeGamma", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.DerivativeGamma);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "val_DerivativeGamma", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_DerivativeGamma", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_DerivativeGamma, -0.01);
-		draw_button(esContext, "inc_DerivativeGamma", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_DerivativeGamma, +0.01);
+		draw_text_button(esContext, "val_DerivativeGamma", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_DerivativeGamma", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_DerivativeGamma, -0.01);
+		draw_text_button(esContext, "inc_DerivativeGamma", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_DerivativeGamma, +0.01);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_WeakLevelingKp", VIEW_MODE_FCMENU, "WeakLevelingKp", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_WeakLevelingKp", VIEW_MODE_FCMENU, "WeakLevelingKp", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%0.6f", OpenpilotStabilizationSettings.WeakLevelingKp);
 		for (i = 0; i < 5; i++) {
 			if (tmp_str[strlen(tmp_str) - 1] == '0') {
 				tmp_str[strlen(tmp_str) - 1] = 0;
 			}
 		}
-		draw_button(esContext, "val_WeakLevelingKp", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_WeakLevelingKp", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_WeakLevelingKp, -0.01);
-		draw_button(esContext, "inc_WeakLevelingKp", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_WeakLevelingKp, +0.01);
+		draw_text_button(esContext, "val_WeakLevelingKp", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_WeakLevelingKp", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_WeakLevelingKp, -0.01);
+		draw_text_button(esContext, "inc_WeakLevelingKp", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_WeakLevelingKp, +0.01);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_RollMax", VIEW_MODE_FCMENU, "RollMax", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_RollMax", VIEW_MODE_FCMENU, "RollMax", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotStabilizationSettings.RollMax);
-		draw_button(esContext, "val_RollMax", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_RollMax", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollMax, -1);
-		draw_button(esContext, "inc_RollMax", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollMax, +1);
+		draw_text_button(esContext, "val_RollMax", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_RollMax", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollMax, -1);
+		draw_text_button(esContext, "inc_RollMax", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_RollMax, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_PitchMax", VIEW_MODE_FCMENU, "PitchMax", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_PitchMax", VIEW_MODE_FCMENU, "PitchMax", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotStabilizationSettings.PitchMax);
-		draw_button(esContext, "val_PitchMax", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_PitchMax", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchMax, -1);
-		draw_button(esContext, "inc_PitchMax", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchMax, +1);
+		draw_text_button(esContext, "val_PitchMax", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_PitchMax", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchMax, -1);
+		draw_text_button(esContext, "inc_PitchMax", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_PitchMax, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_YawMax", VIEW_MODE_FCMENU, "YawMax", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_YawMax", VIEW_MODE_FCMENU, "YawMax", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotStabilizationSettings.YawMax);
-		draw_button(esContext, "val_YawMax", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_YawMax", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawMax, -1);
-		draw_button(esContext, "inc_YawMax", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawMax, +1);
+		draw_text_button(esContext, "val_YawMax", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_YawMax", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawMax, -1);
+		draw_text_button(esContext, "inc_YawMax", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_YawMax, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_VbarGyroSuppress", VIEW_MODE_FCMENU, "VbarGyroSuppress", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_VbarGyroSuppress", VIEW_MODE_FCMENU, "VbarGyroSuppress", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotStabilizationSettings.VbarGyroSuppress);
-		draw_button(esContext, "val_VbarGyroSuppress", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_VbarGyroSuppress", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarGyroSuppress, -1);
-		draw_button(esContext, "inc_VbarGyroSuppress", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarGyroSuppress, +1);
+		draw_text_button(esContext, "val_VbarGyroSuppress", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_VbarGyroSuppress", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarGyroSuppress, -1);
+		draw_text_button(esContext, "inc_VbarGyroSuppress", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarGyroSuppress, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_VbarMaxAngle", VIEW_MODE_FCMENU, "VbarMaxAngle", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_VbarMaxAngle", VIEW_MODE_FCMENU, "VbarMaxAngle", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotStabilizationSettings.VbarMaxAngle);
-		draw_button(esContext, "val_VbarMaxAngle", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_VbarMaxAngle", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarMaxAngle, -1);
-		draw_button(esContext, "inc_VbarMaxAngle", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarMaxAngle, +1);
+		draw_text_button(esContext, "val_VbarMaxAngle", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_VbarMaxAngle", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarMaxAngle, -1);
+		draw_text_button(esContext, "inc_VbarMaxAngle", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarMaxAngle, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_DerivativeCutoff", VIEW_MODE_FCMENU, "DerivativeCutoff", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_DerivativeCutoff", VIEW_MODE_FCMENU, "DerivativeCutoff", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotStabilizationSettings.DerivativeCutoff);
-		draw_button(esContext, "val_DerivativeCutoff", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_DerivativeCutoff", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_DerivativeCutoff, -1);
-		draw_button(esContext, "inc_DerivativeCutoff", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_DerivativeCutoff, +1);
+		draw_text_button(esContext, "val_DerivativeCutoff", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_DerivativeCutoff", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_DerivativeCutoff, -1);
+		draw_text_button(esContext, "inc_DerivativeCutoff", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_DerivativeCutoff, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_MaxAxisLock", VIEW_MODE_FCMENU, "MaxAxisLock", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_MaxAxisLock", VIEW_MODE_FCMENU, "MaxAxisLock", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotStabilizationSettings.MaxAxisLock);
-		draw_button(esContext, "val_MaxAxisLock", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_MaxAxisLock", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_MaxAxisLock, -1);
-		draw_button(esContext, "inc_MaxAxisLock", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_MaxAxisLock, +1);
+		draw_text_button(esContext, "val_MaxAxisLock", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_MaxAxisLock", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_MaxAxisLock, -1);
+		draw_text_button(esContext, "inc_MaxAxisLock", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_MaxAxisLock, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_MaxAxisLockRate", VIEW_MODE_FCMENU, "MaxAxisLockRate", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_MaxAxisLockRate", VIEW_MODE_FCMENU, "MaxAxisLockRate", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotStabilizationSettings.MaxAxisLockRate);
-		draw_button(esContext, "val_MaxAxisLockRate", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_MaxAxisLockRate", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_MaxAxisLockRate, -1);
-		draw_button(esContext, "inc_MaxAxisLockRate", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_MaxAxisLockRate, +1);
+		draw_text_button(esContext, "val_MaxAxisLockRate", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_MaxAxisLockRate", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_MaxAxisLockRate, -1);
+		draw_text_button(esContext, "inc_MaxAxisLockRate", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_MaxAxisLockRate, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_MaxWeakLevelingRate", VIEW_MODE_FCMENU, "MaxWeakLevelingRate", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_MaxWeakLevelingRate", VIEW_MODE_FCMENU, "MaxWeakLevelingRate", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotStabilizationSettings.MaxWeakLevelingRate);
-		draw_button(esContext, "val_MaxWeakLevelingRate", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_MaxWeakLevelingRate", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_MaxWeakLevelingRate, -1);
-		draw_button(esContext, "inc_MaxWeakLevelingRate", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_MaxWeakLevelingRate, +1);
+		draw_text_button(esContext, "val_MaxWeakLevelingRate", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_MaxWeakLevelingRate", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_MaxWeakLevelingRate, -1);
+		draw_text_button(esContext, "inc_MaxWeakLevelingRate", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_MaxWeakLevelingRate, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_VbarPiroComp", VIEW_MODE_FCMENU, "VbarPiroComp", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_VbarPiroComp", VIEW_MODE_FCMENU, "VbarPiroComp", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotStabilizationSettings.VbarPiroComp);
 		if (OpenpilotStabilizationSettings.VbarPiroComp == 0) {
 			sprintf(tmp_str, "FALSE");
@@ -1167,13 +1167,13 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		if (OpenpilotStabilizationSettings.VbarPiroComp == 1) {
 			sprintf(tmp_str, "TRUE");
 		}
-		draw_button(esContext, "val_VbarPiroComp", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_VbarPiroComp", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarPiroComp, -1);
-		draw_button(esContext, "inc_VbarPiroComp", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarPiroComp, +1);
+		draw_text_button(esContext, "val_VbarPiroComp", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_VbarPiroComp", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarPiroComp, -1);
+		draw_text_button(esContext, "inc_VbarPiroComp", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_VbarPiroComp, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_LowThrottleZeroIntegral", VIEW_MODE_FCMENU, "LowThrottleZeroIntegral", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_LowThrottleZeroIntegral", VIEW_MODE_FCMENU, "LowThrottleZeroIntegral", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotStabilizationSettings.LowThrottleZeroIntegral);
 		if (OpenpilotStabilizationSettings.LowThrottleZeroIntegral == 0) {
 			sprintf(tmp_str, "FALSE");
@@ -1181,9 +1181,9 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		if (OpenpilotStabilizationSettings.LowThrottleZeroIntegral == 1) {
 			sprintf(tmp_str, "TRUE");
 		}
-		draw_button(esContext, "val_LowThrottleZeroIntegral", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_LowThrottleZeroIntegral", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_LowThrottleZeroIntegral, -1);
-		draw_button(esContext, "inc_LowThrottleZeroIntegral", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_LowThrottleZeroIntegral, +1);
+		draw_text_button(esContext, "val_LowThrottleZeroIntegral", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_LowThrottleZeroIntegral", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_LowThrottleZeroIntegral, -1);
+		draw_text_button(esContext, "inc_LowThrottleZeroIntegral", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotStabilizationSettings_LowThrottleZeroIntegral, +1);
 	}
 	n++;
 
@@ -1213,17 +1213,17 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 		draw_rect_f3(esContext, 1.3 - 0.01, 0.67 - (1.34 - 0.02) * (float)(n + page - 13) / (float)(n - 13) - 0.02, 0.002, 1.35 + 0.01, 0.67 - (1.34 - 0.02) * (float)(n + page - 13) / (float)(n - 13), 0.002, 100, 100, 100, 128);
 	}
 	if (openpilot_get == 1) {
-		draw_button(esContext, "get", VIEW_MODE_FCMENU, "[GET]", FONT_GREEN, -0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_setup_get, 0.0);
+		draw_text_button(esContext, "get", VIEW_MODE_FCMENU, "[GET]", FONT_GREEN, -0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_setup_get, 0.0);
 	} else {
-		draw_button(esContext, "get", VIEW_MODE_FCMENU, "[GET]", FONT_WHITE, -0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_setup_get, 0.0);
+		draw_text_button(esContext, "get", VIEW_MODE_FCMENU, "[GET]", FONT_WHITE, -0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_setup_get, 0.0);
 	}
 	if (openpilot_set == 1) {
-		draw_button(esContext, "set", VIEW_MODE_FCMENU, "[SET]", FONT_GREEN, 0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_setup_set, 0.0);
+		draw_text_button(esContext, "set", VIEW_MODE_FCMENU, "[SET]", FONT_GREEN, 0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_setup_set, 0.0);
 	} else {
-		draw_button(esContext, "set", VIEW_MODE_FCMENU, "[SET]", FONT_WHITE, 0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_setup_set, 0.0);
+		draw_text_button(esContext, "set", VIEW_MODE_FCMENU, "[SET]", FONT_WHITE, 0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_setup_set, 0.0);
 	}
-	draw_button(esContext, "defaults", VIEW_MODE_FCMENU, "[DEFAULTS]", FONT_WHITE, -0.3, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_defaults, 0.0);
-	draw_button(esContext, "flash", VIEW_MODE_FCMENU, "[FLASH]", FONT_WHITE, 0.3, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_flash, 0.0);
+	draw_text_button(esContext, "defaults", VIEW_MODE_FCMENU, "[DEFAULTS]", FONT_WHITE, -0.3, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_defaults, 0.0);
+	draw_text_button(esContext, "flash", VIEW_MODE_FCMENU, "[FLASH]", FONT_WHITE, 0.3, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_flash, 0.0);
 }
 
 
@@ -1472,15 +1472,15 @@ void openpilot_HwSettings (ESContext *esContext) {
 	draw_title(esContext, "Hardware-Settings");
 
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_DSMxBind", VIEW_MODE_FCMENU, "DSMxBind", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_DSMxBind", VIEW_MODE_FCMENU, "DSMxBind", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotHwSettings.DSMxBind);
-		draw_button(esContext, "val_DSMxBind", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_DSMxBind", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_DSMxBind, -1);
-		draw_button(esContext, "inc_DSMxBind", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_DSMxBind, +1);
+		draw_text_button(esContext, "val_DSMxBind", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_DSMxBind", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_DSMxBind, -1);
+		draw_text_button(esContext, "inc_DSMxBind", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_DSMxBind, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_CC_RcvrPort", VIEW_MODE_FCMENU, "CC_RcvrPort", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_CC_RcvrPort", VIEW_MODE_FCMENU, "CC_RcvrPort", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotHwSettings.CC_RcvrPort);
 		if (OpenpilotHwSettings.CC_RcvrPort == 0) {
 			sprintf(tmp_str, "Disabled");
@@ -1500,13 +1500,13 @@ void openpilot_HwSettings (ESContext *esContext) {
 		if (OpenpilotHwSettings.CC_RcvrPort == 5) {
 			sprintf(tmp_str, "Outputs");
 		}
-		draw_button(esContext, "val_CC_RcvrPort", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_CC_RcvrPort", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_CC_RcvrPort, -1);
-		draw_button(esContext, "inc_CC_RcvrPort", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_CC_RcvrPort, +1);
+		draw_text_button(esContext, "val_CC_RcvrPort", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_CC_RcvrPort", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_CC_RcvrPort, -1);
+		draw_text_button(esContext, "inc_CC_RcvrPort", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_CC_RcvrPort, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_CC_MainPort", VIEW_MODE_FCMENU, "CC_MainPort", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_CC_MainPort", VIEW_MODE_FCMENU, "CC_MainPort", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotHwSettings.CC_MainPort);
 		if (OpenpilotHwSettings.CC_MainPort == 0) {
 			sprintf(tmp_str, "Disabled");
@@ -1541,13 +1541,13 @@ void openpilot_HwSettings (ESContext *esContext) {
 		if (OpenpilotHwSettings.CC_MainPort == 10) {
 			sprintf(tmp_str, "ComBridge");
 		}
-		draw_button(esContext, "val_CC_MainPort", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_CC_MainPort", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_CC_MainPort, -1);
-		draw_button(esContext, "inc_CC_MainPort", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_CC_MainPort, +1);
+		draw_text_button(esContext, "val_CC_MainPort", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_CC_MainPort", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_CC_MainPort, -1);
+		draw_text_button(esContext, "inc_CC_MainPort", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_CC_MainPort, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_CC_FlexiPort", VIEW_MODE_FCMENU, "CC_FlexiPort", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_CC_FlexiPort", VIEW_MODE_FCMENU, "CC_FlexiPort", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotHwSettings.CC_FlexiPort);
 		if (OpenpilotHwSettings.CC_FlexiPort == 0) {
 			sprintf(tmp_str, "Disabled");
@@ -1582,13 +1582,13 @@ void openpilot_HwSettings (ESContext *esContext) {
 		if (OpenpilotHwSettings.CC_FlexiPort == 10) {
 			sprintf(tmp_str, "ComBridge");
 		}
-		draw_button(esContext, "val_CC_FlexiPort", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_CC_FlexiPort", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_CC_FlexiPort, -1);
-		draw_button(esContext, "inc_CC_FlexiPort", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_CC_FlexiPort, +1);
+		draw_text_button(esContext, "val_CC_FlexiPort", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_CC_FlexiPort", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_CC_FlexiPort, -1);
+		draw_text_button(esContext, "inc_CC_FlexiPort", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_CC_FlexiPort, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_RV_RcvrPort", VIEW_MODE_FCMENU, "RV_RcvrPort", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_RV_RcvrPort", VIEW_MODE_FCMENU, "RV_RcvrPort", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotHwSettings.RV_RcvrPort);
 		if (OpenpilotHwSettings.RV_RcvrPort == 0) {
 			sprintf(tmp_str, "Disabled");
@@ -1605,13 +1605,13 @@ void openpilot_HwSettings (ESContext *esContext) {
 		if (OpenpilotHwSettings.RV_RcvrPort == 4) {
 			sprintf(tmp_str, "Outputs");
 		}
-		draw_button(esContext, "val_RV_RcvrPort", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_RV_RcvrPort", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_RV_RcvrPort, -1);
-		draw_button(esContext, "inc_RV_RcvrPort", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_RV_RcvrPort, +1);
+		draw_text_button(esContext, "val_RV_RcvrPort", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_RV_RcvrPort", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_RV_RcvrPort, -1);
+		draw_text_button(esContext, "inc_RV_RcvrPort", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_RV_RcvrPort, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_RV_AuxPort", VIEW_MODE_FCMENU, "RV_AuxPort", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_RV_AuxPort", VIEW_MODE_FCMENU, "RV_AuxPort", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotHwSettings.RV_AuxPort);
 		if (OpenpilotHwSettings.RV_AuxPort == 0) {
 			sprintf(tmp_str, "Disabled");
@@ -1640,13 +1640,13 @@ void openpilot_HwSettings (ESContext *esContext) {
 		if (OpenpilotHwSettings.RV_AuxPort == 8) {
 			sprintf(tmp_str, "ComBridge");
 		}
-		draw_button(esContext, "val_RV_AuxPort", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_RV_AuxPort", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_RV_AuxPort, -1);
-		draw_button(esContext, "inc_RV_AuxPort", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_RV_AuxPort, +1);
+		draw_text_button(esContext, "val_RV_AuxPort", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_RV_AuxPort", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_RV_AuxPort, -1);
+		draw_text_button(esContext, "inc_RV_AuxPort", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_RV_AuxPort, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_RV_AuxSBusPort", VIEW_MODE_FCMENU, "RV_AuxSBusPort", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_RV_AuxSBusPort", VIEW_MODE_FCMENU, "RV_AuxSBusPort", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotHwSettings.RV_AuxSBusPort);
 		if (OpenpilotHwSettings.RV_AuxSBusPort == 0) {
 			sprintf(tmp_str, "Disabled");
@@ -1675,13 +1675,13 @@ void openpilot_HwSettings (ESContext *esContext) {
 		if (OpenpilotHwSettings.RV_AuxSBusPort == 8) {
 			sprintf(tmp_str, "ComBridge");
 		}
-		draw_button(esContext, "val_RV_AuxSBusPort", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_RV_AuxSBusPort", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_RV_AuxSBusPort, -1);
-		draw_button(esContext, "inc_RV_AuxSBusPort", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_RV_AuxSBusPort, +1);
+		draw_text_button(esContext, "val_RV_AuxSBusPort", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_RV_AuxSBusPort", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_RV_AuxSBusPort, -1);
+		draw_text_button(esContext, "inc_RV_AuxSBusPort", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_RV_AuxSBusPort, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_RV_FlexiPort", VIEW_MODE_FCMENU, "RV_FlexiPort", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_RV_FlexiPort", VIEW_MODE_FCMENU, "RV_FlexiPort", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotHwSettings.RV_FlexiPort);
 		if (OpenpilotHwSettings.RV_FlexiPort == 0) {
 			sprintf(tmp_str, "Disabled");
@@ -1710,13 +1710,13 @@ void openpilot_HwSettings (ESContext *esContext) {
 		if (OpenpilotHwSettings.RV_FlexiPort == 8) {
 			sprintf(tmp_str, "ComBridge");
 		}
-		draw_button(esContext, "val_RV_FlexiPort", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_RV_FlexiPort", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_RV_FlexiPort, -1);
-		draw_button(esContext, "inc_RV_FlexiPort", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_RV_FlexiPort, +1);
+		draw_text_button(esContext, "val_RV_FlexiPort", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_RV_FlexiPort", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_RV_FlexiPort, -1);
+		draw_text_button(esContext, "inc_RV_FlexiPort", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_RV_FlexiPort, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_RV_TelemetryPort", VIEW_MODE_FCMENU, "RV_TelemetryPort", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_RV_TelemetryPort", VIEW_MODE_FCMENU, "RV_TelemetryPort", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotHwSettings.RV_TelemetryPort);
 		if (OpenpilotHwSettings.RV_TelemetryPort == 0) {
 			sprintf(tmp_str, "Disabled");
@@ -1730,13 +1730,13 @@ void openpilot_HwSettings (ESContext *esContext) {
 		if (OpenpilotHwSettings.RV_TelemetryPort == 3) {
 			sprintf(tmp_str, "ComBridge");
 		}
-		draw_button(esContext, "val_RV_TelemetryPort", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_RV_TelemetryPort", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_RV_TelemetryPort, -1);
-		draw_button(esContext, "inc_RV_TelemetryPort", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_RV_TelemetryPort, +1);
+		draw_text_button(esContext, "val_RV_TelemetryPort", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_RV_TelemetryPort", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_RV_TelemetryPort, -1);
+		draw_text_button(esContext, "inc_RV_TelemetryPort", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_RV_TelemetryPort, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_RV_GPSPort", VIEW_MODE_FCMENU, "RV_GPSPort", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_RV_GPSPort", VIEW_MODE_FCMENU, "RV_GPSPort", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotHwSettings.RV_GPSPort);
 		if (OpenpilotHwSettings.RV_GPSPort == 0) {
 			sprintf(tmp_str, "Disabled");
@@ -1753,13 +1753,13 @@ void openpilot_HwSettings (ESContext *esContext) {
 		if (OpenpilotHwSettings.RV_GPSPort == 4) {
 			sprintf(tmp_str, "ComBridge");
 		}
-		draw_button(esContext, "val_RV_GPSPort", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_RV_GPSPort", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_RV_GPSPort, -1);
-		draw_button(esContext, "inc_RV_GPSPort", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_RV_GPSPort, +1);
+		draw_text_button(esContext, "val_RV_GPSPort", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_RV_GPSPort", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_RV_GPSPort, -1);
+		draw_text_button(esContext, "inc_RV_GPSPort", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_RV_GPSPort, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_TelemetrySpeed", VIEW_MODE_FCMENU, "TelemetrySpeed", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_TelemetrySpeed", VIEW_MODE_FCMENU, "TelemetrySpeed", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotHwSettings.TelemetrySpeed);
 		if (OpenpilotHwSettings.TelemetrySpeed == 0) {
 			sprintf(tmp_str, "2400");
@@ -1782,13 +1782,13 @@ void openpilot_HwSettings (ESContext *esContext) {
 		if (OpenpilotHwSettings.TelemetrySpeed == 6) {
 			sprintf(tmp_str, "115200");
 		}
-		draw_button(esContext, "val_TelemetrySpeed", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_TelemetrySpeed", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_TelemetrySpeed, -1);
-		draw_button(esContext, "inc_TelemetrySpeed", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_TelemetrySpeed, +1);
+		draw_text_button(esContext, "val_TelemetrySpeed", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_TelemetrySpeed", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_TelemetrySpeed, -1);
+		draw_text_button(esContext, "inc_TelemetrySpeed", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_TelemetrySpeed, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_GPSSpeed", VIEW_MODE_FCMENU, "GPSSpeed", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_GPSSpeed", VIEW_MODE_FCMENU, "GPSSpeed", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotHwSettings.GPSSpeed);
 		if (OpenpilotHwSettings.GPSSpeed == 0) {
 			sprintf(tmp_str, "2400");
@@ -1811,13 +1811,13 @@ void openpilot_HwSettings (ESContext *esContext) {
 		if (OpenpilotHwSettings.GPSSpeed == 6) {
 			sprintf(tmp_str, "115200");
 		}
-		draw_button(esContext, "val_GPSSpeed", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_GPSSpeed", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_GPSSpeed, -1);
-		draw_button(esContext, "inc_GPSSpeed", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_GPSSpeed, +1);
+		draw_text_button(esContext, "val_GPSSpeed", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_GPSSpeed", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_GPSSpeed, -1);
+		draw_text_button(esContext, "inc_GPSSpeed", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_GPSSpeed, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_ComUsbBridgeSpeed", VIEW_MODE_FCMENU, "ComUsbBridgeSpeed", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_ComUsbBridgeSpeed", VIEW_MODE_FCMENU, "ComUsbBridgeSpeed", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotHwSettings.ComUsbBridgeSpeed);
 		if (OpenpilotHwSettings.ComUsbBridgeSpeed == 0) {
 			sprintf(tmp_str, "2400");
@@ -1840,13 +1840,13 @@ void openpilot_HwSettings (ESContext *esContext) {
 		if (OpenpilotHwSettings.ComUsbBridgeSpeed == 6) {
 			sprintf(tmp_str, "115200");
 		}
-		draw_button(esContext, "val_ComUsbBridgeSpeed", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_ComUsbBridgeSpeed", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_ComUsbBridgeSpeed, -1);
-		draw_button(esContext, "inc_ComUsbBridgeSpeed", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_ComUsbBridgeSpeed, +1);
+		draw_text_button(esContext, "val_ComUsbBridgeSpeed", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_ComUsbBridgeSpeed", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_ComUsbBridgeSpeed, -1);
+		draw_text_button(esContext, "inc_ComUsbBridgeSpeed", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_ComUsbBridgeSpeed, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_USB_HIDPort", VIEW_MODE_FCMENU, "USB_HIDPort", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_USB_HIDPort", VIEW_MODE_FCMENU, "USB_HIDPort", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotHwSettings.USB_HIDPort);
 		if (OpenpilotHwSettings.USB_HIDPort == 0) {
 			sprintf(tmp_str, "USBTelemetry");
@@ -1857,13 +1857,13 @@ void openpilot_HwSettings (ESContext *esContext) {
 		if (OpenpilotHwSettings.USB_HIDPort == 2) {
 			sprintf(tmp_str, "Disabled");
 		}
-		draw_button(esContext, "val_USB_HIDPort", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_USB_HIDPort", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_USB_HIDPort, -1);
-		draw_button(esContext, "inc_USB_HIDPort", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_USB_HIDPort, +1);
+		draw_text_button(esContext, "val_USB_HIDPort", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_USB_HIDPort", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_USB_HIDPort, -1);
+		draw_text_button(esContext, "inc_USB_HIDPort", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_USB_HIDPort, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_USB_VCPPort", VIEW_MODE_FCMENU, "USB_VCPPort", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_USB_VCPPort", VIEW_MODE_FCMENU, "USB_VCPPort", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotHwSettings.USB_VCPPort);
 		if (OpenpilotHwSettings.USB_VCPPort == 0) {
 			sprintf(tmp_str, "USBTelemetry");
@@ -1874,13 +1874,13 @@ void openpilot_HwSettings (ESContext *esContext) {
 		if (OpenpilotHwSettings.USB_VCPPort == 2) {
 			sprintf(tmp_str, "Disabled");
 		}
-		draw_button(esContext, "val_USB_VCPPort", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_USB_VCPPort", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_USB_VCPPort, -1);
-		draw_button(esContext, "inc_USB_VCPPort", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_USB_VCPPort, +1);
+		draw_text_button(esContext, "val_USB_VCPPort", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_USB_VCPPort", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_USB_VCPPort, -1);
+		draw_text_button(esContext, "inc_USB_VCPPort", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_USB_VCPPort, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_OptionalModules", VIEW_MODE_FCMENU, "OptionalModules", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_OptionalModules", VIEW_MODE_FCMENU, "OptionalModules", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		draw_line_f3(esContext, -1.3, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 1.25, -0.77 + (n + page) * 0.12 + 0.07, 0.002, 255, 255, 0, 128);
 	}
 	n++;
@@ -1889,7 +1889,7 @@ void openpilot_HwSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_OptionalModules[CameraStab]", VIEW_MODE_FCMENU, "CameraStab", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_OptionalModules[CameraStab]", VIEW_MODE_FCMENU, "CameraStab", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotHwSettings.OptionalModules[0]);
 		if (OpenpilotHwSettings.OptionalModules[0] == 0) {
 			sprintf(tmp_str, "Disabled");
@@ -1897,9 +1897,9 @@ void openpilot_HwSettings (ESContext *esContext) {
 		if (OpenpilotHwSettings.OptionalModules[0] == 1) {
 			sprintf(tmp_str, "Enabled");
 		}
-		draw_button(esContext, "default_OptionalModules[CameraStab]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_OptionalModules[CameraStab]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_CameraStab, -1);
-		draw_button(esContext, "inc_OptionalModules[CameraStab]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_CameraStab, +1);
+		draw_text_button(esContext, "default_OptionalModules[CameraStab]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_OptionalModules[CameraStab]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_CameraStab, -1);
+		draw_text_button(esContext, "inc_OptionalModules[CameraStab]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_CameraStab, +1);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -1907,7 +1907,7 @@ void openpilot_HwSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_OptionalModules[GPS]", VIEW_MODE_FCMENU, "GPS", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_OptionalModules[GPS]", VIEW_MODE_FCMENU, "GPS", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotHwSettings.OptionalModules[1]);
 		if (OpenpilotHwSettings.OptionalModules[1] == 0) {
 			sprintf(tmp_str, "Disabled");
@@ -1915,9 +1915,9 @@ void openpilot_HwSettings (ESContext *esContext) {
 		if (OpenpilotHwSettings.OptionalModules[1] == 1) {
 			sprintf(tmp_str, "Enabled");
 		}
-		draw_button(esContext, "default_OptionalModules[GPS]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_OptionalModules[GPS]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_GPS, -1);
-		draw_button(esContext, "inc_OptionalModules[GPS]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_GPS, +1);
+		draw_text_button(esContext, "default_OptionalModules[GPS]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_OptionalModules[GPS]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_GPS, -1);
+		draw_text_button(esContext, "inc_OptionalModules[GPS]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_GPS, +1);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -1925,7 +1925,7 @@ void openpilot_HwSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_OptionalModules[ComUsbBridge]", VIEW_MODE_FCMENU, "ComUsbBridge", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_OptionalModules[ComUsbBridge]", VIEW_MODE_FCMENU, "ComUsbBridge", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotHwSettings.OptionalModules[2]);
 		if (OpenpilotHwSettings.OptionalModules[2] == 0) {
 			sprintf(tmp_str, "Disabled");
@@ -1933,9 +1933,9 @@ void openpilot_HwSettings (ESContext *esContext) {
 		if (OpenpilotHwSettings.OptionalModules[2] == 1) {
 			sprintf(tmp_str, "Enabled");
 		}
-		draw_button(esContext, "default_OptionalModules[ComUsbBridge]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_OptionalModules[ComUsbBridge]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_ComUsbBridge, -1);
-		draw_button(esContext, "inc_OptionalModules[ComUsbBridge]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_ComUsbBridge, +1);
+		draw_text_button(esContext, "default_OptionalModules[ComUsbBridge]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_OptionalModules[ComUsbBridge]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_ComUsbBridge, -1);
+		draw_text_button(esContext, "inc_OptionalModules[ComUsbBridge]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_ComUsbBridge, +1);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -1943,7 +1943,7 @@ void openpilot_HwSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_OptionalModules[Fault]", VIEW_MODE_FCMENU, "Fault", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_OptionalModules[Fault]", VIEW_MODE_FCMENU, "Fault", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotHwSettings.OptionalModules[3]);
 		if (OpenpilotHwSettings.OptionalModules[3] == 0) {
 			sprintf(tmp_str, "Disabled");
@@ -1951,9 +1951,9 @@ void openpilot_HwSettings (ESContext *esContext) {
 		if (OpenpilotHwSettings.OptionalModules[3] == 1) {
 			sprintf(tmp_str, "Enabled");
 		}
-		draw_button(esContext, "default_OptionalModules[Fault]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_OptionalModules[Fault]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_Fault, -1);
-		draw_button(esContext, "inc_OptionalModules[Fault]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_Fault, +1);
+		draw_text_button(esContext, "default_OptionalModules[Fault]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_OptionalModules[Fault]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_Fault, -1);
+		draw_text_button(esContext, "inc_OptionalModules[Fault]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_Fault, +1);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -1961,7 +1961,7 @@ void openpilot_HwSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_OptionalModules[Altitude]", VIEW_MODE_FCMENU, "Altitude", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_OptionalModules[Altitude]", VIEW_MODE_FCMENU, "Altitude", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotHwSettings.OptionalModules[4]);
 		if (OpenpilotHwSettings.OptionalModules[4] == 0) {
 			sprintf(tmp_str, "Disabled");
@@ -1969,9 +1969,9 @@ void openpilot_HwSettings (ESContext *esContext) {
 		if (OpenpilotHwSettings.OptionalModules[4] == 1) {
 			sprintf(tmp_str, "Enabled");
 		}
-		draw_button(esContext, "default_OptionalModules[Altitude]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_OptionalModules[Altitude]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_Altitude, -1);
-		draw_button(esContext, "inc_OptionalModules[Altitude]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_Altitude, +1);
+		draw_text_button(esContext, "default_OptionalModules[Altitude]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_OptionalModules[Altitude]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_Altitude, -1);
+		draw_text_button(esContext, "inc_OptionalModules[Altitude]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_Altitude, +1);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -1979,7 +1979,7 @@ void openpilot_HwSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_OptionalModules[TxPID]", VIEW_MODE_FCMENU, "TxPID", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_OptionalModules[TxPID]", VIEW_MODE_FCMENU, "TxPID", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotHwSettings.OptionalModules[5]);
 		if (OpenpilotHwSettings.OptionalModules[5] == 0) {
 			sprintf(tmp_str, "Disabled");
@@ -1987,9 +1987,9 @@ void openpilot_HwSettings (ESContext *esContext) {
 		if (OpenpilotHwSettings.OptionalModules[5] == 1) {
 			sprintf(tmp_str, "Enabled");
 		}
-		draw_button(esContext, "default_OptionalModules[TxPID]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_OptionalModules[TxPID]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_TxPID, -1);
-		draw_button(esContext, "inc_OptionalModules[TxPID]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_TxPID, +1);
+		draw_text_button(esContext, "default_OptionalModules[TxPID]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_OptionalModules[TxPID]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_TxPID, -1);
+		draw_text_button(esContext, "inc_OptionalModules[TxPID]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_TxPID, +1);
 	}
 	n2++;
 	if (n2 >= 2) {
@@ -1997,7 +1997,7 @@ void openpilot_HwSettings (ESContext *esContext) {
 		n2 = 0;
 	}
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_OptionalModules[Autotune]", VIEW_MODE_FCMENU, "Autotune", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_OptionalModules[Autotune]", VIEW_MODE_FCMENU, "Autotune", FONT_WHITE, -1.25 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotHwSettings.OptionalModules[6]);
 		if (OpenpilotHwSettings.OptionalModules[6] == 0) {
 			sprintf(tmp_str, "Disabled");
@@ -2005,9 +2005,9 @@ void openpilot_HwSettings (ESContext *esContext) {
 		if (OpenpilotHwSettings.OptionalModules[6] == 1) {
 			sprintf(tmp_str, "Enabled");
 		}
-		draw_button(esContext, "default_OptionalModules[Autotune]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_OptionalModules[Autotune]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_Autotune, -1);
-		draw_button(esContext, "inc_OptionalModules[Autotune]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_Autotune, +1);
+		draw_text_button(esContext, "default_OptionalModules[Autotune]", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.35 + 0.9 + n2 * 1.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 2, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_OptionalModules[Autotune]", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.22, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_Autotune, -1);
+		draw_text_button(esContext, "inc_OptionalModules[Autotune]", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -1.35 + 0.7 + n2 * 1.2 + 0.35, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotHwSettings_OptionalModules_Autotune, +1);
 	}
 	n2++;
 	n++;
@@ -2039,17 +2039,17 @@ void openpilot_HwSettings (ESContext *esContext) {
 		draw_rect_f3(esContext, 1.3 - 0.01, 0.67 - (1.34 - 0.02) * (float)(n + page - 13) / (float)(n - 13) - 0.02, 0.002, 1.35 + 0.01, 0.67 - (1.34 - 0.02) * (float)(n + page - 13) / (float)(n - 13), 0.002, 100, 100, 100, 128);
 	}
 	if (openpilot_get == 1) {
-		draw_button(esContext, "get", VIEW_MODE_FCMENU, "[GET]", FONT_GREEN, -0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_setup_get, 0.0);
+		draw_text_button(esContext, "get", VIEW_MODE_FCMENU, "[GET]", FONT_GREEN, -0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_setup_get, 0.0);
 	} else {
-		draw_button(esContext, "get", VIEW_MODE_FCMENU, "[GET]", FONT_WHITE, -0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_setup_get, 0.0);
+		draw_text_button(esContext, "get", VIEW_MODE_FCMENU, "[GET]", FONT_WHITE, -0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_setup_get, 0.0);
 	}
 	if (openpilot_set == 1) {
-		draw_button(esContext, "set", VIEW_MODE_FCMENU, "[SET]", FONT_GREEN, 0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_setup_set, 0.0);
+		draw_text_button(esContext, "set", VIEW_MODE_FCMENU, "[SET]", FONT_GREEN, 0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_setup_set, 0.0);
 	} else {
-		draw_button(esContext, "set", VIEW_MODE_FCMENU, "[SET]", FONT_WHITE, 0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_setup_set, 0.0);
+		draw_text_button(esContext, "set", VIEW_MODE_FCMENU, "[SET]", FONT_WHITE, 0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_setup_set, 0.0);
 	}
-	draw_button(esContext, "defaults", VIEW_MODE_FCMENU, "[DEFAULTS]", FONT_WHITE, -0.3, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_defaults, 0.0);
-	draw_button(esContext, "flash", VIEW_MODE_FCMENU, "[FLASH]", FONT_WHITE, 0.3, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_flash, 0.0);
+	draw_text_button(esContext, "defaults", VIEW_MODE_FCMENU, "[DEFAULTS]", FONT_WHITE, -0.3, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_defaults, 0.0);
+	draw_text_button(esContext, "flash", VIEW_MODE_FCMENU, "[FLASH]", FONT_WHITE, 0.3, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_flash, 0.0);
 }
 
 
@@ -2077,15 +2077,15 @@ void openpilot_SystemSettings (ESContext *esContext) {
 	draw_title(esContext, "SystemSettings");
 
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_GUIConfigData", VIEW_MODE_FCMENU, "GUIConfigData", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_GUIConfigData", VIEW_MODE_FCMENU, "GUIConfigData", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotSystemSettings.GUIConfigData);
-		draw_button(esContext, "val_GUIConfigData", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_GUIConfigData", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotSystemSettings_GUIConfigData, -1);
-		draw_button(esContext, "inc_GUIConfigData", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotSystemSettings_GUIConfigData, +1);
+		draw_text_button(esContext, "val_GUIConfigData", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_GUIConfigData", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotSystemSettings_GUIConfigData, -1);
+		draw_text_button(esContext, "inc_GUIConfigData", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotSystemSettings_GUIConfigData, +1);
 	}
 	n++;
 	if (-0.77 + (n + page) * 0.12 > -0.8 && -0.77 + (n + page) * 0.12 < 0.7) {
-		draw_button(esContext, "name_AirframeType", VIEW_MODE_FCMENU, "AirframeType", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "name_AirframeType", VIEW_MODE_FCMENU, "AirframeType", FONT_WHITE, -1.3, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_null, (float)n);
 		sprintf(tmp_str, "%i", OpenpilotSystemSettings.AirframeType);
 		if (OpenpilotSystemSettings.AirframeType == 0) {
 			sprintf(tmp_str, "FixedWing");
@@ -2144,9 +2144,9 @@ void openpilot_SystemSettings (ESContext *esContext) {
 		if (OpenpilotSystemSettings.AirframeType == 18) {
 			sprintf(tmp_str, "GroundVehicleMotorcycle");
 		}
-		draw_button(esContext, "val_AirframeType", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
-		draw_button(esContext, "dec_AirframeType", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotSystemSettings_AirframeType, -1);
-		draw_button(esContext, "inc_AirframeType", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotSystemSettings_AirframeType, +1);
+		draw_text_button(esContext, "val_AirframeType", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.77 + (n + page) * 0.12, 0.002, 0.05, 0, 0, openpilot_null, (float)n);
+		draw_text_button(esContext, "dec_AirframeType", VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.25 + 0.2, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotSystemSettings_AirframeType, -1);
+		draw_text_button(esContext, "inc_AirframeType", VIEW_MODE_FCMENU, "[+]", FONT_WHITE, 0.25 + 0.4, -0.77 + (n + page) * 0.12, 0.002, 0.06, 0, 0, openpilot_change_OpenpilotSystemSettings_AirframeType, +1);
 	}
 	n++;
 
@@ -2176,17 +2176,17 @@ void openpilot_SystemSettings (ESContext *esContext) {
 		draw_rect_f3(esContext, 1.3 - 0.01, 0.67 - (1.34 - 0.02) * (float)(n + page - 13) / (float)(n - 13) - 0.02, 0.002, 1.35 + 0.01, 0.67 - (1.34 - 0.02) * (float)(n + page - 13) / (float)(n - 13), 0.002, 100, 100, 100, 128);
 	}
 	if (openpilot_get == 1) {
-		draw_button(esContext, "get", VIEW_MODE_FCMENU, "[GET]", FONT_GREEN, -0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_setup_get, 0.0);
+		draw_text_button(esContext, "get", VIEW_MODE_FCMENU, "[GET]", FONT_GREEN, -0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_setup_get, 0.0);
 	} else {
-		draw_button(esContext, "get", VIEW_MODE_FCMENU, "[GET]", FONT_WHITE, -0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_setup_get, 0.0);
+		draw_text_button(esContext, "get", VIEW_MODE_FCMENU, "[GET]", FONT_WHITE, -0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_setup_get, 0.0);
 	}
 	if (openpilot_set == 1) {
-		draw_button(esContext, "set", VIEW_MODE_FCMENU, "[SET]", FONT_GREEN, 0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_setup_set, 0.0);
+		draw_text_button(esContext, "set", VIEW_MODE_FCMENU, "[SET]", FONT_GREEN, 0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_setup_set, 0.0);
 	} else {
-		draw_button(esContext, "set", VIEW_MODE_FCMENU, "[SET]", FONT_WHITE, 0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_setup_set, 0.0);
+		draw_text_button(esContext, "set", VIEW_MODE_FCMENU, "[SET]", FONT_WHITE, 0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_setup_set, 0.0);
 	}
-	draw_button(esContext, "defaults", VIEW_MODE_FCMENU, "[DEFAULTS]", FONT_WHITE, -0.3, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_defaults, 0.0);
-	draw_button(esContext, "flash", VIEW_MODE_FCMENU, "[FLASH]", FONT_WHITE, 0.3, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_flash, 0.0);
+	draw_text_button(esContext, "defaults", VIEW_MODE_FCMENU, "[DEFAULTS]", FONT_WHITE, -0.3, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_defaults, 0.0);
+	draw_text_button(esContext, "flash", VIEW_MODE_FCMENU, "[FLASH]", FONT_WHITE, 0.3, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_flash, 0.0);
 }
 
 void screen_openpilot (ESContext *esContext) {
@@ -2198,6 +2198,6 @@ void screen_openpilot (ESContext *esContext) {
 	} else if (mode == 2) {
 		openpilot_SystemSettings(esContext);
 	}
-	draw_button(esContext, "mode", VIEW_MODE_FCMENU, "[MODE]", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_mode, 0.0);
+	draw_text_button(esContext, "mode", VIEW_MODE_FCMENU, "[MODE]", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, openpilot_mode, 0.0);
 }
 

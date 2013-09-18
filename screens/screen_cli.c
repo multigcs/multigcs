@@ -137,9 +137,9 @@ void screen_cli (ESContext *esContext) {
 
 
 	if (cli_mode == 0) {
-		draw_button(esContext, "cli_mode", VIEW_MODE_FCMENU, "[\\n]", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, cli_set_mode, 0);
+		draw_text_button(esContext, "cli_mode", VIEW_MODE_FCMENU, "[\\n]", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, cli_set_mode, 0);
 	} else {
-		draw_button(esContext, "cli_mode", VIEW_MODE_FCMENU, "[\\r]", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, cli_set_mode, 0);
+		draw_text_button(esContext, "cli_mode", VIEW_MODE_FCMENU, "[\\r]", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, cli_set_mode, 0);
 	}
 
 

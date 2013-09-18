@@ -1069,7 +1069,7 @@ void screen_hud (ESContext *esContext) {
 		if (ModelData.teletype != TELETYPE_MULTIWII_21 && ModelData.teletype != TELETYPE_BASEFLIGHT) {
 			sprintf(tmp_str, "CPU %0.0f%%", ModelData.load);
 			draw_circleMeter_f3(esContext, -1.05, 0.025, 0.001, 0.06, 20.0, 33.0, 66.0, 160.0, 50, "", "", 3);
-			draw_button(esContext, "hud_load", VIEW_MODE_HUD, tmp_str, FONT_WHITE, -1.05, 0.025, 0.003, 0.035, 1, 0, hud_null, 0);
+			draw_text_button(esContext, "hud_load", VIEW_MODE_HUD, tmp_str, FONT_WHITE, -1.05, 0.025, 0.003, 0.035, 1, 0, hud_null, 0);
 		}
 
 	//printf("hud#9f\n");
@@ -1091,61 +1091,61 @@ void screen_hud (ESContext *esContext) {
 			}
 			if (ModelData.teletype == TELETYPE_MULTIWII_21 || ModelData.teletype == TELETYPE_OPENPILOT || ModelData.teletype == TELETYPE_BASEFLIGHT) {
 				if (n == 0) {
-					draw_button(esContext, "hud_rd_1", VIEW_MODE_HUD, "ROLL", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_1", VIEW_MODE_HUD, "ROLL", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 1) {
-					draw_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "PITCH", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "PITCH", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 2) {
-					draw_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "YAW", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "YAW", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 3) {
-					draw_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "THROTTLE", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "THROTTLE", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 4) {
-					draw_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX1", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX1", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 5) {
-					draw_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX2", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX2", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 6) {
-					draw_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX3", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX3", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 7) {
-					draw_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX4", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX4", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				}
 			} else if (ModelData.teletype == TELETYPE_AUTOQUAD) {
 				if (n == 0) {
-					draw_button(esContext, "hud_rd_1", VIEW_MODE_HUD, "THROTTLE", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_1", VIEW_MODE_HUD, "THROTTLE", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 1) {
-					draw_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "ROLL", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "ROLL", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 2) {
-					draw_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "PITCH", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "PITCH", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 3) {
-					draw_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "YAW", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "YAW", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 4) {
-					draw_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "GEAR", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "GEAR", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 5) {
-					draw_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "MAN/PH/W", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "MAN/PH/W", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 6) {
-					draw_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "RTL/SH", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "RTL/SH", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 7) {
-					draw_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX3", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX3", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				}
 			} else if (ModelData.teletype == TELETYPE_ARDUPILOT || ModelData.teletype == TELETYPE_MEGAPIRATE_NG) {
 				if (n == 0) {
-					draw_button(esContext, "hud_rd_1", VIEW_MODE_HUD, "ROLL", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_1", VIEW_MODE_HUD, "ROLL", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 1) {
-					draw_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "PITCH", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "PITCH", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 2) {
-					draw_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "THROTTLE", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "THROTTLE", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 3) {
-					draw_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "YAW", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "YAW", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 4) {
-					draw_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX1", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX1", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 5) {
-					draw_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX2", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX2", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 6) {
-					draw_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX3", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX3", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 7) {
-					draw_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX4", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX4", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				}
 			} else {
 				sprintf(tmp_str, "CH %i", n);
-				draw_button(esContext, tmp_str, VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+				draw_text_button(esContext, tmp_str, VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 			}
 		}
 		static float min_g = 1.0;
@@ -1176,17 +1176,17 @@ void screen_hud (ESContext *esContext) {
 				if (ModelData.voltage_zell[i] != 0.0) {
 					sprintf(tmp_str, "%0.2fV", ModelData.voltage_zell[i]);
 					draw_circleMeter_f3(esContext, -1.3, 0.3 + (i * 0.1), 0.001, 0.06, 20.0, 20.0, 40.0, 160.0, ((ModelData.voltage_zell[i] - 3.0) * 100.0 / 1.2), "", "", 1);
-					draw_button(esContext, tmp_str2, VIEW_MODE_HUD, tmp_str, FONT_WHITE, -1.3, 0.3 + (i * 0.1), 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, tmp_str2, VIEW_MODE_HUD, tmp_str, FONT_WHITE, -1.3, 0.3 + (i * 0.1), 0.003, 0.035, 1, 0, hud_null, 0);
 				}
 			}
 
 			// Temperature
 			draw_circleMeter_f3(esContext, 1.07, 0.025, 0.001, 0.06, 20.0, 50.0, 50.0, 160.0, ((float)ModelData.temperature[0] + 30) * 100 / 280, "", "", 3);
 			sprintf(tmp_str, "%i°C", ModelData.temperature[0]);
-			draw_button(esContext, "temp1", VIEW_MODE_HUD, tmp_str, FONT_WHITE, 1.07, 0.025, 0.003, 0.035, 1, 0, hud_null, 0);
+			draw_text_button(esContext, "temp1", VIEW_MODE_HUD, tmp_str, FONT_WHITE, 1.07, 0.025, 0.003, 0.035, 1, 0, hud_null, 0);
 			draw_circleMeter_f3(esContext, 1.23, 0.025, 0.001, 0.06, 20.0, 50.0, 50.0, 160.0, 50.0, "", "", 3);
 			sprintf(tmp_str, "%i°C", ModelData.temperature[1]);
-			draw_button(esContext, "temp2", VIEW_MODE_HUD, tmp_str, FONT_WHITE, 1.23, 0.025, 0.003, 0.035, 1, 0, hud_null, 0);
+			draw_text_button(esContext, "temp2", VIEW_MODE_HUD, tmp_str, FONT_WHITE, 1.23, 0.025, 0.003, 0.035, 1, 0, hud_null, 0);
 
 			// Test-Graph
 			graph1_data[0][graph1_pointer] = ModelData.rssi_rx;
@@ -1200,9 +1200,9 @@ void screen_hud (ESContext *esContext) {
 				draw_box_f3(esContext, 0.95, 0.45 + (float)n * 0.1, 0.001, 1.35, 0.45 + (float)n * 0.1 + 0.08, 0.001, 200, 200, 200, 64);
 				draw_line_f3(esContext, 0.95, 0.45 + (float)n * 0.1 + 0.04, 0.002, 1.35, 0.45 + (float)n * 0.1 + 0.04, 0.002, 255, 255, 255, 127);
 				if (n == 0) {
-					draw_button(esContext, "rssi_rx", VIEW_MODE_HUD, "RSSI RX", FONT_WHITE, 0.95, 0.45 + (float)n * 0.1 + 0.05, 0.002, 0.035, 0, 0, hud_null, 0);
+					draw_text_button(esContext, "rssi_rx", VIEW_MODE_HUD, "RSSI RX", FONT_WHITE, 0.95, 0.45 + (float)n * 0.1 + 0.05, 0.002, 0.035, 0, 0, hud_null, 0);
 				} else {
-					draw_button(esContext, "rssi_tx", VIEW_MODE_HUD, "RSSI TX", FONT_WHITE, 0.95, 0.45 + (float)n * 0.1 + 0.05, 0.002, 0.035, 0, 0, hud_null, 0);
+					draw_text_button(esContext, "rssi_tx", VIEW_MODE_HUD, "RSSI TX", FONT_WHITE, 0.95, 0.45 + (float)n * 0.1 + 0.05, 0.002, 0.035, 0, 0, hud_null, 0);
 				}
 				draw_graph_value(esContext, 0.95, 0.45 + (float)n * 0.1, 1.35, 0.45 + (float)n * 0.1 + 0.08, 0.001, graph1_data[n], graph1_size, graph1_pointer, 255 - n * 25, n * 25, n * 125, 255);
 			}
@@ -1219,55 +1219,55 @@ void screen_hud (ESContext *esContext) {
 		draw_box_f3c2(esContext, jetibox_x - 0.01, jetibox_y - 0.025, 0.001, jetibox_x + 0.52, jetibox_y + 0.12, 0.001, 255, 255, 255, 127, 255, 255, 255, 64);
 		draw_text_f3(esContext, jetibox_x, jetibox_y, 0.003, 0.05, 0.05, FONT_WHITE, jeti_line1);
 		draw_text_f3(esContext, jetibox_x, jetibox_y + 0.05, 0.003, 0.05, 0.05, FONT_WHITE, jeti_line2);
-		draw_button(esContext, "jeti_left", VIEW_MODE_HUD, "<", FONT_GREEN_BG, jetibox_x + 0.07	, jetibox_y + 0.15, 0.002, 0.05, 0, 0, jeti_left, 0);
-		draw_button(esContext, "jeti_up", VIEW_MODE_HUD, "^", FONT_GREEN_BG, jetibox_x + 0.17, jetibox_y + 0.15, 0.002, 0.05, 0, 0, jeti_up, 0);
-		draw_button(esContext, "jeti_down", VIEW_MODE_HUD, "v", FONT_GREEN_BG, jetibox_x + 0.27, jetibox_y + 0.15, 0.002, 0.05, 0, 0, jeti_down, 0);
-		draw_button(esContext, "jeti_right", VIEW_MODE_HUD, ">", FONT_GREEN_BG, jetibox_x + 0.37, jetibox_y + 0.15, 0.002, 0.05, 0, 0, jeti_right, 0);
+		draw_text_button(esContext, "jeti_left", VIEW_MODE_HUD, "<", FONT_GREEN_BG, jetibox_x + 0.07	, jetibox_y + 0.15, 0.002, 0.05, 0, 0, jeti_left, 0);
+		draw_text_button(esContext, "jeti_up", VIEW_MODE_HUD, "^", FONT_GREEN_BG, jetibox_x + 0.17, jetibox_y + 0.15, 0.002, 0.05, 0, 0, jeti_up, 0);
+		draw_text_button(esContext, "jeti_down", VIEW_MODE_HUD, "v", FONT_GREEN_BG, jetibox_x + 0.27, jetibox_y + 0.15, 0.002, 0.05, 0, 0, jeti_down, 0);
+		draw_text_button(esContext, "jeti_right", VIEW_MODE_HUD, ">", FONT_GREEN_BG, jetibox_x + 0.37, jetibox_y + 0.15, 0.002, 0.05, 0, 0, jeti_right, 0);
 	}
 
 	if (setup.hud_view_screen == 0) {
-		draw_button(esContext, "view_hud", VIEW_MODE_HUD, "VIEW", FONT_WHITE, -1.35, 0.9, 0.002, 0.06, 0, 0, view_hud, 0);
+		draw_text_button(esContext, "view_hud", VIEW_MODE_HUD, "VIEW", FONT_WHITE, -1.35, 0.9, 0.002, 0.06, 0, 0, view_hud, 0);
 	} else if (setup.hud_view_screen == 1) {
-		draw_button(esContext, "view_hud", VIEW_MODE_HUD, "VIEW", FONT_PINK, -1.35, 0.9, 0.002, 0.06, 0, 0, view_hud, 0);
+		draw_text_button(esContext, "view_hud", VIEW_MODE_HUD, "VIEW", FONT_PINK, -1.35, 0.9, 0.002, 0.06, 0, 0, view_hud, 0);
 	} else {
-		draw_button(esContext, "view_hud", VIEW_MODE_HUD, "VIEW", FONT_GREEN, -1.35, 0.9, 0.002, 0.06, 0, 0, view_hud, 0);
+		draw_text_button(esContext, "view_hud", VIEW_MODE_HUD, "VIEW", FONT_GREEN, -1.35, 0.9, 0.002, 0.06, 0, 0, view_hud, 0);
 	}
 #ifdef SDLGL
 	if (setup.hud_view_map != 0) {
-			draw_button(esContext, "view_hud_mark", VIEW_MODE_HUD, "MARK", FONT_GREEN, -1.35, 0.8, 0.002, 0.06, 0, 0, view_hud_mark, 0);
+			draw_text_button(esContext, "view_hud_mark", VIEW_MODE_HUD, "MARK", FONT_GREEN, -1.35, 0.8, 0.002, 0.06, 0, 0, view_hud_mark, 0);
 		if (setup.hud_view_map == 1) {
-			draw_button(esContext, "view_hud_map", VIEW_MODE_HUD, "MAP", FONT_GREEN, -1.15, 0.9, 0.002, 0.06, 0, 0, view_hud_map, 0);
+			draw_text_button(esContext, "view_hud_map", VIEW_MODE_HUD, "MAP", FONT_GREEN, -1.15, 0.9, 0.002, 0.06, 0, 0, view_hud_map, 0);
 		} else if (setup.hud_view_map == 2) {
-			draw_button(esContext, "view_hud_map", VIEW_MODE_HUD, "MAP", FONT_PINK, -1.15, 0.9, 0.002, 0.06, 0, 0, view_hud_map, 0);
+			draw_text_button(esContext, "view_hud_map", VIEW_MODE_HUD, "MAP", FONT_PINK, -1.15, 0.9, 0.002, 0.06, 0, 0, view_hud_map, 0);
 		} else {
-			draw_button(esContext, "view_hud_map", VIEW_MODE_HUD, "MAP", FONT_PINK, -1.15, 0.9, 0.002, 0.06, 0, 0, view_hud_map, 0);
+			draw_text_button(esContext, "view_hud_map", VIEW_MODE_HUD, "MAP", FONT_PINK, -1.15, 0.9, 0.002, 0.06, 0, 0, view_hud_map, 0);
 		}
 //		if (setup.hud_view_tunnel == 1) {
-//			draw_button(esContext, "view_map_tunnel", VIEW_MODE_HUD, "TUNNEL", FONT_GREEN, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_tunnel, 0);
+//			draw_text_button(esContext, "view_map_tunnel", VIEW_MODE_HUD, "TUNNEL", FONT_GREEN, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_tunnel, 0);
 //		} else {
-//			draw_button(esContext, "view_map_tunnel", VIEW_MODE_HUD, "TUNNEL", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_tunnel, 0);
+//			draw_text_button(esContext, "view_map_tunnel", VIEW_MODE_HUD, "TUNNEL", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_tunnel, 0);
 //		}
 		setup.hud_view_tunnel = 0;
 
 		if (setup.hud_view_stab == 1) {
-			draw_button(esContext, "view_hud_stab", VIEW_MODE_HUD, "STAB", FONT_GREEN, -1.0, 0.8, 0.002, 0.06, 0, 0, view_hud_stab, 0);
+			draw_text_button(esContext, "view_hud_stab", VIEW_MODE_HUD, "STAB", FONT_GREEN, -1.0, 0.8, 0.002, 0.06, 0, 0, view_hud_stab, 0);
 		} else if (setup.hud_view_stab == 2) {
-			draw_button(esContext, "view_hud_stab", VIEW_MODE_HUD, "STAB", FONT_PINK, -1.0, 0.8, 0.002, 0.06, 0, 0, view_hud_stab, 0);
+			draw_text_button(esContext, "view_hud_stab", VIEW_MODE_HUD, "STAB", FONT_PINK, -1.0, 0.8, 0.002, 0.06, 0, 0, view_hud_stab, 0);
 		} else {
-			draw_button(esContext, "view_hud_stab", VIEW_MODE_HUD, "STAB", FONT_WHITE, -1.0, 0.8, 0.002, 0.06, 0, 0, view_hud_stab, 0);
+			draw_text_button(esContext, "view_hud_stab", VIEW_MODE_HUD, "STAB", FONT_WHITE, -1.0, 0.8, 0.002, 0.06, 0, 0, view_hud_stab, 0);
 		}
 
 	} else {
-		draw_button(esContext, "view_hud_map", VIEW_MODE_HUD, "MAP", FONT_WHITE, -1.15, 0.9, 0.002, 0.06, 0, 0, view_hud_map, 0);
-		draw_button(esContext, "view_map_bw", VIEW_MODE_HUD, "BW", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_bw, 0);
+		draw_text_button(esContext, "view_hud_map", VIEW_MODE_HUD, "MAP", FONT_WHITE, -1.15, 0.9, 0.002, 0.06, 0, 0, view_hud_map, 0);
+		draw_text_button(esContext, "view_map_bw", VIEW_MODE_HUD, "BW", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_bw, 0);
 	}
 	if (setup.hud_view_video == 1) {
-		draw_button(esContext, "view_hud_video", VIEW_MODE_HUD, "VID", FONT_GREEN, -1.15, 0.8, 0.002, 0.06, 0, 0, view_hud_video, 0);
+		draw_text_button(esContext, "view_hud_video", VIEW_MODE_HUD, "VID", FONT_GREEN, -1.15, 0.8, 0.002, 0.06, 0, 0, view_hud_video, 0);
 	} else {
-		draw_button(esContext, "view_hud_video", VIEW_MODE_HUD, "VID", FONT_WHITE, -1.15, 0.8, 0.002, 0.06, 0, 0, view_hud_video, 0);
+		draw_text_button(esContext, "view_hud_video", VIEW_MODE_HUD, "VID", FONT_WHITE, -1.15, 0.8, 0.002, 0.06, 0, 0, view_hud_video, 0);
 	}
 #else
-	draw_button(esContext, "view_map_bw", VIEW_MODE_HUD, "BW", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_bw, 0);
+	draw_text_button(esContext, "view_map_bw", VIEW_MODE_HUD, "BW", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_bw, 0);
 #endif
 
 	//printf("hud#11\n");

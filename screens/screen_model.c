@@ -459,27 +459,27 @@ void screen_model (ESContext *esContext) {
 
 	if (select_teletype == 1) {
 		for (n = 0; n < TELETYPE_LAST; n++) {
-			draw_button(esContext, teletypes[n], VIEW_MODE_MODEL, teletypes[n], FONT_WHITE, -1.25, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_teletype_set, (float)n);
+			draw_text_button(esContext, teletypes[n], VIEW_MODE_MODEL, teletypes[n], FONT_WHITE, -1.25, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_teletype_set, (float)n);
 		}
 		return;
 	}
 
-	draw_button(esContext, "Model", VIEW_MODE_MODEL, "Model", FONT_WHITE, -1.25, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_null, (float)n);
+	draw_text_button(esContext, "Model", VIEW_MODE_MODEL, "Model", FONT_WHITE, -1.25, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_null, (float)n);
 	draw_line_f3(esContext, -1.3, -0.8 + n * 0.12 + 0.1, 0.002, 1.25, -0.8 + n * 0.12 + 0.1, 0.002, 255, 255, 0, 128);
 	n++;
 
-	draw_button(esContext, "model_load", VIEW_MODE_MODEL, "[LOAD]", FONT_WHITE, 1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_RIGHT, ALIGN_TOP, model_load, 0);
+	draw_text_button(esContext, "model_load", VIEW_MODE_MODEL, "[LOAD]", FONT_WHITE, 1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_RIGHT, ALIGN_TOP, model_load, 0);
 
-	draw_button(esContext, "model_load2", VIEW_MODE_MODEL, "NAME:", FONT_WHITE, -1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_name_edit, 0);
+	draw_text_button(esContext, "model_load2", VIEW_MODE_MODEL, "NAME:", FONT_WHITE, -1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_name_edit, 0);
 	if (ModelData.name[0] == 0) {
 		strcpy(ModelData.name, "model1");
 	}
 	sprintf(tmp_str, "%s", ModelData.name);
-	draw_button(esContext, "model_name_edit", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_name_edit, 0);
+	draw_text_button(esContext, "model_name_edit", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_name_edit, 0);
 	n++;
 
-	draw_button(esContext, "model_type", VIEW_MODE_MODEL, "TYPE:", FONT_WHITE, -1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_modeltype_change, 0);
-	draw_button(esContext, "modeltype_change", VIEW_MODE_MODEL, modeltypes[ModelData.modeltype], FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_modeltype_change, 0);
+	draw_text_button(esContext, "model_type", VIEW_MODE_MODEL, "TYPE:", FONT_WHITE, -1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_modeltype_change, 0);
+	draw_text_button(esContext, "modeltype_change", VIEW_MODE_MODEL, modeltypes[ModelData.modeltype], FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_modeltype_change, 0);
 
 
 #ifdef SDLGL
@@ -513,17 +513,17 @@ void screen_model (ESContext *esContext) {
 
 	n++;
 
-	draw_button(esContext, "model_image_change", VIEW_MODE_MODEL, "IMAGE:", FONT_WHITE, -1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_image_change, 0);
+	draw_text_button(esContext, "model_image_change", VIEW_MODE_MODEL, "IMAGE:", FONT_WHITE, -1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_image_change, 0);
 	draw_image_f3(esContext, -1.1 + 0.3, -0.8 + n * 0.12 - 0.02, -1.2 + 0.3 + 0.4, -0.8 + n * 0.12 + 0.3 - 0.02, 0.002, ModelData.image);
 	n++;
 
 	n++;
-	draw_button(esContext, "Telemetry", VIEW_MODE_MODEL, "Telemetry", FONT_WHITE, -1.25, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_null, (float)n);
+	draw_text_button(esContext, "Telemetry", VIEW_MODE_MODEL, "Telemetry", FONT_WHITE, -1.25, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_null, (float)n);
 	draw_line_f3(esContext, -1.3, -0.8 + n * 0.12 + 0.1, 0.002, 1.25, -0.8 + n * 0.12 + 0.1, 0.002, 255, 255, 0, 128);
 	n++;
 
-	draw_button(esContext, "model_load3", VIEW_MODE_MODEL, "TYPE:", FONT_WHITE, -1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_teletype_change, 0);
-	draw_button(esContext, "model_teletype_change", VIEW_MODE_MODEL, teletypes[ModelData.teletype], FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_teletype_change, 0);
+	draw_text_button(esContext, "model_load3", VIEW_MODE_MODEL, "TYPE:", FONT_WHITE, -1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_teletype_change, 0);
+	draw_text_button(esContext, "model_teletype_change", VIEW_MODE_MODEL, teletypes[ModelData.teletype], FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_teletype_change, 0);
 	n++;
 
 
@@ -555,12 +555,12 @@ void screen_model (ESContext *esContext) {
 		strcpy(ModelData.teledevice, "/dev/rfcomm0");
 	}
 	sprintf(tmp_str, "%s [SELECT]", ModelData.teledevice);
-	draw_button(esContext, "device_select", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_device_change, 0);
+	draw_text_button(esContext, "device_select", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_device_change, 0);
 
 	n++;
 	draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "BAUD:");
 	sprintf(tmp_str, "%i [CHANGE]", ModelData.telebaud);
-	draw_button(esContext, "rc_baud", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_baud_change, n);
+	draw_text_button(esContext, "rc_baud", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_baud_change, n);
 
 	if (strstr(ModelData.teledevice, "rfcomm") > 0) {
 		n++;
@@ -569,7 +569,7 @@ void screen_model (ESContext *esContext) {
 			strcpy(ModelData.telebtaddr, "00:00:00:00:00:00");
 		}
 		sprintf(tmp_str, "%s [RESCAN]", ModelData.telebtaddr);
-		draw_button(esContext, "bt_scan", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.8, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_null, n);
+		draw_text_button(esContext, "bt_scan", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.8, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_null, n);
 
 		n++;
 		draw_text_f3(esContext, -1.1 + 0.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "BLUETOOTH_PIN:");
@@ -577,7 +577,7 @@ void screen_model (ESContext *esContext) {
 			strcpy(ModelData.telebtpin, "1234");
 		}
 		sprintf(tmp_str, "%s [CHANGE]", ModelData.telebtpin);
-		draw_button(esContext, "bt_pin", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.8, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_null, n);
+		draw_text_button(esContext, "bt_pin", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.8, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_null, n);
 	} else {
 		n++;
 		n++;
@@ -585,9 +585,9 @@ void screen_model (ESContext *esContext) {
 	n++;
 	n++;
 	n++;
-	draw_button(esContext, "model_reconnect", VIEW_MODE_MODEL, "[RECONNECT]", FONT_WHITE, 0.0, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, model_reconnect, n);
+	draw_text_button(esContext, "model_reconnect", VIEW_MODE_MODEL, "[RECONNECT]", FONT_WHITE, 0.0, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, model_reconnect, n);
 	n++;
-	draw_button(esContext, "model_save", VIEW_MODE_MODEL, "[SAVE]", FONT_WHITE, 0.0, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, model_save, n);
+	draw_text_button(esContext, "model_save", VIEW_MODE_MODEL, "[SAVE]", FONT_WHITE, 0.0, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, model_save, n);
 
 	screen_keyboard(esContext);
 	screen_filesystem(esContext);

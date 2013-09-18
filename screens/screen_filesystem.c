@@ -129,7 +129,7 @@ void screen_filesystem (ESContext *esContext) {
 					dirname(new_path);
 					sprintf(image_path, "%s/textures/folder.png", BASE_DIR);
 					draw_image_f3(esContext, -1.0 - 0.12, -0.8 + n * 0.1 - 0.02, -1.0 - 0.12 + 0.1, -0.8 + n * 0.1 - 0.02 + 0.1, 0.002, image_path);
-					draw_button(esContext, new_path, setup.view_mode, dir_entry->d_name, FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, filesystem_dir_open, 0.0);
+					draw_text_button(esContext, new_path, setup.view_mode, dir_entry->d_name, FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, filesystem_dir_open, 0.0);
 				}
 				n++;
 			}
@@ -152,7 +152,7 @@ void screen_filesystem (ESContext *esContext) {
 							sprintf(tmp_str, "%s", dir_entry->d_name);
 							sprintf(image_path, "%s/textures/folder.png", BASE_DIR);
 							draw_image_f3(esContext, -1.0 - 0.12, -0.8 + n * 0.1 - 0.02, -1.0 - 0.12 + 0.1, -0.8 + n * 0.1 - 0.02 + 0.1, 0.002, image_path);
-							draw_button(esContext, new_path, setup.view_mode, tmp_str, FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, filesystem_dir_open, 0.0);
+							draw_text_button(esContext, new_path, setup.view_mode, tmp_str, FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, filesystem_dir_open, 0.0);
 						}
 						n++;
 					}
@@ -182,7 +182,7 @@ void screen_filesystem (ESContext *esContext) {
 								sprintf(image_path, "%s/textures/file.png", BASE_DIR);
 								draw_image_f3(esContext, -1.0 - 0.12, -0.8 + n * 0.1 - 0.02, -1.0 - 0.12 + 0.1, -0.8 + n * 0.1 - 0.02 + 0.1, 0.002, image_path);
 							}
-							draw_button(esContext, new_path, setup.view_mode, tmp_str, FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, filesystem_name_save, 0.0);
+							draw_text_button(esContext, new_path, setup.view_mode, tmp_str, FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, filesystem_name_save, 0.0);
 						}
 						n++;
 					}
@@ -207,7 +207,7 @@ void screen_filesystem (ESContext *esContext) {
 		filesystem_page = 0;
 	}
 
-	draw_button(esContext, "show", setup.view_mode, "[CANCEL]", FONT_WHITE, 0.0, 0.9, 0.002, 0.06, 1, 0, filesystem_name_cancel, 0.0);
+	draw_text_button(esContext, "show", setup.view_mode, "[CANCEL]", FONT_WHITE, 0.0, 0.9, 0.002, 0.06, 1, 0, filesystem_name_cancel, 0.0);
 
 }
 

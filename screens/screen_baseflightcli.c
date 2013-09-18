@@ -669,10 +669,10 @@ void screen_baseflightcli (ESContext *esContext) {
 	for (nn = 0; nn < 50; nn++) {
 		if (groupnames[nn][0] != 0) {
 			if (baseflightcli_group == nn) {
-				draw_button(esContext, groupnames[nn], VIEW_MODE_FCMENU, groupnames[nn], FONT_GREEN, -1.35, -0.83 + nn * 0.07, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, baseflightcli_group_open, (float)nn);
+				draw_text_button(esContext, groupnames[nn], VIEW_MODE_FCMENU, groupnames[nn], FONT_GREEN, -1.35, -0.83 + nn * 0.07, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, baseflightcli_group_open, (float)nn);
 				draw_line_f(esContext, -1.37, -0.83 + nn * 0.07 + 0.065, -0.91, -0.83 + nn * 0.07 + 0.065, 255, 255, 255, 127);
 			} else {
-				draw_button(esContext, groupnames[nn], VIEW_MODE_FCMENU, groupnames[nn], FONT_WHITE, -1.35, -0.83 + nn * 0.07, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, baseflightcli_group_open, (float)nn);
+				draw_text_button(esContext, groupnames[nn], VIEW_MODE_FCMENU, groupnames[nn], FONT_WHITE, -1.35, -0.83 + nn * 0.07, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, baseflightcli_group_open, (float)nn);
 			}
 		}
 	}
@@ -697,60 +697,60 @@ void screen_baseflightcli (ESContext *esContext) {
 						nn2++;
 						n = 0;
 						n++;
-						draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "AUX1", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
+						draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, "AUX1", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
 						n++;
 						n++;
 						n++;
-						draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "AUX2", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
+						draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, "AUX2", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
 						n++;
 						n++;
 						n++;
-						draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "AUX3", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
+						draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, "AUX3", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
 						n++;
 						n++;
 						n++;
-						draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "AUX4", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
+						draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, "AUX4", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
 						n++;
 						nn2++;
 						n = 0;
-						draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "L", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
-						draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "M", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
-						draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "H", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
+						draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, "L", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
+						draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, "M", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
+						draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, "H", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
 						n++;
-						draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "L", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
-						draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "M", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
-						draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "H", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
+						draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, "L", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
+						draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, "M", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
+						draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, "H", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
 						n++;
-						draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "L", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
-						draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "M", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
-						draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "H", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
+						draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, "L", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
+						draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, "M", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
+						draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, "H", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
 						n++;
-						draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "L", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
-						draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "M", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
-						draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "H", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
+						draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, "L", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
+						draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, "M", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
+						draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, "H", FONT_GREEN, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
 						nn2++;
 					}
-					draw_button(esContext, "name", VIEW_MODE_FCMENU, bf_set_value[nn].name, FONT_WHITE, -0.9, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, baseflightcli_null, (float)nn);
+					draw_text_button(esContext, "name", VIEW_MODE_FCMENU, bf_set_value[nn].name, FONT_WHITE, -0.9, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, baseflightcli_null, (float)nn);
 					tmp_str[0] = 0;
 					n = 0;
 					for (n2 = 0; n2 < 12; n2++) {
 						sprintf(tmp_str, "%s_%i", bf_set_value[nn].name, n2);
 						if ((int)bf_set_value[nn].value & (1<<n2)) {
-							draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "1", FONT_WHITE, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
+							draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, "1", FONT_WHITE, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
 						} else {
-							draw_button(esContext, tmp_str, VIEW_MODE_FCMENU, "0", FONT_WHITE, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
+							draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, "0", FONT_WHITE, -0.3 + n++ * 0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_aux_toggle, (float)nn);
 						}
 						if (n2 == 2 || n2 == 5 || n2 == 8) {
 							n++;
 						}
 					}
 				} else if (strncmp(bf_set_value[nn].name, "mixer", 5) == 0) {
-					draw_button(esContext, "name", VIEW_MODE_FCMENU, bf_set_value[nn].name, FONT_WHITE, -0.9, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, baseflightcli_null, (float)nn);
+					draw_text_button(esContext, "name", VIEW_MODE_FCMENU, bf_set_value[nn].name, FONT_WHITE, -0.9, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, baseflightcli_null, (float)nn);
 					for (n2 = 0; n2 < (int)bf_set_value[nn].max; n2++) {
 						if (n2 == (int)bf_set_value[nn].value) {
-							draw_button(esContext, bf_mixer[n2].name, VIEW_MODE_FCMENU, bf_mixer[n2].name, FONT_GREEN, 0.0, -0.8 + nn2++ * 0.07, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, baseflightcli_mixer_set, (float)nn);
+							draw_text_button(esContext, bf_mixer[n2].name, VIEW_MODE_FCMENU, bf_mixer[n2].name, FONT_GREEN, 0.0, -0.8 + nn2++ * 0.07, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, baseflightcli_mixer_set, (float)nn);
 						} else {
-							draw_button(esContext, bf_mixer[n2].name, VIEW_MODE_FCMENU, bf_mixer[n2].name, FONT_WHITE, 0.0, -0.8 + nn2++ * 0.07, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, baseflightcli_mixer_set, (float)nn);
+							draw_text_button(esContext, bf_mixer[n2].name, VIEW_MODE_FCMENU, bf_mixer[n2].name, FONT_WHITE, 0.0, -0.8 + nn2++ * 0.07, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, baseflightcli_mixer_set, (float)nn);
 						}
 					}
 				} else if (bf_set_value[nn].min != 0 || bf_set_value[nn].max != 0) {
@@ -811,24 +811,24 @@ void screen_baseflightcli (ESContext *esContext) {
 									draw_line_f(esContext, m_x, m_y, p_x, p_y, 255, 0, 0, 255);
 								}
 							}
-							draw_button(esContext, "load_cmix", VIEW_MODE_FCMENU, "[LOAD ACTIVE]", FONT_GREEN, -0.9, -0.8 + nn2 * 0.07 + 0.01, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, baseflightcli_load_cmix, 0.0);
+							draw_text_button(esContext, "load_cmix", VIEW_MODE_FCMENU, "[LOAD ACTIVE]", FONT_GREEN, -0.9, -0.8 + nn2 * 0.07 + 0.01, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, baseflightcli_load_cmix, 0.0);
 						}
 					}
 
 					if (strncmp(bf_set_value[nn].name, "feature_", 8) == 0 && bf_set_value[nn].value == 1.0) {
-						draw_button(esContext, "name", VIEW_MODE_FCMENU, bf_set_value[nn].name, FONT_GREEN, -0.9, -0.8 + nn2 * 0.07 + 0.01, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, baseflightcli_null, (float)nn);
+						draw_text_button(esContext, "name", VIEW_MODE_FCMENU, bf_set_value[nn].name, FONT_GREEN, -0.9, -0.8 + nn2 * 0.07 + 0.01, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, baseflightcli_null, (float)nn);
 					} else {
-						draw_button(esContext, "name", VIEW_MODE_FCMENU, bf_set_value[nn].name, FONT_WHITE, -0.9, -0.8 + nn2 * 0.07 + 0.01, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, baseflightcli_null, (float)nn);
+						draw_text_button(esContext, "name", VIEW_MODE_FCMENU, bf_set_value[nn].name, FONT_WHITE, -0.9, -0.8 + nn2 * 0.07 + 0.01, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, baseflightcli_null, (float)nn);
 					}
 
 					if (strcmp(bf_set_value[nn].name, "map_A") == 0) {
-						draw_button(esContext, "name", VIEW_MODE_FCMENU, "(Roll)", FONT_WHITE, -0.6, -0.8 + nn2 * 0.07 + 0.01, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, baseflightcli_null, (float)nn);
+						draw_text_button(esContext, "name", VIEW_MODE_FCMENU, "(Roll)", FONT_WHITE, -0.6, -0.8 + nn2 * 0.07 + 0.01, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, baseflightcli_null, (float)nn);
 					} else if (strcmp(bf_set_value[nn].name, "map_E") == 0) {
-						draw_button(esContext, "name", VIEW_MODE_FCMENU, "(Pitch)", FONT_WHITE, -0.6, -0.8 + nn2 * 0.07 + 0.01, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, baseflightcli_null, (float)nn);
+						draw_text_button(esContext, "name", VIEW_MODE_FCMENU, "(Pitch)", FONT_WHITE, -0.6, -0.8 + nn2 * 0.07 + 0.01, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, baseflightcli_null, (float)nn);
 					} else if (strcmp(bf_set_value[nn].name, "map_T") == 0) {
-						draw_button(esContext, "name", VIEW_MODE_FCMENU, "(Throttle)", FONT_WHITE, -0.6, -0.8 + nn2 * 0.07 + 0.01, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, baseflightcli_null, (float)nn);
+						draw_text_button(esContext, "name", VIEW_MODE_FCMENU, "(Throttle)", FONT_WHITE, -0.6, -0.8 + nn2 * 0.07 + 0.01, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, baseflightcli_null, (float)nn);
 					} else if (strcmp(bf_set_value[nn].name, "map_R") == 0) {
-						draw_button(esContext, "name", VIEW_MODE_FCMENU, "(Yaw)", FONT_WHITE, -0.6, -0.8 + nn2 * 0.07 + 0.01, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, baseflightcli_null, (float)nn);
+						draw_text_button(esContext, "name", VIEW_MODE_FCMENU, "(Yaw)", FONT_WHITE, -0.6, -0.8 + nn2 * 0.07 + 0.01, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, baseflightcli_null, (float)nn);
 					}
 
 					if (strncmp(bf_set_value[nn].name, "mixer", 5) == 0) {
@@ -838,7 +838,7 @@ void screen_baseflightcli (ESContext *esContext) {
 					} else {
 						sprintf(tmp_str, "%i", (int)bf_set_value[nn].value);
 					}
-					draw_button(esContext, "value", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, baseflightcli_null, (float)nn);
+					draw_text_button(esContext, "value", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -0.1, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, baseflightcli_null, (float)nn);
 					if (bf_set_value[nn].type == 1) {
 						sprintf(tmp_str, "%0.3f -> %0.3f", bf_set_value[nn].min, bf_set_value[nn].max);
 					} else {
@@ -856,7 +856,7 @@ void screen_baseflightcli (ESContext *esContext) {
 						sprintf(tmp_str, "slider_%s", bf_set_value[nn].name);
 						set_button(tmp_str, setup.view_mode, SLIDER_START, -0.8 + nn2 * 0.07, SLIDER_START + SLIDER_LEN, -0.8 + nn2 * 0.07 + 0.06, baseflightcli_toggle, (float)nn, 0);
 					} else {
-						draw_button(esContext, "minmax", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.7, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, baseflightcli_null, (float)nn);
+						draw_text_button(esContext, "minmax", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.7, -0.8 + nn2 * 0.07, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, baseflightcli_null, (float)nn);
 						draw_box_f3c2(esContext, SLIDER_START, -0.8 + nn2 * 0.07, 0.001, SLIDER_START + ((bf_set_value[nn].value - bf_set_value[nn].min) * SLIDER_LEN / (bf_set_value[nn].max - bf_set_value[nn].min)), -0.8 + nn2 * 0.07 + 0.06, 0.001, 255, 255, 55, 220, 175, 145, 85, 100);
 						sprintf(tmp_str, "slider_%s", bf_set_value[nn].name);
 						set_button(tmp_str, setup.view_mode, SLIDER_START, -0.8 + nn2 * 0.07, SLIDER_START + SLIDER_LEN, -0.8 + nn2 * 0.07 + 0.06, baseflightcli_slider_move, (float)nn, 1);
@@ -870,15 +870,15 @@ void screen_baseflightcli (ESContext *esContext) {
 		}
 	}
 
-	draw_button(esContext, "defaults", VIEW_MODE_FCMENU, "[DEFAULT]", FONT_WHITE, -1.2, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_defaults, 0.0);
-	draw_button(esContext, "read", VIEW_MODE_FCMENU, "[READ]", FONT_WHITE, 0.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_read, 0.0);
-	draw_button(esContext, "save", VIEW_MODE_FCMENU, "[SAVE]", FONT_WHITE, 1.2, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_save, 0.0);
+	draw_text_button(esContext, "defaults", VIEW_MODE_FCMENU, "[DEFAULT]", FONT_WHITE, -1.2, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_defaults, 0.0);
+	draw_text_button(esContext, "read", VIEW_MODE_FCMENU, "[READ]", FONT_WHITE, 0.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_read, 0.0);
+	draw_text_button(esContext, "save", VIEW_MODE_FCMENU, "[SAVE]", FONT_WHITE, 1.2, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_save, 0.0);
 
-	draw_button(esContext, "xmldesc", VIEW_MODE_FCMENU, "[XML_DESC]", FONT_WHITE, 0.5, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_xml_save, 0.0);
+	draw_text_button(esContext, "xmldesc", VIEW_MODE_FCMENU, "[XML_DESC]", FONT_WHITE, 0.5, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, baseflightcli_xml_save, 0.0);
 
 
 	if (baseflightcli_version[0] != 0) {
-		draw_button(esContext, "version", VIEW_MODE_FCMENU, baseflightcli_version, FONT_WHITE, 0.0, 0.85, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, baseflightcli_null, 0.0);
+		draw_text_button(esContext, "version", VIEW_MODE_FCMENU, baseflightcli_version, FONT_WHITE, 0.0, 0.85, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, baseflightcli_null, 0.0);
 	}
 
 	if (baseflightcli_startup == 0) {
