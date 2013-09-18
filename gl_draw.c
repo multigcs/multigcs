@@ -19,6 +19,7 @@
 #ifndef OSX
 #define NO_SDL_GLEXT
 #include <GL/glew.h>
+#include <GL/glext.h>
 #include <GL/gl.h>
 #else
 #include <OpenGL/glu.h>
@@ -1395,7 +1396,7 @@ int gl_init (uint16_t w, uint16_t h) {
 	glBindRenderbuffer(GL_RENDERBUFFER, RB_depthrenderbuffer);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 768);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, RB_depthrenderbuffer);
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, RB_renderedTexture, 0);
+	glFramebufferTextureEXT(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, RB_renderedTexture, 0);
 	glDrawBuffers(1, RB_DrawBuffers);
 	draw_to_screen();
 
