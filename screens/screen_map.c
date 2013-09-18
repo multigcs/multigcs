@@ -18,9 +18,10 @@
 #else
 #include <OpenGL/glu.h>
 #endif
-
+#ifndef RPI_NO_X
 #include <SDL.h>
 #include <SDL_opengl.h>
+#endif
 
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
