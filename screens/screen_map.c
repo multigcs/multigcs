@@ -10,6 +10,7 @@
 #include <time.h>
 #include <curl/curl.h>
 
+#ifndef RPI_NO_X
 #ifndef OSX
 #define NO_SDL_GLEXT
 #include <GL/gl.h>
@@ -18,7 +19,6 @@
 #else
 #include <OpenGL/glu.h>
 #endif
-#ifndef RPI_NO_X
 #include <SDL.h>
 #include <SDL_opengl.h>
 #endif
