@@ -30,3 +30,40 @@ Installation:
 		make all install
 
 
+
+Raspberry-PI:
+#cat /boot/config.txt 
+hdmi_safe=1
+hdmi_drive=2
+disable_overscan=1
+overscan_left=0
+overscan_right=0
+overscan_top=0
+overscan_bottom=0
+hdmi_group=2
+hdmi_mode=22
+arm_freq=700
+core_freq=250
+sdram_freq=400
+over_voltage=0
+
+#cat /root/.multigcs/setup.cfg 
+model_name		
+view_mode		7
+contrast		0
+screen_w		1280
+screen_h		720
+screen_border_x		32
+screen_border_y		28
+keep_ratio		1.422200
+
+#cat /etc/rc.local
+#!/bin/sh -e
+
+/etc/init.d/dbus restart
+/etc/init.d/bluetooth restart
+su - root -c gcs
+
+exit 0
+
+
