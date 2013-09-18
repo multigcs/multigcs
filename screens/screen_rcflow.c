@@ -2210,7 +2210,9 @@ void rcflow_calc_Embedded (void) {
 #endif
 
 #ifdef ADC_TEST
-//	uint8_t output = 0;
+#ifndef RPI_NO_X
+	uint8_t output = 0;
+#endif
 	for (plugin = 0; plugin < MAX_PLUGINS; plugin++) {
 		if (RcPluginEmbedded[plugin].type == RCFLOW_PLUGIN_ADC) {
 			for (output = 0; output < MAX_OUTPUTS; output++) {
