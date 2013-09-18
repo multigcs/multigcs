@@ -15,7 +15,9 @@
 #include <getopt.h>
 #include <ctype.h>
 #include <termios.h>
-
+#ifdef RPI_NO_X
+#include <linux/input.h>
+#endif
 #include <png.h>
 #ifdef OSX
 #include <SDL_main.h>
