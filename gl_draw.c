@@ -49,6 +49,12 @@ TextureCache TexCache[MAX_TEXCACHE];
 GLfloat colors[4] = {1.0f, 0.0f, 0.0f, 1.0f};
 float aspect = 1.0;
 
+GLuint RB_FramebufferName = 0;
+GLuint RB_renderedTexture = 0;
+GLuint RB_depthrenderbuffer = 0;
+GLenum RB_DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+
+
 void esTranslate(ESMatrix *result, GLfloat tx, GLfloat ty, GLfloat tz) {
 	glTranslatef(tx, ty, tz);
 }
@@ -1375,10 +1381,30 @@ int gl_init (uint16_t w, uint16_t h) {
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 */
 
+
+	// create Render-Buffer
+	glGenFramebuffers(1, &RB_FramebufferName);
+	glBindFramebuffer(GL_FRAMEBUFFER, RB_FramebufferName);
+	glGenTextures(1, &RB_renderedTexture);
+ 	glBindTexture(GL_TEXTURE_2D, RB_renderedTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, setup.screen_w, setup.screen_h, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glGenRenderbuffers(1, &RB_depthrenderbuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, RB_depthrenderbuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 768);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, RB_depthrenderbuffer);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, RB_renderedTexture, 0);
+	glDrawBuffers(1, RB_DrawBuffers);
+	draw_to_screen();
+
 	return 0;
 }
 
 void glExit (ESContext *esContext) {
+	// Delete Render-Buffer
+	glDeleteTextures(1, &RB_renderedTexture);
+	glDeleteFramebuffers(1, &RB_FramebufferName);
 }
 
 void glResize (ESContext *esContext, int w, int h) {
@@ -1528,4 +1554,36 @@ void draw_graph_value (ESContext *esContext, float px1, float py1, float px2, fl
 void resize_border (void) {
 	glViewport(0 + setup.screen_border_x / 2, 0 + setup.screen_border_y / 2, setup.screen_w - setup.screen_border_x, setup.screen_h - setup.screen_border_y);
 }
+
+void draw_to_buffer (void) {
+	glBindFramebuffer(GL_FRAMEBUFFER, RB_FramebufferName);
+	glViewport(0,0,1024,768); // Render on the whole framebuffer, complete from the lower left corner to the upper right
+	glMatrixMode(GL_MODELVIEW);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void draw_to_screen (void) {
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0 + setup.screen_border_x / 2, 0 + setup.screen_border_y / 2, setup.screen_w - setup.screen_border_x, setup.screen_h - setup.screen_border_y);
+}
+
+void draw_buffer_to_screen (float x1, float y1, float x2, float y2, float z, float alpha) {
+	glColor4f(1.0, 1.0, 1.0, alpha);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, RB_renderedTexture);
+	glBegin(GL_QUADS);
+		glTexCoord2i( 0, 0 );
+		glVertex3f(x1, y2, -2.0 + z);
+		glTexCoord2i( 1, 0 );
+		glVertex3f(x2, y2, -2.0 + z);
+		glTexCoord2i( 1, 1 );
+		glVertex3f(x2, y1, -2.0 + z);
+		glTexCoord2i( 0, 1 );
+		glVertex3f(x1, y1, -2.0 + z);
+	glEnd();
+	glDisable(GL_TEXTURE_2D);
+}
+
+
 

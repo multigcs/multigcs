@@ -1270,7 +1270,12 @@ void screen_hud (ESContext *esContext) {
 	draw_text_button(esContext, "view_map_bw", VIEW_MODE_HUD, "BW", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_bw, 0);
 #endif
 
-	//printf("hud#11\n");
+
+	draw_to_buffer();
+	display_map(esContext, lat, lon, zoom, 0, 1, 0.0, 0.0, 0.0);
+	draw_to_screen();
+	draw_buffer_to_screen(0.9, -0.4, 1.4, -0.85, 0.0, 1.0);
+
 
 #ifdef SDLGL
 	glPopMatrix();

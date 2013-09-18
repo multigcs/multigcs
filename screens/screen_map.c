@@ -1646,7 +1646,10 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	uint8_t tiles_num = 0;
 	int16_t n = 0;
 
-	reset_buttons();
+	if (setup.view_mode == VIEW_MODE_MAP) {
+		reset_buttons();
+	}
+
 #ifdef SDLGL
 	if (_map_view == 1) {
 		glMatrixMode( GL_PROJECTION );
@@ -2167,7 +2170,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	sprintf(tmp_str, "%0.1fkm (Z:%i)", scale / 1000.0, zoom);
 	draw_text(esContext, 10, esContext->height - 40, 8, 8, FONT_BLACK_BG, tmp_str);
 
-
 	if (strcmp(mapnames[map_type][MAP_NAME], "GAPI") == 0 || strcmp(mapnames[map_type][MAP_TYPE], "GOOGLE") == 0) {
 		sprintf(tile_name, "%s/.multigcs/MAPS/google.png", getenv("HOME"));
 		if (file_exists(tile_name) != 0) {
@@ -2175,7 +2177,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 		draw_text_f3(esContext, -1.2, 0.955, 0.003, 0.025, 0.04, FONT_GREEN, "Grafiken (c)2012 AeroWest, DigitalGlobe, GeoBasis-DE/BKG, GeoContent, GeoEye, TerraMetrics, Kartendaten (c)2012 GeoBasis-DE/BKG ((c)2009), Google");
 	}
-	if (_map_view != 3 && _map_view != 4 && _map_view != 5) {
+	if (_map_view != 3 && _map_view != 4 && _map_view != 5 && setup.view_mode == VIEW_MODE_MAP) {
 //		draw_text_button(esContext, "map_uav2home", VIEW_MODE_MAP, "UAV->HOME", FONT_GREEN_BG, -0.9, -0.96, 0.002, 0.06, 1, 0, map_uav2home, 0.0);
 		uint8_t ny = 0;
 		ny++;
@@ -2382,7 +2384,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	}
 	glEnable( GL_DEPTH_TEST );
 #ifdef SDLGL
-
 	if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
 		roty = 0.0;
 		glMatrixMode(GL_PROJECTION);
@@ -2391,17 +2392,11 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	}
 	glPopMatrix();
 #endif
-
-
 }
 
 void screen_map (ESContext *esContext, float lat, float lon, uint8_t zoom) {
 	display_map(esContext, lat, lon, zoom, map_view, 1, 0.0, 0.0, 0.0);
-
-
-glViewport(0 + setup.screen_border_x / 2, 0 + setup.screen_border_y / 2, w - setup.screen_border_x, h - setup.screen_border_y);
-
-
-
-
 }
+
+
+
