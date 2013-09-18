@@ -2397,4 +2397,11 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 
 void screen_map (ESContext *esContext, float lat, float lon, uint8_t zoom) {
 	display_map(esContext, lat, lon, zoom, map_view, 1, 0.0, 0.0, 0.0);
+
+
+glViewport(0 + setup.screen_border_x / 2, 0 + setup.screen_border_y / 2, w - setup.screen_border_x, h - setup.screen_border_y);
+
+
+
+
 }
