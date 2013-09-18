@@ -78,12 +78,14 @@ EGLBoolean CreateEGLContext ( EGLNativeWindowType hWnd, EGLDisplay* eglDisplay,
    display = eglGetDisplay((EGLNativeDisplayType)x_display);
    if ( display == EGL_NO_DISPLAY )
    {
+	printf("gles: eglGetDisplay failed\n");
       return EGL_FALSE;
    }
    #else
    display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
    if ( display == EGL_NO_DISPLAY )
    {
+	printf("gles: eglGetDisplay failed\n");
       return EGL_FALSE;
    }
    #endif
@@ -91,18 +93,21 @@ EGLBoolean CreateEGLContext ( EGLNativeWindowType hWnd, EGLDisplay* eglDisplay,
    // Initialize EGL
    if ( !eglInitialize(display, &majorVersion, &minorVersion) )
    {
+	printf("gles: eglInitialize failed\n");
       return EGL_FALSE;
    }
 
    // Get configs
    if ( !eglGetConfigs(display, NULL, 0, &numConfigs) )
    {
+	printf("gles: eglGetConfigs failed\n");
       return EGL_FALSE;
    }
 
    // Choose config
    if ( !eglChooseConfig(display, attribList, &config, 1, &numConfigs) )
    {
+	printf("gles: eglChooseConfig failed\n");
       return EGL_FALSE;
    }
 
@@ -110,6 +115,7 @@ EGLBoolean CreateEGLContext ( EGLNativeWindowType hWnd, EGLDisplay* eglDisplay,
    surface = eglCreateWindowSurface(display, config, (EGLNativeWindowType)hWnd, NULL);
    if ( surface == EGL_NO_SURFACE )
    {
+	printf("gles: eglCreateWindowSurface failed\n");
       return EGL_FALSE;
    }
 
@@ -117,12 +123,14 @@ EGLBoolean CreateEGLContext ( EGLNativeWindowType hWnd, EGLDisplay* eglDisplay,
    context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs );
    if ( context == EGL_NO_CONTEXT )
    {
+	printf("gles: eglCreateContext failed\n");
       return EGL_FALSE;
    }   
    
    // Make the context current
    if ( !eglMakeCurrent(display, surface, surface, context) )
    {
+	printf("gles: eglMakeCurrent failed\n");
       return EGL_FALSE;
    }
    
@@ -150,25 +158,38 @@ EGLBoolean WinCreate(ESContext *esContext, const char *title)
    VC_RECT_T dst_rect;
    VC_RECT_T src_rect;
 
-   int display_width;
-   int display_height;
+   uint32_t display_width;
+   uint32_t display_height;
+  SDL_VideoInfo* videoInfo;
 
-   SDL_Init(SDL_INIT_AUDIO | SDL_INIT_JOYSTICK);
-   SDL_SetVideoMode(esContext->width, esContext->height, 16, SDL_HWPALETTE | SDL_HWACCEL);
+   printf("gles: init sdl\n");
+   SDL_Init(SDL_INIT_VIDEO);
+   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+      printf("gles: SDL_Init failed\n");
+      return EGL_FALSE;
+   }
+
+   printf("gles: sdl get VideoInfo\n");
+   videoInfo = SDL_GetVideoInfo () ;
+   int systemZ = videoInfo->vfmt->BitsPerPixel ;
+   printf("gles: videoInfo: %ix%i\n", esContext->width, esContext->height);
+
+   SDL_SetVideoMode(0, 0, 16, SDL_SWSURFACE);
+   printf("gles: init sdl ok\n");
 
    // create an EGL window surface, passing context width/height
-   success = graphics_get_display_size(0 /* LCD */, &display_width, &display_height);
+   success = graphics_get_display_size(0, &display_width, &display_height);
    if ( success < 0 )
    {
+      printf("gles: graphics_get_display_size failed\n");
       return EGL_FALSE;
    }
    
    // You can hardcode the resolution here:
-
    display_width = display_width;
    display_height = display_height;
 
-printf("## %i, %i ##\n", display_width, display_height);
+   printf("## %i, %i ##\n", display_width, display_height);
 
    dst_rect.x = 0;
    dst_rect.y = 0;
@@ -409,6 +430,7 @@ GLboolean ESUTIL_API esCreateWindow ( ESContext *esContext, const char* title, G
    
    if ( esContext == NULL )
    {
+      printf("gles: esContext failed\n");
       return GL_FALSE;
    }
 
@@ -417,8 +439,10 @@ GLboolean ESUTIL_API esCreateWindow ( ESContext *esContext, const char* title, G
 
    if ( !WinCreate ( esContext, title) )
    {
+      printf("gles: WinCreate failed\n");
       return GL_FALSE;
    }
+      printf("gles: WinCreate ok\n");
 
   
    if ( !CreateEGLContext ( esContext->hWnd,
@@ -427,8 +451,10 @@ GLboolean ESUTIL_API esCreateWindow ( ESContext *esContext, const char* title, G
                             &esContext->eglSurface,
                             attribList) )
    {
+      printf("gles: CreateEGLContext failed\n");
       return GL_FALSE;
    }
+      printf("gles: CreateEGLContext ok\n");
    
 
    return GL_TRUE;

@@ -547,7 +547,7 @@ void setup_load (void) {
 	setup.screen_h = SCREEN_H;
 	setup.screen_border_x = 0;
 	setup.screen_border_y = 0;
-	setup.keep_ratio = 0.0;
+	setup.keep_ratio = 1.4222;
 	setup.touchscreen_device[0] = 0;
 	keyboard_key[0] = 0;
 	setup.calibration_mode = 1;
