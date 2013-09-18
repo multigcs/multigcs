@@ -826,7 +826,11 @@ int glesInit ( ESContext *esContext ) {
 	userData->mvpLoc2 = glGetUniformLocation( userData->programObject2, "u_mvpMatrix" );
 	userData->colorLoc2 = glGetUniformLocation ( userData->programObject2, "u_color" );
 
-	aspect = (GLfloat)esContext->width / (GLfloat)esContext->height;
+	if (setup.keep_ratio == 0.0) {
+		aspect = (GLfloat)esContext->width / (GLfloat)esContext->height;
+	} else {
+		aspect = setup.keep_ratio;
+	}
 	esMatrixLoadIdentity( &userData->perspective );
 
 	glViewport(0 + setup.screen_border_x / 2, 0 + setup.screen_border_y / 2, esContext->width - setup.screen_border_x, esContext->height - setup.screen_border_y);
