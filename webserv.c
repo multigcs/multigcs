@@ -36,7 +36,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <logging.h>
-
+#include <my_mavlink.h>
 
 extern void save_screenshot2 (void);
 extern volatile uint8_t zoom;
@@ -247,6 +247,8 @@ void webserv_child_dump_modeldata (int fd) {
 	sprintf(tmp_str, "sysid=%i\n", ModelData.sysid);
 	strcat(content, tmp_str);
 	sprintf(tmp_str, "compid=%i\n", ModelData.compid);
+	strcat(content, tmp_str);
+	sprintf(tmp_str, "mavlink_update=%i\n", ModelData.mavlink_update);
 	strcat(content, tmp_str);
 
 	sprintf(buffer, header_str, (int)strlen(content), "text/plain");
@@ -1020,6 +1022,8 @@ void webserv_child (int fd) {
 						ModelData.sysid = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "compid") == 0) {
 						ModelData.compid = atoi(tmp_str + start);
+					} else if (strcmp(tmp_str, "mavlink_update") == 0) {
+						ModelData.mavlink_update = atoi(tmp_str + start);
 					}
 				}
 			}
@@ -1037,9 +1041,35 @@ void webserv_child (int fd) {
 		// Misc
 		if (strncmp(buffer + 4,"/modeldata", 10) == 0) {
 			webserv_child_dump_modeldata(fd);
+
+		} else if (strncmp(buffer + 4,"/mavlink_value_set?", 19) == 0) {
+			char name[20];
+			float value = 0.0;
+			int type = 0;
+			sscanf(buffer + 4 + 19, "%[0-9a-zA-Z_]=%f&%i", name, &value, &type);
+
+			mavlink_set_value(name, value, type, -1);
+			mavlink_send_value(name, value, type);
+
+			sprintf(content, "mavlink set value: %s to %f (type:%i)\n", name, value, type);
+			sprintf(buffer, header_str, (int)strlen(content), "text/plain");
+			write(fd, buffer, strlen(buffer));
+			write(fd, content, strlen(content));
+		} else if (strncmp(buffer + 4,"/mavlink_value_get", 18) == 0) {
+			uint16_t n = 0;
+			strcpy(content, "# MAV ID  COMPONENT ID  PARAM NAME  VALUE (FLOAT) TYPE (INT)\n");
+			for (n = 0; n < 500; n++) {
+				if (MavLinkVars[n].name[0] != 0) {
+					sprintf(tmp_str, "%i %i %s %f %i\n", ModelData.sysid, ModelData.compid, MavLinkVars[n].name, MavLinkVars[n].value, MavLinkVars[n].type);
+					strcat(content, tmp_str);
+				}
+			}
+			sprintf(buffer, header_str, (int)strlen(content), "text/plain");
+			write(fd, buffer, strlen(buffer));
+			write(fd, content, strlen(content));
+
 		} else if (strncmp(buffer + 4,"/blender.txt", 12) == 0) {
 			webserv_child_dump_blender(fd);
-
 		} else if (strncmp(buffer + 4,"/blender-export.py", 18) == 0) {
 			sprintf(tmp_str, "%s/webserv/blender-export.py", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/plain");
@@ -1272,6 +1302,9 @@ void webserv_child (int fd) {
 		} else if (strncmp(buffer + 4,"/lonlat.txt", 11) == 0) {
 			webserv_child_show_lonlat(fd);
 		} else {
+			printf("###################\n");
+			printf("%s", buffer);
+			printf("\n###################\n");
 			sprintf(tmp_str, "%s/webserv/index.html", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/html");
 		}

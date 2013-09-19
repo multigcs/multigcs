@@ -88,6 +88,7 @@ extern void mavlink_exit (void);
 extern void mavlink_param_xml_meta_load (void);
 void stop_feeds (void);
 void mavlink_send_value (char *name, float val, uint8_t type);
+void mavlink_set_value (char *name, float val, uint8_t type, uint16_t id);
 void mavlink_handleMessage(mavlink_message_t* msg);
 void read_waypoints (void);
 void save_to_flash (void);
@@ -99,4 +100,3 @@ void start_feeds (void);
 int serial_close(int fd);
 int serial_open(char *mdevice, uint32_t baud);
 uint8_t mavlink_connection_status (void);
-

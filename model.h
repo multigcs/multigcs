@@ -84,6 +84,7 @@ typedef struct {
 	float ampere;
 	uint8_t sysid;
 	uint8_t compid;
+	uint32_t mavlink_update;
 } Model;
 
 extern Model ModelData;

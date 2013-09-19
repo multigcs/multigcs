@@ -34,6 +34,7 @@
 #include <screen_filesystem.h>
 #include <screen_device.h>
 #include <screen_baud.h>
+#include <webclient.h>
 
 extern int file_exists (char *fileName);
 static uint8_t select_teletype = 0;
@@ -456,6 +457,13 @@ void screen_model (ESContext *esContext) {
 	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
+
+	if (clientmode == 1) {
+
+		draw_text_button(esContext, "clientmode", VIEW_MODE_MODEL, "Client-Mode / No Config", FONT_PINK, 0.0, 0.0, 0.002, 0.1, ALIGN_CENTER, ALIGN_TOP, model_null, (float)n);
+
+		return;
+	}
 
 	if (select_teletype == 1) {
 		for (n = 0; n < TELETYPE_LAST; n++) {

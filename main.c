@@ -329,6 +329,9 @@ void stop_telemetry (void) {
 
 void reset_telemetry (void) {
 	stop_telemetry();
+	if (clientmode == 1) {
+		return;
+	}
 	if (ModelData.teletype == TELETYPE_MULTIWII_21) {
 		mwi21_init(setup.telemetry_port, setup.telemetry_baud);
 	} else if (ModelData.teletype == TELETYPE_SIMPLEBGC) {
@@ -353,6 +356,9 @@ void reset_telemetry (void) {
 }
 
 void set_telemetry (char *device, uint32_t baud) {
+	if (clientmode == 1) {
+		return;
+	}
 	strncpy(setup.telemetry_port, device, 1023);
 	setup.telemetry_baud = baud;
 	reset_telemetry();
@@ -1861,6 +1867,8 @@ int main ( int argc, char *argv[] ) {
 	sprintf(dir, "%s/.multigcs/logs", getenv("HOME"));
 	mkdir(dir, 0755);
 	sprintf(dir, "%s/.multigcs/models", getenv("HOME"));
+	mkdir(dir, 0755);
+	sprintf(dir, "%s/.multigcs/PARAMS", getenv("HOME"));
 	mkdir(dir, 0755);
 
 	if (argc >= 3 && strcmp(argv[1], "-c") == 0) {

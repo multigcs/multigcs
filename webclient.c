@@ -9,11 +9,55 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <SDL.h>
 #include <model.h>
+#include <my_mavlink.h>
 
 uint8_t clientmode = 0;
 char clientmode_server[1024];
 uint16_t clientmode_port = 8080;
+
+void webclient_mavlink_get (char *server, uint16_t port) {
+	int sockfd;
+	int n = 0;
+	char tmp_str[1024];
+	char sendline[1024];
+	char recvline[5001];
+	struct sockaddr_in servaddr;
+	if ((sockfd = socket(AF_INET,SOCK_STREAM,0)) < 0) {
+		return;
+	}
+
+	bzero(&servaddr, sizeof(servaddr));
+	servaddr.sin_family = AF_INET;
+	servaddr.sin_addr.s_addr = inet_addr(server);
+	servaddr.sin_port = htons(port);
+
+	connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr));
+
+	sprintf(sendline, "GET /mavlink_value_get HTTP/1.1\nHost: %s:%i\n\n", server, port);
+	sendto(sockfd, sendline, strlen(sendline), 0, (struct sockaddr *)&servaddr, sizeof(servaddr));
+
+	SDL_Delay(100);
+
+	n = recvfrom(sockfd, recvline, 5000, 0, NULL, NULL);
+	recvline[n] = 0;
+
+	for (n = 5; n < strlen(recvline); n++) {
+		if (recvline[n] == '\n') {
+			strncpy(tmp_str, recvline + n + 1, 100);
+			int id1 = 0;
+			int id2 = 0;
+			char name[100];
+			float value = 0.0;
+			int type = 0;
+			sscanf(tmp_str, "%i %i %[0-9a-zA-Z_] %f %i", &id1, &id2, name, &value, &type);
+			mavlink_set_value(name, value, type, -1);
+//			printf("webserv: ## %s = %f ##\n", name, value);
+		}
+	}
+	close(sockfd);
+}
 
 void webclient_update (char *server, uint16_t port) {
 	int sockfd;
@@ -22,7 +66,6 @@ void webclient_update (char *server, uint16_t port) {
 	char sendline[100];
 	char recvline[1024];
 	struct sockaddr_in servaddr;
-
 	if ((sockfd = socket(AF_INET,SOCK_STREAM,0)) < 0) {
 		return;
 	}
@@ -40,6 +83,7 @@ void webclient_update (char *server, uint16_t port) {
 	n = recvfrom(sockfd, recvline, 1023, 0, NULL, NULL);
 	recvline[n] = 0;
 
+	int flag = 0;
 	int l = 0;
 	int l2 = 0;
 	int start = 0;
@@ -185,9 +229,48 @@ void webclient_update (char *server, uint16_t port) {
 				ModelData.sysid = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "compid") == 0) {
 				ModelData.compid = atoi(tmp_str + start);
+			} else if (strcmp(tmp_str, "mavlink_update") == 0) {
+				if (ModelData.mavlink_update < atoi(tmp_str + start)) {
+					ModelData.mavlink_update = atoi(tmp_str + start);
+					flag = 1;
+				}
 			}
 		}
 	}
+	close(sockfd);
+	if (flag == 1) {
+		webclient_mavlink_get(server, port);
+		return;
+	}
+}
+
+
+void webclient_send_value (char *server, uint16_t port, char *name, float value, int type) {
+	int sockfd;
+	int n = 0;
+	char sendline[100];
+	char recvline[1024];
+	struct sockaddr_in servaddr;
+
+	printf("%s %f %i\n", name, value, type);
+
+	if ((sockfd = socket(AF_INET,SOCK_STREAM,0)) < 0) {
+		return;
+	}
+
+	bzero(&servaddr, sizeof(servaddr));
+	servaddr.sin_family = AF_INET;
+	servaddr.sin_addr.s_addr = inet_addr(server);
+	servaddr.sin_port = htons(port);
+
+	connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr));
+
+	sprintf(sendline, "GET /mavlink_value_set?%s=%f&%i HTTP/1.1\nHost: %s:%i\n\n", name, value, type, server, port);
+
+	sendto(sockfd, sendline, strlen(sendline), 0, (struct sockaddr *)&servaddr, sizeof(servaddr));
+	n = recvfrom(sockfd, recvline, 1023, 0, NULL, NULL);
+	recvline[n] = 0;
+
 	close(sockfd);
 }
 

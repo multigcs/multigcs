@@ -24,7 +24,7 @@
 #include <main.h>
 #include <my_mavlink.h>
 #include <screen_map.h>
-
+#include <webclient.h>
 
 #define UDP_BUFLEN 2042
 #define UDP_PORT 14550
@@ -76,7 +76,6 @@ uint8_t mavlink_init (char *port, uint32_t baud) {
 		fprintf(stderr, "mavlink: Thread konnte nicht gestartet werden (mavlink_udp): %s\n", SDL_GetError());
 		return 0;
 	}
-
 	return 0;
 }
 
@@ -103,7 +102,71 @@ void stop_feeds (void) {
 void mavlink_send_value (char *name, float val, uint8_t type) {
 	mavlink_message_t msg;
 	mavlink_msg_param_set_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, name, val, type);
-	send_message(&msg);
+	if (clientmode == 1) {
+		webclient_send_value(clientmode_server, clientmode_port, name, val, type);
+	} else {
+		send_message(&msg);
+		ModelData.mavlink_update = (int)time(0);
+	}
+}
+
+void mavlink_set_value (char *name, float value, uint8_t type, uint16_t id) {
+	uint16_t n = 0;
+	uint8_t flag = 0;
+	float min = 999999.0;
+	float max = 999999.0;
+	for (n = 0; n < 500; n++) {
+		if (strcmp(MavLinkVars[n].name, name) == 0 && (MavLinkVars[n].id == id || MavLinkVars[n].id == -1 || id > 65000)) {
+			MavLinkVars[n].value = value;
+			MavLinkVars[n].id = id;
+			MavLinkVars[n].type = type;
+			flag = 1;
+			break;
+		}
+	}
+	if (flag == 0) {
+		for (n = 0; n < 500; n++) {
+			if (MavLinkVars[n].name[0] == 0) {
+				if (type == MAV_VAR_FLOAT) {
+					min = -999999.0;
+					max = 999999.0;
+				} else if (type == MAV_VAR_UINT8) {
+					min = 0.0;
+					max = 255.0;
+				} else if (type == MAV_VAR_INT8) {
+					min = -127.0;
+					max = 127.0;
+				} else if (type == MAV_VAR_UINT16) {
+					min = 0.0;
+					max = 65535.0;
+				} else if (type == MAV_VAR_INT16) {
+					min = -32767.0;
+					max = 32767.0;
+				} else if (type == MAV_VAR_UINT32) {
+					min = 0.0;
+					max = 999999.0;
+				} else if (type == MAV_VAR_INT32) {
+					min = -999999.0;
+					max = 999999.0;
+				} else {
+					min = -999999.0;
+					max = 999999.0;
+				}
+				if (strstr(name, "baud") > 0) {
+					min = 1200.0;
+					max = 115200.0;
+				}
+				strncpy(MavLinkVars[n].name, name, 16);
+				MavLinkVars[n].value = value;
+				MavLinkVars[n].id = id;
+				MavLinkVars[n].type = type;
+				MavLinkVars[n].min = min;
+				MavLinkVars[n].max = max;
+				break;
+			}
+		}
+	}
+	ModelData.mavlink_update = (int)time(0);
 }
 
 void mavlink_handleMessage(mavlink_message_t* msg) {
@@ -266,58 +329,8 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 			sys_message(sysmsg_str);
 			mavlink_maxparam = packet.param_count;
 			mavlink_timeout = 0;
-			uint16_t n = 0;
-			uint8_t flag = 0;
-			float min = 999999.0;
-			float max = 999999.0;
-			if (packet.param_type == MAV_VAR_FLOAT) {
-				min = -999999.0;
-				max = 999999.0;
-			} else if (packet.param_type == MAV_VAR_UINT8) {
-				min = 0.0;
-				max = 255.0;
-			} else if (packet.param_type == MAV_VAR_INT8) {
-				min = -127.0;
-				max = 127.0;
-			} else if (packet.param_type == MAV_VAR_UINT16) {
-				min = 0.0;
-				max = 65535.0;
-			} else if (packet.param_type == MAV_VAR_INT16) {
-				min = -32767.0;
-				max = 32767.0;
-			} else if (packet.param_type == MAV_VAR_UINT32) {
-				min = 0.0;
-				max = 999999.0;
-			} else if (packet.param_type == MAV_VAR_INT32) {
-				min = 999999.0;
-				max = 999999.0;
-			}
-			if (strstr(var, "baud") > 0) {
-				min = 1200.0;
-				max = 115200.0;
-			}
-			for (n = 0; n < 500; n++) {
-				if (strcmp(MavLinkVars[n].name, var) == 0 && (MavLinkVars[n].id == packet.param_index || MavLinkVars[n].id == -1 || packet.param_index > 65000)) {
-					MavLinkVars[n].value = packet.param_value;
-					MavLinkVars[n].id = packet.param_index;
-					MavLinkVars[n].type = packet.param_type;
-					flag = 1;
-					break;
-				}
-			}
-			if (flag == 0) {
-				for (n = 0; n < 500; n++) {
-					if (MavLinkVars[n].name[0] == 0) {
-						strncpy(MavLinkVars[n].name, var, 100);
-						MavLinkVars[n].value = packet.param_value;
-						MavLinkVars[n].id = packet.param_index;
-						MavLinkVars[n].type = packet.param_type;
-						MavLinkVars[n].min = min;
-						MavLinkVars[n].max = max;
-						break;
-					}
-				}
-			}
+
+			mavlink_set_value(var, packet.param_value, packet.param_type, packet.param_index);
 
 			if (packet.param_index + 1 == packet.param_count || packet.param_index % 10 == 0) {
 				mavlink_param_xml_meta_load();

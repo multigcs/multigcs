@@ -346,7 +346,7 @@ uint8_t mavlink_param_file_save (char *name, float x, float y, int8_t button, fl
 	char filename[1024];
 	FILE *fr;
 	int n = 0;
-	sprintf(filename, "%s/PARAMS/%s", BASE_DIR, name);
+	sprintf(filename, "%s/.multigcs/PARAMS/%s", getenv("HOME"), name);
 	if ((fr = fopen(filename, "w")) != 0) {
 		fprintf(fr, "# Onboard parameters\n");
 		fprintf(fr, "#\n");
@@ -381,7 +381,7 @@ uint8_t mavlink_param_file_load (char *name, float x, float y, int8_t button, fl
 
 uint8_t mavlink_param_load (char *name, float x, float y, int8_t button, float data) {
 	char directory[200];
-	sprintf(directory, "%s/PARAMS", BASE_DIR);
+	sprintf(directory, "%s/.multigcs/PARAMS", getenv("HOME"));
 	filesystem_set_callback(mavlink_param_file_load);
 	filesystem_set_dir(directory);
 	filesystem_reset_filter();
@@ -458,31 +458,7 @@ void mavlink_param_read_file (char *param_file) {
 		if (line[0] != '#' && line[0] != '\n') {
 	                sscanf (line, "%i %i %s %s", &tmp_int1, &tmp_int2, (char *)&var1, (char *)&val);
 			float new_val = atof(val);
-			uint16_t n = 0;
-			uint8_t flag = 0;
-			for (n = 0; n < 500; n++) {
-				if (strcmp(MavLinkVars[n].name, var1) == 0) {
-					float old_val = MavLinkVars[n].value;
-					if (old_val != new_val) {
-						printf ("CHANGED: %s = %f (OLD: %f)\n", var1, new_val, MavLinkVars[n].value);
-						MavLinkVars[n].value = atof(val);
-					}
-					flag = 1;
-					break;
-				}
-			}
-			if (flag == 0) {
-				for (n = 0; n < 500; n++) {
-					if (MavLinkVars[n].name[0] == 0) {
-						strncpy(MavLinkVars[n].name, var1, 99);
-						MavLinkVars[n].value = atof(val);
-						MavLinkVars[n].id = -1;
-				                printf ("NEW: %s = %f\n", var1, atof(val));
-						break;
-					}
-				}
-			}
-
+			mavlink_set_value(var1, new_val, -1, -1);
 		}
         }
         fclose(fr);
