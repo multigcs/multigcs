@@ -44,6 +44,7 @@ uint8_t map_type_select = 0;
 uint8_t omap_type = 0;
 uint8_t omap_type_select = 0;
 uint8_t map_view = 0;
+uint8_t map_color = 0;
 uint8_t map_startup = 0;
 float offset_x1 = 0.0;
 float offset_y1 = 0.0;
@@ -638,6 +639,15 @@ uint8_t map_view_change (char *name, float x, float y, int8_t button, float data
 		map_view++;
 	} else {
 		map_view = 0;
+	}
+	return 0;
+}
+
+uint8_t map_color_change (char *name, float x, float y, int8_t button, float data) {
+	if (map_color < 1) {
+		map_color++;
+	} else {
+		map_color = 0;
 	}
 	return 0;
 }
@@ -1674,7 +1684,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		_map_view = 0;
 	}
 #endif
-	map_view = _map_view;
+//	map_view = _map_view;
 	if (center_map == 1 || _map_view == 3 || _map_view == 4 || _map_view == 5) {
 		draw_xy(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset), lat, lon, zoom, &offset_x1, &offset_y1);
 		if (offset_x1 < -0.8) {
@@ -1854,11 +1864,10 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 					if (draw_tiles == 0) {
 						tile_name[0] = 0;
 					}
-
-if (map_side != 0) {
-alpha1 = 0.5;
-alpha2 = 0.5;
-}
+					if (alpha1 == 0.0 && alpha2 == 0.0 && map_color == 1) {
+						alpha1 = 0.5;
+						alpha2 = 0.5;
+					}
 					if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
 						draw_image_srtm(esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, zoom), tilex2long(tile_x + x_n, zoom), tiley2lat(tile_y + y_n + 1, zoom), tilex2long(tile_x + x_n + 1, zoom), alpha1, alpha2, grid);
 					} else if (_map_view == 1) {
@@ -2185,18 +2194,6 @@ alpha2 = 0.5;
 		} else {
 			draw_text_button(esContext, "map_center", VIEW_MODE_MAP, "FOLLOW", FONT_WHITE, -1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_center, 0.0);
 		}
-#ifndef RPI_NO_X
-		draw_box_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
-		draw_rect_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
-		if (nav_map == 1) {
-			draw_text_button(esContext, "map_nav", VIEW_MODE_MAP, "NAV", FONT_GREEN, -1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_nav, 0.0);
-		} else {
-			draw_text_button(esContext, "map_nav", VIEW_MODE_MAP, "NAV", FONT_WHITE, -1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_nav, 0.0);
-		}
-#else
-		ny++;
-#endif
-
 		draw_box_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 		draw_rect_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
 		if (map_dir == 1) {
@@ -2218,6 +2215,13 @@ alpha2 = 0.5;
 		if (map_view == 1) {
 			draw_box_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 			draw_rect_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
+			if (map_color == 1) {
+				draw_text_button(esContext, "map_color", VIEW_MODE_MAP, "AC", FONT_GREEN, -1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_color_change, 0.0);
+			} else {
+				draw_text_button(esContext, "map_color", VIEW_MODE_MAP, "AC", FONT_WHITE, -1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_color_change, 0.0);
+			}
+			draw_box_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
+			draw_rect_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
 			if (map_side == 1) {
 				draw_text_button(esContext, "map_side", VIEW_MODE_MAP, "SIDE", FONT_GREEN, -1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_side_change, 0.0);
 				draw_box_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
@@ -2234,6 +2238,7 @@ alpha2 = 0.5;
 			}
 		} else {
 			map_rotate = 0;
+			ny++;
 			ny++;
 			ny++;
 		}
@@ -2306,6 +2311,17 @@ alpha2 = 0.5;
 			draw_text_button(esContext, "map_show_poi", VIEW_MODE_MAP, "POI", FONT_WHITE, 1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_poi, 0.0);
 		}
 
+#ifndef RPI_NO_X
+		draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
+		draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
+		if (nav_map == 1) {
+			draw_text_button(esContext, "map_nav", VIEW_MODE_MAP, "NAV", FONT_GREEN, 1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_nav, 0.0);
+		} else {
+			draw_text_button(esContext, "map_nav", VIEW_MODE_MAP, "NAV", FONT_WHITE, 1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_nav, 0.0);
+		}
+#else
+		ny++;
+#endif
 
 #ifdef SDLGL
 		if (draw_target() == 0) {
