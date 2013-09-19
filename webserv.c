@@ -30,6 +30,7 @@
 #endif
 #include <draw.h>
 #include <main.h>
+#include <screen_mavlink_menu.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -43,7 +44,7 @@ extern volatile uint8_t zoom;
 extern uint8_t map_type;
 extern char mapnames[20][4][200];
 
-#define BUFSIZE 18096
+#define BUFSIZE 98096
 #define PI 3.14159265
 
 static float blender_first_lat = 0.0;
@@ -98,7 +99,7 @@ void webserv_child_dump_file (int fd, char *file, char *type) {
 
 void webserv_child_dump_blender (int fd) {
 	char buffer[1024];
-	char content[1024];
+	char content[BUFSIZE + 1];
 	char tmp_str[100];
 
 	if (blender_first_lat == 0.0 || blender_first_long == 0.0) {
@@ -845,6 +846,7 @@ void webserv_child (int fd) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[BUFSIZE + 1];
+	char tmp_str2[1024];
 	char servername[1024];
 
 	content[0] = 0;
@@ -1055,6 +1057,113 @@ void webserv_child (int fd) {
 			sprintf(buffer, header_str, (int)strlen(content), "text/plain");
 			write(fd, buffer, strlen(buffer));
 			write(fd, content, strlen(content));
+		} else if (strncmp(buffer + 4,"/mavlink_values.html", 20) == 0) {
+			uint16_t n = 0;
+
+
+			strcpy(content, "\n");
+			strcat(content, "<FORM>\n");
+
+			strcat(content, "<SCRIPT>\n");
+			strcat(content, "function check_option(name) {\n");
+			strcat(content, "	var value = document.getElementById(name).options[document.getElementById(name).selectedIndex].value;\n");
+			strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
+			strcat(content, "	xmlHttp.open(\"GET\", \"/mavlink_value_set?\" + name + \"=\" + value, true);\n");
+			strcat(content, "	xmlHttp.send(null);\n");
+			strcat(content, "}\n");
+			strcat(content, "function check_value(name) {\n");
+			strcat(content, "	var value = document.getElementById(name).value;\n");
+			strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
+			strcat(content, "	xmlHttp.open(\"GET\", \"/mavlink_value_set?\" + name + \"=\" + value, true);\n");
+			strcat(content, "	xmlHttp.send(null);\n");
+			strcat(content, "}\n");
+			strcat(content, "</SCRIPT>\n");
+
+			strcat(content, "<TABLE border=\"1\">\n");
+			strcat(content, "<TR><TH>PARAM NAME (DISPLAY)</TH><TH>VALUE (FLOAT)</TH><TH>DESCRIPTION</TH><TH>MIN</TH><TH>MAX</TH></TR>\n");
+			for (n = 0; n < 500; n++) {
+				if (MavLinkVars[n].name[0] != 0) {
+
+					sprintf(tmp_str, "<TR><TD>%s (%s)</TD>\n", MavLinkVars[n].name, MavLinkVars[n].display);
+					strcat(content, tmp_str);
+
+					if (MavLinkVars[n].values[0] != 0) {
+						int n2 = 0;
+						sprintf(tmp_str, "<TD><select onchange=\"check_option('%s');\" id=\"%s\">\n", MavLinkVars[n].name, MavLinkVars[n].name);
+						strcat(content, tmp_str);
+						tmp_str2[0] = 0;
+						for (n2 = (int)MavLinkVars[n].min; n2 <= (int)MavLinkVars[n].max; n2++) {
+							tmp_str2[0] = 0;
+							mavlink_meta_get_option(n2, MavLinkVars[n].name, tmp_str2);
+							if (tmp_str2[0] != 0) {
+								if (n2 == (int)MavLinkVars[n].value) {
+									sprintf(tmp_str, "<option value=\"%i\" selected>%s</option>\n", n2, tmp_str2);
+								} else {
+									sprintf(tmp_str, "<option value=\"%i\">%s</option>\n", n2, tmp_str2);
+								}
+								strcat(content, tmp_str);
+							}
+						}
+						strcat(content, "</select></TD>");
+					} else if (MavLinkVars[n].bits[0] != 0) {
+
+						sprintf(tmp_str, "<TD>\n");
+						strcat(content, tmp_str);
+
+						int n2 = 0;
+						strcat(content, "<SCRIPT>\n");
+						sprintf(tmp_str, "function check_%s() {\n", MavLinkVars[n].name);
+						strcat(content, tmp_str);
+						strcat(content, "	var value = 0;\n");
+						tmp_str2[0] = 0;
+						for (n2 = (int)MavLinkVars[n].min; n2 <= (int)MavLinkVars[n].max; n2++) {
+							tmp_str2[0] = 0;
+							mavlink_meta_get_bits(n2, MavLinkVars[n].name, tmp_str2);
+							if (tmp_str2[0] != 0) {
+								sprintf(tmp_str, "	if (document.getElementsByName(\"%s-%s\")[0].checked) {\n", MavLinkVars[n].name, tmp_str2);
+								strcat(content, tmp_str);
+								sprintf(tmp_str, "		value |= (1<<%i);\n", n2);
+								strcat(content, tmp_str);
+								strcat(content, "	}\n");
+							}
+						}
+						strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
+						sprintf(tmp_str, "	xmlHttp.open(\"GET\", \"/mavlink_value_set?%s=\" + value, true);\n", MavLinkVars[n].name);
+						strcat(content, tmp_str);
+						strcat(content, "	xmlHttp.send(null);\n");
+						strcat(content, "}\n");
+						strcat(content, "</SCRIPT>\n");
+
+						tmp_str2[0] = 0;
+						for (n2 = (int)MavLinkVars[n].min; n2 <= (int)MavLinkVars[n].max; n2++) {
+							tmp_str2[0] = 0;
+							mavlink_meta_get_bits(n2, MavLinkVars[n].name, tmp_str2);
+							if (tmp_str2[0] != 0) {
+								if ((int)MavLinkVars[n].value & (1<<n2)) {
+									sprintf(tmp_str, "<input onchange=\"check_%s();\" type=\"checkbox\" name=\"%s-%s\" value=\"%i\" checked>%s\n", MavLinkVars[n].name, MavLinkVars[n].name, tmp_str2, n2, tmp_str2);
+								} else {
+									sprintf(tmp_str, "<input onchange=\"check_%s();\" type=\"checkbox\" name=\"%s-%s\" value=\"%i\">%s\n", MavLinkVars[n].name, MavLinkVars[n].name, tmp_str2, n2, tmp_str2);
+								}
+								strcat(content, tmp_str);
+							}
+						}
+
+						strcat(content, "</TD>");
+					} else {
+						sprintf(tmp_str, "<TD><input onchange=\"check_value('%s');\" id=\"%s\" value=\"%f\" type=\"text\"></TD>\n", MavLinkVars[n].name, MavLinkVars[n].name, MavLinkVars[n].value);
+						strcat(content, tmp_str);
+					}
+					sprintf(tmp_str, "<TD>%s&nbsp;</TD><TD>%i</TD><TD>%i</TD></TR>\n", MavLinkVars[n].desc, (int)MavLinkVars[n].min, (int)MavLinkVars[n].max);
+					strcat(content, tmp_str);
+				}
+			}
+			strcat(content, "</TABLE>\n");
+			strcat(content, "</FORM>\n");
+
+			sprintf(buffer, header_str, (int)strlen(content), "text/html");
+			write(fd, buffer, strlen(buffer));
+			write(fd, content, strlen(content));
+
 		} else if (strncmp(buffer + 4,"/mavlink_value_get", 18) == 0) {
 			uint16_t n = 0;
 			strcpy(content, "# MAV ID  COMPONENT ID  PARAM NAME  VALUE (FLOAT) TYPE (INT)\n");

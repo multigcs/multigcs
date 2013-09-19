@@ -104,7 +104,7 @@ void mavlink_meta_get_bits (int id, char *name, char *entry) {
 		}
 	}
 	strncpy(tmp_str3, MavLinkVars[n].bits + n3, 1023);
-	MavLinkVars[n].max = atof(tmp_str3);
+	MavLinkVars[n].max = (float)((1<<atoi(tmp_str3)) * (1<<atoi(tmp_str3)) - 1);
 	if (atoi(tmp_str3) == id) {
 		strncpy(entry, tmp_str3, 1023);
 	}
@@ -376,6 +376,7 @@ uint8_t mavlink_param_save (char *name, float x, float y, int8_t button, float d
 
 uint8_t mavlink_param_file_load (char *name, float x, float y, int8_t button, float data) {
 	mavlink_param_read_file(name);
+	mavlink_param_xml_meta_load();
 	return 0;
 }
 

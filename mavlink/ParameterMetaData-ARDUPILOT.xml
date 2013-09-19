@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
 <Params>
   <ArduCopter2>
-    <RC1_MIN>
-      <DisplayName>RC min PWM</DisplayName>
-      <Description>RC minimum PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
-      <Units>ms</Units>
-      <Range>800 2200</Range>
+    <ACC_NAV_OFFS_X>
+      <DisplayName>ACC NAV OFFS X</DisplayName>
+      <Description>blaa blaa blaa</Description>
+      <Bits>0:NORMAL,1:TILTONLY,2:DISABLE AUX34,3:FORWARD AUX,4:MIXTILT</Bits>
       <Increment>1</Increment>
       <User>Advanced</User>
-    </RC1_MIN>
+      <Range>0 255</Range>
+    </ACC_NAV_OFFS_X>
     <RC1_TRIM>
       <DisplayName>RC trim PWM</DisplayName>
       <Description>RC trim (neutral) PWM pulse width. Typically 1000 is lower limit, 1500 is neutral and 2000 is upper limit.</Description>
