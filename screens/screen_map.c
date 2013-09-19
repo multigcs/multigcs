@@ -1854,6 +1854,11 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 					if (draw_tiles == 0) {
 						tile_name[0] = 0;
 					}
+
+if (map_side != 0) {
+alpha1 = 0.5;
+alpha2 = 0.5;
+}
 					if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
 						draw_image_srtm(esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, zoom), tilex2long(tile_x + x_n, zoom), tiley2lat(tile_y + y_n + 1, zoom), tilex2long(tile_x + x_n + 1, zoom), alpha1, alpha2, grid);
 					} else if (_map_view == 1) {
