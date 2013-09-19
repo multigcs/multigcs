@@ -1,6 +1,6 @@
 Ground-Control-Station for multiple Protocols
 
-* based on OpenGL / OpenGL-ES
+* based on OpenGL/OpenGL-ES with SDL/SDL2
 * Support for MavLink (Autoquad6, MegapiratesNG, APM2, ...)
 * Support for MultiWii-2.1 (MultiWii ...)
 * Support for Baseflight (Naze32, MW32 ...)
@@ -8,7 +8,7 @@ Ground-Control-Station for multiple Protocols
 * Support for NMEA-GPS (über beliebige Serielle Funk-Brücken)
 * Support for FrSky-Telemetrie (inkl GPS & RSSI)
 * Touchscreens-Optimization
-* for Linux-PC's und den Raspberry-PI
+* for Linux-PC's, Mac-OSX and Raspberry-PI(raspbian)
 * GPL v3
 
 
@@ -28,6 +28,11 @@ Installation:
 	Linux/Raspberry-Pi:
 
 		make all install
+
+	Mac-OSX (OpenGL):
+
+		make -f Makefile.osx all app
+
 
 
 
