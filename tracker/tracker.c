@@ -218,9 +218,14 @@ int thread_serial_tracker (void *unused) {
 
 			if (serial_fd_tracker != -1) {
 				char tmp_str[1024];
-				sprintf(tmp_str, "%i %i\n", (int)direction / 2 * -1, (int)direction_up * -1 + 90);
-//				printf("%s\n", tmp_str);
+//				sprintf(tmp_str, "A%f %f\n", direction, direction_up * -1.0 + 90.0);
+//				printf("#%s#", tmp_str);
+//				write(serial_fd_tracker, tmp_str, strlen(tmp_str));
+
+				sprintf(tmp_str, "P%f %f %f\n", ModelData.p_lat, ModelData.p_long, ModelData.p_alt);
+//				printf("#%s#", tmp_str);
 				write(serial_fd_tracker, tmp_str, strlen(tmp_str));
+
 			}
 
 		} else {
