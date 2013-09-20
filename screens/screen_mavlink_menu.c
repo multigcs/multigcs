@@ -57,16 +57,23 @@ void mavlink_meta_get_option (int id, char *name, char *entry) {
 				}
 			}
 			if (atoi(tmp_str3) == id) {
-				strncpy(entry, tmp_str3, 1023);
+				if (tmp_str3[0] == ' ') {
+					strncpy(entry, tmp_str3 + 1, 1023);
+				} else {
+					strncpy(entry, tmp_str3, 1023);
+				}
 //				break;
 			}
 			n3 = n2 + 1;
 		}
 	}
-	strncpy(tmp_str3, MavLinkVars[n].values + n3, 1023);
 	MavLinkVars[n].max = atof(tmp_str3);
 	if (atoi(tmp_str3) == id) {
-		strncpy(entry, tmp_str3, 1023);
+		if (tmp_str3[0] == ' ') {
+			strncpy(entry, tmp_str3 + 1, 1023);
+		} else {
+			strncpy(entry, tmp_str3, 1023);
+		}
 	}
 }
 
@@ -97,6 +104,11 @@ void mavlink_meta_get_bits (int id, char *name, char *entry) {
 				}
 			}
 			if (atoi(tmp_str3) == id) {
+				if (tmp_str3[0] == ' ') {
+					strncpy(entry, tmp_str3 + 1, 1023);
+				} else {
+					strncpy(entry, tmp_str3, 1023);
+				}
 				strncpy(entry, tmp_str3, 1023);
 //				break;
 			}
@@ -106,6 +118,11 @@ void mavlink_meta_get_bits (int id, char *name, char *entry) {
 	strncpy(tmp_str3, MavLinkVars[n].bits + n3, 1023);
 	MavLinkVars[n].max = (float)((1<<atoi(tmp_str3)) * (1<<atoi(tmp_str3)) - 1);
 	if (atoi(tmp_str3) == id) {
+		if (tmp_str3[0] == ' ') {
+			strncpy(entry, tmp_str3 + 1, 1023);
+		} else {
+			strncpy(entry, tmp_str3, 1023);
+		}
 		strncpy(entry, tmp_str3, 1023);
 	}
 }
@@ -528,7 +545,7 @@ void screen_mavlink_menu (ESContext *esContext) {
 			tmp_str2[0] = 0;
 			mavlink_meta_get_option(n2, MavLinkVars[option_menu].name, tmp_str2);
 			if (tmp_str2[0] == 0) {
-				break;
+				sprintf(tmp_str2, "%i:???", n2);
 			}
 			sprintf(tmp_str, "%3.0i%s", n2, MavLinkVars[option_menu].name);
 			if ((n2 - (int)MavLinkVars[option_menu].min) > 12) {
