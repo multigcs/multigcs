@@ -1044,6 +1044,206 @@ void webserv_child (int fd) {
 		if (strncmp(buffer + 4,"/modeldata", 10) == 0) {
 			webserv_child_dump_modeldata(fd);
 
+		} else if (strncmp(buffer + 4,"/waypoint_set?", 14) == 0) {
+			int n = 0;
+			int wp_num = 0;
+			char name[20];
+			char value[20];
+			sscanf(buffer + 4 + 14, "wp%i&%[0-9a-zA-Z_]=%s", &wp_num, name, value);
+			if (strcmp(name, "NAME") == 0) {
+				strcpy(WayPoints[wp_num].name, value);
+			} else if (strcmp(name, "TYPE") == 0) {
+				strcpy(WayPoints[wp_num].command, value);
+			} else if (strcmp(name, "LONG") == 0) {
+				WayPoints[wp_num].p_long = atof(value);
+			} else if (strcmp(name, "LAT") == 0) {
+				WayPoints[wp_num].p_lat = atof(value);
+			} else if (strcmp(name, "ALT") == 0) {
+				WayPoints[wp_num].p_alt = atof(value);
+			} else if (strcmp(name, "DEL") == 0) {
+				WayPoints[wp_num].name[0] = 0;
+				WayPoints[wp_num].p_lat = 0.0;
+				WayPoints[wp_num].p_long = 0.0;
+				WayPoints[wp_num].p_alt = 0.0;
+			} else if (strcmp(name, "ADD") == 0) {
+				sprintf(WayPoints[wp_num].name, "WP%i", n);
+				strcpy(WayPoints[wp_num].command, "WAYPOINT");
+				WayPoints[wp_num].p_lat = WayPoints[0].p_lat;
+				WayPoints[wp_num].p_long = WayPoints[0].p_long;
+				WayPoints[wp_num].p_alt = WayPoints[0].p_alt;
+			}
+
+			if (strcmp(name, "DEL") == 0 || strcmp(name, "ADD") == 0) {
+				sprintf(content, "<meta http-equiv=\"Refresh\" content=\"0; URL=/waypoints.html\">");
+				sprintf(buffer, header_str, (int)strlen(content), "text/html");
+			} else {
+				sprintf(content, "wp set value(%i): %s to %s\n", wp_num, name, value);
+				sprintf(buffer, header_str, (int)strlen(content), "text/plain");
+			}
+			write(fd, buffer, strlen(buffer));
+			write(fd, content, strlen(content));
+
+
+		} else if (strncmp(buffer + 4,"/waypoints.html", 15) == 0) {
+			char tmp_str[100];
+			int n = 0;
+			int n2 = 0;
+			float last_lat = 0.0;
+			float last_lon = 0.0;
+			float last_alt = 0.0;
+			float alt = 0.0;
+
+			strcpy(content, "<HTML>\n");
+
+			strcat(content, "<SCRIPT>\n");
+			strcat(content, "function check_option(wp, name) {\n");
+			strcat(content, "	var value = document.getElementById(wp + '-' + name).options[document.getElementById(wp + '-' + name).selectedIndex].value;\n");
+			strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
+			strcat(content, "	xmlHttp.open(\"GET\", \"/waypoint_set?\" + wp + \"&\" + name + \"=\" + value, true);\n");
+			strcat(content, "	xmlHttp.send(null);\n");
+			strcat(content, "}\n");
+			strcat(content, "function check_value(wp, name) {\n");
+			strcat(content, "	var value = document.getElementById(wp + '-' + name).value;\n");
+			strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
+			strcat(content, "	xmlHttp.open(\"GET\", \"/waypoint_set?\" + wp + \"&\" + name + \"=\" + value, true);\n");
+			strcat(content, "	xmlHttp.send(null);\n");
+			strcat(content, "}\n");
+			strcat(content, "</SCRIPT>\n");
+
+
+			strcat(content, "<TABLE border=\"1\">\n");
+			strcat(content, "<TR><TH>ACTIVE</TH><TH>NAME</TH><TH>TYPE</TH><TH>LONG</TH><TH>LAT</TH><TH>ALT</TH><TH>DIST</TH><TH>ACTION</TH><TH>MAP</TH></TR>\n");
+			for (n = 0; n < MAX_WAYPOINTS; n++) {
+				if (WayPoints[n].p_lat != 0.0) {
+					strcat(content, "<TR>\n");
+					if (n == waypoint_active) {
+						strcat(content, "<TD>1</TD>");
+					} else {
+						strcat(content, "<TD>0</TD>");
+					}
+
+					sprintf(tmp_str, "<TD><input onchange=\"check_value('wp%i', 'NAME');\" id=\"wp%i-NAME\" value=\"%s\" type=\"text\"></TD>", n, n, WayPoints[n].name);
+					strcat(content, tmp_str);
+
+					if (n != 0) {
+
+						sprintf(tmp_str, "<TD><select onchange=\"check_option('wp%i', 'TYPE');\" id=\"wp%i-TYPE\">\n", n, n);
+						strcat(content, tmp_str);
+						if (WayPoints[n].command[0] == 0) {
+							sprintf(tmp_str, " <option value=\"NONE\" selected>NONE</option>\n");
+						} else {
+							sprintf(tmp_str, " <option value=\"NONE\">NONE</option>\n");
+						}
+						strcat(content, tmp_str);
+						if (strcmp(WayPoints[n].command, "WAYPOINT") == 0) {
+							sprintf(tmp_str, " <option value=\"WAYPOINT\" selected>WAYPOINT</option>\n");
+						} else {
+							sprintf(tmp_str, " <option value=\"WAYPOINT\">WAYPOINT</option>\n");
+						}
+						strcat(content, tmp_str);
+						if (strcmp(WayPoints[n].command, "LOITER_UNLIM") == 0) {
+							sprintf(tmp_str, " <option value=\"LOITER_UNLIM\" selected>LOITER_UNLIM</option>\n");
+						} else {
+							sprintf(tmp_str, " <option value=\"LOITER_UNLIM\">LOITER_UNLIM</option>\n");
+						}
+						strcat(content, tmp_str);
+						if (strcmp(WayPoints[n].command, "LOITER_TURNS") == 0) {
+							sprintf(tmp_str, " <option value=\"LOITER_TURNS\" selected>LOITER_TURNS</option>\n");
+						} else {
+							sprintf(tmp_str, " <option value=\"LOITER_TURNS\">LOITER_TURNS</option>\n");
+						}
+						strcat(content, tmp_str);
+						if (strcmp(WayPoints[n].command, "LOITER_TIME") == 0) {
+							sprintf(tmp_str, " <option value=\"LOITER_TIME\" selected>LOITER_TIME</option>\n");
+						} else {
+							sprintf(tmp_str, " <option value=\"LOITER_TIME\">LOITER_TIME</option>\n");
+						}
+						strcat(content, tmp_str);
+						if (strcmp(WayPoints[n].command, "RTL") == 0) {
+							sprintf(tmp_str, " <option value=\"RTL\" selected>RTL</option>\n");
+						} else {
+							sprintf(tmp_str, " <option value=\"RTL\">RTL</option>\n");
+						}
+						strcat(content, tmp_str);
+						if (strcmp(WayPoints[n].command, "LAND") == 0) {
+							sprintf(tmp_str, " <option value=\"LAND\" selected>LAND</option>\n");
+						} else {
+							sprintf(tmp_str, " <option value=\"LAND\">LAND</option>\n");
+						}
+						strcat(content, tmp_str);
+						if (strcmp(WayPoints[n].command, "TAKEOFF") == 0) {
+							sprintf(tmp_str, " <option value=\"TAKEOFF\" selected>TAKEOFF</option>\n");
+						} else {
+							sprintf(tmp_str, " <option value=\"TAKEOFF\">TAKEOFF</option>\n");
+						}
+						strcat(content, tmp_str);
+						strcat(content, "</select></TD>");
+					} else {
+						strcat(content, "<TD>---</TD>");
+					}
+
+					sprintf(tmp_str, "<TD><input onchange=\"check_value('wp%i', 'LAT');\" id=\"wp%i-LAT\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_lat);
+					strcat(content, tmp_str);
+
+					sprintf(tmp_str, "<TD><input onchange=\"check_value('wp%i', 'LONG');\" id=\"wp%i-LONG\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_long);
+					strcat(content, tmp_str);
+
+					sprintf(tmp_str, "<TD><input onchange=\"check_value('wp%i', 'ALT');\" id=\"wp%i-ALT\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_alt);
+					strcat(content, tmp_str);
+
+
+					float distance1 = 0.0;
+					float distance2 = 0.0;
+					float winkel_up = 0.0;
+					if (last_lat != 0.0) {
+						/* Distance - Ground-Level */
+						distance1 = acos( 
+							cos(toRad(last_lat))
+							* cos(toRad(WayPoints[n].p_lat))
+							* cos(toRad(last_lon) - toRad(WayPoints[n].p_long))
+							+ sin(toRad(last_lat)) 
+							* sin(toRad(WayPoints[n].p_lat))
+						) * 6378.137 * 1000.0;
+						alt = WayPoints[n].p_alt - last_alt;
+						/* Distance - Sichtverbindung */
+						distance2 = sqrt(((distance1) * (distance1)) + (alt * alt));
+						/* Steigung */
+						winkel_up = (asin(alt / distance2)) * 180 / PI;
+						sprintf(tmp_str, "<TD>%0.1fm (%0.1fm / %0.1fGrad)</TD>", distance1, distance2, winkel_up);
+						strcat(content, tmp_str);
+					} else {
+						strcat(content, "<TD>---</TD>");
+					}
+					last_lat = WayPoints[n].p_lat;
+					last_lon = WayPoints[n].p_long;
+					last_alt = WayPoints[n].p_alt;
+
+					if (n != 0) {
+						sprintf(tmp_str, "<TD><A href=\"/waypoint_set?wp%i&DEL=1\">DEL</A></TD>", n);
+					} else {
+						strcpy(tmp_str, "<TD>&nbsp;</TD>");
+					}
+					strcat(content, tmp_str);
+
+					sprintf(tmp_str, "<TD><A target=\"map\" href=\"https://maps.google.de/maps?q=%f,%f%%28%s%%29&t=k&z=17\">SHOW</A></TD>", WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].name);
+					strcat(content, tmp_str);
+
+					strcat(content, "</TR>\n");
+					n2 = n + 1;
+				}
+			}
+
+			sprintf(tmp_str, "<TR><TD>0</TD><TD>---</TD><TD>---</TD><TD>---</TD><TD>---</TD><TD>---</TD><TD>---</TD><TD><A href=\"/waypoint_set?wp%i&ADD=1\">ADD</A></TD><TD>---</TD></TR>", n2);
+			strcat(content, tmp_str);
+
+
+			strcat(content, "</TABLE>\n");
+			strcat(content, "</HTML>\n");
+
+			sprintf(buffer, header_str, (int)strlen(content), "text/html");
+			write(fd, buffer, strlen(buffer));
+			write(fd, content, strlen(content));
+
 		} else if (strncmp(buffer + 4,"/mavlink_value_set?", 19) == 0) {
 			char name[20];
 			float value = 0.0;
@@ -1057,9 +1257,9 @@ void webserv_child (int fd) {
 			sprintf(buffer, header_str, (int)strlen(content), "text/plain");
 			write(fd, buffer, strlen(buffer));
 			write(fd, content, strlen(content));
+
 		} else if (strncmp(buffer + 4,"/mavlink_values.html", 20) == 0) {
 			uint16_t n = 0;
-
 
 			strcpy(content, "\n");
 			strcat(content, "<FORM>\n");

@@ -723,7 +723,7 @@ void setup_load (void) {
 		setup.calibration_mode = 1;
 	}
 
-	strncpy(WayPoints[0].name, ModelData.name, 127);
+	strncpy(WayPoints[0].name, "HOME", 127);
 	ModelData.p_lat = WayPoints[0].p_lat;
 	ModelData.p_long = WayPoints[0].p_long;
 	ModelData.p_alt = WayPoints[0].p_alt;
