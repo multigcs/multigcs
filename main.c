@@ -159,6 +159,19 @@ void SDL_KillThread(SDL_Thread *thread) {
 }
 #endif
 
+
+void system_say (char *text) {
+	char cmd_str[1024];
+#ifdef OSX
+	sprintf(cmd_str, "say \"%s\" > /dev/null 2> /dev/null &", text);
+	system("say \"%s\" > /dev/null 2> /dev/null &");
+#else
+	sprintf(cmd_str, "espeak \"%s\" > /dev/null 2> /dev/null &", text);
+	system("say \"%s\" > /dev/null 2> /dev/null &");
+#endif
+}
+
+
 #ifdef SDLGL
 
 void save_screenshot (void) {
@@ -1595,11 +1608,12 @@ void Draw (ESContext *esContext) {
 		if (speak > 20) {
 			speak = 0;
 			if (ModelData.found_rc == 1 && ModelData.heartbeat_rc == 0) {
-				system("#espeak -v en \"lost rc\" > /dev/null 2> /dev/null &");
+				system_say("lost rc");
 			} else 	if (ModelData.heartbeat == 0 && connection_found == 1) {
-				system("#espeak -v en \"lost heartbeat\" > /dev/null 2> /dev/null &");
+				system_say("lost heartbeat");
 			} else 	if (ModelData.voltage < setup.volt_min) {
 				system("#espeak -v en \"low battery\" > /dev/null 2> /dev/null &");
+				system_say("low battery");
 			}
 		}
 	}
@@ -1664,7 +1678,7 @@ void Draw (ESContext *esContext) {
 	setup.view_mode = view_mode_next;
 #endif
 
-
+#ifndef CONSOLE_ONLY
 	if (view_overview == 1) {
 		screen_overview(esContext);
 	} else if (setup.view_mode == VIEW_MODE_HUD) {
@@ -1723,7 +1737,7 @@ void Draw (ESContext *esContext) {
 			screen_mavlink_menu(esContext);
 		}
 	}
-
+#endif
 #ifdef SDLGL
 	if (trans_count > 0.0) {
 		if (trans_count < 90.0) {
@@ -1950,6 +1964,7 @@ int main ( int argc, char *argv[] ) {
 #endif
 #endif
 
+#ifndef CONSOLE_ONLY
 	// preload map on startup for faster view-changes
 	draw_text_f3(&esContext, -1.4, -0.95, 0.003, 0.06, 0.06, FONT_WHITE, "PreLoading Maps...");
 #ifndef SDLGL
@@ -1961,6 +1976,7 @@ int main ( int argc, char *argv[] ) {
 	SDL_GL_SwapBuffers();
 #endif
 	SDL_Delay(20);
+#endif
 #endif
 #endif
 	screen_map(&esContext, lat, lon, zoom);
