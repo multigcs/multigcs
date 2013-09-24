@@ -169,6 +169,7 @@ void system_say (char *text) {
 	sprintf(cmd_str, "espeak \"%s\" > /dev/null 2> /dev/null &", text);
 	system("say \"%s\" > /dev/null 2> /dev/null &");
 #endif
+	printf("speak: %s\n", text);
 }
 
 
