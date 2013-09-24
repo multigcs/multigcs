@@ -162,6 +162,7 @@ void SDL_KillThread(SDL_Thread *thread) {
 
 void system_say (char *text) {
 	char cmd_str[1024];
+	sys_message(text);
 #ifdef OSX
 	sprintf(cmd_str, "say \"%s\" > /dev/null 2> /dev/null &", text);
 	system(cmd_str);
@@ -169,7 +170,6 @@ void system_say (char *text) {
 	sprintf(cmd_str, "espeak \"%s\" > /dev/null 2> /dev/null &", text);
 	system(cmd_str);
 #endif
-	printf("speak: %s\n", text);
 }
 
 
