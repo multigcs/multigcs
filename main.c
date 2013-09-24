@@ -164,10 +164,10 @@ void system_say (char *text) {
 	char cmd_str[1024];
 #ifdef OSX
 	sprintf(cmd_str, "say \"%s\" > /dev/null 2> /dev/null &", text);
-	system("say \"%s\" > /dev/null 2> /dev/null &");
+	system(cmd_str);
 #else
 	sprintf(cmd_str, "espeak \"%s\" > /dev/null 2> /dev/null &", text);
-	system("say \"%s\" > /dev/null 2> /dev/null &");
+	system(cmd_str);
 #endif
 	printf("speak: %s\n", text);
 }
