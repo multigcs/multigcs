@@ -1612,8 +1612,7 @@ void Draw (ESContext *esContext) {
 				system_say("lost rc");
 			} else 	if (ModelData.heartbeat == 0 && connection_found == 1) {
 				system_say("lost heartbeat");
-			} else 	if (ModelData.voltage < setup.volt_min) {
-				system("#espeak -v en \"low battery\" > /dev/null 2> /dev/null &");
+			} else 	if ((ModelData.found_rc == 1 || ModelData.heartbeat == 0) && ModelData.voltage < setup.volt_min) {
 				system_say("low battery");
 			}
 		}
