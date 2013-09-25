@@ -353,7 +353,7 @@ void draw_triaFilled_f3 (ESContext *esContext, float x1, float y1, float z1, flo
 	glDrawElements ( GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, indices );
 }
 
-void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file, float lat1, float lon1, float lat2, float lon2, float alpha1, float alpha2, float grid) {
+void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file, float lat1, float lon1, float lat2, float lon2, float alpha0, float alpha1, float alpha2, float grid) {
 	UserData *userData = esContext->userData;
 	float x1 = (float)x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 	float y1 = (float)y / (float)esContext->height * 2.0 - 1.0;

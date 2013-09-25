@@ -28,6 +28,8 @@
 #ifndef OSX
 
 #include <SDL.h>
+#include <SDL_image.h>
+#include <SDL_video.h>
 #include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -47,12 +49,21 @@
 #include <sys/ioctl.h>
 #include <asm/types.h>          /* for videodev2.h */
 #include <linux/videodev2.h>
+#include <videocapture.h>
+
 
 #define CLEAR(x) memset (&(x), 0, sizeof (x))
 #define mask32(BYTE) (*(uint32_t *)(uint8_t [4]){ [BYTE] = 0xff })
 
 #define max(a, b) (a > b ? a : b)
 #define min(a, b) (a > b ? b : a)
+
+
+#define DEFAULT_WIDTH 640;
+#define DEFAULT_HEIGHT 480;
+
+static uint8_t pixeltype = 0;
+
 
 typedef enum {
     IO_METHOD_READ,
@@ -65,16 +76,19 @@ struct buffer {
     size_t length;
 };
 
-static char *dev_name = NULL;
+
+static char dev_name[1024];
 static io_method io = IO_METHOD_MMAP;
 static int fd = -1;
 struct buffer *buffers = NULL;
 static unsigned int n_buffers = 0;
-static size_t WIDTH = 640;
-static size_t HEIGHT = 480;
+
+static size_t WIDTH = DEFAULT_WIDTH;
+static size_t HEIGHT = DEFAULT_HEIGHT;
+
 static uint8_t *buffer_sdl;
 uint8_t video_ok = 1;
-SDL_Surface *data_sf;
+SDL_Surface *data_sf = NULL;
 
 static void errno_exit(const char *s) {
 	fprintf(stderr, "videocapture: * %s error %d, %s\n", s, errno, strerror(errno));
@@ -169,14 +183,25 @@ static void inline YUV422_to_RGB(uint8_t * output, const uint8_t * input) {
 }
 
 static void process_image(const void *p) {
-    const uint8_t *buffer_yuv = p;
-    size_t x;
-    size_t y;
-    for (y = 0; y < HEIGHT; y++)
-        for (x = 0; x < WIDTH; x += 2)
-            YUV422_to_RGB(buffer_sdl + (y * WIDTH + x) * 3,
-                          buffer_yuv + (y * WIDTH + x) * 2);
+	const uint8_t *buffer_yuv = p;
+	size_t x;
+	size_t y;
+	for (y = 0; y < HEIGHT; y++) {
+		for (x = 0; x < WIDTH; x += 2) {
+			YUV422_to_RGB(buffer_sdl + (y * WIDTH + x) * 3, buffer_yuv + (y * WIDTH + x) * 2);
+		}
+	}
 }
+
+SDL_Surface *load_image (char * buff, int size) {
+	SDL_RWops *rw = SDL_RWFromMem(buff,size );
+	SDL_Surface *temp = IMG_Load_RW(rw, 1);
+	if (temp == NULL) {
+		printf("IMG_Load_RW: %s\n", IMG_GetError());
+		return NULL;
+	}
+	return temp;
+} 
 
 static int read_frame(void) {
     struct v4l2_buffer buf;
@@ -215,15 +240,22 @@ static int read_frame(void) {
                 errno_exit("VIDIOC_DQBUF");
             }
         }
+	assert(buf.index < n_buffers);
 
-        assert(buf.index < n_buffers);
-
-        process_image(buffers[buf.index].start);
-
-        if (-1 == xioctl(fd, VIDIOC_QBUF, &buf)) {
-            errno_exit("VIDIOC_QBUF");
+	if (pixeltype == 2) {
+		if (data_sf != NULL) {
+			SDL_FreeSurface(data_sf);
+			data_sf = NULL;
+		}
+		data_sf = load_image(buffers[buf.index].start, buf.bytesused);
+	} else {
+		process_image(buffers[buf.index].start);
 	}
-        break;
+
+	if (-1 == xioctl(fd, VIDIOC_QBUF, &buf)) {
+		errno_exit("VIDIOC_QBUF");
+	}
+	break;
     case IO_METHOD_USERPTR:
         CLEAR(buf);
         buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -274,12 +306,10 @@ SDL_Surface *videodev_loop (void) {
                 }
                 errno_exit("select");
             }
-
             if (0 == r) {
                 fprintf(stderr, "videocapture: select timeout\n");
                 exit(EXIT_FAILURE);
             }
-
             if (read_frame()) {
                 break;
             }
@@ -359,29 +389,26 @@ static void start_capturing(void) {
     }
 }
 
-static void uninit_device(void)
-{
-    unsigned int i;
-
-    switch (io)
-    {
-    case IO_METHOD_READ:
-        free(buffers[0].start);
-        break;
-
-    case IO_METHOD_MMAP:
-        for (i = 0; i < n_buffers; ++i)
-            if (-1 == munmap(buffers[i].start, buffers[i].length))
-                errno_exit("munmap");
-        break;
-
-    case IO_METHOD_USERPTR:
-        for (i = 0; i < n_buffers; ++i)
-            free(buffers[i].start);
-        break;
-    }
-
-    free(buffers);
+static void uninit_device(void) {
+	unsigned int i;
+	switch (io) {
+		case IO_METHOD_READ:
+			free(buffers[0].start);
+		break;
+		case IO_METHOD_MMAP:
+			for (i = 0; i < n_buffers; ++i) {
+				if (-1 == munmap(buffers[i].start, buffers[i].length)) {
+					errno_exit("munmap");
+				}
+			}
+		break;
+		case IO_METHOD_USERPTR:
+			for (i = 0; i < n_buffers; ++i) {
+				free(buffers[i].start);
+			}
+		break;
+	}
+	free(buffers);
 }
 
 static void init_read(unsigned int buffer_size)
@@ -516,6 +543,11 @@ static void init_device(void) {
             return;
         }
     }
+
+    printf("videocapture: driver  : %s\n", cap.driver);
+    printf("videocapture: card    : %s\n", cap.card);
+    printf("videocapture: bus_info: %s\n", cap.bus_info);
+
     if (!(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE)) {
         fprintf(stderr, "videocapture: %s is no video capture device\n", dev_name);
         return;
@@ -558,11 +590,28 @@ static void init_device(void) {
     fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
     fmt.fmt.pix.width = WIDTH;
     fmt.fmt.pix.height = HEIGHT;
-    fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
     fmt.fmt.pix.field = V4L2_FIELD_INTERLACED;
-    if (-1 == xioctl(fd, VIDIOC_S_FMT, &fmt)) {
-        errno_exit("VIDIOC_S_FMT");
+
+    if (pixeltype == 2) {
+        fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_MJPEG;
+    } else {
+        fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
     }
+
+    if (pixeltype == 0) {
+        pixeltype = 1;
+        fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
+        if (-1 == xioctl(fd, VIDIOC_S_FMT, &fmt)) {
+            pixeltype = 2;
+            fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_MJPEG;
+            if (-1 == xioctl(fd, VIDIOC_S_FMT, &fmt)) {
+                errno_exit("VIDIOC_S_FMT");
+            }
+        }
+    }
+
+
+
     /* Note VIDIOC_S_FMT may change width and height. */
     /* Buggy driver paranoia. */
     min = fmt.fmt.pix.width * 2;
@@ -619,24 +668,38 @@ int videodev_stop (void) {
 	stop_capturing();
 	close_device();
 	uninit_device();
-	SDL_FreeSurface(data_sf);
+	if (data_sf != NULL) {
+		SDL_FreeSurface(data_sf);
+		data_sf = NULL;
+	}
 	free(buffer_sdl);
 	return 0;
 }
 
-int videodev_start (void) {
+int videodev_start (char *device, uint16_t width, uint16_t height) {
+	WIDTH = width;
+	HEIGHT = height;
+
 	printf("videocapture: init\n");
-	dev_name = "/dev/video0";
+	strcpy(dev_name, device);
 	generate_YCbCr_to_RGB_lookup();
 	open_device();
 	if (video_ok == 0) {
+		printf("videocapture: open_device failed\n");
 		return 0;
 	}
+
 	init_device();
 	if (video_ok == 0) {
+		printf("video: init_device failed\n");
 		return 0;
 	}
+
 	buffer_sdl = (uint8_t*)malloc(WIDTH*HEIGHT*3);
+	if (data_sf != NULL) {
+		SDL_FreeSurface(data_sf);
+		data_sf = NULL;
+	}
 	data_sf = SDL_CreateRGBSurfaceFrom(buffer_sdl, WIDTH, HEIGHT, 24, WIDTH * 3, mask32(0), mask32(1), mask32(2), 0);
 	start_capturing();
 	return 0;

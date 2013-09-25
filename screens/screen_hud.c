@@ -9,9 +9,8 @@
 #include <my_mavlink.h>
 #include <jeti.h>
 #include <mwi21.h>
+#include <videocapture.h>
 
-
-SDL_Surface *videodev_loop (void);
 void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, SDL_Surface *screen);
 
 
@@ -407,23 +406,27 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 	char tmp_str[400];
 	int n = 0;
 
-#ifdef SDLGL
 #ifndef OSX
 	if (setup.hud_view_video == 1) {
 		draw_surface_f3(esContext, -1.4, -1.0, 1.4, 1.0, -0.001, videodev_loop());
 	}
 #endif
-	if (setup.hud_view_map == 1) {
-		if (setup.hud_view_video == 1) {
-			display_map(esContext, lat, lon, zoom, 4, 1, 0.0, 0.0, 0.5);
-		} else {
-			display_map(esContext, lat, lon, zoom, 3, 1, 0.5, 0.0, 0.5);
-		}
-	} else if (setup.hud_view_map == 2) {
-		if (setup.hud_view_video == 1) {
-			display_map(esContext, lat, lon, zoom, 4, 1, 0.3, 0.3, 0.5);
-		} else {
-			display_map(esContext, lat, lon, zoom, 3, 0, 0.7, 0.7, 1.0);
+#ifdef SDLGL
+
+	if (type == 0 && setup.hud_view_video == 1) {
+	} else {
+		if (setup.hud_view_map == 1) {
+			if (setup.hud_view_video == 1) {
+				display_map(esContext, lat, lon, zoom, 3, 1, 0.5, 0.3, 0.3, 0.5);
+			} else {
+				display_map(esContext, lat, lon, zoom, 3, 1, 1.0, 0.1, 0.1, 0.3);
+			}
+		} else if (setup.hud_view_map == 2) {
+			if (setup.hud_view_video == 1) {
+				display_map(esContext, lat, lon, zoom, 3, 0, 0.3, 0.3, 0.3, 0.3);
+			} else {
+				display_map(esContext, lat, lon, zoom, 3, 0, 0.0, 0.7, 0.7, 0.7);
+			}
 		}
 	}
 #endif
@@ -445,7 +448,7 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
 
-	if (setup.hud_view_map == 0 && setup.hud_view_video != 1) {
+	if (setup.hud_view_map == 0 && setup.hud_view_video == 0) {
 		if (setup.contrast == 1) {
 			draw_box_f3(esContext, -2.5f, -2.5f, -0.001, 2.5f, 0.0f, -0.001, 127, 127, 127, 255);
 			draw_box_f3(esContext, -2.5f, 0.0f, -0.001, 2.5f, 2.5f, -0.001, 255, 255, 255, 255);
@@ -1288,7 +1291,7 @@ void screen_hud (ESContext *esContext) {
 #ifdef SDLGL
 	if (setup.hud_view_screen != 2 && draw_target() == 0) {
 		draw_to_buffer();
-		display_map(esContext, lat, lon, zoom, 0, 1, 0.0, 0.0, 0.0);
+		display_map(esContext, lat, lon, zoom, 0, 1, 1.0, 0.0, 0.0, 0.0);
 		draw_to_screen();
 		draw_buffer_to_screen(0.9, 0.4, 1.4, 0.85, 0.0, 1.0);
 		draw_rect_f3(esContext, 0.9, 0.4, 0.002, 1.4, 0.85, 0.002, 0, 0, 0, 255);

@@ -148,6 +148,10 @@ typedef struct {
 	int8_t speak;
 	float volt_min;
 
+	char videocapture_device[1024];
+	uint16_t videocapture_width;
+	uint16_t videocapture_height;
+
 	uint16_t webport;
 	float gearth_interval;
 } GcsSetup;

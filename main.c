@@ -33,6 +33,7 @@
 #define NO_SDL_GLEXT
 #include <GL/gl.h>
 #include <GL/glext.h>
+#include <videocapture.h>
 #endif
 #include <SDL_image.h>
 #include <SDL_opengl.h>
@@ -79,9 +80,6 @@
 // V4L
 #ifndef OSX
 #ifdef SDLGL
-int videodev_start (void);
-int videodev_stop (void);
-SDL_Surface *videodev_loop (void);
 void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, SDL_Surface *screen);
 #endif
 #endif
@@ -500,6 +498,7 @@ void setup_save (void) {
 	        fprintf(fr, "volt_min		%0.1f\n", setup.volt_min);
 	        fprintf(fr, "speak			%i\n", setup.speak);
 	        fprintf(fr, "hud_view_screen		%i\n", setup.hud_view_screen);
+	        fprintf(fr, "hud_view_video		%i\n", setup.hud_view_video);
 	        fprintf(fr, "hud_view_map		%i\n", setup.hud_view_map);
 	        fprintf(fr, "hud_view_tunnel		%i\n", setup.hud_view_tunnel);
 	        fprintf(fr, "map_view		%i\n", map_view);
@@ -512,6 +511,9 @@ void setup_save (void) {
 		fprintf(fr, "calibration_min_y	%i\n", setup.calibration_min_y);
 		fprintf(fr, "calibration_max_y	%i\n", setup.calibration_max_y);
 		fprintf(fr, "videolist_lastfile	%s\n", videolist_lastfile);
+	        fprintf(fr, "videocapture_device	%s\n", setup.videocapture_device);
+	        fprintf(fr, "videocapture_width	%i\n", setup.videocapture_width);
+	        fprintf(fr, "videocapture_height	%i\n", setup.videocapture_height);
 	        fprintf(fr, "waypoint_active		%i\n", waypoint_active);
 	        fprintf(fr, "\n");
 	        fprintf(fr, "[waypoints]\n");
@@ -587,6 +589,9 @@ void setup_load (void) {
 	setup.speak = 0;
 	setup.view_mode = 0;
 	setup.contrast = 0;
+	strcpy(setup.videocapture_device, "/dev/video0");
+	setup.videocapture_width = 640;
+	setup.videocapture_height = 480;
 
 	char filename[1024];
 	sprintf(filename, "%s/.multigcs/setup.cfg", getenv("HOME"));
@@ -683,6 +688,8 @@ void setup_load (void) {
 	                                setup.hud_view_screen = atoi(val);
 	                        } else if (strcmp(var, "hud_view_map") == 0) {
 	                                setup.hud_view_map = atoi(val);
+	                        } else if (strcmp(var, "hud_view_video") == 0) {
+	                                setup.hud_view_video = atoi(val);
 	                        } else if (strcmp(var, "hud_view_tunnel") == 0) {
 	                                setup.hud_view_tunnel = atoi(val);
 	                        } else if (strcmp(var, "map_view") == 0) {
@@ -691,6 +698,12 @@ void setup_load (void) {
 	                                setup.webport = atoi(val);
 	                        } else if (strcmp(var, "gearth_interval") == 0) {
 	                                setup.gearth_interval = atoi(val);
+	                        } else if (strcmp(var, "videocapture_device") == 0) {
+	                                strncpy(setup.videocapture_device, val, 1023);
+	                        } else if (strcmp(var, "videocapture_width") == 0) {
+	                                setup.videocapture_width = atoi(val);
+	                        } else if (strcmp(var, "videocapture_height") == 0) {
+	                                setup.videocapture_height = atoi(val);
 	                        } else if (strcmp(var, "[waypoints]") == 0) {
 	                                mode = 1;
 	                        }
@@ -1979,7 +1992,7 @@ int main ( int argc, char *argv[] ) {
 
 #ifndef OSX
 #ifdef SDLGL
-	videodev_start();
+	videodev_start(setup.videocapture_device, setup.videocapture_width, setup.videocapture_height);
 #endif
 #endif
 

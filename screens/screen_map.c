@@ -1639,7 +1639,7 @@ void draw_waypoints_cup (ESContext *esContext, float lat, float lon, uint8_t zoo
 	return;
 }
 
-void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint8_t _map_view, uint8_t draw_tiles, float alpha1, float alpha2, float grid) {
+void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint8_t _map_view, uint8_t draw_tiles, float alpha0, float alpha1, float alpha2, float grid) {
 	ESMatrix modelview;
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
@@ -1869,9 +1869,9 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 						alpha2 = 0.5;
 					}
 					if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
-						draw_image_srtm(esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, zoom), tilex2long(tile_x + x_n, zoom), tiley2lat(tile_y + y_n + 1, zoom), tilex2long(tile_x + x_n + 1, zoom), alpha1, alpha2, grid);
+						draw_image_srtm(esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, zoom), tilex2long(tile_x + x_n, zoom), tiley2lat(tile_y + y_n + 1, zoom), tilex2long(tile_x + x_n + 1, zoom), alpha0, alpha1, alpha2, grid);
 					} else if (_map_view == 1) {
-						draw_image_srtm(esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, zoom), tilex2long(tile_x + x_n, zoom), tiley2lat(tile_y + y_n + 1, zoom), tilex2long(tile_x + x_n + 1, zoom), alpha1, alpha2, grid);
+						draw_image_srtm(esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, zoom), tilex2long(tile_x + x_n, zoom), tiley2lat(tile_y + y_n + 1, zoom), tilex2long(tile_x + x_n + 1, zoom), alpha0, alpha1, alpha2, grid);
 					} else {
 						draw_image(esContext, x_n * 256, y_n * 256, 256, 256, tile_name);
 					}
@@ -1884,7 +1884,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 					sprintf(tile_name, omapnames[omap_type][MAP_FILE], getenv("HOME"), zoom, tile_x + x_n, tile_y + y_n);
 					if (file_exists(tile_name) != 0) {
 						if (_map_view == 1) {
-							draw_image_srtm(esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, zoom), tilex2long(tile_x + x_n, zoom), tiley2lat(tile_y + y_n + 1, zoom), tilex2long(tile_x + x_n + 1, zoom), 0.0, 0.0, 0.0);
+							draw_image_srtm(esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, zoom), tilex2long(tile_x + x_n, zoom), tiley2lat(tile_y + y_n + 1, zoom), tilex2long(tile_x + x_n + 1, zoom), 0.5, 0.0, 0.0, 0.0);
 						} else {
 							draw_image(esContext, x_n * 256, y_n * 256, 256, 256, tile_name);
 						}
@@ -2354,7 +2354,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 }
 
 void screen_map (ESContext *esContext, float lat, float lon, uint8_t zoom) {
-	display_map(esContext, lat, lon, zoom, map_view, 1, 0.0, 0.0, 0.0);
+	display_map(esContext, lat, lon, zoom, map_view, 1, 1.0, 0.0, 0.0, 0.0);
 }
 
 

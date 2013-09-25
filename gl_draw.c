@@ -957,7 +957,7 @@ void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2
 }
 
 
-void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file, float lat1, float lon1, float lat2, float lon2, float alpha1, float alpha2, float grid) {
+void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file, float lat1, float lon1, float lat2, float lon2, float alpha0, float alpha1, float alpha2, float grid) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -1075,7 +1075,7 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 					glEnable( GL_TEXTURE_2D );
 					glBindTexture( GL_TEXTURE_2D, TexCache[tex_num].texture );
 					glBegin( GL_QUADS );
-					glColor4f(1.0, 1.0, 1.0, 1.0);
+					glColor4f(1.0, 1.0, 1.0, alpha0);
 					glTexCoord2f( tex1, tey1 );
 					glVertex3f(tx1, ty1, -2.0 + z1);
 					glTexCoord2f( tex2, tey1 );
