@@ -20,6 +20,13 @@
 #include <SDL_thread.h>
 #include <SDL_events.h>
 #include <SDL_image.h>
+#ifndef OSX
+#ifdef SDLGL
+#include <videocapture.h>
+#include <savepng.h>
+#include <savepng.c>
+#endif
+#endif
 
 #include <model.h>
 #include <userdata.h>
@@ -1610,6 +1617,23 @@ void webserv_child (int fd) {
 			webserv_child_dump_file(fd, tmp_str, "image/png");
 		} else if (strncmp(buffer + 4,"/lonlat.txt", 11) == 0) {
 			webserv_child_show_lonlat(fd);
+#ifndef OSX
+#ifdef SDLGL
+		} else if (strncmp(buffer + 4,"/video.png", 10) == 0) {
+			SDL_SavePNG(videodev_loop(), "/tmp/video.png");
+			webserv_child_dump_file(fd, "/tmp/video.png", "image/png");
+/*
+			char PngBuffer[502249];
+			SDL_RWops *rwop = SDL_RWFromMem(PngBuffer, 502249);
+			SDL_SavePNG_RW(videodev_loop(), rwop, 1);
+			int32_t length = SDL_RWseek(rwop, 0, SEEK_END);
+			char buffer[BUFSIZE + 1];
+			sprintf(buffer, header_str, 502249, "image/png");
+			write(fd, buffer, strlen(buffer));
+			write(fd, PngBuffer, 502249);
+*/
+#endif
+#endif
 		} else {
 			printf("###################\n");
 			printf("%s", buffer);
