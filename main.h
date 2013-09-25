@@ -15,8 +15,13 @@
 #endif
 #include "draw.h"
 
+#ifdef RPI_NO_X
 #define SCREEN_W 1280
 #define SCREEN_H 720
+#else
+#define SCREEN_W 1024
+#define SCREEN_H 720
+#endif
 
 #define PI 3.14159265
 
