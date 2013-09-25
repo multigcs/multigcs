@@ -1601,19 +1601,38 @@ void Draw (ESContext *esContext) {
 		redraw_flag = 1;
 	}
 	if (setup.speak == 1) {
-		static uint8_t speak = 0;
+		static uint8_t speak = 20;
 		if (timer - speak_timer > 200 || timer < speak_timer) {
 			speak += 5;
 			speak_timer = timer;
 		}
-		if (speak > 20) {
+		if (speak > 40) {
 			speak = 0;
 			if (ModelData.found_rc == 1 && ModelData.heartbeat_rc == 0) {
 				system_say("lost rc");
 			} else 	if (ModelData.heartbeat == 0 && connection_found == 1) {
 				system_say("lost heartbeat");
-			} else 	if ((ModelData.found_rc == 1 || ModelData.heartbeat == 0) && ModelData.voltage < setup.volt_min) {
+			} else 	if ((ModelData.found_rc == 1 || connection_found == 1) && ModelData.voltage > 0.0 && ModelData.voltage < setup.volt_min) {
 				system_say("low battery");
+			} else {
+				static uint8_t say_mode = 0;
+				char tmp_str[1024];
+				if (say_mode++ == 0 && ModelData.voltage > 0.0) {
+					sprintf(tmp_str, "%0.1f volt", ModelData.voltage);
+				} else {
+					float ground_alt = (float)get_altitude(ModelData.p_lat, ModelData.p_long);
+					if (ground_alt - (ModelData.p_alt - ModelData.alt_offset) > 0.0) {
+						sprintf(tmp_str, "WARNING, Altitude %i meter , GROUND CONTACT", (int)((ModelData.p_alt - ModelData.alt_offset) - ground_alt));
+					} else if (ground_alt - (ModelData.p_alt - ModelData.alt_offset) > -2.0) {
+						sprintf(tmp_str, "WARNING, Altitude %i meter , TOO LOW", (int)((ModelData.p_alt - ModelData.alt_offset) - ground_alt));
+					} else if ((ModelData.p_alt - ModelData.alt_offset) - ground_alt > 100.0) {
+						sprintf(tmp_str, "WARNING, Altitude %i meter , PUBLIC AIRSPACE", (int)((ModelData.p_alt - ModelData.alt_offset) - ground_alt));
+					} else {
+						sprintf(tmp_str, "Altitude %i meter", (int)((ModelData.p_alt - ModelData.alt_offset) - ground_alt));
+					}
+					say_mode = 0;
+				}
+				system_say(tmp_str);
 			}
 		}
 	}
