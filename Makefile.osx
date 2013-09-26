@@ -54,6 +54,7 @@ app: gcs
 	cp -a mavlink/ParameterMetaData*.xml multigcs.app/Contents/MacOS/share/mavlink/
 	mkdir -p multigcs.app/Contents/MacOS/share/webserv
 	cp -a textures/marker.png multigcs.app/Contents/MacOS/share/webserv/marker.png
+	cp -a textures/MULTICOPTER.png multigcs.app/Contents/MacOS/share/webserv/model.png
 	cp -a map.js multigcs.app/Contents/MacOS/share/webserv/map.js
 	cp -a webserv-index.html multigcs.app/Contents/MacOS/share/webserv/index.html
 	cp -a blender-export.py multigcs.app/Contents/MacOS/share/webserv/blender-export.py

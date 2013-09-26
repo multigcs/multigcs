@@ -46,6 +46,7 @@ install:
 	cp -a mavlink/ParameterMetaData*.xml $(BASE_DIR)/mavlink/
 	mkdir -p $(BASE_DIR)/webserv
 	cp -a textures/marker.png $(BASE_DIR)/webserv/marker.png
+	cp -a textures/MULTICOPTER.png $(BASE_DIR)/webserv/model.png
 	cp -a map.js $(BASE_DIR)/webserv/map.js
 	cp -a webserv-index.html $(BASE_DIR)/webserv/index.html
 	cp -a blender-export.py $(BASE_DIR)/webserv/blender-export.py
@@ -77,6 +78,7 @@ deb: gcs
 	cp -a mavlink/ParameterMetaData*.xml package$(BASE_DIR)/mavlink/
 	mkdir -p package$(BASE_DIR)/webserv
 	cp -a textures/marker.png package$(BASE_DIR)/webserv/marker.png
+	cp -a textures/MULTICOPTER.png package$(BASE_DIR)/webserv/model.png
 	cp -a map.js package$(BASE_DIR)/webserv/map.js
 	cp -a webserv-index.html package$(BASE_DIR)/webserv/index.html
 	cp -a blender-export.py package$(BASE_DIR)/webserv/blender-export.py

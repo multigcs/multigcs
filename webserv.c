@@ -298,13 +298,14 @@ void webserv_child_show_hud (int fd) {
 	strcat(content, "        }\n");
 	strcat(content, "    }\n");
 	strcat(content, "    self.xmlHttpReq.send();\n");
-	strcat(content, "    setTimeout(xmlhttpGet, 5000);\n");
+	strcat(content, "    setTimeout(xmlhttpGet, 300);\n");
 	strcat(content, "}\n");
 	strcat(content, "function updatepage(str){\n");
 	strcat(content, "    var data = str.split(',')\n");
-	strcat(content, "    lonLat = new OpenLayers.LonLat(data[0], data[1]).transform(new OpenLayers.Projection(\"EPSG:4326\"),map.getProjectionObject());\n");
-	strcat(content, "    markers.addMarker(new OpenLayers.Marker(lonLat));\n");
-	strcat(content, "    map.setCenter (lonLat, zoom);\n");
+	strcat(content, "    laenge = data[0];\n");
+	strcat(content, "    breite = data[1];\n");
+	strcat(content, "    marker.move(new OpenLayers.LonLat(laenge,breite).transform(map.displayProjection,map.projection));\n");
+	strcat(content, "    map.setCenter(new OpenLayers.LonLat(laenge,breite).transform(map.displayProjection,map.projection));\n");
 	strcat(content, "}\n");
 	strcat(content, "\n");
 	strcat(content, "function HUDxmlhttpGet() {\n");
@@ -519,22 +520,159 @@ void webserv_child_show_hud (int fd) {
 	strcat(content, tmp_str);
 	sprintf(tmp_str, "	drawCompas(context, 300, 500, 150, %f);\n", ModelData.yaw);
 	strcat(content, tmp_str);
-
 	strcat(content, "    </script>\n");
-	strcat(content, "<script src=\"/map.js\"></script><script>\n");
-	strcat(content, "map = new OpenLayers.Map(\"mapdiv\");\n");
-	strcat(content, "map.addLayer(new OpenLayers.Layer.OSM());\n");
-	sprintf(tmp_str, "var lonLat = new OpenLayers.LonLat( %f ,%f ).transform(new OpenLayers.Projection(\"EPSG:4326\"),map.getProjectionObject());\n", ModelData.p_long, ModelData.p_lat);
-	strcat(content, tmp_str);
 
-	sprintf(tmp_str, "var zoom=%i;\n", zoom);
+
+	strcat(content, "<script src=\"/map.js\"></script>\n");
+
+
+	strcat(content, "<script>\n");
+	sprintf(tmp_str, "var map,marker,laenge=%f,breite=%f;\n", ModelData.p_long, ModelData.p_lat);
+
+	strcat(content, "var fromProjection = new OpenLayers.Projection(\"EPSG:4326\");   // Transform from WGS 1984\n");
+	strcat(content, "var toProjection   = new OpenLayers.Projection(\"EPSG:900913\"); // to Spherical Mercator Projection\n");
+
 	strcat(content, tmp_str);
-	strcat(content, "var markers = new OpenLayers.Layer.Markers( \"Markers\" );\n");
-	strcat(content, "map.addLayer(markers);\n");
-	strcat(content, "markers.addMarker(new OpenLayers.Marker(lonLat));\n");
-	strcat(content, "map.setCenter (lonLat, zoom);\n");
-//	strcat(content, "setTimeout(xmlhttpGet, 5000);\n");
-	strcat(content, "</script></body></html>\n");
+	strcat(content, "map = new OpenLayers.Map('mapdiv', {projection: toProjection, displayProjection: fromProjection});\n");
+	strcat(content, "var baselayer = new OpenLayers.Layer.OSM(\"Mapnik\",null,{attribution:\"Karte von <a href='http://openstreetmap.org/'>OpenStreetMap</a> und Mitwirkenden unter <a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'>CC-BY-SA</a>-Lizenz \"});\n");
+
+
+//	strcat(content, "var markerlayer = new OpenLayers.Layer.Vector(\"Marker\");\n");
+	strcat(content, "var markerlayer = new OpenLayers.Layer.Vector(\"Marker\", {\n");
+	strcat(content, "                styleMap: new OpenLayers.StyleMap(\n");
+	strcat(content, "                     { 'default': \n");
+	strcat(content, "                        {\n");
+	strcat(content, "                        strokeColor: \"#00FF00\",\n");
+	strcat(content, "                        strokeOpacity: 0.7,\n");
+	strcat(content, "                        strokeWidth: 3,\n");
+	strcat(content, "                        fillColor: \"#FF5500\",\n");
+	strcat(content, "                        fillOpacity: 0.7,\n");
+	strcat(content, "                        pointRadius: 12,\n");
+	strcat(content, "                        pointerEvents: \"visiblePainted\",\n");
+	strcat(content, "                        graphicName: \"circle\",\n");
+	strcat(content, "                        label: \"${name}\\n${command}\\n${alt}\",\n");
+	strcat(content, "                        fontColor: \"#000000\",\n");
+	strcat(content, "                        fontSize: \"16px\",\n");
+	strcat(content, "                        fontFamily: \"Courier New, monospace\",\n");
+	strcat(content, "                        fontWeight: \"bold\",\n");
+	strcat(content, "                        labelAlign: \"cm\",\n");
+	strcat(content, "                        labelXOffset: \"0\",\n");
+	strcat(content, "                        labelYOffset: \"0\"\n");
+	strcat(content, "                    }\n");
+	strcat(content, "                })\n");
+	strcat(content, "            });\n");
+
+
+	strcat(content, "var markerstyle = {graphicWidth:21, graphicHeight:25, graphicXOffset:-10, graphicYOffset:-25, externalGraphic:\"/model.png\"};\n");
+	strcat(content, "var markerstyle2 = {graphicWidth:21, graphicHeight:25, graphicXOffset:-10, graphicYOffset:-25, externalGraphic:\"/marker.png\"};\n");
+	strcat(content, "marker = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(laenge,breite).transform(map.displayProjection,map.projection),null,markerstyle);\n");
+	strcat(content, "markerlayer.addFeatures([marker]);\n");
+	int n = 0;
+	for (n = 0; n < MAX_WAYPOINTS; n++) {
+		if (WayPoints[n].p_lat != 0.0) {
+			sprintf(tmp_str, "marker%i = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(%f, %f).transform(map.displayProjection,map.projection)); markerlayer.addFeatures([marker%i]);\n", n, WayPoints[n].p_long, WayPoints[n].p_lat, n);
+			strcat(content, tmp_str);
+
+			sprintf(tmp_str, "marker%i.attributes.name = \"%s\";\n", n, WayPoints[n].name);
+			strcat(content, tmp_str);
+			sprintf(tmp_str, "marker%i.attributes.command = \"%s\";\n", n, WayPoints[n].command);
+			strcat(content, tmp_str);
+			sprintf(tmp_str, "marker%i.attributes.alt = \"%0.1f\";\n", n, WayPoints[n].p_alt);
+			strcat(content, tmp_str);
+           
+
+		}
+	}
+
+	strcat(content, "var lineLayer = new OpenLayers.Layer.Vector(\"Line Layer\");\n");
+	strcat(content, "map.addLayer(lineLayer);\n");
+	strcat(content, "map.addControl(new OpenLayers.Control.DrawFeature(lineLayer, OpenLayers.Handler.Path));\n");
+	strcat(content, "var points = new Array(\n");
+	uint8_t flag = 0;
+	int n2 = 1;
+	for (n = 0; n < MAX_WAYPOINTS; n++) {
+		if (WayPoints[n].p_lat != 0.0) {
+			if (flag == 1) {
+				strcat(content, ",\n");
+			}
+			sprintf(tmp_str, "   new OpenLayers.Geometry.Point(%f, %f).transform(map.displayProjection,map.projection)", WayPoints[n].p_long, WayPoints[n].p_lat);
+			strcat(content, tmp_str);
+			n2 = n + 1;
+			flag = 1;
+		}
+	}
+	strcat(content, "\n");
+	strcat(content, ");\n");
+	strcat(content, "var line = new OpenLayers.Geometry.LineString(points);\n");
+	strcat(content, "var style = {\n");
+	strcat(content, "  strokeColor: '#0000ff',\n");
+	strcat(content, "  strokeOpacity: 0.5,\n");
+	strcat(content, "  strokeWidth: 5\n");
+	strcat(content, "};\n");
+	strcat(content, "var lineFeature = new OpenLayers.Feature.Vector(line, null, style);\n");
+	strcat(content, "lineLayer.addFeatures([lineFeature]);\n");
+
+
+
+
+	strcat(content, "map.addLayers([baselayer, markerlayer]);\n");
+	sprintf(tmp_str, "map.setCenter(new OpenLayers.LonLat(laenge,breite).transform(map.displayProjection,map.projection), %i);\n", zoom);
+	strcat(content, tmp_str);
+	strcat(content, "\n");
+
+	strcat(content, "OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {\n");
+	strcat(content, "    defaultHandlerOptions: {\n");
+	strcat(content, "        'single': true,\n");
+	strcat(content, "        'double': false,\n");
+	strcat(content, "        'pixelTolerance': 0,\n");
+	strcat(content, "        'stopSingle': false,\n");
+	strcat(content, "        'stopDouble': false\n");
+	strcat(content, "    },\n");
+	strcat(content, "    initialize: function(options) {\n");
+	strcat(content, "        this.handlerOptions = OpenLayers.Util.extend({}, this.defaultHandlerOptions);\n");
+	strcat(content, "        OpenLayers.Control.prototype.initialize.apply(this, arguments); \n");
+	strcat(content, "        this.handler = new OpenLayers.Handler.Click(this, {'click': this.trigger}, this.handlerOptions);\n");
+	strcat(content, "    }, \n");
+	strcat(content, "    trigger: function(e) {\n");
+	strcat(content, "        var lonlat = map.getLonLatFromPixel(e.xy);\n");
+	strcat(content, "        lonlat1 = new OpenLayers.LonLat(lonlat.lon,lonlat.lat).transform(toProjection,fromProjection);\n");
+	strcat(content, "        document.getElementById('lat').value = lonlat1.lat;\n");
+	strcat(content, "        document.getElementById('lon').value = lonlat1.lon;\n");
+
+	sprintf(tmp_str, "        wp_add(%i, lonlat1.lon, lonlat1.lat);\n", n2);
+	strcat(content, tmp_str);
+ 
+	strcat(content, "    }\n");
+	strcat(content, "});\n");
+	strcat(content, "var click = new OpenLayers.Control.Click();\n");
+	strcat(content, "map.addControl(click);\n");
+	strcat(content, "click.activate();\n");
+
+
+	strcat(content, "function wp_add(num, lon, lat) {\n");
+	strcat(content, "    var xmlHttpReq = false;\n");
+	strcat(content, "    var self = this;\n");
+	strcat(content, "    if (window.XMLHttpRequest) {\n");
+	strcat(content, "        self.xmlHttpReq = new XMLHttpRequest();\n");
+	strcat(content, "    } else if (window.ActiveXObject) {\n");
+	strcat(content, "        self.xmlHttpReq = new ActiveXObject(\"Microsoft.XMLHTTP\");\n");
+	strcat(content, "    }\n");
+	strcat(content, "    self.xmlHttpReq.open(\"GET\", \"/waypoint_new?wp\" + num + \"=\" + lat + \",\" + lon, true);\n");
+	strcat(content, "    self.xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');\n");
+	strcat(content, "    self.xmlHttpReq.onreadystatechange = function() {\n");
+	strcat(content, "        if (self.xmlHttpReq.readyState == 4) {\n");
+	strcat(content, "            window.location.reload();\n");
+	strcat(content, "        }\n");
+	strcat(content, "    }\n");
+	strcat(content, "    self.xmlHttpReq.send();\n");
+	strcat(content, "}\n");
+
+	strcat(content, "</script>\n");
+
+	strcat(content, "<textarea class=\"lon\" id=\"lon\"></textarea><BR>\n");
+	strcat(content, "<textarea class=\"lat\" id=\"lat\"></textarea><BR>\n");
+
+	strcat(content, "</body></html>\n");
 
 	sprintf(buffer, header_str, (int)strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
@@ -1051,6 +1189,23 @@ void webserv_child (int fd) {
 		if (strncmp(buffer + 4,"/modeldata", 10) == 0) {
 			webserv_child_dump_modeldata(fd);
 
+		} else if (strncmp(buffer + 4,"/waypoint_new?", 14) == 0) {
+			int n = 0;
+			int wp_num = 0;
+			float lat = 0.0;
+			float lon = 0.0;
+			sscanf(buffer + 4 + 14, "wp%i=%f,%f", &wp_num, &lat, &lon);
+
+			sprintf(WayPoints[wp_num].name, "WP%i", wp_num);
+			strcpy(WayPoints[wp_num].command, "WAYPOINT");
+			WayPoints[wp_num].p_lat = lat;
+			WayPoints[wp_num].p_long = lon;
+			WayPoints[wp_num].p_alt = WayPoints[0].p_alt;
+
+			sprintf(content, "done");
+			sprintf(buffer, header_str, (int)strlen(content), "text/plain");
+
+
 		} else if (strncmp(buffer + 4,"/waypoint_set?", 14) == 0) {
 			int n = 0;
 			int wp_num = 0;
@@ -1197,7 +1352,6 @@ void webserv_child (int fd) {
 
 					sprintf(tmp_str, "<TD><input onchange=\"check_value('wp%i', 'ALT');\" id=\"wp%i-ALT\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_alt);
 					strcat(content, tmp_str);
-
 
 					float distance1 = 0.0;
 					float distance2 = 0.0;
@@ -1612,8 +1766,14 @@ void webserv_child (int fd) {
 		} else if (strncmp(buffer + 4,"/marker.png", 11) == 0) {
 			sprintf(tmp_str, "%s/webserv/marker.png", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "image/png");
+		} else if (strncmp(buffer + 4,"/model.png", 10) == 0) {
+			sprintf(tmp_str, "%s/webserv/model.png", BASE_DIR);
+			webserv_child_dump_file(fd, tmp_str, "image/png");
 		} else if (strncmp(buffer + 4,"/img/marker.png", 15) == 0) {
 			sprintf(tmp_str, "%s/webserv/marker.png", BASE_DIR);
+			webserv_child_dump_file(fd, tmp_str, "image/png");
+		} else if (strncmp(buffer + 4,"/img/model.png", 14) == 0) {
+			sprintf(tmp_str, "%s/webserv/model.png", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "image/png");
 		} else if (strncmp(buffer + 4,"/lonlat.txt", 11) == 0) {
 			webserv_child_show_lonlat(fd);
