@@ -556,9 +556,9 @@ void screen_mavlink_menu (ESContext *esContext) {
 		for (n2 = (int)MavLinkVars[option_menu].min; n2 <= (int)MavLinkVars[option_menu].max; n2++) {
 			tmp_str2[0] = 0;
 			mavlink_meta_get_option(n2, MavLinkVars[option_menu].name, tmp_str2);
-			if (tmp_str2[0] == 0) {
-				sprintf(tmp_str2, "%i:???", n2);
-			}
+//			if (tmp_str2[0] == 0) {
+//				sprintf(tmp_str2, "%i:???", n2);
+//			}
 			sprintf(tmp_str, "%3.0i%s", n2, MavLinkVars[option_menu].name);
 			if ((n2 - (int)MavLinkVars[option_menu].min) > 12) {
 				if ((int)MavLinkVars[option_menu].value == n2) {

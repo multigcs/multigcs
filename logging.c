@@ -666,6 +666,7 @@ void LogSave (void) {
 	char file[1024];
 	sprintf(file, "%s/.multigcs/logs/%i.log", getenv("HOME"), log_startup_time);
 	if (Logdata != NULL) {
+		printf("logging: save to file: %s\n", file);
 		if (strlen(Logdata) > 200) {
 		        FILE *fr;
 		        fr = fopen(file, "w");
@@ -676,6 +677,8 @@ void LogSave (void) {
 		}
 		free(Logdata);
 		Logdata = NULL;
+	} else {
+		printf("logging: nothing to save\n");
 	}
 }
 
@@ -692,7 +695,11 @@ void LogInit (void) {
 }
 
 void LogAppend (char *line) {
+	if (Logdata == NULL) {
+		LogInit();
+	}
 	if (Logdata != NULL) {
+		printf("logging: %s\n", line);
 		Logdata = realloc(Logdata, (int)(strlen(Logdata) + strlen(line) + 2));
 		strcat(Logdata, line);
 		strcat(Logdata, "\n");

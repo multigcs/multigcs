@@ -57,6 +57,8 @@ app: gcs
 	cp -a textures/MULTICOPTER.png multigcs.app/Contents/MacOS/share/webserv/model.png
 	cp -a map.js multigcs.app/Contents/MacOS/share/webserv/map.js
 	cp -a webserv-index.html multigcs.app/Contents/MacOS/share/webserv/index.html
+	cp -a style.css multigcs.app/Contents/MacOS/share/webserv/style.css
+	cp -a favicon.ico multigcs.app/Contents/MacOS/share/webserv/favicon.ico
 	cp -a blender-export.py multigcs.app/Contents/MacOS/share/webserv/blender-export.py
 	cp -a plane.dae multigcs.app/Contents/MacOS/share/webserv/plane.dae
 	cp -a simple.dae multigcs.app/Contents/MacOS/share/webserv/simple.dae

@@ -285,9 +285,14 @@ void webserv_child_show_map (int fd) {
 	strcat(content, "body {\n");
 	strcat(content, "	background-color:#000000;\n");
 	strcat(content, "	color:#FFFFFF;\n");
+	strcat(content, "}\n");
 	strcat(content, "a {\n");
 	strcat(content, "	color:#FFFFFF;\n");
 	strcat(content, "}\n");
+	strcat(content, "table, th, td {\n");
+	strcat(content, "	border: 1px solid #555555;\n");
+	strcat(content, "	padding:0px;\n");
+	strcat(content, "	border-spacing:0;\n");
 	strcat(content, "}\n");
 	strcat(content, "#mapdiv {\n");
 	strcat(content, "    width: 80%;\n");
@@ -451,7 +456,10 @@ void webserv_child_show_map (int fd) {
 	strcat(content, "</head>\n");
 
 	strcat(content, "<body onload=\"init();\">\n");
-	strcat(content, "<A href=\"/hud.html\">[HUD]</A> <A href=\"/map.html\">[MAP]</A> <A href=\"/waypoints.html\">[WAYPOINTS]</A> <A href=\"/mavlink_values.html\">[MAVLINK]</A>");
+
+	strcat(content, "<TABLE width=\"100%\" border=\"0\">\n");
+	strcat(content, "<TR bgcolor=\"#555555\"><TH><A href=\"/hud.html\">[HUD]</A></TH><TH><A href=\"/map.html\">[MAP]</A></TH><TH><A href=\"/waypoints.html\">[WAYPOINTS]</A></TH><TH><A href=\"/mavlink_values.html\">[MAVLINK]</A></TH><TH><A href=\"/logfiles/\">[LOGFILES]</A></TH></TR>\n");
+	strcat(content, "</TABLE>\n");
 
 	strcat(content, "<div class=\"mapdiv\" id=\"mapdiv\"></div>\n");
 //	strcat(content, "<p onclick='JavaScript:xmlhttpGet();'>[UPDATE]</p>\n");
@@ -503,6 +511,11 @@ void webserv_child_show_hud (int fd) {
 	strcat(content, "}\n");
 	strcat(content, "a {\n");
 	strcat(content, "	color:#FFFFFF;\n");
+	strcat(content, "}\n");
+	strcat(content, "table, th, td {\n");
+	strcat(content, "	border: 1px solid #555555;\n");
+	strcat(content, "	padding:0px;\n");
+	strcat(content, "	border-spacing:0;\n");
 	strcat(content, "}\n");
 	strcat(content, "#myCanvas {\n");
 //	strcat(content, "    width: 80%;\n");
@@ -691,7 +704,9 @@ void webserv_child_show_hud (int fd) {
 	strcat(content, "</head>\n");
 
 	strcat(content, "<body onload=\"init();\">\n");
-	strcat(content, "<A href=\"/hud.html\">[HUD]</A> <A href=\"/map.html\">[MAP]</A> <A href=\"/waypoints.html\">[WAYPOINTS]</A> <A href=\"/mavlink_values.html\">[MAVLINK]</A>");
+	strcat(content, "<TABLE width=\"100%\" border=\"0\">\n");
+	strcat(content, "<TR bgcolor=\"#555555\"><TH><A href=\"/hud.html\">[HUD]</A></TH><TH><A href=\"/map.html\">[MAP]</A></TH><TH><A href=\"/waypoints.html\">[WAYPOINTS]</A></TH><TH><A href=\"/mavlink_values.html\">[MAVLINK]</A></TH><TH><A href=\"/logfiles/\">[LOGFILES]</A></TH></TR>\n");
+	strcat(content, "</TABLE>\n");
 	strcat(content, "  <canvas class=\"myCanvas\" id=\"myCanvas\" width=\"640\" height=\"640\"></canvas>\n");
 	strcat(content, "</body></html>\n");
 
@@ -1284,6 +1299,11 @@ void webserv_child (int fd) {
 			strcat(content, "a {\n");
 			strcat(content, "	color:#FFFFFF;\n");
 			strcat(content, "}\n");
+			strcat(content, "table, th, td {\n");
+			strcat(content, "	border: 1px solid #555555;\n");
+			strcat(content, "	padding:0px;\n");
+			strcat(content, "	border-spacing:0;\n");
+			strcat(content, "}\n");
 			strcat(content, ".form_dark { margin:0 0 24px; text-align: left; }\n");
 			strcat(content, ".form_dark .form-input { display: block; height: 34px; padding: 6px 10px; margin-top: 2px; margin-bottom: 2px; margin-left: 2px; margin-right: 2px; font: 14px Calibri, Helvetica, Arial, sans-serif; color: #ccc; background: #444; border: 1px solid #222; outline: none; -moz-border-radius:    8px; -webkit-border-radius: 8px; border-radius:         8px; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -moz-background-clip:    padding; -webkit-background-clip: padding-box; background-clip:         padding-box; -moz-transition:    all 0.4s ease-in-out; -webkit-transition: all 0.4s ease-in-out; -o-transition:      all 0.4s ease-in-out; -ms-transition:     all 0.4s ease-in-out; transition:         all 0.4s ease-in-out; behavior: url(PIE.htc); }\n");
 			strcat(content, ".form_dark textarea.form-input { width: 400px; height: 200px; overflow: auto; }\n");
@@ -1305,7 +1325,9 @@ void webserv_child (int fd) {
 			strcat(content, ".form_dark.tbar.nolabel :-moz-placeholder { color: #999;}\n");
 			strcat(content, "</style>\n");
 			strcat(content, "<body>\n");
-			strcat(content, "<A href=\"/hud.html\">[HUD]</A> <A href=\"/map.html\">[MAP]</A> <A href=\"/waypoints.html\">[WAYPOINTS]</A> <A href=\"/mavlink_values.html\">[MAVLINK]</A>");
+			strcat(content, "<TABLE width=\"100%\" border=\"0\">\n");
+			strcat(content, "<TR bgcolor=\"#555555\"><TH><A href=\"/hud.html\">[HUD]</A></TH><TH><A href=\"/map.html\">[MAP]</A></TH><TH><A href=\"/waypoints.html\">[WAYPOINTS]</A></TH><TH><A href=\"/mavlink_values.html\">[MAVLINK]</A></TH><TH><A href=\"/logfiles/\">[LOGFILES]</A></TH></TR>\n");
+			strcat(content, "</TABLE>\n");
 
 			strcat(content, "<SCRIPT>\n");
 			strcat(content, "function check_option(wp, name) {\n");
@@ -1327,15 +1349,15 @@ void webserv_child (int fd) {
 			strcat(content, "<BR>\n");
 			strcat(content, "<FORM class=\"form_dark\">\n");
 			strcat(content, "<CENTER><TABLE width=\"80%\" border=\"0\">\n");
-			strcat(content, "<TR bgcolor=\"#222222\"><TH>ACTIVE</TH><TH>NAME</TH><TH>TYPE</TH><TH>LONG</TH><TH>LAT</TH><TH>ALT</TH><TH>DIST</TH><TH>ACTION</TH><TH>MAP</TH></TR>\n");
+			strcat(content, "<TR bgcolor=\"#555555\"><TH>ACTIVE</TH><TH>NAME</TH><TH>TYPE</TH><TH>LONG</TH><TH>LAT</TH><TH>ALT</TH><TH>DIST</TH><TH>ACTION</TH><TH>MAP</TH></TR>\n");
 			int lc = 0;
 			for (n = 0; n < MAX_WAYPOINTS; n++) {
 				if (WayPoints[n].p_lat != 0.0) {
 					lc = 1 - lc;
 					if (lc == 0) {
-						strcat(content, "<TR bgcolor=\"#444444\">\n");
+						strcat(content, "<TR bgcolor=\"#222222\">\n");
 					} else {
-						strcat(content, "<TR bgcolor=\"#333333\">\n");
+						strcat(content, "<TR bgcolor=\"#313131\">\n");
 					}
 					if (n == waypoint_active) {
 						strcat(content, "<TD bgcolor=\"#002200\">&nbsp;</TD>");
@@ -1400,7 +1422,7 @@ void webserv_child (int fd) {
 						strcat(content, tmp_str);
 						strcat(content, "</select></TD>");
 					} else {
-						strcat(content, "<TD>---</TD>");
+						strcat(content, "<TD>&nbsp;</TD>");
 					}
 
 					sprintf(tmp_str, "<TD><input class=\"form-input\" onchange=\"check_value('wp%i', 'LAT');\" id=\"wp%i-LAT\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_lat);
@@ -1432,7 +1454,7 @@ void webserv_child (int fd) {
 						sprintf(tmp_str, "<TD><NOBR>%0.1fm (%0.1fm / %0.1fGrad)</NOBR></TD>", distance1, distance2, winkel_up);
 						strcat(content, tmp_str);
 					} else {
-						strcat(content, "<TD>---</TD>");
+						strcat(content, "<TD>&nbsp;</TD>");
 					}
 					last_lat = WayPoints[n].p_lat;
 					last_lon = WayPoints[n].p_long;
@@ -1453,7 +1475,7 @@ void webserv_child (int fd) {
 				}
 			}
 
-			sprintf(tmp_str, "<TR bgcolor=\"#222222\"><TD>0</TD><TD>---</TD><TD>---</TD><TD>---</TD><TD>---</TD><TD>---</TD><TD>---</TD><TD><A href=\"/waypoint_set?wp%i&ADD=1\">ADD</A></TD><TD>---</TD></TR>", n2);
+			sprintf(tmp_str, "<TR bgcolor=\"#111111\"><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD><A href=\"/waypoint_set?wp%i&ADD=1\">ADD</A></TD><TD>&nbsp;</TD></TR>", n2);
 			strcat(content, tmp_str);
 			strcat(content, "</TABLE></CENTER>\n");
 			strcat(content, "</FORM>\n");
@@ -1490,6 +1512,11 @@ void webserv_child (int fd) {
 			strcat(content, "a {\n");
 			strcat(content, "	color:#FFFFFF;\n");
 			strcat(content, "}\n");
+			strcat(content, "table, th, td {\n");
+			strcat(content, "	border: 1px solid #555555;\n");
+			strcat(content, "	padding:0px;\n");
+			strcat(content, "	border-spacing:0;\n");
+			strcat(content, "}\n");
 			strcat(content, ".form_dark { margin:0 0 24px; text-align: left; }\n");
 			strcat(content, ".form_dark .form-input { display: block; height: 34px; padding: 6px 10px; margin-top: 2px; margin-bottom: 2px; margin-left: 2px; margin-right: 2px; font: 14px Calibri, Helvetica, Arial, sans-serif; color: #ccc; background: #444; border: 1px solid #222; outline: none; -moz-border-radius:    8px; -webkit-border-radius: 8px; border-radius:         8px; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -moz-background-clip:    padding; -webkit-background-clip: padding-box; background-clip:         padding-box; -moz-transition:    all 0.4s ease-in-out; -webkit-transition: all 0.4s ease-in-out; -o-transition:      all 0.4s ease-in-out; -ms-transition:     all 0.4s ease-in-out; transition:         all 0.4s ease-in-out; behavior: url(PIE.htc); }\n");
 			strcat(content, ".form_dark textarea.form-input { width: 400px; height: 200px; overflow: auto; }\n");
@@ -1511,7 +1538,9 @@ void webserv_child (int fd) {
 			strcat(content, ".form_dark.tbar.nolabel :-moz-placeholder { color: #999;}\n");
 			strcat(content, "</style>\n");
 			strcat(content, "<body>\n");
-			strcat(content, "<A href=\"/hud.html\">[HUD]</A> <A href=\"/map.html\">[MAP]</A> <A href=\"/waypoints.html\">[WAYPOINTS]</A> <A href=\"/mavlink_values.html\">[MAVLINK]</A>");
+			strcat(content, "<TABLE width=\"100%\" border=\"0\">\n");
+			strcat(content, "<TR bgcolor=\"#555555\"><TH><A href=\"/hud.html\">[HUD]</A></TH><TH><A href=\"/map.html\">[MAP]</A></TH><TH><A href=\"/waypoints.html\">[WAYPOINTS]</A></TH><TH><A href=\"/mavlink_values.html\">[MAVLINK]</A></TH><TH><A href=\"/logfiles/\">[LOGFILES]</A></TH></TR>\n");
+			strcat(content, "</TABLE>\n");
 
 			strcat(content, "<SCRIPT>\n");
 			strcat(content, "function check_option(name) {\n");
@@ -1532,16 +1561,16 @@ void webserv_child (int fd) {
 			strcat(content, "<BR>\n");
 			strcat(content, "<FORM class=\"form_dark\">\n");
 			strcat(content, "<CENTER><TABLE width=\"80%\" border=\"0\">\n");
-			strcat(content, "<TR bgcolor=\"#222222\"><TH>PARAM NAME (DISPLAY)</TH><TH>VALUE (FLOAT)</TH><TH>DESCRIPTION</TH><TH>MIN</TH><TH>MAX</TH></TR>\n");
+			strcat(content, "<TR bgcolor=\"#555555\"><TH>PARAM NAME (DISPLAY)</TH><TH>VALUE (FLOAT)</TH><TH>DESCRIPTION</TH><TH>MIN</TH><TH>MAX</TH></TR>\n");
 			int lc = 0;
 			for (n = 0; n < 500; n++) {
 				if (MavLinkVars[n].name[0] != 0) {
 
 					lc = 1 - lc;
 					if (lc == 0) {
-						strcat(content, "<TR bgcolor=\"#444444\">");
+						strcat(content, "<TR bgcolor=\"#222222\">");
 					} else {
-						strcat(content, "<TR bgcolor=\"#333333\">");
+						strcat(content, "<TR bgcolor=\"#313131\">");
 					}
 
 					sprintf(tmp_str, "<TD>%s (%s)</TD>\n", MavLinkVars[n].name, MavLinkVars[n].display);
@@ -1555,6 +1584,9 @@ void webserv_child (int fd) {
 						for (n2 = (int)MavLinkVars[n].min; n2 <= (int)MavLinkVars[n].max; n2++) {
 							tmp_str2[0] = 0;
 							mavlink_meta_get_option(n2, MavLinkVars[n].name, tmp_str2);
+//							if (tmp_str2[0] == 0) {
+//								sprintf(tmp_str2, "%i:???", n2);
+//							}
 							if (tmp_str2[0] != 0) {
 								if (n2 == (int)MavLinkVars[n].value) {
 									sprintf(tmp_str, "<option value=\"%i\" selected>%s</option>\n", n2, tmp_str2);
@@ -1689,7 +1721,7 @@ void webserv_child (int fd) {
 #endif
 
 
-		} else if (strncmp(buffer + 4,"/logkml/", 8) == 0) {
+		} else if (strncmp(buffer + 4,"/logkml/", 8) == 0 || strncmp(buffer + 4,"/logfiles/", 10) == 0) {
 			int n;
 			for (n = 5; n < strlen(buffer); n++) {
 				if (buffer[n] == ' ') {
@@ -1697,15 +1729,44 @@ void webserv_child (int fd) {
 					break;
 				}
 			}
-			if (buffer[12] == 0) {
-				content[0] = 0;
+			if ((strncmp(buffer + 4,"/logkml/", 8) == 0 && buffer[12] == 0) || (strncmp(buffer + 4,"/logfiles/", 10) == 0 && buffer[14] == 0)) {
 				struct tm strukt;
 				DIR *dir = NULL;
 				struct dirent *dir_entry = NULL;
 				struct stat statbuf;
 				char new_path[400];
-				char tmp_str2[400];
 				char directory[400];
+
+				content[0] = 0;
+				strcat(content, "<html><head><title>MultiGCS (LOGFILES)</title>\n");
+				strcat(content, "<style type=\"text/css\">\n");
+				strcat(content, "body {\n");
+				strcat(content, "	background-color:#000000;\n");
+				strcat(content, "	color:#FFFFFF;\n");
+				strcat(content, "}\n");
+				strcat(content, "a {\n");
+				strcat(content, "	color:#FFFFFF;\n");
+				strcat(content, "}\n");
+				strcat(content, "table, th, td {\n");
+				strcat(content, "	border: 1px solid #555555;\n");
+				strcat(content, "	padding:0px;\n");
+				strcat(content, "	border-spacing:0;\n");
+				strcat(content, "}\n");
+				strcat(content, "</style>\n");
+
+				strcat(content, "<body>\n");
+
+
+				strcat(content, "<TABLE width=\"100%\" border=\"0\">\n");
+				strcat(content, "<TR bgcolor=\"#555555\"><TH><A href=\"/hud.html\">[HUD]</A></TH><TH><A href=\"/map.html\">[MAP]</A></TH><TH><A href=\"/waypoints.html\">[WAYPOINTS]</A></TH><TH><A href=\"/mavlink_values.html\">[MAVLINK]</A></TH><TH><A href=\"/logfiles/\">[LOGFILES]</A></TH></TR>\n");
+				strcat(content, "</TABLE>\n");
+
+				strcat(content, "<BR><BR>\n");
+
+				strcat(content, "<CENTER><TABLE width=\"80%\" border=\"0\">\n");
+				strcat(content, "<TR bgcolor=\"#555555\"><TH>DATE</TH><TH>SIZE</TH><TH>FORMAT</TH></TR>\n");
+
+				int lc = 0;
 				sprintf(directory, "%s/.multigcs/logs", getenv("HOME"));
 				if ((dir = opendir(directory)) != NULL) {
 					while ((dir_entry = readdir(dir)) != 0) {
@@ -1714,6 +1775,14 @@ void webserv_child (int fd) {
 							if (lstat(new_path, &statbuf) == 0) {
 								if (statbuf.st_mode&S_IFDIR) {
 								} else {
+
+									lc = 1 - lc;
+									if (lc == 0) {
+										strcat(content, "<TR bgcolor=\"#222222\">");
+									} else {
+										strcat(content, "<TR bgcolor=\"#313131\">");
+									}
+
 									time_t liczba_sekund = (time_t)(atoi(dir_entry->d_name));
 									localtime_r(&liczba_sekund, &strukt);
 									FILE *f;
@@ -1725,12 +1794,12 @@ void webserv_child (int fd) {
 									end = ftell(f);
 									fclose(f);
 									if ((end - pos) < 1024) {
-										sprintf(tmp_str, "%02d.%02d.%d %02d:%02d:%02d (%iB)", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, (end - pos));
+										sprintf(tmp_str, "<TD><A href=\"%s\">%02d.%02d.%d %02d:%02d:%02d</A></TD><TD>%iB</TD><TD><A href=\"/logfiles/%s\">RAW</A> <A href=\"/logkml/%s\">KML</A></TD>", dir_entry->d_name, strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, (end - pos), dir_entry->d_name, dir_entry->d_name);
 									} else {
-										sprintf(tmp_str, "%02d.%02d.%d %02d:%02d:%02d (%iKB)", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, (end - pos) / 1024);
+										sprintf(tmp_str, "<TD><A href=\"%s\">%02d.%02d.%d %02d:%02d:%02d</A></TD><TD>%iKB</TD><TD><A href=\"/logfiles/%s\">RAW</A> <A href=\"/logkml/%s\">KML</A></TD>", dir_entry->d_name, strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, (end - pos) / 1024, dir_entry->d_name, dir_entry->d_name);
 									}
-									sprintf(tmp_str2, "<A href=\"%s\">%s</A><BR>", dir_entry->d_name, tmp_str);
-									strcat(content, tmp_str2);
+									strcat(content, tmp_str);
+									strcat(content, "</TR>");
 								}
 							}
 						}
@@ -1738,15 +1807,26 @@ void webserv_child (int fd) {
 					closedir(dir);
 					dir = NULL;
 				}
+
+				strcat(content, "</TABLE>\n");
+				strcat(content, "</FORM>\n");
+
+				strcat(content, "</body>\n");
+
 				sprintf(buffer, header_str, (int)strlen(content), "text/html");
 				write(fd, buffer, strlen(buffer));
 				write(fd, content, strlen(content));
 			} else {
-				char tmp_str2[400];
-				sprintf(tmp_str, "%s/.multigcs/logs/%s", getenv("HOME"), buffer + 12);
-				sprintf(tmp_str2, "/tmp/%s.kml", buffer + 12);
-				logplay_export_kml(tmp_str, tmp_str2, 255);
-				webserv_child_dump_file(fd, tmp_str2, "text/xml");
+				char tmp_str2[1024];
+				if (strncmp(buffer + 4,"/logkml/", 8) == 0) {
+					sprintf(tmp_str, "%s/.multigcs/logs/%s", getenv("HOME"), buffer + 12);
+					sprintf(tmp_str2, "/tmp/%s.kml", buffer + 12);
+					logplay_export_kml(tmp_str, tmp_str2, 255);
+					webserv_child_dump_file(fd, tmp_str2, "text/xml");
+				} else {
+					sprintf(tmp_str, "%s/.multigcs/logs/%s", getenv("HOME"), buffer + 14);
+					webserv_child_dump_file(fd, tmp_str, "text/plain");
+				}
 			}
 
 
@@ -1864,6 +1944,8 @@ void webserv_child (int fd) {
 			} else {
 				webserv_child_dump_file(fd, tmp_str, "image/png");
 			}
+		} else if (strncmp(buffer + 4,"/lonlat.txt", 11) == 0) {
+			webserv_child_show_lonlat(fd);
 		} else if (strncmp(buffer + 4,"/marker.png", 11) == 0) {
 			sprintf(tmp_str, "%s/webserv/marker.png", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "image/png");
@@ -1876,8 +1958,14 @@ void webserv_child (int fd) {
 		} else if (strncmp(buffer + 4,"/img/model.png", 14) == 0) {
 			sprintf(tmp_str, "%s/webserv/model.png", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "image/png");
-		} else if (strncmp(buffer + 4,"/lonlat.txt", 11) == 0) {
-			webserv_child_show_lonlat(fd);
+		} else if (strncmp(buffer + 4,"/style.css", 10) == 0) {
+			sprintf(tmp_str, "%s/webserv/style.css", BASE_DIR);
+			webserv_child_dump_file(fd, tmp_str, "text/plain");
+		} else if (strncmp(buffer + 4,"/favicon.ico", 12) == 0) {
+			sprintf(tmp_str, "%s/webserv/favicon.ico", BASE_DIR);
+			webserv_child_dump_file(fd, tmp_str, "text/plain");
+
+
 #ifndef OSX
 #ifdef SDLGL
 		} else if (strncmp(buffer + 4,"/video.png", 10) == 0) {

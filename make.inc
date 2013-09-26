@@ -49,6 +49,8 @@ install:
 	cp -a textures/MULTICOPTER.png $(BASE_DIR)/webserv/model.png
 	cp -a map.js $(BASE_DIR)/webserv/map.js
 	cp -a webserv-index.html $(BASE_DIR)/webserv/index.html
+	cp -a style.css $(BASE_DIR)/webserv/style.css
+	cp -a favicon.ico $(BASE_DIR)/webserv/favicon.ico
 	cp -a blender-export.py $(BASE_DIR)/webserv/blender-export.py
 	cp -a plane.dae $(BASE_DIR)/webserv/plane.dae
 	cp -a simple.dae $(BASE_DIR)/webserv/simple.dae
@@ -81,6 +83,8 @@ deb: gcs
 	cp -a textures/MULTICOPTER.png package$(BASE_DIR)/webserv/model.png
 	cp -a map.js package$(BASE_DIR)/webserv/map.js
 	cp -a webserv-index.html package$(BASE_DIR)/webserv/index.html
+	cp -a style.css package$(BASE_DIR)/webserv/style.css
+	cp -a favicon.ico package$(BASE_DIR)/webserv/favicon.ico
 	cp -a blender-export.py package$(BASE_DIR)/webserv/blender-export.py
 	cp -a plane.dae package$(BASE_DIR)/webserv/plane.dae
 	cp -a simple.dae package$(BASE_DIR)/webserv/simple.dae
