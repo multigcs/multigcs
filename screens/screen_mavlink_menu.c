@@ -46,10 +46,10 @@ void mavlink_meta_get_option (int id, char *name, char *entry) {
 	if (selected == -1) {
 		return;
 	}
-	MavLinkVars[n].min = atof(MavLinkVars[n].values);
-	for (n2 = 0; n2 < strlen(MavLinkVars[n].values); n2++) {
-		if (MavLinkVars[n].values[n2] == ',') {
-			strncpy(tmp_str3, MavLinkVars[n].values + n3, 1023);
+//	MavLinkVars[selected].min = atof(MavLinkVars[selected].values);
+	for (n2 = 0; n2 < strlen(MavLinkVars[selected].values); n2++) {
+		if (MavLinkVars[selected].values[n2] == ',') {
+			strncpy(tmp_str3, MavLinkVars[selected].values + n3, 1023);
 			for (n4 = 0; n4 < strlen(tmp_str3); n4++) {
 				if (tmp_str3[n4] == ',') {
 					tmp_str3[n4] = 0;
@@ -67,7 +67,8 @@ void mavlink_meta_get_option (int id, char *name, char *entry) {
 			n3 = n2 + 1;
 		}
 	}
-	MavLinkVars[n].max = atof(tmp_str3);
+	strncpy(tmp_str3, MavLinkVars[n].values + n3, 1023);
+//	MavLinkVars[selected].max = atof(tmp_str3);
 	if (atoi(tmp_str3) == id) {
 		if (tmp_str3[0] == ' ') {
 			strncpy(entry, tmp_str3 + 1, 1023);
@@ -467,16 +468,27 @@ void mavlink_param_read_file (char *param_file) {
         char line[1024];
         int tmp_int1;
         int tmp_int2;
-        char var1[101];
-        char val[101];
+        char var[101];
+        float val = 0.0;
+        float min = 0.0;
+        float max = 0.0;
+	printf("mavlink: load params: %s\n", param_file);
         fr = fopen (param_file, "r");
         while(fgets(line, 100, fr) != NULL) {
-                var1[0] = 0;
-                val[0] = 0;
-		if (line[0] != '#' && line[0] != '\n') {
-	                sscanf (line, "%i %i %s %s", &tmp_int1, &tmp_int2, (char *)&var1, (char *)&val);
-			float new_val = atof(val);
-			mavlink_set_value(var1, new_val, -1, -1);
+                var[0] = 0;
+                val = 0.0;
+		if ((line[0] >= 'a' && line[0] <= 'z') || (line[0] >= 'A' && line[0] <= 'Z')) {
+	                if (sscanf (line, "%s %f %f %f", var, &val, &min, &max) == 4) {
+				printf("mavlink: read param(f1): %s = %f\n", var, val);
+				mavlink_set_value(var, val, -1, -1);
+			} else if (sscanf (line, "%[0-9a-zA-Z_],%f", var, &val) == 2) {
+				printf("mavlink: read param(f2): %s = %f\n", var, val);
+				mavlink_set_value(var, val, -1, -1);
+			}
+		} else if (line[0] >= '0' && line[0] <= '9') {
+	                sscanf (line, "%i %i %s %f", &tmp_int1, &tmp_int2, var, &val);
+			printf("mavlink: read param(f3): %s = %f\n", var, val);
+			mavlink_set_value(var, val, -1, -1);
 		}
         }
         fclose(fr);
