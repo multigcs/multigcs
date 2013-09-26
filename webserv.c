@@ -275,13 +275,31 @@ void webserv_child_show_lonlat (int fd) {
 }
 
 
-void webserv_child_show_hud (int fd) {
+void webserv_child_show_map (int fd) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
 	content[0] = 0;
-	strcat(content, "<html><head><title>MultiGCS</title>\n");
-	strcat(content, "<script language=\"Javascript\">\n");
+	strcat(content, "<html><head><title>MultiGCS (MAP)</title>\n");
+	strcat(content, "<style type=\"text/css\">\n");
+	strcat(content, "body {\n");
+	strcat(content, "	background-color:#000000;\n");
+	strcat(content, "	color:#FFFFFF;\n");
+	strcat(content, "a {\n");
+	strcat(content, "	color:#FFFFFF;\n");
+	strcat(content, "}\n");
+	strcat(content, "}\n");
+	strcat(content, "#mapdiv {\n");
+	strcat(content, "    width: 80%;\n");
+	strcat(content, "    height: 90%;\n");
+	strcat(content, "    position: absolute;\n");
+	strcat(content, "    left: 0px;\n");
+	strcat(content, "    top: 40px;\n");
+	strcat(content, "    float: none;\n");
+	strcat(content, "}\n");
+	strcat(content, "</style>\n");
+	strcat(content, "<script src=\"/map.js\"></script>\n");
+	strcat(content, "<script>\n");
 	strcat(content, "function xmlhttpGet() {\n");
 	strcat(content, "    var xmlHttpReq = false;\n");
 	strcat(content, "    var self = this;\n");
@@ -307,7 +325,154 @@ void webserv_child_show_hud (int fd) {
 	strcat(content, "    marker.move(new OpenLayers.LonLat(laenge,breite).transform(map.displayProjection,map.projection));\n");
 	strcat(content, "    map.setCenter(new OpenLayers.LonLat(laenge,breite).transform(map.displayProjection,map.projection));\n");
 	strcat(content, "}\n");
+	strcat(content, "function wp_add(num, lon, lat) {\n");
+	strcat(content, "    var xmlHttpReq = false;\n");
+	strcat(content, "    var self = this;\n");
+	strcat(content, "    if (window.XMLHttpRequest) {\n");
+	strcat(content, "        self.xmlHttpReq = new XMLHttpRequest();\n");
+	strcat(content, "    } else if (window.ActiveXObject) {\n");
+	strcat(content, "        self.xmlHttpReq = new ActiveXObject(\"Microsoft.XMLHTTP\");\n");
+	strcat(content, "    }\n");
+	strcat(content, "    self.xmlHttpReq.open(\"GET\", \"/waypoint_new?wp\" + num + \"=\" + lat + \",\" + lon, true);\n");
+	strcat(content, "    self.xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');\n");
+	strcat(content, "    self.xmlHttpReq.onreadystatechange = function() {\n");
+	strcat(content, "        if (self.xmlHttpReq.readyState == 4) {\n");
+	strcat(content, "            window.location.reload();\n");
+	strcat(content, "        }\n");
+	strcat(content, "    }\n");
+	strcat(content, "    self.xmlHttpReq.send();\n");
+	strcat(content, "}\n");
+	sprintf(tmp_str, " var map,marker,laenge=%f,breite=%f;\n", ModelData.p_long, ModelData.p_lat);
+	strcat(content, tmp_str);
+	strcat(content, " var fromProjection = new OpenLayers.Projection(\"EPSG:4326\");   // Transform from WGS 1984\n");
+	strcat(content, " var toProjection   = new OpenLayers.Projection(\"EPSG:900913\"); // to Spherical Mercator Projection\n");
+	strcat(content, "function init() {\n");
+	strcat(content, " map = new OpenLayers.Map('mapdiv', {projection: toProjection, displayProjection: fromProjection});\n");
+	strcat(content, " var baselayer = new OpenLayers.Layer.OSM(\"Mapnik\",null,{attribution:\"Karte von <a href='http://openstreetmap.org/'>OpenStreetMap</a> und Mitwirkenden unter <a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'>CC-BY-SA</a>-Lizenz \"});\n");
+	strcat(content, " var markerlayer = new OpenLayers.Layer.Vector(\"Marker\", {\n");
+	strcat(content, "                styleMap: new OpenLayers.StyleMap(\n");
+	strcat(content, "                     { 'default': \n");
+	strcat(content, "                        {\n");
+	strcat(content, "                        strokeColor: \"#00FF00\",\n");
+	strcat(content, "                        strokeOpacity: 0.7,\n");
+	strcat(content, "                        strokeWidth: 3,\n");
+	strcat(content, "                        fillColor: \"#FF5500\",\n");
+	strcat(content, "                        fillOpacity: 0.7,\n");
+	strcat(content, "                        pointRadius: 12,\n");
+	strcat(content, "                        pointerEvents: \"visiblePainted\",\n");
+	strcat(content, "                        graphicName: \"circle\",\n");
+	strcat(content, "                        label: \"${name}\\n${command}\\n${alt}\",\n");
+	strcat(content, "                        fontColor: \"#000000\",\n");
+	strcat(content, "                        fontSize: \"16px\",\n");
+	strcat(content, "                        fontFamily: \"Courier New, monospace\",\n");
+	strcat(content, "                        fontWeight: \"bold\",\n");
+	strcat(content, "                        labelAlign: \"cm\",\n");
+	strcat(content, "                        labelXOffset: \"0\",\n");
+	strcat(content, "                        labelYOffset: \"0\"\n");
+	strcat(content, "                    }\n");
+	strcat(content, "                })\n");
+	strcat(content, "            });\n");
+	strcat(content, " var markerstyle = {graphicWidth:21, graphicHeight:25, graphicXOffset:-10, graphicYOffset:-25, externalGraphic:\"/model.png\"};\n");
+	strcat(content, " var markerstyle2 = {graphicWidth:21, graphicHeight:25, graphicXOffset:-10, graphicYOffset:-25, externalGraphic:\"/marker.png\"};\n");
+	strcat(content, " marker = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(laenge,breite).transform(map.displayProjection,map.projection),null,markerstyle);\n");
+	strcat(content, " markerlayer.addFeatures([marker]);\n");
+	int n = 0;
+	for (n = 0; n < MAX_WAYPOINTS; n++) {
+		if (WayPoints[n].p_lat != 0.0) {
+			sprintf(tmp_str, " marker%i = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(%f, %f).transform(map.displayProjection,map.projection)); markerlayer.addFeatures([marker%i]);\n", n, WayPoints[n].p_long, WayPoints[n].p_lat, n);
+			strcat(content, tmp_str);
+			sprintf(tmp_str, " marker%i.attributes.name = \"%s\";\n", n, WayPoints[n].name);
+			strcat(content, tmp_str);
+			sprintf(tmp_str, " marker%i.attributes.command = \"%s\";\n", n, WayPoints[n].command);
+			strcat(content, tmp_str);
+			sprintf(tmp_str, " marker%i.attributes.alt = \"%0.1f\";\n", n, WayPoints[n].p_alt);
+			strcat(content, tmp_str);
+           	}
+	}
+	strcat(content, " var lineLayer = new OpenLayers.Layer.Vector(\"Line Layer\");\n");
+	strcat(content, " map.addLayer(lineLayer);\n");
+	strcat(content, " map.addControl(new OpenLayers.Control.DrawFeature(lineLayer, OpenLayers.Handler.Path));\n");
+	strcat(content, " var points = new Array(\n");
+	uint8_t flag = 0;
+	int n2 = 1;
+	for (n = 0; n < MAX_WAYPOINTS; n++) {
+		if (WayPoints[n].p_lat != 0.0) {
+			if (flag == 1) {
+				strcat(content, ",\n");
+			}
+			sprintf(tmp_str, "   new OpenLayers.Geometry.Point(%f, %f).transform(map.displayProjection,map.projection)", WayPoints[n].p_long, WayPoints[n].p_lat);
+			strcat(content, tmp_str);
+			n2 = n + 1;
+			flag = 1;
+		}
+	}
+	strcat(content, " );\n");
 	strcat(content, "\n");
+	strcat(content, " var line = new OpenLayers.Geometry.LineString(points);\n");
+	strcat(content, " var style = {\n");
+	strcat(content, "  strokeColor: '#0000ff',\n");
+	strcat(content, "  strokeOpacity: 0.5,\n");
+	strcat(content, "  strokeWidth: 5\n");
+	strcat(content, " };\n");
+	strcat(content, " var lineFeature = new OpenLayers.Feature.Vector(line, null, style);\n");
+	strcat(content, " lineLayer.addFeatures([lineFeature]);\n");
+	strcat(content, " map.addLayers([baselayer, markerlayer]);\n");
+	sprintf(tmp_str, " map.setCenter(new OpenLayers.LonLat(laenge,breite).transform(map.displayProjection,map.projection), %i);\n", zoom);
+	strcat(content, tmp_str);
+	strcat(content, "\n");
+	strcat(content, " OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {\n");
+	strcat(content, "    defaultHandlerOptions: {\n");
+	strcat(content, "        'single': true,\n");
+	strcat(content, "        'double': false,\n");
+	strcat(content, "        'pixelTolerance': 0,\n");
+	strcat(content, "        'stopSingle': false,\n");
+	strcat(content, "        'stopDouble': false\n");
+	strcat(content, "    },\n");
+	strcat(content, "    initialize: function(options) {\n");
+	strcat(content, "        this.handlerOptions = OpenLayers.Util.extend({}, this.defaultHandlerOptions);\n");
+	strcat(content, "        OpenLayers.Control.prototype.initialize.apply(this, arguments); \n");
+	strcat(content, "        this.handler = new OpenLayers.Handler.Click(this, {'click': this.trigger}, this.handlerOptions);\n");
+	strcat(content, "    }, \n");
+	strcat(content, "    trigger: function(e) {\n");
+	strcat(content, "        var lonlat = map.getLonLatFromPixel(e.xy);\n");
+	strcat(content, "        lonlat1 = new OpenLayers.LonLat(lonlat.lon,lonlat.lat).transform(toProjection,fromProjection);\n");
+//	strcat(content, "        document.getElementById('lat').value = lonlat1.lat;\n");
+//	strcat(content, "        document.getElementById('lon').value = lonlat1.lon;\n");
+	sprintf(tmp_str, "        wp_add(%i, lonlat1.lon, lonlat1.lat);\n", n2);
+	strcat(content, tmp_str);
+	strcat(content, "    }\n");
+	strcat(content, " });\n");
+	strcat(content, " var click = new OpenLayers.Control.Click();\n");
+	strcat(content, " map.addControl(click);\n");
+	strcat(content, " click.activate();\n");
+	strcat(content, " xmlhttpGet();\n");
+	strcat(content, "}\n");
+	strcat(content, "</script>\n");
+	strcat(content, "</head>\n");
+
+	strcat(content, "<body onload=\"init();\">\n");
+	strcat(content, "<A href=\"/hud.html\">[HUD]</A> <A href=\"/map.html\">[MAP]</A> <A href=\"/waypoints.html\">[WAYPOINTS]</A> <A href=\"/mavlink_values.html\">[MAVLINK]</A>");
+
+	strcat(content, "<div class=\"mapdiv\" id=\"mapdiv\"></div>\n");
+//	strcat(content, "<p onclick='JavaScript:xmlhttpGet();'>[UPDATE]</p>\n");
+//	strcat(content, "<BR>\n");
+//	strcat(content, "<textarea class=\"lon\" id=\"lon\"></textarea><BR>\n");
+//	strcat(content, "<textarea class=\"lat\" id=\"lat\"></textarea><BR>\n");
+	strcat(content, "</body></html>\n");
+
+	sprintf(buffer, header_str, (int)strlen(content), "text/html");
+	write(fd, buffer, strlen(buffer));
+	write(fd, content, strlen(content));
+
+}
+
+void webserv_child_show_hud (int fd) {
+	char buffer[BUFSIZE + 1];
+	char content[BUFSIZE + 1];
+	char tmp_str[512];
+	content[0] = 0;
+	strcat(content, "<html><head><title>MultiGCS (HUD)</title>\n");
+	strcat(content, "<script language=\"Javascript\">\n");
 	strcat(content, "function HUDxmlhttpGet() {\n");
 	strcat(content, "    var xmlHttpReq = false;\n");
 	strcat(content, "    var self = this;\n");
@@ -331,25 +496,24 @@ void webserv_child_show_hud (int fd) {
 	strcat(content, "}\n");
 	strcat(content, "\n");
 	strcat(content, "</script>\n");
-	strcat(content, "</head><body>\n");
 	strcat(content, "<style type=\"text/css\">\n");
 	strcat(content, "body {\n");
 	strcat(content, "	background-color:#000000;\n");
 	strcat(content, "	color:#FFFFFF;\n");
 	strcat(content, "}\n");
-	strcat(content, "#mapdiv {\n");
-	strcat(content, "    width: 50%;\n");
-	strcat(content, "    height: 90%;\n");
+	strcat(content, "a {\n");
+	strcat(content, "	color:#FFFFFF;\n");
+	strcat(content, "}\n");
+	strcat(content, "#myCanvas {\n");
+//	strcat(content, "    width: 80%;\n");
+//	strcat(content, "    height: 90%;\n");
 	strcat(content, "    position: absolute;\n");
-	strcat(content, "    right: 10px;\n");
+	strcat(content, "    left: 0px;\n");
+	strcat(content, "    top: 40px;\n");
 	strcat(content, "    float: none;\n");
 	strcat(content, "}\n");
 	strcat(content, "</style>\n");
-	strcat(content, "<div class=\"mapdiv\" id=\"mapdiv\"></div>\n");
-	strcat(content, "<p onclick='JavaScript:xmlhttpGet();'>[UPDATE]</p>\n");
-	strcat(content, "<p onclick='JavaScript:HUDxmlhttpGet();'>[HUD UPDATE]</p>\n");
-	strcat(content, "    <canvas id=\"myCanvas\" width=\"640\" height=\"640\"></canvas>\n");
-	strcat(content, "    <script>\n");
+	strcat(content, "<script>\n");
 	strcat(content, "	function drawMeter(context, x, y, r, a, b, c, text) {\n");
 	strcat(content, "		var centerX = x;\n");
 	strcat(content, "		var centerY = y;\n");
@@ -507,6 +671,7 @@ void webserv_child_show_hud (int fd) {
 	strcat(content, "		context.translate(-x, -y);\n");
 	strcat(content, "	}\n");
 	strcat(content, "\n");
+	strcat(content, "function init() {\n");
 	strcat(content, "	var canvas = document.getElementById('myCanvas');\n");
 	strcat(content, "	var context = canvas.getContext('2d');\n");
 	strcat(content, "	context.clearRect(0, 0, canvas.width, canvas.height);\n");
@@ -520,158 +685,14 @@ void webserv_child_show_hud (int fd) {
 	strcat(content, tmp_str);
 	sprintf(tmp_str, "	drawCompas(context, 300, 500, 150, %f);\n", ModelData.yaw);
 	strcat(content, tmp_str);
-	strcat(content, "    </script>\n");
-
-
-	strcat(content, "<script src=\"/map.js\"></script>\n");
-
-
-	strcat(content, "<script>\n");
-	sprintf(tmp_str, "var map,marker,laenge=%f,breite=%f;\n", ModelData.p_long, ModelData.p_lat);
-
-	strcat(content, "var fromProjection = new OpenLayers.Projection(\"EPSG:4326\");   // Transform from WGS 1984\n");
-	strcat(content, "var toProjection   = new OpenLayers.Projection(\"EPSG:900913\"); // to Spherical Mercator Projection\n");
-
-	strcat(content, tmp_str);
-	strcat(content, "map = new OpenLayers.Map('mapdiv', {projection: toProjection, displayProjection: fromProjection});\n");
-	strcat(content, "var baselayer = new OpenLayers.Layer.OSM(\"Mapnik\",null,{attribution:\"Karte von <a href='http://openstreetmap.org/'>OpenStreetMap</a> und Mitwirkenden unter <a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'>CC-BY-SA</a>-Lizenz \"});\n");
-
-
-//	strcat(content, "var markerlayer = new OpenLayers.Layer.Vector(\"Marker\");\n");
-	strcat(content, "var markerlayer = new OpenLayers.Layer.Vector(\"Marker\", {\n");
-	strcat(content, "                styleMap: new OpenLayers.StyleMap(\n");
-	strcat(content, "                     { 'default': \n");
-	strcat(content, "                        {\n");
-	strcat(content, "                        strokeColor: \"#00FF00\",\n");
-	strcat(content, "                        strokeOpacity: 0.7,\n");
-	strcat(content, "                        strokeWidth: 3,\n");
-	strcat(content, "                        fillColor: \"#FF5500\",\n");
-	strcat(content, "                        fillOpacity: 0.7,\n");
-	strcat(content, "                        pointRadius: 12,\n");
-	strcat(content, "                        pointerEvents: \"visiblePainted\",\n");
-	strcat(content, "                        graphicName: \"circle\",\n");
-	strcat(content, "                        label: \"${name}\\n${command}\\n${alt}\",\n");
-	strcat(content, "                        fontColor: \"#000000\",\n");
-	strcat(content, "                        fontSize: \"16px\",\n");
-	strcat(content, "                        fontFamily: \"Courier New, monospace\",\n");
-	strcat(content, "                        fontWeight: \"bold\",\n");
-	strcat(content, "                        labelAlign: \"cm\",\n");
-	strcat(content, "                        labelXOffset: \"0\",\n");
-	strcat(content, "                        labelYOffset: \"0\"\n");
-	strcat(content, "                    }\n");
-	strcat(content, "                })\n");
-	strcat(content, "            });\n");
-
-
-	strcat(content, "var markerstyle = {graphicWidth:21, graphicHeight:25, graphicXOffset:-10, graphicYOffset:-25, externalGraphic:\"/model.png\"};\n");
-	strcat(content, "var markerstyle2 = {graphicWidth:21, graphicHeight:25, graphicXOffset:-10, graphicYOffset:-25, externalGraphic:\"/marker.png\"};\n");
-	strcat(content, "marker = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(laenge,breite).transform(map.displayProjection,map.projection),null,markerstyle);\n");
-	strcat(content, "markerlayer.addFeatures([marker]);\n");
-	int n = 0;
-	for (n = 0; n < MAX_WAYPOINTS; n++) {
-		if (WayPoints[n].p_lat != 0.0) {
-			sprintf(tmp_str, "marker%i = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(%f, %f).transform(map.displayProjection,map.projection)); markerlayer.addFeatures([marker%i]);\n", n, WayPoints[n].p_long, WayPoints[n].p_lat, n);
-			strcat(content, tmp_str);
-
-			sprintf(tmp_str, "marker%i.attributes.name = \"%s\";\n", n, WayPoints[n].name);
-			strcat(content, tmp_str);
-			sprintf(tmp_str, "marker%i.attributes.command = \"%s\";\n", n, WayPoints[n].command);
-			strcat(content, tmp_str);
-			sprintf(tmp_str, "marker%i.attributes.alt = \"%0.1f\";\n", n, WayPoints[n].p_alt);
-			strcat(content, tmp_str);
-           
-
-		}
-	}
-
-	strcat(content, "var lineLayer = new OpenLayers.Layer.Vector(\"Line Layer\");\n");
-	strcat(content, "map.addLayer(lineLayer);\n");
-	strcat(content, "map.addControl(new OpenLayers.Control.DrawFeature(lineLayer, OpenLayers.Handler.Path));\n");
-	strcat(content, "var points = new Array(\n");
-	uint8_t flag = 0;
-	int n2 = 1;
-	for (n = 0; n < MAX_WAYPOINTS; n++) {
-		if (WayPoints[n].p_lat != 0.0) {
-			if (flag == 1) {
-				strcat(content, ",\n");
-			}
-			sprintf(tmp_str, "   new OpenLayers.Geometry.Point(%f, %f).transform(map.displayProjection,map.projection)", WayPoints[n].p_long, WayPoints[n].p_lat);
-			strcat(content, tmp_str);
-			n2 = n + 1;
-			flag = 1;
-		}
-	}
-	strcat(content, "\n");
-	strcat(content, ");\n");
-	strcat(content, "var line = new OpenLayers.Geometry.LineString(points);\n");
-	strcat(content, "var style = {\n");
-	strcat(content, "  strokeColor: '#0000ff',\n");
-	strcat(content, "  strokeOpacity: 0.5,\n");
-	strcat(content, "  strokeWidth: 5\n");
-	strcat(content, "};\n");
-	strcat(content, "var lineFeature = new OpenLayers.Feature.Vector(line, null, style);\n");
-	strcat(content, "lineLayer.addFeatures([lineFeature]);\n");
-
-
-
-
-	strcat(content, "map.addLayers([baselayer, markerlayer]);\n");
-	sprintf(tmp_str, "map.setCenter(new OpenLayers.LonLat(laenge,breite).transform(map.displayProjection,map.projection), %i);\n", zoom);
-	strcat(content, tmp_str);
-	strcat(content, "\n");
-
-	strcat(content, "OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {\n");
-	strcat(content, "    defaultHandlerOptions: {\n");
-	strcat(content, "        'single': true,\n");
-	strcat(content, "        'double': false,\n");
-	strcat(content, "        'pixelTolerance': 0,\n");
-	strcat(content, "        'stopSingle': false,\n");
-	strcat(content, "        'stopDouble': false\n");
-	strcat(content, "    },\n");
-	strcat(content, "    initialize: function(options) {\n");
-	strcat(content, "        this.handlerOptions = OpenLayers.Util.extend({}, this.defaultHandlerOptions);\n");
-	strcat(content, "        OpenLayers.Control.prototype.initialize.apply(this, arguments); \n");
-	strcat(content, "        this.handler = new OpenLayers.Handler.Click(this, {'click': this.trigger}, this.handlerOptions);\n");
-	strcat(content, "    }, \n");
-	strcat(content, "    trigger: function(e) {\n");
-	strcat(content, "        var lonlat = map.getLonLatFromPixel(e.xy);\n");
-	strcat(content, "        lonlat1 = new OpenLayers.LonLat(lonlat.lon,lonlat.lat).transform(toProjection,fromProjection);\n");
-	strcat(content, "        document.getElementById('lat').value = lonlat1.lat;\n");
-	strcat(content, "        document.getElementById('lon').value = lonlat1.lon;\n");
-
-	sprintf(tmp_str, "        wp_add(%i, lonlat1.lon, lonlat1.lat);\n", n2);
-	strcat(content, tmp_str);
- 
-	strcat(content, "    }\n");
-	strcat(content, "});\n");
-	strcat(content, "var click = new OpenLayers.Control.Click();\n");
-	strcat(content, "map.addControl(click);\n");
-	strcat(content, "click.activate();\n");
-
-
-	strcat(content, "function wp_add(num, lon, lat) {\n");
-	strcat(content, "    var xmlHttpReq = false;\n");
-	strcat(content, "    var self = this;\n");
-	strcat(content, "    if (window.XMLHttpRequest) {\n");
-	strcat(content, "        self.xmlHttpReq = new XMLHttpRequest();\n");
-	strcat(content, "    } else if (window.ActiveXObject) {\n");
-	strcat(content, "        self.xmlHttpReq = new ActiveXObject(\"Microsoft.XMLHTTP\");\n");
-	strcat(content, "    }\n");
-	strcat(content, "    self.xmlHttpReq.open(\"GET\", \"/waypoint_new?wp\" + num + \"=\" + lat + \",\" + lon, true);\n");
-	strcat(content, "    self.xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');\n");
-	strcat(content, "    self.xmlHttpReq.onreadystatechange = function() {\n");
-	strcat(content, "        if (self.xmlHttpReq.readyState == 4) {\n");
-	strcat(content, "            window.location.reload();\n");
-	strcat(content, "        }\n");
-	strcat(content, "    }\n");
-	strcat(content, "    self.xmlHttpReq.send();\n");
+	strcat(content, "       HUDxmlhttpGet();\n");
 	strcat(content, "}\n");
-
 	strcat(content, "</script>\n");
+	strcat(content, "</head>\n");
 
-	strcat(content, "<textarea class=\"lon\" id=\"lon\"></textarea><BR>\n");
-	strcat(content, "<textarea class=\"lat\" id=\"lat\"></textarea><BR>\n");
-
+	strcat(content, "<body onload=\"init();\">\n");
+	strcat(content, "<A href=\"/hud.html\">[HUD]</A> <A href=\"/map.html\">[MAP]</A> <A href=\"/waypoints.html\">[WAYPOINTS]</A> <A href=\"/mavlink_values.html\">[MAVLINK]</A>");
+	strcat(content, "  <canvas class=\"myCanvas\" id=\"myCanvas\" width=\"640\" height=\"640\"></canvas>\n");
 	strcat(content, "</body></html>\n");
 
 	sprintf(buffer, header_str, (int)strlen(content), "text/html");
@@ -1190,7 +1211,6 @@ void webserv_child (int fd) {
 			webserv_child_dump_modeldata(fd);
 
 		} else if (strncmp(buffer + 4,"/waypoint_new?", 14) == 0) {
-			int n = 0;
 			int wp_num = 0;
 			float lat = 0.0;
 			float lon = 0.0;
@@ -1255,7 +1275,37 @@ void webserv_child (int fd) {
 			float last_alt = 0.0;
 			float alt = 0.0;
 
-			strcpy(content, "<HTML>\n");
+			strcat(content, "<html><head><title>MultiGCS (WAYPOINTS)</title>\n");
+			strcat(content, "<style type=\"text/css\">\n");
+			strcat(content, "body {\n");
+			strcat(content, "	background-color:#000000;\n");
+			strcat(content, "	color:#FFFFFF;\n");
+			strcat(content, "}\n");
+			strcat(content, "a {\n");
+			strcat(content, "	color:#FFFFFF;\n");
+			strcat(content, "}\n");
+			strcat(content, ".form_dark { margin:0 0 24px; text-align: left; }\n");
+			strcat(content, ".form_dark .form-input { display: block; height: 34px; padding: 6px 10px; margin-top: 2px; margin-bottom: 2px; margin-left: 2px; margin-right: 2px; font: 14px Calibri, Helvetica, Arial, sans-serif; color: #ccc; background: #444; border: 1px solid #222; outline: none; -moz-border-radius:    8px; -webkit-border-radius: 8px; border-radius:         8px; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -moz-background-clip:    padding; -webkit-background-clip: padding-box; background-clip:         padding-box; -moz-transition:    all 0.4s ease-in-out; -webkit-transition: all 0.4s ease-in-out; -o-transition:      all 0.4s ease-in-out; -ms-transition:     all 0.4s ease-in-out; transition:         all 0.4s ease-in-out; behavior: url(PIE.htc); }\n");
+			strcat(content, ".form_dark textarea.form-input { width: 400px; height: 200px; overflow: auto; }\n");
+			strcat(content, ".form_dark .form-input:focus { border: 1px solid #7fbbf9; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; }\n");
+			strcat(content, ".form_dark .form-input:-moz-ui-invalid { border: 1px solid #e00; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00;}\n");
+			strcat(content, ".form_dark .form-input.invalid { border: 1px solid #e00; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; }\n");
+			strcat(content, ".form_dark.nolabel ::-webkit-input-placeholder { color: #888;}\n");
+			strcat(content, ".form_dark.nolabel :-moz-placeholder { color: #888;}\n");
+			strcat(content, ".form_dark .form-btn { padding: 0 15px; height: 30px; font: bold 12px Calibri, Helvetica, Arial, sans-serif; text-align: center; color: #fff; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.7); cursor: pointer; border: 1px solid #0d3d6a; outline: none; position: relative; background-color: #1d83e2; background-image: -webkit-gradient(linear, left top, left bottom, from(#1d83e2), to(#0d3d6a)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #1d83e2, #0d3d6a); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #1d83e2, #0d3d6a); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #1d83e2, #0d3d6a); /* IE10 */ background-image:      -o-linear-gradient(top, #1d83e2, #0d3d6a); /* Opera 11.10+ */ background-image:         linear-gradient(top, #1d83e2, #0d3d6a); -pie-background:          linear-gradient(top, #1d83e2, #0d3d6a); /* IE6-IE9 */ -moz-border-radius:    16px; -webkit-border-radius: 16px; border-radius:         16px; -moz-box-shadow:    inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); box-shadow:         inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); -moz-background-clip:    padding; -webkit-background-clip: padding-box; background-clip:         padding-box; behavior: url(PIE.htc); }\n");
+			strcat(content, ".form_dark .form-btn:active { border: 1px solid #1d83e2; background-color: #0d3d6a; background-image: -webkit-gradient(linear, left top, left bottom, from(#0d3d6a), to(#1d83e2)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #0d3d6a, #1d83e2); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #0d3d6a, #1d83e2); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #0d3d6a, #1d83e2); /* IE10 */ background-image:      -o-linear-gradient(top, #0d3d6a, #1d83e2); /* Opera 11.10+ */ background-image:         linear-gradient(top, #0d3d6a, #1d83e2); -pie-background:          linear-gradient(top, #0d3d6a, #1d83e2); /* IE6-IE9 */ -moz-box-shadow:    inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); box-shadow:         inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); }\n");
+			strcat(content, ".form_dark input[type=submit]::-moz-focus-inner { border: 0; padding: 0;}\n");
+			strcat(content, ".form_dark label { margin-bottom: 10px; display: block; width: 300px; color: #ccc; font-size: 14px; font-weight: bold; }\n");
+			strcat(content, ".form_dark label span { font-size: 12px; color: #888; font-weight: normal; }\n");
+			strcat(content, ".form_dark.frame { padding: 20px; background-color: #343434; background-image: -webkit-gradient(linear, left top, left bottom, from(#343434), to(#141414)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #343434, #141414); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #343434, #141414); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #343434, #141414); /* IE10 */ background-image:      -o-linear-gradient(top, #343434, #141414); /* Opera 11.10+ */ background-image:         linear-gradient(top, #343434, #141414); -pie-background:          linear-gradient(top, #343434, #141414); /* IE6-IE9 */ -moz-border-radius:    8px; -webkit-border-radius: 8px; border-radius:         8px; -moz-box-shadow:    0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); box-shadow:         0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); behavior: URL(PIE.htc); }\n");
+			strcat(content, ".form_dark.tbar { padding: 0 20px 20px 20px; background-color: #3c3c3c; background-image: -webkit-gradient(linear, left top, left bottom, from(#444444), to(#343434)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #444444, #343434); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #444444, #343434); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #444444, #343434); /* IE10 */ background-image:      -o-linear-gradient(top, #444444, #343434); /* Opera 11.10+ */ background-image:         linear-gradient(top, #444444, #343434); -pie-background:          linear-gradient(top, #444444, #343434); /* IE6-IE9 */ behavior: URL(PIE.htc); }\n");
+			strcat(content, ".form_dark.tbar h3 { font: normal 18px/1 Calibri, Helvetica, Arial, sans-serif; color: #ccc; text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.7); padding: 20px; margin: 0 -20px 20px -20px; background-color: #343434; background-image: -webkit-gradient(linear, left top, left bottom, from(#343434), to(#1b1b1b)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #343434, #1b1b1b); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #343434, #1b1b1b); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #343434, #1b1b1b); /* IE10 */ background-image:      -o-linear-gradient(top, #343434, #1b1b1b); /* Opera 11.10+ */ background-image:         linear-gradient(top, #343434, #1b1b1b); -pie-background:          linear-gradient(top, #343434, #1b1b1b); /* IE6-IE9 */ -moz-border-radius:    8px 8px 0 0; -webkit-border-radius: 8px 8px 0 0; border-radius:         8px 8px 0 0; -moz-border-radius:    8px 8px 0 0; -moz-box-shadow:    inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); box-shadow:         inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); behavior: url(PIE.htc); }\n");
+			strcat(content, ".form_dark.tbar .form-input { background: #545454; }\n");
+			strcat(content, ".form_dark.tbar.nolabel ::-webkit-input-placeholder { color: #999;}\n");
+			strcat(content, ".form_dark.tbar.nolabel :-moz-placeholder { color: #999;}\n");
+			strcat(content, "</style>\n");
+			strcat(content, "<body>\n");
+			strcat(content, "<A href=\"/hud.html\">[HUD]</A> <A href=\"/map.html\">[MAP]</A> <A href=\"/waypoints.html\">[WAYPOINTS]</A> <A href=\"/mavlink_values.html\">[MAVLINK]</A>");
 
 			strcat(content, "<SCRIPT>\n");
 			strcat(content, "function check_option(wp, name) {\n");
@@ -1273,23 +1323,32 @@ void webserv_child (int fd) {
 			strcat(content, "</SCRIPT>\n");
 
 
-			strcat(content, "<TABLE border=\"1\">\n");
-			strcat(content, "<TR><TH>ACTIVE</TH><TH>NAME</TH><TH>TYPE</TH><TH>LONG</TH><TH>LAT</TH><TH>ALT</TH><TH>DIST</TH><TH>ACTION</TH><TH>MAP</TH></TR>\n");
+			strcat(content, "<BR>\n");
+			strcat(content, "<BR>\n");
+			strcat(content, "<FORM class=\"form_dark\">\n");
+			strcat(content, "<CENTER><TABLE width=\"80%\" border=\"0\">\n");
+			strcat(content, "<TR bgcolor=\"#222222\"><TH>ACTIVE</TH><TH>NAME</TH><TH>TYPE</TH><TH>LONG</TH><TH>LAT</TH><TH>ALT</TH><TH>DIST</TH><TH>ACTION</TH><TH>MAP</TH></TR>\n");
+			int lc = 0;
 			for (n = 0; n < MAX_WAYPOINTS; n++) {
 				if (WayPoints[n].p_lat != 0.0) {
-					strcat(content, "<TR>\n");
-					if (n == waypoint_active) {
-						strcat(content, "<TD>1</TD>");
+					lc = 1 - lc;
+					if (lc == 0) {
+						strcat(content, "<TR bgcolor=\"#444444\">\n");
 					} else {
-						strcat(content, "<TD>0</TD>");
+						strcat(content, "<TR bgcolor=\"#333333\">\n");
+					}
+					if (n == waypoint_active) {
+						strcat(content, "<TD bgcolor=\"#002200\">&nbsp;</TD>");
+					} else {
+						strcat(content, "<TD>&nbsp;</TD>");
 					}
 
-					sprintf(tmp_str, "<TD><input onchange=\"check_value('wp%i', 'NAME');\" id=\"wp%i-NAME\" value=\"%s\" type=\"text\"></TD>", n, n, WayPoints[n].name);
+					sprintf(tmp_str, "<TD><input class=\"form-input\" onchange=\"check_value('wp%i', 'NAME');\" id=\"wp%i-NAME\" value=\"%s\" type=\"text\"></TD>", n, n, WayPoints[n].name);
 					strcat(content, tmp_str);
 
 					if (n != 0) {
 
-						sprintf(tmp_str, "<TD><select onchange=\"check_option('wp%i', 'TYPE');\" id=\"wp%i-TYPE\">\n", n, n);
+						sprintf(tmp_str, "<TD><select class=\"form-input\" onchange=\"check_option('wp%i', 'TYPE');\" id=\"wp%i-TYPE\">\n", n, n);
 						strcat(content, tmp_str);
 						if (WayPoints[n].command[0] == 0) {
 							sprintf(tmp_str, " <option value=\"NONE\" selected>NONE</option>\n");
@@ -1344,13 +1403,13 @@ void webserv_child (int fd) {
 						strcat(content, "<TD>---</TD>");
 					}
 
-					sprintf(tmp_str, "<TD><input onchange=\"check_value('wp%i', 'LAT');\" id=\"wp%i-LAT\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_lat);
+					sprintf(tmp_str, "<TD><input class=\"form-input\" onchange=\"check_value('wp%i', 'LAT');\" id=\"wp%i-LAT\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_lat);
 					strcat(content, tmp_str);
 
-					sprintf(tmp_str, "<TD><input onchange=\"check_value('wp%i', 'LONG');\" id=\"wp%i-LONG\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_long);
+					sprintf(tmp_str, "<TD><input class=\"form-input\" onchange=\"check_value('wp%i', 'LONG');\" id=\"wp%i-LONG\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_long);
 					strcat(content, tmp_str);
 
-					sprintf(tmp_str, "<TD><input onchange=\"check_value('wp%i', 'ALT');\" id=\"wp%i-ALT\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_alt);
+					sprintf(tmp_str, "<TD><input class=\"form-input\" onchange=\"check_value('wp%i', 'ALT');\" id=\"wp%i-ALT\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_alt);
 					strcat(content, tmp_str);
 
 					float distance1 = 0.0;
@@ -1370,7 +1429,7 @@ void webserv_child (int fd) {
 						distance2 = sqrt(((distance1) * (distance1)) + (alt * alt));
 						/* Steigung */
 						winkel_up = (asin(alt / distance2)) * 180 / PI;
-						sprintf(tmp_str, "<TD>%0.1fm (%0.1fm / %0.1fGrad)</TD>", distance1, distance2, winkel_up);
+						sprintf(tmp_str, "<TD><NOBR>%0.1fm (%0.1fm / %0.1fGrad)</NOBR></TD>", distance1, distance2, winkel_up);
 						strcat(content, tmp_str);
 					} else {
 						strcat(content, "<TD>---</TD>");
@@ -1394,11 +1453,10 @@ void webserv_child (int fd) {
 				}
 			}
 
-			sprintf(tmp_str, "<TR><TD>0</TD><TD>---</TD><TD>---</TD><TD>---</TD><TD>---</TD><TD>---</TD><TD>---</TD><TD><A href=\"/waypoint_set?wp%i&ADD=1\">ADD</A></TD><TD>---</TD></TR>", n2);
+			sprintf(tmp_str, "<TR bgcolor=\"#222222\"><TD>0</TD><TD>---</TD><TD>---</TD><TD>---</TD><TD>---</TD><TD>---</TD><TD>---</TD><TD><A href=\"/waypoint_set?wp%i&ADD=1\">ADD</A></TD><TD>---</TD></TR>", n2);
 			strcat(content, tmp_str);
-
-
-			strcat(content, "</TABLE>\n");
+			strcat(content, "</TABLE></CENTER>\n");
+			strcat(content, "</FORM>\n");
 			strcat(content, "</HTML>\n");
 
 			sprintf(buffer, header_str, (int)strlen(content), "text/html");
@@ -1422,8 +1480,38 @@ void webserv_child (int fd) {
 		} else if (strncmp(buffer + 4,"/mavlink_values.html", 20) == 0) {
 			uint16_t n = 0;
 
-			strcpy(content, "\n");
-			strcat(content, "<FORM>\n");
+			content[0] = 0;
+			strcat(content, "<html><head><title>MultiGCS (MAVLINK)</title>\n");
+			strcat(content, "<style type=\"text/css\">\n");
+			strcat(content, "body {\n");
+			strcat(content, "	background-color:#000000;\n");
+			strcat(content, "	color:#FFFFFF;\n");
+			strcat(content, "}\n");
+			strcat(content, "a {\n");
+			strcat(content, "	color:#FFFFFF;\n");
+			strcat(content, "}\n");
+			strcat(content, ".form_dark { margin:0 0 24px; text-align: left; }\n");
+			strcat(content, ".form_dark .form-input { display: block; height: 34px; padding: 6px 10px; margin-top: 2px; margin-bottom: 2px; margin-left: 2px; margin-right: 2px; font: 14px Calibri, Helvetica, Arial, sans-serif; color: #ccc; background: #444; border: 1px solid #222; outline: none; -moz-border-radius:    8px; -webkit-border-radius: 8px; border-radius:         8px; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -moz-background-clip:    padding; -webkit-background-clip: padding-box; background-clip:         padding-box; -moz-transition:    all 0.4s ease-in-out; -webkit-transition: all 0.4s ease-in-out; -o-transition:      all 0.4s ease-in-out; -ms-transition:     all 0.4s ease-in-out; transition:         all 0.4s ease-in-out; behavior: url(PIE.htc); }\n");
+			strcat(content, ".form_dark textarea.form-input { width: 400px; height: 200px; overflow: auto; }\n");
+			strcat(content, ".form_dark .form-input:focus { border: 1px solid #7fbbf9; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; }\n");
+			strcat(content, ".form_dark .form-input:-moz-ui-invalid { border: 1px solid #e00; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00;}\n");
+			strcat(content, ".form_dark .form-input.invalid { border: 1px solid #e00; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; }\n");
+			strcat(content, ".form_dark.nolabel ::-webkit-input-placeholder { color: #888;}\n");
+			strcat(content, ".form_dark.nolabel :-moz-placeholder { color: #888;}\n");
+			strcat(content, ".form_dark .form-btn { padding: 0 15px; height: 30px; font: bold 12px Calibri, Helvetica, Arial, sans-serif; text-align: center; color: #fff; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.7); cursor: pointer; border: 1px solid #0d3d6a; outline: none; position: relative; background-color: #1d83e2; background-image: -webkit-gradient(linear, left top, left bottom, from(#1d83e2), to(#0d3d6a)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #1d83e2, #0d3d6a); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #1d83e2, #0d3d6a); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #1d83e2, #0d3d6a); /* IE10 */ background-image:      -o-linear-gradient(top, #1d83e2, #0d3d6a); /* Opera 11.10+ */ background-image:         linear-gradient(top, #1d83e2, #0d3d6a); -pie-background:          linear-gradient(top, #1d83e2, #0d3d6a); /* IE6-IE9 */ -moz-border-radius:    16px; -webkit-border-radius: 16px; border-radius:         16px; -moz-box-shadow:    inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); box-shadow:         inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); -moz-background-clip:    padding; -webkit-background-clip: padding-box; background-clip:         padding-box; behavior: url(PIE.htc); }\n");
+			strcat(content, ".form_dark .form-btn:active { border: 1px solid #1d83e2; background-color: #0d3d6a; background-image: -webkit-gradient(linear, left top, left bottom, from(#0d3d6a), to(#1d83e2)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #0d3d6a, #1d83e2); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #0d3d6a, #1d83e2); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #0d3d6a, #1d83e2); /* IE10 */ background-image:      -o-linear-gradient(top, #0d3d6a, #1d83e2); /* Opera 11.10+ */ background-image:         linear-gradient(top, #0d3d6a, #1d83e2); -pie-background:          linear-gradient(top, #0d3d6a, #1d83e2); /* IE6-IE9 */ -moz-box-shadow:    inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); box-shadow:         inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); }\n");
+			strcat(content, ".form_dark input[type=submit]::-moz-focus-inner { border: 0; padding: 0;}\n");
+			strcat(content, ".form_dark label { margin-bottom: 10px; display: block; width: 300px; color: #ccc; font-size: 14px; font-weight: bold; }\n");
+			strcat(content, ".form_dark label span { font-size: 12px; color: #888; font-weight: normal; }\n");
+			strcat(content, ".form_dark.frame { padding: 20px; background-color: #343434; background-image: -webkit-gradient(linear, left top, left bottom, from(#343434), to(#141414)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #343434, #141414); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #343434, #141414); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #343434, #141414); /* IE10 */ background-image:      -o-linear-gradient(top, #343434, #141414); /* Opera 11.10+ */ background-image:         linear-gradient(top, #343434, #141414); -pie-background:          linear-gradient(top, #343434, #141414); /* IE6-IE9 */ -moz-border-radius:    8px; -webkit-border-radius: 8px; border-radius:         8px; -moz-box-shadow:    0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); box-shadow:         0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); behavior: URL(PIE.htc); }\n");
+			strcat(content, ".form_dark.tbar { padding: 0 20px 20px 20px; background-color: #3c3c3c; background-image: -webkit-gradient(linear, left top, left bottom, from(#444444), to(#343434)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #444444, #343434); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #444444, #343434); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #444444, #343434); /* IE10 */ background-image:      -o-linear-gradient(top, #444444, #343434); /* Opera 11.10+ */ background-image:         linear-gradient(top, #444444, #343434); -pie-background:          linear-gradient(top, #444444, #343434); /* IE6-IE9 */ behavior: URL(PIE.htc); }\n");
+			strcat(content, ".form_dark.tbar h3 { font: normal 18px/1 Calibri, Helvetica, Arial, sans-serif; color: #ccc; text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.7); padding: 20px; margin: 0 -20px 20px -20px; background-color: #343434; background-image: -webkit-gradient(linear, left top, left bottom, from(#343434), to(#1b1b1b)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #343434, #1b1b1b); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #343434, #1b1b1b); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #343434, #1b1b1b); /* IE10 */ background-image:      -o-linear-gradient(top, #343434, #1b1b1b); /* Opera 11.10+ */ background-image:         linear-gradient(top, #343434, #1b1b1b); -pie-background:          linear-gradient(top, #343434, #1b1b1b); /* IE6-IE9 */ -moz-border-radius:    8px 8px 0 0; -webkit-border-radius: 8px 8px 0 0; border-radius:         8px 8px 0 0; -moz-border-radius:    8px 8px 0 0; -moz-box-shadow:    inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); box-shadow:         inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); behavior: url(PIE.htc); }\n");
+			strcat(content, ".form_dark.tbar .form-input { background: #545454; }\n");
+			strcat(content, ".form_dark.tbar.nolabel ::-webkit-input-placeholder { color: #999;}\n");
+			strcat(content, ".form_dark.tbar.nolabel :-moz-placeholder { color: #999;}\n");
+			strcat(content, "</style>\n");
+			strcat(content, "<body>\n");
+			strcat(content, "<A href=\"/hud.html\">[HUD]</A> <A href=\"/map.html\">[MAP]</A> <A href=\"/waypoints.html\">[WAYPOINTS]</A> <A href=\"/mavlink_values.html\">[MAVLINK]</A>");
 
 			strcat(content, "<SCRIPT>\n");
 			strcat(content, "function check_option(name) {\n");
@@ -1440,17 +1528,28 @@ void webserv_child (int fd) {
 			strcat(content, "}\n");
 			strcat(content, "</SCRIPT>\n");
 
-			strcat(content, "<TABLE border=\"1\">\n");
-			strcat(content, "<TR><TH>PARAM NAME (DISPLAY)</TH><TH>VALUE (FLOAT)</TH><TH>DESCRIPTION</TH><TH>MIN</TH><TH>MAX</TH></TR>\n");
+			strcat(content, "<BR>\n");
+			strcat(content, "<BR>\n");
+			strcat(content, "<FORM class=\"form_dark\">\n");
+			strcat(content, "<CENTER><TABLE width=\"80%\" border=\"0\">\n");
+			strcat(content, "<TR bgcolor=\"#222222\"><TH>PARAM NAME (DISPLAY)</TH><TH>VALUE (FLOAT)</TH><TH>DESCRIPTION</TH><TH>MIN</TH><TH>MAX</TH></TR>\n");
+			int lc = 0;
 			for (n = 0; n < 500; n++) {
 				if (MavLinkVars[n].name[0] != 0) {
 
-					sprintf(tmp_str, "<TR><TD>%s (%s)</TD>\n", MavLinkVars[n].name, MavLinkVars[n].display);
+					lc = 1 - lc;
+					if (lc == 0) {
+						strcat(content, "<TR bgcolor=\"#444444\">");
+					} else {
+						strcat(content, "<TR bgcolor=\"#333333\">");
+					}
+
+					sprintf(tmp_str, "<TD>%s (%s)</TD>\n", MavLinkVars[n].name, MavLinkVars[n].display);
 					strcat(content, tmp_str);
 
 					if (MavLinkVars[n].values[0] != 0) {
 						int n2 = 0;
-						sprintf(tmp_str, "<TD><select onchange=\"check_option('%s');\" id=\"%s\">\n", MavLinkVars[n].name, MavLinkVars[n].name);
+						sprintf(tmp_str, "<TD><select class=\"form-input\" onchange=\"check_option('%s');\" id=\"%s\">\n", MavLinkVars[n].name, MavLinkVars[n].name);
 						strcat(content, tmp_str);
 						tmp_str2[0] = 0;
 						for (n2 = (int)MavLinkVars[n].min; n2 <= (int)MavLinkVars[n].max; n2++) {
@@ -1501,9 +1600,9 @@ void webserv_child (int fd) {
 							mavlink_meta_get_bits(n2, MavLinkVars[n].name, tmp_str2);
 							if (tmp_str2[0] != 0) {
 								if ((int)MavLinkVars[n].value & (1<<n2)) {
-									sprintf(tmp_str, "<input onchange=\"check_%s();\" type=\"checkbox\" name=\"%s-%s\" value=\"%i\" checked>%s\n", MavLinkVars[n].name, MavLinkVars[n].name, tmp_str2, n2, tmp_str2);
+									sprintf(tmp_str, "<NOBR><input class=\"form-input\" onchange=\"check_%s();\" type=\"checkbox\" name=\"%s-%s\" value=\"%i\" checked>%s</NOBR>\n", MavLinkVars[n].name, MavLinkVars[n].name, tmp_str2, n2, tmp_str2);
 								} else {
-									sprintf(tmp_str, "<input onchange=\"check_%s();\" type=\"checkbox\" name=\"%s-%s\" value=\"%i\">%s\n", MavLinkVars[n].name, MavLinkVars[n].name, tmp_str2, n2, tmp_str2);
+									sprintf(tmp_str, "<NOBR><input class=\"form-input\" onchange=\"check_%s();\" type=\"checkbox\" name=\"%s-%s\" value=\"%i\">%s</NOBR>\n", MavLinkVars[n].name, MavLinkVars[n].name, tmp_str2, n2, tmp_str2);
 								}
 								strcat(content, tmp_str);
 							}
@@ -1511,7 +1610,7 @@ void webserv_child (int fd) {
 
 						strcat(content, "</TD>");
 					} else {
-						sprintf(tmp_str, "<TD><input onchange=\"check_value('%s');\" id=\"%s\" value=\"%f\" type=\"text\"></TD>\n", MavLinkVars[n].name, MavLinkVars[n].name, MavLinkVars[n].value);
+						sprintf(tmp_str, "<TD><input class=\"form-input\" onchange=\"check_value('%s');\" id=\"%s\" value=\"%f\" type=\"text\"></TD>\n", MavLinkVars[n].name, MavLinkVars[n].name, MavLinkVars[n].value);
 						strcat(content, tmp_str);
 					}
 					sprintf(tmp_str, "<TD>%s&nbsp;</TD><TD>%i</TD><TD>%i</TD></TR>\n", MavLinkVars[n].desc, (int)MavLinkVars[n].min, (int)MavLinkVars[n].max);
@@ -1745,6 +1844,8 @@ void webserv_child (int fd) {
 
 
 		// HTML5 HUD-View + Map
+		} else if (strncmp(buffer + 4,"/map.html", 9) == 0) {
+			webserv_child_show_map(fd);
 		} else if (strncmp(buffer + 4,"/hud.html", 9) == 0) {
 			webserv_child_show_hud(fd);
 		} else if (strncmp(buffer + 4,"/hudredraw.js", 13) == 0) {
