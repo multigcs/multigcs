@@ -5,6 +5,9 @@
 
 EXE="gcs"
 
+## work-around ##
+cp osx/dmg-background.png dmg-background.png
+
 applicationName="$1"
 version="$2"
 dmg_back="dmg-background.png"
@@ -106,6 +109,14 @@ hdiutil create -srcfolder "${applicationName}.app" -volname "${applicationName}"
 echo "## mounting dmg-image ##"
 device=$(hdiutil attach -readwrite -noverify -noautoopen "${applicationName}.temp.dmg" | egrep '^/dev/' | sed 1q | awk '{print $1}')
 
+
+if ! test -d /Volumes/${applicationName}
+then
+	echo "ERROR - generating/mounting dmg-image: ${applicationName}.temp.dmg -> /Volumes/${applicationName}"
+	rm -rf dmg-background.png
+	exit 1
+fi
+
 echo "## copy background-image ##"
 mkdir -p /Volumes/${applicationName}/.background
 cp osx/icon.png /Volumes/${applicationName}/.background/icon.png
@@ -142,4 +153,4 @@ hdiutil detach ${device} 2>/dev/null
 hdiutil convert "${applicationName}.temp.dmg" -format UDZO -imagekey zlib-level=9 -o "${applicationName}-${version}"
 rm -f ${applicationName}.temp.dmg
 
-
+rm -rf dmg-background.png
