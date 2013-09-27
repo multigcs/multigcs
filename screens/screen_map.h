@@ -4,6 +4,8 @@ enum {
 	MAP_URL,
 	MAP_FILE,
 	MAP_TYPE,
+	MAP_COMMENT,
+	MAP_COPYRIGHT,
 };
 
 
@@ -29,6 +31,12 @@ extern uint16_t map_h;
 extern uint8_t map_type;
 extern uint8_t map_view;
 extern uint8_t uav_active_waypoint;
+extern char mapnames[20][6][512];
+extern char omapnames[20][6][512];
+extern uint8_t map_type;
+extern uint8_t map_type_select;
+extern uint8_t omap_type;
+extern uint8_t omap_type_select;
 
 extern size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream);
 extern uint8_t map_3d (char *name, float x, float y, int8_t button, float data);

@@ -38,6 +38,7 @@
 #include <draw.h>
 #include <main.h>
 #include <screen_mavlink_menu.h>
+#include <screen_map.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -48,13 +49,11 @@
 
 extern void save_screenshot2 (void);
 extern volatile uint8_t zoom;
-extern uint8_t map_type;
-extern char mapnames[20][4][200];
 
 #define BUFSIZE 298096
 #define PI 3.14159265
 
-#define MENU "<TABLE width=\"100%\" border=\"0\"><TR bgcolor=\"#555555\"><TH><A href=\"/hud.html\">[HUD]</A></TH><TH><A href=\"/map.html\">[MAP]</A></TH><TH><A href=\"/waypoints.html\">[WAYPOINTS]</A></TH><TH><A href=\"/mavlink_values.html\">[MAVLINK]</A></TH><TH><A href=\"/logfiles/\">[LOGFILES]</A></TH><TH><A href=\"/misc.html\">[MISC]</A></TH></TR></TABLE>\n"
+#define MENU "<TABLE class=\"menubar\" id=\"menubar\" width=\"100%\" border=\"0\"><TR bgcolor=\"#555555\"><TH width=\"10%\"><A href=\"/hud.html\">[HUD]</A></TH><TH width=\"10%\"><A href=\"/map.html\">[MAP]</A></TH><TH width=\"10%\"><A href=\"/waypoints.html\">[WAYPOINTS]</A></TH><TH width=\"10%\"><A href=\"/mavlink.html\">[MAVLINK]</A></TH><TH width=\"10%\"><A href=\"/logfiles/\">[LOGFILES]</A></TH><TH width=\"10%\"><A href=\"/misc.html\">[MISC]</A></TH></TR></TABLE>\n"
 
 static float blender_first_lat = 0.0;
 static float blender_first_long = 0.0;
@@ -270,7 +269,7 @@ void webserv_child_dump_modeldata (int fd) {
 void webserv_child_show_lonlat (int fd) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
-	sprintf(content, "%f, %f", ModelData.p_long, ModelData.p_lat);
+	sprintf(content, "%f, %f, %.1f, %0.1f", ModelData.p_long, ModelData.p_lat, ModelData.p_alt, ModelData.yaw);
 	sprintf(buffer, header_str, (int)strlen(content), "text/plain");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
@@ -296,17 +295,112 @@ void webserv_child_show_map (int fd) {
 	strcat(content, "	padding:0px;\n");
 	strcat(content, "	border-spacing:0;\n");
 	strcat(content, "}\n");
-	strcat(content, "#mapdiv {\n");
-	strcat(content, "    width: 80%;\n");
-	strcat(content, "    height: 90%;\n");
+	strcat(content, "#mapcopyright {\n");
 	strcat(content, "    position: absolute;\n");
-	strcat(content, "    left: 0px;\n");
-	strcat(content, "    top: 40px;\n");
+	strcat(content, "    bottom: 5px;\n");
+	strcat(content, "    left: 5px;\n");
 	strcat(content, "    float: none;\n");
+	strcat(content, "    z-index:-3;\n");
+	strcat(content, "    color:#FF0000;\n");
+	strcat(content, "}\n");
+	strcat(content, "#mapdiv {\n");
+	strcat(content, "    position: absolute;\n");
+	strcat(content, "    top: 0%;\n");
+	strcat(content, "    right: 0%;\n");
+	strcat(content, "    width: 100%;\n");
+	strcat(content, "    height: 100%;\n");
+	strcat(content, "    float: none;\n");
+	strcat(content, "    z-index:-5;\n");
+	strcat(content, "}\n");
+	strcat(content, "#hudcanvas {\n");
+	strcat(content, "    width: 200px;\n");
+	strcat(content, "    height: 200px;\n");
+	strcat(content, "    bottom: 0%;\n");
+	strcat(content, "    right: 0%;\n");
+	strcat(content, "    float: none;\n");
+	strcat(content, "    position: absolute;\n");
+	strcat(content, "    z-index:-1;\n");
+	strcat(content, "}\n");
+	strcat(content, "#menubar {\n");
+	strcat(content, "    width: 100%;\n");
+	strcat(content, "    height: 32px;\n");
+	strcat(content, "    top: 0%;\n");
+	strcat(content, "    left: 0%;\n");
+	strcat(content, "    float: none;\n");
+	strcat(content, "    position: absolute;\n");
+	strcat(content, "    z-index: +5;\n");
 	strcat(content, "}\n");
 	strcat(content, "</style>\n");
 	strcat(content, "<script src=\"/map.js\"></script>\n");
 	strcat(content, "<script>\n");
+
+	strcat(content, "function HUDxmlhttpGet() {\n");
+	strcat(content, "    var xmlHttpReq = false;\n");
+	strcat(content, "    var self = this;\n");
+	strcat(content, "    if (window.XMLHttpRequest) {\n");
+	strcat(content, "        self.xmlHttpReq = new XMLHttpRequest();\n");
+	strcat(content, "    } else if (window.ActiveXObject) {\n");
+	strcat(content, "        self.xmlHttpReq = new ActiveXObject(\"Microsoft.XMLHTTP\");\n");
+	strcat(content, "    }\n");
+	strcat(content, "    self.xmlHttpReq.open('GET', \"/hudredraw_small.js\", true);\n");
+	strcat(content, "    self.xmlHttpReq.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');\n");
+	strcat(content, "    self.xmlHttpReq.onreadystatechange = function() {\n");
+	strcat(content, "        if (self.xmlHttpReq.readyState == 4) {\n");
+	strcat(content, "            HUDupdatepage(self.xmlHttpReq.responseText);\n");
+	strcat(content, "        }\n");
+	strcat(content, "    }\n");
+	strcat(content, "    self.xmlHttpReq.send();\n");
+	strcat(content, "    setTimeout(HUDxmlhttpGet, 100);\n");
+	strcat(content, "}\n");
+	strcat(content, "function HUDupdatepage(str){\n");
+	strcat(content, "	eval(str);\n");
+	strcat(content, "}\n");
+	strcat(content, "\n");
+	strcat(content, "	function drawHorizon(context, x, y, s, roll, pitch) {\n");
+	strcat(content, "		context.beginPath();\n");
+	strcat(content, "		context.moveTo(x, y);\n");
+	strcat(content, "		context.lineTo(x + s, y);\n");
+	strcat(content, "		var warning = 0;\n");
+	strcat(content, "		diff1 = (s / 2) + (roll / 45.0) * (s / 2) + (pitch / 45.0) * (s / 2);\n");
+	strcat(content, "		if (diff1 > s) {diff1 = s; warning = 1;};\n");
+	strcat(content, "		if (diff1 < 0) {diff1 = 0; warning = 1;};\n");
+	strcat(content, "		diff2 = (s / 2) - (roll / 45.0) * (s / 2) + (pitch / 45.0) * (s / 2);\n");
+	strcat(content, "		if (diff2 > s) {diff2 = s; warning = 1;};\n");
+	strcat(content, "		if (diff2 < 0) {diff2 = 0; warning = 1;};\n");
+	strcat(content, "		context.lineTo(x + s, y + s);\n");
+	strcat(content, "		context.lineTo(x, y + s);\n");
+	strcat(content, "		context.lineTo(x, y);\n");
+	strcat(content, "		context.closePath();\n");
+	strcat(content, "		context.fillStyle = 'blue';\n");
+	strcat(content, "		context.fill();\n");
+	strcat(content, "		context.beginPath();\n");
+	strcat(content, "		context.moveTo(x, y + diff1);\n");
+	strcat(content, "		context.lineTo(x + s, y + diff2);\n");
+	strcat(content, "		context.lineTo(x + s, y + s);\n");
+	strcat(content, "		context.lineTo(x, y + s);\n");
+	strcat(content, "		context.lineTo(x, y + diff1);\n");
+	strcat(content, "		context.closePath();\n");
+	strcat(content, "		context.fillStyle = 'brown';\n");
+	strcat(content, "		context.fill();\n");
+	strcat(content, "		context.beginPath();\n");
+	strcat(content, "		context.moveTo(x + s, y + diff2);\n");
+	strcat(content, "		context.lineTo(x, y + diff1);\n");
+	strcat(content, "		context.lineWidth = 3;\n");
+	strcat(content, "		if (warning == 0) {\n");
+	strcat(content, "			context.strokeStyle = 'white';\n");
+	strcat(content, "		} else {\n");
+	strcat(content, "			context.strokeStyle = 'red';\n");
+	strcat(content, "		}\n");
+	strcat(content, "		context.stroke();\n");
+	strcat(content, "		context.beginPath();\n");
+	strcat(content, "		context.moveTo(x + s, y + (s / 2));\n");
+	strcat(content, "		context.lineTo(x, y + (s / 2));\n");
+	strcat(content, "		context.lineWidth = 1;\n");
+	strcat(content, "		context.strokeStyle = 'gray';\n");
+	strcat(content, "		context.stroke();\n");
+	strcat(content, "	}\n");
+	strcat(content, "\n");
+
 	strcat(content, "function xmlhttpGet() {\n");
 	strcat(content, "    var xmlHttpReq = false;\n");
 	strcat(content, "    var self = this;\n");
@@ -329,7 +423,11 @@ void webserv_child_show_map (int fd) {
 	strcat(content, "    var data = str.split(',')\n");
 	strcat(content, "    laenge = data[0];\n");
 	strcat(content, "    breite = data[1];\n");
-	strcat(content, "    marker.move(new OpenLayers.LonLat(laenge,breite).transform(map.displayProjection,map.projection));\n");
+	strcat(content, "    alt = data[2];\n");
+	strcat(content, "    yaw = data[3];\n");
+	strcat(content, "    model.attributes.alt = alt;\n");
+	strcat(content, "    model.attributes.yaw = yaw;\n");
+	strcat(content, "    model.move(new OpenLayers.LonLat(laenge,breite).transform(map.displayProjection,map.projection));\n");
 	strcat(content, "    map.setCenter(new OpenLayers.LonLat(laenge,breite).transform(map.displayProjection,map.projection));\n");
 	strcat(content, "}\n");
 	strcat(content, "function wp_add(num, lon, lat) {\n");
@@ -349,26 +447,61 @@ void webserv_child_show_map (int fd) {
 	strcat(content, "    }\n");
 	strcat(content, "    self.xmlHttpReq.send();\n");
 	strcat(content, "}\n");
-	sprintf(tmp_str, " var map,marker,laenge=%f,breite=%f;\n", ModelData.p_long, ModelData.p_lat);
+	sprintf(tmp_str, " var map,model,laenge=%f,breite=%f;\n", ModelData.p_long, ModelData.p_lat);
 	strcat(content, tmp_str);
 	strcat(content, " var fromProjection = new OpenLayers.Projection(\"EPSG:4326\");   // Transform from WGS 1984\n");
 	strcat(content, " var toProjection   = new OpenLayers.Projection(\"EPSG:900913\"); // to Spherical Mercator Projection\n");
 	strcat(content, "function init() {\n");
+
+	strcat(content, " var canvas = document.getElementById('hudcanvas');\n");
+	strcat(content, " var context = canvas.getContext('2d');\n");
+	strcat(content, " context.clearRect(0, 0, canvas.width, canvas.height);\n");
+	sprintf(tmp_str, " drawHorizon(context, 100, 50, 400, %f, %f);\n", ModelData.roll, ModelData.pitch);
+	strcat(content, tmp_str);
+	strcat(content, " HUDxmlhttpGet();\n");
+
 	strcat(content, " map = new OpenLayers.Map('mapdiv', {projection: toProjection, displayProjection: fromProjection});\n");
-	strcat(content, " var baselayer = new OpenLayers.Layer.OSM(\"Mapnik\",null,{attribution:\"Karte von <a href='http://openstreetmap.org/'>OpenStreetMap</a> und Mitwirkenden unter <a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'>CC-BY-SA</a>-Lizenz \"});\n");
+	strcat(content, " var baselayer = new OpenLayers.Layer.OSM(\"Mapnik\",null,{attribution:\"\"});\n");
+	strcat(content, " var modellayer = new OpenLayers.Layer.Vector(\"Model\", {\n");
+	strcat(content, "                styleMap: new OpenLayers.StyleMap(\n");
+	strcat(content, "                     { 'default': \n");
+	strcat(content, "                        {\n");
+	strcat(content, "                        label: \"${alt}m\",\n");
+	strcat(content, "                        fontColor: \"#000000\",\n");
+	strcat(content, "                        fontSize: \"16px\",\n");
+	strcat(content, "                        fontFamily: \"Courier New, monospace\",\n");
+	strcat(content, "                        fontWeight: \"bold\",\n");
+	strcat(content, "                        labelAlign: \"cm\",\n");
+	strcat(content, "                        labelXOffset: \"0\",\n");
+	strcat(content, "                        labelYOffset: \"-20\",\n");
+	strcat(content, "                        externalGraphic: \"/model.png\",\n");
+	strcat(content, "                        graphicWidth:41,\n");
+	strcat(content, "                        graphicHeight:41,\n");
+	strcat(content, "                        graphicXOffset:-20,\n");
+	strcat(content, "                        graphicYOffset:-20,\n");
+	strcat(content, "                        rotation: \"${yaw}\"\n");
+	strcat(content, "                    }\n");
+	strcat(content, "                })\n");
+	strcat(content, " });\n");
+	strcat(content, " model = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(laenge,breite).transform(map.displayProjection,map.projection));\n");
+	sprintf(tmp_str, " model.attributes.alt = \"%0.1f\";\n", ModelData.p_alt);
+	strcat(content, tmp_str);
+	sprintf(tmp_str, " model.attributes.yaw = \"%0.1f\";\n", ModelData.yaw);
+	strcat(content, tmp_str);
+	strcat(content, " modellayer.addFeatures([model]);\n");
 	strcat(content, " var markerlayer = new OpenLayers.Layer.Vector(\"Marker\", {\n");
 	strcat(content, "                styleMap: new OpenLayers.StyleMap(\n");
 	strcat(content, "                     { 'default': \n");
 	strcat(content, "                        {\n");
 	strcat(content, "                        strokeColor: \"#00FF00\",\n");
-	strcat(content, "                        strokeOpacity: 0.7,\n");
+	strcat(content, "                        strokeOpacity: 0.5,\n");
 	strcat(content, "                        strokeWidth: 3,\n");
 	strcat(content, "                        fillColor: \"#FF5500\",\n");
-	strcat(content, "                        fillOpacity: 0.7,\n");
+	strcat(content, "                        fillOpacity: 0.5,\n");
 	strcat(content, "                        pointRadius: 12,\n");
 	strcat(content, "                        pointerEvents: \"visiblePainted\",\n");
 	strcat(content, "                        graphicName: \"circle\",\n");
-	strcat(content, "                        label: \"${name}\\n${command}\\n${alt}\",\n");
+	strcat(content, "                        label: \"${name}\\n${command}\\n${alt}m\",\n");
 	strcat(content, "                        fontColor: \"#000000\",\n");
 	strcat(content, "                        fontSize: \"16px\",\n");
 	strcat(content, "                        fontFamily: \"Courier New, monospace\",\n");
@@ -378,21 +511,19 @@ void webserv_child_show_map (int fd) {
 	strcat(content, "                        labelYOffset: \"0\"\n");
 	strcat(content, "                    }\n");
 	strcat(content, "                })\n");
-	strcat(content, "            });\n");
-	strcat(content, " var markerstyle = {graphicWidth:21, graphicHeight:25, graphicXOffset:-10, graphicYOffset:-25, externalGraphic:\"/model.png\"};\n");
-	strcat(content, " var markerstyle2 = {graphicWidth:21, graphicHeight:25, graphicXOffset:-10, graphicYOffset:-25, externalGraphic:\"/marker.png\"};\n");
-	strcat(content, " marker = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(laenge,breite).transform(map.displayProjection,map.projection),null,markerstyle);\n");
-	strcat(content, " markerlayer.addFeatures([marker]);\n");
+	strcat(content, " });\n");
 	int n = 0;
 	for (n = 0; n < MAX_WAYPOINTS; n++) {
 		if (WayPoints[n].p_lat != 0.0) {
-			sprintf(tmp_str, " marker%i = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(%f, %f).transform(map.displayProjection,map.projection)); markerlayer.addFeatures([marker%i]);\n", n, WayPoints[n].p_long, WayPoints[n].p_lat, n);
+			sprintf(tmp_str, " marker%i = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(%f, %f).transform(map.displayProjection,map.projection));\n", n, WayPoints[n].p_long, WayPoints[n].p_lat);
 			strcat(content, tmp_str);
 			sprintf(tmp_str, " marker%i.attributes.name = \"%s\";\n", n, WayPoints[n].name);
 			strcat(content, tmp_str);
 			sprintf(tmp_str, " marker%i.attributes.command = \"%s\";\n", n, WayPoints[n].command);
 			strcat(content, tmp_str);
 			sprintf(tmp_str, " marker%i.attributes.alt = \"%0.1f\";\n", n, WayPoints[n].p_alt);
+			strcat(content, tmp_str);
+			sprintf(tmp_str, " markerlayer.addFeatures([marker%i]);\n", n);
 			strcat(content, tmp_str);
            	}
 	}
@@ -424,6 +555,7 @@ void webserv_child_show_map (int fd) {
 	strcat(content, " var lineFeature = new OpenLayers.Feature.Vector(line, null, style);\n");
 	strcat(content, " lineLayer.addFeatures([lineFeature]);\n");
 	strcat(content, " map.addLayers([baselayer, markerlayer]);\n");
+	strcat(content, " map.addLayers([baselayer, modellayer]);\n");
 	sprintf(tmp_str, " map.setCenter(new OpenLayers.LonLat(laenge,breite).transform(map.displayProjection,map.projection), %i);\n", zoom);
 	strcat(content, tmp_str);
 	strcat(content, "\n");
@@ -458,66 +590,16 @@ void webserv_child_show_map (int fd) {
 	strcat(content, "</head>\n");
 
 	strcat(content, "<body onload=\"init();\">\n");
-
 	strcat(content, MENU);
-
+	strcat(content, "<BR><BR>\n");
 	strcat(content, "<div class=\"mapdiv\" id=\"mapdiv\"></div>\n");
-//	strcat(content, "<p onclick='JavaScript:xmlhttpGet();'>[UPDATE]</p>\n");
-//	strcat(content, "<BR>\n");
-//	strcat(content, "<textarea class=\"lon\" id=\"lon\"></textarea><BR>\n");
-//	strcat(content, "<textarea class=\"lat\" id=\"lat\"></textarea><BR>\n");
+	sprintf(tmp_str, "<div class=\"mapcopyright\" id=\"mapcopyright\">%s</div>\n", mapnames[map_type][MAP_COPYRIGHT]);
+	strcat(content, tmp_str);
+
+
+	strcat(content, "<canvas class=\"hudcanvas\" id=\"hudcanvas\" width=\"640\" height=\"640\"></canvas>\n");
+
 	strcat(content, "</body></html>\n");
-
-	sprintf(buffer, header_str, (int)strlen(content), "text/html");
-	write(fd, buffer, strlen(buffer));
-	write(fd, content, strlen(content));
-
-}
-
-void webserv_child_show_misc (int fd) {
-	char buffer[BUFSIZE + 1];
-	char content[BUFSIZE + 1];
-	content[0] = 0;
-	strcat(content, "<html><head><title>MultiGCS (MISC)</title>\n");
-	strcat(content, "<style type=\"text/css\">\n");
-	strcat(content, "body {\n");
-	strcat(content, "	background-color:#000000;\n");
-	strcat(content, "	color:#FFFFFF;\n");
-	strcat(content, "}\n");
-	strcat(content, "a {\n");
-	strcat(content, "	color:#FFFFFF;\n");
-	strcat(content, "}\n");
-	strcat(content, "table, th, td {\n");
-	strcat(content, "	border: 1px solid #555555;\n");
-	strcat(content, "	padding:0px;\n");
-	strcat(content, "	border-spacing:0;\n");
-	strcat(content, "}\n");
-	strcat(content, "</style>\n");
-
-	strcat(content, "<body onload=\"init();\">\n");
-	strcat(content, MENU);
-	strcat(content, "  <canvas class=\"myCanvas\" id=\"myCanvas\" width=\"640\" height=\"640\"></canvas>\n");
-	strcat(content, "</body></html>\n");
-
-
-
-	strcat(content, "<A href=\"/modeldata\">/modeldata</A> (Model-Data / Telemetry-Data)<BR>\n");
-	strcat(content, "<A href=\"/screenshot\">/screenshot</A> (take a screenshot of the GUI)<BR>\n");
-	strcat(content, "\n");
-	strcat(content, "<H3>Blender 3D</H3>\n");
-	strcat(content, "<A href=\"/blender-export.py\">/blender-export.py</A> (blender export script)<BR>\n");
-	strcat(content, "<A href=\"/blender.txt\">/blender.txt</A> (attitude and position data)<BR>\n");
-	strcat(content, "\n");
-	strcat(content, "<H3>Google-Earth Livefeed and Logs</H3>\n");
-	strcat(content, "<A href=\"/index.kml\">/index.kml</A><BR>\n");
-	strcat(content, "<A href=\"/wp.kml\">/wp.kml</A> (list of all waypoints)<BR>\n");
-	strcat(content, "<A href=\"/live.kml\">/live.kml</A><BR>\n");
-	strcat(content, "<A href=\"/live-pilot.kml\">/live-pilot.kml</A><BR>\n");
-	strcat(content, "<A href=\"/model.kml\">/model.kml</A> (called by live.kml)<BR>\n");
-	strcat(content, "<A href=\"/pilot.kml\">/pilot.kml</A> (called by live-pilot.kml)<BR>\n");
-	strcat(content, "<A href=\"/plane.dae\">/plane.dae</A> (called by model.kml)<BR>\n");
-	strcat(content, "<A href=\"/logkml/\">/logkml/</A> (list of all logfiles in kml-format)<BR>\n");
-
 
 	sprintf(buffer, header_str, (int)strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
@@ -531,7 +613,37 @@ void webserv_child_show_hud (int fd) {
 	char tmp_str[512];
 	content[0] = 0;
 	strcat(content, "<html><head><title>MultiGCS (HUD)</title>\n");
-	strcat(content, "<script language=\"Javascript\">\n");
+	strcat(content, "<style type=\"text/css\">\n");
+	strcat(content, "body {\n");
+	strcat(content, "	background-color:#000000;\n");
+	strcat(content, "	color:#FFFFFF;\n");
+	strcat(content, "}\n");
+	strcat(content, "a {\n");
+	strcat(content, "	color:#FFFFFF;\n");
+	strcat(content, "}\n");
+	strcat(content, "table, th, td {\n");
+	strcat(content, "	border: 1px solid #555555;\n");
+	strcat(content, "	padding:0px;\n");
+	strcat(content, "	border-spacing:0;\n");
+	strcat(content, "}\n");
+	strcat(content, "#hudcanvas {\n");
+	strcat(content, "    top: 0%;\n");
+	strcat(content, "    width: 50%;\n");
+	strcat(content, "    left: 25%;\n");
+	strcat(content, "    position: absolute;\n");
+	strcat(content, "    float: none;\n");
+	strcat(content, "}\n");
+	strcat(content, "#menubar {\n");
+	strcat(content, "    width: 100%;\n");
+	strcat(content, "    height: 32px;\n");
+	strcat(content, "    top: 0%;\n");
+	strcat(content, "    left: 0%;\n");
+	strcat(content, "    float: none;\n");
+	strcat(content, "    position: absolute;\n");
+	strcat(content, "    z-index: +5;\n");
+	strcat(content, "}\n");
+	strcat(content, "</style>\n");
+	strcat(content, "<script>\n");
 	strcat(content, "function HUDxmlhttpGet() {\n");
 	strcat(content, "    var xmlHttpReq = false;\n");
 	strcat(content, "    var self = this;\n");
@@ -554,30 +666,6 @@ void webserv_child_show_hud (int fd) {
 	strcat(content, "	eval(str);\n");
 	strcat(content, "}\n");
 	strcat(content, "\n");
-	strcat(content, "</script>\n");
-	strcat(content, "<style type=\"text/css\">\n");
-	strcat(content, "body {\n");
-	strcat(content, "	background-color:#000000;\n");
-	strcat(content, "	color:#FFFFFF;\n");
-	strcat(content, "}\n");
-	strcat(content, "a {\n");
-	strcat(content, "	color:#FFFFFF;\n");
-	strcat(content, "}\n");
-	strcat(content, "table, th, td {\n");
-	strcat(content, "	border: 1px solid #555555;\n");
-	strcat(content, "	padding:0px;\n");
-	strcat(content, "	border-spacing:0;\n");
-	strcat(content, "}\n");
-	strcat(content, "#myCanvas {\n");
-//	strcat(content, "    width: 80%;\n");
-//	strcat(content, "    height: 90%;\n");
-	strcat(content, "    position: absolute;\n");
-	strcat(content, "    left: 0px;\n");
-	strcat(content, "    top: 40px;\n");
-	strcat(content, "    float: none;\n");
-	strcat(content, "}\n");
-	strcat(content, "</style>\n");
-	strcat(content, "<script>\n");
 	strcat(content, "	function drawMeter(context, x, y, r, a, b, c, text) {\n");
 	strcat(content, "		var centerX = x;\n");
 	strcat(content, "		var centerY = y;\n");
@@ -736,7 +824,7 @@ void webserv_child_show_hud (int fd) {
 	strcat(content, "	}\n");
 	strcat(content, "\n");
 	strcat(content, "function init() {\n");
-	strcat(content, "	var canvas = document.getElementById('myCanvas');\n");
+	strcat(content, "	var canvas = document.getElementById('hudcanvas');\n");
 	strcat(content, "	var context = canvas.getContext('2d');\n");
 	strcat(content, "	context.clearRect(0, 0, canvas.width, canvas.height);\n");
 	strcat(content, "	drawMeter(context, 50, 100, 30, 45, 90, 45, 'roll');\n");
@@ -756,7 +844,8 @@ void webserv_child_show_hud (int fd) {
 
 	strcat(content, "<body onload=\"init();\">\n");
 	strcat(content, MENU);
-	strcat(content, "  <canvas class=\"myCanvas\" id=\"myCanvas\" width=\"640\" height=\"640\"></canvas>\n");
+	strcat(content, "<BR><BR>\n");
+	strcat(content, "<canvas class=\"hudcanvas\" id=\"hudcanvas\" width=\"640\" height=\"640\"></canvas>\n");
 	strcat(content, "</body></html>\n");
 
 	sprintf(buffer, header_str, (int)strlen(content), "text/html");
@@ -764,15 +853,73 @@ void webserv_child_show_hud (int fd) {
 	write(fd, content, strlen(content));
 }
 
+void webserv_child_show_misc (int fd) {
+	char buffer[BUFSIZE + 1];
+	char content[BUFSIZE + 1];
+	content[0] = 0;
+	strcat(content, "<html><head><title>MultiGCS (MISC)</title>\n");
+	strcat(content, "<style type=\"text/css\">\n");
+	strcat(content, "body {\n");
+	strcat(content, "	background-color:#000000;\n");
+	strcat(content, "	color:#FFFFFF;\n");
+	strcat(content, "}\n");
+	strcat(content, "a {\n");
+	strcat(content, "	color:#FFFFFF;\n");
+	strcat(content, "}\n");
+	strcat(content, "table, th, td {\n");
+	strcat(content, "	border: 1px solid #555555;\n");
+	strcat(content, "	padding:0px;\n");
+	strcat(content, "	border-spacing:0;\n");
+	strcat(content, "}\n");
+	strcat(content, "#menubar {\n");
+	strcat(content, "    width: 100%;\n");
+	strcat(content, "    height: 32px;\n");
+	strcat(content, "    top: 0%;\n");
+	strcat(content, "    left: 0%;\n");
+	strcat(content, "    float: none;\n");
+	strcat(content, "    position: absolute;\n");
+	strcat(content, "    z-index: +5;\n");
+	strcat(content, "}\n");
+	strcat(content, "</style>\n");
+
+	strcat(content, "<body onload=\"init();\">\n");
+	strcat(content, MENU);
+	strcat(content, "<BR><BR>\n");
+
+	strcat(content, "<H3>Google-Earth Livefeed and Logs</H3>\n");
+	strcat(content, "<A href=\"/index.kml\">/index.kml</A><BR>\n");
+	strcat(content, "<A href=\"/wp.kml\">/wp.kml</A> (list of all waypoints)<BR>\n");
+	strcat(content, "<A href=\"/live.kml\">/live.kml</A><BR>\n");
+	strcat(content, "<A href=\"/live-pilot.kml\">/live-pilot.kml</A><BR>\n");
+	strcat(content, "<A href=\"/model.kml\">/model.kml</A> (called by live.kml)<BR>\n");
+	strcat(content, "<A href=\"/pilot.kml\">/pilot.kml</A> (called by live-pilot.kml)<BR>\n");
+	strcat(content, "<A href=\"/plane.dae\">/plane.dae</A> (called by model.kml)<BR>\n");
+	strcat(content, "<A href=\"/logkml/\">/logkml/</A> (list of all logfiles in kml-format)<BR>\n");
+	strcat(content, "\n");
+	strcat(content, "<H3>Blender 3D</H3>\n");
+	strcat(content, "<A href=\"/blender-export.py\">/blender-export.py</A> (blender export script)<BR>\n");
+	strcat(content, "<A href=\"/blender.txt\">/blender.txt</A> (attitude and position data)<BR>\n");
+	strcat(content, "\n");
+	strcat(content, "<H3>Misc</H3>\n");
+	strcat(content, "<A href=\"/modeldata\">/modeldata</A> (Model-Data / Telemetry-Data)<BR>\n");
+	strcat(content, "<A href=\"/screenshot\">/screenshot</A> (take a screenshot of the GUI)<BR>\n");
+	strcat(content, "\n");
+
+	strcat(content, "</body></html>\n");
+
+	sprintf(buffer, header_str, (int)strlen(content), "text/html");
+	write(fd, buffer, strlen(buffer));
+	write(fd, content, strlen(content));
+}
+
+
 void webserv_child_hud_redraw (int fd) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
 	content[0] = 0;
-
-	strcat(content, "	var canvas = document.getElementById('myCanvas');\n");
+	strcat(content, "	var canvas = document.getElementById('hudcanvas');\n");
 	strcat(content, "	var context = canvas.getContext('2d');\n");
-
 	strcat(content, "	context.clearRect(0, 0, canvas.width, canvas.height);\n");
 	strcat(content, "	drawMeter(context, 50, 100, 30, 45, 90, 45, 'roll');\n");
 	sprintf(tmp_str, "	drawPointer(context, 50, 100, 30, %f);\n", ModelData.roll + 90.0);
@@ -784,7 +931,21 @@ void webserv_child_hud_redraw (int fd) {
 	strcat(content, tmp_str);
 	sprintf(tmp_str, "	drawCompas(context, 300, 500, 150, %f);\n", ModelData.yaw);
 	strcat(content, tmp_str);
+	sprintf(buffer, header_str, (int)strlen(content), "text/html");
+	write(fd, buffer, strlen(buffer));
+	write(fd, content, strlen(content));
+}
 
+void webserv_child_hud_redraw_small (int fd) {
+	char buffer[BUFSIZE + 1];
+	char content[BUFSIZE + 1];
+	char tmp_str[512];
+	content[0] = 0;
+	strcat(content, "	var canvas = document.getElementById('hudcanvas');\n");
+	strcat(content, "	var context = canvas.getContext('2d');\n");
+	strcat(content, "	context.clearRect(0, 0, canvas.width, canvas.height);\n");
+	sprintf(tmp_str, "	drawHorizon(context, 100, 50, 400, %f, %f);\n", ModelData.roll, ModelData.pitch);
+	strcat(content, tmp_str);
 	sprintf(buffer, header_str, (int)strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
@@ -1070,13 +1231,518 @@ void webserv_child_kml_feed (int fd, uint8_t mode, char *servername) {
 	write(fd, content, strlen(content));
 }
 
+void webserv_child_kml_mavlink (int fd, char *servername) {
+	char buffer[BUFSIZE + 1];
+	char content[BUFSIZE + 1];
+	char tmp_str[512];
+	char tmp_str2[512];
+
+	uint16_t n = 0;
+	content[0] = 0;
+	strcat(content, "<html><head><title>MultiGCS (MAVLINK)</title>\n");
+	strcat(content, "<style type=\"text/css\">\n");
+	strcat(content, "body {\n");
+	strcat(content, "	background-color:#000000;\n");
+	strcat(content, "	color:#FFFFFF;\n");
+	strcat(content, "}\n");
+	strcat(content, "a {\n");
+	strcat(content, "	color:#FFFFFF;\n");
+	strcat(content, "}\n");
+	strcat(content, "table, th, td {\n");
+	strcat(content, "	border: 1px solid #555555;\n");
+	strcat(content, "	padding:0px;\n");
+	strcat(content, "	border-spacing:0;\n");
+	strcat(content, "}\n");
+	strcat(content, "#menubar {\n");
+	strcat(content, "    width: 100%;\n");
+	strcat(content, "    height: 32px;\n");
+	strcat(content, "    top: 0%;\n");
+	strcat(content, "    left: 0%;\n");
+	strcat(content, "    float: none;\n");
+	strcat(content, "    position: absolute;\n");
+	strcat(content, "    z-index: +5;\n");
+	strcat(content, "}\n");
+	strcat(content, ".form_dark { margin:0 0 24px; text-align: left; }\n");
+	strcat(content, ".form_dark .form-input { display: block; height: 34px; padding: 6px 10px; margin-top: 2px; margin-bottom: 2px; margin-left: 2px; margin-right: 2px; font: 14px Calibri, Helvetica, Arial, sans-serif; color: #ccc; background: #444; border: 1px solid #222; outline: none; -moz-border-radius:    8px; -webkit-border-radius: 8px; border-radius:         8px; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -moz-background-clip:    padding; -webkit-background-clip: padding-box; background-clip:         padding-box; -moz-transition:    all 0.4s ease-in-out; -webkit-transition: all 0.4s ease-in-out; -o-transition:      all 0.4s ease-in-out; -ms-transition:     all 0.4s ease-in-out; transition:         all 0.4s ease-in-out; behavior: url(PIE.htc); }\n");
+	strcat(content, ".form_dark textarea.form-input { width: 400px; height: 200px; overflow: auto; }\n");
+	strcat(content, ".form_dark .form-input:focus { border: 1px solid #7fbbf9; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; }\n");
+	strcat(content, ".form_dark .form-input:-moz-ui-invalid { border: 1px solid #e00; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00;}\n");
+	strcat(content, ".form_dark .form-input.invalid { border: 1px solid #e00; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; }\n");
+	strcat(content, ".form_dark.nolabel ::-webkit-input-placeholder { color: #888;}\n");
+	strcat(content, ".form_dark.nolabel :-moz-placeholder { color: #888;}\n");
+	strcat(content, ".form_dark .form-btn { padding: 0 15px; height: 30px; font: bold 12px Calibri, Helvetica, Arial, sans-serif; text-align: center; color: #fff; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.7); cursor: pointer; border: 1px solid #0d3d6a; outline: none; position: relative; background-color: #1d83e2; background-image: -webkit-gradient(linear, left top, left bottom, from(#1d83e2), to(#0d3d6a)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #1d83e2, #0d3d6a); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #1d83e2, #0d3d6a); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #1d83e2, #0d3d6a); /* IE10 */ background-image:      -o-linear-gradient(top, #1d83e2, #0d3d6a); /* Opera 11.10+ */ background-image:         linear-gradient(top, #1d83e2, #0d3d6a); -pie-background:          linear-gradient(top, #1d83e2, #0d3d6a); /* IE6-IE9 */ -moz-border-radius:    16px; -webkit-border-radius: 16px; border-radius:         16px; -moz-box-shadow:    inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); box-shadow:         inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); -moz-background-clip:    padding; -webkit-background-clip: padding-box; background-clip:         padding-box; behavior: url(PIE.htc); }\n");
+	strcat(content, ".form_dark .form-btn:active { border: 1px solid #1d83e2; background-color: #0d3d6a; background-image: -webkit-gradient(linear, left top, left bottom, from(#0d3d6a), to(#1d83e2)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #0d3d6a, #1d83e2); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #0d3d6a, #1d83e2); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #0d3d6a, #1d83e2); /* IE10 */ background-image:      -o-linear-gradient(top, #0d3d6a, #1d83e2); /* Opera 11.10+ */ background-image:         linear-gradient(top, #0d3d6a, #1d83e2); -pie-background:          linear-gradient(top, #0d3d6a, #1d83e2); /* IE6-IE9 */ -moz-box-shadow:    inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); box-shadow:         inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); }\n");
+	strcat(content, ".form_dark input[type=submit]::-moz-focus-inner { border: 0; padding: 0;}\n");
+	strcat(content, ".form_dark label { margin-bottom: 10px; display: block; width: 300px; color: #ccc; font-size: 14px; font-weight: bold; }\n");
+	strcat(content, ".form_dark label span { font-size: 12px; color: #888; font-weight: normal; }\n");
+	strcat(content, ".form_dark.frame { padding: 20px; background-color: #343434; background-image: -webkit-gradient(linear, left top, left bottom, from(#343434), to(#141414)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #343434, #141414); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #343434, #141414); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #343434, #141414); /* IE10 */ background-image:      -o-linear-gradient(top, #343434, #141414); /* Opera 11.10+ */ background-image:         linear-gradient(top, #343434, #141414); -pie-background:          linear-gradient(top, #343434, #141414); /* IE6-IE9 */ -moz-border-radius:    8px; -webkit-border-radius: 8px; border-radius:         8px; -moz-box-shadow:    0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); box-shadow:         0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); behavior: URL(PIE.htc); }\n");
+	strcat(content, ".form_dark.tbar { padding: 0 20px 20px 20px; background-color: #3c3c3c; background-image: -webkit-gradient(linear, left top, left bottom, from(#444444), to(#343434)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #444444, #343434); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #444444, #343434); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #444444, #343434); /* IE10 */ background-image:      -o-linear-gradient(top, #444444, #343434); /* Opera 11.10+ */ background-image:         linear-gradient(top, #444444, #343434); -pie-background:          linear-gradient(top, #444444, #343434); /* IE6-IE9 */ behavior: URL(PIE.htc); }\n");
+	strcat(content, ".form_dark.tbar h3 { font: normal 18px/1 Calibri, Helvetica, Arial, sans-serif; color: #ccc; text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.7); padding: 20px; margin: 0 -20px 20px -20px; background-color: #343434; background-image: -webkit-gradient(linear, left top, left bottom, from(#343434), to(#1b1b1b)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #343434, #1b1b1b); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #343434, #1b1b1b); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #343434, #1b1b1b); /* IE10 */ background-image:      -o-linear-gradient(top, #343434, #1b1b1b); /* Opera 11.10+ */ background-image:         linear-gradient(top, #343434, #1b1b1b); -pie-background:          linear-gradient(top, #343434, #1b1b1b); /* IE6-IE9 */ -moz-border-radius:    8px 8px 0 0; -webkit-border-radius: 8px 8px 0 0; border-radius:         8px 8px 0 0; -moz-border-radius:    8px 8px 0 0; -moz-box-shadow:    inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); box-shadow:         inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); behavior: url(PIE.htc); }\n");
+	strcat(content, ".form_dark.tbar .form-input { background: #545454; }\n");
+	strcat(content, ".form_dark.tbar.nolabel ::-webkit-input-placeholder { color: #999;}\n");
+	strcat(content, ".form_dark.tbar.nolabel :-moz-placeholder { color: #999;}\n");
+	strcat(content, "</style>\n");
+	strcat(content, "<body>\n");
+	strcat(content, MENU);
+
+	strcat(content, "<SCRIPT>\n");
+	strcat(content, "function check_option(name) {\n");
+	strcat(content, "	var value = document.getElementById(name).options[document.getElementById(name).selectedIndex].value;\n");
+	strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
+	strcat(content, "	xmlHttp.open(\"GET\", \"/mavlink_value_set?\" + name + \"=\" + value, true);\n");
+	strcat(content, "	xmlHttp.send(null);\n");
+	strcat(content, "}\n");
+	strcat(content, "function check_value(name) {\n");
+	strcat(content, "	var value = document.getElementById(name).value;\n");
+	strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
+	strcat(content, "	xmlHttp.open(\"GET\", \"/mavlink_value_set?\" + name + \"=\" + value, true);\n");
+	strcat(content, "	xmlHttp.send(null);\n");
+	strcat(content, "}\n");
+	strcat(content, "</SCRIPT>\n");
+
+	strcat(content, "<BR>\n");
+	strcat(content, "<BR>\n");
+	strcat(content, "<FORM class=\"form_dark\">\n");
+	strcat(content, "<CENTER><TABLE width=\"80%\" border=\"0\">\n");
+	strcat(content, "<TR bgcolor=\"#555555\"><TH>PARAM NAME (DISPLAY)</TH><TH>VALUE (FLOAT)</TH><TH>DESCRIPTION</TH><TH>MIN</TH><TH>MAX</TH></TR>\n");
+	int lc = 0;
+	for (n = 0; n < 500; n++) {
+		if (MavLinkVars[n].name[0] != 0) {
+
+			lc = 1 - lc;
+			if (lc == 0) {
+				strcat(content, "<TR bgcolor=\"#222222\">");
+			} else {
+				strcat(content, "<TR bgcolor=\"#313131\">");
+			}
+
+			sprintf(tmp_str, "<TD>%s (%s)</TD>\n", MavLinkVars[n].name, MavLinkVars[n].display);
+			strcat(content, tmp_str);
+
+			if (MavLinkVars[n].values[0] != 0) {
+				int n2 = 0;
+				sprintf(tmp_str, "<TD><select class=\"form-input\" onchange=\"check_option('%s');\" id=\"%s\">\n", MavLinkVars[n].name, MavLinkVars[n].name);
+				strcat(content, tmp_str);
+				tmp_str2[0] = 0;
+				for (n2 = (int)MavLinkVars[n].min; n2 <= (int)MavLinkVars[n].max; n2++) {
+					tmp_str2[0] = 0;
+					mavlink_meta_get_option(n2, MavLinkVars[n].name, tmp_str2);
+//							if (tmp_str2[0] == 0) {
+//								sprintf(tmp_str2, "%i:???", n2);
+//							}
+					if (tmp_str2[0] != 0) {
+						if (n2 == (int)MavLinkVars[n].value) {
+							sprintf(tmp_str, "<option value=\"%i\" selected>%s</option>\n", n2, tmp_str2);
+						} else {
+							sprintf(tmp_str, "<option value=\"%i\">%s</option>\n", n2, tmp_str2);
+						}
+						strcat(content, tmp_str);
+					}
+				}
+				strcat(content, "</select></TD>");
+			} else if (MavLinkVars[n].bits[0] != 0) {
+
+				sprintf(tmp_str, "<TD>\n");
+				strcat(content, tmp_str);
+
+				int n2 = 0;
+				strcat(content, "<SCRIPT>\n");
+				sprintf(tmp_str, "function check_%s() {\n", MavLinkVars[n].name);
+				strcat(content, tmp_str);
+				strcat(content, "	var value = 0;\n");
+				tmp_str2[0] = 0;
+				for (n2 = (int)MavLinkVars[n].min; n2 <= (int)MavLinkVars[n].max; n2++) {
+					tmp_str2[0] = 0;
+					mavlink_meta_get_bits(n2, MavLinkVars[n].name, tmp_str2);
+					if (tmp_str2[0] != 0) {
+						sprintf(tmp_str, "	if (document.getElementsByName(\"%s-%s\")[0].checked) {\n", MavLinkVars[n].name, tmp_str2);
+						strcat(content, tmp_str);
+						sprintf(tmp_str, "		value |= (1<<%i);\n", n2);
+						strcat(content, tmp_str);
+						strcat(content, "	}\n");
+					}
+				}
+				strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
+				sprintf(tmp_str, "	xmlHttp.open(\"GET\", \"/mavlink_value_set?%s=\" + value, true);\n", MavLinkVars[n].name);
+				strcat(content, tmp_str);
+				strcat(content, "	xmlHttp.send(null);\n");
+				strcat(content, "}\n");
+				strcat(content, "</SCRIPT>\n");
+
+				tmp_str2[0] = 0;
+				for (n2 = (int)MavLinkVars[n].min; n2 <= (int)MavLinkVars[n].max; n2++) {
+					tmp_str2[0] = 0;
+					mavlink_meta_get_bits(n2, MavLinkVars[n].name, tmp_str2);
+					if (tmp_str2[0] != 0) {
+						if ((int)MavLinkVars[n].value & (1<<n2)) {
+							sprintf(tmp_str, "<NOBR><input class=\"form-input\" onchange=\"check_%s();\" type=\"checkbox\" name=\"%s-%s\" value=\"%i\" checked>%s</NOBR>\n", MavLinkVars[n].name, MavLinkVars[n].name, tmp_str2, n2, tmp_str2);
+						} else {
+							sprintf(tmp_str, "<NOBR><input class=\"form-input\" onchange=\"check_%s();\" type=\"checkbox\" name=\"%s-%s\" value=\"%i\">%s</NOBR>\n", MavLinkVars[n].name, MavLinkVars[n].name, tmp_str2, n2, tmp_str2);
+						}
+						strcat(content, tmp_str);
+					}
+				}
+
+				strcat(content, "</TD>");
+			} else {
+				sprintf(tmp_str, "<TD><input class=\"form-input\" onchange=\"check_value('%s');\" id=\"%s\" value=\"%f\" type=\"text\"></TD>\n", MavLinkVars[n].name, MavLinkVars[n].name, MavLinkVars[n].value);
+				strcat(content, tmp_str);
+			}
+			sprintf(tmp_str, "<TD>%s&nbsp;</TD><TD>%i</TD><TD>%i</TD></TR>\n", MavLinkVars[n].desc, (int)MavLinkVars[n].min, (int)MavLinkVars[n].max);
+			strcat(content, tmp_str);
+		}
+	}
+	strcat(content, "</TABLE>\n");
+	strcat(content, "</FORM>\n");
+
+	sprintf(buffer, header_str, (int)strlen(content), "text/html");
+	write(fd, buffer, strlen(buffer));
+	write(fd, content, strlen(content));
+}
+
+
+
+void webserv_child_kml_waypoints (int fd, char *servername) {
+	char buffer[BUFSIZE + 1];
+	char content[BUFSIZE + 1];
+	char tmp_str[512];
+	content[0] = 0;
+
+	int n = 0;
+	int n2 = 0;
+	float last_lat = 0.0;
+	float last_lon = 0.0;
+	float last_alt = 0.0;
+	float alt = 0.0;
+
+	strcat(content, "<html><head><title>MultiGCS (WAYPOINTS)</title>\n");
+	strcat(content, "<style type=\"text/css\">\n");
+	strcat(content, "body {\n");
+	strcat(content, "	background-color:#000000;\n");
+	strcat(content, "	color:#FFFFFF;\n");
+	strcat(content, "}\n");
+	strcat(content, "a {\n");
+	strcat(content, "	color:#FFFFFF;\n");
+	strcat(content, "}\n");
+	strcat(content, "table, th, td {\n");
+	strcat(content, "	border: 1px solid #555555;\n");
+	strcat(content, "	padding:0px;\n");
+	strcat(content, "	border-spacing:0;\n");
+	strcat(content, "}\n");
+	strcat(content, "#menubar {\n");
+	strcat(content, "    width: 100%;\n");
+	strcat(content, "    height: 32px;\n");
+	strcat(content, "    top: 0%;\n");
+	strcat(content, "    left: 0%;\n");
+	strcat(content, "    float: none;\n");
+	strcat(content, "    position: absolute;\n");
+	strcat(content, "    z-index: +5;\n");
+	strcat(content, "}\n");
+	strcat(content, ".form_dark { margin:0 0 24px; text-align: left; }\n");
+	strcat(content, ".form_dark .form-input { display: block; height: 34px; padding: 6px 10px; margin-top: 2px; margin-bottom: 2px; margin-left: 2px; margin-right: 2px; font: 14px Calibri, Helvetica, Arial, sans-serif; color: #ccc; background: #444; border: 1px solid #222; outline: none; -moz-border-radius:    8px; -webkit-border-radius: 8px; border-radius:         8px; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -moz-background-clip:    padding; -webkit-background-clip: padding-box; background-clip:         padding-box; -moz-transition:    all 0.4s ease-in-out; -webkit-transition: all 0.4s ease-in-out; -o-transition:      all 0.4s ease-in-out; -ms-transition:     all 0.4s ease-in-out; transition:         all 0.4s ease-in-out; behavior: url(PIE.htc); }\n");
+	strcat(content, ".form_dark textarea.form-input { width: 400px; height: 200px; overflow: auto; }\n");
+	strcat(content, ".form_dark .form-input:focus { border: 1px solid #7fbbf9; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; }\n");
+	strcat(content, ".form_dark .form-input:-moz-ui-invalid { border: 1px solid #e00; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00;}\n");
+	strcat(content, ".form_dark .form-input.invalid { border: 1px solid #e00; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; }\n");
+	strcat(content, ".form_dark.nolabel ::-webkit-input-placeholder { color: #888;}\n");
+	strcat(content, ".form_dark.nolabel :-moz-placeholder { color: #888;}\n");
+	strcat(content, ".form_dark .form-btn { padding: 0 15px; height: 30px; font: bold 12px Calibri, Helvetica, Arial, sans-serif; text-align: center; color: #fff; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.7); cursor: pointer; border: 1px solid #0d3d6a; outline: none; position: relative; background-color: #1d83e2; background-image: -webkit-gradient(linear, left top, left bottom, from(#1d83e2), to(#0d3d6a)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #1d83e2, #0d3d6a); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #1d83e2, #0d3d6a); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #1d83e2, #0d3d6a); /* IE10 */ background-image:      -o-linear-gradient(top, #1d83e2, #0d3d6a); /* Opera 11.10+ */ background-image:         linear-gradient(top, #1d83e2, #0d3d6a); -pie-background:          linear-gradient(top, #1d83e2, #0d3d6a); /* IE6-IE9 */ -moz-border-radius:    16px; -webkit-border-radius: 16px; border-radius:         16px; -moz-box-shadow:    inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); box-shadow:         inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); -moz-background-clip:    padding; -webkit-background-clip: padding-box; background-clip:         padding-box; behavior: url(PIE.htc); }\n");
+	strcat(content, ".form_dark .form-btn:active { border: 1px solid #1d83e2; background-color: #0d3d6a; background-image: -webkit-gradient(linear, left top, left bottom, from(#0d3d6a), to(#1d83e2)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #0d3d6a, #1d83e2); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #0d3d6a, #1d83e2); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #0d3d6a, #1d83e2); /* IE10 */ background-image:      -o-linear-gradient(top, #0d3d6a, #1d83e2); /* Opera 11.10+ */ background-image:         linear-gradient(top, #0d3d6a, #1d83e2); -pie-background:          linear-gradient(top, #0d3d6a, #1d83e2); /* IE6-IE9 */ -moz-box-shadow:    inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); box-shadow:         inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); }\n");
+	strcat(content, ".form_dark input[type=submit]::-moz-focus-inner { border: 0; padding: 0;}\n");
+	strcat(content, ".form_dark label { margin-bottom: 10px; display: block; width: 300px; color: #ccc; font-size: 14px; font-weight: bold; }\n");
+	strcat(content, ".form_dark label span { font-size: 12px; color: #888; font-weight: normal; }\n");
+	strcat(content, ".form_dark.frame { padding: 20px; background-color: #343434; background-image: -webkit-gradient(linear, left top, left bottom, from(#343434), to(#141414)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #343434, #141414); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #343434, #141414); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #343434, #141414); /* IE10 */ background-image:      -o-linear-gradient(top, #343434, #141414); /* Opera 11.10+ */ background-image:         linear-gradient(top, #343434, #141414); -pie-background:          linear-gradient(top, #343434, #141414); /* IE6-IE9 */ -moz-border-radius:    8px; -webkit-border-radius: 8px; border-radius:         8px; -moz-box-shadow:    0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); box-shadow:         0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); behavior: URL(PIE.htc); }\n");
+	strcat(content, ".form_dark.tbar { padding: 0 20px 20px 20px; background-color: #3c3c3c; background-image: -webkit-gradient(linear, left top, left bottom, from(#444444), to(#343434)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #444444, #343434); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #444444, #343434); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #444444, #343434); /* IE10 */ background-image:      -o-linear-gradient(top, #444444, #343434); /* Opera 11.10+ */ background-image:         linear-gradient(top, #444444, #343434); -pie-background:          linear-gradient(top, #444444, #343434); /* IE6-IE9 */ behavior: URL(PIE.htc); }\n");
+	strcat(content, ".form_dark.tbar h3 { font: normal 18px/1 Calibri, Helvetica, Arial, sans-serif; color: #ccc; text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.7); padding: 20px; margin: 0 -20px 20px -20px; background-color: #343434; background-image: -webkit-gradient(linear, left top, left bottom, from(#343434), to(#1b1b1b)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #343434, #1b1b1b); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #343434, #1b1b1b); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #343434, #1b1b1b); /* IE10 */ background-image:      -o-linear-gradient(top, #343434, #1b1b1b); /* Opera 11.10+ */ background-image:         linear-gradient(top, #343434, #1b1b1b); -pie-background:          linear-gradient(top, #343434, #1b1b1b); /* IE6-IE9 */ -moz-border-radius:    8px 8px 0 0; -webkit-border-radius: 8px 8px 0 0; border-radius:         8px 8px 0 0; -moz-border-radius:    8px 8px 0 0; -moz-box-shadow:    inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); box-shadow:         inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); behavior: url(PIE.htc); }\n");
+	strcat(content, ".form_dark.tbar .form-input { background: #545454; }\n");
+	strcat(content, ".form_dark.tbar.nolabel ::-webkit-input-placeholder { color: #999;}\n");
+	strcat(content, ".form_dark.tbar.nolabel :-moz-placeholder { color: #999;}\n");
+	strcat(content, "</style>\n");
+	strcat(content, "<body>\n");
+	strcat(content, MENU);
+
+	strcat(content, "<SCRIPT>\n");
+	strcat(content, "function check_option(wp, name) {\n");
+	strcat(content, "	var value = document.getElementById(wp + '-' + name).options[document.getElementById(wp + '-' + name).selectedIndex].value;\n");
+	strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
+	strcat(content, "	xmlHttp.open(\"GET\", \"/waypoint_set?\" + wp + \"&\" + name + \"=\" + value, true);\n");
+	strcat(content, "	xmlHttp.send(null);\n");
+	strcat(content, "}\n");
+	strcat(content, "function check_value(wp, name) {\n");
+	strcat(content, "	var value = document.getElementById(wp + '-' + name).value;\n");
+	strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
+	strcat(content, "	xmlHttp.open(\"GET\", \"/waypoint_set?\" + wp + \"&\" + name + \"=\" + value, true);\n");
+	strcat(content, "	xmlHttp.send(null);\n");
+	strcat(content, "}\n");
+	strcat(content, "</SCRIPT>\n");
+
+
+	strcat(content, "<BR>\n");
+	strcat(content, "<BR>\n");
+	strcat(content, "<FORM class=\"form_dark\">\n");
+	strcat(content, "<CENTER><TABLE width=\"80%\" border=\"0\">\n");
+	strcat(content, "<TR bgcolor=\"#555555\"><TH>ACTIVE</TH><TH>NAME</TH><TH>TYPE</TH><TH>LONG</TH><TH>LAT</TH><TH>ALT</TH><TH>DIST</TH><TH>ACTION</TH><TH>MAP</TH></TR>\n");
+	int lc = 0;
+	for (n = 0; n < MAX_WAYPOINTS; n++) {
+		if (WayPoints[n].p_lat != 0.0) {
+			lc = 1 - lc;
+			if (lc == 0) {
+				strcat(content, "<TR bgcolor=\"#222222\">\n");
+			} else {
+				strcat(content, "<TR bgcolor=\"#313131\">\n");
+			}
+			if (n == waypoint_active) {
+				strcat(content, "<TD bgcolor=\"#002200\">&nbsp;</TD>");
+			} else {
+				strcat(content, "<TD>&nbsp;</TD>");
+			}
+
+			sprintf(tmp_str, "<TD><input class=\"form-input\" onchange=\"check_value('wp%i', 'NAME');\" id=\"wp%i-NAME\" value=\"%s\" type=\"text\"></TD>", n, n, WayPoints[n].name);
+			strcat(content, tmp_str);
+
+			if (n != 0) {
+
+				sprintf(tmp_str, "<TD><select class=\"form-input\" onchange=\"check_option('wp%i', 'TYPE');\" id=\"wp%i-TYPE\">\n", n, n);
+				strcat(content, tmp_str);
+				if (WayPoints[n].command[0] == 0) {
+					sprintf(tmp_str, " <option value=\"NONE\" selected>NONE</option>\n");
+				} else {
+					sprintf(tmp_str, " <option value=\"NONE\">NONE</option>\n");
+				}
+				strcat(content, tmp_str);
+				if (strcmp(WayPoints[n].command, "WAYPOINT") == 0) {
+					sprintf(tmp_str, " <option value=\"WAYPOINT\" selected>WAYPOINT</option>\n");
+				} else {
+					sprintf(tmp_str, " <option value=\"WAYPOINT\">WAYPOINT</option>\n");
+				}
+				strcat(content, tmp_str);
+				if (strcmp(WayPoints[n].command, "LOITER_UNLIM") == 0) {
+					sprintf(tmp_str, " <option value=\"LOITER_UNLIM\" selected>LOITER_UNLIM</option>\n");
+				} else {
+					sprintf(tmp_str, " <option value=\"LOITER_UNLIM\">LOITER_UNLIM</option>\n");
+				}
+				strcat(content, tmp_str);
+				if (strcmp(WayPoints[n].command, "LOITER_TURNS") == 0) {
+					sprintf(tmp_str, " <option value=\"LOITER_TURNS\" selected>LOITER_TURNS</option>\n");
+				} else {
+					sprintf(tmp_str, " <option value=\"LOITER_TURNS\">LOITER_TURNS</option>\n");
+				}
+				strcat(content, tmp_str);
+				if (strcmp(WayPoints[n].command, "LOITER_TIME") == 0) {
+					sprintf(tmp_str, " <option value=\"LOITER_TIME\" selected>LOITER_TIME</option>\n");
+				} else {
+					sprintf(tmp_str, " <option value=\"LOITER_TIME\">LOITER_TIME</option>\n");
+				}
+				strcat(content, tmp_str);
+				if (strcmp(WayPoints[n].command, "RTL") == 0) {
+					sprintf(tmp_str, " <option value=\"RTL\" selected>RTL</option>\n");
+				} else {
+					sprintf(tmp_str, " <option value=\"RTL\">RTL</option>\n");
+				}
+				strcat(content, tmp_str);
+				if (strcmp(WayPoints[n].command, "LAND") == 0) {
+					sprintf(tmp_str, " <option value=\"LAND\" selected>LAND</option>\n");
+				} else {
+					sprintf(tmp_str, " <option value=\"LAND\">LAND</option>\n");
+				}
+				strcat(content, tmp_str);
+				if (strcmp(WayPoints[n].command, "TAKEOFF") == 0) {
+					sprintf(tmp_str, " <option value=\"TAKEOFF\" selected>TAKEOFF</option>\n");
+				} else {
+					sprintf(tmp_str, " <option value=\"TAKEOFF\">TAKEOFF</option>\n");
+				}
+				strcat(content, tmp_str);
+				strcat(content, "</select></TD>");
+			} else {
+				strcat(content, "<TD>&nbsp;</TD>");
+			}
+
+			sprintf(tmp_str, "<TD><input class=\"form-input\" onchange=\"check_value('wp%i', 'LAT');\" id=\"wp%i-LAT\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_lat);
+			strcat(content, tmp_str);
+
+			sprintf(tmp_str, "<TD><input class=\"form-input\" onchange=\"check_value('wp%i', 'LONG');\" id=\"wp%i-LONG\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_long);
+			strcat(content, tmp_str);
+
+			sprintf(tmp_str, "<TD><input class=\"form-input\" onchange=\"check_value('wp%i', 'ALT');\" id=\"wp%i-ALT\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_alt);
+			strcat(content, tmp_str);
+
+			float distance1 = 0.0;
+			float distance2 = 0.0;
+			float winkel_up = 0.0;
+			if (last_lat != 0.0) {
+				/* Distance - Ground-Level */
+				distance1 = acos( 
+					cos(toRad(last_lat))
+					* cos(toRad(WayPoints[n].p_lat))
+					* cos(toRad(last_lon) - toRad(WayPoints[n].p_long))
+					+ sin(toRad(last_lat)) 
+					* sin(toRad(WayPoints[n].p_lat))
+				) * 6378.137 * 1000.0;
+				alt = WayPoints[n].p_alt - last_alt;
+				/* Distance - Sichtverbindung */
+				distance2 = sqrt(((distance1) * (distance1)) + (alt * alt));
+				/* Steigung */
+				winkel_up = (asin(alt / distance2)) * 180 / PI;
+				sprintf(tmp_str, "<TD><NOBR>%0.1fm (%0.1fm / %0.1fGrad)</NOBR></TD>", distance1, distance2, winkel_up);
+				strcat(content, tmp_str);
+			} else {
+				strcat(content, "<TD>&nbsp;</TD>");
+			}
+			last_lat = WayPoints[n].p_lat;
+			last_lon = WayPoints[n].p_long;
+			last_alt = WayPoints[n].p_alt;
+
+			if (n != 0) {
+				sprintf(tmp_str, "<TD><A href=\"/waypoint_set?wp%i&DEL=1\">DEL</A></TD>", n);
+			} else {
+				strcpy(tmp_str, "<TD>&nbsp;</TD>");
+			}
+			strcat(content, tmp_str);
+
+			sprintf(tmp_str, "<TD><A target=\"map\" href=\"https://maps.google.de/maps?q=%f,%f%%28%s%%29&t=k&z=17\">SHOW</A></TD>", WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].name);
+			strcat(content, tmp_str);
+
+			strcat(content, "</TR>\n");
+			n2 = n + 1;
+		}
+	}
+
+	sprintf(tmp_str, "<TR bgcolor=\"#111111\"><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD><A href=\"/waypoint_set?wp%i&ADD=1\">ADD</A></TD><TD>&nbsp;</TD></TR>", n2);
+	strcat(content, tmp_str);
+	strcat(content, "</TABLE></CENTER>\n");
+	strcat(content, "</FORM>\n");
+	strcat(content, "</HTML>\n");
+
+	sprintf(buffer, header_str, (int)strlen(content), "text/html");
+	write(fd, buffer, strlen(buffer));
+	write(fd, content, strlen(content));
+
+}
+
+
+void webserv_child_kml_logfiles (int fd, char *servername, char *buffer2) {
+	char buffer[BUFSIZE + 1];
+	char content[BUFSIZE + 1];
+	char tmp_str[512];
+	content[0] = 0;
+	int n;
+	for (n = 5; n < strlen(buffer2); n++) {
+		if (buffer2[n] == ' ') {
+			buffer2[n] = 0;
+			break;
+		}
+	}
+	if ((strncmp(buffer2 + 4,"/logkml/", 8) == 0 && buffer2[12] == 0) || (strncmp(buffer2 + 4,"/logfiles/", 10) == 0 && buffer2[14] == 0)) {
+		struct tm strukt;
+		DIR *dir = NULL;
+		struct dirent *dir_entry = NULL;
+		struct stat statbuf;
+		char new_path[400];
+		char directory[400];
+
+		content[0] = 0;
+		strcat(content, "<html><head><title>MultiGCS (LOGFILES)</title>\n");
+		strcat(content, "<style type=\"text/css\">\n");
+		strcat(content, "body {\n");
+		strcat(content, "	background-color:#000000;\n");
+		strcat(content, "	color:#FFFFFF;\n");
+		strcat(content, "}\n");
+		strcat(content, "a {\n");
+		strcat(content, "	color:#FFFFFF;\n");
+		strcat(content, "}\n");
+		strcat(content, "table, th, td {\n");
+		strcat(content, "	border: 1px solid #555555;\n");
+		strcat(content, "	padding:0px;\n");
+		strcat(content, "	border-spacing:0;\n");
+		strcat(content, "}\n");
+		strcat(content, "#menubar {\n");
+		strcat(content, "    width: 100%;\n");
+		strcat(content, "    height: 32px;\n");
+		strcat(content, "    top: 0%;\n");
+		strcat(content, "    left: 0%;\n");
+		strcat(content, "    float: none;\n");
+		strcat(content, "    position: absolute;\n");
+		strcat(content, "    z-index: +5;\n");
+		strcat(content, "}\n");
+		strcat(content, "</style>\n");
+
+		strcat(content, "<body>\n");
+		strcat(content, MENU);
+		strcat(content, "<BR><BR>\n");
+
+		strcat(content, "<CENTER><TABLE width=\"80%\" border=\"0\">\n");
+		strcat(content, "<TR bgcolor=\"#555555\"><TH>DATE</TH><TH>SIZE</TH><TH>FORMAT</TH></TR>\n");
+
+		int lc = 0;
+		sprintf(directory, "%s/.multigcs/logs", getenv("HOME"));
+		if ((dir = opendir(directory)) != NULL) {
+			while ((dir_entry = readdir(dir)) != 0) {
+				if (dir_entry->d_name[1] != '.') {
+					sprintf(new_path, "%s/%s", directory, dir_entry->d_name);
+					if (lstat(new_path, &statbuf) == 0) {
+						if (statbuf.st_mode&S_IFDIR) {
+						} else {
+
+							lc = 1 - lc;
+							if (lc == 0) {
+								strcat(content, "<TR bgcolor=\"#222222\">");
+							} else {
+								strcat(content, "<TR bgcolor=\"#313131\">");
+							}
+
+							time_t liczba_sekund = (time_t)(atoi(dir_entry->d_name));
+							localtime_r(&liczba_sekund, &strukt);
+							FILE *f;
+							int pos;
+							int end;
+							f = fopen(new_path, "r");
+							pos = ftell(f);
+							fseek(f, 0, SEEK_END);
+							end = ftell(f);
+							fclose(f);
+							if ((end - pos) < 1024) {
+								sprintf(tmp_str, "<TD><A href=\"%s\">%02d.%02d.%d %02d:%02d:%02d</A></TD><TD>%iB</TD><TD><A href=\"/logfiles/%s\">RAW</A> <A href=\"/logkml/%s\">KML</A></TD>", dir_entry->d_name, strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, (end - pos), dir_entry->d_name, dir_entry->d_name);
+							} else {
+								sprintf(tmp_str, "<TD><A href=\"%s\">%02d.%02d.%d %02d:%02d:%02d</A></TD><TD>%iKB</TD><TD><A href=\"/logfiles/%s\">RAW</A> <A href=\"/logkml/%s\">KML</A></TD>", dir_entry->d_name, strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, (end - pos) / 1024, dir_entry->d_name, dir_entry->d_name);
+							}
+							strcat(content, tmp_str);
+							strcat(content, "</TR>");
+						}
+					}
+				}
+			}
+			closedir(dir);
+			dir = NULL;
+		}
+
+		strcat(content, "</TABLE>\n");
+		strcat(content, "</FORM>\n");
+
+		strcat(content, "</body>\n");
+
+		sprintf(buffer, header_str, (int)strlen(content), "text/html");
+		write(fd, buffer, strlen(buffer));
+		write(fd, content, strlen(content));
+	} else {
+		char tmp_str2[1024];
+		if (strncmp(buffer2 + 4,"/logkml/", 8) == 0) {
+			sprintf(tmp_str, "%s/.multigcs/logs/%s", getenv("HOME"), buffer2 + 12);
+			sprintf(tmp_str2, "/tmp/%s.kml", buffer2 + 12);
+			logplay_export_kml(tmp_str, tmp_str2, 255);
+			webserv_child_dump_file(fd, tmp_str2, "text/xml");
+		} else {
+			sprintf(tmp_str, "%s/.multigcs/logs/%s", getenv("HOME"), buffer2 + 14);
+			webserv_child_dump_file(fd, tmp_str, "text/plain");
+		}
+	}
+}
+
 extern uint8_t get_background_model (char *filename);
 
 void webserv_child (int fd) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[BUFSIZE + 1];
-	char tmp_str2[1024];
 	char servername[1024];
 
 	content[0] = 0;
@@ -1279,17 +1945,13 @@ void webserv_child (int fd) {
 			float lat = 0.0;
 			float lon = 0.0;
 			sscanf(buffer + 4 + 14, "wp%i=%f,%f", &wp_num, &lat, &lon);
-
 			sprintf(WayPoints[wp_num].name, "WP%i", wp_num);
 			strcpy(WayPoints[wp_num].command, "WAYPOINT");
 			WayPoints[wp_num].p_lat = lat;
 			WayPoints[wp_num].p_long = lon;
 			WayPoints[wp_num].p_alt = WayPoints[0].p_alt;
-
 			sprintf(content, "done");
 			sprintf(buffer, header_str, (int)strlen(content), "text/plain");
-
-
 		} else if (strncmp(buffer + 4,"/waypoint_set?", 14) == 0) {
 			int n = 0;
 			int wp_num = 0;
@@ -1318,7 +1980,6 @@ void webserv_child (int fd) {
 				WayPoints[wp_num].p_long = WayPoints[0].p_long;
 				WayPoints[wp_num].p_alt = WayPoints[0].p_alt;
 			}
-
 			if (strcmp(name, "DEL") == 0 || strcmp(name, "ADD") == 0) {
 				sprintf(content, "<meta http-equiv=\"Refresh\" content=\"0; URL=/waypoints.html\">");
 				sprintf(buffer, header_str, (int)strlen(content), "text/html");
@@ -1328,379 +1989,22 @@ void webserv_child (int fd) {
 			}
 			write(fd, buffer, strlen(buffer));
 			write(fd, content, strlen(content));
-
-
 		} else if (strncmp(buffer + 4,"/waypoints.html", 15) == 0) {
-			char tmp_str[100];
-			int n = 0;
-			int n2 = 0;
-			float last_lat = 0.0;
-			float last_lon = 0.0;
-			float last_alt = 0.0;
-			float alt = 0.0;
-
-			strcat(content, "<html><head><title>MultiGCS (WAYPOINTS)</title>\n");
-			strcat(content, "<style type=\"text/css\">\n");
-			strcat(content, "body {\n");
-			strcat(content, "	background-color:#000000;\n");
-			strcat(content, "	color:#FFFFFF;\n");
-			strcat(content, "}\n");
-			strcat(content, "a {\n");
-			strcat(content, "	color:#FFFFFF;\n");
-			strcat(content, "}\n");
-			strcat(content, "table, th, td {\n");
-			strcat(content, "	border: 1px solid #555555;\n");
-			strcat(content, "	padding:0px;\n");
-			strcat(content, "	border-spacing:0;\n");
-			strcat(content, "}\n");
-			strcat(content, ".form_dark { margin:0 0 24px; text-align: left; }\n");
-			strcat(content, ".form_dark .form-input { display: block; height: 34px; padding: 6px 10px; margin-top: 2px; margin-bottom: 2px; margin-left: 2px; margin-right: 2px; font: 14px Calibri, Helvetica, Arial, sans-serif; color: #ccc; background: #444; border: 1px solid #222; outline: none; -moz-border-radius:    8px; -webkit-border-radius: 8px; border-radius:         8px; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -moz-background-clip:    padding; -webkit-background-clip: padding-box; background-clip:         padding-box; -moz-transition:    all 0.4s ease-in-out; -webkit-transition: all 0.4s ease-in-out; -o-transition:      all 0.4s ease-in-out; -ms-transition:     all 0.4s ease-in-out; transition:         all 0.4s ease-in-out; behavior: url(PIE.htc); }\n");
-			strcat(content, ".form_dark textarea.form-input { width: 400px; height: 200px; overflow: auto; }\n");
-			strcat(content, ".form_dark .form-input:focus { border: 1px solid #7fbbf9; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; }\n");
-			strcat(content, ".form_dark .form-input:-moz-ui-invalid { border: 1px solid #e00; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00;}\n");
-			strcat(content, ".form_dark .form-input.invalid { border: 1px solid #e00; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; }\n");
-			strcat(content, ".form_dark.nolabel ::-webkit-input-placeholder { color: #888;}\n");
-			strcat(content, ".form_dark.nolabel :-moz-placeholder { color: #888;}\n");
-			strcat(content, ".form_dark .form-btn { padding: 0 15px; height: 30px; font: bold 12px Calibri, Helvetica, Arial, sans-serif; text-align: center; color: #fff; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.7); cursor: pointer; border: 1px solid #0d3d6a; outline: none; position: relative; background-color: #1d83e2; background-image: -webkit-gradient(linear, left top, left bottom, from(#1d83e2), to(#0d3d6a)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #1d83e2, #0d3d6a); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #1d83e2, #0d3d6a); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #1d83e2, #0d3d6a); /* IE10 */ background-image:      -o-linear-gradient(top, #1d83e2, #0d3d6a); /* Opera 11.10+ */ background-image:         linear-gradient(top, #1d83e2, #0d3d6a); -pie-background:          linear-gradient(top, #1d83e2, #0d3d6a); /* IE6-IE9 */ -moz-border-radius:    16px; -webkit-border-radius: 16px; border-radius:         16px; -moz-box-shadow:    inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); box-shadow:         inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); -moz-background-clip:    padding; -webkit-background-clip: padding-box; background-clip:         padding-box; behavior: url(PIE.htc); }\n");
-			strcat(content, ".form_dark .form-btn:active { border: 1px solid #1d83e2; background-color: #0d3d6a; background-image: -webkit-gradient(linear, left top, left bottom, from(#0d3d6a), to(#1d83e2)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #0d3d6a, #1d83e2); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #0d3d6a, #1d83e2); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #0d3d6a, #1d83e2); /* IE10 */ background-image:      -o-linear-gradient(top, #0d3d6a, #1d83e2); /* Opera 11.10+ */ background-image:         linear-gradient(top, #0d3d6a, #1d83e2); -pie-background:          linear-gradient(top, #0d3d6a, #1d83e2); /* IE6-IE9 */ -moz-box-shadow:    inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); box-shadow:         inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); }\n");
-			strcat(content, ".form_dark input[type=submit]::-moz-focus-inner { border: 0; padding: 0;}\n");
-			strcat(content, ".form_dark label { margin-bottom: 10px; display: block; width: 300px; color: #ccc; font-size: 14px; font-weight: bold; }\n");
-			strcat(content, ".form_dark label span { font-size: 12px; color: #888; font-weight: normal; }\n");
-			strcat(content, ".form_dark.frame { padding: 20px; background-color: #343434; background-image: -webkit-gradient(linear, left top, left bottom, from(#343434), to(#141414)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #343434, #141414); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #343434, #141414); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #343434, #141414); /* IE10 */ background-image:      -o-linear-gradient(top, #343434, #141414); /* Opera 11.10+ */ background-image:         linear-gradient(top, #343434, #141414); -pie-background:          linear-gradient(top, #343434, #141414); /* IE6-IE9 */ -moz-border-radius:    8px; -webkit-border-radius: 8px; border-radius:         8px; -moz-box-shadow:    0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); box-shadow:         0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); behavior: URL(PIE.htc); }\n");
-			strcat(content, ".form_dark.tbar { padding: 0 20px 20px 20px; background-color: #3c3c3c; background-image: -webkit-gradient(linear, left top, left bottom, from(#444444), to(#343434)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #444444, #343434); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #444444, #343434); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #444444, #343434); /* IE10 */ background-image:      -o-linear-gradient(top, #444444, #343434); /* Opera 11.10+ */ background-image:         linear-gradient(top, #444444, #343434); -pie-background:          linear-gradient(top, #444444, #343434); /* IE6-IE9 */ behavior: URL(PIE.htc); }\n");
-			strcat(content, ".form_dark.tbar h3 { font: normal 18px/1 Calibri, Helvetica, Arial, sans-serif; color: #ccc; text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.7); padding: 20px; margin: 0 -20px 20px -20px; background-color: #343434; background-image: -webkit-gradient(linear, left top, left bottom, from(#343434), to(#1b1b1b)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #343434, #1b1b1b); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #343434, #1b1b1b); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #343434, #1b1b1b); /* IE10 */ background-image:      -o-linear-gradient(top, #343434, #1b1b1b); /* Opera 11.10+ */ background-image:         linear-gradient(top, #343434, #1b1b1b); -pie-background:          linear-gradient(top, #343434, #1b1b1b); /* IE6-IE9 */ -moz-border-radius:    8px 8px 0 0; -webkit-border-radius: 8px 8px 0 0; border-radius:         8px 8px 0 0; -moz-border-radius:    8px 8px 0 0; -moz-box-shadow:    inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); box-shadow:         inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); behavior: url(PIE.htc); }\n");
-			strcat(content, ".form_dark.tbar .form-input { background: #545454; }\n");
-			strcat(content, ".form_dark.tbar.nolabel ::-webkit-input-placeholder { color: #999;}\n");
-			strcat(content, ".form_dark.tbar.nolabel :-moz-placeholder { color: #999;}\n");
-			strcat(content, "</style>\n");
-			strcat(content, "<body>\n");
-			strcat(content, MENU);
-
-			strcat(content, "<SCRIPT>\n");
-			strcat(content, "function check_option(wp, name) {\n");
-			strcat(content, "	var value = document.getElementById(wp + '-' + name).options[document.getElementById(wp + '-' + name).selectedIndex].value;\n");
-			strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
-			strcat(content, "	xmlHttp.open(\"GET\", \"/waypoint_set?\" + wp + \"&\" + name + \"=\" + value, true);\n");
-			strcat(content, "	xmlHttp.send(null);\n");
-			strcat(content, "}\n");
-			strcat(content, "function check_value(wp, name) {\n");
-			strcat(content, "	var value = document.getElementById(wp + '-' + name).value;\n");
-			strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
-			strcat(content, "	xmlHttp.open(\"GET\", \"/waypoint_set?\" + wp + \"&\" + name + \"=\" + value, true);\n");
-			strcat(content, "	xmlHttp.send(null);\n");
-			strcat(content, "}\n");
-			strcat(content, "</SCRIPT>\n");
-
-
-			strcat(content, "<BR>\n");
-			strcat(content, "<BR>\n");
-			strcat(content, "<FORM class=\"form_dark\">\n");
-			strcat(content, "<CENTER><TABLE width=\"80%\" border=\"0\">\n");
-			strcat(content, "<TR bgcolor=\"#555555\"><TH>ACTIVE</TH><TH>NAME</TH><TH>TYPE</TH><TH>LONG</TH><TH>LAT</TH><TH>ALT</TH><TH>DIST</TH><TH>ACTION</TH><TH>MAP</TH></TR>\n");
-			int lc = 0;
-			for (n = 0; n < MAX_WAYPOINTS; n++) {
-				if (WayPoints[n].p_lat != 0.0) {
-					lc = 1 - lc;
-					if (lc == 0) {
-						strcat(content, "<TR bgcolor=\"#222222\">\n");
-					} else {
-						strcat(content, "<TR bgcolor=\"#313131\">\n");
-					}
-					if (n == waypoint_active) {
-						strcat(content, "<TD bgcolor=\"#002200\">&nbsp;</TD>");
-					} else {
-						strcat(content, "<TD>&nbsp;</TD>");
-					}
-
-					sprintf(tmp_str, "<TD><input class=\"form-input\" onchange=\"check_value('wp%i', 'NAME');\" id=\"wp%i-NAME\" value=\"%s\" type=\"text\"></TD>", n, n, WayPoints[n].name);
-					strcat(content, tmp_str);
-
-					if (n != 0) {
-
-						sprintf(tmp_str, "<TD><select class=\"form-input\" onchange=\"check_option('wp%i', 'TYPE');\" id=\"wp%i-TYPE\">\n", n, n);
-						strcat(content, tmp_str);
-						if (WayPoints[n].command[0] == 0) {
-							sprintf(tmp_str, " <option value=\"NONE\" selected>NONE</option>\n");
-						} else {
-							sprintf(tmp_str, " <option value=\"NONE\">NONE</option>\n");
-						}
-						strcat(content, tmp_str);
-						if (strcmp(WayPoints[n].command, "WAYPOINT") == 0) {
-							sprintf(tmp_str, " <option value=\"WAYPOINT\" selected>WAYPOINT</option>\n");
-						} else {
-							sprintf(tmp_str, " <option value=\"WAYPOINT\">WAYPOINT</option>\n");
-						}
-						strcat(content, tmp_str);
-						if (strcmp(WayPoints[n].command, "LOITER_UNLIM") == 0) {
-							sprintf(tmp_str, " <option value=\"LOITER_UNLIM\" selected>LOITER_UNLIM</option>\n");
-						} else {
-							sprintf(tmp_str, " <option value=\"LOITER_UNLIM\">LOITER_UNLIM</option>\n");
-						}
-						strcat(content, tmp_str);
-						if (strcmp(WayPoints[n].command, "LOITER_TURNS") == 0) {
-							sprintf(tmp_str, " <option value=\"LOITER_TURNS\" selected>LOITER_TURNS</option>\n");
-						} else {
-							sprintf(tmp_str, " <option value=\"LOITER_TURNS\">LOITER_TURNS</option>\n");
-						}
-						strcat(content, tmp_str);
-						if (strcmp(WayPoints[n].command, "LOITER_TIME") == 0) {
-							sprintf(tmp_str, " <option value=\"LOITER_TIME\" selected>LOITER_TIME</option>\n");
-						} else {
-							sprintf(tmp_str, " <option value=\"LOITER_TIME\">LOITER_TIME</option>\n");
-						}
-						strcat(content, tmp_str);
-						if (strcmp(WayPoints[n].command, "RTL") == 0) {
-							sprintf(tmp_str, " <option value=\"RTL\" selected>RTL</option>\n");
-						} else {
-							sprintf(tmp_str, " <option value=\"RTL\">RTL</option>\n");
-						}
-						strcat(content, tmp_str);
-						if (strcmp(WayPoints[n].command, "LAND") == 0) {
-							sprintf(tmp_str, " <option value=\"LAND\" selected>LAND</option>\n");
-						} else {
-							sprintf(tmp_str, " <option value=\"LAND\">LAND</option>\n");
-						}
-						strcat(content, tmp_str);
-						if (strcmp(WayPoints[n].command, "TAKEOFF") == 0) {
-							sprintf(tmp_str, " <option value=\"TAKEOFF\" selected>TAKEOFF</option>\n");
-						} else {
-							sprintf(tmp_str, " <option value=\"TAKEOFF\">TAKEOFF</option>\n");
-						}
-						strcat(content, tmp_str);
-						strcat(content, "</select></TD>");
-					} else {
-						strcat(content, "<TD>&nbsp;</TD>");
-					}
-
-					sprintf(tmp_str, "<TD><input class=\"form-input\" onchange=\"check_value('wp%i', 'LAT');\" id=\"wp%i-LAT\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_lat);
-					strcat(content, tmp_str);
-
-					sprintf(tmp_str, "<TD><input class=\"form-input\" onchange=\"check_value('wp%i', 'LONG');\" id=\"wp%i-LONG\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_long);
-					strcat(content, tmp_str);
-
-					sprintf(tmp_str, "<TD><input class=\"form-input\" onchange=\"check_value('wp%i', 'ALT');\" id=\"wp%i-ALT\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_alt);
-					strcat(content, tmp_str);
-
-					float distance1 = 0.0;
-					float distance2 = 0.0;
-					float winkel_up = 0.0;
-					if (last_lat != 0.0) {
-						/* Distance - Ground-Level */
-						distance1 = acos( 
-							cos(toRad(last_lat))
-							* cos(toRad(WayPoints[n].p_lat))
-							* cos(toRad(last_lon) - toRad(WayPoints[n].p_long))
-							+ sin(toRad(last_lat)) 
-							* sin(toRad(WayPoints[n].p_lat))
-						) * 6378.137 * 1000.0;
-						alt = WayPoints[n].p_alt - last_alt;
-						/* Distance - Sichtverbindung */
-						distance2 = sqrt(((distance1) * (distance1)) + (alt * alt));
-						/* Steigung */
-						winkel_up = (asin(alt / distance2)) * 180 / PI;
-						sprintf(tmp_str, "<TD><NOBR>%0.1fm (%0.1fm / %0.1fGrad)</NOBR></TD>", distance1, distance2, winkel_up);
-						strcat(content, tmp_str);
-					} else {
-						strcat(content, "<TD>&nbsp;</TD>");
-					}
-					last_lat = WayPoints[n].p_lat;
-					last_lon = WayPoints[n].p_long;
-					last_alt = WayPoints[n].p_alt;
-
-					if (n != 0) {
-						sprintf(tmp_str, "<TD><A href=\"/waypoint_set?wp%i&DEL=1\">DEL</A></TD>", n);
-					} else {
-						strcpy(tmp_str, "<TD>&nbsp;</TD>");
-					}
-					strcat(content, tmp_str);
-
-					sprintf(tmp_str, "<TD><A target=\"map\" href=\"https://maps.google.de/maps?q=%f,%f%%28%s%%29&t=k&z=17\">SHOW</A></TD>", WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].name);
-					strcat(content, tmp_str);
-
-					strcat(content, "</TR>\n");
-					n2 = n + 1;
-				}
-			}
-
-			sprintf(tmp_str, "<TR bgcolor=\"#111111\"><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD><A href=\"/waypoint_set?wp%i&ADD=1\">ADD</A></TD><TD>&nbsp;</TD></TR>", n2);
-			strcat(content, tmp_str);
-			strcat(content, "</TABLE></CENTER>\n");
-			strcat(content, "</FORM>\n");
-			strcat(content, "</HTML>\n");
-
-			sprintf(buffer, header_str, (int)strlen(content), "text/html");
-			write(fd, buffer, strlen(buffer));
-			write(fd, content, strlen(content));
+			webserv_child_kml_waypoints(fd, servername);
 
 		} else if (strncmp(buffer + 4,"/mavlink_value_set?", 19) == 0) {
 			char name[20];
 			float value = 0.0;
 			int type = 0;
 			sscanf(buffer + 4 + 19, "%[0-9a-zA-Z_]=%f&%i", name, &value, &type);
-
 			mavlink_set_value(name, value, type, -1);
 			mavlink_send_value(name, value, type);
-
 			sprintf(content, "mavlink set value: %s to %f (type:%i)\n", name, value, type);
 			sprintf(buffer, header_str, (int)strlen(content), "text/plain");
 			write(fd, buffer, strlen(buffer));
 			write(fd, content, strlen(content));
-
-		} else if (strncmp(buffer + 4,"/mavlink_values.html", 20) == 0) {
-			uint16_t n = 0;
-
-			content[0] = 0;
-			strcat(content, "<html><head><title>MultiGCS (MAVLINK)</title>\n");
-			strcat(content, "<style type=\"text/css\">\n");
-			strcat(content, "body {\n");
-			strcat(content, "	background-color:#000000;\n");
-			strcat(content, "	color:#FFFFFF;\n");
-			strcat(content, "}\n");
-			strcat(content, "a {\n");
-			strcat(content, "	color:#FFFFFF;\n");
-			strcat(content, "}\n");
-			strcat(content, "table, th, td {\n");
-			strcat(content, "	border: 1px solid #555555;\n");
-			strcat(content, "	padding:0px;\n");
-			strcat(content, "	border-spacing:0;\n");
-			strcat(content, "}\n");
-			strcat(content, ".form_dark { margin:0 0 24px; text-align: left; }\n");
-			strcat(content, ".form_dark .form-input { display: block; height: 34px; padding: 6px 10px; margin-top: 2px; margin-bottom: 2px; margin-left: 2px; margin-right: 2px; font: 14px Calibri, Helvetica, Arial, sans-serif; color: #ccc; background: #444; border: 1px solid #222; outline: none; -moz-border-radius:    8px; -webkit-border-radius: 8px; border-radius:         8px; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -moz-background-clip:    padding; -webkit-background-clip: padding-box; background-clip:         padding-box; -moz-transition:    all 0.4s ease-in-out; -webkit-transition: all 0.4s ease-in-out; -o-transition:      all 0.4s ease-in-out; -ms-transition:     all 0.4s ease-in-out; transition:         all 0.4s ease-in-out; behavior: url(PIE.htc); }\n");
-			strcat(content, ".form_dark textarea.form-input { width: 400px; height: 200px; overflow: auto; }\n");
-			strcat(content, ".form_dark .form-input:focus { border: 1px solid #7fbbf9; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; }\n");
-			strcat(content, ".form_dark .form-input:-moz-ui-invalid { border: 1px solid #e00; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00;}\n");
-			strcat(content, ".form_dark .form-input.invalid { border: 1px solid #e00; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; }\n");
-			strcat(content, ".form_dark.nolabel ::-webkit-input-placeholder { color: #888;}\n");
-			strcat(content, ".form_dark.nolabel :-moz-placeholder { color: #888;}\n");
-			strcat(content, ".form_dark .form-btn { padding: 0 15px; height: 30px; font: bold 12px Calibri, Helvetica, Arial, sans-serif; text-align: center; color: #fff; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.7); cursor: pointer; border: 1px solid #0d3d6a; outline: none; position: relative; background-color: #1d83e2; background-image: -webkit-gradient(linear, left top, left bottom, from(#1d83e2), to(#0d3d6a)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #1d83e2, #0d3d6a); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #1d83e2, #0d3d6a); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #1d83e2, #0d3d6a); /* IE10 */ background-image:      -o-linear-gradient(top, #1d83e2, #0d3d6a); /* Opera 11.10+ */ background-image:         linear-gradient(top, #1d83e2, #0d3d6a); -pie-background:          linear-gradient(top, #1d83e2, #0d3d6a); /* IE6-IE9 */ -moz-border-radius:    16px; -webkit-border-radius: 16px; border-radius:         16px; -moz-box-shadow:    inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); box-shadow:         inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); -moz-background-clip:    padding; -webkit-background-clip: padding-box; background-clip:         padding-box; behavior: url(PIE.htc); }\n");
-			strcat(content, ".form_dark .form-btn:active { border: 1px solid #1d83e2; background-color: #0d3d6a; background-image: -webkit-gradient(linear, left top, left bottom, from(#0d3d6a), to(#1d83e2)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #0d3d6a, #1d83e2); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #0d3d6a, #1d83e2); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #0d3d6a, #1d83e2); /* IE10 */ background-image:      -o-linear-gradient(top, #0d3d6a, #1d83e2); /* Opera 11.10+ */ background-image:         linear-gradient(top, #0d3d6a, #1d83e2); -pie-background:          linear-gradient(top, #0d3d6a, #1d83e2); /* IE6-IE9 */ -moz-box-shadow:    inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); box-shadow:         inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); }\n");
-			strcat(content, ".form_dark input[type=submit]::-moz-focus-inner { border: 0; padding: 0;}\n");
-			strcat(content, ".form_dark label { margin-bottom: 10px; display: block; width: 300px; color: #ccc; font-size: 14px; font-weight: bold; }\n");
-			strcat(content, ".form_dark label span { font-size: 12px; color: #888; font-weight: normal; }\n");
-			strcat(content, ".form_dark.frame { padding: 20px; background-color: #343434; background-image: -webkit-gradient(linear, left top, left bottom, from(#343434), to(#141414)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #343434, #141414); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #343434, #141414); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #343434, #141414); /* IE10 */ background-image:      -o-linear-gradient(top, #343434, #141414); /* Opera 11.10+ */ background-image:         linear-gradient(top, #343434, #141414); -pie-background:          linear-gradient(top, #343434, #141414); /* IE6-IE9 */ -moz-border-radius:    8px; -webkit-border-radius: 8px; border-radius:         8px; -moz-box-shadow:    0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); box-shadow:         0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); behavior: URL(PIE.htc); }\n");
-			strcat(content, ".form_dark.tbar { padding: 0 20px 20px 20px; background-color: #3c3c3c; background-image: -webkit-gradient(linear, left top, left bottom, from(#444444), to(#343434)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #444444, #343434); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #444444, #343434); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #444444, #343434); /* IE10 */ background-image:      -o-linear-gradient(top, #444444, #343434); /* Opera 11.10+ */ background-image:         linear-gradient(top, #444444, #343434); -pie-background:          linear-gradient(top, #444444, #343434); /* IE6-IE9 */ behavior: URL(PIE.htc); }\n");
-			strcat(content, ".form_dark.tbar h3 { font: normal 18px/1 Calibri, Helvetica, Arial, sans-serif; color: #ccc; text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.7); padding: 20px; margin: 0 -20px 20px -20px; background-color: #343434; background-image: -webkit-gradient(linear, left top, left bottom, from(#343434), to(#1b1b1b)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #343434, #1b1b1b); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #343434, #1b1b1b); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #343434, #1b1b1b); /* IE10 */ background-image:      -o-linear-gradient(top, #343434, #1b1b1b); /* Opera 11.10+ */ background-image:         linear-gradient(top, #343434, #1b1b1b); -pie-background:          linear-gradient(top, #343434, #1b1b1b); /* IE6-IE9 */ -moz-border-radius:    8px 8px 0 0; -webkit-border-radius: 8px 8px 0 0; border-radius:         8px 8px 0 0; -moz-border-radius:    8px 8px 0 0; -moz-box-shadow:    inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); box-shadow:         inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); behavior: url(PIE.htc); }\n");
-			strcat(content, ".form_dark.tbar .form-input { background: #545454; }\n");
-			strcat(content, ".form_dark.tbar.nolabel ::-webkit-input-placeholder { color: #999;}\n");
-			strcat(content, ".form_dark.tbar.nolabel :-moz-placeholder { color: #999;}\n");
-			strcat(content, "</style>\n");
-			strcat(content, "<body>\n");
-			strcat(content, MENU);
-
-			strcat(content, "<SCRIPT>\n");
-			strcat(content, "function check_option(name) {\n");
-			strcat(content, "	var value = document.getElementById(name).options[document.getElementById(name).selectedIndex].value;\n");
-			strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
-			strcat(content, "	xmlHttp.open(\"GET\", \"/mavlink_value_set?\" + name + \"=\" + value, true);\n");
-			strcat(content, "	xmlHttp.send(null);\n");
-			strcat(content, "}\n");
-			strcat(content, "function check_value(name) {\n");
-			strcat(content, "	var value = document.getElementById(name).value;\n");
-			strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
-			strcat(content, "	xmlHttp.open(\"GET\", \"/mavlink_value_set?\" + name + \"=\" + value, true);\n");
-			strcat(content, "	xmlHttp.send(null);\n");
-			strcat(content, "}\n");
-			strcat(content, "</SCRIPT>\n");
-
-			strcat(content, "<BR>\n");
-			strcat(content, "<BR>\n");
-			strcat(content, "<FORM class=\"form_dark\">\n");
-			strcat(content, "<CENTER><TABLE width=\"80%\" border=\"0\">\n");
-			strcat(content, "<TR bgcolor=\"#555555\"><TH>PARAM NAME (DISPLAY)</TH><TH>VALUE (FLOAT)</TH><TH>DESCRIPTION</TH><TH>MIN</TH><TH>MAX</TH></TR>\n");
-			int lc = 0;
-			for (n = 0; n < 500; n++) {
-				if (MavLinkVars[n].name[0] != 0) {
-
-					lc = 1 - lc;
-					if (lc == 0) {
-						strcat(content, "<TR bgcolor=\"#222222\">");
-					} else {
-						strcat(content, "<TR bgcolor=\"#313131\">");
-					}
-
-					sprintf(tmp_str, "<TD>%s (%s)</TD>\n", MavLinkVars[n].name, MavLinkVars[n].display);
-					strcat(content, tmp_str);
-
-					if (MavLinkVars[n].values[0] != 0) {
-						int n2 = 0;
-						sprintf(tmp_str, "<TD><select class=\"form-input\" onchange=\"check_option('%s');\" id=\"%s\">\n", MavLinkVars[n].name, MavLinkVars[n].name);
-						strcat(content, tmp_str);
-						tmp_str2[0] = 0;
-						for (n2 = (int)MavLinkVars[n].min; n2 <= (int)MavLinkVars[n].max; n2++) {
-							tmp_str2[0] = 0;
-							mavlink_meta_get_option(n2, MavLinkVars[n].name, tmp_str2);
-//							if (tmp_str2[0] == 0) {
-//								sprintf(tmp_str2, "%i:???", n2);
-//							}
-							if (tmp_str2[0] != 0) {
-								if (n2 == (int)MavLinkVars[n].value) {
-									sprintf(tmp_str, "<option value=\"%i\" selected>%s</option>\n", n2, tmp_str2);
-								} else {
-									sprintf(tmp_str, "<option value=\"%i\">%s</option>\n", n2, tmp_str2);
-								}
-								strcat(content, tmp_str);
-							}
-						}
-						strcat(content, "</select></TD>");
-					} else if (MavLinkVars[n].bits[0] != 0) {
-
-						sprintf(tmp_str, "<TD>\n");
-						strcat(content, tmp_str);
-
-						int n2 = 0;
-						strcat(content, "<SCRIPT>\n");
-						sprintf(tmp_str, "function check_%s() {\n", MavLinkVars[n].name);
-						strcat(content, tmp_str);
-						strcat(content, "	var value = 0;\n");
-						tmp_str2[0] = 0;
-						for (n2 = (int)MavLinkVars[n].min; n2 <= (int)MavLinkVars[n].max; n2++) {
-							tmp_str2[0] = 0;
-							mavlink_meta_get_bits(n2, MavLinkVars[n].name, tmp_str2);
-							if (tmp_str2[0] != 0) {
-								sprintf(tmp_str, "	if (document.getElementsByName(\"%s-%s\")[0].checked) {\n", MavLinkVars[n].name, tmp_str2);
-								strcat(content, tmp_str);
-								sprintf(tmp_str, "		value |= (1<<%i);\n", n2);
-								strcat(content, tmp_str);
-								strcat(content, "	}\n");
-							}
-						}
-						strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
-						sprintf(tmp_str, "	xmlHttp.open(\"GET\", \"/mavlink_value_set?%s=\" + value, true);\n", MavLinkVars[n].name);
-						strcat(content, tmp_str);
-						strcat(content, "	xmlHttp.send(null);\n");
-						strcat(content, "}\n");
-						strcat(content, "</SCRIPT>\n");
-
-						tmp_str2[0] = 0;
-						for (n2 = (int)MavLinkVars[n].min; n2 <= (int)MavLinkVars[n].max; n2++) {
-							tmp_str2[0] = 0;
-							mavlink_meta_get_bits(n2, MavLinkVars[n].name, tmp_str2);
-							if (tmp_str2[0] != 0) {
-								if ((int)MavLinkVars[n].value & (1<<n2)) {
-									sprintf(tmp_str, "<NOBR><input class=\"form-input\" onchange=\"check_%s();\" type=\"checkbox\" name=\"%s-%s\" value=\"%i\" checked>%s</NOBR>\n", MavLinkVars[n].name, MavLinkVars[n].name, tmp_str2, n2, tmp_str2);
-								} else {
-									sprintf(tmp_str, "<NOBR><input class=\"form-input\" onchange=\"check_%s();\" type=\"checkbox\" name=\"%s-%s\" value=\"%i\">%s</NOBR>\n", MavLinkVars[n].name, MavLinkVars[n].name, tmp_str2, n2, tmp_str2);
-								}
-								strcat(content, tmp_str);
-							}
-						}
-
-						strcat(content, "</TD>");
-					} else {
-						sprintf(tmp_str, "<TD><input class=\"form-input\" onchange=\"check_value('%s');\" id=\"%s\" value=\"%f\" type=\"text\"></TD>\n", MavLinkVars[n].name, MavLinkVars[n].name, MavLinkVars[n].value);
-						strcat(content, tmp_str);
-					}
-					sprintf(tmp_str, "<TD>%s&nbsp;</TD><TD>%i</TD><TD>%i</TD></TR>\n", MavLinkVars[n].desc, (int)MavLinkVars[n].min, (int)MavLinkVars[n].max);
-					strcat(content, tmp_str);
-				}
-			}
-			strcat(content, "</TABLE>\n");
-			strcat(content, "</FORM>\n");
-
-			sprintf(buffer, header_str, (int)strlen(content), "text/html");
-			write(fd, buffer, strlen(buffer));
-			write(fd, content, strlen(content));
-
+		} else if (strncmp(buffer + 4,"/mavlink.html", 13) == 0) {
+			webserv_child_kml_mavlink(fd, servername);
 		} else if (strncmp(buffer + 4,"/mavlink_value_get", 18) == 0) {
 			uint16_t n = 0;
 			strcpy(content, "# MAV ID  COMPONENT ID  PARAM NAME  VALUE (FLOAT) TYPE (INT)\n");
@@ -1767,111 +2071,7 @@ void webserv_child (int fd) {
 
 
 		} else if (strncmp(buffer + 4,"/logkml/", 8) == 0 || strncmp(buffer + 4,"/logfiles/", 10) == 0) {
-			int n;
-			for (n = 5; n < strlen(buffer); n++) {
-				if (buffer[n] == ' ') {
-					buffer[n] = 0;
-					break;
-				}
-			}
-			if ((strncmp(buffer + 4,"/logkml/", 8) == 0 && buffer[12] == 0) || (strncmp(buffer + 4,"/logfiles/", 10) == 0 && buffer[14] == 0)) {
-				struct tm strukt;
-				DIR *dir = NULL;
-				struct dirent *dir_entry = NULL;
-				struct stat statbuf;
-				char new_path[400];
-				char directory[400];
-
-				content[0] = 0;
-				strcat(content, "<html><head><title>MultiGCS (LOGFILES)</title>\n");
-				strcat(content, "<style type=\"text/css\">\n");
-				strcat(content, "body {\n");
-				strcat(content, "	background-color:#000000;\n");
-				strcat(content, "	color:#FFFFFF;\n");
-				strcat(content, "}\n");
-				strcat(content, "a {\n");
-				strcat(content, "	color:#FFFFFF;\n");
-				strcat(content, "}\n");
-				strcat(content, "table, th, td {\n");
-				strcat(content, "	border: 1px solid #555555;\n");
-				strcat(content, "	padding:0px;\n");
-				strcat(content, "	border-spacing:0;\n");
-				strcat(content, "}\n");
-				strcat(content, "</style>\n");
-
-				strcat(content, "<body>\n");
-
-
-				strcat(content, MENU);
-
-				strcat(content, "<BR><BR>\n");
-
-				strcat(content, "<CENTER><TABLE width=\"80%\" border=\"0\">\n");
-				strcat(content, "<TR bgcolor=\"#555555\"><TH>DATE</TH><TH>SIZE</TH><TH>FORMAT</TH></TR>\n");
-
-				int lc = 0;
-				sprintf(directory, "%s/.multigcs/logs", getenv("HOME"));
-				if ((dir = opendir(directory)) != NULL) {
-					while ((dir_entry = readdir(dir)) != 0) {
-						if (dir_entry->d_name[1] != '.') {
-							sprintf(new_path, "%s/%s", directory, dir_entry->d_name);
-							if (lstat(new_path, &statbuf) == 0) {
-								if (statbuf.st_mode&S_IFDIR) {
-								} else {
-
-									lc = 1 - lc;
-									if (lc == 0) {
-										strcat(content, "<TR bgcolor=\"#222222\">");
-									} else {
-										strcat(content, "<TR bgcolor=\"#313131\">");
-									}
-
-									time_t liczba_sekund = (time_t)(atoi(dir_entry->d_name));
-									localtime_r(&liczba_sekund, &strukt);
-									FILE *f;
-									int pos;
-									int end;
-									f = fopen(new_path, "r");
-									pos = ftell(f);
-									fseek(f, 0, SEEK_END);
-									end = ftell(f);
-									fclose(f);
-									if ((end - pos) < 1024) {
-										sprintf(tmp_str, "<TD><A href=\"%s\">%02d.%02d.%d %02d:%02d:%02d</A></TD><TD>%iB</TD><TD><A href=\"/logfiles/%s\">RAW</A> <A href=\"/logkml/%s\">KML</A></TD>", dir_entry->d_name, strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, (end - pos), dir_entry->d_name, dir_entry->d_name);
-									} else {
-										sprintf(tmp_str, "<TD><A href=\"%s\">%02d.%02d.%d %02d:%02d:%02d</A></TD><TD>%iKB</TD><TD><A href=\"/logfiles/%s\">RAW</A> <A href=\"/logkml/%s\">KML</A></TD>", dir_entry->d_name, strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, (end - pos) / 1024, dir_entry->d_name, dir_entry->d_name);
-									}
-									strcat(content, tmp_str);
-									strcat(content, "</TR>");
-								}
-							}
-						}
-					}
-					closedir(dir);
-					dir = NULL;
-				}
-
-				strcat(content, "</TABLE>\n");
-				strcat(content, "</FORM>\n");
-
-				strcat(content, "</body>\n");
-
-				sprintf(buffer, header_str, (int)strlen(content), "text/html");
-				write(fd, buffer, strlen(buffer));
-				write(fd, content, strlen(content));
-			} else {
-				char tmp_str2[1024];
-				if (strncmp(buffer + 4,"/logkml/", 8) == 0) {
-					sprintf(tmp_str, "%s/.multigcs/logs/%s", getenv("HOME"), buffer + 12);
-					sprintf(tmp_str2, "/tmp/%s.kml", buffer + 12);
-					logplay_export_kml(tmp_str, tmp_str2, 255);
-					webserv_child_dump_file(fd, tmp_str2, "text/xml");
-				} else {
-					sprintf(tmp_str, "%s/.multigcs/logs/%s", getenv("HOME"), buffer + 14);
-					webserv_child_dump_file(fd, tmp_str, "text/plain");
-				}
-			}
-
+			webserv_child_kml_logfiles(fd, servername, buffer);
 
 #ifdef HTML_DRAWING
 		} else if (strncmp(buffer + 4,"/gui.html", 9) == 0) {
@@ -1942,8 +2142,8 @@ void webserv_child (int fd) {
 			strcat(display_html3, "</script>\n");
 			strcat(display_html3, "<body onload=\"JavaScript:xmlhttpGet();\">\n");
 			strcat(display_html3, "	<div style=\"position: relative;\">\n");
-			strcat(display_html3, "		<canvas id=\"myCanvas\" width=\"1024\" height=\"720\" style=\"position: absolute; left: 10; top: 70; z-index: 1;\"></canvas>\n");
-			strcat(display_html3, "		<canvas id=\"myCanvas2\" width=\"1024\" height=\"720\" style=\"position: absolute; left: 10; top: 70; z-index: 0;\"></canvas>\n");
+			strcat(display_html3, "		<canvas id=\"hudcanvas\" width=\"1024\" height=\"720\" style=\"position: absolute; left: 10; top: 70; z-index: 1;\"></canvas>\n");
+			strcat(display_html3, "		<canvas id=\"hudcanvas2\" width=\"1024\" height=\"720\" style=\"position: absolute; left: 10; top: 70; z-index: 0;\"></canvas>\n");
 			strcat(display_html3, "	</div>\n");
 			strcat(display_html3, "</body>\n");
 			sprintf(buffer, header_str, strlen(display_html3), "text/html");
@@ -1975,6 +2175,8 @@ void webserv_child (int fd) {
 			webserv_child_show_misc(fd);
 		} else if (strncmp(buffer + 4,"/hudredraw.js", 13) == 0) {
 			webserv_child_hud_redraw(fd);
+		} else if (strncmp(buffer + 4,"/hudredraw_small.js", 19) == 0) {
+			webserv_child_hud_redraw_small(fd);
 		} else if (strncmp(buffer + 4,"/map.js", 7) == 0) {
 			sprintf(tmp_str, "%s/webserv/map.js", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/html");
@@ -1995,7 +2197,7 @@ void webserv_child (int fd) {
 			sprintf(tmp_str, "%s/webserv/marker.png", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "image/png");
 		} else if (strncmp(buffer + 4,"/model.png", 10) == 0) {
-			sprintf(tmp_str, "%s/webserv/model.png", BASE_DIR);
+			sprintf(tmp_str, "%s/textures/%s.png", BASE_DIR, modeltypes[ModelData.modeltype]);
 			webserv_child_dump_file(fd, tmp_str, "image/png");
 		} else if (strncmp(buffer + 4,"/img/marker.png", 15) == 0) {
 			sprintf(tmp_str, "%s/webserv/marker.png", BASE_DIR);

@@ -77,8 +77,8 @@ SDL_Thread *sdl_thread_get_maps2;
 uint8_t maplen = 0;
 uint8_t omaplen = 0;
 
-char mapnames[20][4][200];
-char omapnames[20][4][200];
+char mapnames[20][6][512];
+char omapnames[20][6][512];
 
 PointOfInterest POIs[MAX_POIS];
 
@@ -111,6 +111,22 @@ void map_parseMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t map_service) {
 				strncpy(mapnames[map_service][MAP_URL], (char *)key, 199);
 			} else {
 				mapnames[map_service][MAP_URL][0] = 0;
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"comment"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if (key != NULL) {
+				strncpy(mapnames[map_service][MAP_COMMENT], (char *)key, 199);
+			} else {
+				mapnames[map_service][MAP_COMMENT][0] = 0;
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"copyright"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if (key != NULL) {
+				strncpy(mapnames[map_service][MAP_COPYRIGHT], (char *)key, 199);
+			} else {
+				mapnames[map_service][MAP_COPYRIGHT][0] = 0;
 			}
 			xmlFree(key);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"file"))) {
