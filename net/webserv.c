@@ -54,6 +54,8 @@ extern char mapnames[20][4][200];
 #define BUFSIZE 98096
 #define PI 3.14159265
 
+#define MENU "<TABLE width=\"100%\" border=\"0\"><TR bgcolor=\"#555555\"><TH><A href=\"/hud.html\">[HUD]</A></TH><TH><A href=\"/map.html\">[MAP]</A></TH><TH><A href=\"/waypoints.html\">[WAYPOINTS]</A></TH><TH><A href=\"/mavlink_values.html\">[MAVLINK]</A></TH><TH><A href=\"/logfiles/\">[LOGFILES]</A></TH><TH><A href=\"/misc.html\">[MISC]</A></TH></TR></TABLE>\n"
+
 static float blender_first_lat = 0.0;
 static float blender_first_long = 0.0;
 static float blender_first_alt = 0.0;
@@ -457,9 +459,7 @@ void webserv_child_show_map (int fd) {
 
 	strcat(content, "<body onload=\"init();\">\n");
 
-	strcat(content, "<TABLE width=\"100%\" border=\"0\">\n");
-	strcat(content, "<TR bgcolor=\"#555555\"><TH><A href=\"/hud.html\">[HUD]</A></TH><TH><A href=\"/map.html\">[MAP]</A></TH><TH><A href=\"/waypoints.html\">[WAYPOINTS]</A></TH><TH><A href=\"/mavlink_values.html\">[MAVLINK]</A></TH><TH><A href=\"/logfiles/\">[LOGFILES]</A></TH></TR>\n");
-	strcat(content, "</TABLE>\n");
+	strcat(content, MENU);
 
 	strcat(content, "<div class=\"mapdiv\" id=\"mapdiv\"></div>\n");
 //	strcat(content, "<p onclick='JavaScript:xmlhttpGet();'>[UPDATE]</p>\n");
@@ -473,6 +473,58 @@ void webserv_child_show_map (int fd) {
 	write(fd, content, strlen(content));
 
 }
+
+void webserv_child_show_misc (int fd) {
+	char buffer[BUFSIZE + 1];
+	char content[BUFSIZE + 1];
+	char tmp_str[512];
+	content[0] = 0;
+	strcat(content, "<html><head><title>MultiGCS (MISC)</title>\n");
+	strcat(content, "<style type=\"text/css\">\n");
+	strcat(content, "body {\n");
+	strcat(content, "	background-color:#000000;\n");
+	strcat(content, "	color:#FFFFFF;\n");
+	strcat(content, "}\n");
+	strcat(content, "a {\n");
+	strcat(content, "	color:#FFFFFF;\n");
+	strcat(content, "}\n");
+	strcat(content, "table, th, td {\n");
+	strcat(content, "	border: 1px solid #555555;\n");
+	strcat(content, "	padding:0px;\n");
+	strcat(content, "	border-spacing:0;\n");
+	strcat(content, "}\n");
+	strcat(content, "</style>\n");
+
+	strcat(content, "<body onload=\"init();\">\n");
+	strcat(content, MENU);
+	strcat(content, "  <canvas class=\"myCanvas\" id=\"myCanvas\" width=\"640\" height=\"640\"></canvas>\n");
+	strcat(content, "</body></html>\n");
+
+
+
+	strcat(content, "<A href=\"/modeldata\">/modeldata</A> (Model-Data / Telemetry-Data)<BR>\n");
+	strcat(content, "<A href=\"/screenshot\">/screenshot</A> (take a screenshot of the GUI)<BR>\n");
+	strcat(content, "\n");
+	strcat(content, "<H3>Blender 3D</H3>\n");
+	strcat(content, "<A href=\"/blender-export.py\">/blender-export.py</A> (blender export script)<BR>\n");
+	strcat(content, "<A href=\"/blender.txt\">/blender.txt</A> (attitude and position data)<BR>\n");
+	strcat(content, "\n");
+	strcat(content, "<H3>Google-Earth Livefeed and Logs</H3>\n");
+	strcat(content, "<A href=\"/index.kml\">/index.kml</A><BR>\n");
+	strcat(content, "<A href=\"/wp.kml\">/wp.kml</A> (list of all waypoints)<BR>\n");
+	strcat(content, "<A href=\"/live.kml\">/live.kml</A><BR>\n");
+	strcat(content, "<A href=\"/live-pilot.kml\">/live-pilot.kml</A><BR>\n");
+	strcat(content, "<A href=\"/model.kml\">/model.kml</A> (called by live.kml)<BR>\n");
+	strcat(content, "<A href=\"/pilot.kml\">/pilot.kml</A> (called by live-pilot.kml)<BR>\n");
+	strcat(content, "<A href=\"/plane.dae\">/plane.dae</A> (called by model.kml)<BR>\n");
+	strcat(content, "<A href=\"/logkml/\">/logkml/</A> (list of all logfiles in kml-format)<BR>\n");
+
+
+	sprintf(buffer, header_str, (int)strlen(content), "text/html");
+	write(fd, buffer, strlen(buffer));
+	write(fd, content, strlen(content));
+}
+
 
 void webserv_child_show_hud (int fd) {
 	char buffer[BUFSIZE + 1];
@@ -704,9 +756,7 @@ void webserv_child_show_hud (int fd) {
 	strcat(content, "</head>\n");
 
 	strcat(content, "<body onload=\"init();\">\n");
-	strcat(content, "<TABLE width=\"100%\" border=\"0\">\n");
-	strcat(content, "<TR bgcolor=\"#555555\"><TH><A href=\"/hud.html\">[HUD]</A></TH><TH><A href=\"/map.html\">[MAP]</A></TH><TH><A href=\"/waypoints.html\">[WAYPOINTS]</A></TH><TH><A href=\"/mavlink_values.html\">[MAVLINK]</A></TH><TH><A href=\"/logfiles/\">[LOGFILES]</A></TH></TR>\n");
-	strcat(content, "</TABLE>\n");
+	strcat(content, MENU);
 	strcat(content, "  <canvas class=\"myCanvas\" id=\"myCanvas\" width=\"640\" height=\"640\"></canvas>\n");
 	strcat(content, "</body></html>\n");
 
@@ -1325,9 +1375,7 @@ void webserv_child (int fd) {
 			strcat(content, ".form_dark.tbar.nolabel :-moz-placeholder { color: #999;}\n");
 			strcat(content, "</style>\n");
 			strcat(content, "<body>\n");
-			strcat(content, "<TABLE width=\"100%\" border=\"0\">\n");
-			strcat(content, "<TR bgcolor=\"#555555\"><TH><A href=\"/hud.html\">[HUD]</A></TH><TH><A href=\"/map.html\">[MAP]</A></TH><TH><A href=\"/waypoints.html\">[WAYPOINTS]</A></TH><TH><A href=\"/mavlink_values.html\">[MAVLINK]</A></TH><TH><A href=\"/logfiles/\">[LOGFILES]</A></TH></TR>\n");
-			strcat(content, "</TABLE>\n");
+			strcat(content, MENU);
 
 			strcat(content, "<SCRIPT>\n");
 			strcat(content, "function check_option(wp, name) {\n");
@@ -1538,9 +1586,7 @@ void webserv_child (int fd) {
 			strcat(content, ".form_dark.tbar.nolabel :-moz-placeholder { color: #999;}\n");
 			strcat(content, "</style>\n");
 			strcat(content, "<body>\n");
-			strcat(content, "<TABLE width=\"100%\" border=\"0\">\n");
-			strcat(content, "<TR bgcolor=\"#555555\"><TH><A href=\"/hud.html\">[HUD]</A></TH><TH><A href=\"/map.html\">[MAP]</A></TH><TH><A href=\"/waypoints.html\">[WAYPOINTS]</A></TH><TH><A href=\"/mavlink_values.html\">[MAVLINK]</A></TH><TH><A href=\"/logfiles/\">[LOGFILES]</A></TH></TR>\n");
-			strcat(content, "</TABLE>\n");
+			strcat(content, MENU);
 
 			strcat(content, "<SCRIPT>\n");
 			strcat(content, "function check_option(name) {\n");
@@ -1757,9 +1803,7 @@ void webserv_child (int fd) {
 				strcat(content, "<body>\n");
 
 
-				strcat(content, "<TABLE width=\"100%\" border=\"0\">\n");
-				strcat(content, "<TR bgcolor=\"#555555\"><TH><A href=\"/hud.html\">[HUD]</A></TH><TH><A href=\"/map.html\">[MAP]</A></TH><TH><A href=\"/waypoints.html\">[WAYPOINTS]</A></TH><TH><A href=\"/mavlink_values.html\">[MAVLINK]</A></TH><TH><A href=\"/logfiles/\">[LOGFILES]</A></TH></TR>\n");
-				strcat(content, "</TABLE>\n");
+				strcat(content, MENU);
 
 				strcat(content, "<BR><BR>\n");
 
@@ -1928,6 +1972,8 @@ void webserv_child (int fd) {
 			webserv_child_show_map(fd);
 		} else if (strncmp(buffer + 4,"/hud.html", 9) == 0) {
 			webserv_child_show_hud(fd);
+		} else if (strncmp(buffer + 4,"/misc.html", 10) == 0) {
+			webserv_child_show_misc(fd);
 		} else if (strncmp(buffer + 4,"/hudredraw.js", 13) == 0) {
 			webserv_child_hud_redraw(fd);
 		} else if (strncmp(buffer + 4,"/map.js", 7) == 0) {
