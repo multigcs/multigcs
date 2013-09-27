@@ -51,7 +51,7 @@ extern volatile uint8_t zoom;
 extern uint8_t map_type;
 extern char mapnames[20][4][200];
 
-#define BUFSIZE 98096
+#define BUFSIZE 298096
 #define PI 3.14159265
 
 #define MENU "<TABLE width=\"100%\" border=\"0\"><TR bgcolor=\"#555555\"><TH><A href=\"/hud.html\">[HUD]</A></TH><TH><A href=\"/map.html\">[MAP]</A></TH><TH><A href=\"/waypoints.html\">[WAYPOINTS]</A></TH><TH><A href=\"/mavlink_values.html\">[MAVLINK]</A></TH><TH><A href=\"/logfiles/\">[LOGFILES]</A></TH><TH><A href=\"/misc.html\">[MISC]</A></TH></TR></TABLE>\n"
@@ -477,7 +477,6 @@ void webserv_child_show_map (int fd) {
 void webserv_child_show_misc (int fd) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
-	char tmp_str[512];
 	content[0] = 0;
 	strcat(content, "<html><head><title>MultiGCS (MISC)</title>\n");
 	strcat(content, "<style type=\"text/css\">\n");
