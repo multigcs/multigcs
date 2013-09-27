@@ -84,18 +84,18 @@ do
 done
 
 echo "## create/copy icons ##"
-if ! test -e ${applicationName}.icns
+if ! test -e osx/${applicationName}.icns
 then
-	rm -rf ${applicationName}.iconset/
-	mkdir -p ${applicationName}.iconset/
+	rm -rf osx/${applicationName}.iconset/
+	mkdir -p osx/${applicationName}.iconset/
 	for size in 16x16 32x32 128x128 256x256 512x512
 	do
-		convert -scale $size! icon.png ${applicationName}.iconset/icon_${size}.png 2>/dev/null
-	#	convert -scale $size! icon.png ${applicationName}.iconset/icon_${size}@2x.png 2>/dev/null
+		convert -scale $size! osx/icon.png osx/${applicationName}.iconset/icon_${size}.png 2>/dev/null
+	#	convert -scale $size! osx/icon.png osx/${applicationName}.iconset/icon_${size}@2x.png 2>/dev/null
 	done
-	png2icns ${applicationName}.icns ${applicationName}.iconset/icon_*png 2>/dev/null
+	png2icns osx/${applicationName}.icns osx/${applicationName}.iconset/icon_*png 2>/dev/null
 fi
-cp ${applicationName}.icns ${applicationName}.app/Contents/Resources/
+cp osx/${applicationName}.icns ${applicationName}.app/Contents/Resources/
 
 
 echo "## creating dmg-image ##"
@@ -108,8 +108,8 @@ device=$(hdiutil attach -readwrite -noverify -noautoopen "${applicationName}.tem
 
 echo "## copy background-image ##"
 mkdir -p /Volumes/${applicationName}/.background
-cp icon.png /Volumes/${applicationName}/.background/icon.png
-cp dmg-background.png /Volumes/${applicationName}/.background/dmg-background.png
+cp osx/icon.png /Volumes/${applicationName}/.background/icon.png
+cp osx/dmg-background.png /Volumes/${applicationName}/.background/dmg-background.png
 
 echo "## configure dmg-image ##"
 ln -s /Applications /Volumes/${applicationName}/Applications

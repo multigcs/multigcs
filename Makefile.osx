@@ -9,7 +9,7 @@
 ## Mac-OSX SDL2-Version ##
 DEB_DEPENDS = tcl8.5, espeak, coreutils, bluez, imagemagick, ia32-libs,lib32asound2,lib32gcc1,lib32stdc++6,lib32tinfo5,lib32z1,libasound2,libasyncns0,libattr1,libc6,libc6-i386,libcaca0,libcap2,libcomerr2,libcurl3,libdbus-1-3,libdirectfb-1.2-9,libflac8,libfreetype6,libgcc1,libgcrypt11,libgl1-mesa-glx,libgl1-nvidia-glx,libglu1-mesa,libgnutls26,libgpg-error0,libgssapi-krb5-2,libice6,libidn11,libjbig0,libjpeg8,libjson0,libk5crypto3,libkeyutils1,libkrb5-3,libkrb5support0,libldap-2.4-2,libncursesw5,libogg0,libp11-kit0,libpng12-0,libpulse0,librtmp0,libsasl2-2,libsdl1.2debian,libsdl-image1.2,libsdl-ttf2.0-0,libslang2,libsm6,libsndfile1,libssh2-1,libssl1.0.0,libstdc++6,libtasn1-3,libtiff4,libtinfo5,libts-0.0-0,libuuid1,libvorbis0a,libvorbisenc2,libwebp2,libwrap0,libx11-6,libx11-xcb1,libxau6,libxcb1,libxdmcp6,libxext6,libxi6,libxtst6,zlib1g
 VERSION_NAME = sdl
-EXTRA_OBJECTS = gl_draw.o
+EXTRA_OBJECTS = draw/gl_draw.o
 BASE_DIR = /usr/share/multigcs
 COMP = clang
 
@@ -36,11 +36,11 @@ app: gcs
 	rm -rf multigcs.app/Contents/MacOS/
 	mkdir -p multigcs.app/Contents/MacOS/bin
 	mkdir -p multigcs.app/Contents/Resources
-	cp -a gcs.sh multigcs.app/Contents/MacOS/bin/gcs.sh
+	cp -a utils/gcs.sh multigcs.app/Contents/MacOS/bin/gcs.sh
 	mkdir -p multigcs.app/Contents/MacOS/share
-	cp -a WMM2010.COF multigcs.app/Contents/MacOS/share/
-	cp -a map-services.xml multigcs.app/Contents/MacOS/share/
-	cp -a clean-badmaps.sh multigcs.app/Contents/MacOS/share/clean-badmaps.sh
+	cp -a data/WMM2010.COF multigcs.app/Contents/MacOS/share/
+	cp -a data/map-services.xml multigcs.app/Contents/MacOS/share/
+	cp -a utils/clean-badmaps.sh multigcs.app/Contents/MacOS/share/clean-badmaps.sh
 	mkdir -p multigcs.app/Contents/MacOS/share/obj3d
 	mkdir -p multigcs.app/Contents/MacOS/share/textures
 	cp -a textures/* multigcs.app/Contents/MacOS/share/textures/
@@ -55,13 +55,13 @@ app: gcs
 	mkdir -p multigcs.app/Contents/MacOS/share/webserv
 	cp -a textures/marker.png multigcs.app/Contents/MacOS/share/webserv/marker.png
 	cp -a textures/MULTICOPTER.png multigcs.app/Contents/MacOS/share/webserv/model.png
-	cp -a map.js multigcs.app/Contents/MacOS/share/webserv/map.js
-	cp -a webserv-index.html multigcs.app/Contents/MacOS/share/webserv/index.html
-	cp -a style.css multigcs.app/Contents/MacOS/share/webserv/style.css
-	cp -a favicon.ico multigcs.app/Contents/MacOS/share/webserv/favicon.ico
-	cp -a blender-export.py multigcs.app/Contents/MacOS/share/webserv/blender-export.py
-	cp -a plane.dae multigcs.app/Contents/MacOS/share/webserv/plane.dae
-	cp -a simple.dae multigcs.app/Contents/MacOS/share/webserv/simple.dae
+	cp -a net/map.js multigcs.app/Contents/MacOS/share/webserv/map.js
+	cp -a net/webserv-index.html multigcs.app/Contents/MacOS/share/webserv/index.html
+	cp -a net/style.css multigcs.app/Contents/MacOS/share/webserv/style.css
+	cp -a net/favicon.ico multigcs.app/Contents/MacOS/share/webserv/favicon.ico
+	cp -a net/blender-export.py multigcs.app/Contents/MacOS/share/webserv/blender-export.py
+	cp -a net/plane.dae multigcs.app/Contents/MacOS/share/webserv/plane.dae
+	cp -a net/simple.dae multigcs.app/Contents/MacOS/share/webserv/simple.dae
 
-	sh osx-app.sh multigcs $(VERSION)
+	sh osx/osx-app.sh multigcs $(VERSION)
 

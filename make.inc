@@ -4,7 +4,7 @@ VERSION = 0.9-`date +%s`
 BASE_DIR = /usr/share/multigcs
 
 
-INCDIR += -I./ -ICommon -Iscreens -Imavlink -Igps -Imwi21 -Isimplebgc -Ibrugi -Ijeti -Iopenpilot -Ifrsky -Iminizip -Itracker
+INCDIR += -I./ -ICommon -Iscreens -Inet -Itcl -Idraw -Imavlink -Igps -Imwi21 -Isimplebgc -Ibrugi -Ijeti -Iopenpilot -Ifrsky -Iminizip -Itracker
 INCDIR += -I/usr/include/tcl8.5
 INCDIR += $(shell pkg-config --cflags libcurl) $(shell pkg-config --cflags libxml-2.0) $(shell pkg-config --cflags x11) $(shell pkg-config --cflags libpng) $(shell pkg-config --cflags zlib)
 
@@ -13,10 +13,10 @@ LIBS += $(shell pkg-config --libs libcurl) $(shell pkg-config --libs libxml-2.0)
 
 
 
-GCS = $(EXTRA_OBJECTS) main.o serial.o draw.o videocapture.o geomag70.o \
+GCS = $(EXTRA_OBJECTS) main.o serial.o draw/draw.o draw/videocapture.o geomag70.o \
 	minizip/ioapi.o minizip/unzip.o \
 	screens/screen_rcflow.o screens/screen_keyboard.o screens/screen_filesystem.o screens/screen_device.o screens/screen_baud.o screens/screen_model.o screens/screen_cli.o screens/screen_baseflightcli.o screens/screen_background.o screens/screen_wpedit.o screens/screen_hud.o screens/screen_map.o screens/screen_calibration.o screens/screen_fms.o screens/screen_system.o screens/screen_tcl.o screens/screen_mavlink_menu.o screens/screen_brugi.o screens/screen_tracker.o screens/screen_mwi_menu.o screens/screen_openpilot_menu.o screens/screen_videolist.o screens/screen_graph.o screens/screen_telemetry.o \
-	mavlink/my_mavlink.o gps/my_gps.o mwi21/mwi21.o jeti/jeti.o openpilot/openpilot.o frsky/frsky.o tracker/tracker.o simplebgc/simplebgc.o brugi/brugi.o webserv.o webclient.o logging.o
+	mavlink/my_mavlink.o gps/my_gps.o mwi21/mwi21.o jeti/jeti.o openpilot/openpilot.o frsky/frsky.o tracker/tracker.o simplebgc/simplebgc.o brugi/brugi.o net/webserv.o net/webclient.o logging.o
 
 
 default: all
@@ -24,15 +24,15 @@ default: all
 all: gcs
 
 clean:
-	rm -f gcs *.o Common/*.o screens/*.o mavlink/*.o gps/*.o mwi21/*.o jeti/*.o openpilot/*.o frsky/*.o tracker/*.o minizip/*.o brugi/*.o simplebgc/*.o tracker/*.o
+	rm -f gcs *.o Common/*.o screens/*.o net/*.o draw/*.o tcl/*.o mavlink/*.o gps/*.o mwi21/*.o jeti/*.o openpilot/*.o frsky/*.o tracker/*.o minizip/*.o brugi/*.o simplebgc/*.o tracker/*.o
 
 install:
 	cp -a gcs /usr/bin/gl-gcs
-	cp -a gcs.sh /usr/bin/gcs
+	cp -a utils/gcs.sh /usr/bin/gcs
 	mkdir -p $(BASE_DIR)
-	cp -a WMM2010.COF $(BASE_DIR)/
-	cp -a map-services.xml $(BASE_DIR)/
-	cp -a clean-badmaps.sh $(BASE_DIR)/clean-badmaps.sh
+	cp -a data/WMM2010.COF $(BASE_DIR)/
+	cp -a data/map-services.xml $(BASE_DIR)/
+	cp -a utils/clean-badmaps.sh $(BASE_DIR)/clean-badmaps.sh
 	mkdir -p $(BASE_DIR)/obj3d
 	mkdir -p $(BASE_DIR)/textures
 	cp -a textures/* $(BASE_DIR)/textures/
@@ -47,13 +47,13 @@ install:
 	mkdir -p $(BASE_DIR)/webserv
 	cp -a textures/marker.png $(BASE_DIR)/webserv/marker.png
 	cp -a textures/MULTICOPTER.png $(BASE_DIR)/webserv/model.png
-	cp -a map.js $(BASE_DIR)/webserv/map.js
-	cp -a webserv-index.html $(BASE_DIR)/webserv/index.html
-	cp -a style.css $(BASE_DIR)/webserv/style.css
-	cp -a favicon.ico $(BASE_DIR)/webserv/favicon.ico
-	cp -a blender-export.py $(BASE_DIR)/webserv/blender-export.py
-	cp -a plane.dae $(BASE_DIR)/webserv/plane.dae
-	cp -a simple.dae $(BASE_DIR)/webserv/simple.dae
+	cp -a net/map.js $(BASE_DIR)/webserv/map.js
+	cp -a net/webserv-index.html $(BASE_DIR)/webserv/index.html
+	cp -a net/style.css $(BASE_DIR)/webserv/style.css
+	cp -a net/favicon.ico $(BASE_DIR)/webserv/favicon.ico
+	cp -a net/blender-export.py $(BASE_DIR)/webserv/blender-export.py
+	cp -a net/plane.dae $(BASE_DIR)/webserv/plane.dae
+	cp -a net/simple.dae $(BASE_DIR)/webserv/simple.dae
 	chmod 0755 /usr/bin/gl-gcs
 	chmod 0755 /usr/bin/gcs
 	chmod 0755 $(BASE_DIR)/clean-badmaps.sh
@@ -62,11 +62,11 @@ deb: gcs
 	rm -rf package/
 	mkdir -p package/usr/bin
 	cp -a gcs package/usr/bin/gl-gcs
-	cp -a gcs.sh package/usr/bin/gcs
+	cp -a utils/gcs.sh package/usr/bin/gcs
 	mkdir -p package$(BASE_DIR)
-	cp -a WMM2010.COF package$(BASE_DIR)/
-	cp -a map-services.xml package$(BASE_DIR)/
-	cp -a clean-badmaps.sh package$(BASE_DIR)/clean-badmaps.sh
+	cp -a data/WMM2010.COF package$(BASE_DIR)/
+	cp -a data/map-services.xml package$(BASE_DIR)/
+	cp -a utils/clean-badmaps.sh package$(BASE_DIR)/clean-badmaps.sh
 	mkdir -p package$(BASE_DIR)/obj3d
 	mkdir -p package$(BASE_DIR)/textures
 	cp -a textures/* package$(BASE_DIR)/textures/

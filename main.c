@@ -203,9 +203,9 @@ void save_screenshot (void) {
 	}
 
 #ifdef SDL2
-	sprintf(tmp_str, "xwd -name \"%s\" -out /tmp/screen.dump; ./save_screenshot.sh /tmp/screen.dump %s", SDL_GetWindowTitle(MainWindow), name);
+	sprintf(tmp_str, "xwd -name \"%s\" -out /tmp/screen.dump; ./utils/save_screenshot.sh /tmp/screen.dump %s", SDL_GetWindowTitle(MainWindow), name);
 #else
-	sprintf(tmp_str, "xwd -name \"Multi-GCS\" -out /tmp/screen.dump; ./save_screenshot.sh /tmp/screen.dump %s", name);
+	sprintf(tmp_str, "xwd -name \"Multi-GCS\" -out /tmp/screen.dump; ./utils/save_screenshot.sh /tmp/screen.dump %s", name);
 #endif
 	system(tmp_str);
 }
@@ -213,7 +213,7 @@ void save_screenshot (void) {
 
 void save_screenshot2 (void) {
 	char tmp_str[100];
-	sprintf(tmp_str, "xwd -name \"Multi-GCS\" -out /tmp/screen.dump; ./save_screenshot.sh /tmp/screen.dump dump");
+	sprintf(tmp_str, "xwd -name \"Multi-GCS\" -out /tmp/screen.dump; ./utils/save_screenshot.sh /tmp/screen.dump dump");
 	system(tmp_str);
 }
 
