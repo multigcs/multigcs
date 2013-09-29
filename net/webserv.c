@@ -39,6 +39,7 @@
 #include <main.h>
 #include <screen_mavlink_menu.h>
 #include <screen_map.h>
+#include <mwi21.h>
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -53,7 +54,7 @@ extern volatile uint8_t zoom;
 #define BUFSIZE 298096
 #define PI 3.14159265
 
-#define MENU "<TABLE class=\"menubar\" id=\"menubar\" width=\"100%\" border=\"0\"><TR bgcolor=\"#555555\"><TH width=\"10%\"><A href=\"/hud.html\">[HUD]</A></TH><TH width=\"10%\"><A href=\"/map.html\">[MAP]</A></TH><TH width=\"10%\"><A href=\"/waypoints.html\">[WAYPOINTS]</A></TH><TH width=\"10%\"><A href=\"/mavlink.html\">[MAVLINK]</A></TH><TH width=\"10%\"><A href=\"/logfiles/\">[LOGFILES]</A></TH><TH width=\"10%\"><A href=\"/misc.html\">[MISC]</A></TH></TR></TABLE>\n"
+#define MENU "<TABLE class=\"menubar\" id=\"menubar\" width=\"100%\" border=\"0\"><TR bgcolor=\"#555555\"><TH width=\"10%\"><A href=\"/hud.html\">[HUD]</A></TH><TH width=\"10%\"><A href=\"/map.html\">[MAP]</A></TH><TH width=\"10%\"><A href=\"/waypoints.html\">[WAYPOINTS]</A></TH><TH width=\"10%\"><A href=\"/mavlink.html\">[MAVLINK]</A></TH><TH width=\"10%\"><A href=\"/mwii.html\">[MWII]</A></TH><TH width=\"10%\"><A href=\"/logfiles/\">[LOGFILES]</A></TH><TH width=\"10%\"><A href=\"/misc.html\">[MISC]</A></TH></TR></TABLE>\n"
 
 static float blender_first_lat = 0.0;
 static float blender_first_long = 0.0;
@@ -1231,7 +1232,141 @@ void webserv_child_kml_feed (int fd, uint8_t mode, char *servername) {
 	write(fd, content, strlen(content));
 }
 
-void webserv_child_kml_mavlink (int fd, char *servername) {
+
+void webserv_child_mwii (int fd, char *servername) {
+	char buffer[BUFSIZE + 1];
+	char content[BUFSIZE + 1];
+	char tmp_str[512];
+	uint16_t n = 0;
+	uint16_t n2 = 0;
+	content[0] = 0;
+	strcat(content, "<html><head><title>MultiGCS (MAVLINK)</title>\n");
+	strcat(content, "<style type=\"text/css\">\n");
+	strcat(content, "body {\n");
+	strcat(content, "	background-color:#000000;\n");
+	strcat(content, "	color:#FFFFFF;\n");
+	strcat(content, "}\n");
+	strcat(content, "a {\n");
+	strcat(content, "	color:#FFFFFF;\n");
+	strcat(content, "}\n");
+	strcat(content, "table, th, td {\n");
+	strcat(content, "	border: 1px solid #555555;\n");
+	strcat(content, "	padding:0px;\n");
+	strcat(content, "	border-spacing:0;\n");
+	strcat(content, "}\n");
+	strcat(content, "#menubar {\n");
+	strcat(content, "    width: 100%;\n");
+	strcat(content, "    height: 32px;\n");
+	strcat(content, "    top: 0%;\n");
+	strcat(content, "    left: 0%;\n");
+	strcat(content, "    float: none;\n");
+	strcat(content, "    position: absolute;\n");
+	strcat(content, "    z-index: +5;\n");
+	strcat(content, "}\n");
+	strcat(content, ".form_dark { margin:0 0 24px; text-align: left; }\n");
+	strcat(content, ".form_dark .form-input { display: block; height: 34px; padding: 6px 10px; margin-top: 2px; margin-bottom: 2px; margin-left: 2px; margin-right: 2px; font: 14px Calibri, Helvetica, Arial, sans-serif; color: #ccc; background: #444; border: 1px solid #222; outline: none; -moz-border-radius:    8px; -webkit-border-radius: 8px; border-radius:         8px; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -moz-background-clip:    padding; -webkit-background-clip: padding-box; background-clip:         padding-box; -moz-transition:    all 0.4s ease-in-out; -webkit-transition: all 0.4s ease-in-out; -o-transition:      all 0.4s ease-in-out; -ms-transition:     all 0.4s ease-in-out; transition:         all 0.4s ease-in-out; behavior: url(PIE.htc); }\n");
+	strcat(content, ".form_dark textarea.form-input { width: 400px; height: 200px; overflow: auto; }\n");
+	strcat(content, ".form_dark .form-input:focus { border: 1px solid #7fbbf9; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; }\n");
+	strcat(content, ".form_dark .form-input:-moz-ui-invalid { border: 1px solid #e00; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00;}\n");
+	strcat(content, ".form_dark .form-input.invalid { border: 1px solid #e00; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; }\n");
+	strcat(content, ".form_dark.nolabel ::-webkit-input-placeholder { color: #888;}\n");
+	strcat(content, ".form_dark.nolabel :-moz-placeholder { color: #888;}\n");
+	strcat(content, ".form_dark .form-btn { padding: 0 15px; height: 30px; font: bold 12px Calibri, Helvetica, Arial, sans-serif; text-align: center; color: #fff; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.7); cursor: pointer; border: 1px solid #0d3d6a; outline: none; position: relative; background-color: #1d83e2; background-image: -webkit-gradient(linear, left top, left bottom, from(#1d83e2), to(#0d3d6a)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #1d83e2, #0d3d6a); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #1d83e2, #0d3d6a); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #1d83e2, #0d3d6a); /* IE10 */ background-image:      -o-linear-gradient(top, #1d83e2, #0d3d6a); /* Opera 11.10+ */ background-image:         linear-gradient(top, #1d83e2, #0d3d6a); -pie-background:          linear-gradient(top, #1d83e2, #0d3d6a); /* IE6-IE9 */ -moz-border-radius:    16px; -webkit-border-radius: 16px; border-radius:         16px; -moz-box-shadow:    inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); box-shadow:         inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); -moz-background-clip:    padding; -webkit-background-clip: padding-box; background-clip:         padding-box; behavior: url(PIE.htc); }\n");
+	strcat(content, ".form_dark .form-btn:active { border: 1px solid #1d83e2; background-color: #0d3d6a; background-image: -webkit-gradient(linear, left top, left bottom, from(#0d3d6a), to(#1d83e2)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #0d3d6a, #1d83e2); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #0d3d6a, #1d83e2); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #0d3d6a, #1d83e2); /* IE10 */ background-image:      -o-linear-gradient(top, #0d3d6a, #1d83e2); /* Opera 11.10+ */ background-image:         linear-gradient(top, #0d3d6a, #1d83e2); -pie-background:          linear-gradient(top, #0d3d6a, #1d83e2); /* IE6-IE9 */ -moz-box-shadow:    inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); box-shadow:         inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); }\n");
+	strcat(content, ".form_dark input[type=submit]::-moz-focus-inner { border: 0; padding: 0;}\n");
+	strcat(content, ".form_dark label { margin-bottom: 10px; display: block; width: 300px; color: #ccc; font-size: 14px; font-weight: bold; }\n");
+	strcat(content, ".form_dark label span { font-size: 12px; color: #888; font-weight: normal; }\n");
+	strcat(content, ".form_dark.frame { padding: 20px; background-color: #343434; background-image: -webkit-gradient(linear, left top, left bottom, from(#343434), to(#141414)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #343434, #141414); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #343434, #141414); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #343434, #141414); /* IE10 */ background-image:      -o-linear-gradient(top, #343434, #141414); /* Opera 11.10+ */ background-image:         linear-gradient(top, #343434, #141414); -pie-background:          linear-gradient(top, #343434, #141414); /* IE6-IE9 */ -moz-border-radius:    8px; -webkit-border-radius: 8px; border-radius:         8px; -moz-box-shadow:    0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); box-shadow:         0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); behavior: URL(PIE.htc); }\n");
+	strcat(content, ".form_dark.tbar { padding: 0 20px 20px 20px; background-color: #3c3c3c; background-image: -webkit-gradient(linear, left top, left bottom, from(#444444), to(#343434)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #444444, #343434); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #444444, #343434); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #444444, #343434); /* IE10 */ background-image:      -o-linear-gradient(top, #444444, #343434); /* Opera 11.10+ */ background-image:         linear-gradient(top, #444444, #343434); -pie-background:          linear-gradient(top, #444444, #343434); /* IE6-IE9 */ behavior: URL(PIE.htc); }\n");
+	strcat(content, ".form_dark.tbar h3 { font: normal 18px/1 Calibri, Helvetica, Arial, sans-serif; color: #ccc; text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.7); padding: 20px; margin: 0 -20px 20px -20px; background-color: #343434; background-image: -webkit-gradient(linear, left top, left bottom, from(#343434), to(#1b1b1b)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #343434, #1b1b1b); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #343434, #1b1b1b); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #343434, #1b1b1b); /* IE10 */ background-image:      -o-linear-gradient(top, #343434, #1b1b1b); /* Opera 11.10+ */ background-image:         linear-gradient(top, #343434, #1b1b1b); -pie-background:          linear-gradient(top, #343434, #1b1b1b); /* IE6-IE9 */ -moz-border-radius:    8px 8px 0 0; -webkit-border-radius: 8px 8px 0 0; border-radius:         8px 8px 0 0; -moz-border-radius:    8px 8px 0 0; -moz-box-shadow:    inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); box-shadow:         inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); behavior: url(PIE.htc); }\n");
+	strcat(content, ".form_dark.tbar .form-input { background: #545454; }\n");
+	strcat(content, ".form_dark.tbar.nolabel ::-webkit-input-placeholder { color: #999;}\n");
+	strcat(content, ".form_dark.tbar.nolabel :-moz-placeholder { color: #999;}\n");
+	strcat(content, "</style>\n");
+
+	strcat(content, "<SCRIPT>\n");
+	strcat(content, "function check_value(row, col) {\n");
+	strcat(content, "	var value = document.getElementById(row + \"-\" + col).value;\n");
+	strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
+	strcat(content, "	xmlHttp.open(\"GET\", \"/mwii_pid.html?\" + row + \",\" + col + \"=\" + value, true);\n");
+	strcat(content, "	xmlHttp.send(null);\n");
+	strcat(content, "}\n");
+	strcat(content, "</SCRIPT>\n");
+
+	strcat(content, "<body>\n");
+	strcat(content, MENU);
+	strcat(content, "</TABLE>\n");
+	strcat(content, "</FORM>\n");
+
+
+	strcat(content, "<BR>\n");
+	strcat(content, "<BR>\n");
+	strcat(content, "<FORM class=\"form_dark\">\n");
+	strcat(content, "<CENTER><TABLE width=\"80%\" border=\"0\">\n");
+	strcat(content, "<TR bgcolor=\"#555555\"><TH>NAME</TH><TH>P</TH><TH>I</TH><TH>D</TH></TR>\n");
+
+	int n3 = 0;
+	int lc = 0;
+	for (n = 0; n < 14; n++) {
+		if (mwi_pid_names[n][0] != 0) {
+			lc = 1 - lc;
+			if (lc == 0) {
+				strcat(content, "<TR bgcolor=\"#222222\">");
+			} else {
+				strcat(content, "<TR bgcolor=\"#313131\">");
+			}
+			sprintf(tmp_str, "<TD>%s</TD>", mwi_pid_names[n]);
+			strcat(content, tmp_str);
+			sprintf(tmp_str, "<TD align=\"center\"><input class=\"form-input\" onchange=\"check_value(%i,%i);\" id=\"%i-%i\" value=\"%0.1f\" type=\"text\"></TD>", n, 0, n, 0, (float)mwi_pid[n][0] / 10.0);
+			strcat(content, tmp_str);
+			sprintf(tmp_str, "<TD align=\"center\"><input class=\"form-input\" onchange=\"check_value(%i,%i);\" id=\"%i-%i\" value=\"%0.3f\" type=\"text\"></TD>", n, 1, n, 1, (float)mwi_pid[n][1] / 1000.0);
+			strcat(content, tmp_str);
+			sprintf(tmp_str, "<TD align=\"center\"><input class=\"form-input\" onchange=\"check_value(%i,%i);\" id=\"%i-%i\" value=\"%i\" type=\"text\"></TD>", n, 2, n, 2, mwi_pid[n][2]);
+			strcat(content, tmp_str);
+			strcat(content, "</TR>\n");
+		}
+	}
+
+	strcat(content, "</TABLE></CENTER>\n");
+	strcat(content, "</FORM>\n");
+
+	strcat(content, "<BR>\n");
+	strcat(content, "<CENTER><TABLE width=\"80%\" border=\"0\">\n");
+	strcat(content, "<TR bgcolor=\"#555555\"><TH>NAME</TH><TH colspan=\"3\">AUX1</TH><TH colspan=\"3\">AUX2</TH><TH colspan=\"3\">AUX3</TH><TH colspan=\"3\">AUX4</TH></TR>\n");
+	strcat(content, "<TR bgcolor=\"#555555\"><TH>&nbsp;</TH><TH>MIN</TH><TH>MID</TH><TH>MAX</TH><TH>MIN</TH><TH>MID</TH><TH>MAX</TH><TH>MIN</TH><TH>MID</TH><TH>MAX</TH><TH>MIN</TH><TH>MID</TH><TH>MAX</TH></TR>\n");
+
+	lc = 0;
+	for (n = 0; n < 16; n++) {
+		if (mwi_box_names[n][0] != 0) {
+			lc = 1 - lc;
+			if (lc == 0) {
+				strcat(content, "<TR bgcolor=\"#222222\">");
+			} else {
+				strcat(content, "<TR bgcolor=\"#313131\">");
+			}
+			sprintf(tmp_str, "<TD>%s</TD>", mwi_box_names[n]);
+			strcat(content, tmp_str);
+			for (n2 = 0; n2 < 12; n2++) {
+				if (mwi_set_box[n] & (1<<n2)) {
+					sprintf(tmp_str, "<TD bgcolor=\"#ABCDAB\" onClick=\"document.location.href='/mwii_set.html?%i';\">&nbsp;</TD>\n", n3);
+				} else {
+					sprintf(tmp_str, "<TD bgcolor=\"#ABABAB\" onClick=\"document.location.href='/mwii_set.html?%i';\">&nbsp;</TD>\n", n3);
+				}
+				strcat(content, tmp_str);
+				n3++;
+			}
+			strcat(content, "</TR>\n");
+		}
+	}
+	strcat(content, "</TABLE></CENTER>\n");
+
+	sprintf(buffer, header_str, (int)strlen(content), "text/html");
+	write(fd, buffer, strlen(buffer));
+	write(fd, content, strlen(content));
+}
+
+
+void webserv_child_mavlink (int fd, char *servername) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
@@ -2004,7 +2139,64 @@ void webserv_child (int fd) {
 			write(fd, buffer, strlen(buffer));
 			write(fd, content, strlen(content));
 		} else if (strncmp(buffer + 4,"/mavlink.html", 13) == 0) {
-			webserv_child_kml_mavlink(fd, servername);
+			webserv_child_mavlink(fd, servername);
+
+
+		} else if (strncmp(buffer + 4,"/mwii.html", 10) == 0) {
+			webserv_child_mwii(fd, servername);
+
+		} else if (strncmp(buffer + 4,"/mwii_pid.html?", 14) == 0) {
+			int n = 0;
+			int row = 0;
+			int col = 0;
+			float val = 0.0;
+			sscanf(buffer + 4 + 15, "%i,%i=%f", &row, &col, &val);
+			for (n = 0; n < 16; n++) {
+				mwi_set_pid[n][0] = mwi_pid[n][0];
+				mwi_set_pid[n][1] = mwi_pid[n][1];
+				mwi_set_pid[n][2] = mwi_pid[n][2];
+			}
+			if (col == 0) {
+				mwi_set_pid[row][col] = (int)(val * 10.0);
+			} else if (col == 1) {
+				mwi_set_pid[row][col] = (int)(val * 1000.0);
+			} else if (col == 2) {
+				mwi_set_pid[row][col] = (int)(val);
+			}
+			mwi_set_pid_flag = 1;
+
+			strcpy(content, "");
+			sprintf(buffer, header_str, (int)strlen(content), "text/html");
+			write(fd, buffer, strlen(buffer));
+			write(fd, content, strlen(content));
+		} else if (strncmp(buffer + 4,"/mwii_set.html?", 14) == 0) {
+			int n = 0;
+			int n2 = 0;
+			int n3 = 0;
+			int nn = 0;
+			sscanf(buffer + 4 + 15, "%i", &nn);
+
+			for (n2 = 0; n2 < 16; n2++) {
+				for (n3 = 0; n3 < 12; n3++) {
+					if (mwi_set_box[n2] & (1<<n3)) {
+						if (n == nn) {
+							mwi_set_box[n2] &= ~(1<<n3);
+						}
+					} else {
+						if (n == nn) {
+							mwi_set_box[n2] |= (1<<n3);
+						}
+					}
+					n++;
+				}
+			}
+			mwi_set_box_flag = 1;
+
+			strcpy(content, "<meta http-equiv=\"Refresh\" content=\"0; URL=/mwii.html\">");
+			sprintf(buffer, header_str, (int)strlen(content), "text/html");
+			write(fd, buffer, strlen(buffer));
+			write(fd, content, strlen(content));
+
 		} else if (strncmp(buffer + 4,"/mavlink_value_get", 18) == 0) {
 			uint16_t n = 0;
 			strcpy(content, "# MAV ID  COMPONENT ID  PARAM NAME  VALUE (FLOAT) TYPE (INT)\n");

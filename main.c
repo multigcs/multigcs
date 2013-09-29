@@ -1229,7 +1229,7 @@ int telemetry_thread (void *data) {
 		} else {
 			mavlink_update();
 		}
-		SDL_Delay(10);
+		SDL_Delay(2);
 	}
 	printf("telemetry: exit thread\n");
 	return(0);
