@@ -1381,7 +1381,7 @@ void webserv_child_mavlink (int fd, char *sub) {
 			strcat(content, tmp_str);
 		}
 	}
-	strcat(content, "</TABLE>\n");
+	strcat(content, "</TABLE><BR><BR>\n");
 	strcat(content, "</TD></TR></TABLE>\n");
 	html_stop(content);
 
