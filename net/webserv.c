@@ -50,23 +50,76 @@
 
 extern void save_screenshot2 (void);
 extern volatile uint8_t zoom;
+extern uint8_t get_background_model (char *filename);
 
 #define BUFSIZE 298096
 #define PI 3.14159265
 
-#define MENU "<TABLE class=\"menubar\" id=\"menubar\" width=\"100%\" border=\"0\"><TR bgcolor=\"#555555\"><TH width=\"10%\"><A href=\"/hud.html\">[HUD]</A></TH><TH width=\"10%\"><A href=\"/map.html\">[MAP]</A></TH><TH width=\"10%\"><A href=\"/waypoints.html\">[WAYPOINTS]</A></TH><TH width=\"10%\"><A href=\"/mavlink.html\">[MAVLINK]</A></TH><TH width=\"10%\"><A href=\"/mwii.html\">[MWII]</A></TH><TH width=\"10%\"><A href=\"/logfiles/\">[LOGFILES]</A></TH><TH width=\"10%\"><A href=\"/misc.html\">[MISC]</A></TH></TR></TABLE>\n"
+#define MENU "<TABLE class=\"menubar\" id=\"menubar\" width=\"100%\" border=\"0\"><TR bgcolor=\"#AAAAAA\"><TH width=\"10%\"><A href=\"/hud.html\">[HUD]</A></TH><TH width=\"10%\"><A href=\"/map.html\">[MAP]</A></TH><TH width=\"10%\"><A href=\"/waypoints.html\">[WAYPOINTS]</A></TH><TH width=\"10%\"><A href=\"/mavlink.html\">[MAVLINK]</A></TH><TH width=\"10%\"><A href=\"/mwii.html\">[MWII]</A></TH><TH width=\"10%\"><A href=\"/logfiles/\">[LOGFILES]</A></TH><TH width=\"10%\"><A href=\"/gcssetup.html\">[SETUP]</A></TH><TH width=\"10%\"><A href=\"/misc.html\">[MISC]</A></TH></TR></TABLE>\n"
 
+static char menu_entrys[16][2][128] = {
+	{"/hud.html", "HUD"}, 
+	{"/map.html", "MAP"}, 
+	{"/waypoints.html", "WAYPOINTS"}, 
+	{"/mavlink.html", "MAVLINK"}, 
+	{"/mwii.html", "MWII"}, 
+	{"/logfiles/", "LOGFILES"}, 
+	{"/gcssetup.html", "SETUP"}, 
+	{"/misc.html", "MISC"}, 
+	{"", ""}, 
+};
+
+static Object3d obj3d_collada;
+static SDL_Thread *thread_webserv = NULL;
 static float blender_first_lat = 0.0;
 static float blender_first_long = 0.0;
 static float blender_first_alt = 0.0;
-
-Object3d obj3d_collada;
-
-uint8_t webserv_running = 0;
-SDL_Thread *thread_webserv = NULL;
+static uint8_t webserv_running = 0;
+static char last_title[128];
 int listenfd;
 
 #define header_str "HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %i\nConnection: close\nContent-Type: %s\n\n"
+
+void html_head (char *content, char *title) {
+	char tmp_str[1024];
+	strcat(content, "<HTML>\n");
+	strcat(content, "<HEAD>\n");
+	sprintf(tmp_str, "  <TITLE>MultiGCS - %s</TITLE>\n", title);
+	strcat(content, tmp_str);
+	strcat(content, "  <LINK rel=\"stylesheet\" type=\"text/css\" href=\"/style.css\" />\n");
+	strcat(content, "</HEAD>\n");
+	strcpy(last_title, title);
+}
+
+void html_start (char *content, uint8_t init) {
+	char tmp_str[1024];
+	int n = 0;
+	if (init == 0) {
+		strcat(content, "<BODY>\n");
+	} else {
+		strcat(content, "<BODY onload=\"init();\">\n");
+	}
+	strcat(content, "<DIV class=\"background\"></DIV>\n");
+//	strcat(content, MENU);
+
+	strcat(content, "<TABLE class=\"menubar\" id=\"menubar\" width=\"100%\" border=\"0\"><TR bgcolor=\"#AAAAAA\">");
+	for (n = 0; n < 16 && menu_entrys[n][0][0] != 0; n++) {
+		if (strcmp(menu_entrys[n][1], last_title) == 0) {
+			sprintf(tmp_str, "<TH class=\"menubar_sel\" width=\"10%%\"><A href=\"%s\">%s</A></TH>", menu_entrys[n][0], menu_entrys[n][1]);
+		} else {
+			sprintf(tmp_str, "<TH width=\"10%%\"><A href=\"%s\">%s</A></TH>", menu_entrys[n][0], menu_entrys[n][1]);
+		}
+		strcat(content, tmp_str);
+	}
+	strcat(content, "</TR></TABLE>\n");
+	strcat(content, "<BR><BR>\n");
+}
+
+void html_stop (char *content) {
+	strcat(content, "<BR><BR>\n");
+	strcat(content, "</BODY>\n");
+	strcat(content, "</HTML>\n");
+}
 
 void webserv_child_dump_screen (int fd) {
 	char buffer[BUFSIZE + 1];
@@ -110,13 +163,11 @@ void webserv_child_dump_blender (int fd) {
 	char buffer[1024];
 	char content[BUFSIZE + 1];
 	char tmp_str[100];
-
 	if (blender_first_lat == 0.0 || blender_first_long == 0.0) {
 		blender_first_lat = ModelData.p_lat;
 		blender_first_long = ModelData.p_long;
 		blender_first_alt = ModelData.p_alt;
 	}
-
 	content[0] = 0;
 	sprintf(tmp_str, "%f %f %f %f %f %f\n", ModelData.pitch, ModelData.roll, ModelData.yaw, (ModelData.p_lat - blender_first_lat), (ModelData.p_long - blender_first_long), (ModelData.p_alt - blender_first_alt));
 	strcat(content, tmp_str);
@@ -130,7 +181,6 @@ void webserv_child_dump_modeldata (int fd) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[100];
-
 	content[0] = 0;
 	sprintf(tmp_str, "name=%s\n", ModelData.name);
 	strcat(content, tmp_str);
@@ -264,7 +314,6 @@ void webserv_child_dump_modeldata (int fd) {
 	sprintf(buffer, header_str, (int)strlen(content), "text/plain");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
-
 }
 
 void webserv_child_show_lonlat (int fd) {
@@ -276,65 +325,14 @@ void webserv_child_show_lonlat (int fd) {
 	write(fd, content, strlen(content));
 }
 
-
 void webserv_child_show_map (int fd) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
 	content[0] = 0;
-	strcat(content, "<html><head><title>MultiGCS (MAP)</title>\n");
-	strcat(content, "<style type=\"text/css\">\n");
-	strcat(content, "body {\n");
-	strcat(content, "	background-color:#000000;\n");
-	strcat(content, "	color:#FFFFFF;\n");
-	strcat(content, "}\n");
-	strcat(content, "a {\n");
-	strcat(content, "	color:#FFFFFF;\n");
-	strcat(content, "}\n");
-	strcat(content, "table, th, td {\n");
-	strcat(content, "	border: 1px solid #555555;\n");
-	strcat(content, "	padding:0px;\n");
-	strcat(content, "	border-spacing:0;\n");
-	strcat(content, "}\n");
-	strcat(content, "#mapcopyright {\n");
-	strcat(content, "    position: absolute;\n");
-	strcat(content, "    bottom: 5px;\n");
-	strcat(content, "    left: 5px;\n");
-	strcat(content, "    float: none;\n");
-	strcat(content, "    z-index:-3;\n");
-	strcat(content, "    color:#FF0000;\n");
-	strcat(content, "}\n");
-	strcat(content, "#mapdiv {\n");
-	strcat(content, "    position: absolute;\n");
-	strcat(content, "    top: 0%;\n");
-	strcat(content, "    right: 0%;\n");
-	strcat(content, "    width: 100%;\n");
-	strcat(content, "    height: 100%;\n");
-	strcat(content, "    float: none;\n");
-	strcat(content, "    z-index:-5;\n");
-	strcat(content, "}\n");
-	strcat(content, "#hudcanvas {\n");
-	strcat(content, "    width: 200px;\n");
-	strcat(content, "    height: 200px;\n");
-	strcat(content, "    bottom: 0%;\n");
-	strcat(content, "    right: 0%;\n");
-	strcat(content, "    float: none;\n");
-	strcat(content, "    position: absolute;\n");
-	strcat(content, "    z-index:-1;\n");
-	strcat(content, "}\n");
-	strcat(content, "#menubar {\n");
-	strcat(content, "    width: 100%;\n");
-	strcat(content, "    height: 32px;\n");
-	strcat(content, "    top: 0%;\n");
-	strcat(content, "    left: 0%;\n");
-	strcat(content, "    float: none;\n");
-	strcat(content, "    position: absolute;\n");
-	strcat(content, "    z-index: +5;\n");
-	strcat(content, "}\n");
-	strcat(content, "</style>\n");
-	strcat(content, "<script src=\"/map.js\"></script>\n");
-	strcat(content, "<script>\n");
-
+	html_head(content, "MAP");
+	strcat(content, "<SCRIPT src=\"/map.js\"></SCRIPT>\n");
+	strcat(content, "<SCRIPT>\n");
 	strcat(content, "function HUDxmlhttpGet() {\n");
 	strcat(content, "    var xmlHttpReq = false;\n");
 	strcat(content, "    var self = this;\n");
@@ -401,7 +399,6 @@ void webserv_child_show_map (int fd) {
 	strcat(content, "		context.stroke();\n");
 	strcat(content, "	}\n");
 	strcat(content, "\n");
-
 	strcat(content, "function xmlhttpGet() {\n");
 	strcat(content, "    var xmlHttpReq = false;\n");
 	strcat(content, "    var self = this;\n");
@@ -453,14 +450,12 @@ void webserv_child_show_map (int fd) {
 	strcat(content, " var fromProjection = new OpenLayers.Projection(\"EPSG:4326\");   // Transform from WGS 1984\n");
 	strcat(content, " var toProjection   = new OpenLayers.Projection(\"EPSG:900913\"); // to Spherical Mercator Projection\n");
 	strcat(content, "function init() {\n");
-
-	strcat(content, " var canvas = document.getElementById('hudcanvas');\n");
+	strcat(content, " var canvas = document.getElementById('small_hudcanvas');\n");
 	strcat(content, " var context = canvas.getContext('2d');\n");
 	strcat(content, " context.clearRect(0, 0, canvas.width, canvas.height);\n");
 	sprintf(tmp_str, " drawHorizon(context, 100, 50, 400, %f, %f);\n", ModelData.roll, ModelData.pitch);
 	strcat(content, tmp_str);
 	strcat(content, " HUDxmlhttpGet();\n");
-
 	strcat(content, " map = new OpenLayers.Map('mapdiv', {projection: toProjection, displayProjection: fromProjection});\n");
 	strcat(content, " var baselayer = new OpenLayers.Layer.OSM(\"Mapnik\",null,{attribution:\"\"});\n");
 	strcat(content, " var modellayer = new OpenLayers.Layer.Vector(\"Model\", {\n");
@@ -576,8 +571,6 @@ void webserv_child_show_map (int fd) {
 	strcat(content, "    trigger: function(e) {\n");
 	strcat(content, "        var lonlat = map.getLonLatFromPixel(e.xy);\n");
 	strcat(content, "        lonlat1 = new OpenLayers.LonLat(lonlat.lon,lonlat.lat).transform(toProjection,fromProjection);\n");
-//	strcat(content, "        document.getElementById('lat').value = lonlat1.lat;\n");
-//	strcat(content, "        document.getElementById('lon').value = lonlat1.lon;\n");
 	sprintf(tmp_str, "        wp_add(%i, lonlat1.lon, lonlat1.lat);\n", n2);
 	strcat(content, tmp_str);
 	strcat(content, "    }\n");
@@ -587,64 +580,26 @@ void webserv_child_show_map (int fd) {
 	strcat(content, " click.activate();\n");
 	strcat(content, " xmlhttpGet();\n");
 	strcat(content, "}\n");
-	strcat(content, "</script>\n");
-	strcat(content, "</head>\n");
-
-	strcat(content, "<body onload=\"init();\">\n");
-	strcat(content, MENU);
-	strcat(content, "<BR><BR>\n");
+	strcat(content, "</SCRIPT>\n");
+	html_start(content, 1);
 	strcat(content, "<div class=\"mapdiv\" id=\"mapdiv\"></div>\n");
 	sprintf(tmp_str, "<div class=\"mapcopyright\" id=\"mapcopyright\">%s</div>\n", mapnames[map_type][MAP_COPYRIGHT]);
 	strcat(content, tmp_str);
-
-
-	strcat(content, "<canvas class=\"hudcanvas\" id=\"hudcanvas\" width=\"640\" height=\"640\"></canvas>\n");
-
-	strcat(content, "</body></html>\n");
+	strcat(content, "<canvas class=\"small_hudcanvas\" id=\"small_hudcanvas\" width=\"640\" height=\"640\"></canvas>\n");
+	html_stop(content);
 
 	sprintf(buffer, header_str, (int)strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
 
-
 void webserv_child_show_hud (int fd) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
 	content[0] = 0;
-	strcat(content, "<html><head><title>MultiGCS (HUD)</title>\n");
-	strcat(content, "<style type=\"text/css\">\n");
-	strcat(content, "body {\n");
-	strcat(content, "	background-color:#000000;\n");
-	strcat(content, "	color:#FFFFFF;\n");
-	strcat(content, "}\n");
-	strcat(content, "a {\n");
-	strcat(content, "	color:#FFFFFF;\n");
-	strcat(content, "}\n");
-	strcat(content, "table, th, td {\n");
-	strcat(content, "	border: 1px solid #555555;\n");
-	strcat(content, "	padding:0px;\n");
-	strcat(content, "	border-spacing:0;\n");
-	strcat(content, "}\n");
-	strcat(content, "#hudcanvas {\n");
-	strcat(content, "    top: 0%;\n");
-	strcat(content, "    width: 50%;\n");
-	strcat(content, "    left: 25%;\n");
-	strcat(content, "    position: absolute;\n");
-	strcat(content, "    float: none;\n");
-	strcat(content, "}\n");
-	strcat(content, "#menubar {\n");
-	strcat(content, "    width: 100%;\n");
-	strcat(content, "    height: 32px;\n");
-	strcat(content, "    top: 0%;\n");
-	strcat(content, "    left: 0%;\n");
-	strcat(content, "    float: none;\n");
-	strcat(content, "    position: absolute;\n");
-	strcat(content, "    z-index: +5;\n");
-	strcat(content, "}\n");
-	strcat(content, "</style>\n");
-	strcat(content, "<script>\n");
+	html_head(content, "HUD");
+	strcat(content, "<SCRIPT>\n");
 	strcat(content, "function HUDxmlhttpGet() {\n");
 	strcat(content, "    var xmlHttpReq = false;\n");
 	strcat(content, "    var self = this;\n");
@@ -840,14 +795,14 @@ void webserv_child_show_hud (int fd) {
 	strcat(content, tmp_str);
 	strcat(content, "       HUDxmlhttpGet();\n");
 	strcat(content, "}\n");
-	strcat(content, "</script>\n");
-	strcat(content, "</head>\n");
+	strcat(content, "</SCRIPT>\n");
+	html_start(content, 1);
 
-	strcat(content, "<body onload=\"init();\">\n");
-	strcat(content, MENU);
-	strcat(content, "<BR><BR>\n");
-	strcat(content, "<canvas class=\"hudcanvas\" id=\"hudcanvas\" width=\"640\" height=\"640\"></canvas>\n");
-	strcat(content, "</body></html>\n");
+	strcat(content, "<CENTER><TABLE width=\"90%\" border=\"0\">\n");
+	strcat(content, "<TR><TH>HUD</TH></TR>\n");
+	strcat(content, "<TR><TD class=\"hudbg\" align=\"center\"><canvas class=\"hudcanvas\" id=\"hudcanvas\" width=\"600\" height=\"720\"></canvas></TD></TR>\n");
+	strcat(content, "</TABLE></CENTER>\n");
+	html_stop(content);
 
 	sprintf(buffer, header_str, (int)strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
@@ -858,35 +813,9 @@ void webserv_child_show_misc (int fd) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	content[0] = 0;
-	strcat(content, "<html><head><title>MultiGCS (MISC)</title>\n");
-	strcat(content, "<style type=\"text/css\">\n");
-	strcat(content, "body {\n");
-	strcat(content, "	background-color:#000000;\n");
-	strcat(content, "	color:#FFFFFF;\n");
-	strcat(content, "}\n");
-	strcat(content, "a {\n");
-	strcat(content, "	color:#FFFFFF;\n");
-	strcat(content, "}\n");
-	strcat(content, "table, th, td {\n");
-	strcat(content, "	border: 1px solid #555555;\n");
-	strcat(content, "	padding:0px;\n");
-	strcat(content, "	border-spacing:0;\n");
-	strcat(content, "}\n");
-	strcat(content, "#menubar {\n");
-	strcat(content, "    width: 100%;\n");
-	strcat(content, "    height: 32px;\n");
-	strcat(content, "    top: 0%;\n");
-	strcat(content, "    left: 0%;\n");
-	strcat(content, "    float: none;\n");
-	strcat(content, "    position: absolute;\n");
-	strcat(content, "    z-index: +5;\n");
-	strcat(content, "}\n");
-	strcat(content, "</style>\n");
-
-	strcat(content, "<body onload=\"init();\">\n");
-	strcat(content, MENU);
-	strcat(content, "<BR><BR>\n");
-
+	html_head(content, "MISC");
+	html_start(content, 0);
+	strcat(content, "<CENTER>\n");
 	strcat(content, "<H3>Google-Earth Livefeed and Logs</H3>\n");
 	strcat(content, "<A href=\"/index.kml\">/index.kml</A><BR>\n");
 	strcat(content, "<A href=\"/wp.kml\">/wp.kml</A> (list of all waypoints)<BR>\n");
@@ -904,15 +833,13 @@ void webserv_child_show_misc (int fd) {
 	strcat(content, "<H3>Misc</H3>\n");
 	strcat(content, "<A href=\"/modeldata\">/modeldata</A> (Model-Data / Telemetry-Data)<BR>\n");
 	strcat(content, "<A href=\"/screenshot\">/screenshot</A> (take a screenshot of the GUI)<BR>\n");
-	strcat(content, "\n");
-
-	strcat(content, "</body></html>\n");
+	strcat(content, "</CENTER>\n");
+	html_stop(content);
 
 	sprintf(buffer, header_str, (int)strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
-
 
 void webserv_child_hud_redraw (int fd) {
 	char buffer[BUFSIZE + 1];
@@ -958,13 +885,10 @@ void webserv_child_kml_wp (int fd, char *servername) {
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
 	content[0] = 0;
-
 	strcat(content, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
 	strcat(content, "<kml xmlns=\"http://earth.google.com/kml/2.2\">\n");
-
 	strcat(content, "  <Document>\n");
 	strcat(content, "    <name>Waypoint-List</name>\n");
-
 	for (n = 0; n < MAX_WAYPOINTS; n++) {
 		if (WayPoints[n].name[0] != 0) {
 			strcat(content, "    <Placemark>\n");
@@ -981,7 +905,6 @@ void webserv_child_kml_wp (int fd, char *servername) {
 			strcat(content, "    </Placemark>\n");
 		}
 	}
-
 	strcat(content, "    <Style id=\"greenLineYellowPoly\">\n");
 	strcat(content, "      <LineStyle>\n");
 	strcat(content, "        <color>7f00ff00</color>\n");
@@ -1009,7 +932,6 @@ void webserv_child_kml_wp (int fd, char *servername) {
 	strcat(content, "        </coordinates>\n");
 	strcat(content, "      </LineString>\n");
 	strcat(content, "    </Placemark>\n");
-
 	strcat(content, "  </Document>\n");
 	strcat(content, "</kml>\n");
 
@@ -1023,14 +945,11 @@ void webserv_child_kml_index (int fd, char *servername) {
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
 	content[0] = 0;
-
 	strcat(content, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
 	strcat(content, "<kml xmlns=\"http://earth.google.com/kml/2.2\">\n");
-
 	strcat(content, "  <Document>\n");
 	strcat(content, "    <name>MultiGCS</name>\n");
 	strcat(content, "    <description>Flight-Data</description>\n");
-
 	strcat(content, "	<NetworkLink>\n");
 	sprintf(tmp_str, "		<name>%s</name>\n", "Liveview");
 	strcat(content, tmp_str);
@@ -1043,7 +962,6 @@ void webserv_child_kml_index (int fd, char *servername) {
 	strcat(content, tmp_str);
 	strcat(content, "		</Link>\n");
 	strcat(content, "	</NetworkLink>\n");
-
 	strcat(content, "	<NetworkLink>\n");
 	sprintf(tmp_str, "		<name>%s</name>\n", "Pilotview");
 	strcat(content, tmp_str);
@@ -1056,7 +974,6 @@ void webserv_child_kml_index (int fd, char *servername) {
 	strcat(content, tmp_str);
 	strcat(content, "		</Link>\n");
 	strcat(content, "	</NetworkLink>\n");
-
 	strcat(content, "	<NetworkLink>\n");
 	sprintf(tmp_str, "		<name>%s</name>\n", "Waypoints");
 	strcat(content, tmp_str);
@@ -1069,10 +986,8 @@ void webserv_child_kml_index (int fd, char *servername) {
 	strcat(content, tmp_str);
 	strcat(content, "		</Link>\n");
 	strcat(content, "	</NetworkLink>\n");
-
 	strcat(content, "	<Folder>\n");
 	strcat(content, "	 <name>Logdata</name>\n");
-
 	struct tm strukt;
 	DIR *dir = NULL;
 	struct dirent *dir_entry = NULL;
@@ -1136,7 +1051,6 @@ void webserv_child_kml_live (int fd, uint8_t mode, char *servername) {
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
 	content[0] = 0;
-
 	strcat(content, "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
 	strcat(content, "<kml xmlns=\"http://earth.google.com/kml/2.2\">\n");
 	strcat(content, "	<NetworkLink>\n");
@@ -1169,7 +1083,6 @@ void webserv_child_kml_feed (int fd, uint8_t mode, char *servername) {
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
 	content[0] = 0;
-
 	strcat(content, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 	strcat(content, "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
 	strcat(content, "	<Document>\n");
@@ -1222,7 +1135,6 @@ void webserv_child_kml_feed (int fd, uint8_t mode, char *servername) {
 		strcat(content, tmp_str);
 		strcat(content, "			</Camera>\n");
 	}
-
 	strcat(content, "		</Placemark>\n");
 	strcat(content, "	</Document>\n");
 	strcat(content, "</kml>\n");
@@ -1232,58 +1144,16 @@ void webserv_child_kml_feed (int fd, uint8_t mode, char *servername) {
 	write(fd, content, strlen(content));
 }
 
-
-void webserv_child_mwii (int fd, char *servername) {
+void webserv_child_mwii (int fd, uint8_t mode) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
+	int n3 = 0;
+	int lc = 0;
 	uint16_t n = 0;
 	uint16_t n2 = 0;
 	content[0] = 0;
-	strcat(content, "<html><head><title>MultiGCS (MAVLINK)</title>\n");
-	strcat(content, "<style type=\"text/css\">\n");
-	strcat(content, "body {\n");
-	strcat(content, "	background-color:#000000;\n");
-	strcat(content, "	color:#FFFFFF;\n");
-	strcat(content, "}\n");
-	strcat(content, "a {\n");
-	strcat(content, "	color:#FFFFFF;\n");
-	strcat(content, "}\n");
-	strcat(content, "table, th, td {\n");
-	strcat(content, "	border: 1px solid #555555;\n");
-	strcat(content, "	padding:0px;\n");
-	strcat(content, "	border-spacing:0;\n");
-	strcat(content, "}\n");
-	strcat(content, "#menubar {\n");
-	strcat(content, "    width: 100%;\n");
-	strcat(content, "    height: 32px;\n");
-	strcat(content, "    top: 0%;\n");
-	strcat(content, "    left: 0%;\n");
-	strcat(content, "    float: none;\n");
-	strcat(content, "    position: absolute;\n");
-	strcat(content, "    z-index: +5;\n");
-	strcat(content, "}\n");
-	strcat(content, ".form_dark { margin:0 0 24px; text-align: left; }\n");
-	strcat(content, ".form_dark .form-input { display: block; height: 34px; padding: 6px 10px; margin-top: 2px; margin-bottom: 2px; margin-left: 2px; margin-right: 2px; font: 14px Calibri, Helvetica, Arial, sans-serif; color: #ccc; background: #444; border: 1px solid #222; outline: none; -moz-border-radius:    8px; -webkit-border-radius: 8px; border-radius:         8px; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -moz-background-clip:    padding; -webkit-background-clip: padding-box; background-clip:         padding-box; -moz-transition:    all 0.4s ease-in-out; -webkit-transition: all 0.4s ease-in-out; -o-transition:      all 0.4s ease-in-out; -ms-transition:     all 0.4s ease-in-out; transition:         all 0.4s ease-in-out; behavior: url(PIE.htc); }\n");
-	strcat(content, ".form_dark textarea.form-input { width: 400px; height: 200px; overflow: auto; }\n");
-	strcat(content, ".form_dark .form-input:focus { border: 1px solid #7fbbf9; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; }\n");
-	strcat(content, ".form_dark .form-input:-moz-ui-invalid { border: 1px solid #e00; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00;}\n");
-	strcat(content, ".form_dark .form-input.invalid { border: 1px solid #e00; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; }\n");
-	strcat(content, ".form_dark.nolabel ::-webkit-input-placeholder { color: #888;}\n");
-	strcat(content, ".form_dark.nolabel :-moz-placeholder { color: #888;}\n");
-	strcat(content, ".form_dark .form-btn { padding: 0 15px; height: 30px; font: bold 12px Calibri, Helvetica, Arial, sans-serif; text-align: center; color: #fff; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.7); cursor: pointer; border: 1px solid #0d3d6a; outline: none; position: relative; background-color: #1d83e2; background-image: -webkit-gradient(linear, left top, left bottom, from(#1d83e2), to(#0d3d6a)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #1d83e2, #0d3d6a); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #1d83e2, #0d3d6a); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #1d83e2, #0d3d6a); /* IE10 */ background-image:      -o-linear-gradient(top, #1d83e2, #0d3d6a); /* Opera 11.10+ */ background-image:         linear-gradient(top, #1d83e2, #0d3d6a); -pie-background:          linear-gradient(top, #1d83e2, #0d3d6a); /* IE6-IE9 */ -moz-border-radius:    16px; -webkit-border-radius: 16px; border-radius:         16px; -moz-box-shadow:    inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); box-shadow:         inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); -moz-background-clip:    padding; -webkit-background-clip: padding-box; background-clip:         padding-box; behavior: url(PIE.htc); }\n");
-	strcat(content, ".form_dark .form-btn:active { border: 1px solid #1d83e2; background-color: #0d3d6a; background-image: -webkit-gradient(linear, left top, left bottom, from(#0d3d6a), to(#1d83e2)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #0d3d6a, #1d83e2); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #0d3d6a, #1d83e2); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #0d3d6a, #1d83e2); /* IE10 */ background-image:      -o-linear-gradient(top, #0d3d6a, #1d83e2); /* Opera 11.10+ */ background-image:         linear-gradient(top, #0d3d6a, #1d83e2); -pie-background:          linear-gradient(top, #0d3d6a, #1d83e2); /* IE6-IE9 */ -moz-box-shadow:    inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); box-shadow:         inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); }\n");
-	strcat(content, ".form_dark input[type=submit]::-moz-focus-inner { border: 0; padding: 0;}\n");
-	strcat(content, ".form_dark label { margin-bottom: 10px; display: block; width: 300px; color: #ccc; font-size: 14px; font-weight: bold; }\n");
-	strcat(content, ".form_dark label span { font-size: 12px; color: #888; font-weight: normal; }\n");
-	strcat(content, ".form_dark.frame { padding: 20px; background-color: #343434; background-image: -webkit-gradient(linear, left top, left bottom, from(#343434), to(#141414)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #343434, #141414); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #343434, #141414); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #343434, #141414); /* IE10 */ background-image:      -o-linear-gradient(top, #343434, #141414); /* Opera 11.10+ */ background-image:         linear-gradient(top, #343434, #141414); -pie-background:          linear-gradient(top, #343434, #141414); /* IE6-IE9 */ -moz-border-radius:    8px; -webkit-border-radius: 8px; border-radius:         8px; -moz-box-shadow:    0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); box-shadow:         0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); behavior: URL(PIE.htc); }\n");
-	strcat(content, ".form_dark.tbar { padding: 0 20px 20px 20px; background-color: #3c3c3c; background-image: -webkit-gradient(linear, left top, left bottom, from(#444444), to(#343434)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #444444, #343434); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #444444, #343434); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #444444, #343434); /* IE10 */ background-image:      -o-linear-gradient(top, #444444, #343434); /* Opera 11.10+ */ background-image:         linear-gradient(top, #444444, #343434); -pie-background:          linear-gradient(top, #444444, #343434); /* IE6-IE9 */ behavior: URL(PIE.htc); }\n");
-	strcat(content, ".form_dark.tbar h3 { font: normal 18px/1 Calibri, Helvetica, Arial, sans-serif; color: #ccc; text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.7); padding: 20px; margin: 0 -20px 20px -20px; background-color: #343434; background-image: -webkit-gradient(linear, left top, left bottom, from(#343434), to(#1b1b1b)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #343434, #1b1b1b); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #343434, #1b1b1b); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #343434, #1b1b1b); /* IE10 */ background-image:      -o-linear-gradient(top, #343434, #1b1b1b); /* Opera 11.10+ */ background-image:         linear-gradient(top, #343434, #1b1b1b); -pie-background:          linear-gradient(top, #343434, #1b1b1b); /* IE6-IE9 */ -moz-border-radius:    8px 8px 0 0; -webkit-border-radius: 8px 8px 0 0; border-radius:         8px 8px 0 0; -moz-border-radius:    8px 8px 0 0; -moz-box-shadow:    inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); box-shadow:         inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); behavior: url(PIE.htc); }\n");
-	strcat(content, ".form_dark.tbar .form-input { background: #545454; }\n");
-	strcat(content, ".form_dark.tbar.nolabel ::-webkit-input-placeholder { color: #999;}\n");
-	strcat(content, ".form_dark.tbar.nolabel :-moz-placeholder { color: #999;}\n");
-	strcat(content, "</style>\n");
-
+	html_head(content, "MWII");
 	strcat(content, "<SCRIPT>\n");
 	strcat(content, "function check_value(row, col) {\n");
 	strcat(content, "	var value = document.getElementById(row + \"-\" + col).value;\n");
@@ -1292,134 +1162,91 @@ void webserv_child_mwii (int fd, char *servername) {
 	strcat(content, "	xmlHttp.send(null);\n");
 	strcat(content, "}\n");
 	strcat(content, "</SCRIPT>\n");
+	html_start(content, 0);
 
-	strcat(content, "<body>\n");
-	strcat(content, MENU);
+	strcat(content, "<TABLE class=\"main\">\n");
+	strcat(content, "<TR class=\"main\"><TD width=\"160px\" valign=\"top\">\n");
+
+	strcat(content, "<TABLE width=\"100%\">\n");
+	strcat(content, "<TR class=\"thead\"><TH>MODE</TH></TR>\n");
+	strcat(content, "<TR class=\"first\"><TD><A href=\"/mwii.html\">PID's</A></TD></TR>");
+	strcat(content, "<TR class=\"first\"><TD><A href=\"/mwii_box.html\">BOX's</A></TD></TR>");
 	strcat(content, "</TABLE>\n");
-	strcat(content, "</FORM>\n");
 
+	strcat(content, "</TD><TD valign=\"top\" width=\"20px\">&nbsp;</TD><TD valign=\"top\">\n");
 
-	strcat(content, "<BR>\n");
-	strcat(content, "<BR>\n");
-	strcat(content, "<FORM class=\"form_dark\">\n");
-	strcat(content, "<CENTER><TABLE width=\"80%\" border=\"0\">\n");
-	strcat(content, "<TR bgcolor=\"#555555\"><TH>NAME</TH><TH>P</TH><TH>I</TH><TH>D</TH></TR>\n");
-
-	int n3 = 0;
-	int lc = 0;
-	for (n = 0; n < 14; n++) {
-		if (mwi_pid_names[n][0] != 0) {
-			lc = 1 - lc;
-			if (lc == 0) {
-				strcat(content, "<TR bgcolor=\"#222222\">");
-			} else {
-				strcat(content, "<TR bgcolor=\"#313131\">");
-			}
-			sprintf(tmp_str, "<TD>%s</TD>", mwi_pid_names[n]);
-			strcat(content, tmp_str);
-			sprintf(tmp_str, "<TD align=\"center\"><input class=\"form-input\" onchange=\"check_value(%i,%i);\" id=\"%i-%i\" value=\"%0.1f\" type=\"text\"></TD>", n, 0, n, 0, (float)mwi_pid[n][0] / 10.0);
-			strcat(content, tmp_str);
-			sprintf(tmp_str, "<TD align=\"center\"><input class=\"form-input\" onchange=\"check_value(%i,%i);\" id=\"%i-%i\" value=\"%0.3f\" type=\"text\"></TD>", n, 1, n, 1, (float)mwi_pid[n][1] / 1000.0);
-			strcat(content, tmp_str);
-			sprintf(tmp_str, "<TD align=\"center\"><input class=\"form-input\" onchange=\"check_value(%i,%i);\" id=\"%i-%i\" value=\"%i\" type=\"text\"></TD>", n, 2, n, 2, mwi_pid[n][2]);
-			strcat(content, tmp_str);
-			strcat(content, "</TR>\n");
-		}
-	}
-
-	strcat(content, "</TABLE></CENTER>\n");
-	strcat(content, "</FORM>\n");
-
-	strcat(content, "<BR>\n");
-	strcat(content, "<CENTER><TABLE width=\"80%\" border=\"0\">\n");
-	strcat(content, "<TR bgcolor=\"#555555\"><TH>NAME</TH><TH colspan=\"3\">AUX1</TH><TH colspan=\"3\">AUX2</TH><TH colspan=\"3\">AUX3</TH><TH colspan=\"3\">AUX4</TH></TR>\n");
-	strcat(content, "<TR bgcolor=\"#555555\"><TH>&nbsp;</TH><TH>MIN</TH><TH>MID</TH><TH>MAX</TH><TH>MIN</TH><TH>MID</TH><TH>MAX</TH><TH>MIN</TH><TH>MID</TH><TH>MAX</TH><TH>MIN</TH><TH>MID</TH><TH>MAX</TH></TR>\n");
-
-	lc = 0;
-	for (n = 0; n < 16; n++) {
-		if (mwi_box_names[n][0] != 0) {
-			lc = 1 - lc;
-			if (lc == 0) {
-				strcat(content, "<TR bgcolor=\"#222222\">");
-			} else {
-				strcat(content, "<TR bgcolor=\"#313131\">");
-			}
-			sprintf(tmp_str, "<TD>%s</TD>", mwi_box_names[n]);
-			strcat(content, tmp_str);
-			for (n2 = 0; n2 < 12; n2++) {
-				if (mwi_set_box[n] & (1<<n2)) {
-					sprintf(tmp_str, "<TD bgcolor=\"#ABCDAB\" onClick=\"document.location.href='/mwii_set.html?%i';\">&nbsp;</TD>\n", n3);
+	if (mode == 1) {
+		strcat(content, "<TABLE width=\"100%\">\n");
+		strcat(content, "<TR class=\"thead\"><TH>NAME</TH><TH colspan=\"3\">AUX1</TH><TH colspan=\"3\">AUX2</TH><TH colspan=\"3\">AUX3</TH><TH colspan=\"3\">AUX4</TH></TR>\n");
+		strcat(content, "<TR class=\"thead\"><TH>&nbsp;</TH><TH>MIN</TH><TH>MID</TH><TH>MAX</TH><TH>MIN</TH><TH>MID</TH><TH>MAX</TH><TH>MIN</TH><TH>MID</TH><TH>MAX</TH><TH>MIN</TH><TH>MID</TH><TH>MAX</TH></TR>\n");
+		lc = 0;
+		for (n = 0; n < 16; n++) {
+			if (mwi_box_names[n][0] != 0) {
+				lc = 1 - lc;
+				if (lc == 0) {
+					strcat(content, "<TR class=\"first\">");
 				} else {
-					sprintf(tmp_str, "<TD bgcolor=\"#ABABAB\" onClick=\"document.location.href='/mwii_set.html?%i';\">&nbsp;</TD>\n", n3);
+					strcat(content, "<TR class=\"sec\">");
 				}
+				sprintf(tmp_str, "<TD>%s</TD>", mwi_box_names[n]);
 				strcat(content, tmp_str);
-				n3++;
+				for (n2 = 0; n2 < 12; n2++) {
+					if (mwi_set_box[n] & (1<<n2)) {
+						sprintf(tmp_str, "<TD class=\"mboxsel\" onClick=\"document.location.href='/mwii_set.html?%i';\">&nbsp;</TD>\n", n3);
+					} else {
+						sprintf(tmp_str, "<TD class=\"mbox\" onClick=\"document.location.href='/mwii_set.html?%i';\">&nbsp;</TD>\n", n3);
+					}
+					strcat(content, tmp_str);
+					n3++;
+				}
+				strcat(content, "</TR>\n");
 			}
-			strcat(content, "</TR>\n");
 		}
+		strcat(content, "</TABLE>\n");
+	} else {
+		strcat(content, "<TABLE width=\"100%\">\n");
+		strcat(content, "<TR class=\"thead\"><TH>NAME</TH><TH>P</TH><TH>I</TH><TH>D</TH></TR>\n");
+		n3 = 0;
+		lc = 0;
+		for (n = 0; n < 14; n++) {
+			if (mwi_pid_names[n][0] != 0) {
+				lc = 1 - lc;
+				if (lc == 0) {
+					strcat(content, "<TR class=\"first\">");
+				} else {
+					strcat(content, "<TR class=\"sec\">");
+				}
+				sprintf(tmp_str, "<TD>%s</TD>", mwi_pid_names[n]);
+				strcat(content, tmp_str);
+				sprintf(tmp_str, "<TD align=\"center\"><INPUT class=\"form-input\" onchange=\"check_value(%i,%i);\" id=\"%i-%i\" value=\"%0.1f\" type=\"text\"></TD>", n, 0, n, 0, (float)mwi_pid[n][0] / 10.0);
+				strcat(content, tmp_str);
+				sprintf(tmp_str, "<TD align=\"center\"><INPUT class=\"form-input\" onchange=\"check_value(%i,%i);\" id=\"%i-%i\" value=\"%0.3f\" type=\"text\"></TD>", n, 1, n, 1, (float)mwi_pid[n][1] / 1000.0);
+				strcat(content, tmp_str);
+				sprintf(tmp_str, "<TD align=\"center\"><INPUT class=\"form-input\" onchange=\"check_value(%i,%i);\" id=\"%i-%i\" value=\"%i\" type=\"text\"></TD>", n, 2, n, 2, mwi_pid[n][2]);
+				strcat(content, tmp_str);
+				strcat(content, "</TR>\n");
+			}
+		}
+		strcat(content, "</TABLE>\n");
 	}
-	strcat(content, "</TABLE></CENTER>\n");
+
+	strcat(content, "</TD></TR></TABLE>\n");
+	html_stop(content);
 
 	sprintf(buffer, header_str, (int)strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
 
-
-void webserv_child_mavlink (int fd, char *servername) {
+void webserv_child_mavlink (int fd, char *sub) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
 	char tmp_str2[512];
-
 	uint16_t n = 0;
+	uint16_t n2 = 0;
 	content[0] = 0;
-	strcat(content, "<html><head><title>MultiGCS (MAVLINK)</title>\n");
-	strcat(content, "<style type=\"text/css\">\n");
-	strcat(content, "body {\n");
-	strcat(content, "	background-color:#000000;\n");
-	strcat(content, "	color:#FFFFFF;\n");
-	strcat(content, "}\n");
-	strcat(content, "a {\n");
-	strcat(content, "	color:#FFFFFF;\n");
-	strcat(content, "}\n");
-	strcat(content, "table, th, td {\n");
-	strcat(content, "	border: 1px solid #555555;\n");
-	strcat(content, "	padding:0px;\n");
-	strcat(content, "	border-spacing:0;\n");
-	strcat(content, "}\n");
-	strcat(content, "#menubar {\n");
-	strcat(content, "    width: 100%;\n");
-	strcat(content, "    height: 32px;\n");
-	strcat(content, "    top: 0%;\n");
-	strcat(content, "    left: 0%;\n");
-	strcat(content, "    float: none;\n");
-	strcat(content, "    position: absolute;\n");
-	strcat(content, "    z-index: +5;\n");
-	strcat(content, "}\n");
-	strcat(content, ".form_dark { margin:0 0 24px; text-align: left; }\n");
-	strcat(content, ".form_dark .form-input { display: block; height: 34px; padding: 6px 10px; margin-top: 2px; margin-bottom: 2px; margin-left: 2px; margin-right: 2px; font: 14px Calibri, Helvetica, Arial, sans-serif; color: #ccc; background: #444; border: 1px solid #222; outline: none; -moz-border-radius:    8px; -webkit-border-radius: 8px; border-radius:         8px; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -moz-background-clip:    padding; -webkit-background-clip: padding-box; background-clip:         padding-box; -moz-transition:    all 0.4s ease-in-out; -webkit-transition: all 0.4s ease-in-out; -o-transition:      all 0.4s ease-in-out; -ms-transition:     all 0.4s ease-in-out; transition:         all 0.4s ease-in-out; behavior: url(PIE.htc); }\n");
-	strcat(content, ".form_dark textarea.form-input { width: 400px; height: 200px; overflow: auto; }\n");
-	strcat(content, ".form_dark .form-input:focus { border: 1px solid #7fbbf9; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; }\n");
-	strcat(content, ".form_dark .form-input:-moz-ui-invalid { border: 1px solid #e00; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00;}\n");
-	strcat(content, ".form_dark .form-input.invalid { border: 1px solid #e00; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; }\n");
-	strcat(content, ".form_dark.nolabel ::-webkit-input-placeholder { color: #888;}\n");
-	strcat(content, ".form_dark.nolabel :-moz-placeholder { color: #888;}\n");
-	strcat(content, ".form_dark .form-btn { padding: 0 15px; height: 30px; font: bold 12px Calibri, Helvetica, Arial, sans-serif; text-align: center; color: #fff; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.7); cursor: pointer; border: 1px solid #0d3d6a; outline: none; position: relative; background-color: #1d83e2; background-image: -webkit-gradient(linear, left top, left bottom, from(#1d83e2), to(#0d3d6a)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #1d83e2, #0d3d6a); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #1d83e2, #0d3d6a); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #1d83e2, #0d3d6a); /* IE10 */ background-image:      -o-linear-gradient(top, #1d83e2, #0d3d6a); /* Opera 11.10+ */ background-image:         linear-gradient(top, #1d83e2, #0d3d6a); -pie-background:          linear-gradient(top, #1d83e2, #0d3d6a); /* IE6-IE9 */ -moz-border-radius:    16px; -webkit-border-radius: 16px; border-radius:         16px; -moz-box-shadow:    inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); box-shadow:         inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); -moz-background-clip:    padding; -webkit-background-clip: padding-box; background-clip:         padding-box; behavior: url(PIE.htc); }\n");
-	strcat(content, ".form_dark .form-btn:active { border: 1px solid #1d83e2; background-color: #0d3d6a; background-image: -webkit-gradient(linear, left top, left bottom, from(#0d3d6a), to(#1d83e2)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #0d3d6a, #1d83e2); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #0d3d6a, #1d83e2); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #0d3d6a, #1d83e2); /* IE10 */ background-image:      -o-linear-gradient(top, #0d3d6a, #1d83e2); /* Opera 11.10+ */ background-image:         linear-gradient(top, #0d3d6a, #1d83e2); -pie-background:          linear-gradient(top, #0d3d6a, #1d83e2); /* IE6-IE9 */ -moz-box-shadow:    inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); box-shadow:         inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); }\n");
-	strcat(content, ".form_dark input[type=submit]::-moz-focus-inner { border: 0; padding: 0;}\n");
-	strcat(content, ".form_dark label { margin-bottom: 10px; display: block; width: 300px; color: #ccc; font-size: 14px; font-weight: bold; }\n");
-	strcat(content, ".form_dark label span { font-size: 12px; color: #888; font-weight: normal; }\n");
-	strcat(content, ".form_dark.frame { padding: 20px; background-color: #343434; background-image: -webkit-gradient(linear, left top, left bottom, from(#343434), to(#141414)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #343434, #141414); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #343434, #141414); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #343434, #141414); /* IE10 */ background-image:      -o-linear-gradient(top, #343434, #141414); /* Opera 11.10+ */ background-image:         linear-gradient(top, #343434, #141414); -pie-background:          linear-gradient(top, #343434, #141414); /* IE6-IE9 */ -moz-border-radius:    8px; -webkit-border-radius: 8px; border-radius:         8px; -moz-box-shadow:    0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); box-shadow:         0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); behavior: URL(PIE.htc); }\n");
-	strcat(content, ".form_dark.tbar { padding: 0 20px 20px 20px; background-color: #3c3c3c; background-image: -webkit-gradient(linear, left top, left bottom, from(#444444), to(#343434)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #444444, #343434); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #444444, #343434); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #444444, #343434); /* IE10 */ background-image:      -o-linear-gradient(top, #444444, #343434); /* Opera 11.10+ */ background-image:         linear-gradient(top, #444444, #343434); -pie-background:          linear-gradient(top, #444444, #343434); /* IE6-IE9 */ behavior: URL(PIE.htc); }\n");
-	strcat(content, ".form_dark.tbar h3 { font: normal 18px/1 Calibri, Helvetica, Arial, sans-serif; color: #ccc; text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.7); padding: 20px; margin: 0 -20px 20px -20px; background-color: #343434; background-image: -webkit-gradient(linear, left top, left bottom, from(#343434), to(#1b1b1b)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #343434, #1b1b1b); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #343434, #1b1b1b); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #343434, #1b1b1b); /* IE10 */ background-image:      -o-linear-gradient(top, #343434, #1b1b1b); /* Opera 11.10+ */ background-image:         linear-gradient(top, #343434, #1b1b1b); -pie-background:          linear-gradient(top, #343434, #1b1b1b); /* IE6-IE9 */ -moz-border-radius:    8px 8px 0 0; -webkit-border-radius: 8px 8px 0 0; border-radius:         8px 8px 0 0; -moz-border-radius:    8px 8px 0 0; -moz-box-shadow:    inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); box-shadow:         inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); behavior: url(PIE.htc); }\n");
-	strcat(content, ".form_dark.tbar .form-input { background: #545454; }\n");
-	strcat(content, ".form_dark.tbar.nolabel ::-webkit-input-placeholder { color: #999;}\n");
-	strcat(content, ".form_dark.tbar.nolabel :-moz-placeholder { color: #999;}\n");
-	strcat(content, "</style>\n");
-	strcat(content, "<body>\n");
-	strcat(content, MENU);
-
+	html_head(content, "MAVLINK");
 	strcat(content, "<SCRIPT>\n");
 	strcat(content, "function check_option(name) {\n");
 	strcat(content, "	var value = document.getElementById(name).options[document.getElementById(name).selectedIndex].value;\n");
@@ -1434,52 +1261,81 @@ void webserv_child_mavlink (int fd, char *servername) {
 	strcat(content, "	xmlHttp.send(null);\n");
 	strcat(content, "}\n");
 	strcat(content, "</SCRIPT>\n");
-
-	strcat(content, "<BR>\n");
-	strcat(content, "<BR>\n");
-	strcat(content, "<FORM class=\"form_dark\">\n");
-	strcat(content, "<CENTER><TABLE width=\"80%\" border=\"0\">\n");
-	strcat(content, "<TR bgcolor=\"#555555\"><TH>PARAM NAME (DISPLAY)</TH><TH>VALUE (FLOAT)</TH><TH>DESCRIPTION</TH><TH>MIN</TH><TH>MAX</TH></TR>\n");
-	int lc = 0;
+	html_start(content, 0);
+	strcat(content, "<TABLE class=\"main\">\n");
+	strcat(content, "<TR class=\"main\"><TD width=\"160px\" valign=\"top\">\n");
+	strcat(content, "<TABLE width=\"100%\">\n");
+	strcat(content, "<TR class=\"thead\"><TH>MODE</TH></TR>\n");
+	strcat(content, "<TR class=\"first\"><TD><A href=\"/mavlink.html\">ALL</A></TD></TR>");
+	uint8_t flag = 0;
+	char mavlink_subs[512][128];
+	for (n2 = 0; n2 < 500; n2++) {
+		mavlink_subs[n2][0] = 0;
+	}
 	for (n = 0; n < 500; n++) {
 		if (MavLinkVars[n].name[0] != 0) {
-
+			strcpy(tmp_str, MavLinkVars[n].name);
+			for (n2 = 0; n2 < strlen(tmp_str) && n2 < 6; n2++) {
+				if (tmp_str[n2] == '_') {
+					break;
+				}
+			}
+			tmp_str[n2] = 0;
+			flag = 0;
+			for (n2 = 0; n2 < 500; n2++) {
+				if (strcmp(mavlink_subs[n2], tmp_str) == 0) {
+					flag = 1;
+					break;
+				}
+			}
+			if (flag == 0) {
+				sprintf(tmp_str2, "<TR class=\"first\"><TD><A href=\"/mavlink.html?%s\">%s</A></TD></TR>", tmp_str, tmp_str);
+				strcat(content, tmp_str2);
+				for (n2 = 0; n2 < 500; n2++) {
+					if (mavlink_subs[n2][0] == 0) {
+						strcpy(mavlink_subs[n2], tmp_str);
+						break;
+					}
+				}
+			}
+		}
+	}
+	strcat(content, "</TABLE><BR><BR><BR>\n");
+	strcat(content, "</TD><TD valign=\"top\" width=\"20px\">&nbsp;</TD><TD valign=\"top\">\n");
+	strcat(content, "<TABLE width=\"100%\" border=\"0\">\n");
+	strcat(content, "<TR class=\"thead\"><TH>NAME</TH><TH>VALUE</TH><TH>DESCRIPTION</TH><TH>MIN</TH><TH>MAX</TH></TR>\n");
+	int lc = 0;
+	for (n = 0; n < 500; n++) {
+		if (MavLinkVars[n].name[0] != 0 && (sub[0] == 0 || strncmp(MavLinkVars[n].name, sub, strlen(sub)) == 0)) {
 			lc = 1 - lc;
 			if (lc == 0) {
-				strcat(content, "<TR bgcolor=\"#222222\">");
+				strcat(content, "<TR class=\"first\">");
 			} else {
-				strcat(content, "<TR bgcolor=\"#313131\">");
+				strcat(content, "<TR class=\"sec\">");
 			}
-
 			sprintf(tmp_str, "<TD>%s (%s)</TD>\n", MavLinkVars[n].name, MavLinkVars[n].display);
 			strcat(content, tmp_str);
-
 			if (MavLinkVars[n].values[0] != 0) {
 				int n2 = 0;
-				sprintf(tmp_str, "<TD><select class=\"form-input\" onchange=\"check_option('%s');\" id=\"%s\">\n", MavLinkVars[n].name, MavLinkVars[n].name);
+				sprintf(tmp_str, "<TD><SELECT class=\"form-input\" onchange=\"check_option('%s');\" id=\"%s\">\n", MavLinkVars[n].name, MavLinkVars[n].name);
 				strcat(content, tmp_str);
 				tmp_str2[0] = 0;
 				for (n2 = (int)MavLinkVars[n].min; n2 <= (int)MavLinkVars[n].max; n2++) {
 					tmp_str2[0] = 0;
 					mavlink_meta_get_option(n2, MavLinkVars[n].name, tmp_str2);
-//							if (tmp_str2[0] == 0) {
-//								sprintf(tmp_str2, "%i:???", n2);
-//							}
 					if (tmp_str2[0] != 0) {
 						if (n2 == (int)MavLinkVars[n].value) {
-							sprintf(tmp_str, "<option value=\"%i\" selected>%s</option>\n", n2, tmp_str2);
+							sprintf(tmp_str, "<OPTION value=\"%i\" selected>%s</OPTION>\n", n2, tmp_str2);
 						} else {
-							sprintf(tmp_str, "<option value=\"%i\">%s</option>\n", n2, tmp_str2);
+							sprintf(tmp_str, "<OPTION value=\"%i\">%s</OPTION>\n", n2, tmp_str2);
 						}
 						strcat(content, tmp_str);
 					}
 				}
-				strcat(content, "</select></TD>");
+				strcat(content, "</SELECT></TD>");
 			} else if (MavLinkVars[n].bits[0] != 0) {
-
 				sprintf(tmp_str, "<TD>\n");
 				strcat(content, tmp_str);
-
 				int n2 = 0;
 				strcat(content, "<SCRIPT>\n");
 				sprintf(tmp_str, "function check_%s() {\n", MavLinkVars[n].name);
@@ -1503,24 +1359,22 @@ void webserv_child_mavlink (int fd, char *servername) {
 				strcat(content, "	xmlHttp.send(null);\n");
 				strcat(content, "}\n");
 				strcat(content, "</SCRIPT>\n");
-
 				tmp_str2[0] = 0;
 				for (n2 = (int)MavLinkVars[n].min; n2 <= (int)MavLinkVars[n].max; n2++) {
 					tmp_str2[0] = 0;
 					mavlink_meta_get_bits(n2, MavLinkVars[n].name, tmp_str2);
 					if (tmp_str2[0] != 0) {
 						if ((int)MavLinkVars[n].value & (1<<n2)) {
-							sprintf(tmp_str, "<NOBR><input class=\"form-input\" onchange=\"check_%s();\" type=\"checkbox\" name=\"%s-%s\" value=\"%i\" checked>%s</NOBR>\n", MavLinkVars[n].name, MavLinkVars[n].name, tmp_str2, n2, tmp_str2);
+							sprintf(tmp_str, "<NOBR><INPUT class=\"form-input\" onchange=\"check_%s();\" type=\"checkbox\" name=\"%s-%s\" value=\"%i\" checked>%s</NOBR>\n", MavLinkVars[n].name, MavLinkVars[n].name, tmp_str2, n2, tmp_str2);
 						} else {
-							sprintf(tmp_str, "<NOBR><input class=\"form-input\" onchange=\"check_%s();\" type=\"checkbox\" name=\"%s-%s\" value=\"%i\">%s</NOBR>\n", MavLinkVars[n].name, MavLinkVars[n].name, tmp_str2, n2, tmp_str2);
+							sprintf(tmp_str, "<NOBR><INPUT class=\"form-input\" onchange=\"check_%s();\" type=\"checkbox\" name=\"%s-%s\" value=\"%i\">%s</NOBR>\n", MavLinkVars[n].name, MavLinkVars[n].name, tmp_str2, n2, tmp_str2);
 						}
 						strcat(content, tmp_str);
 					}
 				}
-
 				strcat(content, "</TD>");
 			} else {
-				sprintf(tmp_str, "<TD><input class=\"form-input\" onchange=\"check_value('%s');\" id=\"%s\" value=\"%f\" type=\"text\"></TD>\n", MavLinkVars[n].name, MavLinkVars[n].name, MavLinkVars[n].value);
+				sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('%s');\" id=\"%s\" value=\"%f\" type=\"text\"></TD>\n", MavLinkVars[n].name, MavLinkVars[n].name, MavLinkVars[n].value);
 				strcat(content, tmp_str);
 			}
 			sprintf(tmp_str, "<TD>%s&nbsp;</TD><TD>%i</TD><TD>%i</TD></TR>\n", MavLinkVars[n].desc, (int)MavLinkVars[n].min, (int)MavLinkVars[n].max);
@@ -1528,74 +1382,26 @@ void webserv_child_mavlink (int fd, char *servername) {
 		}
 	}
 	strcat(content, "</TABLE>\n");
-	strcat(content, "</FORM>\n");
+	strcat(content, "</TD></TR></TABLE>\n");
+	html_stop(content);
 
 	sprintf(buffer, header_str, (int)strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
 
-
-
-void webserv_child_kml_waypoints (int fd, char *servername) {
+void webserv_child_waypoints (int fd, char *servername) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
 	content[0] = 0;
-
 	int n = 0;
 	int n2 = 0;
 	float last_lat = 0.0;
 	float last_lon = 0.0;
 	float last_alt = 0.0;
 	float alt = 0.0;
-
-	strcat(content, "<html><head><title>MultiGCS (WAYPOINTS)</title>\n");
-	strcat(content, "<style type=\"text/css\">\n");
-	strcat(content, "body {\n");
-	strcat(content, "	background-color:#000000;\n");
-	strcat(content, "	color:#FFFFFF;\n");
-	strcat(content, "}\n");
-	strcat(content, "a {\n");
-	strcat(content, "	color:#FFFFFF;\n");
-	strcat(content, "}\n");
-	strcat(content, "table, th, td {\n");
-	strcat(content, "	border: 1px solid #555555;\n");
-	strcat(content, "	padding:0px;\n");
-	strcat(content, "	border-spacing:0;\n");
-	strcat(content, "}\n");
-	strcat(content, "#menubar {\n");
-	strcat(content, "    width: 100%;\n");
-	strcat(content, "    height: 32px;\n");
-	strcat(content, "    top: 0%;\n");
-	strcat(content, "    left: 0%;\n");
-	strcat(content, "    float: none;\n");
-	strcat(content, "    position: absolute;\n");
-	strcat(content, "    z-index: +5;\n");
-	strcat(content, "}\n");
-	strcat(content, ".form_dark { margin:0 0 24px; text-align: left; }\n");
-	strcat(content, ".form_dark .form-input { display: block; height: 34px; padding: 6px 10px; margin-top: 2px; margin-bottom: 2px; margin-left: 2px; margin-right: 2px; font: 14px Calibri, Helvetica, Arial, sans-serif; color: #ccc; background: #444; border: 1px solid #222; outline: none; -moz-border-radius:    8px; -webkit-border-radius: 8px; border-radius:         8px; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -moz-background-clip:    padding; -webkit-background-clip: padding-box; background-clip:         padding-box; -moz-transition:    all 0.4s ease-in-out; -webkit-transition: all 0.4s ease-in-out; -o-transition:      all 0.4s ease-in-out; -ms-transition:     all 0.4s ease-in-out; transition:         all 0.4s ease-in-out; behavior: url(PIE.htc); }\n");
-	strcat(content, ".form_dark textarea.form-input { width: 400px; height: 200px; overflow: auto; }\n");
-	strcat(content, ".form_dark .form-input:focus { border: 1px solid #7fbbf9; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #7fbbf9; }\n");
-	strcat(content, ".form_dark .form-input:-moz-ui-invalid { border: 1px solid #e00; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00;}\n");
-	strcat(content, ".form_dark .form-input.invalid { border: 1px solid #e00; -moz-box-shadow:    inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; -webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; box-shadow:         inset 0 0 1px rgba(0, 0, 0, 0.7), 0 0 3px #e00; }\n");
-	strcat(content, ".form_dark.nolabel ::-webkit-input-placeholder { color: #888;}\n");
-	strcat(content, ".form_dark.nolabel :-moz-placeholder { color: #888;}\n");
-	strcat(content, ".form_dark .form-btn { padding: 0 15px; height: 30px; font: bold 12px Calibri, Helvetica, Arial, sans-serif; text-align: center; color: #fff; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.7); cursor: pointer; border: 1px solid #0d3d6a; outline: none; position: relative; background-color: #1d83e2; background-image: -webkit-gradient(linear, left top, left bottom, from(#1d83e2), to(#0d3d6a)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #1d83e2, #0d3d6a); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #1d83e2, #0d3d6a); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #1d83e2, #0d3d6a); /* IE10 */ background-image:      -o-linear-gradient(top, #1d83e2, #0d3d6a); /* Opera 11.10+ */ background-image:         linear-gradient(top, #1d83e2, #0d3d6a); -pie-background:          linear-gradient(top, #1d83e2, #0d3d6a); /* IE6-IE9 */ -moz-border-radius:    16px; -webkit-border-radius: 16px; border-radius:         16px; -moz-box-shadow:    inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); box-shadow:         inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 2px rgba(0, 0, 0, 0.7); -moz-background-clip:    padding; -webkit-background-clip: padding-box; background-clip:         padding-box; behavior: url(PIE.htc); }\n");
-	strcat(content, ".form_dark .form-btn:active { border: 1px solid #1d83e2; background-color: #0d3d6a; background-image: -webkit-gradient(linear, left top, left bottom, from(#0d3d6a), to(#1d83e2)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #0d3d6a, #1d83e2); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #0d3d6a, #1d83e2); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #0d3d6a, #1d83e2); /* IE10 */ background-image:      -o-linear-gradient(top, #0d3d6a, #1d83e2); /* Opera 11.10+ */ background-image:         linear-gradient(top, #0d3d6a, #1d83e2); -pie-background:          linear-gradient(top, #0d3d6a, #1d83e2); /* IE6-IE9 */ -moz-box-shadow:    inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); -webkit-box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); box-shadow:         inset 0 0 2px rgba(0, 0, 0, 0.7), 0 1px 0 rgba(255, 255, 255, 0.1); }\n");
-	strcat(content, ".form_dark input[type=submit]::-moz-focus-inner { border: 0; padding: 0;}\n");
-	strcat(content, ".form_dark label { margin-bottom: 10px; display: block; width: 300px; color: #ccc; font-size: 14px; font-weight: bold; }\n");
-	strcat(content, ".form_dark label span { font-size: 12px; color: #888; font-weight: normal; }\n");
-	strcat(content, ".form_dark.frame { padding: 20px; background-color: #343434; background-image: -webkit-gradient(linear, left top, left bottom, from(#343434), to(#141414)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #343434, #141414); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #343434, #141414); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #343434, #141414); /* IE10 */ background-image:      -o-linear-gradient(top, #343434, #141414); /* Opera 11.10+ */ background-image:         linear-gradient(top, #343434, #141414); -pie-background:          linear-gradient(top, #343434, #141414); /* IE6-IE9 */ -moz-border-radius:    8px; -webkit-border-radius: 8px; border-radius:         8px; -moz-box-shadow:    0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); box-shadow:         0 1px 2px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.3); behavior: URL(PIE.htc); }\n");
-	strcat(content, ".form_dark.tbar { padding: 0 20px 20px 20px; background-color: #3c3c3c; background-image: -webkit-gradient(linear, left top, left bottom, from(#444444), to(#343434)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #444444, #343434); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #444444, #343434); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #444444, #343434); /* IE10 */ background-image:      -o-linear-gradient(top, #444444, #343434); /* Opera 11.10+ */ background-image:         linear-gradient(top, #444444, #343434); -pie-background:          linear-gradient(top, #444444, #343434); /* IE6-IE9 */ behavior: URL(PIE.htc); }\n");
-	strcat(content, ".form_dark.tbar h3 { font: normal 18px/1 Calibri, Helvetica, Arial, sans-serif; color: #ccc; text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.7); padding: 20px; margin: 0 -20px 20px -20px; background-color: #343434; background-image: -webkit-gradient(linear, left top, left bottom, from(#343434), to(#1b1b1b)); /* Saf4+, Chrome */ background-image: -webkit-linear-gradient(top, #343434, #1b1b1b); /* Chrome 10+, Saf5.1+, iOS 5+ */ background-image:    -moz-linear-gradient(top, #343434, #1b1b1b); /* FF3.6 */ background-image:     -ms-linear-gradient(top, #343434, #1b1b1b); /* IE10 */ background-image:      -o-linear-gradient(top, #343434, #1b1b1b); /* Opera 11.10+ */ background-image:         linear-gradient(top, #343434, #1b1b1b); -pie-background:          linear-gradient(top, #343434, #1b1b1b); /* IE6-IE9 */ -moz-border-radius:    8px 8px 0 0; -webkit-border-radius: 8px 8px 0 0; border-radius:         8px 8px 0 0; -moz-border-radius:    8px 8px 0 0; -moz-box-shadow:    inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); box-shadow:         inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 1px rgba(0, 0, 0, 0.7); behavior: url(PIE.htc); }\n");
-	strcat(content, ".form_dark.tbar .form-input { background: #545454; }\n");
-	strcat(content, ".form_dark.tbar.nolabel ::-webkit-input-placeholder { color: #999;}\n");
-	strcat(content, ".form_dark.tbar.nolabel :-moz-placeholder { color: #999;}\n");
-	strcat(content, "</style>\n");
-	strcat(content, "<body>\n");
-	strcat(content, MENU);
-
+	html_head(content, "WAYPOINTS");
 	strcat(content, "<SCRIPT>\n");
 	strcat(content, "function check_option(wp, name) {\n");
 	strcat(content, "	var value = document.getElementById(wp + '-' + name).options[document.getElementById(wp + '-' + name).selectedIndex].value;\n");
@@ -1610,97 +1416,86 @@ void webserv_child_kml_waypoints (int fd, char *servername) {
 	strcat(content, "	xmlHttp.send(null);\n");
 	strcat(content, "}\n");
 	strcat(content, "</SCRIPT>\n");
-
-
-	strcat(content, "<BR>\n");
-	strcat(content, "<BR>\n");
-	strcat(content, "<FORM class=\"form_dark\">\n");
-	strcat(content, "<CENTER><TABLE width=\"80%\" border=\"0\">\n");
-	strcat(content, "<TR bgcolor=\"#555555\"><TH>ACTIVE</TH><TH>NAME</TH><TH>TYPE</TH><TH>LONG</TH><TH>LAT</TH><TH>ALT</TH><TH>DIST</TH><TH>ACTION</TH><TH>MAP</TH></TR>\n");
+	html_start(content, 0);
+	strcat(content, "<CENTER><TABLE width=\"90%\" border=\"0\">\n");
+	strcat(content, "<TR class=\"thead\"><TH>ACTIVE</TH><TH>NAME</TH><TH>TYPE</TH><TH>LONG</TH><TH>LAT</TH><TH>ALT</TH><TH>DIST</TH><TH>ACTION</TH><TH>MAP</TH></TR>\n");
 	int lc = 0;
 	for (n = 0; n < MAX_WAYPOINTS; n++) {
 		if (WayPoints[n].p_lat != 0.0) {
 			lc = 1 - lc;
 			if (lc == 0) {
-				strcat(content, "<TR bgcolor=\"#222222\">\n");
+				strcat(content, "<TR class=\"first\">\n");
 			} else {
-				strcat(content, "<TR bgcolor=\"#313131\">\n");
+				strcat(content, "<TR class=\"sec\">\n");
 			}
 			if (n == waypoint_active) {
 				strcat(content, "<TD bgcolor=\"#002200\">&nbsp;</TD>");
 			} else {
 				strcat(content, "<TD>&nbsp;</TD>");
 			}
-
-			sprintf(tmp_str, "<TD><input class=\"form-input\" onchange=\"check_value('wp%i', 'NAME');\" id=\"wp%i-NAME\" value=\"%s\" type=\"text\"></TD>", n, n, WayPoints[n].name);
+			sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('wp%i', 'NAME');\" id=\"wp%i-NAME\" value=\"%s\" type=\"text\"></TD>", n, n, WayPoints[n].name);
 			strcat(content, tmp_str);
-
 			if (n != 0) {
-
-				sprintf(tmp_str, "<TD><select class=\"form-input\" onchange=\"check_option('wp%i', 'TYPE');\" id=\"wp%i-TYPE\">\n", n, n);
+				sprintf(tmp_str, "<TD><SELECT class=\"form-input\" onchange=\"check_option('wp%i', 'TYPE');\" id=\"wp%i-TYPE\">\n", n, n);
 				strcat(content, tmp_str);
 				if (WayPoints[n].command[0] == 0) {
-					sprintf(tmp_str, " <option value=\"NONE\" selected>NONE</option>\n");
+					sprintf(tmp_str, " <OPTION value=\"NONE\" selected>NONE</OPTION>\n");
 				} else {
-					sprintf(tmp_str, " <option value=\"NONE\">NONE</option>\n");
+					sprintf(tmp_str, " <OPTION value=\"NONE\">NONE</OPTION>\n");
 				}
 				strcat(content, tmp_str);
 				if (strcmp(WayPoints[n].command, "WAYPOINT") == 0) {
-					sprintf(tmp_str, " <option value=\"WAYPOINT\" selected>WAYPOINT</option>\n");
+					sprintf(tmp_str, " <OPTION value=\"WAYPOINT\" selected>WAYPOINT</OPTION>\n");
 				} else {
-					sprintf(tmp_str, " <option value=\"WAYPOINT\">WAYPOINT</option>\n");
+					sprintf(tmp_str, " <OPTION value=\"WAYPOINT\">WAYPOINT</OPTION>\n");
 				}
 				strcat(content, tmp_str);
 				if (strcmp(WayPoints[n].command, "LOITER_UNLIM") == 0) {
-					sprintf(tmp_str, " <option value=\"LOITER_UNLIM\" selected>LOITER_UNLIM</option>\n");
+					sprintf(tmp_str, " <OPTION value=\"LOITER_UNLIM\" selected>LOITER_UNLIM</OPTION>\n");
 				} else {
-					sprintf(tmp_str, " <option value=\"LOITER_UNLIM\">LOITER_UNLIM</option>\n");
+					sprintf(tmp_str, " <OPTION value=\"LOITER_UNLIM\">LOITER_UNLIM</OPTION>\n");
 				}
 				strcat(content, tmp_str);
 				if (strcmp(WayPoints[n].command, "LOITER_TURNS") == 0) {
-					sprintf(tmp_str, " <option value=\"LOITER_TURNS\" selected>LOITER_TURNS</option>\n");
+					sprintf(tmp_str, " <OPTION value=\"LOITER_TURNS\" selected>LOITER_TURNS</OPTION>\n");
 				} else {
-					sprintf(tmp_str, " <option value=\"LOITER_TURNS\">LOITER_TURNS</option>\n");
+					sprintf(tmp_str, " <OPTION value=\"LOITER_TURNS\">LOITER_TURNS</OPTION>\n");
 				}
 				strcat(content, tmp_str);
 				if (strcmp(WayPoints[n].command, "LOITER_TIME") == 0) {
-					sprintf(tmp_str, " <option value=\"LOITER_TIME\" selected>LOITER_TIME</option>\n");
+					sprintf(tmp_str, " <OPTION value=\"LOITER_TIME\" selected>LOITER_TIME</OPTION>\n");
 				} else {
-					sprintf(tmp_str, " <option value=\"LOITER_TIME\">LOITER_TIME</option>\n");
+					sprintf(tmp_str, " <OPTION value=\"LOITER_TIME\">LOITER_TIME</OPTION>\n");
 				}
 				strcat(content, tmp_str);
 				if (strcmp(WayPoints[n].command, "RTL") == 0) {
-					sprintf(tmp_str, " <option value=\"RTL\" selected>RTL</option>\n");
+					sprintf(tmp_str, " <OPTION value=\"RTL\" selected>RTL</OPTION>\n");
 				} else {
-					sprintf(tmp_str, " <option value=\"RTL\">RTL</option>\n");
+					sprintf(tmp_str, " <OPTION value=\"RTL\">RTL</OPTION>\n");
 				}
 				strcat(content, tmp_str);
 				if (strcmp(WayPoints[n].command, "LAND") == 0) {
-					sprintf(tmp_str, " <option value=\"LAND\" selected>LAND</option>\n");
+					sprintf(tmp_str, " <OPTION value=\"LAND\" selected>LAND</OPTION>\n");
 				} else {
-					sprintf(tmp_str, " <option value=\"LAND\">LAND</option>\n");
+					sprintf(tmp_str, " <OPTION value=\"LAND\">LAND</OPTION>\n");
 				}
 				strcat(content, tmp_str);
 				if (strcmp(WayPoints[n].command, "TAKEOFF") == 0) {
-					sprintf(tmp_str, " <option value=\"TAKEOFF\" selected>TAKEOFF</option>\n");
+					sprintf(tmp_str, " <OPTION value=\"TAKEOFF\" selected>TAKEOFF</OPTION>\n");
 				} else {
-					sprintf(tmp_str, " <option value=\"TAKEOFF\">TAKEOFF</option>\n");
+					sprintf(tmp_str, " <OPTION value=\"TAKEOFF\">TAKEOFF</OPTION>\n");
 				}
 				strcat(content, tmp_str);
-				strcat(content, "</select></TD>");
+				strcat(content, "</SELECT></TD>");
 			} else {
 				strcat(content, "<TD>&nbsp;</TD>");
 			}
-
-			sprintf(tmp_str, "<TD><input class=\"form-input\" onchange=\"check_value('wp%i', 'LAT');\" id=\"wp%i-LAT\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_lat);
+			sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('wp%i', 'LAT');\" id=\"wp%i-LAT\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_lat);
 			strcat(content, tmp_str);
-
-			sprintf(tmp_str, "<TD><input class=\"form-input\" onchange=\"check_value('wp%i', 'LONG');\" id=\"wp%i-LONG\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_long);
+			sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('wp%i', 'LONG');\" id=\"wp%i-LONG\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_long);
 			strcat(content, tmp_str);
-
-			sprintf(tmp_str, "<TD><input class=\"form-input\" onchange=\"check_value('wp%i', 'ALT');\" id=\"wp%i-ALT\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_alt);
+			sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('wp%i', 'ALT');\" id=\"wp%i-ALT\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_alt);
 			strcat(content, tmp_str);
-
 			float distance1 = 0.0;
 			float distance2 = 0.0;
 			float winkel_up = 0.0;
@@ -1741,19 +1536,15 @@ void webserv_child_kml_waypoints (int fd, char *servername) {
 			n2 = n + 1;
 		}
 	}
-
 	sprintf(tmp_str, "<TR bgcolor=\"#111111\"><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD><A href=\"/waypoint_set?wp%i&ADD=1\">ADD</A></TD><TD>&nbsp;</TD></TR>", n2);
 	strcat(content, tmp_str);
 	strcat(content, "</TABLE></CENTER>\n");
-	strcat(content, "</FORM>\n");
-	strcat(content, "</HTML>\n");
+	html_stop(content);
 
 	sprintf(buffer, header_str, (int)strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
-
 }
-
 
 void webserv_child_kml_logfiles (int fd, char *servername, char *buffer2) {
 	char buffer[BUFSIZE + 1];
@@ -1774,40 +1565,11 @@ void webserv_child_kml_logfiles (int fd, char *servername, char *buffer2) {
 		struct stat statbuf;
 		char new_path[400];
 		char directory[400];
-
 		content[0] = 0;
-		strcat(content, "<html><head><title>MultiGCS (LOGFILES)</title>\n");
-		strcat(content, "<style type=\"text/css\">\n");
-		strcat(content, "body {\n");
-		strcat(content, "	background-color:#000000;\n");
-		strcat(content, "	color:#FFFFFF;\n");
-		strcat(content, "}\n");
-		strcat(content, "a {\n");
-		strcat(content, "	color:#FFFFFF;\n");
-		strcat(content, "}\n");
-		strcat(content, "table, th, td {\n");
-		strcat(content, "	border: 1px solid #555555;\n");
-		strcat(content, "	padding:0px;\n");
-		strcat(content, "	border-spacing:0;\n");
-		strcat(content, "}\n");
-		strcat(content, "#menubar {\n");
-		strcat(content, "    width: 100%;\n");
-		strcat(content, "    height: 32px;\n");
-		strcat(content, "    top: 0%;\n");
-		strcat(content, "    left: 0%;\n");
-		strcat(content, "    float: none;\n");
-		strcat(content, "    position: absolute;\n");
-		strcat(content, "    z-index: +5;\n");
-		strcat(content, "}\n");
-		strcat(content, "</style>\n");
-
-		strcat(content, "<body>\n");
-		strcat(content, MENU);
-		strcat(content, "<BR><BR>\n");
-
-		strcat(content, "<CENTER><TABLE width=\"80%\" border=\"0\">\n");
-		strcat(content, "<TR bgcolor=\"#555555\"><TH>DATE</TH><TH>SIZE</TH><TH>FORMAT</TH></TR>\n");
-
+		html_head(content, "LOGFILES");
+		html_start(content, 0);
+		strcat(content, "<CENTER><TABLE width=\"90%\" border=\"0\">\n");
+		strcat(content, "<TR class=\"thead\"><TH>DATE</TH><TH>SIZE</TH><TH>FORMAT</TH></TR>\n");
 		int lc = 0;
 		sprintf(directory, "%s/.multigcs/logs", getenv("HOME"));
 		if ((dir = opendir(directory)) != NULL) {
@@ -1817,14 +1579,12 @@ void webserv_child_kml_logfiles (int fd, char *servername, char *buffer2) {
 					if (lstat(new_path, &statbuf) == 0) {
 						if (statbuf.st_mode&S_IFDIR) {
 						} else {
-
 							lc = 1 - lc;
 							if (lc == 0) {
-								strcat(content, "<TR bgcolor=\"#222222\">");
+								strcat(content, "<TR class=\"first\">");
 							} else {
-								strcat(content, "<TR bgcolor=\"#313131\">");
+								strcat(content, "<TR class=\"sec\">");
 							}
-
 							time_t liczba_sekund = (time_t)(atoi(dir_entry->d_name));
 							localtime_r(&liczba_sekund, &strukt);
 							FILE *f;
@@ -1849,11 +1609,8 @@ void webserv_child_kml_logfiles (int fd, char *servername, char *buffer2) {
 			closedir(dir);
 			dir = NULL;
 		}
-
 		strcat(content, "</TABLE>\n");
-		strcat(content, "</FORM>\n");
-
-		strcat(content, "</body>\n");
+		html_stop(content);
 
 		sprintf(buffer, header_str, (int)strlen(content), "text/html");
 		write(fd, buffer, strlen(buffer));
@@ -1872,14 +1629,1203 @@ void webserv_child_kml_logfiles (int fd, char *servername, char *buffer2) {
 	}
 }
 
-extern uint8_t get_background_model (char *filename);
+
+
+void gcssetup_set (char *name, char *value) {
+	if (strcmp("gcs_gps_port", name) == 0) {
+		strcpy(setup.gcs_gps_port, value);
+	}
+	if (strcmp("gcs_gps_baud", name) == 0) {
+		setup.gcs_gps_baud = atoi(value);
+	}
+	if (strcmp("rcflow_port", name) == 0) {
+		strcpy(setup.rcflow_port, value);
+	}
+	if (strcmp("rcflow_baud", name) == 0) {
+		setup.rcflow_baud = atoi(value);
+	}
+	if (strcmp("telemetry_port", name) == 0) {
+		strcpy(setup.telemetry_port, value);
+	}
+	if (strcmp("telemetry_baud", name) == 0) {
+		setup.telemetry_baud = atoi(value);
+	}
+	if (strcmp("jeti_port", name) == 0) {
+		strcpy(setup.jeti_port, value);
+	}
+	if (strcmp("jeti_baud", name) == 0) {
+		setup.jeti_baud = atoi(value);
+	}
+	if (strcmp("frsky_port", name) == 0) {
+		strcpy(setup.frsky_port, value);
+	}
+	if (strcmp("frsky_baud", name) == 0) {
+		setup.frsky_baud = atoi(value);
+	}
+	if (strcmp("tracker_port", name) == 0) {
+		strcpy(setup.tracker_port, value);
+	}
+	if (strcmp("tracker_baud", name) == 0) {
+		setup.tracker_baud = atoi(value);
+	}
+	if (strcmp("waypoint_active", name) == 0) {
+		setup.waypoint_active = atoi(value);
+	}
+	if (strcmp("fullscreen", name) == 0) {
+		setup.fullscreen = atoi(value);
+	}
+	if (strcmp("borderless", name) == 0) {
+		setup.borderless = atoi(value);
+	}
+	if (strcmp("view_mode", name) == 0) {
+		setup.view_mode = atoi(value);
+	}
+	if (strcmp("hud_view_screen", name) == 0) {
+		setup.hud_view_screen = atoi(value);
+	}
+	if (strcmp("hud_view_stab", name) == 0) {
+		setup.hud_view_stab = atoi(value);
+	}
+	if (strcmp("hud_view_map", name) == 0) {
+		setup.hud_view_map = atoi(value);
+	}
+	if (strcmp("hud_view_video", name) == 0) {
+		setup.hud_view_video = atoi(value);
+	}
+	if (strcmp("hud_view_tunnel", name) == 0) {
+		setup.hud_view_tunnel = atoi(value);
+	}
+	if (strcmp("hud_view_mark", name) == 0) {
+		setup.hud_view_mark = atoi(value);
+	}
+	if (strcmp("contrast", name) == 0) {
+		setup.contrast = atoi(value);
+	}
+	if (strcmp("screen_w", name) == 0) {
+		setup.screen_w = atoi(value);
+	}
+	if (strcmp("screen_h", name) == 0) {
+		setup.screen_h = atoi(value);
+	}
+	if (strcmp("screen_border_x", name) == 0) {
+		setup.screen_border_x = atoi(value);
+	}
+	if (strcmp("screen_border_y", name) == 0) {
+		setup.screen_border_y = atoi(value);
+	}
+	if (strcmp("keep_ratio", name) == 0) {
+		setup.keep_ratio = atof(value);
+	}
+	if (strcmp("touchscreen_device", name) == 0) {
+		strcpy(setup.touchscreen_device, value);
+	}
+	if (strcmp("calibration_mode", name) == 0) {
+		setup.calibration_mode = atoi(value);
+	}
+	if (strcmp("calibration_min_x", name) == 0) {
+		setup.calibration_min_x = atoi(value);
+	}
+	if (strcmp("calibration_max_x", name) == 0) {
+		setup.calibration_max_x = atoi(value);
+	}
+	if (strcmp("calibration_min_y", name) == 0) {
+		setup.calibration_min_y = atoi(value);
+	}
+	if (strcmp("calibration_max_y", name) == 0) {
+		setup.calibration_max_y = atoi(value);
+	}
+	if (strcmp("speak", name) == 0) {
+		setup.speak = atoi(value);
+	}
+	if (strcmp("volt_min", name) == 0) {
+		setup.volt_min = atof(value);
+	}
+	if (strcmp("videocapture_device", name) == 0) {
+		strcpy(setup.videocapture_device, value);
+	}
+	if (strcmp("videocapture_width", name) == 0) {
+		setup.videocapture_width = atoi(value);
+	}
+	if (strcmp("videocapture_height", name) == 0) {
+		setup.videocapture_height = atoi(value);
+	}
+	if (strcmp("webport", name) == 0) {
+		setup.webport = atoi(value);
+	}
+	if (strcmp("gearth_interval", name) == 0) {
+		setup.gearth_interval = atof(value);
+	}
+}
+
+void webserv_child_gcssetup (int fd, uint8_t mode) {
+	DIR *dir = NULL;
+	struct dirent *dir_entry = NULL;
+	struct stat statbuf;
+	char buffer[BUFSIZE + 1];
+	char content[BUFSIZE + 1];
+	char new_path[400];
+	char tmp_str[100];
+	uint8_t flag = 0;
+	content[0] = 0;
+	html_head(content, "SETUP");
+	strcat(content, "<SCRIPT>\n");
+	strcat(content, "function check_option(name) {\n");
+	strcat(content, "	var value = document.getElementById(name).options[document.getElementById(name).selectedIndex].value;\n");
+	strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
+	strcat(content, "	xmlHttp.open(\"GET\", \"/gcssetup.html?\" + name + \"=\" + value, true);\n");
+	strcat(content, "	xmlHttp.send(null);\n");
+	strcat(content, "}\n");
+	strcat(content, "function check_box(name) {\n");
+	strcat(content, "	if (document.getElementById(name).checked) {\n");
+	strcat(content, "		value = 1;\n");
+	strcat(content, "	} else {\n");
+	strcat(content, "		value = 0;\n");
+	strcat(content, "	}\n");
+	strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
+	strcat(content, "	xmlHttp.open(\"GET\", \"/gcssetup.html?\" + name + \"=\" + value, true);\n");
+	strcat(content, "	xmlHttp.send(null);\n");
+	strcat(content, "}\n");
+	strcat(content, "function check_value(name) {\n");
+	strcat(content, "	var value = document.getElementById(name).value;\n");
+	strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
+	strcat(content, "	xmlHttp.open(\"GET\", \"/gcssetup.html?\" + name + \"=\" + value, true);\n");
+	strcat(content, "	xmlHttp.send(null);\n");
+	strcat(content, "}\n");
+	strcat(content, "</SCRIPT>\n");
+	html_start(content, 0);
+
+	strcat(content, "<TABLE class=\"main\">\n");
+	strcat(content, "<TR class=\"main\"><TD width=\"160px\" valign=\"top\">\n");
+
+	strcat(content, "<TABLE width=\"100%\">\n");
+	strcat(content, "<TR class=\"thead\"><TH>MODE</TH></TR>\n");
+	strcat(content, "<TR class=\"first\"><TD><A href=\"/gcssetup.html\">Ports</A></TD></TR>");
+	strcat(content, "<TR class=\"first\"><TD><A href=\"/gcssetup1.html\">GUI</A></TD></TR>");
+	strcat(content, "<TR class=\"first\"><TD><A href=\"/gcssetup2.html\">TOUCH</A></TD></TR>");
+	strcat(content, "<TR class=\"first\"><TD><A href=\"/gcssetup3.html\">ETC</A></TD></TR>");
+	strcat(content, "</TABLE>\n");
+
+	strcat(content, "</TD><TD valign=\"top\" width=\"20px\">&nbsp;</TD><TD valign=\"top\">\n");
+
+	strcat(content, "<TABLE width=\"100%\">\n");
+	strcat(content, "<TR class=\"thead\"><TH>NAME</TH><TH>VALUE</TH></TR>\n");
+	int lc = 0;
+
+
+	if (mode == 0) {
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>gcs_gps_port</TD>");
+		sprintf(tmp_str, " <TD><SELECT class=\"form-input\" onchange=\"check_option('gcs_gps_port');\" id=\"gcs_gps_port\">\n");
+		strcat(content, tmp_str);
+		flag = 0;
+		if ((dir = opendir("/dev")) != NULL) {
+			while ((dir_entry = readdir(dir)) != 0) {
+				if (dir_entry->d_name[0] != '.') {
+					sprintf(new_path, "%s/%s", "/dev", dir_entry->d_name);
+					if (lstat(new_path, &statbuf) == 0) {
+						if ( statbuf.st_mode & S_IFDIR) {
+						} else {
+							if (strstr(new_path, "ttyS") > 0 || strstr(new_path, "ttyUSB") > 0 || strstr(new_path, "ttyACM") > 0) {
+								if (strcmp(new_path, setup.gcs_gps_port) == 0) {
+									sprintf(tmp_str, " <OPTION value=\"%s\" selected>%s</OPTION>\n", new_path, new_path);
+									flag = 1;
+								} else {
+									sprintf(tmp_str, " <OPTION value=\"%s\">%s</OPTION>\n", new_path, new_path);
+								}
+								strcat(content, tmp_str);
+							}
+						}
+					}
+				}
+			}
+			closedir(dir);
+			dir = NULL;
+		}
+		if (flag == 0) {
+			sprintf(tmp_str, " <OPTION value=\"%s\" selected>%s</OPTION>\n", setup.gcs_gps_port, setup.gcs_gps_port);
+			strcat(content, tmp_str);
+		}
+		strcat(content, " </SELECT></TD>\n");
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>gcs_gps_baud</TD>");
+		flag = 0;
+		strcat(content, " <TD><SELECT class=\"form-input\" onchange=\"check_option('gcs_gps_baud');\" id=\"gcs_gps_baud\">\n");
+		if (setup.gcs_gps_baud == 1200) {
+			sprintf(tmp_str, " <OPTION value=\"1200\" selected>1200</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"1200\">1200</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.gcs_gps_baud == 2400) {
+			sprintf(tmp_str, " <OPTION value=\"2400\" selected>2400</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"2400\">2400</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.gcs_gps_baud == 4800) {
+			sprintf(tmp_str, " <OPTION value=\"4800\" selected>4800</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"4800\">4800</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.gcs_gps_baud == 9600) {
+			sprintf(tmp_str, " <OPTION value=\"9600\" selected>9600</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"9600\">9600</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.gcs_gps_baud == 19200) {
+			sprintf(tmp_str, " <OPTION value=\"19200\" selected>19200</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"19200\">19200</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.gcs_gps_baud == 38400) {
+			sprintf(tmp_str, " <OPTION value=\"38400\" selected>38400</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"38400\">38400</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.gcs_gps_baud == 57600) {
+			sprintf(tmp_str, " <OPTION value=\"57600\" selected>57600</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"57600\">57600</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.gcs_gps_baud == 115200) {
+			sprintf(tmp_str, " <OPTION value=\"115200\" selected>115200</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"115200\">115200</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (flag == 0) {
+			sprintf(tmp_str, " <OPTION value=\"%i\" selected>%i</OPTION>\n", setup.gcs_gps_baud, setup.gcs_gps_baud);
+			strcat(content, tmp_str);
+		}
+		strcat(content, " </SELECT></TD>\n");
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>rcflow_port</TD>");
+		sprintf(tmp_str, " <TD><SELECT class=\"form-input\" onchange=\"check_option('rcflow_port');\" id=\"rcflow_port\">\n");
+		strcat(content, tmp_str);
+		flag = 0;
+		if ((dir = opendir("/dev")) != NULL) {
+			while ((dir_entry = readdir(dir)) != 0) {
+				if (dir_entry->d_name[0] != '.') {
+					sprintf(new_path, "%s/%s", "/dev", dir_entry->d_name);
+					if (lstat(new_path, &statbuf) == 0) {
+						if ( statbuf.st_mode & S_IFDIR) {
+						} else {
+							if (strstr(new_path, "ttyS") > 0 || strstr(new_path, "ttyUSB") > 0 || strstr(new_path, "ttyACM") > 0) {
+								if (strcmp(new_path, setup.rcflow_port) == 0) {
+									sprintf(tmp_str, " <OPTION value=\"%s\" selected>%s</OPTION>\n", new_path, new_path);
+									flag = 1;
+								} else {
+									sprintf(tmp_str, " <OPTION value=\"%s\">%s</OPTION>\n", new_path, new_path);
+								}
+								strcat(content, tmp_str);
+							}
+						}
+					}
+				}
+			}
+			closedir(dir);
+			dir = NULL;
+		}
+		if (flag == 0) {
+			sprintf(tmp_str, " <OPTION value=\"%s\" selected>%s</OPTION>\n", setup.rcflow_port, setup.rcflow_port);
+			strcat(content, tmp_str);
+		}
+		strcat(content, " </SELECT></TD>\n");
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>rcflow_baud</TD>");
+		flag = 0;
+		strcat(content, " <TD><SELECT class=\"form-input\" onchange=\"check_option('rcflow_baud');\" id=\"rcflow_baud\">\n");
+		if (setup.rcflow_baud == 1200) {
+			sprintf(tmp_str, " <OPTION value=\"1200\" selected>1200</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"1200\">1200</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.rcflow_baud == 2400) {
+			sprintf(tmp_str, " <OPTION value=\"2400\" selected>2400</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"2400\">2400</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.rcflow_baud == 4800) {
+			sprintf(tmp_str, " <OPTION value=\"4800\" selected>4800</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"4800\">4800</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.rcflow_baud == 9600) {
+			sprintf(tmp_str, " <OPTION value=\"9600\" selected>9600</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"9600\">9600</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.rcflow_baud == 19200) {
+			sprintf(tmp_str, " <OPTION value=\"19200\" selected>19200</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"19200\">19200</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.rcflow_baud == 38400) {
+			sprintf(tmp_str, " <OPTION value=\"38400\" selected>38400</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"38400\">38400</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.rcflow_baud == 57600) {
+			sprintf(tmp_str, " <OPTION value=\"57600\" selected>57600</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"57600\">57600</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.rcflow_baud == 115200) {
+			sprintf(tmp_str, " <OPTION value=\"115200\" selected>115200</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"115200\">115200</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (flag == 0) {
+			sprintf(tmp_str, " <OPTION value=\"%i\" selected>%i</OPTION>\n", setup.rcflow_baud, setup.rcflow_baud);
+			strcat(content, tmp_str);
+		}
+		strcat(content, " </SELECT></TD>\n");
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>telemetry_port</TD>");
+		sprintf(tmp_str, " <TD><SELECT class=\"form-input\" onchange=\"check_option('telemetry_port');\" id=\"telemetry_port\">\n");
+		strcat(content, tmp_str);
+		flag = 0;
+		if ((dir = opendir("/dev")) != NULL) {
+			while ((dir_entry = readdir(dir)) != 0) {
+				if (dir_entry->d_name[0] != '.') {
+					sprintf(new_path, "%s/%s", "/dev", dir_entry->d_name);
+					if (lstat(new_path, &statbuf) == 0) {
+						if ( statbuf.st_mode & S_IFDIR) {
+						} else {
+							if (strstr(new_path, "ttyS") > 0 || strstr(new_path, "ttyUSB") > 0 || strstr(new_path, "ttyACM") > 0) {
+								if (strcmp(new_path, setup.telemetry_port) == 0) {
+									sprintf(tmp_str, " <OPTION value=\"%s\" selected>%s</OPTION>\n", new_path, new_path);
+									flag = 1;
+								} else {
+									sprintf(tmp_str, " <OPTION value=\"%s\">%s</OPTION>\n", new_path, new_path);
+								}
+								strcat(content, tmp_str);
+							}
+						}
+					}
+				}
+			}
+			closedir(dir);
+			dir = NULL;
+		}
+		if (flag == 0) {
+			sprintf(tmp_str, " <OPTION value=\"%s\" selected>%s</OPTION>\n", setup.telemetry_port, setup.telemetry_port);
+			strcat(content, tmp_str);
+		}
+		strcat(content, " </SELECT></TD>\n");
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>telemetry_baud</TD>");
+		flag = 0;
+		strcat(content, " <TD><SELECT class=\"form-input\" onchange=\"check_option('telemetry_baud');\" id=\"telemetry_baud\">\n");
+		if (setup.telemetry_baud == 1200) {
+			sprintf(tmp_str, " <OPTION value=\"1200\" selected>1200</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"1200\">1200</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.telemetry_baud == 2400) {
+			sprintf(tmp_str, " <OPTION value=\"2400\" selected>2400</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"2400\">2400</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.telemetry_baud == 4800) {
+			sprintf(tmp_str, " <OPTION value=\"4800\" selected>4800</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"4800\">4800</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.telemetry_baud == 9600) {
+			sprintf(tmp_str, " <OPTION value=\"9600\" selected>9600</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"9600\">9600</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.telemetry_baud == 19200) {
+			sprintf(tmp_str, " <OPTION value=\"19200\" selected>19200</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"19200\">19200</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.telemetry_baud == 38400) {
+			sprintf(tmp_str, " <OPTION value=\"38400\" selected>38400</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"38400\">38400</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.telemetry_baud == 57600) {
+			sprintf(tmp_str, " <OPTION value=\"57600\" selected>57600</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"57600\">57600</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.telemetry_baud == 115200) {
+			sprintf(tmp_str, " <OPTION value=\"115200\" selected>115200</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"115200\">115200</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (flag == 0) {
+			sprintf(tmp_str, " <OPTION value=\"%i\" selected>%i</OPTION>\n", setup.telemetry_baud, setup.telemetry_baud);
+			strcat(content, tmp_str);
+		}
+		strcat(content, " </SELECT></TD>\n");
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>jeti_port</TD>");
+		sprintf(tmp_str, " <TD><SELECT class=\"form-input\" onchange=\"check_option('jeti_port');\" id=\"jeti_port\">\n");
+		strcat(content, tmp_str);
+		flag = 0;
+		if ((dir = opendir("/dev")) != NULL) {
+			while ((dir_entry = readdir(dir)) != 0) {
+				if (dir_entry->d_name[0] != '.') {
+					sprintf(new_path, "%s/%s", "/dev", dir_entry->d_name);
+					if (lstat(new_path, &statbuf) == 0) {
+						if ( statbuf.st_mode & S_IFDIR) {
+						} else {
+							if (strstr(new_path, "ttyS") > 0 || strstr(new_path, "ttyUSB") > 0 || strstr(new_path, "ttyACM") > 0) {
+								if (strcmp(new_path, setup.jeti_port) == 0) {
+									sprintf(tmp_str, " <OPTION value=\"%s\" selected>%s</OPTION>\n", new_path, new_path);
+									flag = 1;
+								} else {
+									sprintf(tmp_str, " <OPTION value=\"%s\">%s</OPTION>\n", new_path, new_path);
+								}
+								strcat(content, tmp_str);
+							}
+						}
+					}
+				}
+			}
+			closedir(dir);
+			dir = NULL;
+		}
+		if (flag == 0) {
+			sprintf(tmp_str, " <OPTION value=\"%s\" selected>%s</OPTION>\n", setup.jeti_port, setup.jeti_port);
+			strcat(content, tmp_str);
+		}
+		strcat(content, " </SELECT></TD>\n");
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>jeti_baud</TD>");
+		flag = 0;
+		strcat(content, " <TD><SELECT class=\"form-input\" onchange=\"check_option('jeti_baud');\" id=\"jeti_baud\">\n");
+		if (setup.jeti_baud == 1200) {
+			sprintf(tmp_str, " <OPTION value=\"1200\" selected>1200</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"1200\">1200</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.jeti_baud == 2400) {
+			sprintf(tmp_str, " <OPTION value=\"2400\" selected>2400</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"2400\">2400</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.jeti_baud == 4800) {
+			sprintf(tmp_str, " <OPTION value=\"4800\" selected>4800</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"4800\">4800</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.jeti_baud == 9600) {
+			sprintf(tmp_str, " <OPTION value=\"9600\" selected>9600</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"9600\">9600</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.jeti_baud == 19200) {
+			sprintf(tmp_str, " <OPTION value=\"19200\" selected>19200</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"19200\">19200</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.jeti_baud == 38400) {
+			sprintf(tmp_str, " <OPTION value=\"38400\" selected>38400</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"38400\">38400</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.jeti_baud == 57600) {
+			sprintf(tmp_str, " <OPTION value=\"57600\" selected>57600</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"57600\">57600</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.jeti_baud == 115200) {
+			sprintf(tmp_str, " <OPTION value=\"115200\" selected>115200</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"115200\">115200</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (flag == 0) {
+			sprintf(tmp_str, " <OPTION value=\"%i\" selected>%i</OPTION>\n", setup.jeti_baud, setup.jeti_baud);
+			strcat(content, tmp_str);
+		}
+		strcat(content, " </SELECT></TD>\n");
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>frsky_port</TD>");
+		sprintf(tmp_str, " <TD><SELECT class=\"form-input\" onchange=\"check_option('frsky_port');\" id=\"frsky_port\">\n");
+		strcat(content, tmp_str);
+		flag = 0;
+		if ((dir = opendir("/dev")) != NULL) {
+			while ((dir_entry = readdir(dir)) != 0) {
+				if (dir_entry->d_name[0] != '.') {
+					sprintf(new_path, "%s/%s", "/dev", dir_entry->d_name);
+					if (lstat(new_path, &statbuf) == 0) {
+						if ( statbuf.st_mode & S_IFDIR) {
+						} else {
+							if (strstr(new_path, "ttyS") > 0 || strstr(new_path, "ttyUSB") > 0 || strstr(new_path, "ttyACM") > 0) {
+								if (strcmp(new_path, setup.frsky_port) == 0) {
+									sprintf(tmp_str, " <OPTION value=\"%s\" selected>%s</OPTION>\n", new_path, new_path);
+									flag = 1;
+								} else {
+									sprintf(tmp_str, " <OPTION value=\"%s\">%s</OPTION>\n", new_path, new_path);
+								}
+								strcat(content, tmp_str);
+							}
+						}
+					}
+				}
+			}
+			closedir(dir);
+			dir = NULL;
+		}
+		if (flag == 0) {
+			sprintf(tmp_str, " <OPTION value=\"%s\" selected>%s</OPTION>\n", setup.frsky_port, setup.frsky_port);
+			strcat(content, tmp_str);
+		}
+		strcat(content, " </SELECT></TD>\n");
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>frsky_baud</TD>");
+		flag = 0;
+		strcat(content, " <TD><SELECT class=\"form-input\" onchange=\"check_option('frsky_baud');\" id=\"frsky_baud\">\n");
+		if (setup.frsky_baud == 1200) {
+			sprintf(tmp_str, " <OPTION value=\"1200\" selected>1200</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"1200\">1200</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.frsky_baud == 2400) {
+			sprintf(tmp_str, " <OPTION value=\"2400\" selected>2400</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"2400\">2400</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.frsky_baud == 4800) {
+			sprintf(tmp_str, " <OPTION value=\"4800\" selected>4800</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"4800\">4800</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.frsky_baud == 9600) {
+			sprintf(tmp_str, " <OPTION value=\"9600\" selected>9600</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"9600\">9600</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.frsky_baud == 19200) {
+			sprintf(tmp_str, " <OPTION value=\"19200\" selected>19200</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"19200\">19200</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.frsky_baud == 38400) {
+			sprintf(tmp_str, " <OPTION value=\"38400\" selected>38400</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"38400\">38400</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.frsky_baud == 57600) {
+			sprintf(tmp_str, " <OPTION value=\"57600\" selected>57600</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"57600\">57600</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.frsky_baud == 115200) {
+			sprintf(tmp_str, " <OPTION value=\"115200\" selected>115200</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"115200\">115200</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (flag == 0) {
+			sprintf(tmp_str, " <OPTION value=\"%i\" selected>%i</OPTION>\n", setup.frsky_baud, setup.frsky_baud);
+			strcat(content, tmp_str);
+		}
+		strcat(content, " </SELECT></TD>\n");
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>tracker_port</TD>");
+		sprintf(tmp_str, " <TD><SELECT class=\"form-input\" onchange=\"check_option('tracker_port');\" id=\"tracker_port\">\n");
+		strcat(content, tmp_str);
+		flag = 0;
+		if ((dir = opendir("/dev")) != NULL) {
+			while ((dir_entry = readdir(dir)) != 0) {
+				if (dir_entry->d_name[0] != '.') {
+					sprintf(new_path, "%s/%s", "/dev", dir_entry->d_name);
+					if (lstat(new_path, &statbuf) == 0) {
+						if ( statbuf.st_mode & S_IFDIR) {
+						} else {
+							if (strstr(new_path, "ttyS") > 0 || strstr(new_path, "ttyUSB") > 0 || strstr(new_path, "ttyACM") > 0) {
+								if (strcmp(new_path, setup.tracker_port) == 0) {
+									sprintf(tmp_str, " <OPTION value=\"%s\" selected>%s</OPTION>\n", new_path, new_path);
+									flag = 1;
+								} else {
+									sprintf(tmp_str, " <OPTION value=\"%s\">%s</OPTION>\n", new_path, new_path);
+								}
+								strcat(content, tmp_str);
+							}
+						}
+					}
+				}
+			}
+			closedir(dir);
+			dir = NULL;
+		}
+		if (flag == 0) {
+			sprintf(tmp_str, " <OPTION value=\"%s\" selected>%s</OPTION>\n", setup.tracker_port, setup.tracker_port);
+			strcat(content, tmp_str);
+		}
+		strcat(content, " </SELECT></TD>\n");
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>tracker_baud</TD>");
+		flag = 0;
+		strcat(content, " <TD><SELECT class=\"form-input\" onchange=\"check_option('tracker_baud');\" id=\"tracker_baud\">\n");
+		if (setup.tracker_baud == 1200) {
+			sprintf(tmp_str, " <OPTION value=\"1200\" selected>1200</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"1200\">1200</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.tracker_baud == 2400) {
+			sprintf(tmp_str, " <OPTION value=\"2400\" selected>2400</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"2400\">2400</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.tracker_baud == 4800) {
+			sprintf(tmp_str, " <OPTION value=\"4800\" selected>4800</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"4800\">4800</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.tracker_baud == 9600) {
+			sprintf(tmp_str, " <OPTION value=\"9600\" selected>9600</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"9600\">9600</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.tracker_baud == 19200) {
+			sprintf(tmp_str, " <OPTION value=\"19200\" selected>19200</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"19200\">19200</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.tracker_baud == 38400) {
+			sprintf(tmp_str, " <OPTION value=\"38400\" selected>38400</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"38400\">38400</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.tracker_baud == 57600) {
+			sprintf(tmp_str, " <OPTION value=\"57600\" selected>57600</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"57600\">57600</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (setup.tracker_baud == 115200) {
+			sprintf(tmp_str, " <OPTION value=\"115200\" selected>115200</OPTION>\n");
+			flag = 1;
+		} else {
+			sprintf(tmp_str, " <OPTION value=\"115200\">115200</OPTION>\n");
+		}
+		strcat(content, tmp_str);
+		if (flag == 0) {
+			sprintf(tmp_str, " <OPTION value=\"%i\" selected>%i</OPTION>\n", setup.tracker_baud, setup.tracker_baud);
+			strcat(content, tmp_str);
+		}
+		strcat(content, " </SELECT></TD>\n");
+		strcat(content, "</TR>");
+	} else if (mode == 1) {
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>fullscreen</TD>");
+		if (setup.fullscreen == 1) {
+			strcat(content, "<TD><INPUT class=\"form-input\" onchange=\"check_box('fullscreen');\" id=\"fullscreen\" type=\"checkbox\" checked></TD>\n");
+		} else {
+			strcat(content, "<TD><INPUT class=\"form-input\" onchange=\"check_box('fullscreen');\" id=\"fullscreen\" type=\"checkbox\"></TD>\n");
+		}
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>borderless</TD>");
+		if (setup.borderless == 1) {
+			strcat(content, "<TD><INPUT class=\"form-input\" onchange=\"check_box('borderless');\" id=\"borderless\" type=\"checkbox\" checked></TD>\n");
+		} else {
+			strcat(content, "<TD><INPUT class=\"form-input\" onchange=\"check_box('borderless');\" id=\"borderless\" type=\"checkbox\"></TD>\n");
+		}
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>view_mode</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('view_mode');\" id=\"view_mode\" value=\"%i\" type=\"text\"></TD>\n", setup.view_mode);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>hud_view_screen</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('hud_view_screen');\" id=\"hud_view_screen\" value=\"%i\" type=\"text\"></TD>\n", setup.hud_view_screen);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>hud_view_stab</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('hud_view_stab');\" id=\"hud_view_stab\" value=\"%i\" type=\"text\"></TD>\n", setup.hud_view_stab);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>hud_view_map</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('hud_view_map');\" id=\"hud_view_map\" value=\"%i\" type=\"text\"></TD>\n", setup.hud_view_map);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>hud_view_video</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('hud_view_video');\" id=\"hud_view_video\" value=\"%i\" type=\"text\"></TD>\n", setup.hud_view_video);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>hud_view_tunnel</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('hud_view_tunnel');\" id=\"hud_view_tunnel\" value=\"%i\" type=\"text\"></TD>\n", setup.hud_view_tunnel);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>hud_view_mark</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('hud_view_mark');\" id=\"hud_view_mark\" value=\"%i\" type=\"text\"></TD>\n", setup.hud_view_mark);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>contrast</TD>");
+		if (setup.contrast == 1) {
+			strcat(content, "<TD><INPUT class=\"form-input\" onchange=\"check_box('contrast');\" id=\"contrast\" type=\"checkbox\" checked></TD>\n");
+		} else {
+			strcat(content, "<TD><INPUT class=\"form-input\" onchange=\"check_box('contrast');\" id=\"contrast\" type=\"checkbox\"></TD>\n");
+		}
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>screen_w</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('screen_w');\" id=\"screen_w\" value=\"%i\" type=\"text\"></TD>\n", setup.screen_w);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>screen_h</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('screen_h');\" id=\"screen_h\" value=\"%i\" type=\"text\"></TD>\n", setup.screen_h);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>screen_border_x</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('screen_border_x');\" id=\"screen_border_x\" value=\"%i\" type=\"text\"></TD>\n", setup.screen_border_x);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>screen_border_y</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('screen_border_y');\" id=\"screen_border_y\" value=\"%i\" type=\"text\"></TD>\n", setup.screen_border_y);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>keep_ratio</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('keep_ratio');\" id=\"keep_ratio\" value=\"%0.1f\" type=\"text\"></TD>\n", setup.keep_ratio);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+	} else if (mode == 2) {
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>touchscreen_device</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('touchscreen_device');\" id=\"touchscreen_device\" value=\"%s\" type=\"text\"></TD>\n", setup.touchscreen_device);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>calibration_mode</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('calibration_mode');\" id=\"calibration_mode\" value=\"%i\" type=\"text\"></TD>\n", setup.calibration_mode);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>calibration_min_x</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('calibration_min_x');\" id=\"calibration_min_x\" value=\"%i\" type=\"text\"></TD>\n", setup.calibration_min_x);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>calibration_max_x</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('calibration_max_x');\" id=\"calibration_max_x\" value=\"%i\" type=\"text\"></TD>\n", setup.calibration_max_x);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>calibration_min_y</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('calibration_min_y');\" id=\"calibration_min_y\" value=\"%i\" type=\"text\"></TD>\n", setup.calibration_min_y);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>calibration_max_y</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('calibration_max_y');\" id=\"calibration_max_y\" value=\"%i\" type=\"text\"></TD>\n", setup.calibration_max_y);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+	} else {
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>speak</TD>");
+		if (setup.speak == 1) {
+			strcat(content, "<TD><INPUT class=\"form-input\" onchange=\"check_box('speak');\" id=\"speak\" type=\"checkbox\" checked></TD>\n");
+		} else {
+			strcat(content, "<TD><INPUT class=\"form-input\" onchange=\"check_box('speak');\" id=\"speak\" type=\"checkbox\"></TD>\n");
+		}
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>volt_min</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('volt_min');\" id=\"volt_min\" value=\"%0.1f\" type=\"text\"></TD>\n", setup.volt_min);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>videocapture_device</TD>");
+		sprintf(tmp_str, " <TD><SELECT class=\"form-input\" onchange=\"check_option('videocapture_device');\" id=\"videocapture_device\">\n");
+		strcat(content, tmp_str);
+		flag = 0;
+		if ((dir = opendir("/dev")) != NULL) {
+			while ((dir_entry = readdir(dir)) != 0) {
+				if (dir_entry->d_name[0] != '.') {
+					sprintf(new_path, "%s/%s", "/dev", dir_entry->d_name);
+					if (lstat(new_path, &statbuf) == 0) {
+						if ( statbuf.st_mode & S_IFDIR) {
+						} else {
+							if (strstr(new_path, "/dev/video") > 0) {
+								if (strcmp(new_path, setup.videocapture_device) == 0) {
+									sprintf(tmp_str, " <OPTION value=\"%s\" selected>%s</OPTION>\n", new_path, new_path);
+									flag = 1;
+								} else {
+									sprintf(tmp_str, " <OPTION value=\"%s\">%s</OPTION>\n", new_path, new_path);
+								}
+								strcat(content, tmp_str);
+							}
+						}
+					}
+				}
+			}
+			closedir(dir);
+			dir = NULL;
+		}
+		if (flag == 0) {
+			sprintf(tmp_str, " <OPTION value=\"%s\" selected>%s</OPTION>\n", setup.videocapture_device, setup.videocapture_device);
+			strcat(content, tmp_str);
+		}
+		strcat(content, " </SELECT></TD>\n");
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>videocapture_width</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('videocapture_width');\" id=\"videocapture_width\" value=\"%i\" type=\"text\"></TD>\n", setup.videocapture_width);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>videocapture_height</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('videocapture_height');\" id=\"videocapture_height\" value=\"%i\" type=\"text\"></TD>\n", setup.videocapture_height);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>webport</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('webport');\" id=\"webport\" value=\"%i\" type=\"text\"></TD>\n", setup.webport);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>waypoint_active</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('waypoint_active');\" id=\"waypoint_active\" value=\"%i\" type=\"text\"></TD>\n", setup.waypoint_active);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>gearth_interval</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('gearth_interval');\" id=\"gearth_interval\" value=\"%0.1f\" type=\"text\"></TD>\n", setup.gearth_interval);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+	}
+
+	strcat(content, "</TABLE><BR><BR>");
+
+	strcat(content, "</TD></TR></TABLE>\n");
+
+	html_stop(content);
+
+	sprintf(buffer, header_str, (int)strlen(content), "text/html");
+	write(fd, buffer, strlen(buffer));
+	write(fd, content, strlen(content));
+}
+
 
 void webserv_child (int fd) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[BUFSIZE + 1];
 	char servername[1024];
-
 	content[0] = 0;
 
 	SDL_Delay(10);
@@ -1899,14 +2845,6 @@ void webserv_child (int fd) {
 	} else {
 		servername[0] = 0;
 	}
-
-//	printf("webserv: ###########################\n");
-//	printf("webserv: servername: %s\n", servername);
-//	printf("webserv: ###########################\n");
-//	printf("%s\n", buffer);
-//	printf("webserv: ###########################\n");
-
-
 	if (strncmp(buffer,"POST ", 5) == 0 || strncmp(buffer,"post ", 5) == 0) {
 		if (strncmp(buffer + 5,"/setdata", 8) == 0) {
 			int n = 0;
@@ -1927,8 +2865,6 @@ void webserv_child (int fd) {
 							break;
 						}
 					}
-					printf("webserv: ## %s ### %s (%i)##\n", tmp_str, tmp_str + start, start);
-
 					if (strcmp(tmp_str, "name") == 0) {
 						strncpy(ModelData.name, tmp_str + start, 199);
 					} else if (strcmp(tmp_str, "image") == 0) {
@@ -2125,7 +3061,7 @@ void webserv_child (int fd) {
 			write(fd, buffer, strlen(buffer));
 			write(fd, content, strlen(content));
 		} else if (strncmp(buffer + 4,"/waypoints.html", 15) == 0) {
-			webserv_child_kml_waypoints(fd, servername);
+			webserv_child_waypoints(fd, servername);
 
 		} else if (strncmp(buffer + 4,"/mavlink_value_set?", 19) == 0) {
 			char name[20];
@@ -2138,12 +3074,17 @@ void webserv_child (int fd) {
 			sprintf(buffer, header_str, (int)strlen(content), "text/plain");
 			write(fd, buffer, strlen(buffer));
 			write(fd, content, strlen(content));
-		} else if (strncmp(buffer + 4,"/mavlink.html", 13) == 0) {
-			webserv_child_mavlink(fd, servername);
-
+		} else if (strncmp(buffer + 4, "/mavlink.html?", 14) == 0) {
+			char sub[128];
+			sscanf(buffer + 4 + 14, "%[0-9a-zA-Z_]", sub);
+			webserv_child_mavlink(fd, sub);
+		} else if (strncmp(buffer + 4, "/mavlink.html", 13) == 0) {
+			webserv_child_mavlink(fd, "");
 
 		} else if (strncmp(buffer + 4,"/mwii.html", 10) == 0) {
-			webserv_child_mwii(fd, servername);
+			webserv_child_mwii(fd, 0);
+		} else if (strncmp(buffer + 4,"/mwii_box.html", 14) == 0) {
+			webserv_child_mwii(fd, 1);
 
 		} else if (strncmp(buffer + 4,"/mwii_pid.html?", 14) == 0) {
 			int n = 0;
@@ -2369,6 +3310,25 @@ void webserv_child (int fd) {
 			webserv_child_hud_redraw(fd);
 		} else if (strncmp(buffer + 4,"/hudredraw_small.js", 19) == 0) {
 			webserv_child_hud_redraw_small(fd);
+		} else if (strncmp(buffer + 4,"/gcssetup.html?", 15) == 0) {
+			char name[1024];
+			char value[1024];
+			sscanf(buffer + 4 + 15, "%[0-9a-zA-Z_]=%s", name, value);
+			gcssetup_set(name, value);
+			strcpy(content, "");
+			sprintf(buffer, header_str, (int)strlen(content), "text/html");
+			write(fd, buffer, strlen(buffer));
+			write(fd, content, strlen(content));
+
+		} else if (strncmp(buffer + 4,"/gcssetup.html", 14) == 0) {
+			webserv_child_gcssetup(fd, 0);
+		} else if (strncmp(buffer + 4,"/gcssetup1.html", 15) == 0) {
+			webserv_child_gcssetup(fd, 1);
+		} else if (strncmp(buffer + 4,"/gcssetup2.html", 15) == 0) {
+			webserv_child_gcssetup(fd, 2);
+		} else if (strncmp(buffer + 4,"/gcssetup3.html", 15) == 0) {
+			webserv_child_gcssetup(fd, 3);
+
 		} else if (strncmp(buffer + 4,"/map.js", 7) == 0) {
 			sprintf(tmp_str, "%s/webserv/map.js", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/html");
@@ -2400,11 +3360,12 @@ void webserv_child (int fd) {
 		} else if (strncmp(buffer + 4,"/style.css", 10) == 0) {
 			sprintf(tmp_str, "%s/webserv/style.css", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/plain");
+		} else if (strncmp(buffer + 4,"/bg.png", 7) == 0) {
+			sprintf(tmp_str, "%s/webserv/bg.png", BASE_DIR);
+			webserv_child_dump_file(fd, tmp_str, "image/png");
 		} else if (strncmp(buffer + 4,"/favicon.ico", 12) == 0) {
 			sprintf(tmp_str, "%s/webserv/favicon.ico", BASE_DIR);
-			webserv_child_dump_file(fd, tmp_str, "text/plain");
-
-
+			webserv_child_dump_file(fd, tmp_str, "image/png");
 #ifndef OSX
 #ifdef SDLGL
 		} else if (strncmp(buffer + 4,"/video.png", 10) == 0) {
@@ -2443,25 +3404,20 @@ int webserv_thread (void *data) {
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	serv_addr.sin_port = htons(setup.webport);
-
 	if ((listenfd = socket(AF_INET, SOCK_STREAM,0)) < 0) {
 		return(1);
 	}
-
 	int flags = fcntl(listenfd, F_GETFL);
 	flags |= O_NONBLOCK;
 	fcntl(listenfd, F_SETFL, flags);
-
 	int opt = 1;
 	setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
-
 	if (bind(listenfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
 		return(1);
 	}
 	if (listen(listenfd, 64) < 0) {
 		return(1);
 	}
-
 	while (webserv_running == 1) {
 		length = sizeof(cli_addr);
 		if ((socketfd = accept(listenfd, (struct sockaddr *)&cli_addr, &length)) >= 0) {
@@ -2469,9 +3425,7 @@ int webserv_thread (void *data) {
 		}
 		SDL_Delay(1);
 	}
-
 	close(listenfd);
-
 	printf("webserv: exit thread\n");
 	return(0);
 }
