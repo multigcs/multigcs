@@ -1,25 +1,5 @@
 
-#include <stdint.h>
-#include <stdio.h>
-#include <math.h>
-#include <sys/stat.h>
-#include <sys/signal.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <sys/times.h>
-#include <sys/ioctl.h>
-#include <fcntl.h>
-#include <termios.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <time.h>
-#include <userdata.h>
-#include <serial.h>
-#include <model.h>
-#include <main.h>
-#include <my_mavlink.h>
-#include <my_gps.h>
-#include <SDL.h>
+#include <all.h>
 
 SDL_Thread *gcs_sdl_thread_serial_gps = NULL;
 int gcs_serial_fd_gps = -1;

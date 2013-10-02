@@ -1,28 +1,7 @@
 
-#include <stdint.h>
-#include <string.h>
-#include <stdio.h>
-#include <libgen.h>
-#include <math.h>
-#include <termios.h>
-#include <sys/stat.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <time.h>
-#include <curl/curl.h>
-#include <SDL.h>
+#include <all.h>
 
-#include <libxml/xmlmemory.h>
-#include <libxml/parser.h>
 
-#include <model.h>
-#include <userdata.h>
-#include <main.h>
-#include <screen_rcflow.h>
-#include <screen_keyboard.h>
-#include <screen_filesystem.h>
-#include <screen_tcl.h>
-#include <my_mavlink.h>
 
 #include <tcl.h>
 

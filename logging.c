@@ -1,48 +1,5 @@
 
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <time.h>
-#include <sys/times.h>
-#include <sys/time.h>
-#include <math.h>
-#include <string.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <dirent.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <errno.h>
-#include <getopt.h>
-#include <ctype.h>
-#include <termios.h>
-
-#include <png.h>
-#include <SDL.h>
-#include <SDL_thread.h>
-#include <SDL_events.h>
-
-#ifndef SDLGL
-#include "esUtil.h"
-#endif
-
-#include <model.h>
-
-#include <geomag70.h>
-
-#include "my_mavlink.h"
-#include <userdata.h>
-#include <main.h>
-#include "my_gps.h"
-#include "mwi21.h"
-#include "simplebgc.h"
-#include "brugi.h"
-#include "openpilot.h"
-#include "jeti.h"
-#include "frsky.h"
-#include "webserv.h"
-#include "logging.h"
+#include <all.h>
 
 char *Logdata = NULL;
 int log_startup_time = 0;

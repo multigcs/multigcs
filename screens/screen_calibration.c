@@ -1,7 +1,5 @@
 
-#include <userdata.h>
-#include <main.h>
-#include <screen_calibration.h>
+#include <all.h>
 
 static uint16_t calibration_timeout = 200;
 

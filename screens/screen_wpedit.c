@@ -1,9 +1,6 @@
 
-#include <userdata.h>
-#include <screen_wpedit.h>
-#include <screen_map.h>
-#include <main.h>
-#include <my_mavlink.h>
+#include <all.h>
+
 
 uint16_t wpedit_pos = 0;
 uint16_t wpedit_sel = 0;

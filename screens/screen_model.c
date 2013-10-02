@@ -1,40 +1,6 @@
 
-#include <stdint.h>
-#include <stdio.h>
-#include <libgen.h>
-#include <stdlib.h>
-#include <locale.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <time.h>
-#include <sys/times.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <dirent.h>
-#include <math.h>
-#include <userdata.h>
-#include <serial.h>
-#include <libxml/xmlmemory.h>
-#include <libxml/parser.h>
-#include <main.h>
-#include <model.h>
-#include <my_mavlink.h>
-#include <my_gps.h>
-#include <frsky.h>
-#include <openpilot.h>
-#include <mwi21.h>
-#include <jeti.h>
-#include <openpilot_xml.h>
-#include <screen_model.h>
-#include <SDL_thread.h>
-#include <screen_keyboard.h>
-#include <screen_filesystem.h>
-#include <screen_device.h>
-#include <screen_baud.h>
-#include <webclient.h>
+#include <all.h>
+
 
 extern int file_exists (char *fileName);
 static uint8_t select_teletype = 0;

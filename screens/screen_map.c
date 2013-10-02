@@ -1,40 +1,6 @@
 
-#include <stdint.h>
-#include <string.h>
-#include <stdio.h>
-#include <math.h>
-#include <termios.h>
-#include <sys/stat.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <time.h>
-#include <curl/curl.h>
+#include <all.h>
 
-#ifndef RPI_NO_X
-#ifndef OSX
-#define NO_SDL_GLEXT
-#include <GL/gl.h>
-#include <GL/glext.h>
-#include <GL/glu.h>
-#else
-#include <OpenGL/glu.h>
-#endif
-#include <SDL.h>
-#include <SDL_opengl.h>
-#endif
-
-#include <libxml/xmlmemory.h>
-#include <libxml/parser.h>
-
-#include <model.h>
-#include <userdata.h>
-#include <main.h>
-#include <screen_map.h>
-#include <my_mavlink.h>
-#include <screen_wpedit.h>
-#include <screen_hud.h>
-#include <tracker.h>
-#include <logging.h>
 
 volatile float lat = 50.29;
 volatile float lon = 9.12;

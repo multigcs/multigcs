@@ -1,11 +1,6 @@
 
-#include <stdint.h>
-#include <model.h>
-#include <userdata.h>
-#include <main.h>
-#include <screen_mavlink_menu.h>
-#include <my_mavlink.h>
-#include <mwi21.h>
+#include <all.h>
+
 
 uint8_t mwi_view = 0;
 uint8_t mwi_mode = 1;

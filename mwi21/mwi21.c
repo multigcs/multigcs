@@ -1,22 +1,5 @@
 
-#include <stdint.h>
-#include <stdio.h>
-#include <math.h>
-#include <sys/stat.h>
-#include <sys/signal.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <sys/times.h>
-#include <sys/ioctl.h>
-#include <fcntl.h>
-#include <termios.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <time.h>
-#include <serial.h>
-#include <model.h>
-#include <mwi21.h>
-#include <my_mavlink.h>
+#include <all.h>
 
 extern uint8_t redraw_flag;
 

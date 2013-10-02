@@ -1,15 +1,6 @@
 
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <dirent.h>
-#include <math.h>
-#include <userdata.h>
-#include <serial.h>
-#include <main.h>
-#include <screen_keyboard.h>
+#include <all.h>
+
 
 static uint8_t show_keyboard = 0;
 static char new_name[200];

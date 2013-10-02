@@ -1,31 +1,5 @@
 
-#include <stdio.h>
-#include <stdint.h>
-#include <unistd.h>
-#include <sys/times.h>
-#include <stdlib.h>
-#include <math.h>
-#include <linux/version.h>
-#include <linux/input.h>
-#include <string.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <dirent.h>
-#include <errno.h>
-#include <getopt.h>
-#include <ctype.h>
-#include <termios.h>
-
-#include <GLES2/gl2.h>
-#include <EGL/egl.h>
-#include "esUtil.h"
-
-#include <png.h>
-#include <main.h>
-#include <userdata.h>
-#include <gles_draw.h>
-#include <draw.h>
+#include <all.h>
 
 TextureCache TexCache[MAX_TEXCACHE];
 GLfloat colors[4] = {1.0f, 0.0f, 0.0f, 1.0f};

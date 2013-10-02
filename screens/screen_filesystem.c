@@ -1,16 +1,5 @@
 
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <libgen.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <dirent.h>
-#include <math.h>
-#include <userdata.h>
-#include <serial.h>
-#include <main.h>
-#include <screen_filesystem.h>
+#include <all.h>
 
 #define FILTER_MAX 10
 

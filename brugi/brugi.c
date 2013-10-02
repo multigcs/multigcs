@@ -1,22 +1,5 @@
 
-#include <stdint.h>
-#include <stdio.h>
-#include <math.h>
-#include <sys/stat.h>
-#include <sys/signal.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <sys/times.h>
-#include <sys/ioctl.h>
-#include <fcntl.h>
-#include <termios.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <time.h>
-#include <serial.h>
-#include <model.h>
-#include <brugi.h>
-#include <my_mavlink.h>
+#include <all.h>
 
 int brugi_serial_fd = -1;
 uint8_t brugi_serial_buf[255];

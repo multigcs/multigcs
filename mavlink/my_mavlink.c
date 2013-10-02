@@ -1,30 +1,6 @@
 
-#include <stdint.h>
-#include <stdio.h>
-#include <math.h>
-#include <sys/stat.h>
-#include <sys/signal.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <sys/times.h>
-#include <sys/ioctl.h>
-#include <fcntl.h>
-#include <termios.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <time.h>
-#include <arpa/inet.h>
-#include <sys/socket.h>
-#include <libxml/xmlmemory.h>
-#include <libxml/parser.h>
+#include <all.h>
 
-#include <serial.h>
-#include <model.h>
-#include <userdata.h>
-#include <main.h>
-#include <my_mavlink.h>
-#include <screen_map.h>
-#include <webclient.h>
 
 #define UDP_BUFLEN 2042
 #define UDP_PORT 14550

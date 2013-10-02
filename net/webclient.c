@@ -1,17 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
-#include <string.h>
-#include <fcntl.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <SDL.h>
-#include <model.h>
-#include <my_mavlink.h>
+
+#include <all.h>
 
 uint8_t clientmode = 0;
 char clientmode_server[1024];

@@ -1,15 +1,6 @@
 
-#include <userdata.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <dirent.h>
-#include <main.h>
-#include <model.h>
-#include <screen_mavlink_menu.h>
-#include <screen_keyboard.h>
-#include <screen_filesystem.h>
-#include <my_mavlink.h>
-#include <geomag70.h>
+#include <all.h>
+
 
 float sel = 0.0;
 float set_sel = 0.0;

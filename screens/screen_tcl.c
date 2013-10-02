@@ -1,33 +1,6 @@
 
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <time.h>
-#include <sys/time.h>
-#include <sys/times.h>
-#include <math.h>
-#include <string.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <dirent.h>
-#include <errno.h>
-#include <getopt.h>
-#include <ctype.h>
-#include <termios.h>
-#include <userdata.h>
-#include <main.h>
-#include <model.h>
-#include <screen_tcl.h>
-#include <my_mavlink.h>
-#include <my_gps.h>
-#include <frsky.h>
-#include <openpilot.h>
-#include <mwi21.h>
-#include <jeti.h>
-#include <screen_device.h>
-#include <screen_baud.h>
-#include <tcl.h>
+#include <all.h>
+
 
 
 Tcl_Interp *tcl_interp = NULL;

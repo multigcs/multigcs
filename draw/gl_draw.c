@@ -1,40 +1,5 @@
 
-#include <stdint.h>
-#include <stdio.h>
-#include <math.h>
-#include <sys/stat.h>
-#include <sys/times.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <time.h>
-#include <sys/times.h>
-#include <curl/curl.h>
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <fcntl.h>
-#include <math.h>
-#ifndef OSX
-#define NO_SDL_GLEXT
-#include <GL/glew.h>
-#include <GL/glext.h>
-#include <GL/gl.h>
-#else
-#include <OpenGL/glu.h>
-#endif
-#include <SDL.h>
-#include <SDL_thread.h>
-#include <SDL_events.h>
-#include <SDL_image.h>
-#include <SDL_opengl.h>
-
-#include <model.h>
-#include <userdata.h>
-#include <gl_draw.h>
-#include <draw.h>
-#include <main.h>
+#include <all.h>
 
 
 

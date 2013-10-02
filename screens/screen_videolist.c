@@ -1,13 +1,6 @@
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <libgen.h>
-#include <sys/stat.h>
-#include <dirent.h>
-#include <userdata.h>
-#include <main.h>
-#include <screen_videolist.h>
-#include <screen_filesystem.h>
+#include <all.h>
+
 
 uint8_t videolist_startup = 0;
 char videolist_path[1024];

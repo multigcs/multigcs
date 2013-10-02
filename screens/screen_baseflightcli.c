@@ -1,34 +1,6 @@
 
-#include <stdint.h>
-#include <stdio.h>
-#include <libgen.h>
-#include <stdlib.h>
-#include <locale.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <time.h>
-#include <sys/times.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <dirent.h>
-#include <math.h>
-#include <userdata.h>
-#include <model.h>
-#include <serial.h>
-#include <libxml/xmlmemory.h>
-#include <libxml/parser.h>
-#include <model.h>
-#include <main.h>
-#include <screen_baseflightcli.h>
-#include <SDL_thread.h>
-#include <screen_keyboard.h>
+#include <all.h>
 
-
-#define toRad(x) (PI/180.0) * x
-#define toDeg(x) (x*180.0) / PI
 
 uint8_t baseflightcli_startup = 0;
 int baseflightcli_fd = -1;

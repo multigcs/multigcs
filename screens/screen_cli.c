@@ -1,30 +1,5 @@
 
-#include <stdint.h>
-#include <stdio.h>
-#include <libgen.h>
-#include <stdlib.h>
-#include <locale.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <time.h>
-#include <sys/times.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <dirent.h>
-#include <math.h>
-#include <userdata.h>
-#include <model.h>
-#include <serial.h>
-#include <libxml/xmlmemory.h>
-#include <libxml/parser.h>
-#include <model.h>
-#include <main.h>
-#include <screen_cli.h>
-#include <SDL_thread.h>
-#include <screen_keyboard.h>
+#include <all.h>
 
 
 uint8_t cli_startup = 0;

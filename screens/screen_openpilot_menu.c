@@ -1,10 +1,6 @@
 
-#include <stdint.h>
-#include <model.h>
-#include <userdata.h>
-#include <main.h>
-#include <screen_openpilot_menu.h>
-#include <openpilot.h>
+#include <all.h>
+
 
 #define MAX_PER_PAGE 12
 

@@ -1,26 +1,6 @@
 
-#include <stdint.h>
-#include <stdio.h>
-#include <math.h>
-#include <sys/stat.h>
-#include <sys/signal.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <sys/times.h>
-#include <sys/ioctl.h>
-#include <fcntl.h>
-#include <termios.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <time.h>
-#include<arpa/inet.h>
-#include<sys/socket.h>
-#include <userdata.h>
-#include <serial.h>
-#include <model.h>
-#include <main.h>
-#include <tracker.h>
-#include <SDL.h>
+#include <all.h>
+
 
 extern void get_dir (float lat_from, float lon_from, float alt_from, float lat_to, float lon_to, float alt_to, float *angle, float *dist1, float *angle_up, float *dist2);
 

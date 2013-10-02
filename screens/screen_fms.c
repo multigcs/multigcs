@@ -1,11 +1,5 @@
 
-#include <math.h>
-#include <userdata.h>
-#include <main.h>
-#include <screen_fms.h>
-#include <my_mavlink.h>
-#include <screen_wpedit.h>
-#include <screen_map.h>
+#include <all.h>
 
 int16_t fms_pos = 0;
 uint16_t fms_sel = 0;

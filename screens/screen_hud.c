@@ -1,17 +1,5 @@
 
-#include <stdint.h>
-#include <termios.h>
-#include <userdata.h>
-#include <model.h>
-#include <main.h>
-#include <screen_hud.h>
-#include <screen_map.h>
-#include <my_mavlink.h>
-#include <jeti.h>
-#include <mwi21.h>
-#include <videocapture.h>
-
-void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, SDL_Surface *screen);
+#include <all.h>
 
 
 uint8_t hud_null (char *name, float x, float y, int8_t button, float data) {
@@ -407,9 +395,11 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 	int n = 0;
 
 #ifndef OSX
+#ifdef SDLGL
 	if (setup.hud_view_video == 1) {
 		draw_surface_f3(esContext, -1.4, -1.0, 1.4, 1.0, -0.001, videodev_loop());
 	}
+#endif
 #endif
 #ifdef SDLGL
 

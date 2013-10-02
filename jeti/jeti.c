@@ -1,26 +1,5 @@
 
-#include <stdint.h>
-#include <stdio.h>
-#include <math.h>
-#include <sys/stat.h>
-#include <sys/signal.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <sys/times.h>
-#include <sys/ioctl.h>
-#include <fcntl.h>
-#include <termios.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <time.h>
-#include<arpa/inet.h>
-#include<sys/socket.h>
-#include <userdata.h>
-#include <serial.h>
-#include <jeti.h>
-#include <model.h>
-#include <main.h>
-#include <SDL.h>
+#include <all.h>
 
 static SDL_Thread *sdl_thread_serial_jeti = NULL;
 static uint8_t jeti_thread_running = 0;

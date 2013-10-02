@@ -1,52 +1,6 @@
 
-#include <stdint.h>
-#include <stdio.h>
-#include <math.h>
-#include <sys/stat.h>
-#include <sys/times.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <time.h>
-#include <curl/curl.h>
-#include <stdio.h>
-#include <dirent.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <fcntl.h>
-#include <math.h>
-#include <SDL.h>
-#include <SDL_thread.h>
-#include <SDL_events.h>
-#include <SDL_image.h>
-#ifndef OSX
-#ifdef SDLGL
-#include <videocapture.h>
-#include <savepng.h>
-#include <savepng.c>
-#endif
-#endif
+#include <all.h>
 
-#include <model.h>
-#include <userdata.h>
-#ifndef SDLGL
-#include <gles_draw.h>
-#else
-#include <gl_draw.h>
-#endif
-#include <draw.h>
-#include <main.h>
-#include <screen_mavlink_menu.h>
-#include <screen_map.h>
-#include <mwi21.h>
-
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <logging.h>
-#include <my_mavlink.h>
 
 extern void save_screenshot2 (void);
 extern volatile uint8_t zoom;

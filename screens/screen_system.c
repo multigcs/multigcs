@@ -1,54 +1,6 @@
 
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <time.h>
-#include <sys/time.h>
-#include <sys/times.h>
-#include <math.h>
-#include <string.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <dirent.h>
-#include <errno.h>
-#include <getopt.h>
-#include <ctype.h>
-#include <termios.h>
-#include <userdata.h>
-#include <main.h>
-#include <model.h>
-#include <screen_system.h>
-#include <screen_rcflow.h>
-#include <my_mavlink.h>
-#include <my_gps.h>
-#include <frsky.h>
-#include <tracker.h>
-#include <openpilot.h>
-#include <mwi21.h>
-#include <jeti.h>
-#include <logging.h>
-#include <screen_device.h>
-#include <screen_baud.h>
-#include "screen_wpedit.h"
-#include "screen_map.h"
-#include "screen_brugi.h"
-#include "screen_hud.h"
-#include "screen_graph.h"
-#include "screen_calibration.h"
-#include "screen_telemetry.h"
-#include "screen_fms.h"
-#include "screen_system.h"
-#include "screen_tcl.h"
-#include "screen_mavlink_menu.h"
-#include "screen_mwi_menu.h"
-#include "screen_openpilot_menu.h"
-#include "screen_videolist.h"
-#include "screen_model.h"
-#include "screen_cli.h"
-#include "screen_baseflightcli.h"
-#include "screen_rcflow.h"
-#include "screen_tracker.h"
+#include <all.h>
+
 
 
 static char port_selected[100];

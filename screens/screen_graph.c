@@ -1,8 +1,5 @@
 
-#include <stdint.h>
-#include <model.h>
-#include <userdata.h>
-#include <main.h>
+#include <all.h>
 
 uint8_t graph_data[10][200];
 int16_t graph_pointer = 0;

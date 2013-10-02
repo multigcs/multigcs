@@ -1,9 +1,5 @@
 
-#include <userdata.h>
-#include <screen_background.h>
-#include <main.h>
-#include <draw.h>
-#include <model.h>
+#include <all.h>
 
 extern int file_exists (char *fileName);
 

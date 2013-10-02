@@ -1,14 +1,6 @@
 
-#include <stdint.h>
-#include <termios.h>
-#include <userdata.h>
-#include <model.h>
-#include <main.h>
-#include <screen_hud.h>
-#include <screen_map.h>
-#include <my_mavlink.h>
-#include <jeti.h>
-#include <mwi21.h>
+#include <all.h>
+
 
 
 uint8_t telemetry_null (char *name, float x, float y, int8_t button, float data) {
