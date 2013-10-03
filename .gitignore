@@ -6,3 +6,4 @@ package
 *.bin
 *.hex
 *.elf
+android/jni/src/*
