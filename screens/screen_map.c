@@ -59,8 +59,6 @@ uint8_t map_goto_screen (char *name, float x, float y, int8_t button, float data
 	return 0;
 }
 
-#ifndef ANDROID
-
 void map_parseMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t map_service) { 
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
@@ -167,7 +165,22 @@ static void map_parseDoc (char *docname) {
 //	xmlChar *key;
 	maplen = 0;
 	omaplen = 0;
-	doc = xmlParseFile(docname);
+
+	char *buffer = NULL;
+	int len = 0;
+	SDL_RWops *ops_file = SDL_RWFromFile(docname, "r");
+	if (ops_file == NULL) {
+		printf("map: Document open failed: %s\n", docname);
+		return;
+	}
+	len = SDL_RWseek(ops_file, 0, SEEK_END);
+	SDL_RWseek(ops_file, 0, SEEK_SET);
+	buffer = malloc(len);
+	SDL_RWread(ops_file, buffer, 1, len);
+	doc = xmlParseMemory(buffer, len);
+	SDL_RWclose(ops_file);
+	free(buffer);
+
 	if (doc == NULL) {
 		printf("map: Document parsing failed: %s\n", docname);
 		return;
@@ -190,14 +203,6 @@ static void map_parseDoc (char *docname) {
 	xmlFreeDoc(doc);
 	return;
 }
-
-#else
-
-static void map_parseDoc (char *docname) {
-	return;
-}
-
-#endif
 
 void map_exit (void) {
 	if (sdl_thread_get_maps1 != NULL) {

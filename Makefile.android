@@ -2,32 +2,33 @@
 all:
 	rm -f android/jni/src/*
 	(cd android/jni/src ; ln -s ../../../* ./)
-	rm -rf android/assets/multigcs
-	mkdir -p android/assets/multigcs
-	cp -a data/WMM2010.COF android/assets/multigcs/
-	cp -a data/map-services.xml android/assets/multigcs/
-	cp -a utils/clean-badmaps.sh android/assets/multigcs/clean-badmaps.sh
-	mkdir -p android/assets/multigcs/obj3d
-	mkdir -p android/assets/multigcs/textures
-	cp -a textures/* android/assets/multigcs/textures/
-	mkdir -p android/assets/multigcs/fonts
-	cp -a fonts/* android/assets/multigcs/fonts/
-	mkdir -p android/assets/multigcs/rcflow_presets
-	cp -a rcflow_presets/* android/assets/multigcs/rcflow_presets/
-	mkdir -p android/assets/multigcs/scripts
-	cp -a screens/screen_tcl.tcl android/assets/multigcs/scripts/screen_tcl.tcl
-	mkdir -p android/assets/multigcs/mavlink
-	cp -a mavlink/ParameterMetaData*.xml android/assets/multigcs/mavlink/
-	mkdir -p android/assets/multigcs/webserv
-	cp -a textures/marker.png android/assets/multigcs/webserv/marker.png
-	cp -a textures/MULTICOPTER.png android/assets/multigcs/webserv/model.png
-	cp -a net/map.js android/assets/multigcs/webserv/map.js
-	cp -a net/webserv-index.html android/assets/multigcs/webserv/index.html
-	cp -a net/style.css android/assets/multigcs/webserv/style.css
-	cp -a net/favicon.ico android/assets/multigcs/webserv/favicon.ico
-	cp -a net/blender-export.py android/assets/multigcs/webserv/blender-export.py
-	cp -a net/plane.dae android/assets/multigcs/webserv/plane.dae
-	cp -a net/simple.dae android/assets/multigcs/webserv/simple.dae
+	rm -rf android/assets
+	mkdir -p android/assets
+	cp -a data/WMM2010.COF android/assets/
+	cp -a data/map-services.xml android/assets/
+	cp -a utils/clean-badmaps.sh android/assets/clean-badmaps.sh
+	mkdir -p android/assets/obj3d
+	mkdir -p android/assets/textures
+	cp -a textures/* android/assets/textures/
+	mkdir -p android/assets/fonts
+	cp -a fonts/* android/assets/fonts/
+	mkdir -p android/assets/rcflow_presets
+	cp -a rcflow_presets/* android/assets/rcflow_presets/
+	mkdir -p android/assets/scripts
+	cp -a screens/screen_tcl.tcl android/assets/scripts/screen_tcl.tcl
+	mkdir -p android/assets/mavlink
+	cp -a mavlink/ParameterMetaData*.xml android/assets/mavlink/
+	mkdir -p android/assets/webserv
+	cp -a textures/marker.png android/assets/webserv/marker.png
+	cp -a textures/MULTICOPTER.png android/assets/webserv/model.png
+	cp -a net/map.js android/assets/webserv/map.js
+	cp -a net/webserv-index.html android/assets/webserv/index.html
+	cp -a net/style.css android/assets/webserv/style.css
+	cp -a net/style.css android/assets/style.css
+	cp -a net/favicon.ico android/assets/webserv/favicon.ico
+	cp -a net/blender-export.py android/assets/webserv/blender-export.py
+	cp -a net/plane.dae android/assets/webserv/plane.dae
+	cp -a net/simple.dae android/assets/webserv/simple.dae
 	(cd android ; ndk-build)
 	(cd android ; ant debug)
 

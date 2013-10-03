@@ -875,7 +875,7 @@ inline void draw_char_f3_fast (ESContext *esContext, float x1, float y1, float z
 
 void draw_text_f3_fast (ESContext *esContext, float x1, float y1, float z1, float w, float h, char *file, char *text) {
 
-
+// http://paulbourke.net/dataformats/hershey/
 
 static int simplex[95][112] = {
     0,16, /* Ascii 32 */

@@ -259,8 +259,6 @@ static void die(char *msg) {
 	return;
 }
 
-#ifndef ANDROID
-
 void rcflow_parseInput (xmlDocPtr doc, xmlNodePtr cur, uint8_t plugin, uint8_t input) { 
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
@@ -474,7 +472,22 @@ static void rcflow_parseDoc (char *docname) {
 	xmlDocPtr doc;
 	xmlNodePtr cur;
 	xmlChar *key;
-	doc = xmlParseFile(docname);
+
+	char *buffer = NULL;
+	int len = 0;
+	SDL_RWops *ops_file = SDL_RWFromFile(docname, "r");
+	if (ops_file == NULL) {
+		printf("map: Document open failed: %s\n", docname);
+		return;
+	}
+	len = SDL_RWseek(ops_file, 0, SEEK_END);
+	SDL_RWseek(ops_file, 0, SEEK_SET);
+	buffer = malloc(len);
+	SDL_RWread(ops_file, buffer, 1, len);
+	doc = xmlParseMemory(buffer, len);
+	SDL_RWclose(ops_file);
+	free(buffer);
+
 	if (doc == NULL) {
 		printf("rcflow: Document parsing failed: %s\n", docname);
 		return;
@@ -543,14 +556,6 @@ static void rcflow_parseDoc (char *docname) {
 	xmlFreeDoc(doc);
 	return;
 }
-
-#else
-
-static void rcflow_parseDoc (char *docname) {
-	return;
-}
-
-#endif
 
 void rcflow_convert_to_Embedded (void) {
 	char tmp_str[64];

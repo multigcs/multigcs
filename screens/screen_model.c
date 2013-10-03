@@ -174,8 +174,6 @@ static void die(char *msg) {
 	return;
 }
 
-#ifndef ANDROID
-
 static void model_parseTelemetry (xmlDocPtr doc, xmlNodePtr cur) { 
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
@@ -318,7 +316,22 @@ static void model_parseDoc (char *docname) {
 	xmlDocPtr doc;
 	xmlNodePtr cur;
 	xmlChar *key;
-	doc = xmlParseFile(docname);
+
+	char *buffer = NULL;
+	int len = 0;
+	SDL_RWops *ops_file = SDL_RWFromFile(docname, "r");
+	if (ops_file == NULL) {
+		printf("map: Document open failed: %s\n", docname);
+		return;
+	}
+	len = SDL_RWseek(ops_file, 0, SEEK_END);
+	SDL_RWseek(ops_file, 0, SEEK_SET);
+	buffer = malloc(len);
+	SDL_RWread(ops_file, buffer, 1, len);
+	doc = xmlParseMemory(buffer, len);
+	SDL_RWclose(ops_file);
+	free(buffer);
+
 	if (doc == NULL) {
 		printf("Document parsing failed: %s\n", docname);
 		return;
@@ -367,15 +380,6 @@ static void model_parseDoc (char *docname) {
 	xmlFreeDoc(doc);
 	return;
 }
-
-#else
-
-static void model_parseDoc (char *docname) {
-	return;
-}
-
-#endif
-
 
 static uint8_t model_load_xml (char *name, float x, float y, int8_t button, float data) {
 	model_parseDoc(name);

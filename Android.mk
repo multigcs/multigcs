@@ -3,7 +3,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := main
 
 BASE_DIR = multigcs
-LOCAL_CFLAGS := -DANDROID -DBASE_DIR="\"./share\"" -DANDROID -DSDLGL -DSDL2
+LOCAL_CFLAGS := -DANDROID -DBASE_DIR="\"\"" -DANDROID -DSDLGL -DSDL2
 
 SDL_PATH := ../SDL2
 SDL_IMAGE_PATH := ../SDL2_image
@@ -24,7 +24,7 @@ LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
 
 LOCAL_SHARED_LIBRARIES := SDL2 SDL2_image libxml2
 
-LOCAL_LDLIBS := -lGLESv1_CM -llog $(LOCAL_PATH)/$(CURL_PATH)/lib/armeabi-v7a/libcurl.a
+LOCAL_LDLIBS := -lGLESv1_CM -llog
 #LOCAL_LDLIBS := -lGLESv2 -llog -lEGL
 
 include $(BUILD_SHARED_LIBRARY)

@@ -96,21 +96,26 @@ void webserv_child_dump_screen (int fd) {
 
 void webserv_child_dump_file (int fd, char *file, char *type) {
 	char buffer[BUFSIZE + 1];
-	int file_fd;
+	char content[1024];
 	int len;
 	int ret;
-	if ((file_fd = open(file,O_RDONLY)) == -1) {
+	SDL_RWops *ops_file = SDL_RWFromFile(file, "r");
+	if (ops_file == NULL) {
 		printf("webserv: file not found: %s\n", file);
+		sprintf(content, "webserv: file not found: %s\n", file);
+		sprintf(buffer, header_str, (int)strlen(content), "text/plain");
+		write(fd, buffer, strlen(buffer));
+		write(fd, content, strlen(content));
 		return;
 	}
-	len = lseek(file_fd, (off_t)0, SEEK_END);
-	lseek(file_fd, (off_t)0, SEEK_SET);
+	len = SDL_RWseek(ops_file, 0, SEEK_END);
+	SDL_RWseek(ops_file, 0, SEEK_SET);
 	sprintf(buffer, header_str, len, type);
 	write(fd, buffer, strlen(buffer));
-	while ((ret = read(file_fd, buffer, BUFSIZE)) > 0) {
-		write(fd,buffer,ret);
+	while ((ret = SDL_RWread(ops_file, buffer, 1, BUFSIZE)) > 0) {
+		write(fd, buffer, ret);
 	}
-	close(file_fd);
+	SDL_RWclose(ops_file);
 }
 
 void webserv_child_dump_blender (int fd) {
@@ -3314,6 +3319,7 @@ void webserv_child (int fd) {
 		} else if (strncmp(buffer + 4,"/style.css", 10) == 0) {
 			sprintf(tmp_str, "%s/webserv/style.css", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/plain");
+//			webserv_child_dump_file(fd, "style.css", "text/plain");
 		} else if (strncmp(buffer + 4,"/bg.png", 7) == 0) {
 			sprintf(tmp_str, "%s/webserv/bg.png", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "image/png");

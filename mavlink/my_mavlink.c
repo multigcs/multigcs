@@ -801,7 +801,7 @@ int mavlink_udp (void *data) {
 	return 0;
 }
 
-#ifndef ANDROID
+#ifndef ANDROID_
 void mavlink_parseParams1 (xmlDocPtr doc, xmlNodePtr cur, char *name) { 
 	int n = 0;
 	int n2 = 0;
@@ -911,7 +911,22 @@ void mavlink_parseParams (xmlDocPtr doc, xmlNodePtr cur) {
 static void mavlink_parseDoc (char *docname) {
 	xmlDocPtr doc;
 	xmlNodePtr cur;
-	doc = xmlParseFile(docname);
+
+	char *buffer = NULL;
+	int len = 0;
+	SDL_RWops *ops_file = SDL_RWFromFile(docname, "r");
+	if (ops_file == NULL) {
+		printf("map: Document open failed: %s\n", docname);
+		return;
+	}
+	len = SDL_RWseek(ops_file, 0, SEEK_END);
+	SDL_RWseek(ops_file, 0, SEEK_SET);
+	buffer = malloc(len);
+	SDL_RWread(ops_file, buffer, 1, len);
+	doc = xmlParseMemory(buffer, len);
+	SDL_RWclose(ops_file);
+	free(buffer);
+
 	if (doc == NULL) {
 		printf("mavlink: Document parsing failed: %s\n", docname);
 		return;
