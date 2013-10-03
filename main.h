@@ -1,20 +1,6 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include <SDL.h>
-#include <SDL_thread.h>
-#include <SDL_events.h>
-
-#ifndef SDLGL
-#include "gles_draw.h"
-#else
-#define NO_SDL_GLEXT
-#include <SDL_image.h>
-#include <SDL_opengl.h>
-#include "gl_draw.h"
-#endif
-#include "draw.h"
-
 #ifdef RPI_NO_X
 #define SCREEN_W 1280
 #define SCREEN_H 720

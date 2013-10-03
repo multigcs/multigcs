@@ -3,14 +3,20 @@
 #ifdef SDLGL
 #ifndef OSX
 #define NO_SDL_GLEXT
+#ifndef ANDROID
 #include <GL/gl.h>
 #include <GL/glext.h>
+#endif
 #endif
 #include <SDL.h>
 #include <SDL_thread.h>
 #include <SDL_events.h>
 #include <SDL_image.h>
+#ifndef ANDROID
 #include <SDL_opengl.h>
+#else
+#include <SDL_opengles.h>
+#endif
 #else
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
@@ -20,6 +26,7 @@
 
 
 typedef struct {
+#ifndef ANDROID
 #ifndef SDLGL
 	GLuint programObject;
 	GLint  positionLoc;
@@ -34,6 +41,7 @@ typedef struct {
 	GLuint textureId[10];
 	ESMatrix  mvpMatrix2;
 	ESMatrix perspective;
+#endif
 #endif
 } UserData;
 

@@ -1,4 +1,5 @@
 
+
 #include <ctype.h>
 #include <dirent.h>
 #include <errno.h>
@@ -27,12 +28,29 @@
 #endif
 
 #include <png.h>
+
+#ifndef ANDROID
 #include <tcl.h>
 #include <curl/curl.h>
+#endif
 
 #include <libxml/xmlmemory.h>
 #include <libxml/parser.h>
 
+#ifdef ANDROID
+#include <SDL.h>
+#include <android_gles.h>
+#include <SDL_opengles.h>
+#include <SDL_main.h>
+#include <SDL_image.h>
+#include <SDL_thread.h>
+#include <SDL_events.h>
+
+#include <android/sensor.h>
+#include <android/log.h>
+
+
+#else
 
 #ifdef OSX
 #include <SDL_main.h>
@@ -52,7 +70,13 @@
 #include <OpenGL/glu.h>
 #endif
 #include <SDL_image.h>
+#ifndef ANDROID
 #include <SDL_opengl.h>
+#else
+#include <SDL_opengles.h>
+#endif
+#endif
+
 #endif
 
 #ifndef OSX
@@ -100,11 +124,27 @@
 #include <screen_openpilot_menu.h>
 #include <screen_rcflow.h>
 #include <screen_system.h>
-#include <screen_tcl.h>
 #include <screen_telemetry.h>
 #include <screen_tracker.h>
 #include <screen_videolist.h>
 #include <screen_wpedit.h>
+#ifndef ANDROID
+#include <screen_tcl.h>
+#endif
+
+#ifndef ANDROID
+#include <screen_tcl.h>
+#endif
 
 
+#ifndef SDLGL
+#include "gles_draw.h"
+#else
+#ifdef ANDROID
+#include "glesa_draw.h"
+#else
+#include "gl_draw.h"
+#endif
+#endif
+#include "draw.h"
 

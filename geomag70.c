@@ -153,6 +153,9 @@ int init_declination (char *mdfile, int year, int month, int day) {
   inbuff[MAXINBUFF-1]='\0';  /* Just to protect mem. */
 
       stream = fopen(mdfile, "rt");
+      if (stream == NULL) {
+	return 0;
+      }
       fileline = 0;                            /* First line will be 1 */
       modelI = -1;                             /* First model will be 0 */
       while (fgets(inbuff,MAXREAD,stream)) {

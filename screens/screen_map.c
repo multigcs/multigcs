@@ -59,6 +59,8 @@ uint8_t map_goto_screen (char *name, float x, float y, int8_t button, float data
 	return 0;
 }
 
+#ifndef ANDROID
+
 void map_parseMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t map_service) { 
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
@@ -189,6 +191,13 @@ static void map_parseDoc (char *docname) {
 	return;
 }
 
+#else
+
+static void map_parseDoc (char *docname) {
+	return;
+}
+
+#endif
 
 void map_exit (void) {
 	if (sdl_thread_get_maps1 != NULL) {
@@ -225,6 +234,7 @@ int file_download (char *fileName, char *url) {
 	sprintf(tmp_cmd, "wget -q -O %s \"%s\"", tmp_file, url);
 	system(tmp_cmd);
 #else
+#ifndef ANDROID
 	CURL *curl_handle;
 	FILE *bodyfile;
 	bodyfile = fopen(tmp_file,"w");
@@ -242,6 +252,7 @@ int file_download (char *fileName, char *url) {
 	curl_easy_perform(curl_handle);
 	fclose(bodyfile);
 	curl_easy_cleanup(curl_handle);
+#endif
 #endif
 	rename(tmp_file, fileName);
 	return 0;
@@ -458,6 +469,7 @@ void get_maps (uint8_t mode) {
 	}
 }
 
+#ifndef ANDROID
 
 #include <unzip.h>
 
@@ -517,6 +529,13 @@ int unzipFile( char* zipfile, char* filename, char* outfile ) {
 	return result;
 }
 
+#else
+
+int unzipFile( char* zipfile, char* filename, char* outfile ) {
+	return 0;
+}
+
+#endif
 
 void get_srtm (void) {
 	char file[1024];
@@ -1622,6 +1641,10 @@ void draw_waypoints_cup (ESContext *esContext, float lat, float lon, uint8_t zoo
 }
 
 void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint8_t _map_view, uint8_t draw_tiles, float alpha0, float alpha1, float alpha2, float grid) {
+#ifdef ANDROID
+	return;
+#endif
+
 	ESMatrix modelview;
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
@@ -1687,7 +1710,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		char map_setup_file[1024];
 		sprintf(map_setup_file, "%s/map-services.xml", BASE_DIR);
 		map_parseDoc(map_setup_file);
-
 		for (n = 0; n < MAX_POIS; n++) {
 			POIs[n].name[0] = 0;
 			POIs[n].p_lat = 0.0;

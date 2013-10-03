@@ -801,6 +801,7 @@ int mavlink_udp (void *data) {
 	return 0;
 }
 
+#ifndef ANDROID
 void mavlink_parseParams1 (xmlDocPtr doc, xmlNodePtr cur, char *name) { 
 	int n = 0;
 	int n2 = 0;
@@ -931,6 +932,14 @@ static void mavlink_parseDoc (char *docname) {
 	xmlFreeDoc(doc);
 	return;
 }
+
+#else
+
+static void mavlink_parseDoc (char *docname) {
+	return;
+}
+
+#endif
 
 void mavlink_param_xml_meta_load (void) {
 	char filename[1024];

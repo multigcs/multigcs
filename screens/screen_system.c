@@ -220,8 +220,10 @@ void screen_overview (ESContext *esContext) {
 			screen_videolist(esContext);
 		} else if (n == VIEW_MODE_SYSTEM) {
 			screen_system(esContext);
+#ifndef ANDROID
 		} else if (n == VIEW_MODE_TCL) {
 			screen_tcl(esContext);
+#endif
 		} else if (n == VIEW_MODE_TRACKER) {
 			screen_tracker(esContext);
 		} else if (n == VIEW_MODE_FCMENU) {

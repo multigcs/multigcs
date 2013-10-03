@@ -174,6 +174,8 @@ static void die(char *msg) {
 	return;
 }
 
+#ifndef ANDROID
+
 static void model_parseTelemetry (xmlDocPtr doc, xmlNodePtr cur) { 
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
@@ -365,6 +367,15 @@ static void model_parseDoc (char *docname) {
 	xmlFreeDoc(doc);
 	return;
 }
+
+#else
+
+static void model_parseDoc (char *docname) {
+	return;
+}
+
+#endif
+
 
 static uint8_t model_load_xml (char *name, float x, float y, int8_t button, float data) {
 	model_parseDoc(name);

@@ -2,9 +2,6 @@
 #include <all.h>
 
 
-
-#include <tcl.h>
-
 #ifdef RPI_NO_X
 #define SIMPLE_DRAW	1
 #endif
@@ -261,6 +258,8 @@ static void die(char *msg) {
 	printf("rcflow: %s", msg);
 	return;
 }
+
+#ifndef ANDROID
 
 void rcflow_parseInput (xmlDocPtr doc, xmlNodePtr cur, uint8_t plugin, uint8_t input) { 
 	xmlChar *key;
@@ -544,6 +543,14 @@ static void rcflow_parseDoc (char *docname) {
 	xmlFreeDoc(doc);
 	return;
 }
+
+#else
+
+static void rcflow_parseDoc (char *docname) {
+	return;
+}
+
+#endif
 
 void rcflow_convert_to_Embedded (void) {
 	char tmp_str[64];

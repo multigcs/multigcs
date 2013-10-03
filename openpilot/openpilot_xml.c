@@ -104,6 +104,7 @@ void model_save_xml_OpenPilot (FILE *fr) {
 }
 
 
+#ifndef ANDROID
 
 void model_parseOpenPilot_StabilizationSettings (xmlDocPtr doc, xmlNodePtr cur, StabilizationSettingsData *data) {
 	xmlChar *key;
@@ -610,4 +611,10 @@ void model_parseOpenPilot (xmlDocPtr doc, xmlNodePtr cur) {
 	return;
 }
 
+#else
 
+void model_parseOpenPilot (xmlDocPtr doc, xmlNodePtr cur) {
+	return;
+}
+
+#endif

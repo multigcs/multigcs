@@ -155,10 +155,10 @@ void draw_turning_indicator (ESContext *esContext, float ti_x, float ti_y, float
 	// Hoehe
 	draw_box_f3(esContext, 0.0 - (w / 5.0), 0.0 - (w / 14.0), 0.005, 0.0 + (w / 5.0), 0.0 - (w / 14.0) + (w / 40.0), 0.005, 255, 255, 255, 255);
 	// Seite
-	draw_box_f3(esContext, 0.0 - (w / 40.0), 0.0, 0.005, 0.0 + (w / 140.0), 0.0 - 0.1, 0.005, 255, 255, 255, 255);
+	draw_box_f3(esContext, 0.0 - (w / 40.0), 0.0 - 0.03, 0.005, 0.0 + (w / 140.0), 0.0 + 0.03, 0.005, 255, 255, 255, 255);
 	// Flaechen
-	draw_triaFilled_f3(esContext, 0.0, 0.0 - (w / 40.0), 0.005, 0.0 + (w / 2.2), 0.0, (w / 40.0), 0.0, 0.0 + (w / 40.0), 0.005, 255, 255, 255, 255);
-	draw_triaFilled_f3(esContext, 0.0, 0.0 - (w / 40.0), 0.005, 0.0 - (w / 2.2), 0.0, (w / 40.0), 0.0, 0.0 + (w / 40.0), 0.005, 255, 255, 255, 255);
+	draw_triaFilled_f3(esContext, 0.0, 0.0 + (w / 40.0), 0.005, 0.0 + (w / 2.2), 0.0, 0.005, 0.0, 0.0 - (w / 40.0), 0.005, 255, 255, 255, 255);
+	draw_triaFilled_f3(esContext, 0.0, 0.0 - (w / 40.0), 0.005, 0.0 - (w / 2.2), 0.0, 0.005, 0.0, 0.0 + (w / 40.0), 0.005, 255, 255, 255, 255);
 	esRotate(&modelview, -rate_yaw, 0.0, 0.0, 1.0);
 #ifndef SDLGL
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
@@ -291,7 +291,7 @@ void draw_altiude_rule (ESContext *esContext, float ti_x, float ti_y, float w, f
 		draw_line_f3(esContext, ax1, 0.0 - ((float)n - (ModelData.p_alt - ModelData.alt_offset)) * 0.1 + 0.05, 0.0015, ax1 + 0.01, 0.0 - ((float)n - (ModelData.p_alt - ModelData.alt_offset)) * 0.1 + 0.05, 0.0015, 255, 255, 255, 255);
 	}
 	draw_box_f3(esContext, ax, -0.05, 0.002, ax + 0.28, 0.05, 0.002, 0, 0, 0, 255);
-	draw_triaFilled_f3(esContext, ax - 0.02, 0.0, 0.002, ax, -0.02, 0.002, ax, 0.02, 0.002, 0, 0, 0, 255);
+	draw_triaFilled_f3(esContext, ax, -0.02, 0.002, ax - 0.02, 0.0, 0.002, ax, 0.02, 0.002, 0, 0, 0, 255);
 	draw_line_f3(esContext, ax, -0.05, 0.002, ax + 0.28, -0.05, 0.002, 255, 255, 255, 255);
 	draw_line_f3(esContext, ax, 0.05, 0.002, ax + 0.28, 0.05, 0.002, 255, 255, 255, 255);
 	draw_line_f3(esContext, ax + 0.28, -0.05, 0.002, ax + 0.28, 0.05, 0.002, 255, 255, 255, 255);
@@ -358,7 +358,7 @@ void draw_speed_rule (ESContext *esContext, float ti_x, float ti_y, float w, flo
 		draw_line_f3(esContext, ax1 + 0.17, 0.0 - ((float)n - speed) * 0.1 + 0.05, 0.0015, ax1 + 0.17 - 0.01, 0.0 - ((float)n - speed) * 0.1 + 0.05, 0.0015, 255, 255, 255, 255);
 	}
 
-	draw_box_f3(esContext, ax, -0.05, 0.002, ax - 0.28, 0.05, 0.002, 0, 0, 0, 255);
+	draw_box_f3(esContext, ax - 0.28, -0.05, 0.002, ax, 0.05, 0.002, 0, 0, 0, 255);
 	draw_triaFilled_f3(esContext, ax + 0.02, 0.0, 0.002, ax, -0.02, 0.002, ax, 0.02, 0.002, 0, 0, 0, 255);
 	draw_line_f3(esContext, ax, -0.05, 0.002, ax - 0.28, -0.05, 0.002, 255, 255, 255, 255);
 	draw_line_f3(esContext, ax, 0.05, 0.002, ax - 0.28, 0.05, 0.002, 255, 255, 255, 255);
@@ -440,12 +440,12 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 
 	if (setup.hud_view_map == 0 && setup.hud_view_video == 0) {
 		if (setup.contrast == 1) {
-			draw_box_f3(esContext, -2.5f, -2.5f, -0.001, 2.5f, 0.0f, -0.001, 127, 127, 127, 255);
-			draw_box_f3(esContext, -2.5f, 0.0f, -0.001, 2.5f, 2.5f, -0.001, 255, 255, 255, 255);
+			draw_box_f3(esContext, -2.5f, -2.5f, 0.001, 2.5f, 0.0f, 0.001, 127, 127, 127, 255);
+			draw_box_f3(esContext, -2.5f, 0.0f, 0.001, 2.5f, 2.5f, 0.001, 255, 255, 255, 255);
 		} else {
 #ifdef SDLGL
-			draw_box_f3c2(esContext, -2.5f, -2.5f, -0.001, 2.5f, 0.0f, -0.001, 0x01, 0x8e, 0xea, 100, 0x01, 0x8e, 0xea, 255); // blue
-			draw_box_f3c2(esContext, -2.5f, 0.0f, -0.001, 2.5f, 2.5f, -0.001, 0xb1, 0x56, 0x1f, 255, 0xb1, 0x56, 0x1f, 100);  // brown
+			draw_box_f3c2(esContext, -2.5f, -2.5f, 0.001, 2.5f, 0.0f, 0.001, 0x01, 0x8e, 0xea, 100, 0x01, 0x8e, 0xea, 255); // blue
+			draw_box_f3c2(esContext, -2.5f, 0.0f, 0.001, 2.5f, 2.5f, 0.001, 0xb1, 0x56, 0x1f, 255, 0xb1, 0x56, 0x1f, 100);  // brown
 #else
 			char tmp_str[128];
 			sprintf(tmp_str, "%s/textures/blue.png", BASE_DIR);
@@ -723,9 +723,11 @@ void screen_hud (ESContext *esContext) {
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
 
+#ifndef ANDROID
 	if (setup.hud_view_screen == 0) {
 		draw_image(esContext, 0, 0, esContext->width, esContext->height, TEXTURE_HUD_FRAME);
 	}
+#endif
 
 
 	// Alt

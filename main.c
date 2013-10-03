@@ -969,6 +969,35 @@ void check_events (ESContext *esContext, SDL_Event event) {
 		}
 
 #ifdef SDL2
+#ifdef ANDROID
+	} else if (event.type == SDL_FINGERDOWN) {
+		float x = (int)(event.tfinger.x * (float)setup.screen_w);
+		float y = (int)(event.tfinger.y * (float)setup.screen_h);
+		SDL_Event user_event;
+		user_event.type=SDL_MOUSEBUTTONDOWN;
+		user_event.button.x = x;
+		user_event.button.y = y;
+		user_event.button.button = 1;
+		SDL_PushEvent(&user_event);
+	} else if (event.type == SDL_FINGERUP) {
+		float x = (int)(event.tfinger.x * (float)setup.screen_w);
+		float y = (int)(event.tfinger.y * (float)setup.screen_h);
+		SDL_Event user_event;
+		user_event.type=SDL_MOUSEBUTTONUP;
+		user_event.button.x = x;
+		user_event.button.y = y;
+		user_event.button.button = 1;
+		SDL_PushEvent(&user_event);
+	} else if (event.type == SDL_FINGERMOTION) {
+		float x = (int)(event.tfinger.x * (float)setup.screen_w);
+		float y = (int)(event.tfinger.y * (float)setup.screen_h);
+		SDL_Event user_event;
+		user_event.type=SDL_MOUSEMOTION;
+		user_event.button.x = x;
+		user_event.button.y = y;
+		user_event.button.button = 1;
+		SDL_PushEvent(&user_event);
+#endif
 	} else if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEWHEEL) {
 		if (event.type == SDL_MOUSEWHEEL) {
 
@@ -1322,8 +1351,10 @@ static uint8_t screen_next (char *name, float x, float y, int8_t button, float d
 }
 
 
-
 void display_update (ESContext *esContext) {
+#ifdef ANDROID
+	gl_update();
+#else
 #ifndef SDLGL
 	eglSwapBuffers(esContext->eglDisplay, esContext->eglSurface);
 #else
@@ -1333,6 +1364,7 @@ void display_update (ESContext *esContext) {
 	SDL_GL_SwapBuffers();
 #endif
 	SDL_Delay(15);
+#endif
 #endif
 
 #ifdef HTML_DRAWING
@@ -1677,8 +1709,10 @@ void Draw (ESContext *esContext) {
 		screen_background(esContext);
 		screen_system(esContext);
 	} else if (setup.view_mode == VIEW_MODE_TCL) {
+#ifndef ANDROID
 		screen_background(esContext);
 		screen_tcl(esContext);
+#endif
 	} else if (setup.view_mode == VIEW_MODE_TRACKER) {
 		screen_background(esContext);
 		screen_tracker(esContext);
@@ -1765,6 +1799,7 @@ void Draw (ESContext *esContext) {
 #else
 	SDL_Delay(15);
 #endif
+
 }
 
 void ShutDown ( ESContext *esContext ) {
@@ -1827,16 +1862,19 @@ void ShutDown ( ESContext *esContext ) {
 }
 
 
+
+
 ESContext *GlobalesContext = NULL;
 
 int main ( int argc, char *argv[] ) {
+	char dir[1024];
 	char tmp_name[201];
 	ESContext esContext;
 #ifndef SDLGL
 	UserData userData;
 #endif
 
-	char dir[1024];
+
 	sprintf(dir, "%s", get_datadirectory());
 	mkdir(dir, 0755);
 	sprintf(dir, "%s/MAPS", get_datadirectory());
@@ -1923,12 +1961,16 @@ int main ( int argc, char *argv[] ) {
 //	printf( "* Extensions : %s\n", glGetString( GL_EXTENSIONS ) );
 
 
+
 #ifndef OSX
 #ifdef SDLGL
 	videodev_start(setup.videocapture_device, setup.videocapture_width, setup.videocapture_height);
 #endif
 #endif
 
+#ifdef ANDROID
+gl_update();
+#else
 #ifndef CONSOLE_ONLY
 	// preload map on startup for faster view-changes
 	draw_text_f3(&esContext, -1.4, -0.95, 0.003, 0.06, 0.06, FONT_WHITE, "PreLoading Maps...");
@@ -1944,7 +1986,11 @@ int main ( int argc, char *argv[] ) {
 #endif
 #endif
 #endif
+#endif
+
+#ifndef ANDROID
 	screen_map(&esContext, lat, lon, zoom);
+#endif
 	int16_t zz = get_altitude(ModelData.p_lat, ModelData.p_long);
 	if (ModelData.p_alt < zz + 10) {
 		ModelData.p_alt = zz + 10;
