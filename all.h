@@ -104,6 +104,7 @@
 #include <webserv.h>
 #include <logging.h>
 #include <openpilot_xml.h>
+#include <htmlget.h>
 
 #include <screen_background.h>
 #include <screen_baseflightcli.h>

@@ -15,8 +15,10 @@ static char view_names[VIEW_MODE_LAST][100] = {
 	"MODEL",
 	"FCMENU",
 	"RCFLOW",
+#ifndef ANDROID
 	"VIDEOLIST",
 	"TCL",
+#endif
 	"TRACKER",
 	"SYSTEM",
 };
@@ -201,6 +203,7 @@ void screen_overview (ESContext *esContext) {
 			x = 0;
 			y += 1;
 		}
+#ifndef ANDROID
 		draw_to_buffer();
 		if (n == VIEW_MODE_HUD) {
 			screen_hud(esContext);
@@ -216,11 +219,11 @@ void screen_overview (ESContext *esContext) {
 			screen_wpedit(esContext);
 		} else if (n == VIEW_MODE_MAP) {
 			screen_map(esContext, lat, lon, zoom);
-		} else if (n == VIEW_MODE_VIDEOLIST) {
-			screen_videolist(esContext);
 		} else if (n == VIEW_MODE_SYSTEM) {
 			screen_system(esContext);
 #ifndef ANDROID
+		} else if (n == VIEW_MODE_VIDEOLIST) {
+			screen_videolist(esContext);
 		} else if (n == VIEW_MODE_TCL) {
 			screen_tcl(esContext);
 #endif
@@ -246,14 +249,12 @@ void screen_overview (ESContext *esContext) {
 			}
 		}
 		draw_to_screen();
-//		draw_buffer_to_screen(-1.3 + x * 0.5, -0.8 + y * 0.4, -1.3 + x * 0.5 + 0.5, -0.8 + y * 0.4 + 0.4, 0.002, 1.0);
 		draw_buffer_to_screen(-1.422 + x * 0.71, -0.99 + y * 0.66, -1.422 + x * 0.71 + 0.71, -0.99 + y * 0.66 + 0.66, 0.002, 1.0);
+#endif
 		sprintf(tmp_str, "%s", view_names[n]);
 		if (setup.view_mode == n) {
-//			draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_GREEN, -1.3 + 0.25 + x * 0.5, -0.8 + y * 0.4, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)n);
 			draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_GREEN, -1.422 + 0.35 + x * 0.71, -0.99 + y * 0.66, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)n);
 		} else {
-//			draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_WHITE, -1.3 + 0.25 + x * 0.5, -0.8 + y * 0.4, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)n);
 			draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_WHITE, -1.422 + 0.35 + x * 0.71, -0.99 + y * 0.66, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)n);
 		}
 		reset_buttons();

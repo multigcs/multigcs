@@ -11,6 +11,8 @@ SDL_Window *MainWindow = NULL;
 SDL_GLContext MainGLcontext;
 SDL_Surface *WinScreen = NULL;
 
+uint8_t RB_Active = 0;
+
 void gl_update (void);
 
 void esTranslate(ESMatrix *result, GLfloat tx, GLfloat ty, GLfloat tz) {
@@ -171,7 +173,6 @@ void gl_init (void) {
 	SDL_Log("Extensions : %s\n", glGetString(GL_EXTENSIONS));
 	SDL_Log("\n");
 	for (i = 0; i < state->num_windows; ++i) {
-		float aspectAdjust;
 		status = SDL_GL_MakeCurrent(state->windows[i], context[i]);
 		if (status) {
 			SDL_Log("SDL_GL_MakeCurrent(): %s\n", SDL_GetError());
@@ -183,12 +184,14 @@ void gl_init (void) {
 
 		state->window_w = 1205;
 		state->window_h = 800;
-		aspect = (GLfloat)state->window_w / (GLfloat)state->window_h;
+		setup.screen_w = state->window_w;
+		setup.screen_h = state->window_h;
+		aspect = (GLfloat)setup.screen_w / (GLfloat)setup.screen_h;
 
-		aspectAdjust = 1.0 / ((float)state->window_w / state->window_h);
+		float aspectAdjust = 1.0 / ((float)setup.screen_w / setup.screen_h);
 		glOrthof(-1.5, 1.5, -1.5 * aspectAdjust, 1.5 * aspectAdjust, -20.0, 20.0);
 
-//		glViewport(0 + setup.screen_border_x / 2, 0 + setup.screen_border_y / 2, state->window_w - setup.screen_border_x, state->window_h - setup.screen_border_y);
+//		glViewport(0 + setup.screen_border_x / 2, 0 + setup.screen_border_y / 2, setup.screen_w - setup.screen_border_x, setup.screen_h - setup.screen_border_y);
 //		gluPerspective(53.0, aspect, 0.001, 7.0);
 
 		glMatrixMode(GL_MODELVIEW);
@@ -236,6 +239,7 @@ void glResize (ESContext *esContext, int w, int h) {
 }
 
 uint8_t draw_target (void) {
+	return RB_Active;
 	return 0;
 }
 
@@ -258,9 +262,11 @@ void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float 
 }
 
 void draw_to_buffer (void) {
+	RB_Active = 1;
 }
 
 void draw_to_screen (void) {
+	RB_Active = 0;
 }
 
 void draw_buffer_to_screen (float x1, float y1, float x2, float y2, float z, float alpha) {
@@ -644,7 +650,7 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 			}    
 		}
 	}
-	if (TexCache[tex_num].texture != 0) {
+//	if (TexCache[tex_num].texture != 0) {
 		TexCache[tex_num].atime = time(0);
 
 		float z1 = z;
@@ -663,7 +669,7 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 		float _dhx = _hx2 - _hx1;
 		float _dhy = _hy2 - _hy1;
 
-		uint8_t subtiles = 2;
+		uint8_t subtiles = 6;
 		for (ty = 0; ty < subtiles; ty++) {
 			for (tx = 0; tx < subtiles; tx++) {
 				float tx1 = x1 + dx / (float)subtiles * (float)tx;
@@ -691,43 +697,44 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 				z3 = z + (float)_alt3 / alt_zoom;
 				z4 = z + (float)_alt4 / alt_zoom;
 
-		//glUseProgram(userData->programObject);
-		glActiveTexture(GL_TEXTURE0);
+				glActiveTexture(GL_TEXTURE0);
 
-		GLfloat vVertices[] = {
-			tx1, ty1, z1,  // Position 0
-			tex1, tey1,          // TexCoord 3
-			tx1, ty2, z4,  // Position 1
-			tex1,  tey2,         // TexCoord 0 
-			tx2, ty2, z3,   // Position 2
-			tex2,  tey2,         // TexCoord 1
-			tx2, ty1, z2,   // Position 3
-			tex2, tey1,         // TexCoord 2
-		};
-		GLushort indices[] = { 0, 1, 2, 0, 2, 3 };
+				GLfloat vVertices[] = {
+					tx1, ty1, z1,  // Position 0
+					tx1, ty2, z4,  // Position 1
+					tx2, ty2, z3,   // Position 2
+					tx2, ty1, z2,   // Position 3
+				};
+				GLushort indices[] = { 0, 1, 2, 0, 2, 3 };
 
-		//glVertexAttribPointer ( userData->positionLoc, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), vVertices );
-		//glEnableVertexAttribArray ( userData->positionLoc );
-		//glUniformMatrix4fv( userData->mvpLoc, 1, GL_FALSE, (GLfloat*) &userData->mvpMatrix.m[0][0] );
+				if ((float)_alt1 > ModelData.p_alt || (float)_alt2 > ModelData.p_alt || (float)_alt3 > ModelData.p_alt || (float)_alt4 > ModelData.p_alt) {
+					glColor4f(255.0, 0.0, 0.0, 0.3);
+					glVertexPointer(3, GL_FLOAT, 0, vVertices);
+					glEnableClientState(GL_VERTEX_ARRAY);
+					glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
+				} else {
+					glColor4f(0.0, 255.0, 0.0, 0.3);
+					glVertexPointer(3, GL_FLOAT, 0, vVertices);
+					glEnableClientState(GL_VERTEX_ARRAY);
+					glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
+				}
 
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_BLEND);
-
-		//glVertexAttribPointer ( userData->texCoordLoc, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), &vVertices[3] );
-		//glEnableVertexAttribArray ( userData->texCoordLoc );
-//		glBindTexture (GL_TEXTURE_2D, TexCache[tex_num].texture );
-		//glUniform1i ( userData->samplerLoc, 0 );
-		//glDrawElements ( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices );
+grid = 0.5;
+				if (grid > 0.0) {
+					glColor4f(255.0, 255.0, 255.0, grid);
+					glVertexPointer(3, GL_FLOAT, 0, vVertices);
+					glEnableClientState(GL_VERTEX_ARRAY);
+					glDrawElements(GL_LINE_LOOP, 6, GL_UNSIGNED_SHORT, indices);
+				}
 
 
 			}
 		}
 
-	}
+//	}
 }
 
 void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, char *file) {
-return;
 	UserData *userData = esContext->userData;
 	y1 = y1 * -1;
 	y2 = y2 * -1;
@@ -794,25 +801,15 @@ return;
 		GLushort indices[] = { 0, 1, 2, 0, 2, 3 };
 
 		glColor4f(1.0, 0.0, 0.0, 1.0);
-
 		glActiveTexture(GL_TEXTURE0);
-
-
-
 //		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //		glEnable(GL_BLEND);
-
 		glBindTexture(GL_TEXTURE_2D, TexCache[tex_num].texture);
-
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glTexCoordPointer(2, GL_FLOAT, 0, vTex);
-
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glVertexPointer(3, GL_FLOAT, 0, vVertices);
-
-
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
-
+		glDrawElements(GL_LINE_STRIP, 6, GL_UNSIGNED_SHORT, indices);
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		glDisableClientState(GL_VERTEX_ARRAY);
 

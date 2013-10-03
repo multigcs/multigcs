@@ -30,7 +30,9 @@ all:
 	cp -a net/plane.dae android/assets/webserv/plane.dae
 	cp -a net/simple.dae android/assets/webserv/simple.dae
 	(cd android ; ndk-build)
-	(cd android ; ant debug)
+
+install:
+	(cd android ; ant debug install)
 
 clean:
 	(cd android ; ndk-build clean)
@@ -39,8 +41,4 @@ clean:
 	rm -rf android/bin/
 	rm -rf android/libs/
 	rm -rf android/obj/ 
-
-
-install:
-	(cd android ; ant debug install)
 

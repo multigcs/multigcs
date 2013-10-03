@@ -1280,6 +1280,7 @@ void screen_hud (ESContext *esContext) {
 	draw_text_button(esContext, "view_map_bw", VIEW_MODE_HUD, "BW", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_bw, 0);
 #endif
 
+#ifndef ANDROID
 #ifdef SDLGL
 	if (setup.hud_view_screen != 2 && draw_target() == 0) {
 		draw_to_buffer();
@@ -1290,6 +1291,7 @@ void screen_hud (ESContext *esContext) {
 		draw_rect_f3(esContext, 0.9 - 0.005, 0.4 - 0.005, 0.002, 1.4 + 0.005, 0.85 + 0.005, 0.002, 255, 255, 255, 255);
 		set_button("goto_map", setup.view_mode, 0.9, 0.4, 1.4, 0.85, hud_goto_screen, (float)VIEW_MODE_MAP, 0);
 	}
+#endif
 #endif
 
 #ifdef SDLGL

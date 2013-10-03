@@ -123,12 +123,14 @@ void save_screenshot (void) {
 		strncpy(name, "fms", 99);
 	} else if (setup.view_mode == VIEW_MODE_MAP) {
 		strncpy(name, "map", 99);
-	} else if (setup.view_mode == VIEW_MODE_VIDEOLIST) {
-		strncpy(name, "video", 99);
 	} else if (setup.view_mode == VIEW_MODE_SYSTEM) {
 		strncpy(name, "system", 99);
+#ifndef ANDROID
+	} else if (setup.view_mode == VIEW_MODE_VIDEOLIST) {
+		strncpy(name, "video", 99);
 	} else if (setup.view_mode == VIEW_MODE_TCL) {
 		strncpy(name, "tcl", 99);
+#endif
 	} else if (setup.view_mode == VIEW_MODE_TRACKER) {
 		strncpy(name, "tracker", 99);
 	} else if (setup.view_mode == VIEW_MODE_FCMENU) {
@@ -1702,14 +1704,14 @@ void Draw (ESContext *esContext) {
 			map_view = 0;
 		}
 		screen_map(esContext, lat, lon, zoom);
-	} else if (setup.view_mode == VIEW_MODE_VIDEOLIST) {
-		screen_background(esContext);
-		screen_videolist(esContext);
 	} else if (setup.view_mode == VIEW_MODE_SYSTEM) {
 		screen_background(esContext);
 		screen_system(esContext);
-	} else if (setup.view_mode == VIEW_MODE_TCL) {
 #ifndef ANDROID
+	} else if (setup.view_mode == VIEW_MODE_VIDEOLIST) {
+		screen_background(esContext);
+		screen_videolist(esContext);
+	} else if (setup.view_mode == VIEW_MODE_TCL) {
 		screen_background(esContext);
 		screen_tcl(esContext);
 #endif

@@ -166,6 +166,10 @@ static void map_parseDoc (char *docname) {
 	maplen = 0;
 	omaplen = 0;
 
+	if (strncmp(docname, "./", 2) == 0) {
+		docname += 2;
+	}
+
 	char *buffer = NULL;
 	int len = 0;
 	SDL_RWops *ops_file = SDL_RWFromFile(docname, "r");
@@ -234,31 +238,7 @@ int file_exists (char *fileName) {
 int file_download (char *fileName, char *url) {
 	char tmp_file[4024];
 	sprintf(tmp_file, "%s.tmp", fileName);
-#ifdef HTTP_USE_WGET
-	char tmp_cmd[4024];
-	sprintf(tmp_cmd, "wget -q -O %s \"%s\"", tmp_file, url);
-	system(tmp_cmd);
-#else
-#ifndef ANDROID
-	CURL *curl_handle;
-	FILE *bodyfile;
-	bodyfile = fopen(tmp_file,"w");
-	curl_global_init(CURL_GLOBAL_ALL);
-	curl_handle = curl_easy_init();
-	curl_easy_setopt(curl_handle, CURLOPT_URL, url);
-	curl_easy_setopt(curl_handle, CURLOPT_NOPROGRESS, 1L);
-	curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, bodyfile);
-	curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, write_data);
-	curl_easy_setopt(curl_handle, CURLOPT_USERAGENT , "Map-Viewer Dev-0.01");
-	if (bodyfile == NULL) {
-		curl_easy_cleanup(curl_handle);
-		return -1;
-	}
-	curl_easy_perform(curl_handle);
-	fclose(bodyfile);
-	curl_easy_cleanup(curl_handle);
-#endif
-#endif
+	htmlget(url, tmp_file);
 	rename(tmp_file, fileName);
 	return 0;
 }
@@ -474,8 +454,6 @@ void get_maps (uint8_t mode) {
 	}
 }
 
-#ifndef ANDROID
-
 #include <unzip.h>
 
 #define UNZIP_OK 0
@@ -533,14 +511,6 @@ int unzipFile( char* zipfile, char* filename, char* outfile ) {
 	unzCloseCurrentFile( uf );
 	return result;
 }
-
-#else
-
-int unzipFile( char* zipfile, char* filename, char* outfile ) {
-	return 0;
-}
-
-#endif
 
 void get_srtm (void) {
 	char file[1024];
@@ -1646,10 +1616,6 @@ void draw_waypoints_cup (ESContext *esContext, float lat, float lon, uint8_t zoo
 }
 
 void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint8_t _map_view, uint8_t draw_tiles, float alpha0, float alpha1, float alpha2, float grid) {
-#ifdef ANDROID
-	return;
-#endif
-
 	ESMatrix modelview;
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
@@ -1672,6 +1638,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		reset_buttons();
 	}
 
+#ifndef ANDROID
 #ifdef SDLGL
 	if (_map_view == 1) {
 		glMatrixMode( GL_PROJECTION );
@@ -1694,7 +1661,31 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		_map_view = 0;
 	}
 #endif
+
+#else
+	if (_map_view == 1) {
+		glMatrixMode( GL_PROJECTION );
+		glLoadIdentity();
+		float aspectAdjust = 1.0 / ((float)setup.screen_w / setup.screen_h);
+		glOrthof(-1.5, 1.5, -1.5 * aspectAdjust, 1.5 * aspectAdjust, -20.0, 20.0);
+		glMatrixMode( GL_MODELVIEW );
+	} else if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
+		glMatrixMode( GL_PROJECTION );
+		glLoadIdentity();
+		float aspectAdjust = 1.0 / ((float)setup.screen_w / setup.screen_h);
+		glOrthof(-1.5, 1.5, -1.5 * aspectAdjust, 1.5 * aspectAdjust, -20.0, 20.0);
+		glMatrixMode( GL_MODELVIEW );
+	} else {
+		glMatrixMode( GL_PROJECTION );
+		glLoadIdentity();
+		float aspectAdjust = 1.0 / ((float)setup.screen_w / setup.screen_h);
+		glOrthof(-1.5, 1.5, -1.5 * aspectAdjust, 1.5 * aspectAdjust, -20.0, 20.0);
+		glMatrixMode( GL_MODELVIEW );
+	}
+#endif
 //	map_view = _map_view;
+
+
 	if (center_map == 1 || _map_view == 3 || _map_view == 4 || _map_view == 5) {
 		draw_xy(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset), lat, lon, zoom, &offset_x1, &offset_y1);
 		if (offset_x1 < -0.8) {
@@ -1752,8 +1743,8 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		if ( sdl_thread_get_maps2 == NULL ) {
 			fprintf(stderr, "map: Unable to create thread_get_maps2: %s\n", SDL_GetError());
 		}
-
 	}
+
 	if (map_rotate == 1) {
 		roty += 1.3;
 		if (roty >= 360.0) {
@@ -1766,7 +1757,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	} else {
 		roty = 0.0;
 	}
-
 
 	// rotate map
 #ifndef SDLGL
@@ -1798,14 +1788,18 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	if (_map_view == 1) {
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
+#ifndef ANDROID
 		glTranslatef( 0.0, 0.0, -2.0 );
+#endif
 		if (map_side != 0) {
 			glRotatef( -45.0, 1.0, 0.0, 0.0 );
 		}
 		if (roty != 0.0) {
 			glRotatef(roty, 0.0, 0.0, 1.0 );
 		}
+#ifndef ANDROID
 		glTranslatef( 0.0, 0.0, 2.0 );
+#endif
 		glTranslatef(-offset_x1, offset_y1, 0.0);
 	} else if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
 		roty = 0.0;
@@ -1836,16 +1830,15 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	}
 #endif
 
-
 	// move map offset
 	if (_map_view != 1 && _map_view != 3 && _map_view != 4 && _map_view != 5) {
 		esTranslate( &modelview, -offset_x1, offset_y1, 0.0 );
 	}
+
 #ifndef SDLGL
 	esMatrixMultiply( &userData->mvpMatrix, &modelview, &userData->perspective );
 	esMatrixMultiply( &userData->mvpMatrix2, &modelview, &userData->perspective );
 #endif
-
 
 	// draw Sky in 3D-Mode
 	if (_map_view == 3 || _map_view == 5) {
@@ -1903,6 +1896,8 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			}
 		}
 	}
+
+
 
 #ifdef SDLGL
 	if (nav_map == 1) {
@@ -2091,6 +2086,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	}
 #endif
 
+
 	// rotate map back
 #ifndef SDLGL
 	if (_map_view == 1) {
@@ -2128,7 +2124,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 
 	glDisable( GL_DEPTH_TEST );
 
-
 	// Scale-Info
 	float scale = 100.0;
 	float S = 63727982 * cos((lat * DEG2RAD)) / pow(2, (zoom + 8));
@@ -2153,6 +2148,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	if (_map_view != 3 && _map_view != 4 && _map_view != 5 && setup.view_mode == VIEW_MODE_MAP) {
 
 
+#ifndef ANDROID
 #ifdef SDLGL
 		if (draw_target() == 0) {
 			draw_to_buffer();
@@ -2167,6 +2163,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			sprintf(tmp_str, "Speed: %0.0f", ModelData.speed);
 			draw_text_button(esContext, "map_speed", VIEW_MODE_MAP, tmp_str, FONT_GREEN, 0.92, 0.8, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
 		}
+#endif
 #endif
 
 

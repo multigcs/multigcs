@@ -99,6 +99,9 @@ void webserv_child_dump_file (int fd, char *file, char *type) {
 	char content[1024];
 	int len;
 	int ret;
+	if (strncmp(file, "./", 2) == 0) {
+		file += 2;
+	}
 	SDL_RWops *ops_file = SDL_RWFromFile(file, "r");
 	if (ops_file == NULL) {
 		printf("webserv: file not found: %s\n", file);
@@ -3319,7 +3322,6 @@ void webserv_child (int fd) {
 		} else if (strncmp(buffer + 4,"/style.css", 10) == 0) {
 			sprintf(tmp_str, "%s/webserv/style.css", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/plain");
-//			webserv_child_dump_file(fd, "style.css", "text/plain");
 		} else if (strncmp(buffer + 4,"/bg.png", 7) == 0) {
 			sprintf(tmp_str, "%s/webserv/bg.png", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "image/png");

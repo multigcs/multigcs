@@ -317,6 +317,10 @@ static void model_parseDoc (char *docname) {
 	xmlNodePtr cur;
 	xmlChar *key;
 
+	if (strncmp(docname, "./", 2) == 0) {
+		docname += 2;
+	}
+
 	char *buffer = NULL;
 	int len = 0;
 	SDL_RWops *ops_file = SDL_RWFromFile(docname, "r");
