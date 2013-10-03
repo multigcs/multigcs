@@ -11,6 +11,8 @@ SDL_Window *MainWindow = NULL;
 SDL_GLContext MainGLcontext;
 SDL_Surface *WinScreen = NULL;
 
+void gl_update (void);
+
 void esTranslate(ESMatrix *result, GLfloat tx, GLfloat ty, GLfloat tz) {
 	glTranslatef(tx, ty, tz);
 }
