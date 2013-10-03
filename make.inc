@@ -81,13 +81,13 @@ deb: gcs
 	mkdir -p package$(BASE_DIR)/webserv
 	cp -a textures/marker.png package$(BASE_DIR)/webserv/marker.png
 	cp -a textures/MULTICOPTER.png package$(BASE_DIR)/webserv/model.png
-	cp -a map.js package$(BASE_DIR)/webserv/map.js
-	cp -a webserv-index.html package$(BASE_DIR)/webserv/index.html
-	cp -a style.css package$(BASE_DIR)/webserv/style.css
-	cp -a favicon.ico package$(BASE_DIR)/webserv/favicon.ico
-	cp -a blender-export.py package$(BASE_DIR)/webserv/blender-export.py
-	cp -a plane.dae package$(BASE_DIR)/webserv/plane.dae
-	cp -a simple.dae package$(BASE_DIR)/webserv/simple.dae
+	cp -a net/map.js package$(BASE_DIR)/webserv/map.js
+	cp -a net/webserv-index.html package$(BASE_DIR)/webserv/index.html
+	cp -a net/style.css package$(BASE_DIR)/webserv/style.css
+	cp -a net/favicon.ico package$(BASE_DIR)/webserv/favicon.ico
+	cp -a net/blender-export.py package$(BASE_DIR)/webserv/blender-export.py
+	cp -a net/plane.dae package$(BASE_DIR)/webserv/plane.dae
+	cp -a net/simple.dae package$(BASE_DIR)/webserv/simple.dae
 	chmod 0755 package/usr/bin/gl-gcs
 	chmod 0755 package/usr/bin/gcs
 	chmod 0755 package$(BASE_DIR)/clean-badmaps.sh

@@ -7,3 +7,8 @@ package
 *.hex
 *.elf
 android/jni/src/*
+android/assets/multigcs
+android/gen
+android/bin
+android/libs
+android/obj 
