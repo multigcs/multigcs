@@ -34,6 +34,9 @@ Installation:
 		make -f Makefile.osx all app
 
 
+	Android:
+		cd android
+		ndk-build && ant debug install
 
 
 Raspberry-PI:
