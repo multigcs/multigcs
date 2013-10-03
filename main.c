@@ -81,6 +81,15 @@ void SDL_KillThread(SDL_Thread *thread) {
 }
 #endif
 
+char *get_datadirectory (void) {
+	static char datradir[1024];
+#ifdef ANDROID
+	strcpy(datradir, "/sdcard/MultiGCS");
+#else
+	sprintf(datradir, "%s/.multigcs", getenv("HOME"));
+#endif
+	return datradir;
+}
 
 void system_say (char *text) {
 	char cmd_str[1024];
@@ -388,7 +397,7 @@ void setup_save (void) {
 	}
 //	printf("** saving file\n");
 	char filename[1024];
-	sprintf(filename, "%s/.multigcs/setup.cfg", getenv("HOME"));
+	sprintf(filename, "%s/setup.cfg", get_datadirectory());
         fr = fopen(filename, "w");
 	if (fr != 0) {
 	        fprintf(fr, "model_name		%s\n", ModelData.name);
@@ -518,7 +527,7 @@ void setup_load (void) {
 	setup.videocapture_height = 480;
 
 	char filename[1024];
-	sprintf(filename, "%s/.multigcs/setup.cfg", getenv("HOME"));
+	sprintf(filename, "%s/setup.cfg", get_datadirectory());
         fr = fopen (filename, "r");
 	if (fr != 0) {
 	        while(fgets(line, 100, fr) != NULL) {
@@ -1828,17 +1837,17 @@ int main ( int argc, char *argv[] ) {
 #endif
 
 	char dir[1024];
-	sprintf(dir, "%s/.multigcs", getenv("HOME"));
+	sprintf(dir, "%s", get_datadirectory());
 	mkdir(dir, 0755);
-	sprintf(dir, "%s/.multigcs/MAPS", getenv("HOME"));
+	sprintf(dir, "%s/MAPS", get_datadirectory());
 	mkdir(dir, 0755);
-	sprintf(dir, "%s/.multigcs/MAPS/part", getenv("HOME"));
+	sprintf(dir, "%s/MAPS/part", get_datadirectory());
 	mkdir(dir, 0755);
-	sprintf(dir, "%s/.multigcs/logs", getenv("HOME"));
+	sprintf(dir, "%s/logs", get_datadirectory());
 	mkdir(dir, 0755);
-	sprintf(dir, "%s/.multigcs/models", getenv("HOME"));
+	sprintf(dir, "%s/models", get_datadirectory());
 	mkdir(dir, 0755);
-	sprintf(dir, "%s/.multigcs/PARAMS", getenv("HOME"));
+	sprintf(dir, "%s/PARAMS", get_datadirectory());
 	mkdir(dir, 0755);
 
 	if (argc >= 3 && strcmp(argv[1], "-c") == 0) {

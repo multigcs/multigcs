@@ -70,7 +70,7 @@ void tracker_setup_save (void) {
         FILE *fr;
 	int n = 0;
 	char filename[1024];
-	sprintf(filename, "%s/.multigcs/tracker.cfg", getenv("HOME"));
+	sprintf(filename, "%s/tracker.cfg", get_datadirectory());
         fr = fopen(filename, "w");
 	if (fr != 0) {
 		fprintf(fr, "TYPE %i\n", trackertype);
@@ -93,7 +93,7 @@ void tracker_setup_load (void) {
 	float max = 0.0;
 	float value = 0.0;
 	tracker_setup_defaults();
-	sprintf(filename, "%s/.multigcs/tracker.cfg", getenv("HOME"));
+	sprintf(filename, "%s/tracker.cfg", get_datadirectory());
         fr = fopen(filename, "r");
 	if (fr != 0) {
 	        while(fgets(line, 100, fr) != NULL) {

@@ -111,9 +111,9 @@ static uint8_t model_save_xml (char *name, float x, float y, int8_t button, floa
 	int16_t n = 0;
         FILE *fr;
 	char tmp_str[128];
-	sprintf(tmp_str, "mkdir -p %s/.multigcs/models", getenv("HOME"));
+	sprintf(tmp_str, "mkdir -p %s/models", get_datadirectory());
 	system(tmp_str);
-	sprintf(tmp_str, "%s/.multigcs/models/%s", getenv("HOME"), name);
+	sprintf(tmp_str, "%s/models/%s", get_datadirectory(), name);
         fr = fopen(tmp_str, "w");
 	if (fr != 0) {
 		fprintf(fr, "<rcflow>\n");
@@ -375,7 +375,7 @@ static uint8_t model_load_xml (char *name, float x, float y, int8_t button, floa
 static uint8_t model_load (char *name, float x, float y, int8_t button, float data) {
 	reset_buttons();
 	char tmp_str[128];
-	sprintf(tmp_str, "%s/.multigcs/models", getenv("HOME"));
+	sprintf(tmp_str, "%s/models", get_datadirectory());
 	filesystem_set_dir(tmp_str);
 	filesystem_set_callback(model_load_xml);
 	filesystem_reset_filter();

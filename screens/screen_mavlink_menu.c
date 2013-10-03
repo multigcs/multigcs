@@ -355,7 +355,7 @@ uint8_t mavlink_param_file_save (char *name, float x, float y, int8_t button, fl
 	char filename[1024];
 	FILE *fr;
 	int n = 0;
-	sprintf(filename, "%s/.multigcs/PARAMS/%s", getenv("HOME"), name);
+	sprintf(filename, "%s/PARAMS/%s", get_datadirectory(), name);
 	if ((fr = fopen(filename, "w")) != 0) {
 		fprintf(fr, "# Onboard parameters\n");
 		fprintf(fr, "#\n");
@@ -391,7 +391,7 @@ uint8_t mavlink_param_file_load (char *name, float x, float y, int8_t button, fl
 
 uint8_t mavlink_param_load (char *name, float x, float y, int8_t button, float data) {
 	char directory[200];
-	sprintf(directory, "%s/.multigcs/PARAMS", getenv("HOME"));
+	sprintf(directory, "%s/PARAMS", get_datadirectory());
 	filesystem_set_callback(mavlink_param_file_load);
 	filesystem_set_dir(directory);
 	filesystem_reset_filter();

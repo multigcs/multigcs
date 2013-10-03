@@ -27,7 +27,7 @@ void screen_videolist (ESContext *esContext) {
 			strncpy(videolist_path, videolist_lastfile, 1023);
 			dirname(videolist_path);
 		} else {
-			sprintf(videolist_path, "%s", getenv("HOME"));
+			sprintf(videolist_path, "%s", get_datadirectory());
 		}
 		filesystem_set_dir(videolist_path);
 		videolist_startup = 1;

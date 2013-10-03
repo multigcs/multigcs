@@ -949,7 +949,7 @@ void webserv_child_kml_index (int fd, char *servername) {
 	char new_path[400];
 	char tmp_str2[400];
 	char directory[400];
-	sprintf(directory, "%s/.multigcs/logs", getenv("HOME"));
+	sprintf(directory, "%s/logs", get_datadirectory());
 	if ((dir = opendir(directory)) != NULL) {
 		while ((dir_entry = readdir(dir)) != 0) {
 			if (dir_entry->d_name[1] != '.') {
@@ -1525,7 +1525,7 @@ void webserv_child_kml_logfiles (int fd, char *servername, char *buffer2) {
 		strcat(content, "<CENTER><TABLE width=\"90%\" border=\"0\">\n");
 		strcat(content, "<TR class=\"thead\"><TH>DATE</TH><TH>SIZE</TH><TH>FORMAT</TH></TR>\n");
 		int lc = 0;
-		sprintf(directory, "%s/.multigcs/logs", getenv("HOME"));
+		sprintf(directory, "%s/logs", get_datadirectory());
 		if ((dir = opendir(directory)) != NULL) {
 			while ((dir_entry = readdir(dir)) != 0) {
 				if (dir_entry->d_name[1] != '.') {
@@ -1572,12 +1572,12 @@ void webserv_child_kml_logfiles (int fd, char *servername, char *buffer2) {
 	} else {
 		char tmp_str2[1024];
 		if (strncmp(buffer2 + 4,"/logkml/", 8) == 0) {
-			sprintf(tmp_str, "%s/.multigcs/logs/%s", getenv("HOME"), buffer2 + 12);
+			sprintf(tmp_str, "%s/logs/%s", get_datadirectory(), buffer2 + 12);
 			sprintf(tmp_str2, "/tmp/%s.kml", buffer2 + 12);
 			logplay_export_kml(tmp_str, tmp_str2, 255);
 			webserv_child_dump_file(fd, tmp_str2, "text/xml");
 		} else {
-			sprintf(tmp_str, "%s/.multigcs/logs/%s", getenv("HOME"), buffer2 + 14);
+			sprintf(tmp_str, "%s/logs/%s", get_datadirectory(), buffer2 + 14);
 			webserv_child_dump_file(fd, tmp_str, "text/plain");
 		}
 	}
@@ -3291,7 +3291,7 @@ void webserv_child (int fd) {
 			int ty = 0;
 			int zoom = 0;
 			sscanf(buffer + 10, "%i/%i/%i.png", &zoom, &tx, &ty);
-			sprintf(tmp_str, mapnames[map_type][2], getenv("HOME"), zoom, tx, ty);
+			sprintf(tmp_str, mapnames[map_type][2], get_datadirectory(), zoom, tx, ty);
 			if (strstr(tmp_str, ".jpg\0") > 0) {
 				webserv_child_dump_file(fd, tmp_str, "image/jpg");
 			} else {

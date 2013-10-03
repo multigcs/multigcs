@@ -214,3 +214,5 @@ void next_point_ll (ESContext *esContext, float x_origin, float y_origin, float 
 #ifdef SDL2
 extern SDL_Window *MainWindow;
 #endif
+
+char *get_datadirectory (void);

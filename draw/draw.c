@@ -698,7 +698,7 @@ int16_t get_altitude (float lat, float lon) {
 	if (lat_m == 0 || lon_m == 0) {
 		return 0;
 	}
-	sprintf(file, "%s/.multigcs/MAPS/N%02iE%03i.hgt", getenv("HOME"), lat_m, lon_m);
+	sprintf(file, "%s/MAPS/N%02iE%03i.hgt", get_datadirectory(), lat_m, lon_m);
 	for (n = 0; n < 8; n++) {
 		if (strcmp(AltCache[n].name, file) == 0) {
 			alt_num = n;
