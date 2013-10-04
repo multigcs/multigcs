@@ -1164,7 +1164,13 @@ void check_events (ESContext *esContext, SDL_Event event) {
 		redraw_flag = 1;
 #ifdef SDL2
 	} else {
+#ifdef ANDROID
+		char tmp_str[1024];
+		sprintf(tmp_str, "## UNKNOWN_EVENT: %i (0x%x) ##\n", event.type, event.type);
+		SDL_Log(tmp_str);
+#else
 		printf("## UNKNOWN_EVENT: %i (0x%x) ##\n", event.type, event.type);
+#endif
 #endif
 	}
 }
