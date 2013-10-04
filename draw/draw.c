@@ -264,9 +264,16 @@ int imagefile_exists (char *fileName) {
 }
 
 int loadImage(const char *filename) {
+
+	if (strncmp(filename, "./", 2) == 0) {
+		filename += 2;
+	}
+
+#ifndef ANDROID
 	if (strstr(filename, ".png\0") > 0) {
 		return loadPNG(filename);
 	}
+#endif
 #ifdef RPI_NO_X
 	char tmp_file[1024];
 	sprintf(tmp_file, "%s.png", filename);
@@ -277,6 +284,7 @@ int loadImage(const char *filename) {
 	}
 	return loadPNG(tmp_file);
 #endif
+
 	SDL_Surface *imageSurface1 = IMG_Load(filename);
 	if (! imageSurface1) {
 		printf("Error: loading image: %s\n", filename);
