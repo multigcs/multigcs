@@ -49,6 +49,8 @@
 #include <android/sensor.h>
 #include <android/log.h>
 
+extern SDL_bool Android_JNI_GetAccelerometerValues(float values[3]);
+extern void jni_gpsGetPosition (float *lat, float *lon, float *alt, float *speed);
 
 #else
 

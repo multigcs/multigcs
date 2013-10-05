@@ -20,7 +20,8 @@ LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
  minizip/ioapi.c minizip/unzip.c \
  screens/screen_rcflow.c screens/screen_keyboard.c screens/screen_filesystem.c screens/screen_device.c screens/screen_baud.c screens/screen_model.c screens/screen_cli.c screens/screen_baseflightcli.c screens/screen_background.c screens/screen_wpedit.c screens/screen_hud.c screens/screen_map.c screens/screen_calibration.c screens/screen_fms.c screens/screen_system.c screens/screen_mavlink_menu.c screens/screen_brugi.c screens/screen_tracker.c screens/screen_mwi_menu.c screens/screen_openpilot_menu.c screens/screen_graph.c screens/screen_telemetry.c \
  mavlink/my_mavlink.c gps/my_gps.c mwi21/mwi21.c jeti/jeti.c openpilot/openpilot.c openpilot/openpilot_xml.c frsky/frsky.c tracker/tracker.c simplebgc/simplebgc.c brugi/brugi.c net/savepng.c net/webserv.c net/webclient.c logging.c \
- draw/android_gles.c draw/glesa_draw.c
+ draw/android_gles.c draw/glesa_draw.c \
+ gps/jni_gps.c
 
 
 

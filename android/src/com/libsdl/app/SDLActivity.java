@@ -15,6 +15,12 @@ import android.media.*;
 import android.hardware.*;
 
 
+
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+
+
 /**
     SDL Activity
 */
@@ -61,6 +67,10 @@ public class SDLActivity extends Activity {
 
         mLayout = new AbsoluteLayout(this);
         mLayout.addView(mSurface);
+
+        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        LocationListener ll = new mylocationlistener();
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
 
         setContentView(mLayout);
     }
@@ -143,6 +153,8 @@ public class SDLActivity extends Activity {
             SDLActivity.mIsPaused = true;
             SDLActivity.nativePause();
             mSurface.enableSensor(Sensor.TYPE_ACCELEROMETER, false);
+            mSurface.enableSensor(Sensor.TYPE_MAGNETIC_FIELD, false);
+            mSurface.enableSensor(Sensor.TYPE_GRAVITY, false);
         }
     }
 
@@ -155,6 +167,8 @@ public class SDLActivity extends Activity {
             SDLActivity.mIsPaused = false;
             SDLActivity.nativeResume();
             mSurface.enableSensor(Sensor.TYPE_ACCELEROMETER, true);
+            mSurface.enableSensor(Sensor.TYPE_MAGNETIC_FIELD, true);
+            mSurface.enableSensor(Sensor.TYPE_GRAVITY, true);
         }
     }
 
@@ -523,6 +537,8 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 
             SDLActivity.mSDLThread = new Thread(new SDLMain(), "SDLThread");
             enableSensor(Sensor.TYPE_ACCELEROMETER, true);
+            enableSensor(Sensor.TYPE_MAGNETIC_FIELD, true);
+            enableSensor(Sensor.TYPE_GRAVITY, true);
             SDLActivity.mSDLThread.start();
         }
     }
@@ -598,15 +614,75 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
         // TODO
     }
 
+    private static final float accelFilteringFactor = 0.6f;
+    private static final float magFilteringFactor = 0.03f;
+    boolean haveGrav = false;
+
+
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            SDLActivity.onNativeAccel(event.values[0] / SensorManager.GRAVITY_EARTH,
-                                      event.values[1] / SensorManager.GRAVITY_EARTH,
-                                      event.values[2] / SensorManager.GRAVITY_EARTH);
+        Sensor sensor = event.sensor;
+        int type = sensor.getType();
+
+        switch (type) {
+            case Sensor.TYPE_MAGNETIC_FIELD:
+                mags[0] = event.values[0] * magFilteringFactor + mags[0] * (1.0f - magFilteringFactor);
+                mags[1] = event.values[1] * magFilteringFactor + mags[1] * (1.0f - magFilteringFactor);
+                mags[2] = event.values[2] * magFilteringFactor + mags[2] * (1.0f - magFilteringFactor);
+
+                isReady = true;
+                break;
+            case Sensor.TYPE_GRAVITY:
+                accels[0] = event.values[0] * accelFilteringFactor + accels[0] * (1.0f - accelFilteringFactor);
+                accels[1] = event.values[1] * accelFilteringFactor + accels[1] * (1.0f - accelFilteringFactor);
+                accels[2] = event.values[2] * accelFilteringFactor + accels[2] * (1.0f - accelFilteringFactor);
+		haveGrav = true;
+                break;
+            case Sensor.TYPE_ACCELEROMETER:
+                if (haveGrav) break; 
+                accels[0] = event.values[0] * accelFilteringFactor + accels[0] * (1.0f - accelFilteringFactor);
+                accels[1] = event.values[1] * accelFilteringFactor + accels[1] * (1.0f - accelFilteringFactor);
+                accels[2] = event.values[2] * accelFilteringFactor + accels[2] * (1.0f - accelFilteringFactor);
+                break;
+            default:
+                return;
+        }
+
+        if(mags != null && accels != null && isReady) {
+            isReady = false;
+            SensorManager.getRotationMatrix(rot, inclination, accels, mags);
+            outR = rot;
+            SensorManager.getOrientation(outR, values);
+            double x180pi = 180.0 / Math.PI;
+            float azimuth = (float)(values[0] * x180pi);
+            float pitch = (float)(values[1] * x180pi);
+            float roll = (float)(values[2] * x180pi);
+            float tmp = pitch;
+            pitch = -roll;
+            roll = -tmp;
+            azimuth = 180 - azimuth + 90;
+            if (azimuth < -180) {
+		azimuth += 360;
+            }
+            if (azimuth > 180) {
+		azimuth -= 360;
+            }
+            attitudeSetPosition(pitch,roll,azimuth);
+            //float incl = SensorManager.getInclination(inclination);
         }
     }
-    
+
+    private float[] mags = new float[3];
+    private float[] accels = new float[3];
+    private boolean isReady;
+
+    private float[] rot = new float[9];
+    private float[] outR = new float[9];
+    private float[] inclination = new float[9];
+    private float[] values = new float[3];
+
+    public native void attitudeSetPosition(float pitch, float roll, float yaw);
+
 }
 
 /* This is a fake invisible editor view that receives the input and defines the
@@ -728,3 +804,25 @@ class SDLInputConnection extends BaseInputConnection {
 
 }
 
+
+
+class mylocationlistener implements LocationListener {
+    @Override public void onLocationChanged(Location location) {
+        if (location != null) {
+          Log.d("LOCATION CHANGED", location.getLatitude() + "");
+          Log.d("LOCATION CHANGED", location.getLongitude() + "");
+
+          gpsSetPosition((float)location.getLatitude(), (float)location.getLongitude(), (float)location.getAltitude(), (float)((float)location.getSpeed() * 3600 / 1000));
+
+        }
+    }
+    @Override public void onProviderDisabled(String provider) {
+    }
+    @Override public void onProviderEnabled(String provider) {
+    }
+    @Override public void onStatusChanged(String provider, int status, Bundle extras) {
+    }
+
+    public native void gpsSetPosition(float lat, float lon, float alt, float speed);
+
+}

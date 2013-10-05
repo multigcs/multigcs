@@ -1175,8 +1175,41 @@ void check_events (ESContext *esContext, SDL_Event event) {
 	}
 }
 
+
+#ifdef ANDROID
+extern void jni_attitudeGetPosition (float *pitch, float *roll, float *yaw);
+#endif
+
 int telemetry_thread (void *data) {
 	while (gui_running == 1) {
+
+
+#ifdef ANDROID
+//		float acc_values[3];
+//		Android_JNI_GetAccelerometerValues(acc_values);
+//		ModelData.roll = acc_values[1] * -90.0;
+//		ModelData.pitch = acc_values[2] * -90.0;
+
+		jni_attitudeGetPosition (&ModelData.pitch, &ModelData.roll, &ModelData.yaw);
+
+		float jni_gps_lat = 0.0;
+		float jni_gps_lon = 0.0;
+		float jni_gps_alt = 0.0;
+		float jni_gps_speed = 0.0;
+		jni_gpsGetPosition(&jni_gps_lat, &jni_gps_lon, &jni_gps_alt, &jni_gps_speed);
+		if (jni_gps_lat != 0.0 && jni_gps_lon != 0.0) {
+			ModelData.p_lat = jni_gps_lat;
+			ModelData.p_long = jni_gps_lon;
+			ModelData.p_alt = jni_gps_alt;
+			ModelData.speed = jni_gps_speed;
+		}
+
+//		char tmp_str[1024];
+//		sprintf(tmp_str, "## ACC: %f %f %f ##\n", acc_values[0], acc_values[1], acc_values[2]);
+//		SDL_Log(tmp_str);
+
+#endif
+
 		if (clientmode == 1) {
 			webclient_update(clientmode_server, clientmode_port);
 			SDL_Delay(99);

@@ -43,6 +43,7 @@ clean:
 	rm -f android/local.properties
 	rm -f android/project.properties
 	rm -f android/proguard-project.txt
+	rm -f android/build.xml
 	rm -f android/jni/src/*
 	rm -rf android/gen/
 	rm -rf android/bin/
