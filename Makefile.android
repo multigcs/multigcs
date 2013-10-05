@@ -37,7 +37,12 @@ install:
 
 clean:
 	(cd android ; ndk-build clean)
-	rm -f android/local.properties android/proguard-project.txt android/project.properties android/ant.properties android/build.properties
+	rm -f android/ant.properties
+	rm -f android/build.properties
+	rm -f android/default.properties
+	rm -f android/local.properties
+	rm -f android/project.properties
+	rm -f android/proguard-project.txt
 	rm -f android/jni/src/*
 	rm -rf android/gen/
 	rm -rf android/bin/
