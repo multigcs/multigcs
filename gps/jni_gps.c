@@ -39,9 +39,17 @@ void Java_org_libsdl_app_mylocationlistener_gpsSetPosition (JNIEnv* env, jclass 
 }
 
 void Java_org_libsdl_app_SDLSurface_attitudeSetPosition (JNIEnv* env, jclass cls, jfloat pitch, jfloat roll, jfloat yaw) {
-	jni_att_roll = roll;
-	jni_att_pitch = pitch - 90.0;
-	jni_att_yaw = yaw * -1.0;
+	jni_att_roll = roll * RAD_TO_DEG * -1;
+	jni_att_pitch = pitch * RAD_TO_DEG * -1 - 90.0;
+	yaw *= RAD_TO_DEG;
+	yaw += 90;
+	if (yaw < -180) {
+		yaw += 360;
+	}
+	if (yaw > 180) {
+		yaw -= 360;
+	}
+	jni_att_yaw = yaw;
 	return;
 }
 
