@@ -12,3 +12,6 @@ android/gen
 android/bin
 android/libs
 android/obj
+android/ant.properties
+android/build.properties
+android/default.properties
