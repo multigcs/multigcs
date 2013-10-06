@@ -34,8 +34,8 @@ void screen_background (ESContext *esContext) {
 	static float rotate = 0.0;
 	rotate += 0.3;
 
+#ifndef ANDROID
 #ifdef SDLGL
-
 	if (get_background_model(tmp_str) == 0) {
 		static uint8_t startup = 0;
 		if (startup == 0 || strcmp(obj3d.name, tmp_str) != 0) {
@@ -96,5 +96,6 @@ void screen_background (ESContext *esContext) {
 			}
 		}
 	}
+#endif
 #endif
 }

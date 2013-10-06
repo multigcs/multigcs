@@ -155,7 +155,7 @@ void draw_turning_indicator (ESContext *esContext, float ti_x, float ti_y, float
 	// Hoehe
 	draw_box_f3(esContext, 0.0 - (w / 5.0), 0.0 - (w / 14.0), 0.005, 0.0 + (w / 5.0), 0.0 - (w / 14.0) + (w / 40.0), 0.005, 255, 255, 255, 255);
 	// Seite
-	draw_box_f3(esContext, 0.0 - (w / 40.0), 0.0 - 0.03, 0.005, 0.0 + (w / 140.0), 0.0 + 0.03, 0.005, 255, 255, 255, 255);
+	draw_box_f3(esContext, 0.0 - (w / 70.0), 0.0, 0.005, 0.0 + (w / 70.0), 0.0 - 0.1, 0.005, 255, 255, 255, 255);
 	// Flaechen
 	draw_triaFilled_f3(esContext, 0.0, 0.0 + (w / 40.0), 0.005, 0.0 + (w / 2.2), 0.0, 0.005, 0.0, 0.0 - (w / 40.0), 0.005, 255, 255, 255, 255);
 	draw_triaFilled_f3(esContext, 0.0, 0.0 - (w / 40.0), 0.005, 0.0 - (w / 2.2), 0.0, 0.005, 0.0, 0.0 + (w / 40.0), 0.005, 255, 255, 255, 255);
@@ -440,18 +440,20 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 
 	if (setup.hud_view_map == 0 && setup.hud_view_video == 0) {
 		if (setup.contrast == 1) {
-			draw_box_f3(esContext, -2.5f, -2.5f, 0.001, 2.5f, 0.0f, 0.001, 127, 127, 127, 255);
-			draw_box_f3(esContext, -2.5f, 0.0f, 0.001, 2.5f, 2.5f, 0.001, 255, 255, 255, 255);
+			draw_box_f3(esContext, -2.5, -2.5, 0.001, 2.5, 0.0, 0.001, 127, 127, 127, 255);
+			draw_box_f3(esContext, -2.5, 0.0, 0.001, 2.5, 2.5, 0.001, 255, 255, 255, 255);
 		} else {
 #ifdef SDLGL
-			draw_box_f3c2(esContext, -2.5f, -2.5f, 0.001, 2.5f, 0.0f, 0.001, 0x01, 0x8e, 0xea, 100, 0x01, 0x8e, 0xea, 255); // blue
-			draw_box_f3c2(esContext, -2.5f, 0.0f, 0.001, 2.5f, 2.5f, 0.001, 0xb1, 0x56, 0x1f, 255, 0xb1, 0x56, 0x1f, 100);  // brown
+			draw_box_f3c2(esContext, -2.5, -2.5, 0.001, 2.5, 0.0, 0.001, 0x01, 0x8e, 0xea, 100, 0x01, 0x8e, 0xea, 255); // blue
+			draw_box_f3c2(esContext, -2.5, 0.0, 0.001, 2.5, 2.5, 0.001, 0xb1, 0x56, 0x1f, 255, 0xb1, 0x56, 0x1f, 100);  // brown
+			draw_line_f3(esContext, -2.5, 0.0, 0.001, 2.5, 0.0, 0.001, 255, 255, 255, 255);
 #else
 			char tmp_str[128];
 			sprintf(tmp_str, "%s/textures/blue.png", BASE_DIR);
-			draw_image_f3(esContext, -2.5f, -2.5f, 2.5f, 0.0f, -0.001, tmp_str); // blue
+			draw_image_f3(esContext, -2.5, -2.5, 2.5, 0.0, -0.001, tmp_str); // blue
 			sprintf(tmp_str, "%s/textures/brown.png", BASE_DIR);
-			draw_image_f3(esContext, -2.5f, 0.0f, 2.5f, 2.5f, -0.001, tmp_str); // brown
+			draw_image_f3(esContext, -2.5, 0.0, 2.5, 2.5, -0.001, tmp_str); // brown
+			draw_line_f3(esContext, -2.5, 0.0, 0.001, 2.5, 0.0, 0.001, 255, 255, 255, 255);
 #endif
 		}
 	}
@@ -728,7 +730,6 @@ void screen_hud (ESContext *esContext) {
 		draw_image(esContext, 0, 0, esContext->width, esContext->height, TEXTURE_HUD_FRAME);
 	}
 #endif
-
 
 	// Alt
 	draw_altiude_rule(esContext, 1.0, -0.6, 0.0, 0.0);
@@ -1292,6 +1293,14 @@ void screen_hud (ESContext *esContext) {
 		set_button("goto_map", setup.view_mode, 0.9, 0.4, 1.4, 0.85, hud_goto_screen, (float)VIEW_MODE_MAP, 0);
 	}
 #endif
+#else
+/*
+		glPushMatrix();
+		glTranslatef(1.1, -0.7, 0.0 );
+		glScalef( 0.1, 0.1, 1.0 );
+		display_map(esContext, lat, lon, zoom, 0, 1, 1.0, 0.0, 0.0, 0.0);
+		glPopMatrix();
+*/
 #endif
 
 #ifdef SDLGL

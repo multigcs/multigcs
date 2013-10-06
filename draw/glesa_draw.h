@@ -1,6 +1,6 @@
 
-#ifndef GLES_DRAW_H
-#define GLES_DRAW_H
+#ifndef GLESA_DRAW_H
+#define GLESA_DRAW_H
 
 #define MAX_TEXCACHE 90
 #define MAX_ALTCACHE 8
@@ -66,5 +66,6 @@ void draw_graph_value (ESContext *esContext, float px1, float py1, float px2, fl
 void resize_border (void);
 void esRotate(ESMatrix *result, GLfloat angle, GLfloat x, GLfloat y, GLfloat z);
 void esTranslate(ESMatrix *result, GLfloat tx, GLfloat ty, GLfloat tz);
+void gluPerspective (GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar);
 
 #endif

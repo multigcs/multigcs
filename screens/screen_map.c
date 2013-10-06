@@ -1638,7 +1638,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		reset_buttons();
 	}
 
-#ifndef ANDROID
 #ifdef SDLGL
 	if (_map_view == 1) {
 		glMatrixMode( GL_PROJECTION );
@@ -1653,7 +1652,12 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	} else {
 		glMatrixMode( GL_PROJECTION );
 		glLoadIdentity();
+#ifndef ANDROID
 		glOrtho(-1.0 * aspect, 1.0 * aspect, -1.0, 1.0, -4.5, 4.5);
+#else
+		glOrthof(-1.0 * aspect, 1.0 * aspect, -1.0, 1.0, -4.5, 4.5);
+#endif
+
 		glMatrixMode( GL_MODELVIEW );
 	}
 #else
@@ -1661,30 +1665,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		_map_view = 0;
 	}
 #endif
-
-#else
-	if (_map_view == 1) {
-		glMatrixMode( GL_PROJECTION );
-		glLoadIdentity();
-		float aspectAdjust = 1.0 / ((float)setup.screen_w / setup.screen_h);
-		glOrthof(-1.5, 1.5, -1.5 * aspectAdjust, 1.5 * aspectAdjust, -20.0, 20.0);
-		glMatrixMode( GL_MODELVIEW );
-	} else if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
-		glMatrixMode( GL_PROJECTION );
-		glLoadIdentity();
-		float aspectAdjust = 1.0 / ((float)setup.screen_w / setup.screen_h);
-		glOrthof(-1.5, 1.5, -1.5 * aspectAdjust, 1.5 * aspectAdjust, -20.0, 20.0);
-		glMatrixMode( GL_MODELVIEW );
-	} else {
-		glMatrixMode( GL_PROJECTION );
-		glLoadIdentity();
-		float aspectAdjust = 1.0 / ((float)setup.screen_w / setup.screen_h);
-		glOrthof(-1.5, 1.5, -1.5 * aspectAdjust, 1.5 * aspectAdjust, -20.0, 20.0);
-		glMatrixMode( GL_MODELVIEW );
-	}
-#endif
-//	map_view = _map_view;
-
 
 	if (center_map == 1 || _map_view == 3 || _map_view == 4 || _map_view == 5) {
 		draw_xy(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset), lat, lon, zoom, &offset_x1, &offset_y1);
@@ -1788,18 +1768,14 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	if (_map_view == 1) {
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
-#ifndef ANDROID
 		glTranslatef( 0.0, 0.0, -2.0 );
-#endif
 		if (map_side != 0) {
 			glRotatef( -45.0, 1.0, 0.0, 0.0 );
 		}
 		if (roty != 0.0) {
 			glRotatef(roty, 0.0, 0.0, 1.0 );
 		}
-#ifndef ANDROID
 		glTranslatef( 0.0, 0.0, 2.0 );
-#endif
 		glTranslatef(-offset_x1, offset_y1, 0.0);
 	} else if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
 		roty = 0.0;
@@ -1816,7 +1792,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			glRotatef(-ModelData.roll, 0.0, 1.0, 0.0);
 			glRotatef(-ModelData.pitch, 1.0, 0.0, 0.0);
 		}
-
 		glRotatef(ModelData.yaw, 0.0, 0.0, 1.0);
 		glTranslatef(0.0, 0.0, 2.0 - 0.00 - (ModelData.p_alt - ModelData.alt_offset) / alt_zoom);
 		glTranslatef(-offset_x1, offset_y1, 0.0);
@@ -2006,7 +1981,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				}
 			}
 		}
-		if (map_view == 3 || map_view == 4 || _map_view == 5) {
+		if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
 			if (setup.hud_view_tunnel == 1) {
 				mark_tunnel(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset) + 10.6, WayPoints[waypoint_active].p_lat, WayPoints[waypoint_active].p_long, WayPoints[waypoint_active].p_alt, 5, lat, lon, zoom);
 			}
@@ -2028,7 +2003,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		mark_route(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset), WayPoints[uav_active_waypoint + 1].p_lat, WayPoints[uav_active_waypoint + 1].p_long, WayPoints[uav_active_waypoint + 1].p_alt, 1, lat, lon, zoom);
 	//	mark_route(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset), WayPoints[waypoint_active].p_lat, WayPoints[waypoint_active].p_long, WayPoints[waypoint_active].p_alt, 1, lat, lon, zoom);
 	} else {
-		if (map_view == 3 || map_view == 4 || _map_view == 5) {
+		if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
 			if (setup.hud_view_tunnel == 1) {
 				mark_tunnel(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset) + 10.6, WayPoints[waypoint_active].p_lat, WayPoints[waypoint_active].p_long, WayPoints[waypoint_active].p_alt, 5, lat, lon, zoom);
 			}
@@ -2036,7 +2011,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			draw_quad(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset), ModelData.roll, ModelData.pitch, ModelData.yaw, lat, lon, zoom);
 		}
 	}
-
 
 #ifdef SDLGL
 	// Camview - Target-Marking
@@ -2085,7 +2059,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 	}
 #endif
-
 
 	// rotate map back
 #ifndef SDLGL
@@ -2147,7 +2120,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	}
 	if (_map_view != 3 && _map_view != 4 && _map_view != 5 && setup.view_mode == VIEW_MODE_MAP) {
 
-
 #ifndef ANDROID
 #ifdef SDLGL
 		if (draw_target() == 0) {
@@ -2164,10 +2136,16 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			draw_text_button(esContext, "map_speed", VIEW_MODE_MAP, tmp_str, FONT_GREEN, 0.92, 0.8, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
 		}
 #endif
+#else
+/*
+		glPushMatrix();
+		glTranslatef(1.1, -0.7, 0.0 );
+		glScalef( 0.1, 0.1, 1.0 );
+		hud_draw_horizon(esContext, 0);
+		draw_rect_f3(esContext, -1.2, -1.0, 0.1, 1.2, 1.0, 0.1, 255, 255, 255, 255);
+		glPopMatrix();
+*/
 #endif
-
-
-//		draw_text_button(esContext, "map_uav2home", VIEW_MODE_MAP, "UAV->HOME", FONT_GREEN_BG, -0.9, -0.96, 0.002, 0.06, 1, 0, map_uav2home, 0.0);
 		uint8_t ny = 0;
 		ny++;
 		if (map_type_select == 1) {

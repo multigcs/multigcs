@@ -209,7 +209,6 @@ uint8_t set_button (char *name, uint8_t view_mode, float x1, float y1, float x2,
 
 int8_t check_button (uint8_t view_mode, float x, float y, uint8_t button, uint8_t event) {
 	int16_t n = 0;
-
 	if (event == BUTTON_RELEASE) {
 		for (n = 0; n < MAX_BUTTONS; n++) {
 			Buttons[n].status = 0;
@@ -228,7 +227,6 @@ int8_t check_button (uint8_t view_mode, float x, float y, uint8_t button, uint8_
 			}
 		}
 	}
-
 	for (n = MAX_BUTTONS - 1; n >= 0; n--) {
 		if (Buttons[n].name[0] != 0 && Buttons[n].view_mode == view_mode && x > Buttons[n].x1 && x < Buttons[n].x2 && y > Buttons[n].y1 && y < Buttons[n].y2) {
 			if (Buttons[n].type == 0 && event == BUTTON_PRESS) {
@@ -973,6 +971,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 #ifdef SDL2
 #ifdef ANDROID
 	} else if (event.type == SDL_FINGERDOWN) {
+/*
 		float x = (int)(event.tfinger.x * (float)setup.screen_w);
 		float y = (int)(event.tfinger.y * (float)setup.screen_h);
 		SDL_Event user_event;
@@ -981,7 +980,9 @@ void check_events (ESContext *esContext, SDL_Event event) {
 		user_event.button.y = y;
 		user_event.button.button = 1;
 		SDL_PushEvent(&user_event);
+*/
 	} else if (event.type == SDL_FINGERUP) {
+/*
 		float x = (int)(event.tfinger.x * (float)setup.screen_w);
 		float y = (int)(event.tfinger.y * (float)setup.screen_h);
 		SDL_Event user_event;
@@ -990,7 +991,9 @@ void check_events (ESContext *esContext, SDL_Event event) {
 		user_event.button.y = y;
 		user_event.button.button = 1;
 		SDL_PushEvent(&user_event);
+*/
 	} else if (event.type == SDL_FINGERMOTION) {
+/*
 		float x = (int)(event.tfinger.x * (float)setup.screen_w);
 		float y = (int)(event.tfinger.y * (float)setup.screen_h);
 		SDL_Event user_event;
@@ -999,6 +1002,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 		user_event.button.y = y;
 		user_event.button.button = 1;
 		SDL_PushEvent(&user_event);
+*/
 #endif
 	} else if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEWHEEL) {
 		if (event.type == SDL_MOUSEWHEEL) {
@@ -1086,12 +1090,10 @@ void check_events (ESContext *esContext, SDL_Event event) {
 					}
 					map_addmode = 0;
 				} else {
-
 					waypoint_active = -1;
 					mousestart_x = x1;
 					mousestart_y = y1;
 					mousemode = 1;
-
 					uint16_t n = 0;
 					for (n = 0; n < MAX_WAYPOINTS; n++) {
 						if (WayPoints[n].p_lat != 0.0) {
@@ -1107,7 +1109,6 @@ void check_events (ESContext *esContext, SDL_Event event) {
 							}
 						}
 					}
-
 				}
 			} else if (event.button.button == 3) {
 				uint16_t n = 0;
