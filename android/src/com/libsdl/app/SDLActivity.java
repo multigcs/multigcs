@@ -160,7 +160,9 @@ public class SDLActivity extends Activity {
             SDLActivity.nativePause();
             mSurface.enableSensor(Sensor.TYPE_ACCELEROMETER, false);
             mSurface.enableSensor(Sensor.TYPE_MAGNETIC_FIELD, false);
-            mSurface.enableSensor(Sensor.TYPE_GRAVITY, false);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                mSurface.enableSensor(Sensor.TYPE_GRAVITY, false);
+            }
         }
     }
 
@@ -174,7 +176,9 @@ public class SDLActivity extends Activity {
             SDLActivity.nativeResume();
             mSurface.enableSensor(Sensor.TYPE_ACCELEROMETER, true);
             mSurface.enableSensor(Sensor.TYPE_MAGNETIC_FIELD, true);
-            mSurface.enableSensor(Sensor.TYPE_GRAVITY, true);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                mSurface.enableSensor(Sensor.TYPE_GRAVITY, true);
+            }
         }
     }
 
@@ -450,6 +454,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 
         mSensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
 
+  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 	// sensor-fusion
         gyroOrientation[0] = 0.0f;
         gyroOrientation[1] = 0.0f;
@@ -461,8 +466,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
  
         initListeners();
         fuseTimer.scheduleAtFixedRate(new calculateFusedOrientationTask(), 1000, TIME_CONSTANT);
-
-
+  }
 
         // Some arbitrary defaults to avoid a potential division by zero
         mWidth = 1.0f;
@@ -558,7 +562,9 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
             SDLActivity.mSDLThread = new Thread(new SDLMain(), "SDLThread");
             enableSensor(Sensor.TYPE_ACCELEROMETER, true);
             enableSensor(Sensor.TYPE_MAGNETIC_FIELD, true);
-            enableSensor(Sensor.TYPE_GRAVITY, true);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                enableSensor(Sensor.TYPE_GRAVITY, true);
+            }
             SDLActivity.mSDLThread.start();
         }
     }
@@ -633,8 +639,6 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 
 
 
-
-
     // sensor-fusion
     // http://www.thousand-thoughts.com/2012/03/android-sensor-fusion-tutorial/
 
@@ -675,8 +679,6 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 	DecimalFormat d = new DecimalFormat("#.##");
 	
 
-
-
     public void initListeners(){
         mSensorManager.registerListener(this,
             mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
@@ -693,9 +695,10 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 
 
 
-	@Override
-	public void onSensorChanged(SensorEvent event) {
-		switch(event.sensor.getType()) {
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+	switch(event.sensor.getType()) {
 	    case Sensor.TYPE_ACCELEROMETER:
 	        // copy new accelerometer data into accel array and calculate orientation
 	        System.arraycopy(event.values, 0, accel, 0, 3);
@@ -712,22 +715,23 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 	        System.arraycopy(event.values, 0, magnet, 0, 3);
 	        break;
 	    }
-	}
+  }
+    }
 	
-	// calculates orientation angles from accelerometer and magnetometer output
-	public void calculateAccMagOrientation() {
+    // calculates orientation angles from accelerometer and magnetometer output
+    public void calculateAccMagOrientation() {
 	    if(SensorManager.getRotationMatrix(rotationMatrix, null, accel, magnet)) {
 	        SensorManager.getOrientation(rotationMatrix, accMagOrientation);
 	    }
-	}
+    }
 	
-	// This function is borrowed from the Android reference
-	// at http://developer.android.com/reference/android/hardware/SensorEvent.html#values
-	// It calculates a rotation vector from the gyroscope angular speed values.
+    // This function is borrowed from the Android reference
+    // at http://developer.android.com/reference/android/hardware/SensorEvent.html#values
+    // It calculates a rotation vector from the gyroscope angular speed values.
     private void getRotationVectorFromGyro(float[] gyroValues,
             float[] deltaRotationVector,
             float timeFactor)
-	{
+    {
 		float[] normValues = new float[3];
 		
 		// Calculate the angular speed of the sample
@@ -754,7 +758,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 		deltaRotationVector[1] = sinThetaOverTwo * normValues[1];
 		deltaRotationVector[2] = sinThetaOverTwo * normValues[2];
 		deltaRotationVector[3] = cosThetaOverTwo;
-	}
+    }
 	
     // This function performs the integration of the gyroscope data.
     // It writes the gyroscope based orientation into gyroOrientation.
@@ -905,13 +909,6 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
             attitudeSetPosition(fusedOrientation[2], fusedOrientation[1], fusedOrientation[0]);
         }
     }
-    
-
-
-
-
-
-
 
 
     
