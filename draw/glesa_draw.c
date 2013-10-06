@@ -195,9 +195,13 @@ void gl_init (ESContext *esContext) {
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-glShadeModel(GL_SMOOTH);
+//		glShadeModel(GL_SMOOTH);
+		glShadeModel(GL_FLAT);
+		glEnable(GL_TEXTURE_2D);
 
-
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+		glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
@@ -628,7 +632,7 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 			}    
 		}
 	}
-//	if (TexCache[tex_num].texture != 0) {
+	if (TexCache[tex_num].texture != 0) {
 		TexCache[tex_num].atime = time(0);
 		float z1 = z;
 		float z2 = z;
@@ -644,7 +648,7 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 		float _hy2 = lat2;
 		float _dhx = _hx2 - _hx1;
 		float _dhy = _hy2 - _hy1;
-		uint8_t subtiles = 6;
+		uint8_t subtiles = 4;
 		for (ty = 0; ty < subtiles; ty++) {
 			for (tx = 0; tx < subtiles; tx++) {
 				float tx1 = x1 + dx / (float)subtiles * (float)tx;
@@ -667,26 +671,42 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 				z2 = z + (float)_alt2 / alt_zoom;
 				z3 = z + (float)_alt3 / alt_zoom;
 				z4 = z + (float)_alt4 / alt_zoom;
-				glActiveTexture(GL_TEXTURE0);
 				GLfloat vVertices[] = {
 					tx1, ty1, -2.0f + z1,  // Position 0
 					tx1, ty2, -2.0f + z4,  // Position 1
 					tx2, ty2, -2.0f + z3,   // Position 2
 					tx2, ty1, -2.0f + z2,   // Position 3
 				};
+				GLfloat vTex[] = {
+					tex1, tey1,         // TexCoord 3
+					tex1, tey2,         // TexCoord 0 
+					tex2, tey2,         // TexCoord 1
+					tex2, tey1,         // TexCoord 2
+				};
 				GLushort indices[] = { 0, 1, 2, 0, 2, 3 };
-				if ((float)_alt1 > ModelData.p_alt || (float)_alt2 > ModelData.p_alt || (float)_alt3 > ModelData.p_alt || (float)_alt4 > ModelData.p_alt) {
-					glColor4f(255.0, 0.0, 0.0, 0.3);
+
+				glEnable(GL_TEXTURE_2D);
+				glColor4f(1.0, 1.0, 1.0, 0.2);
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, TexCache[tex_num].texture);
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				glTexCoordPointer(2, GL_FLOAT, 0, vTex);
+				glVertexPointer(3, GL_FLOAT, 0, vVertices);
+				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
+				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+				glDisable(GL_TEXTURE_2D);
+
+				if (alpha1 > 0.0 && ((float)_alt1 > ModelData.p_alt || (float)_alt2 > ModelData.p_alt || (float)_alt3 > ModelData.p_alt || (float)_alt4 > ModelData.p_alt)) {
+					glColor4f(255.0, 0.0, 0.0, alpha1);
 					glVertexPointer(3, GL_FLOAT, 0, vVertices);
 					glEnableClientState(GL_VERTEX_ARRAY);
 					glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
-				} else {
-					glColor4f(0.0, 255.0, 0.0, 0.3);
+				} else if (alpha2 > 0.0) {
+					glColor4f(0.0, 255.0, 0.0, alpha2);
 					glVertexPointer(3, GL_FLOAT, 0, vVertices);
 					glEnableClientState(GL_VERTEX_ARRAY);
 					glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
 				}
-grid = 0.5;
 				if (grid > 0.0) {
 					glColor4f(255.0, 255.0, 255.0, grid);
 					glVertexPointer(3, GL_FLOAT, 0, vVertices);
@@ -696,7 +716,7 @@ grid = 0.5;
 			}
 		}
 
-//	}
+	}
 }
 
 void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, char *file) {
@@ -763,19 +783,19 @@ void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2
 			1.0f,  0.0f          // TexCoord 3
 		};
 		GLushort indices[] = { 0, 1, 2, 0, 2, 3 };
+
+		glEnable(GL_TEXTURE_2D);
 		glColor4f(1.0, 1.0, 1.0, 0.2);
 		glActiveTexture(GL_TEXTURE0);
-//		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//		glEnable(GL_BLEND);
 		glBindTexture(GL_TEXTURE_2D, TexCache[tex_num].texture);
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glTexCoordPointer(2, GL_FLOAT, 0, vTex);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glTexCoordPointer(2, GL_FLOAT, 0, vTex);
 		glVertexPointer(3, GL_FLOAT, 0, vVertices);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
 		glDrawElements(GL_LINE_LOOP, 6, GL_UNSIGNED_SHORT, indices);
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-		glDisableClientState(GL_VERTEX_ARRAY);
+		glDisable(GL_TEXTURE_2D);
+
 	}
 }
 
@@ -819,21 +839,72 @@ inline void draw_char_f3_fast (ESContext *esContext, float x1, float y1, float z
 	vTex[6] = tpos_x + 0.0625;
 	vTex[7] = tpos_y + 0.005;
 
-
-	glColor4f(0.0, 1.0, 0.0, 1.0);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, TexCache[tex_num].texture);
-	glEnableClientState(GL_VERTEX_ARRAY);
 	glTexCoordPointer(2, GL_FLOAT, 0, vTex);
-	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	glVertexPointer(3, GL_FLOAT, 0, vVertices);
-	glDrawElements(GL_LINES, 6, GL_UNSIGNED_SHORT, indices);
-	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	glDisableClientState(GL_VERTEX_ARRAY);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
 
 }
 
 void draw_text_f3_fast (ESContext *esContext, float x1, float y1, float z1, float w, float h, char *file, char *text) {
+	UserData *userData = esContext->userData;
+	int16_t n = 0;
+	int16_t tex_num = -1;
+	int16_t old_num = -1;
+	uint32_t atime_min = 0xFFFFFFFF;
+	for (n = 0; n < MAX_TEXCACHE; n++) {
+		if (strcmp(TexCache[n].name, file) == 0) {
+			tex_num = n;
+			break;
+		} else if (TexCache[n].atime < atime_min) {
+			old_num = n;
+			atime_min = TexCache[n].atime;
+		}
+	}
+	if (tex_num == -1) {
+		for (n = 0; n < MAX_TEXCACHE; n++) {
+			if (TexCache[n].name[0] == 0) {
+				tex_num = n;
+				break;
+			}
+		}
+		if (old_num == -1) {
+			old_num = 0;
+		}
+		if (tex_num == -1) {
+			tex_num = old_num;
+			printf("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
+			glDeleteTextures( 1, &TexCache[tex_num].texture );
+			TexCache[tex_num].name[0] = 0;
+			TexCache[tex_num].texture = 0;
+		}
+		if (tex_num > 0) {
+//			printf("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
+			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) { 
+				strncpy(TexCache[tex_num].name, file, 1023);
+				TexCache[tex_num].atime = time(0);
+			} else {
+				printf("could not load image: %s\n", file);
+				unlink(file);
+			}    
+		}
+	}
+	if (TexCache[tex_num].texture != 0) {
+		TexCache[tex_num].atime = time(0);
+		glEnable(GL_TEXTURE_2D);
+		glActiveTexture(GL_TEXTURE0);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glBindTexture(GL_TEXTURE_2D, TexCache[tex_num].texture);
+		for (n = 0; n < strlen(text); n++) {
+			draw_char_f3_fast(esContext, x1 + n * ((float)w * 0.6), y1, z1, x1 + n * ((float)w * 0.6) + w, y1 + h, z1, TexCache[tex_num].texture, text[n]);
+		}
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		glDisable(GL_TEXTURE_2D);
+	}
+
+
+
+
+/*
 	y1 += h;
 	int n1 = 0;
 	float scale = 32.0;
@@ -866,6 +937,7 @@ void draw_text_f3_fast (ESContext *esContext, float x1, float y1, float z1, floa
 			x1 += step;
 		}
 	}
+*/
 }
 
 

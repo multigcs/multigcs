@@ -316,10 +316,14 @@ int loadImage(const char *filename) {
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 
+#ifndef ANDROID
 #ifdef SDLGL
 	glTexImage2D(GL_TEXTURE_2D, 0, nOfColors, imageSurface->w, imageSurface->h, 0, texture_format, GL_UNSIGNED_BYTE, imageSurface->pixels);
 #else
 	glTexImage2D(GL_TEXTURE_2D, 0, texture_format, imageSurface->w, imageSurface->h, 0, texture_format, GL_UNSIGNED_BYTE, imageSurface->pixels);
+#endif
+#else
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_BGRA, imageSurface->w, imageSurface->h, 0, texture_format, GL_UNSIGNED_BYTE, imageSurface->pixels);
 #endif
 
 	SDL_FreeSurface(imageSurface);

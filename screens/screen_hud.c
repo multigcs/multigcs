@@ -725,11 +725,9 @@ void screen_hud (ESContext *esContext) {
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
 
-#ifndef ANDROID
 	if (setup.hud_view_screen == 0) {
 		draw_image(esContext, 0, 0, esContext->width, esContext->height, TEXTURE_HUD_FRAME);
 	}
-#endif
 
 	// Alt
 	draw_altiude_rule(esContext, 1.0, -0.6, 0.0, 0.0);
