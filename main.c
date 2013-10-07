@@ -310,6 +310,13 @@ void set_telemetry (char *device, uint32_t baud) {
 	}
 	strncpy(setup.telemetry_port, device, 1023);
 	setup.telemetry_baud = baud;
+
+#ifdef ANDROID
+	if (strncmp(setup.telemetry_port, "bt:", 3) == 0) {
+		Android_JNI_ConnectSerial(setup.telemetry_port + 3);
+	}
+#endif
+
 	reset_telemetry();
 }
 

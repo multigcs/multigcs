@@ -74,6 +74,10 @@ uint8_t device_name_save (char *name, float x, float y, int8_t button, float dat
 	return 0;
 }
 
+#ifdef ANDROID
+extern char bt_devices[100][1023];
+#endif
+
 void screen_device (ESContext *esContext) {
 	if (show_device != setup.view_mode) {
 		return;
@@ -115,6 +119,17 @@ void screen_device (ESContext *esContext) {
 		closedir(dir);
 		dir = NULL;
 	}
+
+#ifdef ANDROID
+	int nnum = 0;
+	for (nnum = 0; nnum < 10 && bt_devices[nnum][0] != 0; nnum++) {
+		if (device_page == n2) {
+			sprintf(tmp_str, "bt:%s", bt_devices[nnum]);
+			draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, device_name_save, 0.0);
+		}
+		n++;
+	}
+#endif
 
 	draw_text_button(esContext, "UNSET", setup.view_mode, "UNSET", FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, device_name_save, 0.0);
 

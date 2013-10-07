@@ -68,14 +68,16 @@ public class SDLActivity extends Activity {
         System.loadLibrary("main");
     }
 
-    public static TextToSpeech mTts;
-    public static ConnectBT cbt;
+    static TextToSpeech mTts;
+    static ConnectBT cbt;
 
     // Setup
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //Log.v("SDL", "onCreate()");
         super.onCreate(savedInstanceState);
+
+        cbt = new ConnectBT();
 
         mTts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
@@ -103,9 +105,6 @@ public class SDLActivity extends Activity {
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         LocationListener ll = new mylocationlistener();
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
-
-        cbt = new ConnectBT();
-
 
         setContentView(mLayout);
     }
@@ -306,6 +305,11 @@ public class SDLActivity extends Activity {
 
     public static void flipBuffers() {
         SDLActivity.nativeFlipBuffers();
+    }
+
+    public static boolean serialConnect(String text) {
+        cbt.startBT(text);
+        return true;
     }
 
     public static boolean serialWrite(byte c) {
@@ -1210,58 +1214,103 @@ class ConnectBT {
     int readBufferPosition;
     int counter;
     volatile boolean stopWorker;
+    String bt_devices = "";
 
     public ConnectBT() {
         Log.e("bt", "Bluetooth init");
+        findBT("_____x_x_x____");
+        startBT("radio3dr");
+    }
+
+    public void startBT(String name) {
+        Log.e("bt", "Bluetooth start");
         try  {
-            findBT();
+            closeBT();
+            findBT(name);
             openBT();
         }
         catch (IOException ex) { }
     }
 
-    public void findBT() {
+    public void findBT(String name) {
+
+        if (mmSocket != null) {
+            try  {
+                mmSocket.close();
+                mmSocket = null;
+            }
+            catch (IOException ex) { }
+        }
+
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(mBluetoothAdapter == null) {
             Log.e("bt", "No bluetooth adapter available");
+            return;
         }
         if(!mBluetoothAdapter.isEnabled()) {
             Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 //            startActivityForResult(enableBluetooth, 0);
+            return;
         }
+
+        Log.e("bt", "bluetooth scan devices");
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+        bt_devices = "";
         if(pairedDevices.size() > 0) {
             for(BluetoothDevice device : pairedDevices) {
-                if(device.getName().equals("octo")) {
+                bt_devices += device.getName() + ";";
+            }
+        }
+        Log.e("bt", bt_devices);
+	deviceList(bt_devices);
+
+        String devices;
+        if(pairedDevices.size() > 0) {
+            for(BluetoothDevice device : pairedDevices) {
+                if(device.getName().equals(name)) {
                     mmDevice = device;
-                    break;
+                    Log.e("bt", "Bluetooth Device Found");
+                    return;
                 }
             }
         }
-        Log.e("bt", "Bluetooth Device Found");
     }
 
     public void openBT() throws IOException {
+        if (mmDevice == null) {
+		mmSocket = null;
+		mmDevice = null;
+		return;
+	}
         UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); //Standard SerialPortService ID
         mmSocket = mmDevice.createRfcommSocketToServiceRecord(uuid);
         mmSocket.connect();
-        mmOutputStream = mmSocket.getOutputStream();
-        mmInputStream = mmSocket.getInputStream();
-        beginListenForData();
-        Log.e("bt", "Bluetooth Opened");
+        if (mmSocket != null) {
+            mmOutputStream = mmSocket.getOutputStream();
+            mmInputStream = mmSocket.getInputStream();
+            beginListenForData();
+            Log.e("bt", "Bluetooth Opened: ok");
+        } else {
+            Log.e("bt", "Bluetooth Opened: failed");
+        }
     }
 
     public byte[] readBT(int len) throws IOException {
-        int bytesAvailable = mmInputStream.available();                        
-        if(bytesAvailable > 0) {
-            byte[] packetBytes = new byte[bytesAvailable];
-            mmInputStream.read(packetBytes);
-            return packetBytes;
-        }
-	return null;
+        if (mmSocket != null) {
+            int bytesAvailable = mmInputStream.available();                        
+            if(bytesAvailable > 0) {
+                byte[] packetBytes = new byte[bytesAvailable];
+                mmInputStream.read(packetBytes);
+                return packetBytes;
+            }
+         }
+         return null;
     }
 
     public void beginListenForData() {
+        if (mmSocket == null) {
+            return;
+        }
         final Handler handler = new Handler(); 
         final byte delimiter = 10; //This is the ASCII code for a newline character
         stopWorker = false;
@@ -1275,20 +1324,17 @@ class ConnectBT {
                         if(bytesAvailable > 0) {
                             byte[] packetBytes = new byte[bytesAvailable];
                             mmInputStream.read(packetBytes);
-
                             for(int i=0;i<bytesAvailable;i++) {
                                 byte b = packetBytes[i];
-
 	                        serialReceive(b);
-
                             }
-
                         }
                     } 
                     catch (IOException ex) {
                         stopWorker = true;
                     }
                }
+               Log.e("bt", "Bluetooth thread closed");
             }
         });
         workerThread.start();
@@ -1305,12 +1351,18 @@ class ConnectBT {
 
     public void closeBT() throws IOException {
         stopWorker = true;
-        mmOutputStream.close();
-        mmInputStream.close();
-        mmSocket.close();
+        if (mmSocket != null) {
+            Log.e("bt", "Bluetooth close");
+            mmOutputStream.close();
+            mmInputStream.close();
+            mmSocket.close();
+            mmSocket = null;
+            mmDevice = null;
+        }
         Log.e("bt", "Bluetooth Closed");
     }
 
     public native void serialReceive(byte c);
+    public native void deviceList(String dlist);
 
 }

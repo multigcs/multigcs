@@ -3,6 +3,9 @@
 #include <all.h>
 #include <jni.h>
 
+#define DEG_TO_RAD   ( PI / 180.0 )
+#define RAD_TO_DEG   ( 180.0 / PI )
+
 static float jni_gps_lat = 0.0;
 static float jni_gps_lon = 0.0;
 static float jni_gps_alt = 0.0;
@@ -11,8 +14,9 @@ static float jni_att_roll = 0.0;
 static float jni_att_pitch = 0.0;
 static float jni_att_yaw = 0.0;
 
-#define DEG_TO_RAD   ( PI / 180.0 )
-#define RAD_TO_DEG   ( 180.0 / PI )
+char bt_devices[100][1023];
+uint8_t aserbuffer[2048];
+int aserbuffer_pos = 0;
 
 
 void jni_gpsGetPosition (float *lat, float *lon, float *alt, float *speed) {
@@ -53,10 +57,6 @@ void Java_org_libsdl_app_SDLSurface_attitudeSetPosition (JNIEnv* env, jclass cls
 	return;
 }
 
-uint8_t aserbuffer[2048];
-int aserbuffer_pos = 0;
-int aserbuffer_pos2 = 0;
-
 ssize_t bt_read(int fd, void *data, size_t len) {
 	ssize_t retlen = aserbuffer_pos;
 	memcpy(data, aserbuffer, retlen);
@@ -64,24 +64,32 @@ ssize_t bt_read(int fd, void *data, size_t len) {
 	return retlen;
 }
 
-ssize_t __bt_read(int fd, void *data, size_t len) {
-	ssize_t retlen = aserbuffer_pos - aserbuffer_pos2;
-	if (retlen < len) {
-		 len = retlen;
-	}
-	memcpy(data, aserbuffer + aserbuffer_pos2, len);
-	aserbuffer_pos2 += len;
-	if (aserbuffer_pos2 >= aserbuffer_pos) {
-		aserbuffer_pos = 0;
-		aserbuffer_pos2 = 0;
-	}
-	return len;
-}
-
 void Java_org_libsdl_app_ConnectBT_serialReceive (JNIEnv* env, jclass cls, jbyte c) {
 	int n = 0;
 	if (aserbuffer_pos < 2000) {
 		aserbuffer[aserbuffer_pos++] = c;
+	}
+	return;
+}
+
+void Java_org_libsdl_app_ConnectBT_deviceList (JNIEnv* env, jclass cls, jstring dlist) {
+
+	const char *nativeString = (*env)->GetStringUTFChars(env, dlist, 0);
+
+	SDL_Log("BT DEVICE_LIST: %s", nativeString);
+
+	int n = 0;
+	int nn = 0;
+	int num = 0;
+	for (n = 0; n < strlen(nativeString); n++) {
+		if (nativeString[n] == ';') {
+			num++;
+			nn = 0;
+			bt_devices[num][nn] = 0;
+		} else {
+			bt_devices[num][nn++] = nativeString[n];
+			bt_devices[num][nn] = 0;
+		}
 	}
 	return;
 }
