@@ -11,6 +11,9 @@ static float jni_att_roll = 0.0;
 static float jni_att_pitch = 0.0;
 static float jni_att_yaw = 0.0;
 
+char jni_text2speak[1024];
+
+
 #define DEG_TO_RAD   ( PI / 180.0 )
 #define RAD_TO_DEG   ( 180.0 / PI )
 
@@ -51,5 +54,12 @@ void Java_org_libsdl_app_SDLSurface_attitudeSetPosition (JNIEnv* env, jclass cls
 	}
 	jni_att_yaw = yaw;
 	return;
+}
+
+jstring Java_org_libsdl_app_SDLSurface_getTextToSpeak (JNIEnv* env, jclass cls) {
+	static char text[1024];
+	strcpy(text, jni_text2speak);
+	jni_text2speak[0] = 0;
+	return (*env)->NewStringUTF(env, text);
 }
 

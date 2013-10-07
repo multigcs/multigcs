@@ -91,15 +91,21 @@ char *get_datadirectory (void) {
 	return datradir;
 }
 
+extern char jni_text2speak[1024];
+
 void system_say (char *text) {
 	char cmd_str[1024];
 	sys_message(text);
+#ifndef ANDROID
 #ifdef OSX
 	sprintf(cmd_str, "say \"%s\" > /dev/null 2> /dev/null &", text);
 	system(cmd_str);
 #else
 	sprintf(cmd_str, "espeak \"%s\" > /dev/null 2> /dev/null &", text);
 	system(cmd_str);
+#endif
+#else
+	strcpy(jni_text2speak, text);
 #endif
 }
 

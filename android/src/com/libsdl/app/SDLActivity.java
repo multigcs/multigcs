@@ -8,14 +8,15 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsoluteLayout;
+import android.speech.tts.TextToSpeech;
 import android.os.*;
 import android.util.Log;
 import android.graphics.*;
 import android.media.*;
 import android.hardware.*;
 
-
-
+import java.util.Locale;
+import java.util.Random;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Timer;
@@ -59,12 +60,29 @@ public class SDLActivity extends Activity {
         System.loadLibrary("main");
     }
 
+    public static TextToSpeech mTts;
+
     // Setup
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //Log.v("SDL", "onCreate()");
         super.onCreate(savedInstanceState);
-        
+
+        mTts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status == TextToSpeech.SUCCESS) {
+                    int result = mTts.setLanguage(Locale.US);
+                    if (result == TextToSpeech.LANG_MISSING_DATA ||
+                        result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    } else {
+        	        mTts.speak("wellcome to multi g c s", TextToSpeech.QUEUE_FLUSH, null);
+                    }
+                }
+            }
+        });
+
+
         // So we can call stuff from static callbacks
         mSingleton = this;
 
@@ -78,8 +96,13 @@ public class SDLActivity extends Activity {
         LocationListener ll = new mylocationlistener();
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
 
+
+        SpeakText sp = new SpeakText();
+
+
         setContentView(mLayout);
     }
+
 
     // Events
     @Override
@@ -117,6 +140,11 @@ public class SDLActivity extends Activity {
 
     @Override
     protected void onDestroy() {
+        if (mTts != null) {
+            mTts.stop();
+            mTts.shutdown();
+        }
+
         super.onDestroy();
         Log.v("SDL", "onDestroy()");
         // Send a quit message to the application
@@ -466,6 +494,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
  
         initListeners();
         fuseTimer.scheduleAtFixedRate(new calculateFusedOrientationTask(), 1000, TIME_CONSTANT);
+        ttsTimer.scheduleAtFixedRate(new ttsTask(), 5000, 100);
   }
 
         // Some arbitrary defaults to avoid a potential division by zero
@@ -667,16 +696,19 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
     
     public static final float EPSILON = 0.000000001f;
     private static final float NS2S = 1.0f / 1000000000.0f;
-	private float timestamp;
-	private boolean initState = true;
+    private float timestamp;
+    private boolean initState = true;
     
-	public static final int TIME_CONSTANT = 30;
-	public static final float FILTER_COEFFICIENT = 0.98f;
-	private Timer fuseTimer = new Timer();
+    public static final int TIME_CONSTANT = 30;
+    public static final float FILTER_COEFFICIENT = 0.98f;
+    private Timer fuseTimer = new Timer();
 	
-	// The following members are only for displaying the sensor output.
-	public Handler mHandler;
-	DecimalFormat d = new DecimalFormat("#.##");
+    // The following members are only for displaying the sensor output.
+    public Handler mHandler;
+    DecimalFormat d = new DecimalFormat("#.##");
+
+
+    private Timer ttsTimer = new Timer();
 	
 
     public void initListeners(){
@@ -850,6 +882,16 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
      
         return result;
     }
+
+    class ttsTask extends TimerTask {
+        public void run() {
+            String newText = getTextToSpeak();
+            if (newText != null && !newText.isEmpty()) {
+                SDLActivity.mTts.speak(newText, TextToSpeech.QUEUE_FLUSH, null);
+            }
+        }
+    }
+
     
     class calculateFusedOrientationTask extends TimerTask {
         public void run() {
@@ -988,6 +1030,8 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 
 
     public native void attitudeSetPosition(float pitch, float roll, float yaw);
+    public native String getTextToSpeak();
+
 
 }
 
@@ -1132,3 +1176,5 @@ class mylocationlistener implements LocationListener {
     public native void gpsSetPosition(float lat, float lon, float alt, float speed);
 
 }
+
+
