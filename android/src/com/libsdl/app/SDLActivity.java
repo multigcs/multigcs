@@ -96,10 +96,6 @@ public class SDLActivity extends Activity {
         LocationListener ll = new mylocationlistener();
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
 
-
-        SpeakText sp = new SpeakText();
-
-
         setContentView(mLayout);
     }
 
