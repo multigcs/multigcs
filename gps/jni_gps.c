@@ -11,16 +11,13 @@ static float jni_att_roll = 0.0;
 static float jni_att_pitch = 0.0;
 static float jni_att_yaw = 0.0;
 
-char jni_text2speak[1024];
-
-
 #define DEG_TO_RAD   ( PI / 180.0 )
 #define RAD_TO_DEG   ( 180.0 / PI )
 
 
 void jni_gpsGetPosition (float *lat, float *lon, float *alt, float *speed) {
 	*lat = jni_gps_lat;
-	*lon = jni_gps_lat;
+	*lon = jni_gps_lon;
 	*alt = jni_gps_alt;
 	*speed = jni_gps_speed;
 	return;
@@ -56,10 +53,36 @@ void Java_org_libsdl_app_SDLSurface_attitudeSetPosition (JNIEnv* env, jclass cls
 	return;
 }
 
-jstring Java_org_libsdl_app_SDLSurface_getTextToSpeak (JNIEnv* env, jclass cls) {
-	static char text[1024];
-	strcpy(text, jni_text2speak);
-	jni_text2speak[0] = 0;
-	return (*env)->NewStringUTF(env, text);
+uint8_t aserbuffer[2048];
+int aserbuffer_pos = 0;
+int aserbuffer_pos2 = 0;
+
+ssize_t bt_read(int fd, void *data, size_t len) {
+	ssize_t retlen = aserbuffer_pos;
+	memcpy(data, aserbuffer, retlen);
+	aserbuffer_pos = 0;
+	return retlen;
+}
+
+ssize_t __bt_read(int fd, void *data, size_t len) {
+	ssize_t retlen = aserbuffer_pos - aserbuffer_pos2;
+	if (retlen < len) {
+		 len = retlen;
+	}
+	memcpy(data, aserbuffer + aserbuffer_pos2, len);
+	aserbuffer_pos2 += len;
+	if (aserbuffer_pos2 >= aserbuffer_pos) {
+		aserbuffer_pos = 0;
+		aserbuffer_pos2 = 0;
+	}
+	return len;
+}
+
+void Java_org_libsdl_app_ConnectBT_serialReceive (JNIEnv* env, jclass cls, jbyte c) {
+	int n = 0;
+	if (aserbuffer_pos < 2000) {
+		aserbuffer[aserbuffer_pos++] = c;
+	}
+	return;
 }
 

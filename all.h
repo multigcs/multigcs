@@ -52,6 +52,10 @@
 extern SDL_bool Android_JNI_GetAccelerometerValues(float values[3]);
 extern void jni_gpsGetPosition (float *lat, float *lon, float *alt, float *speed);
 
+extern void Android_JNI_SendSerial(uint8_t c);
+extern void Android_JNI_SayText(const char *text);
+
+
 #else
 
 #ifdef OSX

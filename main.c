@@ -91,8 +91,6 @@ char *get_datadirectory (void) {
 	return datradir;
 }
 
-extern char jni_text2speak[1024];
-
 void system_say (char *text) {
 	char cmd_str[1024];
 	sys_message(text);
@@ -105,7 +103,7 @@ void system_say (char *text) {
 	system(cmd_str);
 #endif
 #else
-	strcpy(jni_text2speak, text);
+	Android_JNI_SayText(text);
 #endif
 }
 
@@ -1189,15 +1187,8 @@ extern void jni_attitudeGetPosition (float *pitch, float *roll, float *yaw);
 
 int telemetry_thread (void *data) {
 	while (gui_running == 1) {
-
-
 #ifdef ANDROID
-//		float acc_values[3];
-//		Android_JNI_GetAccelerometerValues(acc_values);
-//		ModelData.roll = acc_values[1] * -90.0;
-//		ModelData.pitch = acc_values[2] * -90.0;
-
-		jni_attitudeGetPosition (&ModelData.pitch, &ModelData.roll, &ModelData.yaw);
+//		jni_attitudeGetPosition (&ModelData.pitch, &ModelData.roll, &ModelData.yaw);
 
 		float jni_gps_lat = 0.0;
 		float jni_gps_lon = 0.0;
@@ -1210,11 +1201,6 @@ int telemetry_thread (void *data) {
 			ModelData.p_alt = jni_gps_alt;
 			ModelData.speed = jni_gps_speed;
 		}
-
-//		char tmp_str[1024];
-//		sprintf(tmp_str, "## ACC: %f %f %f ##\n", acc_values[0], acc_values[1], acc_values[2]);
-//		SDL_Log(tmp_str);
-
 #endif
 
 		if (clientmode == 1) {

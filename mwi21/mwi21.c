@@ -5,6 +5,7 @@ extern uint8_t redraw_flag;
 
 int mwi21_serial_fd = -1;
 uint8_t mwi21_serial_buf[255];
+uint8_t serial_buffer[1024];
 uint8_t mwi21_serial_n = 0;
 uint8_t mwi21_frame_start = 0;
 uint8_t mwi21_frame_len = 0;
@@ -81,7 +82,7 @@ int32_t mwi21_read32 (void) {
 }
 
 void mwi21_get_req (uint8_t id) {
-	char send_buffer[20];
+	uint8_t send_buffer[20];
 	send_buffer[0] = '$';
 	send_buffer[1] = 'M';
 	send_buffer[2] = '<';
@@ -89,12 +90,12 @@ void mwi21_get_req (uint8_t id) {
 	send_buffer[4] = id;
 	send_buffer[5] = id;
 	if (mwi21_serial_fd >= 0) {
-		write(mwi21_serial_fd, send_buffer, 6);
+		serial_write(mwi21_serial_fd, send_buffer, 6);
 	}
 }
 
 void mwi21_get_req8 (uint8_t id, int8_t data) {
-	char send_buffer[20];
+	uint8_t send_buffer[20];
 	send_buffer[0] = '$';
 	send_buffer[1] = 'M';
 	send_buffer[2] = '<';
@@ -103,12 +104,12 @@ void mwi21_get_req8 (uint8_t id, int8_t data) {
 	send_buffer[5] = data;
 	send_buffer[6] = 1 ^ id ^ data;
 	if (mwi21_serial_fd >= 0) {
-		write(mwi21_serial_fd, send_buffer, 7);
+		serial_write(mwi21_serial_fd, send_buffer, 7);
 	}
 }
 
 void mwi21_send_box (void) {
-	char send_buffer[50];
+	uint8_t send_buffer[50];
 	send_buffer[0] = '$';
 	send_buffer[1] = 'M';
 	send_buffer[2] = '<';
@@ -125,12 +126,12 @@ void mwi21_send_box (void) {
 		send_buffer[5 + 32] ^= d2;
 	}
 	if (mwi21_serial_fd >= 0) {
-		write(mwi21_serial_fd, send_buffer, 6 + 32);
+		serial_write(mwi21_serial_fd, send_buffer, 6 + 32);
 	}
 }
 
 void mwi21_send_pid (void) {
-	char send_buffer[50];
+	uint8_t send_buffer[50];
 	send_buffer[0] = '$';
 	send_buffer[1] = 'M';
 	send_buffer[2] = '<';
@@ -147,7 +148,7 @@ void mwi21_send_pid (void) {
 		send_buffer[5 + 30] ^= mwi_set_pid[nn][2];
 	}
 	if (mwi21_serial_fd >= 0) {
-		write(mwi21_serial_fd, send_buffer, 6 + 30);
+		serial_write(mwi21_serial_fd, send_buffer, 6 + 30);
 	}
 }
 
@@ -172,6 +173,7 @@ void mwi21_get_values (void) {
 
 void mwi21_get_new (void) {
 	static uint8_t flag = 0;
+
 
 	flag = 1 - flag;
 
@@ -242,7 +244,10 @@ void mwi21_update (void) {
 		mwi21_get_new();
 //		printf("mwi21: timeout\n");
 	}
-	while ((res = read(mwi21_serial_fd, mwi21_serial_buf, 1)) > 0) {
+	while ((res = serial_read(mwi21_serial_fd, serial_buffer, 1023)) > 0) {
+	    int i = 0;
+	    for (i = 0; i < res; i++) {
+		mwi21_serial_buf[0] = serial_buffer[i];
 		last_connection = time(0);
 		c = mwi21_serial_buf[0];
 //		printf("%i: %i (%c)\n", mwi21_serial_n, c, c);
@@ -456,6 +461,7 @@ void mwi21_update (void) {
 			mwi21_serial_n = 0;
 		}
 		last = c;
+	    }
 	}
 }
 

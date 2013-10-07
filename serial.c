@@ -3,6 +3,27 @@
 
 struct termios oldtio, newtio;
 
+void serial_write (int fd, uint8_t *data, int len) {
+#ifdef ANDROID
+	int n = 0;
+	for (n = 0; n < len; n++) {
+		Android_JNI_SendSerial(data[n]);
+	}
+#else
+	write(fd, data, len);
+#endif
+}
+
+extern ssize_t bt_read(int fd, void *data, size_t len);
+
+ssize_t serial_read(int fd, void *data, size_t len) {
+#ifdef ANDROID
+	return bt_read(fd, data, len);
+#else
+	return read(fd, data, len);
+#endif
+}
+
 int serial_close (int fd) {
 	if (fd >= 0) {
 		close(fd);
@@ -13,6 +34,11 @@ int serial_close (int fd) {
 
 int serial_open (char *mdevice, uint32_t baud) {
 	int fd = -1;
+#ifdef ANDROID
+	if (strncmp(mdevice, "bt:", 3) == 0) {
+		return 1;
+	}
+#endif
 #ifndef OSX
 	int baudr = 9600;
 	switch(baud) {

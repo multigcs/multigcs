@@ -9,6 +9,9 @@ import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsoluteLayout;
 import android.speech.tts.TextToSpeech;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.os.*;
 import android.util.Log;
 import android.graphics.*;
@@ -21,6 +24,11 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Set;
+import java.util.UUID;
 
 
 import android.location.Location;
@@ -61,6 +69,7 @@ public class SDLActivity extends Activity {
     }
 
     public static TextToSpeech mTts;
+    public static ConnectBT cbt;
 
     // Setup
     @Override
@@ -82,7 +91,6 @@ public class SDLActivity extends Activity {
             }
         });
 
-
         // So we can call stuff from static callbacks
         mSingleton = this;
 
@@ -95,6 +103,9 @@ public class SDLActivity extends Activity {
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         LocationListener ll = new mylocationlistener();
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
+
+        cbt = new ConnectBT();
+
 
         setContentView(mLayout);
     }
@@ -297,6 +308,30 @@ public class SDLActivity extends Activity {
         SDLActivity.nativeFlipBuffers();
     }
 
+    public static boolean serialWrite(byte c) {
+        try  {
+            cbt.sendByte(c);
+        }
+        catch (IOException ex) { }
+        return true;
+    }
+
+    public static byte[] serialRead(int maxlen) {
+        try  {
+            byte[] data = cbt.readBT(maxlen);
+	    return data;
+        }
+        catch (IOException ex) { }
+        return null;
+    }
+
+
+
+    public static boolean SayText(String text) {
+        SDLActivity.mTts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+        return true;
+    }
+
     public static boolean setActivityTitle(String title) {
         // Called from SDLMain() thread and can't directly affect the view
         return mSingleton.sendCommand(COMMAND_CHANGE_TITLE, title);
@@ -490,14 +525,14 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
  
         initListeners();
         fuseTimer.scheduleAtFixedRate(new calculateFusedOrientationTask(), 1000, TIME_CONSTANT);
-        ttsTimer.scheduleAtFixedRate(new ttsTask(), 5000, 100);
   }
+
 
         // Some arbitrary defaults to avoid a potential division by zero
         mWidth = 1.0f;
         mHeight = 1.0f;
     }
-    
+
     public Surface getNativeSurface() {
         return getHolder().getSurface();
     }
@@ -879,16 +914,6 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
         return result;
     }
 
-    class ttsTask extends TimerTask {
-        public void run() {
-            String newText = getTextToSpeak();
-            if (newText != null && !newText.isEmpty()) {
-                SDLActivity.mTts.speak(newText, TextToSpeech.QUEUE_FLUSH, null);
-            }
-        }
-    }
-
-    
     class calculateFusedOrientationTask extends TimerTask {
         public void run() {
             float oneMinusCoeff = 1.0f - FILTER_COEFFICIENT;
@@ -1174,3 +1199,118 @@ class mylocationlistener implements LocationListener {
 }
 
 
+class ConnectBT {
+    BluetoothAdapter mBluetoothAdapter;
+    BluetoothSocket mmSocket;
+    BluetoothDevice mmDevice;
+    OutputStream mmOutputStream;
+    InputStream mmInputStream;
+    Thread workerThread;
+    byte[] readBuffer;
+    int readBufferPosition;
+    int counter;
+    volatile boolean stopWorker;
+
+    public ConnectBT() {
+        Log.e("bt", "Bluetooth init");
+        try  {
+            findBT();
+            openBT();
+        }
+        catch (IOException ex) { }
+    }
+
+    public void findBT() {
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if(mBluetoothAdapter == null) {
+            Log.e("bt", "No bluetooth adapter available");
+        }
+        if(!mBluetoothAdapter.isEnabled()) {
+            Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//            startActivityForResult(enableBluetooth, 0);
+        }
+        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+        if(pairedDevices.size() > 0) {
+            for(BluetoothDevice device : pairedDevices) {
+                if(device.getName().equals("octo")) {
+                    mmDevice = device;
+                    break;
+                }
+            }
+        }
+        Log.e("bt", "Bluetooth Device Found");
+    }
+
+    public void openBT() throws IOException {
+        UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"); //Standard SerialPortService ID
+        mmSocket = mmDevice.createRfcommSocketToServiceRecord(uuid);
+        mmSocket.connect();
+        mmOutputStream = mmSocket.getOutputStream();
+        mmInputStream = mmSocket.getInputStream();
+        beginListenForData();
+        Log.e("bt", "Bluetooth Opened");
+    }
+
+    public byte[] readBT(int len) throws IOException {
+        int bytesAvailable = mmInputStream.available();                        
+        if(bytesAvailable > 0) {
+            byte[] packetBytes = new byte[bytesAvailable];
+            mmInputStream.read(packetBytes);
+            return packetBytes;
+        }
+	return null;
+    }
+
+    public void beginListenForData() {
+        final Handler handler = new Handler(); 
+        final byte delimiter = 10; //This is the ASCII code for a newline character
+        stopWorker = false;
+        readBufferPosition = 0;
+        readBuffer = new byte[1024];
+        workerThread = new Thread(new Runnable() {
+            public void run() {                
+               while(!Thread.currentThread().isInterrupted() && !stopWorker) {
+                    try {
+                        int bytesAvailable = mmInputStream.available();                        
+                        if(bytesAvailable > 0) {
+                            byte[] packetBytes = new byte[bytesAvailable];
+                            mmInputStream.read(packetBytes);
+
+                            for(int i=0;i<bytesAvailable;i++) {
+                                byte b = packetBytes[i];
+
+	                        serialReceive(b);
+
+                            }
+
+                        }
+                    } 
+                    catch (IOException ex) {
+                        stopWorker = true;
+                    }
+               }
+            }
+        });
+        workerThread.start();
+    }
+    
+    public void sendData(String msg) throws IOException {
+        mmOutputStream.write(msg.getBytes());
+	Log.e("bt", "Data Sent");
+    }
+
+    public void sendByte(byte c) throws IOException {
+        mmOutputStream.write(c);
+    }
+
+    public void closeBT() throws IOException {
+        stopWorker = true;
+        mmOutputStream.close();
+        mmInputStream.close();
+        mmSocket.close();
+        Log.e("bt", "Bluetooth Closed");
+    }
+
+    public native void serialReceive(byte c);
+
+}

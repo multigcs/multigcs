@@ -636,7 +636,6 @@ void send_waypoints (void) {
 	send_message(&msg);
 }
 
-
 void send_message (mavlink_message_t* msg) {
 	uint8_t buf[MAVLINK_MAX_PACKET_LEN];
 	printf("mavlink: send_msg...\n");
@@ -644,7 +643,7 @@ void send_message (mavlink_message_t* msg) {
 	uint16_t i = 0;
 	for(i = 0; i < len; i++) {
 		uint8_t c = buf[i];
-		write(serial_fd_mavlink, &c, 1);
+		serial_write(serial_fd_mavlink, &c, 1);
 	}
 	if (mavlink_udp_active == 1) {
 		if (sendto(s, buf, len, 0, (struct sockaddr *)&si_other, slen) == -1) {
@@ -660,6 +659,8 @@ uint8_t mavlink_connection_status (void) {
 	return last_connection;
 }
 
+extern int Android_JNI_ReadSerial(uint8_t *data, int len);
+
 void mavlink_update (void) {
 	if (serial_fd_mavlink == -1) {
 		return;
@@ -669,7 +670,7 @@ void mavlink_update (void) {
 //	uint16_t id = 0;
 	mavlink_message_t msg;
 	mavlink_status_t status;
-	while ((res = read(serial_fd_mavlink, serial_buf, 200)) > 0) {
+	while ((res = serial_read(serial_fd_mavlink, serial_buf, 200)) > 0) {
 		last_connection = time(0);
 		for (n = 0; n < res; n++) {
 			c = serial_buf[n];
@@ -801,7 +802,6 @@ int mavlink_udp (void *data) {
 	return 0;
 }
 
-#ifndef ANDROID_
 void mavlink_parseParams1 (xmlDocPtr doc, xmlNodePtr cur, char *name) { 
 	int n = 0;
 	int n2 = 0;
@@ -951,14 +951,6 @@ static void mavlink_parseDoc (char *docname) {
 	xmlFreeDoc(doc);
 	return;
 }
-
-#else
-
-static void mavlink_parseDoc (char *docname) {
-	return;
-}
-
-#endif
 
 void mavlink_param_xml_meta_load (void) {
 	char filename[1024];
