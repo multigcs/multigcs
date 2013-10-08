@@ -11,7 +11,8 @@
 	<service>
 		<name>GAPI</name>
 		<comment>Google-API</comment>
-		<url>http://khm0.googleapis.com/kh/v=120&amp;src=app&amp;x=%i&amp;s=&amp;y=%i&amp;z=%i</url>
+		<_url>http://khm0.googleapis.com/kh/v=120&amp;src=app&amp;x=%i&amp;s=&amp;y=%i&amp;z=%i</_url>
+		<url>http://khms1.google.de/kh/v=138&amp;src=app&amp;x=%i&amp;y=%i&amp;z=%i</url>
 		<file>%s/MAPS/gapi_%i_%i_%i.jpg</file>
 		<type>XYZ</type>
 		<copyright>Map data @2013 Google, &lt;a href=http://www.google.com/intl/en_ALL/help/terms_maps.html&gt;Terms of Use&lt;/a&gt;</copyright>

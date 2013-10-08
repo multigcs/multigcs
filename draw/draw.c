@@ -264,14 +264,13 @@ int imagefile_exists (char *fileName) {
 }
 
 int loadImage(const char *filename) {
-
-	if (strncmp(filename, "./", 2) == 0) {
-		filename += 2;
-	}
-
 #ifndef ANDROID
 	if (strstr(filename, ".png\0") > 0) {
 		return loadPNG(filename);
+	}
+#else
+	if (strncmp(filename, "./", 2) == 0) {
+		filename += 2;
 	}
 #endif
 #ifdef RPI_NO_X
@@ -284,7 +283,6 @@ int loadImage(const char *filename) {
 	}
 	return loadPNG(tmp_file);
 #endif
-
 	SDL_Surface *imageSurface1 = IMG_Load(filename);
 	if (! imageSurface1) {
 		printf("Error: loading image: %s\n", filename);
@@ -311,11 +309,10 @@ int loadImage(const char *filename) {
                 printf("warning: the image is not truecolor..  this will probably break\n");
 		return 0;
         }
-	glGenTextures( 1, &texture );
-	glBindTexture( GL_TEXTURE_2D, texture );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 #ifndef ANDROID
 #ifdef SDLGL
 	glTexImage2D(GL_TEXTURE_2D, 0, nOfColors, imageSurface->w, imageSurface->h, 0, texture_format, GL_UNSIGNED_BYTE, imageSurface->pixels);
@@ -325,7 +322,6 @@ int loadImage(const char *filename) {
 #else
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_BGRA, imageSurface->w, imageSurface->h, 0, texture_format, GL_UNSIGNED_BYTE, imageSurface->pixels);
 #endif
-
 	SDL_FreeSurface(imageSurface);
 	imageSurface = NULL;
 	return texture;

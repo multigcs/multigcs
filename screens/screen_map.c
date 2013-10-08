@@ -228,8 +228,8 @@ void map_exit (void) {
 
 int file_exists (char *fileName) {
 	struct stat buf;
-	int i = stat ( fileName, &buf );
-	if ( i == 0 ) {
+	int i = stat(fileName, &buf);
+	if (i == 0) {
 		return 1;
 	}
 	return 0;
@@ -237,8 +237,11 @@ int file_exists (char *fileName) {
 
 int file_download (char *fileName, char *url) {
 	char tmp_file[4024];
+#ifdef ANDROID
+	SDL_Log("htmlget: %s -> %s\n", url, fileName);
+#endif
 	sprintf(tmp_file, "%s.tmp", fileName);
-	if (htmlget(url, tmp_file) < NULL) {
+	if (htmlget(url, tmp_file) < 0) {
 		return -1;
 	}
 	rename(tmp_file, fileName);
@@ -518,10 +521,11 @@ void get_srtm (void) {
 	sprintf(file2, "%s/MAPS/%s", get_datadirectory(), file);
 	if (file_exists(file2) == 0) {
 		printf("map: getting srtm-data: %s\n", file);
-
+#ifdef ANDROID
+		SDL_Log("map: getting srtm-data: %s\n", file);
+#endif
 		sprintf(target, "%s/MAPS/part/", get_datadirectory());
 		mkdir(target, 0755);
-
 		sprintf(source, "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/Eurasia/%s.zip", file);
 		sprintf(target, "%s/MAPS/part/%s.zip", get_datadirectory(), file);
 		if (file_download(target, source) != -1) {
@@ -1627,6 +1631,14 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	uint8_t tiles_num = 0;
 	int16_t n = 0;
 
+#ifdef ANDROID
+	if (draw_target() == 0) {
+		draw_to_buffer();
+		hud_draw_horizon(esContext, 0);
+		draw_to_screen();
+	}
+#endif
+
 	if (setup.view_mode == VIEW_MODE_MAP) {
 		reset_buttons();
 	}
@@ -1829,26 +1841,29 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	if (zoom <= 18 && _map_view != 4) {
 		for (y_n = -MAP_OVERLAY; y_n < tiles_y + MAP_OVERLAY; y_n++) {
 			for (x_n = -MAP_OVERLAY; x_n < tiles_x + MAP_OVERLAY; x_n++) {
+				float _grid = grid;
 				sprintf(tile_name, mapnames[map_type][MAP_FILE], get_datadirectory(), zoom, tile_x + x_n, tile_y + y_n);
-				if (file_exists(tile_name) != 0) {
-					if (draw_tiles == 0) {
-						tile_name[0] = 0;
-					}
-					if (alpha1 == 0.0 && alpha2 == 0.0 && map_color == 1) {
-						alpha1 = 0.5;
-						alpha2 = 0.5;
-					}
-					if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
-						draw_image_srtm(esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, zoom), tilex2long(tile_x + x_n, zoom), tiley2lat(tile_y + y_n + 1, zoom), tilex2long(tile_x + x_n + 1, zoom), alpha0, alpha1, alpha2, grid);
-					} else if (_map_view == 1) {
-						draw_image_srtm(esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, zoom), tilex2long(tile_x + x_n, zoom), tiley2lat(tile_y + y_n + 1, zoom), tilex2long(tile_x + x_n + 1, zoom), alpha0, alpha1, alpha2, grid);
-					} else {
-						draw_image(esContext, x_n * 256, y_n * 256, 256, 256, tile_name);
-					}
+				if (file_exists(tile_name) == 0) {
+					tile_name[0] = 0;
+					_grid = 1.0;
+				}
+				if (draw_tiles == 0) {
+					tile_name[0] = 0;
+				}
+				if (alpha1 == 0.0 && alpha2 == 0.0 && map_color == 1) {
+					alpha1 = 0.5;
+					alpha2 = 0.5;
+				}
+				if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
+					draw_image_srtm(esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, zoom), tilex2long(tile_x + x_n, zoom), tiley2lat(tile_y + y_n + 1, zoom), tilex2long(tile_x + x_n + 1, zoom), alpha0, alpha1, alpha2, _grid);
+				} else if (_map_view == 1) {
+					draw_image_srtm(esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, zoom), tilex2long(tile_x + x_n, zoom), tiley2lat(tile_y + y_n + 1, zoom), tilex2long(tile_x + x_n + 1, zoom), alpha0, alpha1, alpha2, _grid);
 				} else {
-					char tmp_str[128];
-					sprintf(tmp_str, "%s/textures/loading.png", BASE_DIR);
-					draw_image(esContext, x_n * 256, y_n * 256, 256, 256, tmp_str);
+					if (tile_name[0] != 0) {
+						draw_image(esContext, x_n * 256, y_n * 256, 256, 256, tile_name);
+					} else {
+						draw_rect(esContext, x_n * 256, y_n * 256, x_n * 256 + 256, y_n * 256 + 256, 255, 255, 255, 255);
+					}
 				}
 				if (draw_tiles != 0 && omapnames[omap_type][MAP_FILE][0] != 0) {
 					sprintf(tile_name, omapnames[omap_type][MAP_FILE], get_datadirectory(), zoom, tile_x + x_n, tile_y + y_n);
@@ -2104,13 +2119,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	sprintf(tmp_str, "%0.1fkm (Z:%i)", scale / 1000.0, zoom);
 	draw_text(esContext, 10, esContext->height - 40, 8, 8, FONT_BLACK_BG, tmp_str);
 
-	if (strcmp(mapnames[map_type][MAP_NAME], "GAPI") == 0 || strcmp(mapnames[map_type][MAP_TYPE], "GOOGLE") == 0) {
-		sprintf(tile_name, "%s/MAPS/google.png", get_datadirectory());
-		if (file_exists(tile_name) != 0) {
-			draw_image(esContext, 1, setup.screen_h - 30, 62, 29, tile_name);
-		}
-		draw_text_f3(esContext, -1.2, 0.955, 0.003, 0.025, 0.04, FONT_GREEN, "Grafiken (c)2012 AeroWest, DigitalGlobe, GeoBasis-DE/BKG, GeoContent, GeoEye, TerraMetrics, Kartendaten (c)2012 GeoBasis-DE/BKG ((c)2009), Google");
-	}
 	if (_map_view != 3 && _map_view != 4 && _map_view != 5 && setup.view_mode == VIEW_MODE_MAP) {
 
 #ifndef ANDROID
@@ -2130,14 +2138,16 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 #endif
 #else
-/*
-		glPushMatrix();
-		glTranslatef(1.1, -0.7, 0.0 );
-		glScalef( 0.1, 0.1, 1.0 );
-		hud_draw_horizon(esContext, 0);
-		draw_rect_f3(esContext, -1.2, -1.0, 0.1, 1.2, 1.0, 0.1, 255, 255, 255, 255);
-		glPopMatrix();
-*/
+		if (draw_target() == 0) {
+			draw_buffer_to_screen(0.9, 0.4, 1.4, 0.85, 0.0, 1.0);
+			draw_rect_f3(esContext, 0.9, 0.4, 0.002, 1.4, 0.85, 0.002, 0, 0, 0, 255);
+			draw_rect_f3(esContext, 0.9 - 0.005, 0.4 - 0.005, 0.002, 1.4 + 0.005, 0.85 + 0.005, 0.002, 255, 255, 255, 255);
+			set_button("goto_hud", setup.view_mode, 0.9, 0.4, 1.4, 0.85, map_goto_screen, (float)VIEW_MODE_HUD, 0);
+			sprintf(tmp_str, "Alt: %0.0f", ModelData.p_alt);
+			draw_text_button(esContext, "map_alt", VIEW_MODE_MAP, tmp_str, FONT_GREEN, 0.92, 0.75, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
+			sprintf(tmp_str, "Speed: %0.0f", ModelData.speed);
+			draw_text_button(esContext, "map_speed", VIEW_MODE_MAP, tmp_str, FONT_GREEN, 0.92, 0.8, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
+		}
 #endif
 		uint8_t ny = 0;
 		ny++;

@@ -1,6 +1,8 @@
 
 #include <all.h>
 
+extern GLuint RB_texture;
+void draw_texture_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, GLuint texture);
 
 uint8_t hud_null (char *name, float x, float y, int8_t button, float data) {
 	return 0;
@@ -444,8 +446,8 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 			draw_box_f3(esContext, -2.5, 0.0, 0.001, 2.5, 2.5, 0.001, 255, 255, 255, 255);
 		} else {
 #ifdef SDLGL
-			draw_box_f3c2(esContext, -2.5, -2.5, 0.001, 2.5, 0.0, 0.001, 0x01, 0x8e, 0xea, 100, 0x01, 0x8e, 0xea, 255); // blue
-			draw_box_f3c2(esContext, -2.5, 0.0, 0.001, 2.5, 2.5, 0.001, 0xb1, 0x56, 0x1f, 255, 0xb1, 0x56, 0x1f, 100);  // brown
+			draw_box_f3c2(esContext, -2.5, -2.5, 0.001, 2.5, 0.0, 0.001, 0x01, 0x8e, 0xea, 255, 0x01, 0x8e, 0xea, 255); // blue
+			draw_box_f3c2(esContext, -2.5, 0.0, 0.001, 2.5, 2.5, 0.001, 0xb1, 0x56, 0x1f, 255, 0xb1, 0x56, 0x1f, 255);  // brown
 			draw_line_f3(esContext, -2.5, 0.0, 0.001, 2.5, 0.0, 0.001, 255, 255, 255, 255);
 #else
 			char tmp_str[128];
@@ -691,6 +693,13 @@ void screen_hud (ESContext *esContext) {
 	ESMatrix modelview;
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
+#endif
+#ifdef ANDROID
+	if (draw_target() == 0) {
+		draw_to_buffer();
+		display_map(esContext, lat, lon, zoom, 0, 1, 1.0, 0.0, 0.0, 0.0);
+		draw_to_screen();
+	}
 #endif
 	char tmp_str[400];
 	char tmp_str2[400];
@@ -1292,13 +1301,12 @@ void screen_hud (ESContext *esContext) {
 	}
 #endif
 #else
-/*
-		glPushMatrix();
-		glTranslatef(1.1, -0.7, 0.0 );
-		glScalef( 0.1, 0.1, 1.0 );
-		display_map(esContext, lat, lon, zoom, 0, 1, 1.0, 0.0, 0.0, 0.0);
-		glPopMatrix();
-*/
+	if (setup.hud_view_screen != 2 && draw_target() == 0) {
+		draw_buffer_to_screen(0.9, 0.4, 1.4, 0.85, 0.0, 1.0);
+		draw_rect_f3(esContext, 0.9, 0.4, 0.002, 1.4, 0.85, 0.002, 0, 0, 0, 255);
+		draw_rect_f3(esContext, 0.9 - 0.005, 0.4 - 0.005, 0.002, 1.4 + 0.005, 0.85 + 0.005, 0.002, 255, 255, 255, 255);
+		set_button("goto_map", setup.view_mode, 0.9, 0.4, 1.4, 0.85, hud_goto_screen, (float)VIEW_MODE_MAP, 0);
+	}
 #endif
 
 #ifdef SDLGL
