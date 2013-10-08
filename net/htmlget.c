@@ -21,7 +21,7 @@ static int create_tcp_socket () {
 	int sock;
 	if((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0){
 		fprintf(stderr, "Can't create TCP socket");
-		exit(1);
+		return -1;
 	}
 	return sock;
 }
@@ -33,11 +33,11 @@ static char *get_ip (char *host) {
 	memset(ip, 0, iplen+1);
 	if ((hent = gethostbyname(host)) == NULL) {
 		herror("Can't get IP");
-		exit(1);
+		return NULL;
 	}
 	if(inet_ntop(AF_INET, (void *)hent->h_addr_list[0], ip, iplen) == NULL) {
 		fprintf(stderr, "Can't resolve host");
-		exit(1);
+		return NULL;
 	}
 	return ip;
 }
@@ -73,7 +73,14 @@ int htmlget (char *url, char *file) {
 	sprintf(page, "/%s", page2);
 
 	sock = create_tcp_socket();
+	if (sock < 0) {
+		return -1;
+	}
 	ip = get_ip(host);
+	if (ip == NULL) {
+		close(sock);
+		return -1;
+	}
 	fprintf(stderr, "IP is %s\n", ip);
 	remote = (struct sockaddr_in *)malloc(sizeof(struct sockaddr_in *));
 	remote->sin_family = AF_INET;
@@ -81,16 +88,19 @@ int htmlget (char *url, char *file) {
 
 	if( tmpres < 0)  {
 		fprintf(stderr, "Can't set remote->sin_addr.s_addr");
-		exit(1);
-	}else if(tmpres == 0) {
+		close(sock);
+		return -1;
+	} else if (tmpres == 0) {
 		fprintf(stderr, "%s is not a valid IP address\n", ip);
-		exit(1);
+		close(sock);
+		return -1;
 	}
 	remote->sin_port = htons(80);
 
-	if(connect(sock, (struct sockaddr *)remote, sizeof(struct sockaddr)) < 0){
+	if (connect(sock, (struct sockaddr *)remote, sizeof(struct sockaddr)) < 0){
 		fprintf(stderr, "Could not connect");
-		exit(1);
+		close(sock);
+		return -1;
 	}
 	get = build_get_query(host, page);
 	fprintf(stderr, "Query is:\n<<START>>\n%s<<END>>\n", get);
@@ -100,7 +110,8 @@ int htmlget (char *url, char *file) {
 		tmpres = send(sock, get+sent, strlen(get)-sent, 0);
 		if(tmpres == -1) {
 			fprintf(stderr, "Can't send query");
-			exit(1);
+			close(sock);
+			return -1;
 		}
 		sent += tmpres;
 	}

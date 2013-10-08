@@ -238,7 +238,9 @@ int file_exists (char *fileName) {
 int file_download (char *fileName, char *url) {
 	char tmp_file[4024];
 	sprintf(tmp_file, "%s.tmp", fileName);
-	htmlget(url, tmp_file);
+	if (htmlget(url, tmp_file) < NULL) {
+		return -1;
+	}
 	rename(tmp_file, fileName);
 	return 0;
 }
@@ -445,13 +447,6 @@ void get_maps (uint8_t mode) {
 			}
 		}
 	}
-	if (strcmp(mapnames[map_type][MAP_NAME], "GAPI") == 0 || strcmp(mapnames[map_type][MAP_TYPE], "GOOGLE") == 0) {
-		sprintf(tile_name, "%s/MAPS/google.png", get_datadirectory());
-		sprintf(tile_url, "http://maps.gstatic.com/intl/de_ALL/mapfiles/poweredby.png");
-		if (file_exists(tile_name) == 0) {
-			file_download(tile_name, tile_url);
-		}
-	}
 }
 
 #include <unzip.h>
@@ -529,14 +524,12 @@ void get_srtm (void) {
 
 		sprintf(source, "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/Eurasia/%s.zip", file);
 		sprintf(target, "%s/MAPS/part/%s.zip", get_datadirectory(), file);
-		file_download(target, source);
-
-		sprintf(source, "%s/MAPS/part/%s.zip", get_datadirectory(), file);
-		sprintf(target, "%s/MAPS/%s", get_datadirectory(), file);
-		unzipFile(source, file, target);
-
-		unlink(source);
-
+		if (file_download(target, source) != -1) {
+			sprintf(source, "%s/MAPS/part/%s.zip", get_datadirectory(), file);
+			sprintf(target, "%s/MAPS/%s", get_datadirectory(), file);
+			unzipFile(source, file, target);
+			unlink(source);
+		}
 	}
 }
 
