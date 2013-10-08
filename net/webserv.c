@@ -102,6 +102,9 @@ void webserv_child_dump_file (int fd, char *file, char *type) {
 	if (strncmp(file, "./", 2) == 0) {
 		file += 2;
 	}
+#ifdef ANDROID
+	SDL_Log("webserv_child_dump_file: %s\n", file);
+#endif
 	SDL_RWops *ops_file = SDL_RWFromFile(file, "r");
 	if (ops_file == NULL) {
 		printf("webserv: file not found: %s\n", file);
@@ -293,7 +296,13 @@ void webserv_child_show_map (int fd) {
 	char tmp_str[512];
 	content[0] = 0;
 	html_head(content, "MAP");
+
+#ifdef ANDROID
+	strcat(content, "<SCRIPT src=\"http://openlayers.org/api/OpenLayers.js\"></SCRIPT>\n");
+#else
 	strcat(content, "<SCRIPT src=\"/map.js\"></SCRIPT>\n");
+#endif
+
 	strcat(content, "<SCRIPT>\n");
 	strcat(content, "function HUDxmlhttpGet() {\n");
 	strcat(content, "    var xmlHttpReq = false;\n");
@@ -2969,7 +2978,11 @@ void webserv_child (int fd) {
 			write(fd, content, strlen(content));
 		}
 	} else if (strncmp(buffer,"GET ", 4) == 0 || strncmp(buffer,"get ", 4) == 0) {
-		// Misc
+#ifdef ANDROID
+		SDL_Log("###################\n");
+		SDL_Log("%s", buffer);
+		SDL_Log("\n###################\n");
+#endif
 		if (strncmp(buffer + 4,"/modeldata", 10) == 0) {
 			webserv_child_dump_modeldata(fd);
 
@@ -3290,10 +3303,9 @@ void webserv_child (int fd) {
 			webserv_child_gcssetup(fd, 2);
 		} else if (strncmp(buffer + 4,"/gcssetup3.html", 15) == 0) {
 			webserv_child_gcssetup(fd, 3);
-
 		} else if (strncmp(buffer + 4,"/map.js", 7) == 0) {
 			sprintf(tmp_str, "%s/webserv/map.js", BASE_DIR);
-			webserv_child_dump_file(fd, tmp_str, "text/html");
+			webserv_child_dump_file(fd, tmp_str, "text/plain");
 		} else if (strncmp(buffer + 4,"/tile/", 6) == 0) {
 			int tx = 0;
 			int ty = 0;

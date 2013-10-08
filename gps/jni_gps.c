@@ -6,54 +6,46 @@
 #define DEG_TO_RAD   ( PI / 180.0 )
 #define RAD_TO_DEG   ( 180.0 / PI )
 
-static float jni_gps_lat = 0.0;
-static float jni_gps_lon = 0.0;
-static float jni_gps_alt = 0.0;
-static float jni_gps_speed = 0.0;
-static float jni_att_roll = 0.0;
-static float jni_att_pitch = 0.0;
-static float jni_att_yaw = 0.0;
-
 char bt_devices[100][1023];
 uint8_t aserbuffer[2048];
 int aserbuffer_pos = 0;
 
-
-void jni_gpsGetPosition (float *lat, float *lon, float *alt, float *speed) {
-	*lat = jni_gps_lat;
-	*lon = jni_gps_lon;
-	*alt = jni_gps_alt;
-	*speed = jni_gps_speed;
-	return;
-}
-
-void jni_attitudeGetPosition (float *pitch, float *roll, float *yaw) {
-	*pitch = jni_att_pitch;
-	*roll = jni_att_roll;
-	*yaw = jni_att_yaw;
-	return;
-}
-
 void Java_org_libsdl_app_mylocationlistener_gpsSetPosition (JNIEnv* env, jclass cls, jfloat lat, jfloat lon, jfloat alt, jfloat speed) {
-	jni_gps_lat = lat;
-	jni_gps_lon = lon;
-	jni_gps_alt = alt;
-	jni_gps_speed = speed;
+	if (lat != 0.0 && lon != 0.0) {
+		if (ModelData.heartbeat == 0) {
+			ModelData.p_lat = lat;
+			ModelData.p_long = lon;
+			ModelData.p_alt = alt;
+			ModelData.speed = speed;
+		} else {
+			WayPoints[0].p_lat = lat;
+			WayPoints[0].p_long = lon;
+			WayPoints[0].p_alt = alt;
+		}
+	}
 	return;
 }
 
 void Java_org_libsdl_app_SDLSurface_attitudeSetPosition (JNIEnv* env, jclass cls, jfloat pitch, jfloat roll, jfloat yaw) {
-	jni_att_roll = roll * RAD_TO_DEG * -1;
-	jni_att_pitch = pitch * RAD_TO_DEG * -1 - 90.0;
-	yaw *= RAD_TO_DEG;
-	yaw += 90;
-	if (yaw < -180) {
-		yaw += 360;
+	if (ModelData.heartbeat == 0) {
+		float jni_att_roll = 0.0;
+		float jni_att_pitch = 0.0;
+		float jni_att_yaw = 0.0;
+		jni_att_roll = roll * RAD_TO_DEG * -1;
+		jni_att_pitch = pitch * RAD_TO_DEG * -1 - 90.0;
+		yaw *= RAD_TO_DEG;
+		yaw += 90;
+		if (yaw < -180) {
+			yaw += 360;
+		}
+		if (yaw > 180) {
+			yaw -= 360;
+		}
+		jni_att_yaw = yaw;
+		ModelData.pitch = jni_att_pitch;
+		ModelData.roll = jni_att_roll;
+		ModelData.yaw = jni_att_yaw;
 	}
-	if (yaw > 180) {
-		yaw -= 360;
-	}
-	jni_att_yaw = yaw;
 	return;
 }
 
@@ -73,11 +65,8 @@ void Java_org_libsdl_app_ConnectBT_serialReceive (JNIEnv* env, jclass cls, jbyte
 }
 
 void Java_org_libsdl_app_ConnectBT_deviceList (JNIEnv* env, jclass cls, jstring dlist) {
-
 	const char *nativeString = (*env)->GetStringUTFChars(env, dlist, 0);
-
 	SDL_Log("BT DEVICE_LIST: %s", nativeString);
-
 	int n = 0;
 	int nn = 0;
 	int num = 0;

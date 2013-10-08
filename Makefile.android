@@ -31,9 +31,19 @@ all:
 	cp -a net/simple.dae android/assets/webserv/simple.dae
 	(cd android ; android update project -s -p ./ -t android-18)
 	(cd android ; ndk-build)
+	(cd android ; ant debug)
 
 install:
-	(cd android ; ant debug install)
+	adb install -r android/bin/MultiGCS-debug.apk
+
+run:
+	adb shell am start -n org.libsdl.app/org.libsdl.app.MultiGCS
+
+logcat:
+	adb logcat
+
+tail: logcat
+
 
 clean:
 	(cd android ; ndk-build clean)
