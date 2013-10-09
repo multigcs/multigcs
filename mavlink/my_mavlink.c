@@ -932,8 +932,16 @@ static void mavlink_parseDoc (char *docname) {
 
 void mavlink_param_xml_meta_load (void) {
 	char filename[1024];
+	sprintf(filename, "%s/mavlink/ParameterMetaData-%s.xml", get_datadirectory(), teletypes[ModelData.teletype]);
+	if (file_exists(filename) != 0) {
+		mavlink_parseDoc(filename);
+		return;
+	}
 	sprintf(filename, "%s/mavlink/ParameterMetaData-%s.xml", BASE_DIR, teletypes[ModelData.teletype]);
-	mavlink_parseDoc(filename);
+	if (file_exists(filename) != 0) {
+		mavlink_parseDoc(filename);
+		return;
+	}
 }
 
 static void model_parseMavlinkParam (xmlDocPtr doc, xmlNodePtr cur, uint16_t param) { 

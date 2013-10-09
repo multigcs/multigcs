@@ -1899,6 +1899,8 @@ int main ( int argc, char *argv[] ) {
 	mkdir(dir, 0755);
 	sprintf(dir, "%s/PARAMS", get_datadirectory());
 	mkdir(dir, 0755);
+	sprintf(dir, "%s/mavlink", get_datadirectory());
+	mkdir(dir, 0755);
 
 	if (argc >= 3 && strcmp(argv[1], "-c") == 0) {
 		strncpy(clientmode_server, argv[2], 1023);
