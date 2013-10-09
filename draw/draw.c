@@ -176,6 +176,34 @@ uint8_t draw_text_button (ESContext *esContext, char *name, uint8_t view_mode, c
 	return 2;
 }
 
+uint8_t draw_text_align (ESContext *esContext, char *text, char *font, float x, float y, float z, float h, uint8_t align_x, uint8_t align_y) {
+#ifdef CONSOLE_ONLY
+	return 0;
+#endif
+	float x1 = x - strlen(text) * h * 0.6 / 2.0 - 0.012;
+	float y1 = y;
+	float x2 = x + strlen(text) * h * 0.6 / 2.0 + 0.012;
+	float y2 = y + h;
+	float z1 = z;
+	if (align_x == ALIGN_CENTER) {
+		x1 = x - strlen(text) * h * 0.6 / 2.0 - 0.012;
+		x2 = x + strlen(text) * h * 0.6 / 2.0 + 0.012;
+	} else if (align_x == ALIGN_RIGHT) {
+		x1 = x - strlen(text) * h * 0.6 - 0.012;
+		x2 = x;
+	} else if (align_x == ALIGN_LEFT) {
+		x1 = x;
+		x2 = x + strlen(text) * h * 0.6 + 0.02;
+	}
+	if (align_y == ALIGN_CENTER) {
+		y1 = y - h / 2;
+		y2 = y + h / 2;
+	}
+	draw_text_f3(esContext, x1, y1, z1, h, h, font, text);
+//	draw_rect_f3(esContext, x1 - 0.01, y1 - 0.01, z1, x2 + 0.01, y2 + 0.01, z1, 255, 255, 255, 64);
+	return 0;
+}
+
 uint8_t draw_image_button (ESContext *esContext, char *name, uint8_t view_mode, char *image, float x, float y, float z, float w, float h, uint8_t align_x, uint8_t align_y, uint8_t (*callback) (char *, float, float, int8_t, float), float data) {
 #ifdef CONSOLE_ONLY
 	return 0;

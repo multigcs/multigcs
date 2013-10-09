@@ -309,7 +309,6 @@ void set_telemetry (char *device, uint32_t baud) {
 		Android_JNI_ConnectSerial(setup.telemetry_port + 3);
 	}
 #endif
-
 	reset_telemetry();
 }
 
@@ -327,7 +326,6 @@ void setup_waypoints (void) {
 		WayPoints[n].command[0] = 0;
 		WayPoints[n].type = 0;
 	}
-
 	WayPoints[0].p_lat = 50.29197;
 	WayPoints[0].p_long = 9.12764;
 	WayPoints[0].p_alt = 125.0;

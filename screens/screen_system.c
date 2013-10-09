@@ -250,13 +250,17 @@ void screen_overview (ESContext *esContext) {
 		}
 		draw_to_screen();
 		draw_buffer_to_screen(-1.422 + x * 0.71, -0.99 + y * 0.66, -1.422 + x * 0.71 + 0.71, -0.99 + y * 0.66 + 0.66, 0.002, 1.0);
-#endif
 		sprintf(tmp_str, "%s", view_names[n]);
 		if (setup.view_mode == n) {
 			draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_GREEN, -1.422 + 0.35 + x * 0.71, -0.99 + y * 0.66, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)n);
 		} else {
 			draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_WHITE, -1.422 + 0.35 + x * 0.71, -0.99 + y * 0.66, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)n);
 		}
+#else
+		sprintf(tmp_str, "%s", view_names[n]);
+		draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_WHITE, -1.422 + 0.35 + x * 0.71, -0.99 + y * 0.66 + 0.3, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)n);
+
+#endif
 		reset_buttons();
 		x++;
 	}
