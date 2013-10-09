@@ -274,14 +274,12 @@ void reset_telemetry (void) {
 	if (clientmode == 1) {
 		return;
 	}
-	if (ModelData.teletype == TELETYPE_MULTIWII_21) {
+	if (ModelData.teletype == TELETYPE_MULTIWII_21 || ModelData.teletype == TELETYPE_BASEFLIGHT) {
 		mwi21_init(setup.telemetry_port, setup.telemetry_baud);
 	} else if (ModelData.teletype == TELETYPE_SIMPLEBGC) {
 		simplebgc_init(setup.telemetry_port, setup.telemetry_baud);
 	} else if (ModelData.teletype == TELETYPE_BRUGI) {
 		brugi_init(setup.telemetry_port, setup.telemetry_baud);
-	} else if (ModelData.teletype == TELETYPE_BASEFLIGHT) {
-		mwi21_init(setup.telemetry_port, setup.telemetry_baud);
 	} else if (ModelData.teletype == TELETYPE_GPS_NMEA) {
 		gps_init(setup.telemetry_port, setup.telemetry_baud);
 	} else if (ModelData.teletype == TELETYPE_OPENPILOT) {
@@ -1187,23 +1185,21 @@ int telemetry_thread (void *data) {
 	while (gui_running == 1) {
 		if (clientmode == 1) {
 			webclient_update(clientmode_server, clientmode_port);
-			SDL_Delay(99);
-		} else if (ModelData.teletype == TELETYPE_MULTIWII_21) {
+			SDL_Delay(90);
+		} else if (ModelData.teletype == TELETYPE_MULTIWII_21 || ModelData.teletype == TELETYPE_BASEFLIGHT) {
 			mwi21_update();
 		} else if (ModelData.teletype == TELETYPE_SIMPLEBGC) {
 			simplebgc_update();
 		} else if (ModelData.teletype == TELETYPE_BRUGI) {
 			brugi_update();
-		} else if (ModelData.teletype == TELETYPE_BASEFLIGHT) {
-			mwi21_update();
 		} else if (ModelData.teletype == TELETYPE_GPS_NMEA) {
 			gps_update();
 		} else if (ModelData.teletype == TELETYPE_OPENPILOT) {
 			openpilot_update();
-		} else if (ModelData.teletype == TELETYPE_CLI) {
-			cli_update();
 		} else if (ModelData.teletype == TELETYPE_BASEFLIGHTCLI) {
 			baseflightcli_update();
+		} else if (ModelData.teletype == TELETYPE_CLI) {
+			cli_update();
 		} else {
 			mavlink_update();
 		}
@@ -1493,11 +1489,11 @@ void Draw (ESContext *esContext) {
 		setup_save();
 	} else if (strcmp(keyboard_key, "s") == 0) {
 		if (setup.view_mode == VIEW_MODE_FMS || setup.view_mode == VIEW_MODE_MAP) {
-			send_waypoints();
+			mavlink_send_waypoints();
 		}
 	} else if (strcmp(keyboard_key, "r") == 0) {
 		if (setup.view_mode == VIEW_MODE_FMS || setup.view_mode == VIEW_MODE_MAP) {
-			read_waypoints();
+			mavlink_read_waypoints();
 		}
 	} else if (strcmp(keyboard_key, "print screen") == 0 || strcmp(keyboard_key, "printscreen") == 0) {
 #ifdef SDLGL

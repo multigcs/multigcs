@@ -1857,7 +1857,7 @@
     <LOITER_LAT_I>
       <DisplayName>Loiter latitude rate controller I gain</DisplayName>
       <Description>Loiter latitude rate controller I gain.  Corrects long-term difference in desired speed and actual speed in the latitude direction</Description>
-      <Range>0.020 0.060</Range>
+      <Range>0.020 0.080</Range>
       <User>Standard</User>
     </LOITER_LAT_I>
     <LOITER_LAT_IMAX>
@@ -1870,7 +1870,7 @@
     <LOITER_LAT_D>
       <DisplayName>Loiter latitude rate controller D gain</DisplayName>
       <Description>Loiter latitude rate controller D gain.  Compensates for short-term change in desired speed vs actual speed</Description>
-      <Range>0.200 0.600</Range>
+      <Range>0.200 0.800</Range>
       <User>Standard</User>
     </LOITER_LAT_D>
     <LOITER_LON_P>
@@ -1882,7 +1882,7 @@
     <LOITER_LON_I>
       <DisplayName>Loiter longitude rate controller I gain</DisplayName>
       <Description>Loiter longitude rate controller I gain.  Corrects long-term difference in desired speed and actual speed in the longitude direction</Description>
-      <Range>0.020 0.060</Range>
+      <Range>0.020 0.080</Range>
       <User>Standard</User>
     </LOITER_LON_I>
     <LOITER_LON_IMAX>
@@ -1895,7 +1895,7 @@
     <LOITER_LON_D>
       <DisplayName>Loiter longituderate controller D gain</DisplayName>
       <Description>Loiter longitude rate controller D gain.  Compensates for short-term change in desired speed vs actual speed</Description>
-      <Range>0.200 0.600</Range>
+      <Range>0.200 0.800</Range>
       <User>Standard</User>
     </LOITER_LON_D>
     <NAV_LAT_P>

@@ -213,11 +213,14 @@ typedef struct {
 } SystemSettingsData;
 
 
-extern void openpilot_update (void);
-extern uint8_t openpilot_init (char *port, uint32_t baud);
-extern void openpilot_exit (void);
+uint8_t openpilot_init (char *port, uint32_t baud);
+void openpilot_exit (void);
+void openpilot_update (void);
+uint8_t openpilot_connection_status (void);
+void openpilot_xml_load (xmlDocPtr doc, xmlNodePtr cur);
+void openpilot_xml_save (FILE *fr);
+
 extern void openpilot_defaults_StabilizationSettings (StabilizationSettingsData *data);
-extern uint8_t openpilot_connection_status (void);
 extern uint8_t openpilot_get;
 extern uint8_t openpilot_set;
 extern uint8_t openpilot_save;

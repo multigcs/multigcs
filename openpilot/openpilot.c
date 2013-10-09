@@ -937,5 +937,11 @@ void openpilot_exit (void) {
 	}
 }
 
+void openpilot_xml_load (xmlDocPtr doc, xmlNodePtr cur) { 
+	model_parseOpenPilot(doc, cur);
+}
 
+void openpilot_xml_save (FILE *fr) {
+	model_save_xml_OpenPilot(fr);
+}
 

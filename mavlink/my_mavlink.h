@@ -14,6 +14,22 @@
 #define MODE_FAILSAVE 4
 #define MODE_SETHOME 5
 
+#define MAVLINK_PARAMETER_MAX 500
+
+
+#define MAV_DATA_STREAM_POSITION_ACTIVE 1
+#define MAV_DATA_STREAM_RAW_SENSORS_ACTIVE 1
+#define MAV_DATA_STREAM_EXTENDED_STATUS_ACTIVE 1
+#define MAV_DATA_STREAM_RAW_CONTROLLER_ACTIVE 1
+#define MAV_DATA_STREAM_EXTRA1_ACTIVE 1
+#define MAV_DATA_STREAM_EXTRA2_ACTIVE 1
+#define MAV_DATA_STREAM_POSITION_RATE 10
+#define MAV_DATA_STREAM_RAW_SENSORS_RATE 10
+#define MAV_DATA_STREAM_EXTENDED_STATUS_RATE 10
+#define MAV_DATA_STREAM_RAW_CONTROLLER_RATE 10
+#define MAV_DATA_STREAM_EXTRA1_RATE 10
+#define MAV_DATA_STREAM_EXTRA2_RATE 10
+
 enum {
 	MAV_CMD_NAV_WAYPOINT=16, /* Navigate to MISSION. |Hold time in decimal seconds. (ignored by fixed wing, time to stay at MISSION for rotary wing)| Acceptance radius in meters (if the sphere with this radius is hit, the MISSION counts as reached)| 0 to pass through the WP, if > 0 radius in meters to pass by WP. Positive value for clockwise orbit, negative value for counter-clockwise orbit. Allows trajectory control.| Desired yaw angle at MISSION (rotary wing)| Latitude| Longitude| Altitude|  */
 	MAV_CMD_NAV_LOITER_UNLIM=17, /* Loiter around this MISSION an unlimited amount of time |Empty| Empty| Radius around MISSION, in meters. If positive loiter clockwise, else counter-clockwise| Desired yaw angle.| Latitude| Longitude| Altitude|  */
@@ -63,9 +79,10 @@ typedef struct {
 	char values[1024];
 	char bits[1024];
 	float value;
+	float onload;
 	float min;
 	float max;
-	uint8_t type;
+	int8_t type;
 	uint16_t option1;
 	uint16_t option2;
 } ValueList;
@@ -73,7 +90,7 @@ typedef struct {
 
 extern int16_t mission_max;
 extern int serial_fd_mavlink;
-extern ValueList MavLinkVars[500];
+extern ValueList MavLinkVars[MAVLINK_PARAMETER_MAX];
 extern uint8_t droneType;
 extern uint8_t autoPilot;
 extern int c;
@@ -82,21 +99,28 @@ extern char serial_buf[255];
 extern uint16_t mavlink_timeout;
 extern uint16_t mavlink_maxparam;
 extern uint8_t mavlink_update_yaw;
-extern void mavlink_update (void);
-extern uint8_t mavlink_init (char *port, uint32_t baud);
-extern void mavlink_exit (void);
-extern void mavlink_param_xml_meta_load (void);
-void stop_feeds (void);
-void mavlink_send_value (char *name, float val, uint8_t type);
-void mavlink_set_value (char *name, float val, uint8_t type, uint16_t id);
-void mavlink_handleMessage(mavlink_message_t* msg);
-void read_waypoints (void);
-void save_to_flash (void);
-void load_from_flash (void);
-void send_waypoints (void);
-void send_message (mavlink_message_t* msg);
-void param_get_id (uint16_t id);
-void start_feeds (void);
-int serial_close(int fd);
-int serial_open(char *mdevice, uint32_t baud);
+
+uint8_t mavlink_init (char *port, uint32_t baud);
+void mavlink_exit (void);
+void mavlink_update (void);
 uint8_t mavlink_connection_status (void);
+void mavlink_xml_save (FILE *fr);
+void mavlink_xml_load (xmlDocPtr doc, xmlNodePtr cur);
+
+void mavlink_web_get (char *url, char *content, char *type);
+
+void mavlink_read_waypoints (void);
+void mavlink_send_waypoints (void);
+
+void mavlink_param_xml_meta_load (void);
+void mavlink_stop_feeds (void);
+void mavlink_send_value (char *name, float val, int8_t type);
+void mavlink_set_value (char *name, float val, int8_t type, uint16_t id);
+void mavlink_handleMessage(mavlink_message_t* msg);
+void mavlink_save_to_flash (void);
+void mavlink_load_from_flash (void);
+void mavlink_send_waypoints (void);
+void mavlink_send_message (mavlink_message_t* msg);
+void mavlink_param_get_id (uint16_t id);
+void mavlink_start_feeds (void);
+int mavlink_udp (void *data);

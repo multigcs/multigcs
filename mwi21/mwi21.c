@@ -35,7 +35,6 @@ char mwi_pid_names[16][12];
 int8_t mwi_get_boxnames_flag = 0;
 int8_t mwi_get_pidnames_flag = 0;
 
-
 uint8_t mwi21_connection_status (void) {
 	if (mwi21_serial_fd == -1) {
 		return 0;
@@ -173,10 +172,7 @@ void mwi21_get_values (void) {
 
 void mwi21_get_new (void) {
 	static uint8_t flag = 0;
-
-
 	flag = 1 - flag;
-
 	if (flag == 0) {
 		if (mwi_get_pid_flag != 0) {
 			mwi21_get_req(MSP_PID);
@@ -464,5 +460,217 @@ void mwi21_update (void) {
 	    }
 	}
 }
+
+
+static void model_parseMWI21Pid (xmlDocPtr doc, xmlNodePtr cur, uint16_t pid) { 
+	xmlChar *key;
+	cur = cur->xmlChildrenNode;
+	while (cur != NULL) {
+		if ((!xmlStrcmp(cur->name, (const xmlChar *)"p"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				mwi_pid[pid][0] = atoi((char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"i"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				mwi_pid[pid][1] = atoi((char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"d"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				mwi_pid[pid][2] = atoi((char *)key);
+			}
+			xmlFree(key);
+		}
+		cur = cur->next;
+	}
+	return;
+}
+
+static void model_parseMWI21Box (xmlDocPtr doc, xmlNodePtr cur, uint16_t box) { 
+	xmlChar *key;
+	cur = cur->xmlChildrenNode;
+	while (cur != NULL) {
+		if ((!xmlStrcmp(cur->name, (const xmlChar *)"value"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				mwi_box[box] = atoi((char *)key);
+			}
+			xmlFree(key);
+		}
+		cur = cur->next;
+	}
+	return;
+}
+
+void mwi21_xml_load (xmlDocPtr doc, xmlNodePtr cur) { 
+	uint16_t pid = 0;
+	uint16_t box = 0;
+	cur = cur->xmlChildrenNode;
+	while (cur != NULL) {
+		if ((!xmlStrcmp(cur->name, (const xmlChar *)"pid"))) {
+			model_parseMWI21Pid (doc, cur, pid++);
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"box"))) {
+			model_parseMWI21Box (doc, cur, box++);
+		}
+		cur = cur->next;
+	}
+	return;
+}
+
+void mwi21_xml_save (FILE *fr) {
+	int16_t n = 0;
+	fprintf(fr, " <mwi21>\n");
+	for (n = 0; n < 16; n++) {
+		fprintf(fr, "  <pid><id>%i</id><p>%i</p><i>%i</i><d>%i</d></pid>\n", n, mwi_pid[n][0], mwi_pid[n][1], mwi_pid[n][2]);
+	}
+	for (n = 0; n < 16; n++) {
+		fprintf(fr, "  <box><id>%i</id><value>%i</value></box>\n", n, mwi_box[n]);
+	}
+	fprintf(fr, " </mwi21>\n");
+}
+
+static void mwi21_html_page (char *content, uint8_t mode) {
+	char tmp_str[512];
+	int n3 = 0;
+	int lc = 0;
+	uint16_t n = 0;
+	uint16_t n2 = 0;
+	content[0] = 0;
+	webserv_html_head(content, "MWII");
+	strcat(content, "<SCRIPT>\n");
+	strcat(content, "function check_value(row, col) {\n");
+	strcat(content, "	var value = document.getElementById(row + \"-\" + col).value;\n");
+	strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
+	strcat(content, "	xmlHttp.open(\"GET\", \"/mwii_pid.html?\" + row + \",\" + col + \"=\" + value, true);\n");
+	strcat(content, "	xmlHttp.send(null);\n");
+	strcat(content, "}\n");
+	strcat(content, "</SCRIPT>\n");
+	webserv_html_start(content, 0);
+	strcat(content, "<TABLE class=\"main\">\n");
+	strcat(content, "<TR class=\"main\"><TD width=\"160px\" valign=\"top\">\n");
+	strcat(content, "<TABLE width=\"100%\">\n");
+	strcat(content, "<TR class=\"thead\"><TH>MODE</TH></TR>\n");
+	strcat(content, "<TR class=\"first\"><TD><A href=\"/mwii.html\">PID's</A></TD></TR>");
+	strcat(content, "<TR class=\"first\"><TD><A href=\"/mwii_box.html\">BOX's</A></TD></TR>");
+	strcat(content, "</TABLE>\n");
+	strcat(content, "</TD><TD valign=\"top\" width=\"20px\">&nbsp;</TD><TD valign=\"top\">\n");
+	if (mode == 1) {
+		strcat(content, "<TABLE width=\"100%\">\n");
+		strcat(content, "<TR class=\"thead\"><TH>NAME</TH><TH colspan=\"3\">AUX1</TH><TH colspan=\"3\">AUX2</TH><TH colspan=\"3\">AUX3</TH><TH colspan=\"3\">AUX4</TH></TR>\n");
+		strcat(content, "<TR class=\"thead\"><TH>&nbsp;</TH><TH>MIN</TH><TH>MID</TH><TH>MAX</TH><TH>MIN</TH><TH>MID</TH><TH>MAX</TH><TH>MIN</TH><TH>MID</TH><TH>MAX</TH><TH>MIN</TH><TH>MID</TH><TH>MAX</TH></TR>\n");
+		lc = 0;
+		for (n = 0; n < 16; n++) {
+			if (mwi_box_names[n][0] != 0) {
+				lc = 1 - lc;
+				if (lc == 0) {
+					strcat(content, "<TR class=\"first\">");
+				} else {
+					strcat(content, "<TR class=\"sec\">");
+				}
+				sprintf(tmp_str, "<TD>%s</TD>", mwi_box_names[n]);
+				strcat(content, tmp_str);
+				for (n2 = 0; n2 < 12; n2++) {
+					if (mwi_set_box[n] & (1<<n2)) {
+						sprintf(tmp_str, "<TD class=\"mboxsel\" onClick=\"document.location.href='/mwii_set.html?%i';\">&nbsp;</TD>\n", n3);
+					} else {
+						sprintf(tmp_str, "<TD class=\"mbox\" onClick=\"document.location.href='/mwii_set.html?%i';\">&nbsp;</TD>\n", n3);
+					}
+					strcat(content, tmp_str);
+					n3++;
+				}
+				strcat(content, "</TR>\n");
+			}
+		}
+		strcat(content, "</TABLE>\n");
+	} else {
+		strcat(content, "<TABLE width=\"100%\">\n");
+		strcat(content, "<TR class=\"thead\"><TH>NAME</TH><TH>P</TH><TH>I</TH><TH>D</TH></TR>\n");
+		n3 = 0;
+		lc = 0;
+		for (n = 0; n < 14; n++) {
+			if (mwi_pid_names[n][0] != 0) {
+				lc = 1 - lc;
+				if (lc == 0) {
+					strcat(content, "<TR class=\"first\">");
+				} else {
+					strcat(content, "<TR class=\"sec\">");
+				}
+				sprintf(tmp_str, "<TD>%s</TD>", mwi_pid_names[n]);
+				strcat(content, tmp_str);
+				sprintf(tmp_str, "<TD align=\"center\"><INPUT class=\"form-input\" onchange=\"check_value(%i,%i);\" id=\"%i-%i\" value=\"%0.1f\" type=\"text\"></TD>", n, 0, n, 0, (float)mwi_pid[n][0] / 10.0);
+				strcat(content, tmp_str);
+				sprintf(tmp_str, "<TD align=\"center\"><INPUT class=\"form-input\" onchange=\"check_value(%i,%i);\" id=\"%i-%i\" value=\"%0.3f\" type=\"text\"></TD>", n, 1, n, 1, (float)mwi_pid[n][1] / 1000.0);
+				strcat(content, tmp_str);
+				sprintf(tmp_str, "<TD align=\"center\"><INPUT class=\"form-input\" onchange=\"check_value(%i,%i);\" id=\"%i-%i\" value=\"%i\" type=\"text\"></TD>", n, 2, n, 2, mwi_pid[n][2]);
+				strcat(content, tmp_str);
+				strcat(content, "</TR>\n");
+			}
+		}
+		strcat(content, "</TABLE>\n");
+	}
+	strcat(content, "</TD></TR></TABLE>\n");
+	webserv_html_stop(content);
+}
+
+void mwi21_web_get (char *url, char *content, char *type) {
+	if (strncmp(url, "/mwii.html", 10) == 0) {
+		mwi21_html_page(content, 0);
+		strcpy(type, "text/html");
+	} else if (strncmp(url, "/mwii_box.html", 14) == 0) {
+		mwi21_html_page(content, 1);
+		strcpy(type, "text/html");
+	} else if (strncmp(url, "/mwii_pid.html?", 14) == 0) {
+		int n = 0;
+		int row = 0;
+		int col = 0;
+		float val = 0.0;
+		sscanf(url + 15, "%i,%i=%f", &row, &col, &val);
+		for (n = 0; n < 16; n++) {
+			mwi_set_pid[n][0] = mwi_pid[n][0];
+			mwi_set_pid[n][1] = mwi_pid[n][1];
+			mwi_set_pid[n][2] = mwi_pid[n][2];
+		}
+		if (col == 0) {
+			mwi_set_pid[row][col] = (int)(val * 10.0);
+		} else if (col == 1) {
+			mwi_set_pid[row][col] = (int)(val * 1000.0);
+		} else if (col == 2) {
+			mwi_set_pid[row][col] = (int)(val);
+		}
+		mwi_set_pid_flag = 1;
+		strcpy(content, " ");
+		strcpy(type, "text/html");
+	} else if (strncmp(url,"/mwii_set.html?", 14) == 0) {
+		int n = 0;
+		int n2 = 0;
+		int n3 = 0;
+		int nn = 0;
+		sscanf(url + 15, "%i", &nn);
+		for (n2 = 0; n2 < 16; n2++) {
+			for (n3 = 0; n3 < 12; n3++) {
+				if (mwi_set_box[n2] & (1<<n3)) {
+					if (n == nn) {
+						mwi_set_box[n2] &= ~(1<<n3);
+					}
+				} else {
+					if (n == nn) {
+						mwi_set_box[n2] |= (1<<n3);
+					}
+				}
+				n++;
+			}
+		}
+		mwi_set_box_flag = 1;
+		strcpy(content, "<meta http-equiv=\"Refresh\" content=\"0; URL=/mwii.html\">");
+		strcpy(type, "text/html");
+	}
+}
+
+
+
 
 

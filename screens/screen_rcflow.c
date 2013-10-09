@@ -449,7 +449,7 @@ void rcflow_parseMavlinkParam (xmlDocPtr doc, xmlNodePtr cur, uint16_t param) {
 
 void rcflow_parseMavlink (xmlDocPtr doc, xmlNodePtr cur) { 
 	uint16_t param = 0;
-	for (param = 0; param < 500; param++) {
+	for (param = 0; param < MAVLINK_PARAMETER_MAX; param++) {
 		MavLinkVars[param].name[0] = 0;
 		MavLinkVars[param].value = 0.0;
 	}
@@ -949,7 +949,7 @@ uint8_t rcflow_save_xml (char *name, float x, float y, int8_t button, float data
 		fprintf(fr, " <name>%s</name>\n", setup_name);
 		fprintf(fr, " <image>%s</image>\n", ModelData.image);
 		fprintf(fr, " <mavlink>\n");
-		for (n = 0; n < 500 - 1; n++) {
+		for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
 			if (MavLinkVars[n].name[0] != 0) {
 				fprintf(fr, "  <param><name>%s</name><value>%f</value></param>\n", MavLinkVars[n].name, MavLinkVars[n].value);
 			}

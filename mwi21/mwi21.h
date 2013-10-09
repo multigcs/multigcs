@@ -50,12 +50,17 @@
 
 void mwi21_init (char *port, uint32_t baud);
 void mwi21_exit (void);
+void mwi21_update (void);
+uint8_t mwi21_connection_status (void);
+void mwi21_xml_save (FILE *fr);
+void mwi21_xml_load (xmlDocPtr doc, xmlNodePtr cur);
+
 void mwi21_cal_acc (void);
 void mwi21_cal_mac (void);
 void mwi21_get_values (void);
 void mwi21_write_rom (void);
-void mwi21_update (void);
-uint8_t mwi21_connection_status (void);
+
+void mwi21_web_get (char *url, char *content, char *type);
 
 extern int32_t mwi_status;
 extern uint8_t mwi_pid[16][3];

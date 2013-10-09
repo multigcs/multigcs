@@ -34,7 +34,7 @@ int listenfd;
 
 #define header_str "HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %i\nConnection: close\nContent-Type: %s\n\n"
 
-void html_head (char *content, char *title) {
+void webserv_html_head (char *content, char *title) {
 	char tmp_str[1024];
 	strcat(content, "<HTML>\n");
 	strcat(content, "<HEAD>\n");
@@ -45,7 +45,7 @@ void html_head (char *content, char *title) {
 	strcpy(last_title, title);
 }
 
-void html_start (char *content, uint8_t init) {
+void webserv_html_start (char *content, uint8_t init) {
 	char tmp_str[1024];
 	int n = 0;
 	if (init == 0) {
@@ -69,7 +69,7 @@ void html_start (char *content, uint8_t init) {
 	strcat(content, "<BR><BR>\n");
 }
 
-void html_stop (char *content) {
+void webserv_html_stop (char *content) {
 	strcat(content, "<BR><BR>\n");
 	strcat(content, "</BODY>\n");
 	strcat(content, "</HTML>\n");
@@ -295,7 +295,7 @@ void webserv_child_show_map (int fd) {
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
 	content[0] = 0;
-	html_head(content, "MAP");
+	webserv_html_head(content, "MAP");
 
 #ifdef ANDROID
 	strcat(content, "<SCRIPT src=\"http://openlayers.org/api/OpenLayers.js\"></SCRIPT>\n");
@@ -552,12 +552,12 @@ void webserv_child_show_map (int fd) {
 	strcat(content, " xmlhttpGet();\n");
 	strcat(content, "}\n");
 	strcat(content, "</SCRIPT>\n");
-	html_start(content, 1);
+	webserv_html_start(content, 1);
 	strcat(content, "<div class=\"mapdiv\" id=\"mapdiv\"></div>\n");
 	sprintf(tmp_str, "<div class=\"mapcopyright\" id=\"mapcopyright\">%s</div>\n", mapnames[map_type][MAP_COPYRIGHT]);
 	strcat(content, tmp_str);
 	strcat(content, "<canvas class=\"small_hudcanvas\" id=\"small_hudcanvas\" width=\"640\" height=\"640\"></canvas>\n");
-	html_stop(content);
+	webserv_html_stop(content);
 
 	sprintf(buffer, header_str, (int)strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
@@ -569,7 +569,7 @@ void webserv_child_show_hud (int fd) {
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
 	content[0] = 0;
-	html_head(content, "HUD");
+	webserv_html_head(content, "HUD");
 	strcat(content, "<SCRIPT>\n");
 	strcat(content, "function HUDxmlhttpGet() {\n");
 	strcat(content, "    var xmlHttpReq = false;\n");
@@ -767,13 +767,13 @@ void webserv_child_show_hud (int fd) {
 	strcat(content, "       HUDxmlhttpGet();\n");
 	strcat(content, "}\n");
 	strcat(content, "</SCRIPT>\n");
-	html_start(content, 1);
+	webserv_html_start(content, 1);
 
 	strcat(content, "<CENTER><TABLE width=\"90%\" border=\"0\">\n");
 	strcat(content, "<TR><TH>HUD</TH></TR>\n");
 	strcat(content, "<TR><TD class=\"hudbg\" align=\"center\"><canvas class=\"hudcanvas\" id=\"hudcanvas\" width=\"600\" height=\"720\"></canvas></TD></TR>\n");
 	strcat(content, "</TABLE></CENTER>\n");
-	html_stop(content);
+	webserv_html_stop(content);
 
 	sprintf(buffer, header_str, (int)strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
@@ -784,8 +784,8 @@ void webserv_child_show_misc (int fd) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	content[0] = 0;
-	html_head(content, "MISC");
-	html_start(content, 0);
+	webserv_html_head(content, "MISC");
+	webserv_html_start(content, 0);
 	strcat(content, "<CENTER>\n");
 	strcat(content, "<H3>Google-Earth Livefeed and Logs</H3>\n");
 	strcat(content, "<A href=\"/index.kml\">/index.kml</A><BR>\n");
@@ -805,7 +805,7 @@ void webserv_child_show_misc (int fd) {
 	strcat(content, "<A href=\"/modeldata\">/modeldata</A> (Model-Data / Telemetry-Data)<BR>\n");
 	strcat(content, "<A href=\"/screenshot\">/screenshot</A> (take a screenshot of the GUI)<BR>\n");
 	strcat(content, "</CENTER>\n");
-	html_stop(content);
+	webserv_html_stop(content);
 
 	sprintf(buffer, header_str, (int)strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
@@ -1115,252 +1115,6 @@ void webserv_child_kml_feed (int fd, uint8_t mode, char *servername) {
 	write(fd, content, strlen(content));
 }
 
-void webserv_child_mwii (int fd, uint8_t mode) {
-	char buffer[BUFSIZE + 1];
-	char content[BUFSIZE + 1];
-	char tmp_str[512];
-	int n3 = 0;
-	int lc = 0;
-	uint16_t n = 0;
-	uint16_t n2 = 0;
-	content[0] = 0;
-	html_head(content, "MWII");
-	strcat(content, "<SCRIPT>\n");
-	strcat(content, "function check_value(row, col) {\n");
-	strcat(content, "	var value = document.getElementById(row + \"-\" + col).value;\n");
-	strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
-	strcat(content, "	xmlHttp.open(\"GET\", \"/mwii_pid.html?\" + row + \",\" + col + \"=\" + value, true);\n");
-	strcat(content, "	xmlHttp.send(null);\n");
-	strcat(content, "}\n");
-	strcat(content, "</SCRIPT>\n");
-	html_start(content, 0);
-
-	strcat(content, "<TABLE class=\"main\">\n");
-	strcat(content, "<TR class=\"main\"><TD width=\"160px\" valign=\"top\">\n");
-
-	strcat(content, "<TABLE width=\"100%\">\n");
-	strcat(content, "<TR class=\"thead\"><TH>MODE</TH></TR>\n");
-	strcat(content, "<TR class=\"first\"><TD><A href=\"/mwii.html\">PID's</A></TD></TR>");
-	strcat(content, "<TR class=\"first\"><TD><A href=\"/mwii_box.html\">BOX's</A></TD></TR>");
-	strcat(content, "</TABLE>\n");
-
-	strcat(content, "</TD><TD valign=\"top\" width=\"20px\">&nbsp;</TD><TD valign=\"top\">\n");
-
-	if (mode == 1) {
-		strcat(content, "<TABLE width=\"100%\">\n");
-		strcat(content, "<TR class=\"thead\"><TH>NAME</TH><TH colspan=\"3\">AUX1</TH><TH colspan=\"3\">AUX2</TH><TH colspan=\"3\">AUX3</TH><TH colspan=\"3\">AUX4</TH></TR>\n");
-		strcat(content, "<TR class=\"thead\"><TH>&nbsp;</TH><TH>MIN</TH><TH>MID</TH><TH>MAX</TH><TH>MIN</TH><TH>MID</TH><TH>MAX</TH><TH>MIN</TH><TH>MID</TH><TH>MAX</TH><TH>MIN</TH><TH>MID</TH><TH>MAX</TH></TR>\n");
-		lc = 0;
-		for (n = 0; n < 16; n++) {
-			if (mwi_box_names[n][0] != 0) {
-				lc = 1 - lc;
-				if (lc == 0) {
-					strcat(content, "<TR class=\"first\">");
-				} else {
-					strcat(content, "<TR class=\"sec\">");
-				}
-				sprintf(tmp_str, "<TD>%s</TD>", mwi_box_names[n]);
-				strcat(content, tmp_str);
-				for (n2 = 0; n2 < 12; n2++) {
-					if (mwi_set_box[n] & (1<<n2)) {
-						sprintf(tmp_str, "<TD class=\"mboxsel\" onClick=\"document.location.href='/mwii_set.html?%i';\">&nbsp;</TD>\n", n3);
-					} else {
-						sprintf(tmp_str, "<TD class=\"mbox\" onClick=\"document.location.href='/mwii_set.html?%i';\">&nbsp;</TD>\n", n3);
-					}
-					strcat(content, tmp_str);
-					n3++;
-				}
-				strcat(content, "</TR>\n");
-			}
-		}
-		strcat(content, "</TABLE>\n");
-	} else {
-		strcat(content, "<TABLE width=\"100%\">\n");
-		strcat(content, "<TR class=\"thead\"><TH>NAME</TH><TH>P</TH><TH>I</TH><TH>D</TH></TR>\n");
-		n3 = 0;
-		lc = 0;
-		for (n = 0; n < 14; n++) {
-			if (mwi_pid_names[n][0] != 0) {
-				lc = 1 - lc;
-				if (lc == 0) {
-					strcat(content, "<TR class=\"first\">");
-				} else {
-					strcat(content, "<TR class=\"sec\">");
-				}
-				sprintf(tmp_str, "<TD>%s</TD>", mwi_pid_names[n]);
-				strcat(content, tmp_str);
-				sprintf(tmp_str, "<TD align=\"center\"><INPUT class=\"form-input\" onchange=\"check_value(%i,%i);\" id=\"%i-%i\" value=\"%0.1f\" type=\"text\"></TD>", n, 0, n, 0, (float)mwi_pid[n][0] / 10.0);
-				strcat(content, tmp_str);
-				sprintf(tmp_str, "<TD align=\"center\"><INPUT class=\"form-input\" onchange=\"check_value(%i,%i);\" id=\"%i-%i\" value=\"%0.3f\" type=\"text\"></TD>", n, 1, n, 1, (float)mwi_pid[n][1] / 1000.0);
-				strcat(content, tmp_str);
-				sprintf(tmp_str, "<TD align=\"center\"><INPUT class=\"form-input\" onchange=\"check_value(%i,%i);\" id=\"%i-%i\" value=\"%i\" type=\"text\"></TD>", n, 2, n, 2, mwi_pid[n][2]);
-				strcat(content, tmp_str);
-				strcat(content, "</TR>\n");
-			}
-		}
-		strcat(content, "</TABLE>\n");
-	}
-
-	strcat(content, "</TD></TR></TABLE>\n");
-	html_stop(content);
-
-	sprintf(buffer, header_str, (int)strlen(content), "text/html");
-	write(fd, buffer, strlen(buffer));
-	write(fd, content, strlen(content));
-}
-
-void webserv_child_mavlink (int fd, char *sub) {
-	char buffer[BUFSIZE + 1];
-	char content[BUFSIZE + 1];
-	char tmp_str[512];
-	char tmp_str2[512];
-	uint16_t n = 0;
-	uint16_t n2 = 0;
-	content[0] = 0;
-	html_head(content, "MAVLINK");
-	strcat(content, "<SCRIPT>\n");
-	strcat(content, "function check_option(name) {\n");
-	strcat(content, "	var value = document.getElementById(name).options[document.getElementById(name).selectedIndex].value;\n");
-	strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
-	strcat(content, "	xmlHttp.open(\"GET\", \"/mavlink_value_set?\" + name + \"=\" + value, true);\n");
-	strcat(content, "	xmlHttp.send(null);\n");
-	strcat(content, "}\n");
-	strcat(content, "function check_value(name) {\n");
-	strcat(content, "	var value = document.getElementById(name).value;\n");
-	strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
-	strcat(content, "	xmlHttp.open(\"GET\", \"/mavlink_value_set?\" + name + \"=\" + value, true);\n");
-	strcat(content, "	xmlHttp.send(null);\n");
-	strcat(content, "}\n");
-	strcat(content, "</SCRIPT>\n");
-	html_start(content, 0);
-	strcat(content, "<TABLE class=\"main\">\n");
-	strcat(content, "<TR class=\"main\"><TD width=\"160px\" valign=\"top\">\n");
-	strcat(content, "<TABLE width=\"100%\">\n");
-	strcat(content, "<TR class=\"thead\"><TH>MODE</TH></TR>\n");
-	strcat(content, "<TR class=\"first\"><TD><A href=\"/mavlink.html\">ALL</A></TD></TR>");
-	uint8_t flag = 0;
-	char mavlink_subs[512][128];
-	for (n2 = 0; n2 < 500; n2++) {
-		mavlink_subs[n2][0] = 0;
-	}
-	for (n = 0; n < 500; n++) {
-		if (MavLinkVars[n].name[0] != 0) {
-			strcpy(tmp_str, MavLinkVars[n].name);
-			for (n2 = 0; n2 < strlen(tmp_str) && n2 < 6; n2++) {
-				if (tmp_str[n2] == '_') {
-					break;
-				}
-			}
-			tmp_str[n2] = 0;
-			flag = 0;
-			for (n2 = 0; n2 < 500; n2++) {
-				if (strcmp(mavlink_subs[n2], tmp_str) == 0) {
-					flag = 1;
-					break;
-				}
-			}
-			if (flag == 0) {
-				sprintf(tmp_str2, "<TR class=\"first\"><TD><A href=\"/mavlink.html?%s\">%s</A></TD></TR>", tmp_str, tmp_str);
-				strcat(content, tmp_str2);
-				for (n2 = 0; n2 < 500; n2++) {
-					if (mavlink_subs[n2][0] == 0) {
-						strcpy(mavlink_subs[n2], tmp_str);
-						break;
-					}
-				}
-			}
-		}
-	}
-	strcat(content, "</TABLE><BR><BR><BR>\n");
-	strcat(content, "</TD><TD valign=\"top\" width=\"20px\">&nbsp;</TD><TD valign=\"top\">\n");
-	strcat(content, "<TABLE width=\"100%\" border=\"0\">\n");
-	strcat(content, "<TR class=\"thead\"><TH>NAME</TH><TH>VALUE</TH><TH>DESCRIPTION</TH><TH>MIN</TH><TH>MAX</TH></TR>\n");
-	int lc = 0;
-	for (n = 0; n < 500; n++) {
-		if (MavLinkVars[n].name[0] != 0 && (sub[0] == 0 || strncmp(MavLinkVars[n].name, sub, strlen(sub)) == 0)) {
-			lc = 1 - lc;
-			if (lc == 0) {
-				strcat(content, "<TR class=\"first\">");
-			} else {
-				strcat(content, "<TR class=\"sec\">");
-			}
-			sprintf(tmp_str, "<TD>%s (%s)</TD>\n", MavLinkVars[n].name, MavLinkVars[n].display);
-			strcat(content, tmp_str);
-			if (MavLinkVars[n].values[0] != 0) {
-				int n2 = 0;
-				sprintf(tmp_str, "<TD><SELECT class=\"form-input\" onchange=\"check_option('%s');\" id=\"%s\">\n", MavLinkVars[n].name, MavLinkVars[n].name);
-				strcat(content, tmp_str);
-				tmp_str2[0] = 0;
-				for (n2 = (int)MavLinkVars[n].min; n2 <= (int)MavLinkVars[n].max; n2++) {
-					tmp_str2[0] = 0;
-					mavlink_meta_get_option(n2, MavLinkVars[n].name, tmp_str2);
-					if (tmp_str2[0] != 0) {
-						if (n2 == (int)MavLinkVars[n].value) {
-							sprintf(tmp_str, "<OPTION value=\"%i\" selected>%s</OPTION>\n", n2, tmp_str2);
-						} else {
-							sprintf(tmp_str, "<OPTION value=\"%i\">%s</OPTION>\n", n2, tmp_str2);
-						}
-						strcat(content, tmp_str);
-					}
-				}
-				strcat(content, "</SELECT></TD>");
-			} else if (MavLinkVars[n].bits[0] != 0) {
-				sprintf(tmp_str, "<TD>\n");
-				strcat(content, tmp_str);
-				int n2 = 0;
-				strcat(content, "<SCRIPT>\n");
-				sprintf(tmp_str, "function check_%s() {\n", MavLinkVars[n].name);
-				strcat(content, tmp_str);
-				strcat(content, "	var value = 0;\n");
-				tmp_str2[0] = 0;
-				for (n2 = (int)MavLinkVars[n].min; n2 <= (int)MavLinkVars[n].max; n2++) {
-					tmp_str2[0] = 0;
-					mavlink_meta_get_bits(n2, MavLinkVars[n].name, tmp_str2);
-					if (tmp_str2[0] != 0) {
-						sprintf(tmp_str, "	if (document.getElementsByName(\"%s-%s\")[0].checked) {\n", MavLinkVars[n].name, tmp_str2);
-						strcat(content, tmp_str);
-						sprintf(tmp_str, "		value |= (1<<%i);\n", n2);
-						strcat(content, tmp_str);
-						strcat(content, "	}\n");
-					}
-				}
-				strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
-				sprintf(tmp_str, "	xmlHttp.open(\"GET\", \"/mavlink_value_set?%s=\" + value, true);\n", MavLinkVars[n].name);
-				strcat(content, tmp_str);
-				strcat(content, "	xmlHttp.send(null);\n");
-				strcat(content, "}\n");
-				strcat(content, "</SCRIPT>\n");
-				tmp_str2[0] = 0;
-				for (n2 = (int)MavLinkVars[n].min; n2 <= (int)MavLinkVars[n].max; n2++) {
-					tmp_str2[0] = 0;
-					mavlink_meta_get_bits(n2, MavLinkVars[n].name, tmp_str2);
-					if (tmp_str2[0] != 0) {
-						if ((int)MavLinkVars[n].value & (1<<n2)) {
-							sprintf(tmp_str, "<NOBR><INPUT class=\"form-input\" onchange=\"check_%s();\" type=\"checkbox\" name=\"%s-%s\" value=\"%i\" checked>%s</NOBR>\n", MavLinkVars[n].name, MavLinkVars[n].name, tmp_str2, n2, tmp_str2);
-						} else {
-							sprintf(tmp_str, "<NOBR><INPUT class=\"form-input\" onchange=\"check_%s();\" type=\"checkbox\" name=\"%s-%s\" value=\"%i\">%s</NOBR>\n", MavLinkVars[n].name, MavLinkVars[n].name, tmp_str2, n2, tmp_str2);
-						}
-						strcat(content, tmp_str);
-					}
-				}
-				strcat(content, "</TD>");
-			} else {
-				sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('%s');\" id=\"%s\" value=\"%f\" type=\"text\"></TD>\n", MavLinkVars[n].name, MavLinkVars[n].name, MavLinkVars[n].value);
-				strcat(content, tmp_str);
-			}
-			sprintf(tmp_str, "<TD>%s&nbsp;</TD><TD>%i</TD><TD>%i</TD></TR>\n", MavLinkVars[n].desc, (int)MavLinkVars[n].min, (int)MavLinkVars[n].max);
-			strcat(content, tmp_str);
-		}
-	}
-	strcat(content, "</TABLE><BR><BR>\n");
-	strcat(content, "</TD></TR></TABLE>\n");
-	html_stop(content);
-
-	sprintf(buffer, header_str, (int)strlen(content), "text/html");
-	write(fd, buffer, strlen(buffer));
-	write(fd, content, strlen(content));
-}
-
 void webserv_child_waypoints (int fd, char *servername) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
@@ -1372,7 +1126,7 @@ void webserv_child_waypoints (int fd, char *servername) {
 	float last_lon = 0.0;
 	float last_alt = 0.0;
 	float alt = 0.0;
-	html_head(content, "WAYPOINTS");
+	webserv_html_head(content, "WAYPOINTS");
 	strcat(content, "<SCRIPT>\n");
 	strcat(content, "function check_option(wp, name) {\n");
 	strcat(content, "	var value = document.getElementById(wp + '-' + name).options[document.getElementById(wp + '-' + name).selectedIndex].value;\n");
@@ -1387,7 +1141,7 @@ void webserv_child_waypoints (int fd, char *servername) {
 	strcat(content, "	xmlHttp.send(null);\n");
 	strcat(content, "}\n");
 	strcat(content, "</SCRIPT>\n");
-	html_start(content, 0);
+	webserv_html_start(content, 0);
 	strcat(content, "<CENTER><TABLE width=\"90%\" border=\"0\">\n");
 	strcat(content, "<TR class=\"thead\"><TH>ACTIVE</TH><TH>NAME</TH><TH>TYPE</TH><TH>LONG</TH><TH>LAT</TH><TH>ALT</TH><TH>DIST</TH><TH>ACTION</TH><TH>MAP</TH></TR>\n");
 	int lc = 0;
@@ -1510,7 +1264,7 @@ void webserv_child_waypoints (int fd, char *servername) {
 	sprintf(tmp_str, "<TR bgcolor=\"#111111\"><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD><A href=\"/waypoint_set?wp%i&ADD=1\">ADD</A></TD><TD>&nbsp;</TD></TR>", n2);
 	strcat(content, tmp_str);
 	strcat(content, "</TABLE></CENTER>\n");
-	html_stop(content);
+	webserv_html_stop(content);
 
 	sprintf(buffer, header_str, (int)strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
@@ -1537,8 +1291,8 @@ void webserv_child_kml_logfiles (int fd, char *servername, char *buffer2) {
 		char new_path[400];
 		char directory[400];
 		content[0] = 0;
-		html_head(content, "LOGFILES");
-		html_start(content, 0);
+		webserv_html_head(content, "LOGFILES");
+		webserv_html_start(content, 0);
 		strcat(content, "<CENTER><TABLE width=\"90%\" border=\"0\">\n");
 		strcat(content, "<TR class=\"thead\"><TH>DATE</TH><TH>SIZE</TH><TH>FORMAT</TH></TR>\n");
 		int lc = 0;
@@ -1581,7 +1335,7 @@ void webserv_child_kml_logfiles (int fd, char *servername, char *buffer2) {
 			dir = NULL;
 		}
 		strcat(content, "</TABLE>\n");
-		html_stop(content);
+		webserv_html_stop(content);
 
 		sprintf(buffer, header_str, (int)strlen(content), "text/html");
 		write(fd, buffer, strlen(buffer));
@@ -1738,7 +1492,7 @@ void webserv_child_gcssetup (int fd, uint8_t mode) {
 	char tmp_str[100];
 	uint8_t flag = 0;
 	content[0] = 0;
-	html_head(content, "SETUP");
+	webserv_html_head(content, "SETUP");
 	strcat(content, "<SCRIPT>\n");
 	strcat(content, "function check_option(name) {\n");
 	strcat(content, "	var value = document.getElementById(name).options[document.getElementById(name).selectedIndex].value;\n");
@@ -1763,7 +1517,7 @@ void webserv_child_gcssetup (int fd, uint8_t mode) {
 	strcat(content, "	xmlHttp.send(null);\n");
 	strcat(content, "}\n");
 	strcat(content, "</SCRIPT>\n");
-	html_start(content, 0);
+	webserv_html_start(content, 0);
 
 	strcat(content, "<TABLE class=\"main\">\n");
 	strcat(content, "<TR class=\"main\"><TD width=\"160px\" valign=\"top\">\n");
@@ -2784,7 +2538,7 @@ void webserv_child_gcssetup (int fd, uint8_t mode) {
 
 	strcat(content, "</TD></TR></TABLE>\n");
 
-	html_stop(content);
+	webserv_html_stop(content);
 
 	sprintf(buffer, header_str, (int)strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
@@ -2797,6 +2551,7 @@ void webserv_child (int fd) {
 	char content[BUFSIZE + 1];
 	char tmp_str[BUFSIZE + 1];
 	char servername[1024];
+	char type[100];
 	content[0] = 0;
 
 	SDL_Delay(10);
@@ -3037,95 +2792,6 @@ void webserv_child (int fd) {
 			write(fd, content, strlen(content));
 		} else if (strncmp(buffer + 4,"/waypoints.html", 15) == 0) {
 			webserv_child_waypoints(fd, servername);
-
-		} else if (strncmp(buffer + 4,"/mavlink_value_set?", 19) == 0) {
-			char name[20];
-			float value = 0.0;
-			int type = 0;
-			sscanf(buffer + 4 + 19, "%[0-9a-zA-Z_]=%f&%i", name, &value, &type);
-			mavlink_set_value(name, value, type, -1);
-			mavlink_send_value(name, value, type);
-			sprintf(content, "mavlink set value: %s to %f (type:%i)\n", name, value, type);
-			sprintf(buffer, header_str, (int)strlen(content), "text/plain");
-			write(fd, buffer, strlen(buffer));
-			write(fd, content, strlen(content));
-		} else if (strncmp(buffer + 4, "/mavlink.html?", 14) == 0) {
-			char sub[128];
-			sscanf(buffer + 4 + 14, "%[0-9a-zA-Z_]", sub);
-			webserv_child_mavlink(fd, sub);
-		} else if (strncmp(buffer + 4, "/mavlink.html", 13) == 0) {
-			webserv_child_mavlink(fd, "");
-
-		} else if (strncmp(buffer + 4,"/mwii.html", 10) == 0) {
-			webserv_child_mwii(fd, 0);
-		} else if (strncmp(buffer + 4,"/mwii_box.html", 14) == 0) {
-			webserv_child_mwii(fd, 1);
-
-		} else if (strncmp(buffer + 4,"/mwii_pid.html?", 14) == 0) {
-			int n = 0;
-			int row = 0;
-			int col = 0;
-			float val = 0.0;
-			sscanf(buffer + 4 + 15, "%i,%i=%f", &row, &col, &val);
-			for (n = 0; n < 16; n++) {
-				mwi_set_pid[n][0] = mwi_pid[n][0];
-				mwi_set_pid[n][1] = mwi_pid[n][1];
-				mwi_set_pid[n][2] = mwi_pid[n][2];
-			}
-			if (col == 0) {
-				mwi_set_pid[row][col] = (int)(val * 10.0);
-			} else if (col == 1) {
-				mwi_set_pid[row][col] = (int)(val * 1000.0);
-			} else if (col == 2) {
-				mwi_set_pid[row][col] = (int)(val);
-			}
-			mwi_set_pid_flag = 1;
-
-			strcpy(content, "");
-			sprintf(buffer, header_str, (int)strlen(content), "text/html");
-			write(fd, buffer, strlen(buffer));
-			write(fd, content, strlen(content));
-		} else if (strncmp(buffer + 4,"/mwii_set.html?", 14) == 0) {
-			int n = 0;
-			int n2 = 0;
-			int n3 = 0;
-			int nn = 0;
-			sscanf(buffer + 4 + 15, "%i", &nn);
-
-			for (n2 = 0; n2 < 16; n2++) {
-				for (n3 = 0; n3 < 12; n3++) {
-					if (mwi_set_box[n2] & (1<<n3)) {
-						if (n == nn) {
-							mwi_set_box[n2] &= ~(1<<n3);
-						}
-					} else {
-						if (n == nn) {
-							mwi_set_box[n2] |= (1<<n3);
-						}
-					}
-					n++;
-				}
-			}
-			mwi_set_box_flag = 1;
-
-			strcpy(content, "<meta http-equiv=\"Refresh\" content=\"0; URL=/mwii.html\">");
-			sprintf(buffer, header_str, (int)strlen(content), "text/html");
-			write(fd, buffer, strlen(buffer));
-			write(fd, content, strlen(content));
-
-		} else if (strncmp(buffer + 4,"/mavlink_value_get", 18) == 0) {
-			uint16_t n = 0;
-			strcpy(content, "# MAV ID  COMPONENT ID  PARAM NAME  VALUE (FLOAT) TYPE (INT)\n");
-			for (n = 0; n < 500; n++) {
-				if (MavLinkVars[n].name[0] != 0) {
-					sprintf(tmp_str, "%i %i %s %f %i\n", ModelData.sysid, ModelData.compid, MavLinkVars[n].name, MavLinkVars[n].value, MavLinkVars[n].type);
-					strcat(content, tmp_str);
-				}
-			}
-			sprintf(buffer, header_str, (int)strlen(content), "text/plain");
-			write(fd, buffer, strlen(buffer));
-			write(fd, content, strlen(content));
-
 		} else if (strncmp(buffer + 4,"/blender.txt", 12) == 0) {
 			webserv_child_dump_blender(fd);
 		} else if (strncmp(buffer + 4,"/blender-export.py", 18) == 0) {
@@ -3358,11 +3024,31 @@ void webserv_child (int fd) {
 #endif
 #endif
 		} else {
-			printf("###################\n");
-			printf("%s", buffer);
-			printf("\n###################\n");
-			sprintf(tmp_str, "%s/webserv/index.html", BASE_DIR);
-			webserv_child_dump_file(fd, tmp_str, "text/html");
+
+			type[0] = 0;
+			content[0] = 0;
+
+			mwi21_web_get(buffer + 4, content, type);
+			if (type[0] != 0 && content[0] != 0) {
+				sprintf(buffer, header_str, (int)strlen(content), type);
+				write(fd, buffer, strlen(buffer));
+				write(fd, content, strlen(content));
+			}
+
+			mavlink_web_get(buffer + 4, content, type);
+			if (type[0] != 0 && content[0] != 0) {
+				sprintf(buffer, header_str, (int)strlen(content), type);
+				write(fd, buffer, strlen(buffer));
+				write(fd, content, strlen(content));
+			}
+
+			if (type[0] == 0 || content[0] == 0) {
+				printf("###################\n");
+				printf("%s", buffer);
+				printf("\n###################\n");
+				sprintf(tmp_str, "%s/webserv/index.html", BASE_DIR);
+				webserv_child_dump_file(fd, tmp_str, "text/html");
+			}
 		}
 	}
 	close(fd);

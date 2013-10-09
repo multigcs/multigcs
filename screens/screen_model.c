@@ -91,7 +91,6 @@ static uint8_t model_device_change (char *name, float x, float y, int8_t button,
 	return 0;
 }
 
-
 static uint8_t model_name_set (char *name, float x, float y, int8_t button, float data) {
 	strncpy(ModelData.name, name, 199);
 	return 0;
@@ -104,11 +103,8 @@ static uint8_t model_name_edit (char *name, float x, float y, int8_t button, flo
 	return 0;
 }
 
-
-
 static uint8_t model_save_xml (char *name, float x, float y, int8_t button, float data) {
 	reset_buttons();
-	int16_t n = 0;
         FILE *fr;
 	char tmp_str[128];
 	sprintf(tmp_str, "mkdir -p %s/models", get_datadirectory());
@@ -129,24 +125,9 @@ static uint8_t model_save_xml (char *name, float x, float y, int8_t button, floa
 			fprintf(fr, "  <bluetooth_pin>%s</bluetooth_pin>\n", ModelData.telebtpin);
 		}
 		fprintf(fr, " </telemetry>\n");
-		fprintf(fr, " <mavlink>\n");
-		for (n = 0; n < 500 - 1; n++) {
-			if (MavLinkVars[n].name[0] != 0) {
-				fprintf(fr, "  <param><name>%s</name><value>%f</value></param>\n", MavLinkVars[n].name, MavLinkVars[n].value);
-			}
-		}
-		fprintf(fr, " </mavlink>\n");
-		fprintf(fr, " <mwi21>\n");
-		for (n = 0; n < 16; n++) {
-			fprintf(fr, "  <pid><id>%i</id><p>%i</p><i>%i</i><d>%i</d></pid>\n", n, mwi_pid[n][0], mwi_pid[n][1], mwi_pid[n][2]);
-		}
-		for (n = 0; n < 16; n++) {
-			fprintf(fr, "  <box><id>%i</id><value>%i</value></box>\n", n, mwi_box[n]);
-		}
-		fprintf(fr, " </mwi21>\n");
-
-		model_save_xml_OpenPilot(fr);
-
+		mavlink_xml_save(fr);
+		mwi21_xml_save(fr);
+		openpilot_xml_save(fr);
 		fprintf(fr, "</rcflow>\n");
 	        fclose(fr);
 	}
@@ -214,104 +195,6 @@ static void model_parseTelemetry (xmlDocPtr doc, xmlNodePtr cur) {
 	return;
 }
 
-static void model_parseMavlinkParam (xmlDocPtr doc, xmlNodePtr cur, uint16_t param) { 
-	xmlChar *key;
-	cur = cur->xmlChildrenNode;
-	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"name"))) {
-			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			if ((char *)key != NULL) {
-				strncpy(MavLinkVars[param].name, (char *)key, 199);
-			}
-			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"value"))) {
-			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			if ((char *)key != NULL) {
-				MavLinkVars[param].value = atof((char *)key);
-			}
-			xmlFree(key);
-		}
-		cur = cur->next;
-	}
-	return;
-}
-
-static void model_parseMavlink (xmlDocPtr doc, xmlNodePtr cur) { 
-	uint16_t param = 0;
-	for (param = 0; param < 500; param++) {
-		MavLinkVars[param].name[0] = 0;
-		MavLinkVars[param].value = 0.0;
-	}
-	param = 0;
-	cur = cur->xmlChildrenNode;
-	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"param"))) {
-			model_parseMavlinkParam (doc, cur, param++);
-		}
-		cur = cur->next;
-	}
-	return;
-}
-
-static void model_parseMWI21Pid (xmlDocPtr doc, xmlNodePtr cur, uint16_t pid) { 
-	xmlChar *key;
-	cur = cur->xmlChildrenNode;
-	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"p"))) {
-			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			if ((char *)key != NULL) {
-				mwi_pid[pid][0] = atoi((char *)key);
-			}
-			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"i"))) {
-			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			if ((char *)key != NULL) {
-				mwi_pid[pid][1] = atoi((char *)key);
-			}
-			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"d"))) {
-			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			if ((char *)key != NULL) {
-				mwi_pid[pid][2] = atoi((char *)key);
-			}
-			xmlFree(key);
-		}
-		cur = cur->next;
-	}
-	return;
-}
-
-static void model_parseMWI21Box (xmlDocPtr doc, xmlNodePtr cur, uint16_t box) { 
-	xmlChar *key;
-	cur = cur->xmlChildrenNode;
-	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"value"))) {
-			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			if ((char *)key != NULL) {
-				mwi_box[box] = atoi((char *)key);
-			}
-			xmlFree(key);
-		}
-		cur = cur->next;
-	}
-	return;
-}
-
-static void model_parseMWI21 (xmlDocPtr doc, xmlNodePtr cur) { 
-	uint16_t pid = 0;
-	uint16_t box = 0;
-	cur = cur->xmlChildrenNode;
-	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"pid"))) {
-			model_parseMWI21Pid (doc, cur, pid++);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"box"))) {
-			model_parseMWI21Box (doc, cur, box++);
-		}
-		cur = cur->next;
-	}
-	return;
-}
-
 static void model_parseDoc (char *docname) {
 	xmlDocPtr doc;
 	xmlNodePtr cur;
@@ -372,12 +255,14 @@ static void model_parseDoc (char *docname) {
 			xmlFree(key);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"telemetry"))) {
 			model_parseTelemetry(doc, cur);
+
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"mavlink"))) {
-			model_parseMavlink(doc, cur);
+			mavlink_xml_load(doc, cur);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"mwi21"))) {
-			model_parseMWI21(doc, cur);
+			mwi21_xml_load(doc, cur);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"OpenPilot"))) {
-			model_parseOpenPilot(doc, cur);
+			openpilot_xml_load(doc, cur);
+
 		}
 		cur = cur->next;
 	}
@@ -402,7 +287,6 @@ static uint8_t model_load (char *name, float x, float y, int8_t button, float da
 	filesystem_set_mode(setup.view_mode);
 	return 0;
 }
-
 
 static uint8_t model_image_set (char *name, float x, float y, int8_t button, float data) {
 	strncpy(ModelData.image, name, 511);

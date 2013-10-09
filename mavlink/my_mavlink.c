@@ -1,7 +1,6 @@
 
 #include <all.h>
 
-
 #define UDP_BUFLEN 2042
 #define UDP_PORT 14550
 
@@ -11,7 +10,7 @@ static int s, slen = sizeof(si_other) , recv_len;
 static uint8_t udp_running = 0;
 int16_t mission_max = -1;
 int serial_fd_mavlink = -1;
-ValueList MavLinkVars[500];
+ValueList MavLinkVars[MAVLINK_PARAMETER_MAX];
 uint8_t mavlink_update_yaw = 0;
 uint8_t droneType = 1;
 uint8_t autoPilot = 3;
@@ -26,19 +25,32 @@ uint8_t mavlink_udp_active = 0;
 SDL_Thread *thread_udp = NULL;
 int mavlink_udp (void *data);
 
+void mavlink_xml_save (FILE *fr) {
+	int16_t n = 0;
+	fprintf(fr, " <mavlink>\n");
+	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
+		if (MavLinkVars[n].name[0] != 0) {
+			fprintf(fr, "  <param><name>%s</name><value>%f</value></param>\n", MavLinkVars[n].name, MavLinkVars[n].value);
+		}
+	}
+	fprintf(fr, " </mavlink>\n");
+}
+
 uint8_t mavlink_init (char *port, uint32_t baud) {
 	int n = 0;
 	mavlink_maxparam = 0;
 	mavlink_foundparam = 0;
 	printf("mavlink: init serial port...\n");
 	serial_fd_mavlink = serial_open(port, baud);
-	for (n = 0; n < 500; n++) {
+	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
 		MavLinkVars[n].name[0] = 0;
 		MavLinkVars[n].display[0] = 0;
 		MavLinkVars[n].desc[0] = 0;
 		MavLinkVars[n].values[0] = 0;
 		MavLinkVars[n].bits[0] = 0;
 		MavLinkVars[n].value = 0.0;
+		MavLinkVars[n].onload = 0.0;
+		MavLinkVars[n].type = MAV_VAR_FLOAT;
 		MavLinkVars[n].id = -1;
 	}
 
@@ -68,40 +80,45 @@ void mavlink_exit (void) {
 	}
 }
 
-void stop_feeds (void) {
+void mavlink_stop_feeds (void) {
 	printf("mavlink: stopping feeds!\n");
 	mavlink_message_t msg1;
 	mavlink_msg_request_data_stream_pack(127, 0, &msg1, ModelData.sysid, ModelData.compid, MAV_DATA_STREAM_ALL, 0, 0);
-	send_message(&msg1);
+	mavlink_send_message(&msg1);
 }
 
-void mavlink_send_value (char *name, float val, uint8_t type) {
+void mavlink_send_value (char *name, float val, int8_t type) {
 	mavlink_message_t msg;
+	if (type == -1) {
+		type = MAV_VAR_FLOAT;
+	}
 	mavlink_msg_param_set_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, name, val, type);
 	if (clientmode == 1) {
 		webclient_send_value(clientmode_server, clientmode_port, name, val, type);
 	} else {
-		send_message(&msg);
+		mavlink_send_message(&msg);
 		ModelData.mavlink_update = (int)time(0);
 	}
 }
 
-void mavlink_set_value (char *name, float value, uint8_t type, uint16_t id) {
+void mavlink_set_value (char *name, float value, int8_t type, uint16_t id) {
 	uint16_t n = 0;
 	uint8_t flag = 0;
 	float min = 999999.0;
 	float max = 999999.0;
-	for (n = 0; n < 500; n++) {
-		if (strcmp(MavLinkVars[n].name, name) == 0 && (MavLinkVars[n].id == id || MavLinkVars[n].id == -1 || id > 65000)) {
+	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
+		if (strcmp(MavLinkVars[n].name, name) == 0 && (MavLinkVars[n].id == id || MavLinkVars[n].id == -1 || id > 65000 || id == -1)) {
 			MavLinkVars[n].value = value;
 			MavLinkVars[n].id = id;
-			MavLinkVars[n].type = type;
+			if (type != -1) {
+				MavLinkVars[n].type = type;
+			}
 			flag = 1;
 			break;
 		}
 	}
 	if (flag == 0) {
-		for (n = 0; n < 500; n++) {
+		for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
 			if (MavLinkVars[n].name[0] == 0) {
 				if (type == MAV_VAR_FLOAT) {
 					min = -999999.0;
@@ -134,7 +151,11 @@ void mavlink_set_value (char *name, float value, uint8_t type, uint16_t id) {
 				}
 				strncpy(MavLinkVars[n].name, name, 16);
 				MavLinkVars[n].value = value;
+				MavLinkVars[n].onload = value;
 				MavLinkVars[n].id = id;
+				if (type == -1) {
+					type = MAV_VAR_FLOAT;
+				}
 				MavLinkVars[n].type = type;
 				MavLinkVars[n].min = min;
 				MavLinkVars[n].max = max;
@@ -176,7 +197,7 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 				ModelData.sysid = (*msg).sysid;
 				ModelData.compid = (*msg).compid;
 				if (mavlink_maxparam == 0) {
-					start_feeds();
+					mavlink_start_feeds();
 				}
 			}
 			redraw_flag = 1;
@@ -323,7 +344,7 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 			mission_max = packet.count;
 			if (mission_max > 0) {
 				mavlink_msg_mission_request_pack(127, 0, &msg2, ModelData.sysid, ModelData.compid, 0);
-				send_message(&msg2);
+				mavlink_send_message(&msg2);
 			}
 			redraw_flag = 1;
 			break;
@@ -371,7 +392,7 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 
 
 			mavlink_msg_mission_item_pack(127, 0, &msg2, ModelData.sysid, ModelData.compid, id, 0, type, 0.0, 0.0, WayPoints[1 + id2].radius, WayPoints[1 + id2].wait, WayPoints[1 + id2].orbit, WayPoints[1 + id2].yaw, WayPoints[1 + id2].p_lat, WayPoints[1 + id2].p_long, WayPoints[1 + id2].p_alt);
-			send_message(&msg2);
+			mavlink_send_message(&msg2);
 /*
 mavlink_msg_mission_item_pack(system_id, component_id, &msg , packet1.target_system , packet1.target_component , packet1.seq , packet1.frame , packet1.command , packet1.current , packet1.autocontinue , packet1.param1 , packet1.param2 , packet1.param3 , packet1.param4 , packet1.x , packet1.y , packet1.z );
 float param1; ///< PARAM1 / For NAV command MISSIONs: Radius in which the MISSION is accepted as reached, in meters
@@ -403,10 +424,10 @@ uint8_t autocontinue; ///< autocontinue to next wp
 
 			if (packet.seq < mission_max - 1) {
 				mavlink_msg_mission_request_pack(127, 0, &msg2, ModelData.sysid, ModelData.compid, packet.seq + 1);
-				send_message(&msg2);
+				mavlink_send_message(&msg2);
 			} else {
 				mavlink_msg_mission_ack_pack(127, 0, &msg2, ModelData.sysid, ModelData.compid, 15);
-				send_message(&msg2);
+				mavlink_send_message(&msg2);
 			}
 
 			if (ModelData.teletype == TELETYPE_MEGAPIRATE_NG || ModelData.teletype == TELETYPE_ARDUPILOT) {
@@ -595,31 +616,31 @@ wp_dist
 	}
 }
 
-void read_waypoints (void) {
+void mavlink_read_waypoints (void) {
 	printf("mavlink: reading Waypoints\n");
 	mavlink_message_t msg;
 	mavlink_msg_mission_request_list_pack(127, 0, &msg, ModelData.sysid, ModelData.compid);
-	send_message(&msg);
+	mavlink_send_message(&msg);
 }
 
-void save_to_flash (void) {
+void mavlink_save_to_flash (void) {
 	printf("mavlink: save values to flash\n");
 	mavlink_message_t msg;
 	mavlink_msg_command_long_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_CMD_PREFLIGHT_STORAGE, 0, 1.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-	send_message(&msg);
+	mavlink_send_message(&msg);
 }
 
-void load_from_flash (void) {
+void mavlink_load_from_flash (void) {
 	printf("mavlink: load values from flash\n");
 	mavlink_message_t msg;
 	mavlink_msg_command_long_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_CMD_PREFLIGHT_STORAGE, 0, 0.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-	send_message(&msg);
+	mavlink_send_message(&msg);
 }
 
-void send_waypoints (void) {
+void mavlink_send_waypoints (void) {
 	mavlink_message_t msg;
 	mavlink_msg_mission_clear_all_pack(127, 0, &msg, ModelData.sysid, ModelData.compid);
-	send_message(&msg);
+	mavlink_send_message(&msg);
 	usleep(100000);
 	uint16_t n = 0;
 	for (n = 1; n < MAX_WAYPOINTS; n++) {
@@ -633,10 +654,10 @@ void send_waypoints (void) {
 	}
 	printf("mavlink: sending Waypoints (%i)\n", n - 1);
 	mavlink_msg_mission_count_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, n - 1);
-	send_message(&msg);
+	mavlink_send_message(&msg);
 }
 
-void send_message (mavlink_message_t* msg) {
+void mavlink_send_message (mavlink_message_t* msg) {
 	uint8_t buf[MAVLINK_MAX_PACKET_LEN];
 	printf("mavlink: send_msg...\n");
 	uint16_t len = mavlink_msg_to_send_buffer(buf, msg);
@@ -659,104 +680,64 @@ uint8_t mavlink_connection_status (void) {
 	return last_connection;
 }
 
-extern int Android_JNI_ReadSerial(uint8_t *data, int len);
-
 void mavlink_update (void) {
 	if (serial_fd_mavlink == -1) {
 		return;
 	}
 	uint8_t c = 0;
 	uint16_t n = 0;
-//	uint16_t id = 0;
 	mavlink_message_t msg;
 	mavlink_status_t status;
 	while ((res = serial_read(serial_fd_mavlink, serial_buf, 200)) > 0) {
 		last_connection = time(0);
 		for (n = 0; n < res; n++) {
 			c = serial_buf[n];
-//			printf("%i (%x)  \n", c, c);
 			if(mavlink_parse_char(0, c, &msg, &status)) {
 				mavlink_handleMessage(&msg);
 			}
 		}
 
 	}
-/*
-	if (mavlink_timeout++ > 100 && mavlink_foundparam != mavlink_maxparam) {
-		// checking missing parameters
-		mavlink_foundparam = 0;
-		for (id = 0; id < mavlink_maxparam; id++) {
-			c = 0;
-			for (n = 0; n < 500; n++) {
-				if (MavLinkVars[n].id == id) {
-					c = 1;
-					mavlink_foundparam++;
-					break;
-				}
-			}
-			if (c == 0) {
-				printf("mavlink: missing id: %i\n", id);
-				param_get_id(id);
-				mavlink_timeout = 0;
-			}
-		}
-		printf("mavlink: parameters found: %i/%i\n", mavlink_foundparam, mavlink_maxparam);
-	}
-*/
 }
 
-void param_get_id (uint16_t id) {
+void mavlink_param_get_id (uint16_t id) {
 	printf("mavlink: get id: %i\n", id);
 	mavlink_message_t msg;
 	mavlink_msg_param_request_read_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, NULL, id);
-	send_message(&msg);
+	mavlink_send_message(&msg);
 }
 
-#define MAV_DATA_STREAM_POSITION_ACTIVE 1
-#define MAV_DATA_STREAM_RAW_SENSORS_ACTIVE 1
-#define MAV_DATA_STREAM_EXTENDED_STATUS_ACTIVE 1
-#define MAV_DATA_STREAM_RAW_CONTROLLER_ACTIVE 1
-#define MAV_DATA_STREAM_EXTRA1_ACTIVE 1
-#define MAV_DATA_STREAM_EXTRA2_ACTIVE 1
-
-#define MAV_DATA_STREAM_POSITION_RATE 10
-#define MAV_DATA_STREAM_RAW_SENSORS_RATE 10
-#define MAV_DATA_STREAM_EXTENDED_STATUS_RATE 10
-#define MAV_DATA_STREAM_RAW_CONTROLLER_RATE 10
-#define MAV_DATA_STREAM_EXTRA1_RATE 10
-#define MAV_DATA_STREAM_EXTRA2_RATE 10
-
-void start_feeds (void) {
+void mavlink_start_feeds (void) {
 	mavlink_message_t msg;
 	mavlink_timeout = 0;
 	printf("mavlink: starting feeds!\n");
 	mavlink_msg_param_request_list_pack(127, 0, &msg, ModelData.sysid, ModelData.compid);
-	send_message(&msg);
+	mavlink_send_message(&msg);
 	SDL_Delay(10);
 
 	mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_DATA_STREAM_RAW_SENSORS, MAV_DATA_STREAM_RAW_SENSORS_RATE, MAV_DATA_STREAM_RAW_SENSORS_ACTIVE);
-	send_message(&msg);
+	mavlink_send_message(&msg);
 	SDL_Delay(10);
 
 	if (ModelData.teletype == TELETYPE_MEGAPIRATE_NG || ModelData.teletype == TELETYPE_ARDUPILOT || ModelData.teletype == TELETYPE_HARAKIRIML) {
 		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_DATA_STREAM_EXTENDED_STATUS, MAV_DATA_STREAM_EXTENDED_STATUS_RATE, MAV_DATA_STREAM_EXTENDED_STATUS_ACTIVE);
-		send_message(&msg);
+		mavlink_send_message(&msg);
 		SDL_Delay(10);
 
 		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_DATA_STREAM_RAW_CONTROLLER, MAV_DATA_STREAM_RAW_CONTROLLER_RATE, MAV_DATA_STREAM_RAW_CONTROLLER_ACTIVE);
-		send_message(&msg);
+		mavlink_send_message(&msg);
 		SDL_Delay(10);
 
 		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_DATA_STREAM_POSITION, MAV_DATA_STREAM_POSITION_RATE, MAV_DATA_STREAM_POSITION_ACTIVE);
-		send_message(&msg);
+		mavlink_send_message(&msg);
 		SDL_Delay(10);
 
 		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_DATA_STREAM_EXTRA1, MAV_DATA_STREAM_EXTRA1_RATE, MAV_DATA_STREAM_EXTRA1_ACTIVE);
-		send_message(&msg);
+		mavlink_send_message(&msg);
 		SDL_Delay(10);
 
 		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_DATA_STREAM_EXTRA2, MAV_DATA_STREAM_EXTRA2_RATE, MAV_DATA_STREAM_EXTRA2_ACTIVE);
-		send_message(&msg);
+		mavlink_send_message(&msg);
 		SDL_Delay(10);
 	}
 }
@@ -808,12 +789,12 @@ void mavlink_parseParams1 (xmlDocPtr doc, xmlNodePtr cur, char *name) {
 	int n3 = 0;
 	int n4 = 0;
 	char tmp_str3[1024];
-	for (n = 0; n < 500 - 1; n++) {
+	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
 		if (strcmp(MavLinkVars[n].name, name) == 0) {
 			break;
 		}
 	}
-	if (n == 500 - 1) {
+	if (n == MAVLINK_PARAMETER_MAX) {
 		return;
 	}
 	cur = cur->xmlChildrenNode;
@@ -911,11 +892,9 @@ void mavlink_parseParams (xmlDocPtr doc, xmlNodePtr cur) {
 static void mavlink_parseDoc (char *docname) {
 	xmlDocPtr doc;
 	xmlNodePtr cur;
-
 	if (strncmp(docname, "./", 2) == 0) {
 		docname += 2;
 	}
-
 	char *buffer = NULL;
 	int len = 0;
 	SDL_RWops *ops_file = SDL_RWFromFile(docname, "r");
@@ -930,7 +909,6 @@ static void mavlink_parseDoc (char *docname) {
 	doc = xmlParseMemory(buffer, len);
 	SDL_RWclose(ops_file);
 	free(buffer);
-
 	if (doc == NULL) {
 		printf("mavlink: Document parsing failed: %s\n", docname);
 		return;
@@ -957,3 +935,224 @@ void mavlink_param_xml_meta_load (void) {
 	sprintf(filename, "%s/mavlink/ParameterMetaData-%s.xml", BASE_DIR, teletypes[ModelData.teletype]);
 	mavlink_parseDoc(filename);
 }
+
+static void model_parseMavlinkParam (xmlDocPtr doc, xmlNodePtr cur, uint16_t param) { 
+	xmlChar *key;
+	cur = cur->xmlChildrenNode;
+	while (cur != NULL) {
+		if ((!xmlStrcmp(cur->name, (const xmlChar *)"name"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				strncpy(MavLinkVars[param].name, (char *)key, 199);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"value"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				MavLinkVars[param].value = atof((char *)key);
+				MavLinkVars[param].onload = atof((char *)key);
+			}
+			xmlFree(key);
+		}
+		cur = cur->next;
+	}
+	return;
+}
+
+void mavlink_xml_load (xmlDocPtr doc, xmlNodePtr cur) { 
+	uint16_t param = 0;
+	for (param = 0; param < MAVLINK_PARAMETER_MAX; param++) {
+		MavLinkVars[param].name[0] = 0;
+		MavLinkVars[param].value = 0.0;
+		MavLinkVars[param].onload = 0.0;
+	}
+	param = 0;
+	cur = cur->xmlChildrenNode;
+	while (cur != NULL) {
+		if ((!xmlStrcmp(cur->name, (const xmlChar *)"param"))) {
+			model_parseMavlinkParam (doc, cur, param++);
+		}
+		cur = cur->next;
+	}
+	return;
+}
+
+static void mavlink_html_page (char *content, char *sub) {
+	char tmp_str[512];
+	char tmp_str2[512];
+	uint16_t n = 0;
+	uint16_t n2 = 0;
+	content[0] = 0;
+	webserv_html_head(content, "MAVLINK");
+	strcat(content, "<SCRIPT>\n");
+	strcat(content, "function check_option(name) {\n");
+	strcat(content, "	var value = document.getElementById(name).options[document.getElementById(name).selectedIndex].value;\n");
+	strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
+	strcat(content, "	xmlHttp.open(\"GET\", \"/mavlink_value_set?\" + name + \"=\" + value, true);\n");
+	strcat(content, "	xmlHttp.send(null);\n");
+	strcat(content, "}\n");
+	strcat(content, "function check_value(name) {\n");
+	strcat(content, "	var value = document.getElementById(name).value;\n");
+	strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
+	strcat(content, "	xmlHttp.open(\"GET\", \"/mavlink_value_set?\" + name + \"=\" + value, true);\n");
+	strcat(content, "	xmlHttp.send(null);\n");
+	strcat(content, "}\n");
+	strcat(content, "</SCRIPT>\n");
+	webserv_html_start(content, 0);
+	strcat(content, "<TABLE class=\"main\">\n");
+	strcat(content, "<TR class=\"main\"><TD width=\"160px\" valign=\"top\">\n");
+	strcat(content, "<TABLE width=\"100%\">\n");
+	strcat(content, "<TR class=\"thead\"><TH>MODE</TH></TR>\n");
+	strcat(content, "<TR class=\"first\"><TD><A href=\"/mavlink.html\">ALL</A></TD></TR>");
+	uint8_t flag = 0;
+	char mavlink_subs[512][128];
+	for (n2 = 0; n2 < MAVLINK_PARAMETER_MAX; n2++) {
+		mavlink_subs[n2][0] = 0;
+	}
+	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
+		if (MavLinkVars[n].name[0] != 0) {
+			strcpy(tmp_str, MavLinkVars[n].name);
+			for (n2 = 0; n2 < strlen(tmp_str) && n2 < 6; n2++) {
+				if (tmp_str[n2] == '_') {
+					break;
+				}
+			}
+			tmp_str[n2] = 0;
+			flag = 0;
+			for (n2 = 0; n2 < MAVLINK_PARAMETER_MAX; n2++) {
+				if (strcmp(mavlink_subs[n2], tmp_str) == 0) {
+					flag = 1;
+					break;
+				}
+			}
+			if (flag == 0) {
+				sprintf(tmp_str2, "<TR class=\"first\"><TD><A href=\"/mavlink.html?%s\">%s</A></TD></TR>", tmp_str, tmp_str);
+				strcat(content, tmp_str2);
+				for (n2 = 0; n2 < MAVLINK_PARAMETER_MAX; n2++) {
+					if (mavlink_subs[n2][0] == 0) {
+						strcpy(mavlink_subs[n2], tmp_str);
+						break;
+					}
+				}
+			}
+		}
+	}
+	strcat(content, "</TABLE><BR><BR><BR>\n");
+	strcat(content, "</TD><TD valign=\"top\" width=\"20px\">&nbsp;</TD><TD valign=\"top\">\n");
+	strcat(content, "<TABLE width=\"100%\" border=\"0\">\n");
+	strcat(content, "<TR class=\"thead\"><TH>NAME</TH><TH>VALUE</TH><TH>DESCRIPTION</TH><TH>MIN</TH><TH>MAX</TH><TH>ONLOAD</TH></TR>\n");
+	int lc = 0;
+	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
+		if (MavLinkVars[n].name[0] != 0 && (sub[0] == 0 || strncmp(MavLinkVars[n].name, sub, strlen(sub)) == 0)) {
+			lc = 1 - lc;
+			if (lc == 0) {
+				strcat(content, "<TR class=\"first\">");
+			} else {
+				strcat(content, "<TR class=\"sec\">");
+			}
+			sprintf(tmp_str, "<TD>%s (%s)</TD>\n", MavLinkVars[n].name, MavLinkVars[n].display);
+			strcat(content, tmp_str);
+			if (MavLinkVars[n].values[0] != 0) {
+				int n2 = 0;
+				sprintf(tmp_str, "<TD><SELECT class=\"form-input\" onchange=\"check_option('%s');\" id=\"%s\">\n", MavLinkVars[n].name, MavLinkVars[n].name);
+				strcat(content, tmp_str);
+				tmp_str2[0] = 0;
+				for (n2 = (int)MavLinkVars[n].min; n2 <= (int)MavLinkVars[n].max; n2++) {
+					tmp_str2[0] = 0;
+					mavlink_meta_get_option(n2, MavLinkVars[n].name, tmp_str2);
+					if (tmp_str2[0] != 0) {
+						if (n2 == (int)MavLinkVars[n].value) {
+							sprintf(tmp_str, "<OPTION value=\"%i\" selected>%s</OPTION>\n", n2, tmp_str2);
+						} else {
+							sprintf(tmp_str, "<OPTION value=\"%i\">%s</OPTION>\n", n2, tmp_str2);
+						}
+						strcat(content, tmp_str);
+					}
+				}
+				strcat(content, "</SELECT></TD>");
+			} else if (MavLinkVars[n].bits[0] != 0) {
+				sprintf(tmp_str, "<TD>\n");
+				strcat(content, tmp_str);
+				int n2 = 0;
+				strcat(content, "<SCRIPT>\n");
+				sprintf(tmp_str, "function check_%s() {\n", MavLinkVars[n].name);
+				strcat(content, tmp_str);
+				strcat(content, "	var value = 0;\n");
+				tmp_str2[0] = 0;
+				for (n2 = (int)MavLinkVars[n].min; n2 <= (int)MavLinkVars[n].max; n2++) {
+					tmp_str2[0] = 0;
+					mavlink_meta_get_bits(n2, MavLinkVars[n].name, tmp_str2);
+					if (tmp_str2[0] != 0) {
+						sprintf(tmp_str, "	if (document.getElementsByName(\"%s-%s\")[0].checked) {\n", MavLinkVars[n].name, tmp_str2);
+						strcat(content, tmp_str);
+						sprintf(tmp_str, "		value |= (1<<%i);\n", n2);
+						strcat(content, tmp_str);
+						strcat(content, "	}\n");
+					}
+				}
+				strcat(content, "	xmlHttp = new XMLHttpRequest();\n");
+				sprintf(tmp_str, "	xmlHttp.open(\"GET\", \"/mavlink_value_set?%s=\" + value, true);\n", MavLinkVars[n].name);
+				strcat(content, tmp_str);
+				strcat(content, "	xmlHttp.send(null);\n");
+				strcat(content, "}\n");
+				strcat(content, "</SCRIPT>\n");
+				tmp_str2[0] = 0;
+				for (n2 = (int)MavLinkVars[n].min; n2 <= (int)MavLinkVars[n].max; n2++) {
+					tmp_str2[0] = 0;
+					mavlink_meta_get_bits(n2, MavLinkVars[n].name, tmp_str2);
+					if (tmp_str2[0] != 0) {
+						if ((int)MavLinkVars[n].value & (1<<n2)) {
+							sprintf(tmp_str, "<NOBR><INPUT class=\"form-input\" onchange=\"check_%s();\" type=\"checkbox\" name=\"%s-%s\" value=\"%i\" checked>%s</NOBR>\n", MavLinkVars[n].name, MavLinkVars[n].name, tmp_str2, n2, tmp_str2);
+						} else {
+							sprintf(tmp_str, "<NOBR><INPUT class=\"form-input\" onchange=\"check_%s();\" type=\"checkbox\" name=\"%s-%s\" value=\"%i\">%s</NOBR>\n", MavLinkVars[n].name, MavLinkVars[n].name, tmp_str2, n2, tmp_str2);
+						}
+						strcat(content, tmp_str);
+					}
+				}
+				strcat(content, "</TD>");
+			} else {
+				sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('%s');\" id=\"%s\" value=\"%f\" type=\"text\"></TD>\n", MavLinkVars[n].name, MavLinkVars[n].name, MavLinkVars[n].value);
+				strcat(content, tmp_str);
+			}
+			sprintf(tmp_str, "<TD>%s&nbsp;</TD><TD>%0.4f</TD><TD>%0.4f</TD><TD>%0.4f</TD></TR>\n", MavLinkVars[n].desc, MavLinkVars[n].min, MavLinkVars[n].max, MavLinkVars[n].onload);
+			strcat(content, tmp_str);
+		}
+	}
+	strcat(content, "</TABLE><BR><BR>\n");
+	strcat(content, "</TD></TR></TABLE>\n");
+	webserv_html_stop(content);
+}
+
+
+void mavlink_web_get (char *url, char *content, char *type) {
+	char tmp_str[512];
+	if (strncmp(url, "/mavlink_value_set?", 19) == 0) {
+		char name[20];
+		float value = 0.0;
+		int ntype = 0;
+		sscanf(url + 19, "%[0-9a-zA-Z_]=%f&%i", name, &value, &ntype);
+		mavlink_set_value(name, value, ntype, -1);
+		mavlink_send_value(name, value, ntype);
+		sprintf(content, "mavlink set value: %s to %f (type:%i)\n", name, value, ntype);
+		strcpy(type, "text/plain");
+	} else if (strncmp(url, "/mavlink.html?", 14) == 0) {
+		char sub[128];
+		sscanf(url + 14, "%[0-9a-zA-Z_]", sub);
+		mavlink_html_page(content, sub);
+		strcpy(type, "text/html");
+	} else if (strncmp(url, "/mavlink.html", 13) == 0) {
+		mavlink_html_page(content, "");
+		strcpy(type, "text/html");
+	} else if (strncmp(url, "/mavlink_value_get", 18) == 0) {
+		uint16_t n = 0;
+		strcpy(content, "# MAV ID  COMPONENT ID  PARAM NAME  VALUE (FLOAT) TYPE (INT)\n");
+		for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
+			if (MavLinkVars[n].name[0] != 0) {
+				sprintf(tmp_str, "%i %i %s %f %i\n", ModelData.sysid, ModelData.compid, MavLinkVars[n].name, MavLinkVars[n].value, MavLinkVars[n].type);
+				strcat(content, tmp_str);
+			}
+		}
+		strcpy(type, "text/plain");
+	}
+}
+

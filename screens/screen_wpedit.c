@@ -8,12 +8,12 @@ uint8_t wpedit_last_mode = VIEW_MODE_MAP;
 
 uint8_t read_wp (char *name, float x, float y, int8_t button, float data) {
 	show_wp(name, x, y, button, 1);
-	read_waypoints();
+	mavlink_read_waypoints();
 	return 0;
 }
 
 uint8_t write_wp (char *name, float x, float y, int8_t button, float data) {
-	send_waypoints();
+	mavlink_send_waypoints();
 	return 0;
 }
 
