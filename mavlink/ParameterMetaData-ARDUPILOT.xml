@@ -1725,7 +1725,6 @@
       <Range>1 45</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
-      <Group>RC1_</Group>
       <Path>../libraries/RC_Channel/RC_Channel.cpp</Path>
     </AUTO_SLEW>
     <RC_SPEED>
@@ -2161,7 +2160,6 @@
       <Range>0 3000</Range>
       <Unit>cm/s</Unit>
       <User>Standard</User>
-      <Group>CAM_</Group>
       <Path>../libraries/AP_Camera/AP_Camera.cpp</Path>
     </HLD_LON_IMAX>
   </ArduCopter2>
@@ -3611,7 +3609,6 @@
       <Description>This selects an analog pin for the receiver RSSI voltage. It assumes the voltage is 5V for max rssi, 0V for minimum</Description>
       <Values>-1:Disabled, 0:A0, 1:A1, 13:A13</Values>
       <User>Standard</User>
-      <Group>CAM_</Group>
       <Path>../libraries/AP_Camera/AP_Camera.cpp</Path>
     </RSSI_PIN>
   </ArduPlane>
@@ -3902,7 +3899,6 @@
       <Description>Setting this to Enabled(1) will enable the sonar. Setting this to Disabled(0) will disable the sonar</Description>
       <Values>0:Disabled,1:Enabled</Values>
       <User>Standard</User>
-      <Group>INS_</Group>
       <Path>../libraries/AP_InertialSensor/AP_InertialSensor.cpp</Path>
     </SONAR_ENABLE>
   </ArduRover>
