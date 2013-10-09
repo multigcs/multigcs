@@ -44,6 +44,7 @@ uint8_t mavlink_init (char *port, uint32_t baud) {
 	serial_fd_mavlink = serial_open(port, baud);
 	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
 		MavLinkVars[n].name[0] = 0;
+		MavLinkVars[n].group[0] = 0;
 		MavLinkVars[n].display[0] = 0;
 		MavLinkVars[n].desc[0] = 0;
 		MavLinkVars[n].values[0] = 0;
@@ -149,7 +150,7 @@ void mavlink_set_value (char *name, float value, int8_t type, uint16_t id) {
 					min = 1200.0;
 					max = 115200.0;
 				}
-				strncpy(MavLinkVars[n].name, name, 16);
+				strncpy(MavLinkVars[n].name, name, 17);
 				MavLinkVars[n].value = value;
 				MavLinkVars[n].onload = value;
 				MavLinkVars[n].id = id;
@@ -159,6 +160,17 @@ void mavlink_set_value (char *name, float value, int8_t type, uint16_t id) {
 				MavLinkVars[n].type = type;
 				MavLinkVars[n].min = min;
 				MavLinkVars[n].max = max;
+				if (strncmp(MavLinkVars[n].name, "RC", 2) == 0) {
+					strncpy(MavLinkVars[n].group, "RC", 17);
+				} else if (strncmp(MavLinkVars[n].name, "CH", 2) == 0) {
+					strncpy(MavLinkVars[n].group, "Channels", 17);
+				} else if (strncmp(MavLinkVars[n].name, "FLTMODE", 7) == 0) {
+					strncpy(MavLinkVars[n].group, "FlightMode", 17);
+				} else if (strncmp(MavLinkVars[n].name, "COMPASS", 7) == 0) {
+					strncpy(MavLinkVars[n].group, "Compass", 17);
+				} else if (strncmp(MavLinkVars[n].name, "SR", 2) == 0) {
+					strncpy(MavLinkVars[n].group, "SR", 17);
+				}
 				break;
 			}
 		}
@@ -817,6 +829,13 @@ void mavlink_parseParams1 (xmlDocPtr doc, xmlNodePtr cur, char *name) {
 				strncpy(MavLinkVars[n].desc, (char *)key, 1023);
 				xmlFree(key);
 			}
+		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"Group"))) {
+			xmlChar *key;
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if (key != NULL) {
+				strncpy(MavLinkVars[n].group, (char *)key, 20);
+				xmlFree(key);
+			}
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"Values"))) {
 			xmlChar *key;
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
@@ -951,7 +970,7 @@ static void model_parseMavlinkParam (xmlDocPtr doc, xmlNodePtr cur, uint16_t par
 		if ((!xmlStrcmp(cur->name, (const xmlChar *)"name"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
-				strncpy(MavLinkVars[param].name, (char *)key, 199);
+				strncpy(MavLinkVars[param].name, (char *)key, 20);
 			}
 			xmlFree(key);
 		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"value"))) {
@@ -971,6 +990,7 @@ void mavlink_xml_load (xmlDocPtr doc, xmlNodePtr cur) {
 	uint16_t param = 0;
 	for (param = 0; param < MAVLINK_PARAMETER_MAX; param++) {
 		MavLinkVars[param].name[0] = 0;
+		MavLinkVars[param].group[0] = 0;
 		MavLinkVars[param].value = 0.0;
 		MavLinkVars[param].onload = 0.0;
 	}

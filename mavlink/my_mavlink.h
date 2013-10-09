@@ -78,6 +78,7 @@ typedef struct {
 	char desc[1024];
 	char values[1024];
 	char bits[1024];
+	char group[20];
 	float value;
 	float onload;
 	float min;
