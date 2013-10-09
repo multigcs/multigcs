@@ -396,33 +396,35 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 	char tmp_str[400];
 	int n = 0;
 
+	glDisable( GL_DEPTH_TEST );
+
 #ifndef OSX
 #ifdef SDLGL
 	if (setup.hud_view_video == 1) {
-		draw_surface_f3(esContext, -1.4, -1.0, 1.4, 1.0, -0.001, videodev_loop());
+		draw_surface_f3(esContext, -1.4, -1.0, 1.4, 1.0, -2.0, 1.0, videodev_loop());
 	}
 #endif
 #endif
-#ifdef SDLGL
 
+#ifdef SDLGL
 	if (type == 0 && setup.hud_view_video == 1) {
 	} else {
 		if (setup.hud_view_map == 1) {
 			if (setup.hud_view_video == 1) {
-				display_map(esContext, lat, lon, zoom, 3, 1, 0.5, 0.3, 0.3, 0.5);
+				display_map(esContext, lat, lon, zoom, 3, 1, 0.5, 0.05, 0.05, 0.5);
 			} else {
 				display_map(esContext, lat, lon, zoom, 3, 1, 1.0, 0.1, 0.1, 0.3);
 			}
 		} else if (setup.hud_view_map == 2) {
 			if (setup.hud_view_video == 1) {
-				display_map(esContext, lat, lon, zoom, 3, 0, 0.3, 0.3, 0.3, 0.3);
+				display_map(esContext, lat, lon, zoom, 3, 0, 0.0, 0.35, 0.35, 0.3);
 			} else {
 				display_map(esContext, lat, lon, zoom, 3, 0, 0.0, 0.7, 0.7, 0.7);
 			}
 		}
 	}
 #endif
-	glDisable( GL_DEPTH_TEST );
+
 
 	// Horizont / Background
 #ifdef SDLGL

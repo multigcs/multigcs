@@ -20,7 +20,7 @@
 static int create_tcp_socket () {
 	int sock;
 	if((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0){
-		fprintf(stderr, "Can't create TCP socket");
+		printf("Can't create TCP socket");
 		return -1;
 	}
 	return sock;
@@ -36,7 +36,7 @@ static char *get_ip (char *host) {
 		return NULL;
 	}
 	if(inet_ntop(AF_INET, (void *)hent->h_addr_list[0], ip, iplen) == NULL) {
-		fprintf(stderr, "Can't resolve host");
+		printf("Can't resolve host");
 		return NULL;
 	}
 	return ip;
@@ -49,7 +49,6 @@ char *build_get_query (char *host, char *page) {
            
 	if(getpage[0] == '/'){
 		getpage = getpage + 1;
-		fprintf(stderr,"Removing leading \"/\", converting %s to %s\n", page, getpage);
 	}
 	query = (char *)malloc(strlen(host)+strlen(getpage)+strlen(USERAGENT)+strlen(tpl)-5);
 	sprintf(query, tpl, getpage, host, USERAGENT);
@@ -67,8 +66,6 @@ int htmlget (char *url, char *file) {
 	char page[1024];
 	char page2[1024];
 
-	printf("htmlget: %s -> %s\n", url, file);
-
 	sscanf(url, "http://%[a-zA-Z0-9-_.]/%s", host, page2);
 	sprintf(page, "/%s", page2);
 
@@ -81,35 +78,33 @@ int htmlget (char *url, char *file) {
 		close(sock);
 		return -1;
 	}
-	fprintf(stderr, "IP is %s\n", ip);
 	remote = (struct sockaddr_in *)malloc(sizeof(struct sockaddr_in *));
 	remote->sin_family = AF_INET;
 	tmpres = inet_pton(AF_INET, ip, (void *)(&(remote->sin_addr.s_addr)));
 
 	if( tmpres < 0)  {
-		fprintf(stderr, "Can't set remote->sin_addr.s_addr");
+		printf("Can't set remote->sin_addr.s_addr");
 		close(sock);
 		return -1;
 	} else if (tmpres == 0) {
-		fprintf(stderr, "%s is not a valid IP address\n", ip);
+		printf("%s is not a valid IP address\n", ip);
 		close(sock);
 		return -1;
 	}
 	remote->sin_port = htons(80);
 
 	if (connect(sock, (struct sockaddr *)remote, sizeof(struct sockaddr)) < 0){
-		fprintf(stderr, "Could not connect");
+		printf("Could not connect");
 		close(sock);
 		return -1;
 	}
 	get = build_get_query(host, page);
-	fprintf(stderr, "Query is:\n<<START>>\n%s<<END>>\n", get);
 
 	int sent = 0;
 	while(sent < strlen(get)) {
 		tmpres = send(sock, get+sent, strlen(get)-sent, 0);
 		if(tmpres == -1) {
-			fprintf(stderr, "Can't send query");
+			printf("Can't send query");
 			close(sock);
 			return -1;
 		}
@@ -119,7 +114,7 @@ int htmlget (char *url, char *file) {
         FILE *fd = NULL;
         fd = fopen(file, "w");
 	if (fd == NULL) {
-		fprintf(stderr, "Error open file to write: %s\n", file);
+		printf("Error open file to write: %s\n", file);
 	}
 
 	memset(buf, 0, sizeof(buf));

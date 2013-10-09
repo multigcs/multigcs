@@ -36,7 +36,6 @@ void esMatrixMultiply(ESMatrix *result, ESMatrix *srcA, ESMatrix *srcB);
 int loadPNG(const char *filename);
 int16_t get_altitude (float lat, float lon);
 void draw_image_uncache (char *file);
-void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, SDL_Surface *screen);
 void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file, float lat1, float lon1, float lat2, float lon2, float alpha0, float alpha1, float alpha2, float grid);
 void draw_line_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 void draw_line_f (ESContext *esContext, float x1, float y1, float x2, float y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
@@ -82,5 +81,6 @@ void draw_to_buffer (void);
 void draw_to_screen (void);
 uint8_t draw_target (void);
 void draw_buffer_to_screen (float x1, float y1, float x2, float y2, float z, float alpha);
+void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, float alpha, SDL_Surface *screen);
 
 #endif

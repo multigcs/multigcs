@@ -275,7 +275,7 @@ void object3d_load (Object3d *o3d, char *filename) {
 void object3d_load_data (Object3d *o3d, char *filename) {
 }
 
-void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, SDL_Surface *screen) {
+void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, float alpha, SDL_Surface *screen) {
 }
 
 uint8_t draw_target (void) {

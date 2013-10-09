@@ -1,13 +1,6 @@
 
 #include <all.h>
 
-// V4L
-#ifndef OSX
-#ifdef SDLGL
-void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, SDL_Surface *screen);
-#endif
-#endif
-
 Model ModelData;
 char teletypes[16][16] = {
 	"MULTIWII_21",

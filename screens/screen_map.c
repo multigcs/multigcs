@@ -395,7 +395,7 @@ void get_maps (uint8_t mode) {
 						sprintf(tile_name, "%s/MAPS/google_%i_%i_%i.png", get_datadirectory(), zoom, tile_x + x_n, tile_y + y_n);
 						if (file_exists(tile_name) == 0) {
 							sprintf(status_txt, "getting map-tile: %i_%i_%i.png (%i/%i)", zoom, tile_x + x_n, tile_y + y_n, tiles_num + 1, tiles_need);
-							printf("map: %s\n", status_txt);
+							sys_message(status_txt);
 							/* Google-Maps */
 							google_tile_long1 = tilex2long(tile_x + x_n, zoom);
 							google_tile_long2 = tilex2long(tile_x + x_n + 1, zoom);
@@ -416,7 +416,6 @@ void get_maps (uint8_t mode) {
 							if (file_exists(tile_name) == 0) {
 								sprintf(status_txt, "getting map-tile: %s", tile_name);
 								sys_message(status_txt);
-								printf("map: %s\n", status_txt);
 								if (strcmp(mapnames[map_type][MAP_TYPE], "ZYX") == 0) {
 									sprintf(tile_url, mapnames[map_type][MAP_URL], zoom, tile_y + y_n, tile_x + x_n);
 								} else if (strcmp(mapnames[map_type][MAP_TYPE], "ZXY") == 0) {
@@ -1630,7 +1629,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	uint8_t tiles_y = (setup.screen_h + 255) / 256;
 	uint8_t tiles_num = 0;
 	int16_t n = 0;
-
 #ifdef ANDROID
 	if (draw_target() == 0) {
 		draw_to_buffer();
@@ -1638,11 +1636,9 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		draw_to_screen();
 	}
 #endif
-
 	if (setup.view_mode == VIEW_MODE_MAP) {
 		reset_buttons();
 	}
-
 #ifdef SDLGL
 	if (_map_view == 1) {
 		glMatrixMode( GL_PROJECTION );
@@ -1662,7 +1658,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 #else
 		glOrthof(-1.0 * aspect, 1.0 * aspect, -1.0, 1.0, -4.5, 4.5);
 #endif
-
 		glMatrixMode( GL_MODELVIEW );
 	}
 #else
@@ -1670,7 +1665,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		_map_view = 0;
 	}
 #endif
-
 	if (center_map == 1 || _map_view == 3 || _map_view == 4 || _map_view == 5) {
 		draw_xy(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset), lat, lon, zoom, &offset_x1, &offset_y1);
 		if (offset_x1 < -0.8) {
@@ -1697,17 +1691,14 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			POIs[n].p_long = 0.0;
 			POIs[n].type = 0;
 		}
-
 		strcpy(POIs[0].name, "Startpukt 1");
 		POIs[0].p_lat = 50.54875565;
 		POIs[0].p_long = 9.67414856;
 		POIs[0].type = 0;
-
 		strcpy(POIs[1].name, "Startpukt 2");
 		POIs[1].p_lat = 50.43736267;
 		POIs[1].p_long = 9.20448303;
 		POIs[1].type = 1;
-
 		mapthread_running = 1;
 		printf("map: init thread (get_maps1)\n");
 #ifdef SDL2
@@ -1718,7 +1709,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		if ( sdl_thread_get_maps1 == NULL ) {
 			fprintf(stderr, "map: Unable to create thread_get_maps1: %s\n", SDL_GetError());
 		}
-
 		printf("map: init thread (get_maps2)\n");
 #ifdef SDL2
 		sdl_thread_get_maps2 = SDL_CreateThread(thread_get_maps2, NULL, NULL);
@@ -1729,7 +1719,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			fprintf(stderr, "map: Unable to create thread_get_maps2: %s\n", SDL_GetError());
 		}
 	}
-
 	if (map_rotate == 1) {
 		roty += 1.3;
 		if (roty >= 360.0) {
@@ -1742,7 +1731,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	} else {
 		roty = 0.0;
 	}
-
 	// rotate map
 #ifndef SDLGL
 	esMatrixLoadIdentity(&modelview);
@@ -1809,26 +1797,24 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		glTranslatef( 0.0, 0.0, 2.0 );
 	}
 #endif
-
 	// move map offset
 	if (_map_view != 1 && _map_view != 3 && _map_view != 4 && _map_view != 5) {
 		esTranslate( &modelview, -offset_x1, offset_y1, 0.0 );
 	}
-
 #ifndef SDLGL
 	esMatrixMultiply( &userData->mvpMatrix, &modelview, &userData->perspective );
 	esMatrixMultiply( &userData->mvpMatrix2, &modelview, &userData->perspective );
 #endif
-
 	// draw Sky in 3D-Mode
-	if (_map_view == 3 || _map_view == 5) {
-		draw_box_f3c2(esContext, -3.0, -3.0, -1.0, 3.0, -3.0, 3.0, 0x01, 0x8e, 0xea, 255, 0x01, 0x8e, 0xea, 255);
-		draw_box_f3c2(esContext, -3.0, 3.0, -1.0, 3.0, 3.0, 3.0, 0x01, 0x8e, 0xea, 255, 0x01, 0x8e, 0xea, 255);
-		draw_box_f3c2b(esContext, -3.0, -3.0, -1.0, -3.0, 3.0, 3.0, 0x01, 0x8e, 0xea, 255, 0x01, 0x8e, 0xea, 255);
-		draw_box_f3c2b(esContext, 3.0, -3.0, -1.0, 3.0, 3.0, 3.0, 0x01, 0x8e, 0xea, 255, 0x01, 0x8e, 0xea, 255);
-		draw_box_f3(esContext, -3.0, -3.0, 3.0, 3.0, 3.0, 3.0, 0x01, 0x8e, 0xea, 255);
+	if (setup.hud_view_video == 0) {
+		if (_map_view == 3 || _map_view == 5) {
+			draw_box_f3c2(esContext, -3.0, -3.0, -1.0, 3.0, -3.0, 3.0, 0x01, 0x8e, 0xea, 255, 0x01, 0x8e, 0xea, 255);
+			draw_box_f3c2(esContext, -3.0, 3.0, -1.0, 3.0, 3.0, 3.0, 0x01, 0x8e, 0xea, 255, 0x01, 0x8e, 0xea, 255);
+			draw_box_f3c2b(esContext, -3.0, -3.0, -1.0, -3.0, 3.0, 3.0, 0x01, 0x8e, 0xea, 255, 0x01, 0x8e, 0xea, 255);
+			draw_box_f3c2b(esContext, 3.0, -3.0, -1.0, 3.0, 3.0, 3.0, 0x01, 0x8e, 0xea, 255, 0x01, 0x8e, 0xea, 255);
+			draw_box_f3(esContext, -3.0, -3.0, 3.0, 3.0, 3.0, 3.0, 0x01, 0x8e, 0xea, 255);
+		}
 	}
-
 	// Map-Scale Test
 	if (zoom == 19) {
 		zoom = 18;
@@ -1836,7 +1822,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 //	} else {
 //		zoom = zoom;
 	}
-
 	// draw Titles
 	if (zoom <= 18 && _map_view != 4) {
 		for (y_n = -MAP_OVERLAY; y_n < tiles_y + MAP_OVERLAY; y_n++) {
@@ -1879,9 +1864,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			}
 		}
 	}
-
-
-
 #ifdef SDLGL
 	if (nav_map == 1) {
 		glMatrixMode(GL_MODELVIEW);
@@ -1949,7 +1931,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 	}
 #endif
-
 	// drawing POI's, NOTAM's and Waypoint's
 	if (map_show_notam == 1) {
 		draw_notam(esContext, lat, lon, zoom);
@@ -1964,17 +1945,13 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			}
 		}
 	}
-
 	// Mark Tracker-Position
 	draw_tracker(esContext, tracker_lat, tracker_long, tracker_alt, tracker_pitch_dir, tracker_pan_dir, lat, lon, zoom);
-
-
 	// drawing Waypoint-Route
 	float last_lat = ModelData.p_lat;
 	float last_lon = ModelData.p_long;
 	float last_alt = (ModelData.p_alt - ModelData.alt_offset);
 	int flag = 0;
-
 	if (map_show_wp == 1) {
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
 			if (WayPoints[n].p_lat != 0.0) {
@@ -2019,7 +1996,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			draw_quad(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset), ModelData.roll, ModelData.pitch, ModelData.yaw, lat, lon, zoom);
 		}
 	}
-
 #ifdef SDLGL
 	// Camview - Target-Marking
 	float nx2 = 0.0;
@@ -2067,7 +2043,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 	}
 #endif
-
 	// rotate map back
 #ifndef SDLGL
 	if (_map_view == 1) {
@@ -2088,23 +2063,18 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		esTranslate( &userData->perspective, 0.0, 0.0, -0.5 );
 		esTranslate( &userData->perspective, 0.0, 0.0, 2.0 );
 	}
-
 	esMatrixLoadIdentity(&modelview);
 	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
-
 	// move map offset back
 	if (_map_view != 1 && _map_view != 3 && _map_view != 4 && _map_view != 5) {
 		esTranslate( &modelview, offset_x1, -offset_y1, 0.0 );
 	}
-
 #else
 	glPopMatrix();
 	glMatrixMode( GL_MODELVIEW );
 #endif
-
 	glDisable( GL_DEPTH_TEST );
-
 	// Scale-Info
 	float scale = 100.0;
 	float S = 63727982 * cos((lat * DEG2RAD)) / pow(2, (zoom + 8));
@@ -2118,9 +2088,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	draw_rect(esContext, 10, esContext->height - 50, (scale / S), 5, 0, 0, 0, 255);
 	sprintf(tmp_str, "%0.1fkm (Z:%i)", scale / 1000.0, zoom);
 	draw_text(esContext, 10, esContext->height - 40, 8, 8, FONT_BLACK_BG, tmp_str);
-
 	if (_map_view != 3 && _map_view != 4 && _map_view != 5 && setup.view_mode == VIEW_MODE_MAP) {
-
 #ifndef ANDROID
 #ifdef SDLGL
 		if (draw_target() == 0) {
@@ -2164,7 +2132,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		draw_box_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 		draw_rect_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
 		draw_text_button(esContext, "change_maptype", VIEW_MODE_MAP, mapnames[map_type][MAP_NAME], FONT_WHITE, -1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, change_maptype, -1);
-
 		if (omap_type_select == 1) {
 			uint8_t ny2 = ny;
 			uint8_t nn = 0;
@@ -2178,7 +2145,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		draw_box_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 		draw_rect_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
 		draw_text_button(esContext, "change_omaptype", VIEW_MODE_MAP, omapnames[omap_type][MAP_NAME], FONT_WHITE, -1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, change_omaptype, -1);
-
 		draw_box_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 		draw_rect_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
 		draw_text_button(esContext, "map_zoom+", VIEW_MODE_MAP, "[+]", FONT_WHITE, -1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_zoom, +1.0);
@@ -2209,7 +2175,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		} else {
 			draw_text_button(esContext, "map_dir", VIEW_MODE_MAP, "NORTH", FONT_WHITE, -1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_dir_change, 0.0);
 		}
-
 		draw_box_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 		draw_rect_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
 		if (map_view == 1) {
@@ -2217,7 +2182,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		} else {
 			draw_text_button(esContext, "map_3d", VIEW_MODE_MAP, "2D", FONT_WHITE, -1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_view_change, 0.0);
 		}
-
 		if (map_view == 1) {
 			draw_box_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 			draw_rect_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
@@ -2248,7 +2212,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			ny++;
 			ny++;
 		}
-
 		draw_box_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 		draw_rect_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
 		if (ModelData.gpsfix > 0) {
@@ -2262,7 +2225,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			sprintf(tmp_str, "Sat: %i", ModelData.numSat);
 			draw_text_button(esContext, "map_sats", VIEW_MODE_MAP, tmp_str, FONT_WHITE, -1.3, -0.8 + ny * 0.12 + 0.03, 0.003, 0.04, ALIGN_CENTER, ALIGN_CENTER, map_null, 0.0);
 		}
-
 		ny = 0;
 		ny++;
 		draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
@@ -2291,7 +2253,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			ny++;
 			ny++;
 		}
-
 //		ny++;
 		draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 		draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
@@ -2300,7 +2261,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		} else {
 			draw_text_button(esContext, "map_show_wp", VIEW_MODE_MAP, "WP", FONT_WHITE, 1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_wp, 0.0);
 		}
-
 		draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 		draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
 		if (map_show_notam == 1) {
@@ -2308,7 +2268,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		} else {
 			draw_text_button(esContext, "map_show_notam", VIEW_MODE_MAP, "NOTAM", FONT_WHITE, 1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_notam, 0.0);
 		}
-
 		draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 		draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
 		if (map_show_poi == 1) {
@@ -2316,7 +2275,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		} else {
 			draw_text_button(esContext, "map_show_poi", VIEW_MODE_MAP, "POI", FONT_WHITE, 1.3, -0.8 + ny++ * 0.12, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_poi, 0.0);
 		}
-
 #ifndef RPI_NO_X
 		draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 		draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
@@ -2328,7 +2286,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 #else
 		ny++;
 #endif
-
 //		map_view = 0;
 	}
 	glEnable( GL_DEPTH_TEST );

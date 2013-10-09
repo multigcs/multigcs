@@ -775,7 +775,7 @@ void draw_triaFilled_f3 (ESContext *esContext, float x1, float y1, float z1, flo
 	glEnd();
 }
 
-void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, SDL_Surface *screen) {
+void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, float alpha, SDL_Surface *screen) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -784,7 +784,7 @@ void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float 
 	if (screen == NULL) {
 		return;
 	}
-	GLuint texture;			// This is a handle to our texture object
+	GLuint texture;
 	GLenum texture_format;
 	GLint  nOfColors;
         nOfColors = screen->format->BytesPerPixel;
@@ -804,16 +804,15 @@ void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float 
                 printf("warning: the image is not truecolor..  this will probably break\n");
 		return;
         }
-	glGenTextures( 1, &texture );
-	glBindTexture( GL_TEXTURE_2D, texture );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-	glTexImage2D( GL_TEXTURE_2D, 0, nOfColors, screen->w, screen->h, 0, texture_format, GL_UNSIGNED_BYTE, screen->pixels );
-
-	glColor4f(1.0, 1.0, 1.0, 1.0);
-	glEnable( GL_TEXTURE_2D );
-	glBindTexture( GL_TEXTURE_2D, texture );
-	glBegin( GL_QUADS );
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, nOfColors, screen->w, screen->h, 0, texture_format, GL_UNSIGNED_BYTE, screen->pixels);
+	glColor4f(1.0, 1.0, 1.0, alpha);
+	glEnable(GL_TEXTURE_2D);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glBegin(GL_QUADS);
 		glTexCoord2i( 0, 0 );
 		glVertex3f(x1, y1, -2.0 + z);
 		glTexCoord2i( 1, 0 );
@@ -823,9 +822,8 @@ void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float 
 		glTexCoord2i( 0, 1 );
 		glVertex3f(x1, y2, -2.0 + z);
 	glEnd();
-	glDisable( GL_TEXTURE_2D );
-
-	glDeleteTextures( 1, &texture );
+	glDisable(GL_TEXTURE_2D);
+	glDeleteTextures(1, &texture);
 }
 
 void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, char *file) {
