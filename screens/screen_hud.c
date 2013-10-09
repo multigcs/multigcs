@@ -395,38 +395,32 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 #endif
 	char tmp_str[400];
 	int n = 0;
-
-	glDisable( GL_DEPTH_TEST );
-
 #ifndef OSX
 #ifdef SDLGL
+	glDisable(GL_DEPTH_TEST);
 	if (setup.hud_view_video == 1) {
-		draw_surface_f3(esContext, -1.4, -1.0, 1.4, 1.0, -2.0, 1.0, videodev_loop());
+		draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, videodev_loop());
 	}
 #endif
 #endif
 
 #ifdef SDLGL
-	if (type == 0 && setup.hud_view_video == 1) {
-	} else {
-		if (setup.hud_view_map == 1) {
-			if (setup.hud_view_video == 1) {
-				display_map(esContext, lat, lon, zoom, 3, 1, 0.5, 0.05, 0.05, 0.5);
-			} else {
-				display_map(esContext, lat, lon, zoom, 3, 1, 1.0, 0.1, 0.1, 0.3);
-			}
-		} else if (setup.hud_view_map == 2) {
-			if (setup.hud_view_video == 1) {
-				display_map(esContext, lat, lon, zoom, 3, 0, 0.0, 0.35, 0.35, 0.3);
-			} else {
-				display_map(esContext, lat, lon, zoom, 3, 0, 0.0, 0.7, 0.7, 0.7);
-			}
+	if (setup.hud_view_map == 1) {
+		if (setup.hud_view_video == 1) {
+			display_map(esContext, lat, lon, zoom, 3, 1, 0.5, 0.05, 0.05, 0.5);
+		} else {
+			display_map(esContext, lat, lon, zoom, 3, 1, 1.0, 0.1, 0.1, 0.3);
+		}
+	} else if (setup.hud_view_map == 2) {
+		if (setup.hud_view_video == 1) {
+			display_map(esContext, lat, lon, zoom, 3, 0, 0.0, 0.35, 0.35, 0.3);
+		} else {
+			display_map(esContext, lat, lon, zoom, 3, 0, 0.0, 0.7, 0.7, 0.7);
 		}
 	}
 #endif
 
-
-	// Horizont / Background
+	// Background
 #ifdef SDLGL
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
@@ -441,7 +435,6 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
-
 	if (setup.hud_view_map == 0 && setup.hud_view_video == 0) {
 		if (setup.contrast == 1) {
 			draw_box_f3(esContext, -2.5, -2.5, 0.001, 2.5, 0.0, 0.001, 127, 127, 127, 255);
@@ -450,22 +443,20 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 #ifdef SDLGL
 			draw_box_f3c2(esContext, -2.5, -2.5, 0.001, 2.5, 0.0, 0.001, 0x01, 0x8e, 0xea, 255, 0x01, 0x8e, 0xea, 255); // blue
 			draw_box_f3c2(esContext, -2.5, 0.0, 0.001, 2.5, 2.5, 0.001, 0xb1, 0x56, 0x1f, 255, 0xb1, 0x56, 0x1f, 255);  // brown
-			draw_line_f3(esContext, -2.5, 0.0, 0.001, 2.5, 0.0, 0.001, 255, 255, 255, 255);
 #else
 			char tmp_str[128];
 			sprintf(tmp_str, "%s/textures/blue.png", BASE_DIR);
 			draw_image_f3(esContext, -2.5, -2.5, 2.5, 0.0, -0.001, tmp_str); // blue
 			sprintf(tmp_str, "%s/textures/brown.png", BASE_DIR);
 			draw_image_f3(esContext, -2.5, 0.0, 2.5, 2.5, -0.001, tmp_str); // brown
-			draw_line_f3(esContext, -2.5, 0.0, 0.001, 2.5, 0.0, 0.001, 255, 255, 255, 255);
 #endif
 		}
+		draw_line_f3(esContext, -2.5, 0.0, 0.001, 2.5, 0.0, 0.001, 255, 255, 255, 255);
 	}
 
 #ifdef SDLGL
 	glPopMatrix();
 #endif
-
 
 if (type == 1) {
 	// Pitch & Roll-Winkel
@@ -676,18 +667,16 @@ if (type == 1) {
 	glPopMatrix();
 #endif
 
-} else {
-	draw_box_f(esContext, -2.0, -0.01, 2.0, 0.01, 255, 255, 255, 255);
-	if (setup.contrast == 1) {
-		draw_box_f3(esContext, -0.01, -0.2, 0.001, 0.01, 0.2, 0.001, 0, 0, 0, 255);
-		draw_box_f3(esContext, -0.2, -0.01, 0.001, 0.2, 0.01, 0.001, 0, 0, 0, 255);
 	} else {
-		draw_box_f3(esContext, -0.01, -0.2, 0.001, 0.01, 0.2, 0.001, 0xff, 0x33, 0xfc, 255); // pink
-		draw_box_f3(esContext, -0.2, -0.01, 0.001, 0.2, 0.01, 0.001, 0xff, 0x33, 0xfc, 255); // pink
+		draw_box_f(esContext, -2.0, -0.01, 2.0, 0.01, 255, 255, 255, 255);
+		if (setup.contrast == 1) {
+			draw_box_f3(esContext, -0.01, -0.2, 0.001, 0.01, 0.2, 0.001, 0, 0, 0, 255);
+			draw_box_f3(esContext, -0.2, -0.01, 0.001, 0.2, 0.01, 0.001, 0, 0, 0, 255);
+		} else {
+			draw_box_f3(esContext, -0.01, -0.2, 0.001, 0.01, 0.2, 0.001, 0xff, 0x33, 0xfc, 255); // pink
+			draw_box_f3(esContext, -0.2, -0.01, 0.001, 0.2, 0.01, 0.001, 0xff, 0x33, 0xfc, 255); // pink
+		}
 	}
-}
-
-
 }
 
 
@@ -696,13 +685,13 @@ void screen_hud (ESContext *esContext) {
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
 #endif
-#ifdef ANDROID
-	if (draw_target() == 0) {
+	if (draw_target() == 0 && setup.view_mode == VIEW_MODE_HUD) {
 		draw_to_buffer();
 		display_map(esContext, lat, lon, zoom, 0, 1, 1.0, 0.0, 0.0, 0.0);
 		draw_to_screen();
+		reset_buttons();
 	}
-#endif
+	glDisable(GL_DEPTH_TEST);
 	char tmp_str[400];
 	char tmp_str2[400];
 	int n = 0;
@@ -724,10 +713,8 @@ void screen_hud (ESContext *esContext) {
 	if (angle_home > 180.0) {
 		angle_home = angle_home - 360.0;
 	}
-
-
 	hud_draw_horizon(esContext, 1);
-
+	glDisable(GL_DEPTH_TEST);
 
 	// Rahmen
 #ifndef SDLGL
@@ -735,7 +722,6 @@ void screen_hud (ESContext *esContext) {
 	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
-
 	if (setup.hud_view_screen == 0) {
 		draw_image(esContext, 0, 0, esContext->width, esContext->height, TEXTURE_HUD_FRAME);
 	}
@@ -1289,36 +1275,18 @@ void screen_hud (ESContext *esContext) {
 #else
 	draw_text_button(esContext, "view_map_bw", VIEW_MODE_HUD, "BW", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_bw, 0);
 #endif
-
-#ifndef ANDROID
 #ifdef SDLGL
 	if (setup.hud_view_screen != 2 && draw_target() == 0) {
-		draw_to_buffer();
-		display_map(esContext, lat, lon, zoom, 0, 1, 1.0, 0.0, 0.0, 0.0);
-		draw_to_screen();
 		draw_buffer_to_screen(0.9, 0.4, 1.4, 0.85, 0.0, 1.0);
 		draw_rect_f3(esContext, 0.9, 0.4, 0.002, 1.4, 0.85, 0.002, 0, 0, 0, 255);
 		draw_rect_f3(esContext, 0.9 - 0.005, 0.4 - 0.005, 0.002, 1.4 + 0.005, 0.85 + 0.005, 0.002, 255, 255, 255, 255);
 		set_button("goto_map", setup.view_mode, 0.9, 0.4, 1.4, 0.85, hud_goto_screen, (float)VIEW_MODE_MAP, 0);
 	}
 #endif
-#else
-	if (setup.hud_view_screen != 2 && draw_target() == 0) {
-		draw_buffer_to_screen(0.9, 0.4, 1.4, 0.85, 0.0, 1.0);
-		draw_rect_f3(esContext, 0.9, 0.4, 0.002, 1.4, 0.85, 0.002, 0, 0, 0, 255);
-		draw_rect_f3(esContext, 0.9 - 0.005, 0.4 - 0.005, 0.002, 1.4 + 0.005, 0.85 + 0.005, 0.002, 255, 255, 255, 255);
-		set_button("goto_map", setup.view_mode, 0.9, 0.4, 1.4, 0.85, hud_goto_screen, (float)VIEW_MODE_MAP, 0);
-	}
-#endif
-
 #ifdef SDLGL
 	glPopMatrix();
 #endif
-
-	glEnable( GL_DEPTH_TEST );
-
-	//printf("hud#12end\n");
-
+	glEnable(GL_DEPTH_TEST);
 }
 
 

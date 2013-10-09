@@ -1629,14 +1629,10 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	uint8_t tiles_y = (setup.screen_h + 255) / 256;
 	uint8_t tiles_num = 0;
 	int16_t n = 0;
-#ifdef ANDROID
-	if (draw_target() == 0) {
+	if (draw_target() == 0 && setup.view_mode == VIEW_MODE_MAP) {
 		draw_to_buffer();
 		hud_draw_horizon(esContext, 0);
 		draw_to_screen();
-	}
-#endif
-	if (setup.view_mode == setup.view_mode) {
 		reset_buttons();
 	}
 #ifdef SDLGL
@@ -2088,24 +2084,8 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	draw_rect(esContext, 10, esContext->height - 50, (scale / S), 5, 0, 0, 0, 255);
 	sprintf(tmp_str, "%0.1fkm (Z:%i)", scale / 1000.0, zoom);
 	draw_text(esContext, 10, esContext->height - 40, 8, 8, FONT_BLACK_BG, tmp_str);
-	if (_map_view != 3 && _map_view != 4 && _map_view != 5 && setup.view_mode == setup.view_mode) {
-#ifndef ANDROID
+	if (_map_view != 3 && _map_view != 4 && _map_view != 5 && setup.view_mode == VIEW_MODE_MAP) {
 #ifdef SDLGL
-		if (draw_target() == 0) {
-			draw_to_buffer();
-			hud_draw_horizon(esContext, 0);
-			draw_to_screen();
-			draw_buffer_to_screen(0.9, 0.4, 1.4, 0.85, 0.0, 1.0);
-			draw_rect_f3(esContext, 0.9, 0.4, 0.002, 1.4, 0.85, 0.002, 0, 0, 0, 255);
-			draw_rect_f3(esContext, 0.9 - 0.005, 0.4 - 0.005, 0.002, 1.4 + 0.005, 0.85 + 0.005, 0.002, 255, 255, 255, 255);
-			set_button("goto_hud", setup.view_mode, 0.9, 0.4, 1.4, 0.85, map_goto_screen, (float)VIEW_MODE_HUD, 0);
-			sprintf(tmp_str, "Alt: %0.0f", ModelData.p_alt);
-			draw_text_button(esContext, "map_alt", setup.view_mode, tmp_str, FONT_GREEN, 0.92, 0.75, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
-			sprintf(tmp_str, "Speed: %0.0f", ModelData.speed);
-			draw_text_button(esContext, "map_speed", setup.view_mode, tmp_str, FONT_GREEN, 0.92, 0.8, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
-		}
-#endif
-#else
 		if (draw_target() == 0) {
 			draw_buffer_to_screen(0.9, 0.4, 1.4, 0.85, 0.0, 1.0);
 			draw_rect_f3(esContext, 0.9, 0.4, 0.002, 1.4, 0.85, 0.002, 0, 0, 0, 255);
@@ -2286,7 +2266,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 #else
 		ny++;
 #endif
-//		map_view = 0;
 	}
 	glEnable( GL_DEPTH_TEST );
 #ifdef SDLGL
