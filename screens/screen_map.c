@@ -1629,13 +1629,13 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	uint8_t tiles_y = (setup.screen_h + 255) / 256;
 	uint8_t tiles_num = 0;
 	int16_t n = 0;
+#ifdef SDLGL
 	if (draw_target() == 0 && setup.view_mode == VIEW_MODE_MAP) {
 		draw_to_buffer();
 		hud_draw_horizon(esContext, 0);
 		draw_to_screen();
 		reset_buttons();
 	}
-#ifdef SDLGL
 	if (_map_view == 1) {
 		glMatrixMode( GL_PROJECTION );
 		glLoadIdentity();

@@ -31,7 +31,6 @@
 
 #ifndef ANDROID
 #include <tcl.h>
-#include <curl/curl.h>
 #endif
 
 #include <libxml/xmlmemory.h>

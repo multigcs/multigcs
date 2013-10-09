@@ -83,3 +83,11 @@ void Java_org_libsdl_app_ConnectBT_deviceList (JNIEnv* env, jclass cls, jstring 
 	return;
 }
 
+void Java_org_libsdl_app_SDLActivity_batterySetStatus (JNIEnv* env, jclass cls, jboolean present, jint level, jint health, jint plugged, jint status, jint temperature, jint voltage, jstring technology) {
+	const char *type = (*env)->GetStringUTFChars(env, technology, 0);
+	SDL_Log("BATTERY (%s): %0.2fV (%i%%)", type, (float)voltage / 1000.0, level);
+	if (ModelData.heartbeat == 0) {
+		ModelData.voltage = (float)voltage / 1000.0;
+	}
+}
+

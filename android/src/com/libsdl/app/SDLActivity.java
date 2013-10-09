@@ -12,11 +12,17 @@ import android.speech.tts.TextToSpeech;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.os.BatteryManager;
 import android.os.*;
 import android.util.Log;
 import android.graphics.*;
 import android.media.*;
 import android.hardware.*;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.app.Activity;
 
 import java.util.Locale;
 import java.util.Random;
@@ -101,19 +107,42 @@ public class SDLActivity extends Activity {
 
         mLayout = new AbsoluteLayout(this);
         mLayout.addView(mSurface);
-
         LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         LocationListener ll = new mylocationlistener();
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
-
+        getBatteryPercentage();
         setContentView(mLayout);
     }
 
+    private void getBatteryPercentage() {
+	BroadcastReceiver batteryLevelReceiver = new BroadcastReceiver() {
+          public void onReceive(Context context, Intent intent) {
+             context.unregisterReceiver(this);
+             int currentLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+             int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+             int level = -1;
+             if (currentLevel >= 0 && scale > 0) {
+                 level = (currentLevel * 100) / scale;
+             }
+             boolean present = intent.getExtras().getBoolean(BatteryManager.EXTRA_PRESENT);
+             int health = intent.getIntExtra(BatteryManager.EXTRA_HEALTH, 0);
+             int plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0);
+             int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, 0);
+             int temperature = intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0);
+             int voltage = intent.getIntExtra(BatteryManager.EXTRA_VOLTAGE, 0);
+             String technology = intent.getExtras().getString(BatteryManager.EXTRA_TECHNOLOGY);
+             batterySetStatus(present, level, health, plugged, status, temperature, voltage, technology);
+          }
+        };	
+        IntentFilter batteryLevelFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        registerReceiver(batteryLevelReceiver, batteryLevelFilter);
+    }
 
     // Events
     @Override
     protected void onPause() {
         Log.v("SDL", "onPause()");
+        mSurface.stopListeners();
         super.onPause();
         SDLActivity.handlePause();
     }
@@ -123,8 +152,8 @@ public class SDLActivity extends Activity {
         Log.v("SDL", "onResume()");
         super.onResume();
         SDLActivity.handleResume();
+        mSurface.initListeners();
     }
-
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -150,12 +179,10 @@ public class SDLActivity extends Activity {
             mTts.stop();
             mTts.shutdown();
         }
-
         super.onDestroy();
         Log.v("SDL", "onDestroy()");
         // Send a quit message to the application
         SDLActivity.nativeQuit();
-
         // Now wait for the SDL thread to quit
         if (mSDLThread != null) {
             try {
@@ -329,8 +356,6 @@ public class SDLActivity extends Activity {
         return null;
     }
 
-
-
     public static boolean SayText(String text) {
         SDLActivity.mTts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
         return true;
@@ -473,6 +498,9 @@ public class SDLActivity extends Activity {
             mAudioTrack = null;
         }
     }
+
+    public native void batterySetStatus(boolean present, int level, int health, int plugged, int status, int temperature, int voltage, String technology);
+
 }
 
 /**
@@ -517,7 +545,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 
         mSensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
 
-  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 	// sensor-fusion
         gyroOrientation[0] = 0.0f;
         gyroOrientation[1] = 0.0f;
@@ -529,13 +557,15 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
  
         initListeners();
         fuseTimer.scheduleAtFixedRate(new calculateFusedOrientationTask(), 1000, TIME_CONSTANT);
-  }
+      }
 
 
         // Some arbitrary defaults to avoid a potential division by zero
         mWidth = 1.0f;
         mHeight = 1.0f;
     }
+
+
 
     public Surface getNativeSurface() {
         return getHolder().getSurface();
@@ -701,8 +731,6 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 
 
 
-
-
     // sensor-fusion
     // http://www.thousand-thoughts.com/2012/03/android-sensor-fusion-tutorial/
 
@@ -744,7 +772,11 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 
 
     private Timer ttsTimer = new Timer();
-	
+
+
+    public void stopListeners(){
+        mSensorManager.unregisterListener(this);
+    }
 
     public void initListeners(){
         mSensorManager.registerListener(this,

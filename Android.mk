@@ -8,10 +8,9 @@ LOCAL_CFLAGS := -DANDROID -DBASE_DIR="\"$(BASE_DIR)\"" -DANDROID -DSDLGL -DSDL2 
 SDL_PATH := ../SDL2
 SDL_IMAGE_PATH := ../SDL2_image
 
-CURL_PATH := ../libprebuilt/libcurl
 LIBXML2_PATH := ../libxml2
 
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/$(SDL_PATH)/include $(LOCAL_PATH)/$(SDL_IMAGE_PATH) $(LOCAL_PATH)/$(CURL_PATH)/inc $(LOCAL_PATH)/$(LIBXML2_PATH)/include \
+LOCAL_C_INCLUDES := $(LOCAL_PATH)/$(SDL_PATH)/include $(LOCAL_PATH)/$(SDL_IMAGE_PATH) $(LOCAL_PATH)/$(LIBXML2_PATH)/include \
  $(LOCAL_PATH)/Common $(LOCAL_PATH)/screens $(LOCAL_PATH)/net $(LOCAL_PATH)/tcl $(LOCAL_PATH)/draw $(LOCAL_PATH)/mavlink $(LOCAL_PATH)/gps $(LOCAL_PATH)/mwi21 $(LOCAL_PATH)/simplebgc $(LOCAL_PATH)/brugi $(LOCAL_PATH)/jeti $(LOCAL_PATH)/openpilot $(LOCAL_PATH)/frsky $(LOCAL_PATH)/tracker $(LOCAL_PATH)/minizip
 
 LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \

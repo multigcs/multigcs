@@ -144,12 +144,15 @@ void screen_telemetry (ESContext *esContext) {
 	esMatrixLoadIdentity(&modelview);
 #endif
 
-
 	draw_title(esContext, "Telemetry");
 
 	draw_value_barmeter(esContext, -1.2, -0.8, -0.9, 0.0, "SPEED", "km/h", 0, 0.0, 200.0, 0.0, 0.0, ModelData.speed);
 	draw_value_barmeter(esContext, -0.7, -0.8, -0.4, 0.0, "ALT", "m", 0, -10.0, 999.0, 0.0, 0.0, ModelData.p_alt);
-	draw_value_barmeter(esContext, -0.2, -0.8, 0.1, 0.0, "VOLTS", "V", 0, 8.0, 14.0, 11.0, 10.0, ModelData.voltage_rx);
+	if (ModelData.heartbeat == 0 && ModelData.voltage < 5.0) {
+		draw_value_barmeter(esContext, -0.2, -0.8, 0.1, 0.0, "VOLTS", "V", 0, 2.0, 4.2, 3.6, 3.1, ModelData.voltage);
+	} else {
+		draw_value_barmeter(esContext, -0.2, -0.8, 0.1, 0.0, "VOLTS", "V", 0, 8.0, 14.0, 11.0, 10.0, ModelData.voltage);
+	}
 	draw_value_barmeter(esContext, 0.3, -0.8, 0.6, 0.0, "AMPS", "A", 0, 0.0, 100.0, 75.0, 50.0, ModelData.ampere);
 	draw_value_barmeter(esContext, 0.8, -0.8, 1.1, 0.0, "VOLTS(RX)", "V", 0, 8.0, 14.0, 11.0, 10.0, ModelData.voltage_rx);
 

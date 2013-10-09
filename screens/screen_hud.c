@@ -684,13 +684,14 @@ void screen_hud (ESContext *esContext) {
 	ESMatrix modelview;
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
-#endif
+#else
 	if (draw_target() == 0 && setup.view_mode == VIEW_MODE_HUD) {
 		draw_to_buffer();
 		display_map(esContext, lat, lon, zoom, 0, 1, 1.0, 0.0, 0.0, 0.0);
 		draw_to_screen();
 		reset_buttons();
 	}
+#endif
 	glDisable(GL_DEPTH_TEST);
 	char tmp_str[400];
 	char tmp_str2[400];
@@ -1046,8 +1047,6 @@ void screen_hud (ESContext *esContext) {
 				voltage_max += 1.2;
 			}
 		}
-
-	//printf("hud#9d\n");
 
 		sprintf(tmp_str, "%0.0fkm/h", ModelData.speed);
 		draw_circleMeter_f3(esContext, -1.05, -0.5, 0.001, 0.14, 0.0, 25.0, 50.0, 180.0, (ModelData.speed * 100.0 / 250.0), "Speed", tmp_str, 0);
