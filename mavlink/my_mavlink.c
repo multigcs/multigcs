@@ -1040,25 +1040,27 @@ static void mavlink_html_page (char *content, char *sub) {
 	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
 		if (MavLinkVars[n].name[0] != 0) {
 			strcpy(tmp_str, MavLinkVars[n].name);
-			for (n2 = 0; n2 < strlen(tmp_str) && n2 < 6; n2++) {
-				if (tmp_str[n2] == '_') {
-					break;
+			if (MavLinkVars[n].group[0] == 0) {
+				for (n2 = 0; n2 < strlen(tmp_str) && n2 < 6; n2++) {
+					if (tmp_str[n2] == '_') {
+						break;
+					}
 				}
+				strncpy(MavLinkVars[n].group, tmp_str, 17);
 			}
-			tmp_str[n2] = 0;
 			flag = 0;
 			for (n2 = 0; n2 < MAVLINK_PARAMETER_MAX; n2++) {
-				if (strcmp(mavlink_subs[n2], tmp_str) == 0) {
+				if (strcmp(mavlink_subs[n2], MavLinkVars[n].group) == 0) {
 					flag = 1;
 					break;
 				}
 			}
 			if (flag == 0) {
-				sprintf(tmp_str2, "<TR class=\"first\"><TD><A href=\"/mavlink.html?%s\">%s</A></TD></TR>", tmp_str, tmp_str);
+				sprintf(tmp_str2, "<TR class=\"first\"><TD><A href=\"/mavlink.html?%s\">%s</A></TD></TR>", MavLinkVars[n].group, tmp_str);
 				strcat(content, tmp_str2);
 				for (n2 = 0; n2 < MAVLINK_PARAMETER_MAX; n2++) {
 					if (mavlink_subs[n2][0] == 0) {
-						strcpy(mavlink_subs[n2], tmp_str);
+						strcpy(mavlink_subs[n2], MavLinkVars[n].group);
 						break;
 					}
 				}
@@ -1070,8 +1072,8 @@ static void mavlink_html_page (char *content, char *sub) {
 	strcat(content, "<TABLE width=\"100%\" border=\"0\">\n");
 	strcat(content, "<TR class=\"thead\"><TH>NAME</TH><TH>VALUE</TH><TH>DESCRIPTION</TH><TH>MIN</TH><TH>MAX</TH><TH>ONLOAD</TH></TR>\n");
 	int lc = 0;
-	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
-		if (MavLinkVars[n].name[0] != 0 && (sub[0] == 0 || strncmp(MavLinkVars[n].name, sub, strlen(sub)) == 0)) {
+	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) 
+		if (MavLinkVars[n].name[0] != 0 && (sub[0] == 0 || strncmp(MavLinkVars[n].name, sub, strlen(sub)) == 0) || strcmp(MavLinkVars[n].group, sub) == 0) {
 			lc = 1 - lc;
 			if (lc == 0) {
 				strcat(content, "<TR class=\"first\">");
