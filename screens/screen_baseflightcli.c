@@ -241,7 +241,7 @@ static uint8_t baseflightcli_null (char *name, float x, float y, int8_t button, 
 
 static uint8_t baseflightcli_xml_save (char *name, float x, float y, int8_t button, float data) {
         FILE *fr;
-        fr = fopen("/tmp/ParameterMetaData.xml", "w");
+        fr = fopen("/tmp/ParameterMetaData.xml", "wb");
 	if (fr != 0) {
 		fprintf(fr, "<?xml version=\"1.0\"?>\n");
 		fprintf(fr, "<Params>\n");

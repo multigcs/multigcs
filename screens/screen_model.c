@@ -110,7 +110,7 @@ static uint8_t model_save_xml (char *name, float x, float y, int8_t button, floa
 	sprintf(tmp_str, "mkdir -p %s/models", get_datadirectory());
 	system(tmp_str);
 	sprintf(tmp_str, "%s/models/%s", get_datadirectory(), name);
-        fr = fopen(tmp_str, "w");
+        fr = fopen(tmp_str, "wb");
 	if (fr != 0) {
 		fprintf(fr, "<rcflow>\n");
 		fprintf(fr, " <name>%s</name>\n", ModelData.name);

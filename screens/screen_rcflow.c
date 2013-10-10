@@ -691,7 +691,7 @@ void rcflow_undo_save (void) {
 	}
         FILE *fr;
 	sprintf(tmp_str, "%s/models/rcflow_undo0.bin", get_datadirectory());
-        fr = fopen(tmp_str, "w");
+        fr = fopen(tmp_str, "wb");
 	if (fr != 0) {
 		fwrite(&RcPlugin[0], sizeof(RcFlowPlugin) * MAX_PLUGINS, 1, fr);
 		fwrite(&RcLink[0], sizeof(RcFlowLink) * MAX_LINKS, 1, fr);
@@ -947,7 +947,7 @@ uint8_t rcflow_save_xml (char *name, float x, float y, int8_t button, float data
 	sprintf(tmp_str, "mkdir -p %s/models", get_datadirectory());
 	system(tmp_str);
 	sprintf(tmp_str, "%s/models/%s", get_datadirectory(), name);
-        fr = fopen(tmp_str, "w");
+        fr = fopen(tmp_str, "wb");
 	if (fr != 0) {
 		fprintf(fr, "<rcflow>\n");
 		fprintf(fr, " <name>%s</name>\n", setup_name);

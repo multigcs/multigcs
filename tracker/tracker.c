@@ -71,7 +71,7 @@ void tracker_setup_save (void) {
 	int n = 0;
 	char filename[1024];
 	sprintf(filename, "%s/tracker.cfg", get_datadirectory());
-        fr = fopen(filename, "w");
+        fr = fopen(filename, "wb");
 	if (fr != 0) {
 		fprintf(fr, "TYPE %i\n", trackertype);
 		for (n = 0; n < TRACKER_MAX; n++) {

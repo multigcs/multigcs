@@ -2669,7 +2669,7 @@ int data_write ( void )
     fileout = fopen ( fileout_name, "wb" );
   }
   else {
-    fileout = fopen ( fileout_name, "w" );
+    fileout = fopen ( fileout_name, "wb" );
   }
 
   if ( fileout == NULL ) {

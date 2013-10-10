@@ -402,7 +402,7 @@ void setup_save (void) {
 //	printf("** saving file\n");
 	char filename[1024];
 	sprintf(filename, "%s/setup.cfg", get_datadirectory());
-        fr = fopen(filename, "w");
+        fr = fopen(filename, "wb");
 	if (fr != 0) {
 	        fprintf(fr, "model_name		%s\n", ModelData.name);
 	        fprintf(fr, "view_mode		%i\n", setup.view_mode);
@@ -1940,8 +1940,10 @@ int main ( int argc, char *argv[] ) {
 #endif
 //	printf("DATE: %d.%d %d\n", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900); 
 
+#ifndef WINDOWS
 	sprintf(tmp_name, "%s/WMM2010.COF", BASE_DIR);
 	init_declination(tmp_name, strukt.tm_year + 1900, strukt.tm_mon + 1, strukt.tm_mday);
+#endif
 
 	uint16_t n = 0;
 	for (n = 0; n < MAX_TEXCACHE; n++) {

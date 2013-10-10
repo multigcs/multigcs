@@ -1,6 +1,7 @@
 *.o
 *.deb
 gcs
+gcs.exe
 scrennshots
 package
 *.bin
@@ -19,3 +20,4 @@ android/local.properties
 android/project.properties
 android/proguard-project.txt
 android/build.xml
+Windows

@@ -44,7 +44,7 @@ void logplay_export_kml (char *logfile, char *kmlfile, uint8_t type) {
 		FILE *log_fr = NULL;
 		log_fr = fopen(logfile, "r");
 		if (log_fr != 0) {
-		        fr = fopen(kmlfile, "w");
+		        fr = fopen(kmlfile, "wb");
 			if (fr != 0) {
 				fprintf(fr, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 //				fprintf(fr, "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
@@ -632,7 +632,7 @@ void LogSave (void) {
 		printf("logging: save to file: %s\n", file);
 		if (strlen(Logdata) > 200) {
 		        FILE *fr;
-		        fr = fopen(file, "w");
+		        fr = fopen(file, "wb");
 			if (fr != 0) {
 				fprintf(fr, "%s", Logdata);
 			        fclose(fr);

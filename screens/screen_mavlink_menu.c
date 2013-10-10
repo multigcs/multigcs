@@ -356,7 +356,7 @@ uint8_t mavlink_param_file_save (char *name, float x, float y, int8_t button, fl
 	FILE *fr;
 	int n = 0;
 	sprintf(filename, "%s/PARAMS/%s", get_datadirectory(), name);
-	if ((fr = fopen(filename, "w")) != 0) {
+	if ((fr = fopen(filename, "wb")) != 0) {
 		fprintf(fr, "# Onboard parameters\n");
 		fprintf(fr, "#\n");
 		fprintf(fr, "# MAV ID  COMPONENT ID  PARAM NAME  VALUE (FLOAT)\n");

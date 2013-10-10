@@ -209,7 +209,7 @@ void object3d_save_as_collada (Object3d *o3d, char *filename) {
 #ifndef WINDOWS
 	localtime_r(&liczba_sekund, &strukt); 
 #endif
-	fr2 = fopen(filename, "w");
+	fr2 = fopen(filename, "wb");
 	fprintf(fr2, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n");
 	fprintf(fr2, "<COLLADA xmlns=\"http://www.collada.org/2005/11/COLLADASchema\" version=\"1.4.1\">\n");
 

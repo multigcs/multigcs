@@ -111,7 +111,7 @@ int htmlget (char *url, char *file) {
 	}
 
         FILE *fd = NULL;
-        fd = fopen(file, "w");
+        fd = fopen(file, "wb");
 	if (fd == NULL) {
 		printf("Error open file to write: %s\n", file);
 	}
