@@ -203,6 +203,7 @@ void screen_overview (ESContext *esContext) {
 			x = 0;
 			y += 1;
 		}
+#ifndef WINDOWS
 #ifndef ANDROID
 		draw_to_buffer();
 		if (n == VIEW_MODE_HUD) {
@@ -260,6 +261,7 @@ void screen_overview (ESContext *esContext) {
 		sprintf(tmp_str, "%s", view_names[n]);
 		draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_WHITE, -1.422 + 0.35 + x * 0.71, -0.99 + y * 0.66 + 0.3, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)n);
 
+#endif
 #endif
 		reset_buttons();
 		x++;
@@ -384,6 +386,7 @@ void screen_system (ESContext *esContext) {
 		strcpy(dnsserver, "---.---.---.---");
 		strcpy(gateway, "---.---.---.---");
 
+#ifndef WINDOWS
 #ifndef ANDROID
 #ifdef OSX
 		if((cmd = popen("LANG=C ifconfig en0 | grep \"inet \" | sed \"s|[a-zA-Z:]||g\"", "r")) != NULL) {
@@ -427,6 +430,7 @@ void screen_system (ESContext *esContext) {
 			}
 		}
 		pclose(cmd);
+#endif
 #endif
 
 		last_time = now_time;
