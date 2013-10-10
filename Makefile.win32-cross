@@ -1,0 +1,117 @@
+
+## http://gnuwin32.sourceforge.net/packages.html ##
+## libpng3.dll tcl85.dll libxml2.dll SDL2_image.dll SDL2.dll zlib1.dll iconv.dll ##
+
+# libsdl
+#http://www.libsdl.org/projects/SDL_image/release/SDL2_image-devel-2.0.0-mingw.tar.gz
+#http://www.libsdl.org/release/SDL2-devel-2.0.0-mingw.tar.gz
+
+# libxml2 / iconv
+#ftp://ftp.zlatkovic.com/libxml/iconv-1.9.2.win32.zip
+#ftp://ftp.zlatkovic.com/libxml/libxml2-2.7.8.win32.zip
+
+# png/zlib
+#"http://downloads.sourceforge.net/project/gnuwin32/libpng/1.2.37/libpng-1.2.37-lib.zip?r=http%3A%2F%2Fgnuwin32.sourceforge.net%2Fpackages%2Flibpng.htm&ts=1381407328&use_mirror=surfnet"
+#"http://downloads.sourceforge.net/project/gnuwin32/zlib/1.2.3/zlib-1.2.3-lib.zip?r=http%3A%2F%2Fgnuwin32.sourceforge.net%2Fpackages%2Fzlib.htm&ts=1381407495&use_mirror=surfnet"
+
+# tcl85
+#http://prdownloads.sourceforge.net/tcl/tcl8515-src.zip
+#../configure --enable-gcc --host=i386-mingw32
+#make
+
+# mingw
+# apt-get install binutils-mingw-w64-i686 gcc-mingw-w64-i686 gcc-mingw32 mingw-w64-x86-64-dev mingw-w64-i686-dev mingw32-runtime
+
+
+## Windows-Desktop GL Version ##
+VERSION_NAME = sdl
+EXTRA_OBJECTS = draw/gl_draw.o
+BASE_DIR = /usr/share/multigcs
+COMP = i686-w64-mingw32-gcc
+
+
+INCDIR = 
+LIBS = 
+CFLAGS += -DSDLGL -DSDL2 -DWINDOWS -O3 -Wall -DBASE_DIR="\"$(BASE_DIR)\""
+#CFLAGS += -ggdb
+#CFLAGS +=  -pg
+
+INCDIR += -I/usr/i686-w64-mingw32/include -I/usr/i686-w64-mingw32/include/SDL2 -I/usr/i686-w64-mingw32/include/libpng12 -I/usr/i686-w64-mingw32/include/tcl
+LIBS += -Lc:/MinGW/lib/SDL2 -static-libgcc -lmingw32 -lopengl32 -lglu32 -lSDL2main -mwindows -lSDL2 -lSDL2_image -L/usr/i686-w64-mingw32/bin \
+-lm -lxml2 -ltcl85 -lpng
+
+
+## ldd gcs  | grep -v /opt | awk '{print $1}' | xargs -r -l dpkg -S  | cut -d":" -f1 | sort -u | tr  "\n" "," ##
+
+COMMONSRC=
+COMMONHRD=
+
+
+
+VERSION = 0.9-`date +%s`
+BASE_DIR = ShareMultiGCS
+
+
+INCDIR += -I./ -ICommon -Iscreens -Inet -Itcl -Idraw -Imavlink -Igps -Imwi21 -Isimplebgc -Ibrugi -Ijeti -Iopenpilot -Ifrsky -Iminizip -Itracker -Iutils
+
+
+GCS = $(EXTRA_OBJECTS) main.o serial.o draw/draw.o draw/videocapture.o geomag70.o \
+	minizip/ioapi.o minizip/unzip.o net/htmlget.o \
+	screens/screen_rcflow.o screens/screen_keyboard.o screens/screen_filesystem.o screens/screen_device.o screens/screen_baud.o screens/screen_model.o screens/screen_cli.o screens/screen_baseflightcli.o screens/screen_background.o screens/screen_wpedit.o screens/screen_hud.o screens/screen_map.o screens/screen_calibration.o screens/screen_fms.o screens/screen_system.o screens/screen_tcl.o screens/screen_mavlink_menu.o screens/screen_brugi.o screens/screen_tracker.o screens/screen_mwi_menu.o screens/screen_openpilot_menu.o screens/screen_videolist.o screens/screen_graph.o screens/screen_telemetry.o \
+	mavlink/my_mavlink.o gps/my_gps.o mwi21/mwi21.o jeti/jeti.o openpilot/openpilot.o openpilot/openpilot_xml.o frsky/frsky.o tracker/tracker.o simplebgc/simplebgc.o brugi/brugi.o net/savepng.o net/webserv.o net/webclient.o logging.o \
+/usr/i686-w64-mingw32/lib/libz.a
+
+default: all
+
+all: gcs.exe
+
+clean:
+	rm -f gcs *.o Common/*.o screens/*.o net/*.o draw/*.o tcl/*.o mavlink/*.o gps/*.o mwi21/*.o jeti/*.o openpilot/*.o frsky/*.o tracker/*.o minizip/*.o brugi/*.o simplebgc/*.o tracker/*.o
+
+%.o: %.c
+	@echo "$< -> $@"
+	@$(COMP) -c $(CFLAGS) $< -o $@ ${INCDIR}
+
+gcs.exe: ${COMMONSRC} ${COMMONHDR} ${GCS}
+	@echo "linking $@"
+	@$(COMP) -DBASE_DIR="\"$(BASE_DIR)\"" $(CFLAGS) ${COMMONSRC} ${GCS} -o $@ ${INCDIR} ${LIBS}
+
+
+install:
+	mkdir -p Windows
+	cp -a gcs.exe Windows/gcs.exe
+	mkdir -p Windows/$(BASE_DIR)
+	cp -a data/WMM2010.COF Windows/$(BASE_DIR)/
+	cp -a data/map-services.xml Windows/$(BASE_DIR)/
+	cp -a utils/clean-badmaps.sh Windows/$(BASE_DIR)/clean-badmaps.sh
+	mkdir -p Windows/$(BASE_DIR)/obj3d
+	mkdir -p Windows/$(BASE_DIR)/textures
+	cp -a textures/* Windows/$(BASE_DIR)/textures/
+	mkdir -p Windows/$(BASE_DIR)/fonts
+	cp -a fonts/* Windows/$(BASE_DIR)/fonts/
+	mkdir -p Windows/$(BASE_DIR)/rcflow_presets
+	cp -a rcflow_presets/* Windows/$(BASE_DIR)/rcflow_presets/
+	mkdir -p Windows/$(BASE_DIR)/scripts
+	cp -a screens/screen_tcl.tcl Windows/$(BASE_DIR)/scripts/screen_tcl.tcl
+	mkdir -p Windows/$(BASE_DIR)/mavlink
+	cp -a mavlink/ParameterMetaData*.xml Windows/$(BASE_DIR)/mavlink/
+	mkdir -p Windows/$(BASE_DIR)/webserv
+	cp -a textures/marker.png Windows/$(BASE_DIR)/webserv/marker.png
+	cp -a textures/MULTICOPTER.png Windows/$(BASE_DIR)/webserv/model.png
+	cp -a net/map.js Windows/$(BASE_DIR)/webserv/map.js
+	cp -a net/webserv-index.html Windows/$(BASE_DIR)/webserv/index.html
+	cp -a net/style.css Windows/$(BASE_DIR)/webserv/style.css
+	cp -a net/favicon.ico Windows/$(BASE_DIR)/webserv/favicon.ico
+	cp -a net/blender-export.py Windows/$(BASE_DIR)/webserv/blender-export.py
+	cp -a net/plane.dae Windows/$(BASE_DIR)/webserv/plane.dae
+	cp -a net/simple.dae Windows/$(BASE_DIR)/webserv/simple.dae
+
+	cp /usr/i686-w64-mingw32/bin/libpng3.dll Windows/
+	cp /usr/i686-w64-mingw32/bin/tcl85.dll Windows/
+	cp /usr/i686-w64-mingw32/bin/SDL2_image.dll Windows/
+	cp /usr/i686-w64-mingw32/bin/SDL2.dll Windows/
+	cp /usr/i686-w64-mingw32/bin/zlib1.dll Windows/
+	cp /usr/i686-w64-mingw32/bin/iconv.dll Windows/
+	cp /usr/i686-w64-mingw32/bin/libxml2.dll Windows/
+
+

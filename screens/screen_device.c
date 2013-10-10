@@ -96,6 +96,7 @@ void screen_device (ESContext *esContext) {
 	uint8_t n2 = 0;
 	sprintf(directory, "%s", "/dev");
 	// Device-File's
+#ifndef WINDOWS
 	if ((dir = opendir(directory)) != NULL) {
 		while ((dir_entry = readdir(dir)) != 0) {
 			if (dir_entry->d_name[0] != '.') {
@@ -119,6 +120,7 @@ void screen_device (ESContext *esContext) {
 		closedir(dir);
 		dir = NULL;
 	}
+#endif
 
 #ifdef ANDROID
 	int nnum = 0;

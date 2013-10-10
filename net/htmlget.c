@@ -1,8 +1,7 @@
 
-#ifndef TESTME
 #include <all.h>
-#endif
 
+#ifndef WINDOWS
 
 #include <stdio.h>
 #include <sys/socket.h>
@@ -141,11 +140,7 @@ int htmlget (char *url, char *file) {
 	return 0;
 }
 
-#ifdef TESTME
-int main (void) {
-
-	htmlget("http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/Eurasia/N50E009.hgt.zip", "/tmp/N50E009.hgt.zip");
-
-	return 0;
+#else
+int htmlget (char *url, char *file) {
 }
 #endif

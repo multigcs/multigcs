@@ -1,6 +1,7 @@
 
 #include <all.h>
 
+#ifndef WINDOWS
 
 extern void save_screenshot2 (void);
 extern volatile uint8_t zoom;
@@ -3055,6 +3056,7 @@ void webserv_child (int fd) {
 	return;
 }
 
+#ifndef WINDOWS
 int webserv_thread (void *data) {
 	int listenfd;
 	int socketfd;
@@ -3089,6 +3091,7 @@ int webserv_thread (void *data) {
 	printf("webserv: exit thread\n");
 	return(0);
 }
+#endif
 
 void webserv_init (void) {
 	printf("webserv: init thread\n");
@@ -3121,4 +3124,21 @@ void webserv_exit (void) {
 	}
 #endif
 }
+
+#else
+void webserv_init (void) {
+}
+
+void webserv_exit (void) {
+}
+
+void webserv_html_head (char *content, char *title) {
+}
+
+void webserv_html_start (char *content, uint8_t init) {
+}
+
+void webserv_html_stop (char *content) {
+}
+#endif
 

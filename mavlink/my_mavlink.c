@@ -95,7 +95,9 @@ void mavlink_send_value (char *name, float val, int8_t type) {
 	}
 	mavlink_msg_param_set_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, name, val, type);
 	if (clientmode == 1) {
+#ifndef WINDOWS
 		webclient_send_value(clientmode_server, clientmode_port, name, val, type);
+#endif
 	} else {
 		mavlink_send_message(&msg);
 		ModelData.mavlink_update = (int)time(0);
@@ -678,11 +680,13 @@ void mavlink_send_message (mavlink_message_t* msg) {
 		uint8_t c = buf[i];
 		serial_write(serial_fd_mavlink, &c, 1);
 	}
+#ifndef WINDOWS
 	if (mavlink_udp_active == 1) {
 		if (sendto(s, buf, len, 0, (struct sockaddr *)&si_other, slen) == -1) {
 			printf("mavlink: error: sendto udp()\n");
 		}
 	}
+#endif
 }
 
 uint8_t mavlink_connection_status (void) {
@@ -754,6 +758,7 @@ void mavlink_start_feeds (void) {
 	}
 }
 
+#ifndef WINDOWS
 int mavlink_udp (void *data) {
 	printf("mavlink: init udp thread\n");
 	mavlink_message_t msg;
@@ -794,6 +799,11 @@ int mavlink_udp (void *data) {
 	printf("mavlink: exit udp thread\n");
 	return 0;
 }
+#else
+int mavlink_udp (void *data) {
+	return 0;
+}
+#endif
 
 void mavlink_parseParams1 (xmlDocPtr doc, xmlNodePtr cur, char *name) { 
 	int n = 0;

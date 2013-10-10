@@ -16,10 +16,19 @@ GLfloat colors[4] = {1.0f, 0.0f, 0.0f, 1.0f};
 float aspect = 1.0;
 
 uint8_t RB_Active = 0;
+#ifndef WINDOWS
 GLuint RB_FramebufferName = 0;
 GLuint RB_renderedTexture = 0;
 GLuint RB_depthrenderbuffer = 0;
 GLenum RB_DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+#endif
+
+#ifndef GL_BGRA
+#define GL_BGRA 0x80E1
+#define GL_RGBA	0x1908
+#define GL_BGR 0x80E0
+#define GL_RGB 0x1907
+#endif
 
 
 void esTranslate(ESMatrix *result, GLfloat tx, GLfloat ty, GLfloat tz) {
@@ -36,7 +45,9 @@ void esMatrixLoadIdentity(ESMatrix *result) {
 void esMatrixMultiply(ESMatrix *result, ESMatrix *srcA, ESMatrix *srcB) {
 }
 
+#ifndef WINDOWS
 #define GL_OBJECT_USING_BUFFER
+#endif
 
 void object3d_load_data (Object3d *o3d, char *filename) {
 	FILE *fr;
@@ -195,8 +206,9 @@ void object3d_save_as_collada (Object3d *o3d, char *filename) {
 	time_t liczba_sekund;
 	struct tm strukt;
 	time(&liczba_sekund);
+#ifndef WINDOWS
 	localtime_r(&liczba_sekund, &strukt); 
-
+#endif
 	fr2 = fopen(filename, "w");
 	fprintf(fr2, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n");
 	fprintf(fr2, "<COLLADA xmlns=\"http://www.collada.org/2005/11/COLLADASchema\" version=\"1.4.1\">\n");
@@ -1294,9 +1306,46 @@ void draw_char_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 	}
 }
 
+#ifdef WINDOWS
+/* gluPerspective from http://code.google.com/p/glues/source/checkout */
+
+#define __glPi 3.14159265358979323846
+
+static void __gluMakeIdentityf (GLfloat m[16]) {
+    m[0+4*0] = 1; m[0+4*1] = 0; m[0+4*2] = 0; m[0+4*3] = 0;
+    m[1+4*0] = 0; m[1+4*1] = 1; m[1+4*2] = 0; m[1+4*3] = 0;
+    m[2+4*0] = 0; m[2+4*1] = 0; m[2+4*2] = 1; m[2+4*3] = 0;
+    m[3+4*0] = 0; m[3+4*1] = 0; m[3+4*2] = 0; m[3+4*3] = 1;
+}
+
+void gluPerspective (GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar) {
+    GLfloat m[4][4];
+    GLfloat sine, cotangent, deltaZ;
+    GLfloat radians=(GLfloat)(fovy/2.0f*__glPi/180.0f);
+
+    deltaZ=zFar-zNear;
+    sine=(GLfloat)sin(radians);
+    if ((deltaZ==0.0f) || (sine==0.0f) || (aspect==0.0f))
+    {
+        return;
+    }
+    cotangent=(GLfloat)(cos(radians)/sine);
+    __gluMakeIdentityf(&m[0][0]);
+    m[0][0] = cotangent / aspect;
+    m[1][1] = cotangent;
+    m[2][2] = -(zFar + zNear) / deltaZ;
+    m[2][3] = -1.0f;
+    m[3][2] = -2.0f * zNear * zFar / deltaZ;
+    m[3][3] = 0;
+    glMultMatrixf(&m[0][0]);
+}
+#endif
+
 int gl_init (uint16_t w, uint16_t h) {
+#ifndef WINDOWS
 #ifndef OSX
 	glewInit();
+#endif
 #endif
 	glClear( GL_COLOR_BUFFER_BIT );
 	glMatrixMode( GL_PROJECTION );
@@ -1346,6 +1395,7 @@ int gl_init (uint16_t w, uint16_t h) {
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 */
 
+#ifndef WINDOWS
 	// create Render-Buffer
 	glGenFramebuffers(1, &RB_FramebufferName);
 	glBindFramebuffer(GL_FRAMEBUFFER, RB_FramebufferName);
@@ -1361,13 +1411,16 @@ int gl_init (uint16_t w, uint16_t h) {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, RB_renderedTexture, 0);
 	glDrawBuffers(1, RB_DrawBuffers);
 	draw_to_screen();
+#endif
 	return 0;
 }
 
 void glExit (ESContext *esContext) {
 	// Delete Render-Buffer
+#ifndef WINDOWS
 	glDeleteTextures(1, &RB_renderedTexture);
 	glDeleteFramebuffers(1, &RB_FramebufferName);
+#endif
 }
 
 void glResize (ESContext *esContext, int w, int h) {
@@ -1520,17 +1573,21 @@ void resize_border (void) {
 
 void draw_to_buffer (void) {
 	RB_Active = 1;
+#ifndef WINDOWS
 	glBindFramebuffer(GL_FRAMEBUFFER, RB_FramebufferName);
 	glViewport(0,0,1024,768); // Render on the whole framebuffer, complete from the lower left corner to the upper right
 	glMatrixMode(GL_MODELVIEW);
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+#endif
 }
 
 void draw_to_screen (void) {
 	RB_Active = 0;
+#ifndef WINDOWS
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0 + setup.screen_border_x / 2, 0 + setup.screen_border_y / 2, setup.screen_w - setup.screen_border_x, setup.screen_h - setup.screen_border_y);
+#endif
 }
 
 uint8_t draw_target (void) {
@@ -1538,6 +1595,7 @@ uint8_t draw_target (void) {
 }
 
 void draw_buffer_to_screen (float x1, float y1, float x2, float y2, float z, float alpha) {
+#ifndef WINDOWS
 	y1 = y1 * -1;
 	y2 = y2 * -1;
 	glColor4f(1.0, 1.0, 1.0, alpha);
@@ -1554,6 +1612,7 @@ void draw_buffer_to_screen (float x1, float y1, float x2, float y2, float z, flo
 		glVertex3f(x1, y1, -2.0 + z);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
+#endif
 }
 
 

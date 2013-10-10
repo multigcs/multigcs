@@ -12,22 +12,25 @@
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
-#include <termios.h>
 #include <time.h>
 #include <unistd.h>
 
-#include <sys/time.h>
+#ifndef WINDOWS
+#include <termios.h>
 #include <sys/times.h>
-#include <sys/stat.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
-
 #include <arpa/inet.h>
+#endif
+
+#include <sys/time.h>
+#include <sys/stat.h>
+#include <png.h>
+
 #ifdef RPI_NO_X
 #include <linux/input.h>
 #endif
 
-#include <png.h>
 
 #ifndef ANDROID
 #include <tcl.h>
@@ -62,8 +65,10 @@
 #else
 #ifndef OSX
 #define NO_SDL_GLEXT
+#ifndef WINDOWS
 #include <GL/glew.h>
 #include <GL/glext.h>
+#endif
 #include <GL/gl.h>
 #else
 #include <OpenGL/glu.h>

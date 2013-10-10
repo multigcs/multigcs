@@ -234,7 +234,9 @@ if (type & (1<<2)) {
 						sscanf(line, "ATT;%i.%i;%f;%f;%f", &lsec, &lmicros, &pitch, &roll, &yaw);
 						struct tm strukt;
 						time_t liczba_sekund = (time_t)(lsec);
+#ifndef WINDOWS
 						localtime_r(&liczba_sekund, &strukt); 
+#endif
 						fprintf(fr, "<when>%02d-%02d-%dT%02d:%02d:%02dZ</when>\n", strukt.tm_year + 1900, strukt.tm_mon + 1, strukt.tm_mday, strukt.tm_hour, strukt.tm_min, strukt.tm_sec);
 						point_nr++;
 					}
@@ -563,7 +565,9 @@ void logplay_draw_control (ESContext *esContext, float x1, float y1) {
 
 	struct tm strukt;
 	time_t liczba_sekund = (time_t)(logplay_msec / 1000 + logplay_startsec);
+#ifndef WINDOWS
 	localtime_r(&liczba_sekund, &strukt); 
+#endif
 //	sprintf(tmp_str, "%04i.%03is", logplay_msec / 1000, logplay_msec % 1000);
 	sprintf(tmp_str, "%02d.%02d.%d %02d:%02d:%02d.%03i", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, logplay_msec % 1000);
 	draw_text_button(esContext, "timer", setup.view_mode, tmp_str, FONT_GREEN, x + w / 2, y + h / 4 * 1, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, logplay_cmd_play, 0.0);
@@ -579,6 +583,7 @@ void logplay_draw_control (ESContext *esContext, float x1, float y1) {
 		draw_text_button(esContext, "up", setup.view_mode, "[^]", FONT_GREEN, x + w - 0.1, -0.8 + 0.05, 0.001, 0.06, ALIGN_CENTER, ALIGN_CENTER, logplay_cmd_play_updown, -1.0);
 		draw_text_button(esContext, "down", setup.view_mode, "[v]", FONT_GREEN, x + w - 0.1, y - 0.05, 0.001, 0.06, ALIGN_CENTER, ALIGN_CENTER, logplay_cmd_play_updown, 1.0);
 		sprintf(directory, "%s/logs", get_datadirectory());
+#ifndef WINDOWS
 		if ((dir = opendir(directory)) != NULL) {
 			while ((dir_entry = readdir(dir)) != 0) {
 				if (dir_entry->d_name[1] != '.') {
@@ -616,6 +621,7 @@ void logplay_draw_control (ESContext *esContext, float x1, float y1) {
 			closedir(dir);
 			dir = NULL;
 		}
+#endif
 	}
 }
 

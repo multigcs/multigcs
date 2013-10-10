@@ -524,7 +524,11 @@ void get_srtm (void) {
 		SDL_Log("map: getting srtm-data: %s\n", file);
 #endif
 		sprintf(target, "%s/MAPS/part/", get_datadirectory());
+#ifndef WINDOWS
 		mkdir(target, 0755);
+#else
+		mkdir(target);
+#endif
 		sprintf(source, "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/Eurasia/%s.zip", file);
 		sprintf(target, "%s/MAPS/part/%s.zip", get_datadirectory(), file);
 		if (file_download(target, source) != -1) {

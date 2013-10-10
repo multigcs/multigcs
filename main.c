@@ -76,10 +76,14 @@ void SDL_KillThread(SDL_Thread *thread) {
 
 char *get_datadirectory (void) {
 	static char datradir[1024];
+#ifdef WINDOWS
+	strcpy(datradir, "MultiGCS");
+#else
 #ifdef ANDROID
 	strcpy(datradir, "/sdcard/MultiGCS");
 #else
 	sprintf(datradir, "%s/.multigcs", getenv("HOME"));
+#endif
 #endif
 	return datradir;
 }
@@ -1413,11 +1417,16 @@ void Draw (ESContext *esContext) {
 	static uint16_t timer = 0;
 	timer++;
 #else
+#ifdef WINDOWS
+	static uint16_t timer = 0;
+	timer++;
+#else
 #ifdef OSX
 	static uint16_t timer = 0;
 	timer++;
 #else
 	uint16_t timer = times(0);
+#endif
 #endif
 #endif
 
@@ -1887,6 +1896,7 @@ int main ( int argc, char *argv[] ) {
 #endif
 
 
+#ifndef WINDOWS
 	sprintf(dir, "%s", get_datadirectory());
 	mkdir(dir, 0755);
 	sprintf(dir, "%s/MAPS", get_datadirectory());
@@ -1901,6 +1911,22 @@ int main ( int argc, char *argv[] ) {
 	mkdir(dir, 0755);
 	sprintf(dir, "%s/mavlink", get_datadirectory());
 	mkdir(dir, 0755);
+#else
+	sprintf(dir, "%s", get_datadirectory());
+	mkdir(dir);
+	sprintf(dir, "%s/MAPS", get_datadirectory());
+	mkdir(dir);
+	sprintf(dir, "%s/MAPS/part", get_datadirectory());
+	mkdir(dir);
+	sprintf(dir, "%s/logs", get_datadirectory());
+	mkdir(dir);
+	sprintf(dir, "%s/models", get_datadirectory());
+	mkdir(dir);
+	sprintf(dir, "%s/PARAMS", get_datadirectory());
+	mkdir(dir);
+	sprintf(dir, "%s/mavlink", get_datadirectory());
+	mkdir(dir);
+#endif
 
 	if (argc >= 3 && strcmp(argv[1], "-c") == 0) {
 		strncpy(clientmode_server, argv[2], 1023);
@@ -1914,7 +1940,9 @@ int main ( int argc, char *argv[] ) {
 	time_t liczba_sekund;
 	struct tm strukt;
 	time(&liczba_sekund);
+#ifndef WINDOWS
 	localtime_r(&liczba_sekund, &strukt); 
+#endif
 //	printf("DATE: %d.%d %d\n", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900); 
 
 	sprintf(tmp_name, "%s/WMM2010.COF", BASE_DIR);

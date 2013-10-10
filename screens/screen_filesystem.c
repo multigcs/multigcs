@@ -136,6 +136,7 @@ void screen_filesystem (ESContext *esContext) {
 		dir = NULL;
 	}
 	// Directory's
+#ifndef WINDOWS
 	if ((dir = opendir(directory)) != NULL) {
 		while ((dir_entry = readdir(dir)) != 0) {
 			if (dir_entry->d_name[0] != '.') {
@@ -190,6 +191,7 @@ void screen_filesystem (ESContext *esContext) {
 		closedir(dir);
 		dir = NULL;
 	}
+#endif
 	if (n == 0) {
 		filesystem_page = 0;
 	}

@@ -236,7 +236,9 @@ void brugi_init (char *port, uint32_t baud) {
 void brugi_exit (void) {
 	if (brugi_serial_fd >= 0) {
 		brugi_send_cmd("OAC 0\n");
+#ifndef WINDOWS
 		tcflush(brugi_serial_fd, TCIFLUSH);
+#endif
 		close(brugi_serial_fd);
 		brugi_serial_fd = -1;
 		info_num = 0;

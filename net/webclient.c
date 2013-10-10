@@ -5,6 +5,8 @@ uint8_t clientmode = 0;
 char clientmode_server[1024];
 uint16_t clientmode_port = 8080;
 
+#ifndef WINDOWS
+
 void webclient_mavlink_get (char *server, uint16_t port) {
 	int sockfd;
 	int n = 0;
@@ -262,5 +264,8 @@ void webclient_send_value (char *server, uint16_t port, char *name, float value,
 	close(sockfd);
 }
 
-
+#else
+void webclient_update (char *server, uint16_t port) {
+}
+#endif
 

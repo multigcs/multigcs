@@ -5,7 +5,6 @@ static SDL_Thread *sdl_thread_serial_jeti = NULL;
 static uint8_t jeti_thread_running = 0;
 int jeti_serial_fd = -1;
 char jeti_serial_buf[255];
-struct termios newtio;
 char jeti_line[33];
 char jeti_line1[17];
 char jeti_line2[17];

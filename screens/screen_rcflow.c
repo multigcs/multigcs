@@ -679,7 +679,11 @@ void rcflow_undo_save (void) {
 	char tmp_str2[1024];
 	printf("rcflow: undo_save \n");
 	sprintf(tmp_str, "%s/models", get_datadirectory());
+#ifndef WINDOWS
 	mkdir(tmp_str, 0755);
+#else
+	mkdir(tmp_str);
+#endif
 	for (n = MAX_UNDO - 1; n >= 0; n--) {
 		sprintf(tmp_str, "%s/models/rcflow_undo%i.bin", get_datadirectory(), n);
 		sprintf(tmp_str2, "%s/models/rcflow_undo%i.bin", get_datadirectory(), n + 1);

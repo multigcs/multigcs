@@ -1,9 +1,12 @@
 
 #include <all.h>
 
+#ifndef WINDOWS
 struct termios oldtio, newtio;
+#endif
 
 void serial_write (int fd, uint8_t *data, int len) {
+#ifndef WINDOWS
 #ifdef ANDROID
 	int n = 0;
 	for (n = 0; n < len; n++) {
@@ -12,27 +15,33 @@ void serial_write (int fd, uint8_t *data, int len) {
 #else
 	write(fd, data, len);
 #endif
+#endif
 }
 
 extern ssize_t bt_read(int fd, void *data, size_t len);
 
 ssize_t serial_read(int fd, void *data, size_t len) {
+#ifndef WINDOWS
 #ifdef ANDROID
 	return bt_read(fd, data, len);
 #else
 	return read(fd, data, len);
 #endif
+#endif
 }
 
 int serial_close (int fd) {
+#ifndef WINDOWS
 	if (fd >= 0) {
 		close(fd);
 		fd = -1;
 	}
+#endif
 	return 0;
 }
 
 int serial_open (char *mdevice, uint32_t baud) {
+#ifndef WINDOWS
 	int fd = -1;
 #ifdef ANDROID
 	if (strncmp(mdevice, "bt:", 3) == 0) {
@@ -120,10 +129,12 @@ int serial_open (char *mdevice, uint32_t baud) {
 		return fd;
 	}
 	printf("..Failed\n");
+#endif
 	return -1;
 }
 
 int serial_open9b (char *mdevice, uint32_t baud) {
+#ifndef WINDOWS
 	int fd = -1;
 	int baudr = 9600;
 	switch(baud) {
@@ -193,6 +204,7 @@ int serial_open9b (char *mdevice, uint32_t baud) {
 		printf("..Ok\n");
 		return fd;
 	}
+#endif
 	printf("..Failed\n");
 	return -1;
 }

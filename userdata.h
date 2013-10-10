@@ -1,29 +1,4 @@
 
-#include <stdint.h>
-#ifdef SDLGL
-#ifndef OSX
-#define NO_SDL_GLEXT
-#ifndef ANDROID
-#include <GL/gl.h>
-#include <GL/glext.h>
-#endif
-#endif
-#include <SDL.h>
-#include <SDL_thread.h>
-#include <SDL_events.h>
-#include <SDL_image.h>
-#ifndef ANDROID
-#include <SDL_opengl.h>
-#else
-#include <SDL_opengles.h>
-#endif
-#else
-#include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
-#include <EGL/egl.h>
-#include "esUtil.h"
-#endif
-
 
 typedef struct {
 #ifndef ANDROID
