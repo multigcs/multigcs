@@ -384,6 +384,7 @@ void screen_system (ESContext *esContext) {
 		strcpy(dnsserver, "---.---.---.---");
 		strcpy(gateway, "---.---.---.---");
 
+#ifndef ANDROID
 #ifdef OSX
 		if((cmd = popen("LANG=C ifconfig en0 | grep \"inet \" | sed \"s|[a-zA-Z:]||g\"", "r")) != NULL) {
 			while(!feof(cmd)) {
@@ -419,7 +420,6 @@ void screen_system (ESContext *esContext) {
 		}
 		pclose(cmd);
 #endif
-
 		if((cmd = popen("hostname", "r")) != NULL) {
 			while(!feof(cmd)) {
 				if(fgets(hostname, 1024, cmd) != NULL) {
@@ -427,6 +427,7 @@ void screen_system (ESContext *esContext) {
 			}
 		}
 		pclose(cmd);
+#endif
 
 		last_time = now_time;
 	}
