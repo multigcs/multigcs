@@ -63,23 +63,23 @@ GCS = $(EXTRA_OBJECTS) main.o serial.o draw/draw.o draw/videocapture.o geomag70.
 
 default: all
 
-all: gcs.exe
+all: Windows/gcs.exe
 
 clean:
-	rm -f gcs *.o Common/*.o screens/*.o net/*.o draw/*.o tcl/*.o mavlink/*.o gps/*.o mwi21/*.o jeti/*.o openpilot/*.o frsky/*.o tracker/*.o minizip/*.o brugi/*.o simplebgc/*.o tracker/*.o
+	rm -f Windows/gcs.exe gcs *.o Common/*.o screens/*.o net/*.o draw/*.o tcl/*.o mavlink/*.o gps/*.o mwi21/*.o jeti/*.o openpilot/*.o frsky/*.o tracker/*.o minizip/*.o brugi/*.o simplebgc/*.o tracker/*.o
+	rm -rf Windows
 
 %.o: %.c
 	@echo "$< -> $@"
 	@$(COMP) -c $(CFLAGS) $< -o $@ ${INCDIR}
 
-gcs.exe: ${COMMONSRC} ${COMMONHDR} ${GCS}
+Windows/gcs.exe: ${COMMONSRC} ${COMMONHDR} ${GCS}
 	@echo "linking $@"
+	@mkdir -p Windows
 	@$(COMP) -DBASE_DIR="\"$(BASE_DIR)\"" $(CFLAGS) ${COMMONSRC} ${GCS} -o $@ ${INCDIR} ${LIBS}
-
 
 install:
 	mkdir -p Windows
-	cp -a gcs.exe Windows/gcs.exe
 	mkdir -p Windows/$(BASE_DIR)
 	cp -a data/WMM2010.COF Windows/$(BASE_DIR)/
 	cp -a data/map-services.xml Windows/$(BASE_DIR)/
