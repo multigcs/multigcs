@@ -870,7 +870,18 @@ void check_events (ESContext *esContext, SDL_Event event) {
 			}
 		}
 		redraw_flag = 1;
+
+#ifdef ANDROID
 	} else if (event.type == SDL_MOUSEMOTION) {
+	} else if (event.type == SDL_FINGERMOTION) {
+		float x = (int)(event.tfinger.x * (float)setup.screen_w);
+		float y = (int)(event.tfinger.y * (float)setup.screen_h);
+		event.button.button = 1;
+		event.button.x = x;
+		event.button.y = y;
+#else
+	} else if (event.type == SDL_MOUSEMOTION) {
+#endif
 		event.type = 0;
 		mouse_x = event.button.x;
 		mouse_y = event.button.y;
@@ -931,7 +942,17 @@ void check_events (ESContext *esContext, SDL_Event event) {
 			sys_message(msg);
 		}
 		redraw_flag = 1;
+#ifdef ANDROID
 	} else if (event.type == SDL_MOUSEBUTTONUP) {
+	} else if (event.type == SDL_FINGERUP) {
+		float x = (int)(event.tfinger.x * (float)setup.screen_w);
+		float y = (int)(event.tfinger.y * (float)setup.screen_h);
+		event.button.button = 1;
+		event.button.x = x;
+		event.button.y = y;
+#else
+	} else if (event.type == SDL_MOUSEBUTTONUP) {
+#endif
 		float bx = (float)event.button.x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 		float by = (float)event.button.y / (float)esContext->height * 2.0 - 1.0;
 		if (check_button(setup.view_mode, bx, by, event.button.button, BUTTON_RELEASE) != -1) {
@@ -972,45 +993,18 @@ void check_events (ESContext *esContext, SDL_Event event) {
 			waypoint_active = 1;
 		}
 
-#ifdef SDL2
 #ifdef ANDROID
+	} else if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEWHEEL) {
 	} else if (event.type == SDL_FINGERDOWN) {
-/*
 		float x = (int)(event.tfinger.x * (float)setup.screen_w);
 		float y = (int)(event.tfinger.y * (float)setup.screen_h);
-		SDL_Event user_event;
-		user_event.type=SDL_MOUSEBUTTONDOWN;
-		user_event.button.x = x;
-		user_event.button.y = y;
-		user_event.button.button = 1;
-		SDL_PushEvent(&user_event);
-*/
-	} else if (event.type == SDL_FINGERUP) {
-/*
-		float x = (int)(event.tfinger.x * (float)setup.screen_w);
-		float y = (int)(event.tfinger.y * (float)setup.screen_h);
-		SDL_Event user_event;
-		user_event.type=SDL_MOUSEBUTTONUP;
-		user_event.button.x = x;
-		user_event.button.y = y;
-		user_event.button.button = 1;
-		SDL_PushEvent(&user_event);
-*/
-	} else if (event.type == SDL_FINGERMOTION) {
-/*
-		float x = (int)(event.tfinger.x * (float)setup.screen_w);
-		float y = (int)(event.tfinger.y * (float)setup.screen_h);
-		SDL_Event user_event;
-		user_event.type=SDL_MOUSEMOTION;
-		user_event.button.x = x;
-		user_event.button.y = y;
-		user_event.button.button = 1;
-		SDL_PushEvent(&user_event);
-*/
-#endif
+		event.button.button = 1;
+		event.button.x = x;
+		event.button.y = y;
+#else
+#ifdef SDL2
 	} else if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEWHEEL) {
 		if (event.type == SDL_MOUSEWHEEL) {
-
 			if (event.button.x > 0) {
 				event.button.button = 4;
 			} else if (event.button.x < 0) {
@@ -1021,6 +1015,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 		}
 #else
 	} else if (event.type == SDL_MOUSEBUTTONDOWN) {
+#endif
 #endif
 		float bx = (float)event.button.x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 		float by = (float)event.button.y / (float)esContext->height * 2.0 - 1.0;
