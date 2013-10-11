@@ -2,7 +2,7 @@
 #
 #
 
-apt-get install binutils-mingw-w64-i686 gcc-mingw-w64-i686 gcc-mingw32 mingw-w64-x86-64-dev mingw-w64-i686-dev mingw32-runtime wine libwine-gl
+apt-get install binutils-mingw-w64-i686 gcc-mingw-w64-i686 gcc-mingw32 mingw-w64-x86-64-dev mingw-w64-i686-dev mingw32-runtime wine libwine-gl dos2unix
 
 mkdir -p winlibs
 cd winlibs
@@ -41,6 +41,33 @@ test -e tcl8515-src.zip || wget http://prdownloads.sourceforge.net/tcl/tcl8515-s
 unzip -o -x tcl8515-src.zip
 (cd tcl8.5.15/win/ ; ./configure --enable-gcc --host=i386-mingw32 ; make)
 
+test -e winglut.zip || wget http://web.cs.wpi.edu/~gogo/courses/mingw/winglut.zip
+mkdir -p winglut
+(cd winglut ; unzip -o -x ../winglut.zip)
+
+test -e glew-1.10.0.tgz || wget http://garr.dl.sourceforge.net/project/glew/glew/1.10.0/glew-1.10.0.tgz
+tar xzvpf glew-1.10.0.tgz
+(
+cd glew-1.10.0
+rm -rf lib/
+rm -rf bin/
+mkdir -p lib/
+mkdir -p bin/
+i686-w64-mingw32-gcc -DGLEW_NO_GLU -O2 -Wall -W -Iinclude  -DGLEW_BUILD -o src/glew.o -c src/glew.c
+i686-w64-mingw32-gcc -shared -Wl,-soname,libglew32.dll -Wl,--out-implib,lib/libglew32.dll.a  -o bin/glew32.dll src/glew.o -L/mingw/lib -lglu32 -lopengl32 -lgdi32 -luser32 -lkernel32
+ar cr lib/libglew32.a src/glew.o
+sed -e "s|@prefix@|/usr|g" -e "s|@libdir@|/usr/lib|g" -e "s|@exec_prefix@|/usr/bin|g" -e "s|@includedir@|/usr/include/GL|g" -e "s|@version@|1.6.0|g" -e "s|@cflags@||g" -e "s|@libname@|GLEW|g" < glew.pc.in > glew.pc
+i686-w64-mingw32-gcc -DGLEW_NO_GLU -DGLEW_MX -O2 -Wall -W -Iinclude  -DGLEW_BUILD -o src/glew.mx.o -c src/glew.c
+i686-w64-mingw32-gcc -shared -Wl,-soname,libglew32mx.dll -Wl,--out-implib,lib/libglew32mx.dll.a -o bin/glew32mx.dll src/glew.mx.o -L/mingw/lib -lglu32 -lopengl32 -lgdi32 -luser32 -lkernel32
+ar cr lib/libglew32mx.a src/glew.mx.o
+sed -e "s|@prefix@|/usr|g" -e "s|@libdir@|/usr/lib|g" -e "s|@exec_prefix@|/usr/bin|g" -e "s|@includedir@|/usr/include/GL|g" -e "s|@version@|1.6.0|g" -e "s|@cflags@|-DGLEW_MX|g" -e "s|@libname@|GLEWmx|g" < glew.pc.in > glewmx.pc
+i686-w64-mingw32-gcc -c -O2 -Wall -W -Iinclude  -o src/glewinfo.o src/glewinfo.c
+i686-w64-mingw32-gcc -O2 -Wall -W -Iinclude  -o bin/glewinfo.exe src/glewinfo.o -Llib  -lglew32 -L/mingw/lib -lglu32 -lopengl32 -lgdi32 -luser32 -lkernel32
+i686-w64-mingw32-gcc -c -O2 -Wall -W -Iinclude  -o src/visualinfo.o src/visualinfo.c
+i686-w64-mingw32-gcc -O2 -Wall -W -Iinclude  -o bin/visualinfo.exe src/visualinfo.o -Llib  -lglew32 -L/mingw/lib -lglu32 -lopengl32 -lgdi32 -luser32 -lkernel32
+)
+
+
 mkdir -p /usr/i686-w64-mingw32/bin/
 mkdir -p /usr/i686-w64-mingw32/lib/
 mkdir -p /usr/i686-w64-mingw32/include/
@@ -55,6 +82,11 @@ cp -av libpng-1.2.37/* /usr/i686-w64-mingw32/
 cp -av libpng3/* /usr/i686-w64-mingw32/bin/
 cp -av zlib-1.2.3/* /usr/i686-w64-mingw32/
 cp -av tcl8.5.15/generic/*.h  /usr/i686-w64-mingw32/include/tcl/
-cp -a tcl8.5.15/win/*dll /usr/i686-w64-mingw32/bin/
-
+cp -av tcl8.5.15/win/*dll /usr/i686-w64-mingw32/bin/
+cp -av winglut/glut32.dll /usr/i686-w64-mingw32/bin/
+cp -av winglut/winlib/* /usr/i686-w64-mingw32/lib/
+cp -av winglut/GL/* /usr/i686-w64-mingw32/include/GL/
+cp -av glew-1.10.0/lib/* /usr/i686-w64-mingw32/lib/
+cp -av glew-1.10.0/bin/* /usr/i686-w64-mingw32/bin/
+cp -av glew-1.10.0/include/* /usr/i686-w64-mingw32/include/
 

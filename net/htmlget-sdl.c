@@ -29,7 +29,7 @@ int htmlget (char *url, char *file) {
 		fprintf(stderr, "SDLNet_TCP_Open: %s\n", SDLNet_GetError());
 		return -1;
 	}
-	sprintf(buffer, "GET /%s HTTP/1.1\r\nHost: %s\r\nUser-Agent: multigcs\r\nConnection: close\r\n\r\n", page, host);
+	sprintf(buffer, "GET /%s HTTP/1.1\r\nHost: %s\r\nUser-Agent: wget 0.1\r\nConnection: close\r\n\r\n", page, host);
 	len = strlen(buffer) + 1;
 	if (SDLNet_TCP_Send(sd, (void *)buffer, len) < len) {
 		fprintf(stderr, "SDLNet_TCP_Send: %s\n", SDLNet_GetError());

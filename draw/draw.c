@@ -762,7 +762,7 @@ int16_t get_altitude (float lat, float lon) {
 		if (alt_num != -1) {
 //			printf("loading srtm %s in to alt-cache %i %i\n", file, alt_num, AltCache[alt_num].atime);
 			FILE *fr;
-			fr = fopen(file, "r");
+			fr = fopen(file, "rb");
 			if (fr != 0) {
 				strncpy(AltCache[alt_num].name, file, 1023);
 				AltCache[alt_num].atime = time(0);

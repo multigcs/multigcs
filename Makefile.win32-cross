@@ -13,7 +13,7 @@ CFLAGS += -DSDLGL -DSDL2 -DWINDOWS -O3 -Wall -DBASE_DIR="\"$(BASE_DIR)\""
 #CFLAGS +=  -pg
 
 INCDIR += -I/usr/i686-w64-mingw32/include -I/usr/i686-w64-mingw32/include/SDL2 -I/usr/i686-w64-mingw32/include/libpng12 -I/usr/i686-w64-mingw32/include/tcl
-LIBS += -Lc:/MinGW/lib/SDL2 -static-libgcc -lmingw32 -lopengl32 -lglu32 -lSDL2main -mwindows -lSDL2 -lSDL2_image -lSDL2_net -L/usr/i686-w64-mingw32/bin \
+LIBS += -Lc:/MinGW/lib/SDL2 -static-libgcc -lmingw32 -lopengl32 -lglu32 -lglew32.dll -lSDL2main -mwindows -lSDL2 -lSDL2_image -lSDL2_net -L/usr/i686-w64-mingw32/bin \
 -lm -lxml2 -ltcl85 -lpng
 
 
@@ -51,6 +51,9 @@ clean:
 gcs.exe: ${COMMONSRC} ${COMMONHDR} ${GCS}
 	@echo "linking $@"
 	@$(COMP) -DBASE_DIR="\"$(BASE_DIR)\"" $(CFLAGS) ${COMMONSRC} ${GCS} -o $@ ${INCDIR} ${LIBS}
+
+test:
+	(cd Windows/MultiGCS/ ; wine MultiGCS.exe)
 
 install:
 	rm -rf Windows
@@ -90,6 +93,7 @@ install:
 	cp /usr/i686-w64-mingw32/bin/zlib1.dll Windows/MultiGCS/
 	cp /usr/i686-w64-mingw32/bin/iconv.dll Windows/MultiGCS/
 	cp /usr/i686-w64-mingw32/bin/libxml2.dll Windows/MultiGCS/
+	cp /usr/i686-w64-mingw32/bin/glew32.dll Windows/MultiGCS/
 
 	(cd Windows ; zip -r MultiGCS-win32.zip MultiGCS)
 

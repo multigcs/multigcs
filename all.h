@@ -65,8 +65,8 @@
 #else
 #ifndef OSX
 #define NO_SDL_GLEXT
-#ifndef WINDOWS
 #include <GL/glew.h>
+#ifndef WINDOWS
 #include <GL/glext.h>
 #endif
 #include <GL/gl.h>
