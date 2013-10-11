@@ -1304,7 +1304,9 @@ void draw_char_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 
 int gl_init (uint16_t w, uint16_t h) {
 #ifndef OSX
+#ifndef WINDOWS
 	glewInit();
+#endif
 #endif
 	glClear( GL_COLOR_BUFFER_BIT );
 	glMatrixMode( GL_PROJECTION );
@@ -1353,7 +1355,7 @@ int gl_init (uint16_t w, uint16_t h) {
 	glEnable (GL_COLOR_MATERIAL);
 	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 */
-
+#ifndef WINDOWS
 	// create Render-Buffer
 	glGenFramebuffers(1, &RB_FramebufferName);
 	glBindFramebuffer(GL_FRAMEBUFFER, RB_FramebufferName);
@@ -1369,13 +1371,16 @@ int gl_init (uint16_t w, uint16_t h) {
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, RB_renderedTexture, 0);
 	glDrawBuffers(1, RB_DrawBuffers);
 	draw_to_screen();
+#endif
 	return 0;
 }
 
 void glExit (ESContext *esContext) {
 	// Delete Render-Buffer
+#ifndef WINDOWS
 	glDeleteTextures(1, &RB_renderedTexture);
 	glDeleteFramebuffers(1, &RB_FramebufferName);
+#endif
 }
 
 void glResize (ESContext *esContext, int w, int h) {
@@ -1528,17 +1533,21 @@ void resize_border (void) {
 
 void draw_to_buffer (void) {
 	RB_Active = 1;
+#ifndef WINDOWS
 	glBindFramebuffer(GL_FRAMEBUFFER, RB_FramebufferName);
 	glViewport(0,0,1024,768); // Render on the whole framebuffer, complete from the lower left corner to the upper right
 	glMatrixMode(GL_MODELVIEW);
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+#endif
 }
 
 void draw_to_screen (void) {
 	RB_Active = 0;
+#ifndef WINDOWS
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0 + setup.screen_border_x / 2, 0 + setup.screen_border_y / 2, setup.screen_w - setup.screen_border_x, setup.screen_h - setup.screen_border_y);
+#endif
 }
 
 uint8_t draw_target (void) {
@@ -1546,6 +1555,7 @@ uint8_t draw_target (void) {
 }
 
 void draw_buffer_to_screen (float x1, float y1, float x2, float y2, float z, float alpha) {
+#ifndef WINDOWS
 	y1 = y1 * -1;
 	y2 = y2 * -1;
 	glColor4f(1.0, 1.0, 1.0, alpha);
@@ -1562,6 +1572,7 @@ void draw_buffer_to_screen (float x1, float y1, float x2, float y2, float z, flo
 		glVertex3f(x1, y1, -2.0 + z);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
+#endif
 }
 
 
