@@ -21,3 +21,4 @@ android/project.properties
 android/proguard-project.txt
 android/build.xml
 Windows
+winlibs
