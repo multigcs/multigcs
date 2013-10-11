@@ -1408,22 +1408,7 @@ void Draw (ESContext *esContext) {
 	UserData *userData = esContext->userData;
 #endif
 
-#ifdef RPI_NO_X
-	static uint16_t timer = 0;
-	timer++;
-#else
-#ifdef WINDOWS
-	static uint16_t timer = 0;
-	timer++;
-#else
-#ifdef OSX
-	static uint16_t timer = 0;
-	timer++;
-#else
-	uint16_t timer = times(0);
-#endif
-#endif
-#endif
+	uint16_t timer = SDL_GetTicks();
 
 	if (ModelData.heartbeat != 0) {
 		connection_found = 1;
@@ -1807,8 +1792,10 @@ void Draw (ESContext *esContext) {
 	}
 
 #ifndef CONSOLE_ONLY
+#ifndef ANDROID
 	// Mouse-Pointer
 	draw_pointer(esContext, mouse_x, mouse_y, 16, 16, TEXTURE_POINTER);
+#endif
 	glEnable( GL_DEPTH_TEST );
 
 	display_update(esContext);
@@ -2035,10 +2022,6 @@ gl_update();
 		ModelData.p_alt = zz + 10;
 	}
 
-	if (clientmode != 1) {
-		webserv_init();
-	}
-
 	frsky_init(setup.frsky_port, setup.frsky_baud);
 	jeti_init(setup.jeti_port, setup.jeti_baud);
 	gcs_gps_init(setup.gcs_gps_port, setup.gcs_gps_baud);
@@ -2060,7 +2043,7 @@ gl_update();
 	GlobalesContext = &esContext;
 	printf("main: start loop\n");
 #ifdef CONSOLE_ONLY
-	printf("main: now you can connect via Browser or Google-Earth to port :8080\n");
+	printf("main: now you can connect via Browser or Google-Earth to port :%i\n", setup.webport);
 #endif
 #ifndef SDLGL
 	esMainLoop(&esContext);

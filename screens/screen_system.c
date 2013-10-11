@@ -26,8 +26,15 @@ static char view_names[VIEW_MODE_LAST][100] = {
 extern uint8_t view_overview;
 
 uint8_t option_cmd (char *name, float x, float y, int8_t button, float data) {
-	view_overview = 0;
-	if (strcmp(name, "SPEAK") == 0) {
+	if (strcmp(name, "WEBSERV") == 0) {
+		if (clientmode != 1 && setup.webport != 0) {
+			if (webserv_is_running() == 1) {
+				webserv_exit();
+			} else {
+				webserv_init();
+			}
+		}
+	} else if (strcmp(name, "SPEAK") == 0) {
 		setup.speak = 1 - setup.speak;
 	} else if (strcmp(name, "LOGGING") == 0) {
 		logmode = 1 - logmode;
@@ -156,6 +163,20 @@ uint8_t system_set_ratio (char *name, float x, float y, int8_t button, float dat
 	return 0;
 }
 
+uint8_t system_set_fullscreen (char *name, float x, float y, int8_t button, float data) {
+#ifdef SDL2
+	if (setup.fullscreen == 0) {
+		setup.fullscreen = 1;
+		SDL_SetWindowFullscreen(MainWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	} else {
+		setup.fullscreen = 0;
+		SDL_SetWindowFullscreen(MainWindow, 0);
+	}
+	resize = 1;
+#endif
+	return 0;
+}
+
 uint8_t system_set_border_x (char *name, float x, float y, int8_t button, float data) {
 	if ((int)data == 0) {
 		setup.screen_border_x = 0;
@@ -203,7 +224,6 @@ void screen_overview (ESContext *esContext) {
 			x = 0;
 			y += 1;
 		}
-#ifndef WINDOWS
 #ifndef ANDROID
 		draw_to_buffer();
 		if (n == VIEW_MODE_HUD) {
@@ -260,8 +280,6 @@ void screen_overview (ESContext *esContext) {
 #else
 		sprintf(tmp_str, "%s", view_names[n]);
 		draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_WHITE, -1.422 + 0.35 + x * 0.71, -0.99 + y * 0.66 + 0.3, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)n);
-
-#endif
 #endif
 		reset_buttons();
 		x++;
@@ -283,23 +301,30 @@ void screen_overview (ESContext *esContext) {
 	draw_text_button(esContext, "Options", setup.view_mode, "Options", FONT_PINK, 1.05, 0.55 + -2 * 0.1, 0.002, 0.08, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)0);
 	n = 0;
 	if (setup.speak == 1) {
-		draw_text_button(esContext, "SPEAK", setup.view_mode, "SPEAK", FONT_GREEN, 1.05, 0.55 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+		draw_text_button(esContext, "SPEAK", setup.view_mode, "SPEAK", FONT_GREEN, 1.05, 0.45 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
 	} else {
-		draw_text_button(esContext, "SPEAK", setup.view_mode, "SPEAK", FONT_WHITE, 1.05, 0.55 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+		draw_text_button(esContext, "SPEAK", setup.view_mode, "SPEAK", FONT_WHITE, 1.05, 0.45 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
 	}
 	if (logmode == 1) {
-		draw_text_button(esContext, "LOGGING", setup.view_mode, "LOGGING", FONT_GREEN, 1.05, 0.55 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+		draw_text_button(esContext, "LOGGING", setup.view_mode, "LOGGING", FONT_GREEN, 1.05, 0.45 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
 	} else {
-		draw_text_button(esContext, "LOGGING", setup.view_mode, "LOGGING", FONT_WHITE, 1.05, 0.55 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+		draw_text_button(esContext, "LOGGING", setup.view_mode, "LOGGING", FONT_WHITE, 1.05, 0.45 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
 	}
 #ifndef OSX
 	if (logplay == 1) {
-		draw_text_button(esContext, "LOGPLAYER", setup.view_mode, "LOGPLAYER", FONT_GREEN, 1.05, 0.55 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+		draw_text_button(esContext, "LOGPLAYER", setup.view_mode, "LOGPLAYER", FONT_GREEN, 1.05, 0.45 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
 	} else {
-		draw_text_button(esContext, "LOGPLAYER", setup.view_mode, "LOGPLAYER", FONT_WHITE, 1.05, 0.55 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+		draw_text_button(esContext, "LOGPLAYER", setup.view_mode, "LOGPLAYER", FONT_WHITE, 1.05, 0.45 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
 	}
 #endif
-	draw_text_button(esContext, "EXIT", setup.view_mode, "EXIT", FONT_GREEN, 1.05, 0.55 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+	if (clientmode != 1 && setup.webport != 0) {
+		if (webserv_is_running() == 1) {
+			draw_text_button(esContext, "WEBSERV", setup.view_mode, "stop Webserver", FONT_GREEN, 1.05, 0.45 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+		} else {
+			draw_text_button(esContext, "WEBSERV", setup.view_mode, "start Webserver", FONT_WHITE, 1.05, 0.45 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
+		}
+	}
+	draw_text_button(esContext, "EXIT", setup.view_mode, "EXIT", FONT_GREEN, 1.05, 0.45 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
 }
 #else
 void screen_overview (ESContext *esContext) {
@@ -432,10 +457,8 @@ void screen_system (ESContext *esContext) {
 		pclose(cmd);
 #endif
 #endif
-
 		last_time = now_time;
 	}
-
 	sprintf(buffer, "Name  : %s", hostname);
 	draw_text_f(esContext, -0.5, -0.8 + 1 * 0.1, 0.06, 0.06, FONT_GREEN, buffer);
 	sprintf(buffer, "IP    : %s", ip);
@@ -559,6 +582,17 @@ void screen_system (ESContext *esContext) {
 	draw_text_button(esContext, "ratio", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, 0.55, 0.6, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_ratio, 0.0);
 	draw_text_button(esContext, "ratio--", VIEW_MODE_SYSTEM, "[-]", FONT_GREEN, 0.85, 0.6, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_ratio, -0.1);
 	draw_text_button(esContext, "ratio++", VIEW_MODE_SYSTEM, "[+]", FONT_GREEN, 0.95, 0.6, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_ratio, 0.1);
+
+#ifndef ANDROID
+#ifdef SDL2
+	if (setup.fullscreen == 0) {
+		draw_text_button(esContext, "fullscreen", VIEW_MODE_SYSTEM, "TOGGLE FULLSCREEN", FONT_WHITE, 0.55, 0.7, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_fullscreen, 0.0);
+	} else {
+		draw_text_button(esContext, "fullscreen", VIEW_MODE_SYSTEM, "TOGGLE FULLSCREEN", FONT_GREEN, 0.55, 0.7, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_fullscreen, 0.0);
+	}
+#endif
+#endif
+
 
 /*
 	char tmp_str[100];

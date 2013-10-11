@@ -3125,7 +3125,15 @@ void webserv_exit (void) {
 #endif
 }
 
+uint8_t webserv_is_running (void) {
+	return webserv_running;
+}
+
 #else
+uint8_t webserv_is_running (void) {
+	return 0;
+}
+
 void webserv_init (void) {
 }
 

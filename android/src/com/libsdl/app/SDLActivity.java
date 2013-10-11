@@ -23,6 +23,7 @@ import android.content.IntentFilter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.app.Activity;
+import android.app.ActionBar;
 
 import java.util.Locale;
 import java.util.Random;
@@ -82,9 +83,7 @@ public class SDLActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         //Log.v("SDL", "onCreate()");
         super.onCreate(savedInstanceState);
-
         cbt = new ConnectBT();
-
         mTts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
@@ -111,7 +110,15 @@ public class SDLActivity extends Activity {
         LocationListener ll = new mylocationlistener();
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
         getBatteryPercentage();
+
         setContentView(mLayout);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.v("SDL", "Menu-Item clicked");
+        return true;
     }
 
     private void getBatteryPercentage() {

@@ -120,8 +120,17 @@ void screen_device (ESContext *esContext) {
 		closedir(dir);
 		dir = NULL;
 	}
+#else
+	int nnum = 0;
+	for (nnum = 1; nnum <= 16; nnum++) {
+		if (device_page == n2) {
+			sprintf(new_path, "\\\\.\\COM%i", nnum);
+			sprintf(tmp_str, "COM%i", nnum);
+			draw_text_button(esContext, new_path, setup.view_mode, tmp_str, FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, device_name_save, 0.0);
+		}
+		n++;
+	}
 #endif
-
 #ifdef ANDROID
 	int nnum = 0;
 	for (nnum = 0; nnum < 10 && bt_devices[nnum][0] != 0; nnum++) {

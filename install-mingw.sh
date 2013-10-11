@@ -67,6 +67,8 @@ i686-w64-mingw32-gcc -c -O2 -Wall -W -Iinclude  -o src/visualinfo.o src/visualin
 i686-w64-mingw32-gcc -O2 -Wall -W -Iinclude  -o bin/visualinfo.exe src/visualinfo.o -Llib  -lglew32 -L/mingw/lib -lglu32 -lopengl32 -lgdi32 -luser32 -lkernel32
 )
 
+mkdir -p libjpeg
+test -e libjpeg/libjpeg-9.dll || wget -O libjpeg/libjpeg-9.dll https://raw.github.com/OctaForge/OF-Windows/master/bin_win64/libjpeg-9.dll
 
 mkdir -p /usr/i686-w64-mingw32/bin/
 mkdir -p /usr/i686-w64-mingw32/lib/
@@ -89,4 +91,4 @@ cp -av winglut/GL/* /usr/i686-w64-mingw32/include/GL/
 cp -av glew-1.10.0/lib/* /usr/i686-w64-mingw32/lib/
 cp -av glew-1.10.0/bin/* /usr/i686-w64-mingw32/bin/
 cp -av glew-1.10.0/include/* /usr/i686-w64-mingw32/include/
-
+cp -av libjpeg/libjpeg-9.dll /usr/i686-w64-mingw32/bin/

@@ -21,6 +21,8 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
+#else
+#include <windows.h>
 #endif
 
 #include <sys/time.h>

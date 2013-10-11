@@ -1,9 +1,18 @@
 
 #include <all.h>
 
+#ifdef ANDROID
+extern ssize_t bt_read(int fd, void *data, size_t len);
+#endif
+
 #ifndef WINDOWS
 struct termios oldtio, newtio;
+#else
+HANDLE hSerial[10] = {INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE};
 #endif
+
+
+
 
 void serial_write (int fd, uint8_t *data, int len) {
 #ifndef WINDOWS
@@ -15,10 +24,11 @@ void serial_write (int fd, uint8_t *data, int len) {
 #else
 	write(fd, data, len);
 #endif
+#else
+	DWORD dwBytesWritten = 0;
+	WriteFile(hSerial[fd], data, len, &dwBytesWritten, NULL);
 #endif
 }
-
-extern ssize_t bt_read(int fd, void *data, size_t len);
 
 ssize_t serial_read(int fd, void *data, size_t len) {
 #ifndef WINDOWS
@@ -27,6 +37,11 @@ ssize_t serial_read(int fd, void *data, size_t len) {
 #else
 	return read(fd, data, len);
 #endif
+#else
+	DWORD dwBytesRead = 0;
+	ReadFile(hSerial[fd], data, len, &dwBytesRead, 0);
+printf("## serial get: %i/%i \n", dwBytesRead, len);
+	return dwBytesRead;
 #endif
 }
 
@@ -36,13 +51,19 @@ int serial_close (int fd) {
 		close(fd);
 		fd = -1;
 	}
+#else
+	if (fd >= 0) {
+		CloseHandle(hSerial[fd]);
+		hSerial[fd] = INVALID_HANDLE_VALUE;
+		fd = -1;
+	}
 #endif
 	return 0;
 }
 
 int serial_open (char *mdevice, uint32_t baud) {
-#ifndef WINDOWS
 	int fd = -1;
+#ifndef WINDOWS
 #ifdef ANDROID
 	if (strncmp(mdevice, "bt:", 3) == 0) {
 		return 1;
@@ -129,6 +150,92 @@ int serial_open (char *mdevice, uint32_t baud) {
 		return fd;
 	}
 	printf("..Failed\n");
+
+#else
+
+	printf("	Try to open Serial-Port: %s (%i)...", mdevice, baud);
+
+	DCB dcbSerialParams = {0};
+	COMMTIMEOUTS timeouts = {0};
+	int n = 0;
+	int free_port = -1;
+	for (n = 0; n < 10; n++) {
+		if (hSerial[n] == INVALID_HANDLE_VALUE) {
+			free_port = n;
+		}
+	}
+	if (free_port == -1) {
+		printf("..Failed (no usable ports found)\n");
+		return -1;
+	}
+
+	hSerial[free_port] = CreateFile(mdevice, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	if (hSerial[free_port] == INVALID_HANDLE_VALUE) {
+		printf("..Failed (INVALID_HANDLE_VALUE: %i)\n", GetLastError());
+		return -1;
+	}
+	dcbSerialParams.DCBlength = sizeof(dcbSerialParams);
+	if (GetCommState(hSerial[free_port], &dcbSerialParams) == 0) {
+		printf("..Failed (Error getting device state)\n");
+		CloseHandle(hSerial[free_port]);
+		hSerial[free_port] = INVALID_HANDLE_VALUE;
+		return -1;
+	}
+	switch(baud) {
+		case    1200 : dcbSerialParams.BaudRate = CBR_1200;
+                   break;
+		case    2400 : dcbSerialParams.BaudRate = CBR_2400;
+                   break;
+		case    4800 : dcbSerialParams.BaudRate = CBR_4800;
+                   break;
+		case    9600 : dcbSerialParams.BaudRate = CBR_9600;
+                   break;
+		case   19200 : dcbSerialParams.BaudRate = CBR_19200;
+                   break;
+		case   38400 : dcbSerialParams.BaudRate = CBR_38400;
+                   break;
+		case   57600 : dcbSerialParams.BaudRate = CBR_57600;
+                   break;
+		case  115200 : dcbSerialParams.BaudRate = CBR_115200;
+                   break;
+		default      : printf("invalid baudrate\n");
+                   return(1);
+                   break;
+	}
+	dcbSerialParams.ByteSize = 8;
+	dcbSerialParams.StopBits = ONESTOPBIT;
+	dcbSerialParams.Parity = NOPARITY;
+	dcbSerialParams.fOutxCtsFlow = FALSE;
+	dcbSerialParams.fOutxDsrFlow = FALSE;
+	dcbSerialParams.fDtrControl = DTR_CONTROL_DISABLE;
+	dcbSerialParams.fRtsControl = RTS_CONTROL_DISABLE;
+	dcbSerialParams.fDsrSensitivity = FALSE;
+	dcbSerialParams.fTXContinueOnXoff = FALSE;
+	dcbSerialParams.fOutX = FALSE;
+	dcbSerialParams.fInX = FALSE;
+	dcbSerialParams.fErrorChar = FALSE;
+	dcbSerialParams.fNull = FALSE;
+	dcbSerialParams.fAbortOnError = FALSE;
+
+	if(SetCommState(hSerial[free_port], &dcbSerialParams) == 0) {
+		printf("..Failed (Error setting device parameters\n");
+		CloseHandle(hSerial[free_port]);
+		hSerial[free_port] = INVALID_HANDLE_VALUE;
+		return -1;
+	}
+	timeouts.ReadIntervalTimeout = 5;
+	timeouts.ReadTotalTimeoutConstant = 5;
+	timeouts.ReadTotalTimeoutMultiplier = 1;
+	timeouts.WriteTotalTimeoutConstant = 5;
+	timeouts.WriteTotalTimeoutMultiplier = 1;
+	if(SetCommTimeouts(hSerial[free_port], &timeouts) == 0) {
+		printf("..Failed (Error setting timeouts)\n");
+		CloseHandle(hSerial[free_port]);
+		hSerial[free_port] = INVALID_HANDLE_VALUE;
+		return -1;
+	}
+ 	printf("..Ok\n");
+	return free_port;
 #endif
 	return -1;
 }
