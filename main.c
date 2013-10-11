@@ -1408,7 +1408,7 @@ void Draw (ESContext *esContext) {
 	UserData *userData = esContext->userData;
 #endif
 
-	uint16_t timer = SDL_GetTicks();
+	uint32_t timer = SDL_GetTicks();
 
 	if (ModelData.heartbeat != 0) {
 		connection_found = 1;

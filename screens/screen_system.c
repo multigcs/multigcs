@@ -40,6 +40,7 @@ uint8_t option_cmd (char *name, float x, float y, int8_t button, float data) {
 		logmode = 1 - logmode;
 	} else if (strcmp(name, "LOGPLAYER") == 0) {
 		logplay = 1 - logplay;
+		view_overview = 0;
 	} else if (strcmp(name, "EXIT") == 0) {
 		SDL_Event user_event;
 		user_event.type=SDL_QUIT;

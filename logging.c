@@ -669,42 +669,46 @@ void LogAppend (char *line) {
 	}
 }
 
+static FILE *fr_play = NULL;
 void Logging (void) {
 	if (logplay == 1) {
 		char line[512];
 		static char last_line[512];
-		static FILE *fr = NULL;
 		if (logplay_play == 2 && logplay_open == 1) {
 			logplay_play = 1;
 			logplay_open = 0;
-			fclose(fr);
-			fr = NULL;
+			fclose(fr_play);
+			fr_play = NULL;
 		}
 		if (logplay_play == 0 && logplay_open == 1) {
 			logplay_open = 0;
-			fclose(fr);
-			fr = NULL;
+			fclose(fr_play);
+			fr_play = NULL;
 		}
 		if (logplay_play == 1) {
 			if (logplay_open == 0 && logplay_file[0] != 0) {
 				logplay_open = 1;
 				logplay_startsec = 0;
-				fr = fopen(logplay_file, "r");
-				if (fgets(line, 500, fr) != NULL) {
+				if ((fr_play = fopen(logplay_file, "r")) == NULL) {
+					printf("logplay: error loading file: %s\n", logplay_file);
+				}
+				if (fgets(line, 500, fr_play) != 0) {
 					strncpy(last_line, line, 1023);
+
+
 				} else {
 					logplay_open = 0;
 					logplay_play = 0;
-					fclose(fr);
-					fr = NULL;
+					fclose(fr_play);
+					fr_play = NULL;
 				}
 			}
 			struct timeval tv;
-			gettimeofday(&tv, NULL);  
+			gettimeofday(&tv, NULL);
 			static uint32_t lsec = 0;
 			static uint32_t lmicros = 0;
 
-			if (fr != NULL) {
+			if (fr_play != NULL) {
 				while (1 == 1) {
 					if (last_line[3] == ';') {
 						sscanf(last_line + 4, "%i.%i;", &lsec, &lmicros);
@@ -716,7 +720,7 @@ void Logging (void) {
 							logplay_startsec = lsec;
 						}
 					} else {
-						if (fgets(line, 500, fr) != NULL) {
+						if (fgets(line, 500, fr_play) != 0) {
 							strncpy(last_line, line, 1023);
 //							printf("NEXT_LINE: %s\n", line);
 
@@ -733,8 +737,8 @@ void Logging (void) {
 							printf("######## file end ########\n");
 							logplay_open = 0;
 							logplay_play = 0;
-							fclose(fr);
-							fr = NULL;
+							fclose(fr_play);
+							fr_play = NULL;
 							break;
 						}
 					}
@@ -769,7 +773,7 @@ void Logging (void) {
 						} else if (strncmp(last_line, "ATT,", 4) == 0) {
 							sscanf(last_line, "ATT,%f,%f,%f", &ModelData.pitch, &ModelData.roll, &ModelData.yaw);
 						}
-						if (fgets(line, 500, fr) != NULL) {
+						if (fgets(line, 500, fr_play) != NULL) {
 							strncpy(last_line, line, 1023);
 //							printf("NEXT_LINE: %s\n", line);
 							if (strncmp(last_line, "GPS,", 4) == 0) {
@@ -785,8 +789,8 @@ void Logging (void) {
 							printf("######## file end ########\n");
 							logplay_open = 0;
 							logplay_play = 0;
-							fclose(fr);
-							fr = NULL;
+							fclose(fr_play);
+							fr_play = NULL;
 							break;
 						}
 					} else {
@@ -797,17 +801,10 @@ void Logging (void) {
 			if (logplay_pause == 0) {
 				struct timeval tv;
 				gettimeofday(&tv, NULL);  
-
 				if (logplay_starttime == 0) {
 					logplay_starttime = tv.tv_sec;
 				}
-
-#ifndef OSX
-				logplay_msec = (tv.tv_sec - logplay_starttime) * 1000 + tv.tv_usec / 1000;
-#else
-				logplay_msec++;
-#endif
-
+				logplay_msec = (tv.tv_sec - logplay_starttime) * 1000 + (SDL_GetTicks() % 1000);
 			}
 		}
 	} else if (logmode == 1) {
@@ -834,11 +831,7 @@ void Logging (void) {
 		struct timeval tv;
 		gettimeofday(&tv, NULL);  
 		uint32_t sec = tv.tv_sec;
-#ifndef OSX
-		uint32_t micros = tv.tv_usec / 1000;
-#else
-		uint32_t micros = 0;
-#endif
+		uint32_t micros = SDL_GetTicks() % 1000;
 
 		if (last_lat != ModelData.p_lat || last_lon != ModelData.p_long || (int)last_alt != (int)ModelData.p_alt || last_sats != ModelData.numSat) {
 			sprintf(line, "GPS;%i.%03i;%f;%f;%f;%f;%i;%i", sec, micros, ModelData.p_lat, ModelData.p_long, ModelData.p_alt, ModelData.speed, ModelData.gpsfix, ModelData.numSat);
