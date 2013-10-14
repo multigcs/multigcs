@@ -1877,6 +1877,32 @@ int main ( int argc, char *argv[] ) {
 	UserData userData;
 #endif
 
+#ifdef WINDOWS
+	printf("### TEST_REG ###\n");
+	DWORD Index = 0;
+	DWORD dwValueNameLength, dwTypeCode, dwValueLength;
+	char ValueName[256];
+	char Value[256];
+	dwValueNameLength = sizeof(ValueName);
+	dwValueLength = sizeof(Value);
+	LONG lnResult;
+	HKEY hKey;
+	lnResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP\\SERIALCOMM", 0, KEY_READ, &hKey);
+	if (lnResult == ERROR_SUCCESS) {
+		printf("### GET ###\n");
+		while(RegEnumValue(hKey, Index, ValueName, &dwValueNameLength, NULL, &dwTypeCode, (BYTE *)Value, &dwValueLength) == ERROR_SUCCESS) {
+			printf("### %s ###\n", ValueName);
+			if(dwTypeCode == REG_SZ) {
+				printf("### %s ###\n", ValueName);
+			}
+			dwValueNameLength = sizeof(ValueName);
+			dwValueLength = sizeof(Value);
+			Index++;
+		}
+		RegCloseKey(hKey);
+	}
+	printf("### END ###\n");
+#endif
 
 #ifndef WINDOWS
 	sprintf(dir, "%s", get_datadirectory());
