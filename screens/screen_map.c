@@ -569,6 +569,26 @@ uint8_t map_null (char *name, float x, float y, int8_t button, float data) {
 	return 0;
 }
 
+uint8_t map_link (char *name, float x, float y, int8_t button, float data) {
+	sys_message(name);
+
+#ifdef ANDROID
+	Android_JNI_OpenLink(name);
+#else
+#ifndef WINDOWS
+#ifndef OSX
+#ifndef RPI_NO_X
+	char cmd_str[1024];
+	sprintf(cmd_str, "firefox \'%s\' &", name);
+	printf("map: link: %s\n", cmd_str);
+	system(cmd_str);
+#endif
+#endif
+#endif
+#endif
+	return 0;
+}
+
 uint8_t map_nav (char *name, float x, float y, int8_t button, float data) {
 	nav_map = 1 - nav_map;
 	if (nav_map == 1) {
@@ -2090,6 +2110,64 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	draw_rect(esContext, 10, esContext->height - 50, (scale / S), 5, 0, 0, 0, 255);
 	sprintf(tmp_str, "%0.1fkm (Z:%i)", scale / 1000.0, zoom);
 	draw_text(esContext, 10, esContext->height - 40, 8, 8, FONT_BLACK_BG, tmp_str);
+
+	sprintf(tmp_str, "%s", mapnames[map_type][MAP_COPYRIGHT]);
+
+	uint16_t cn = 0;
+	uint16_t xn = 0;
+	uint16_t mn = 0;
+	uint16_t an = 0;
+	uint8_t tag_start = 0;
+	uint8_t tagtype = 0;
+	uint8_t attrib_start = 0;
+	uint8_t lastc = 0;
+	uint8_t tmode = 0;
+	char tmp_str2[1024];
+	char tmp_str3[1024];
+	for (cn = 0; cn < strlen(mapnames[map_type][MAP_COPYRIGHT]); cn++) {
+		if (tmp_str[cn] == '<') {
+			tag_start = 1;
+		} else if (mapnames[map_type][MAP_COPYRIGHT][cn] == '>') {
+			tag_start = 0;
+			attrib_start = 0;
+		} else if (mapnames[map_type][MAP_COPYRIGHT][cn] == '=') {
+			attrib_start = 1;
+			an = 0;
+
+		} else if (mapnames[map_type][MAP_COPYRIGHT][cn] == '\'' && attrib_start == 1) {
+		} else if (mapnames[map_type][MAP_COPYRIGHT][cn] == '\"' && attrib_start == 1) {
+
+		} else if (mapnames[map_type][MAP_COPYRIGHT][cn] == 'a' && lastc == '<') {
+			tagtype = 'a';
+		} else if (mapnames[map_type][MAP_COPYRIGHT][cn] == '/' && lastc == '<') {
+			tagtype = 0;
+		} else if (tag_start == 0 && tagtype == 'a') {
+			tmode = 1;
+			tmp_str2[mn++] = mapnames[map_type][MAP_COPYRIGHT][cn];
+			tmp_str2[mn] = 0;
+		} else if (tag_start == 0) {
+			tmode = 2;
+			tmp_str2[mn++] = mapnames[map_type][MAP_COPYRIGHT][cn];
+			tmp_str2[mn] = 0;
+		} else if (attrib_start == 1) {
+			tmode = 3;
+			tmp_str3[an++] = mapnames[map_type][MAP_COPYRIGHT][cn];
+			tmp_str3[an] = 0;
+		} else {
+			if (tmode == 1) {
+				draw_text_button(esContext, tmp_str3, setup.view_mode, tmp_str2, FONT_PINK, -1.3 + xn * 0.035, 0.92, 0.0002, 0.06, ALIGN_LEFT, ALIGN_TOP, map_link, 0.0);
+				xn += strlen(tmp_str2);
+			} else if (tmode == 2) {
+				draw_text_f3(esContext, -1.3 + xn * 0.035, 0.92, 0.0002, 0.06, 0.06, FONT_BLACK_BG, tmp_str2);
+				xn += strlen(tmp_str2);
+			}
+			tmode = 0;
+			mn = 0;
+		}
+		lastc = tmp_str[cn];
+	}
+
+
 	if (_map_view != 3 && _map_view != 4 && _map_view != 5 && setup.view_mode == VIEW_MODE_MAP) {
 #ifdef SDLGL
 #ifndef WINDOWS

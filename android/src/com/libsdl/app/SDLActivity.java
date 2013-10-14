@@ -37,6 +37,7 @@ import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
 
+import android.net.Uri;
 
 import android.location.Location;
 import android.location.LocationListener;
@@ -365,6 +366,17 @@ public class SDLActivity extends Activity {
 
     public static boolean SayText(String text) {
         SDLActivity.mTts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+        return true;
+    }
+
+    public boolean OpenLink(String text) {
+        Log.v("SDL", "open url: " + text);
+        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(text));
+        startActivity(browserIntent);
+
+        Intent viewIntent = new Intent("android.intent.action.VIEW", Uri.parse("http://www.google.de"));
+        startActivity(viewIntent);  
+
         return true;
     }
 
