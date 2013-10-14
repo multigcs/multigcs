@@ -1634,12 +1634,14 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	uint8_t tiles_num = 0;
 	int16_t n = 0;
 #ifdef SDLGL
+#ifndef WINDOWS
 	if (draw_target() == 0 && setup.view_mode == VIEW_MODE_MAP) {
 		draw_to_buffer();
 		hud_draw_horizon(esContext, 0);
 		draw_to_screen();
 		reset_buttons();
 	}
+#endif
 	if (_map_view == 1) {
 		glMatrixMode( GL_PROJECTION );
 		glLoadIdentity();
@@ -2090,6 +2092,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	draw_text(esContext, 10, esContext->height - 40, 8, 8, FONT_BLACK_BG, tmp_str);
 	if (_map_view != 3 && _map_view != 4 && _map_view != 5 && setup.view_mode == VIEW_MODE_MAP) {
 #ifdef SDLGL
+#ifndef WINDOWS
 		if (draw_target() == 0) {
 			draw_buffer_to_screen(0.9, 0.4, 1.4, 0.85, 0.0, 1.0);
 			draw_rect_f3(esContext, 0.9, 0.4, 0.002, 1.4, 0.85, 0.002, 0, 0, 0, 255);
@@ -2100,6 +2103,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			sprintf(tmp_str, "Speed: %0.0f", ModelData.speed);
 			draw_text_button(esContext, "map_speed", setup.view_mode, tmp_str, FONT_GREEN, 0.92, 0.8, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
 		}
+#endif
 #endif
 		uint16_t ny = 0;
 		uint8_t ny2 = 0;
