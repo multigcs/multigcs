@@ -24,7 +24,7 @@ COMMONHRD=
 
 
 VERSION = 0.9-`date +%s`
-BASE_DIR = ShareMultiGCS
+BASE_DIR = Data
 
 
 INCDIR += -I./ -ICommon -Iscreens -Inet -Itcl -Idraw -Imavlink -Igps -Imwi21 -Isimplebgc -Ibrugi -Ijeti -Iopenpilot -Ifrsky -Iminizip -Itracker -Iutils
