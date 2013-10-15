@@ -54,7 +54,7 @@ gcs.exe: ${COMMONSRC} ${COMMONHDR} ${GCS}
 test:
 	(cd Windows/MultiGCS/ ; wine MultiGCS.exe)
 
-install:
+pack:
 	#rm -rf Windows
 	mkdir -p Windows/MultiGCS
 	cp -a gcs.exe Windows/MultiGCS/MultiGCS.exe
