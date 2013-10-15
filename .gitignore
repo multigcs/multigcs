@@ -22,3 +22,5 @@ android/proguard-project.txt
 android/build.xml
 Windows
 winlibs
+exe.rc
+exe.res
