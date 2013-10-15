@@ -1440,6 +1440,15 @@ int glInit ( ESContext *esContext ) {
 		SDL_Quit();
 		exit(1);
 	}
+
+	char icon_file[1024];
+	SDL_Surface *icon_surface;
+	sprintf(icon_file, "%s/textures/icon.png", BASE_DIR);
+	if ((icon_surface = IMG_Load(icon_file)) != NULL) {
+		SDL_SetWindowIcon(MainWindow, icon_surface); 
+		SDL_FreeSurface(icon_surface);
+	}
+
 	WinScreen = SDL_GetWindowSurface(MainWindow);
 	MainGLcontext = SDL_GL_CreateContext(MainWindow);
 #else
