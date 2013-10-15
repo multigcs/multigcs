@@ -238,8 +238,13 @@ void mwi21_update (void) {
 		tout = 0;
 		mwi21_serial_n = 0;
 		mwi21_get_new();
-//		printf("mwi21: timeout\n");
+		printf("mwi21: timeout\n");
 	}
+
+
+	printf("mwi21: check\n");
+
+
 	while ((res = serial_read(mwi21_serial_fd, serial_buffer, 1023)) > 0) {
 	    int i = 0;
 	    for (i = 0; i < res; i++) {
@@ -255,7 +260,7 @@ void mwi21_update (void) {
 		if (c == 'M' && last == '$') {
 			mwi21_frame_start = mwi21_serial_n - 2;
 			mwi21_frame_len = 0;
-//			printf("mwi21_frame_start: %i\n", mwi21_frame_start);
+			printf("mwi21_frame_start: %i\n", mwi21_frame_start);
 			tout = 0;
 		}
 		if (mwi21_serial_n - mwi21_frame_start == 4) {
@@ -289,6 +294,7 @@ void mwi21_update (void) {
 				cmd = 0;
 				continue;
 			} else {
+//				printf("mwi21: CSUM-OK (cmd:%i/len:%i):  %i %i %i\n", cmd, mwi21_frame_len, mwi21_serial_buf[mwi21_frame_len + 5 + mwi21_frame_start], chksum, mwi21_frame_start);
 				mwi21_serial_n = 0;
 			}
 //			printf("CSUM %i(%i):  %i %i\n", cmd, mwi21_frame_len, mwi21_serial_buf[mwi21_frame_len + 5 + mwi21_frame_start], chksum);

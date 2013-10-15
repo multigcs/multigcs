@@ -121,14 +121,40 @@ void screen_device (ESContext *esContext) {
 		dir = NULL;
 	}
 #else
-	int nnum = 0;
-	for (nnum = 1; nnum <= 16; nnum++) {
-		if (device_page == n2) {
-			sprintf(new_path, "\\\\.\\COM%i", nnum);
-			sprintf(tmp_str, "COM%i", nnum);
-			draw_text_button(esContext, new_path, setup.view_mode, tmp_str, FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, device_name_save, 0.0);
+	n = 0;
+	DWORD Index = 0;
+	DWORD dwValueNameLength, dwTypeCode, dwValueLength;
+	char ValueName[256];
+	char Value[256];
+	dwValueNameLength = sizeof(ValueName);
+	dwValueLength = sizeof(Value);
+	LONG lnResult;
+	HKEY hKey;
+	lnResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP\\SERIALCOMM", 0, KEY_READ, &hKey);
+	if (lnResult == ERROR_SUCCESS) {
+		while(RegEnumValue(hKey, Index, ValueName, &dwValueNameLength, NULL, &dwTypeCode, (BYTE *)Value, &dwValueLength) == ERROR_SUCCESS) {
+			if(dwTypeCode == REG_SZ) {
+				sprintf(new_path, "\\\\.\\%s", Value);
+				sprintf(tmp_str, "%s (%s)", ValueName, Value);
+				draw_text_button(esContext, new_path, setup.view_mode, tmp_str, FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, device_name_save, 0.0);
+				n++;
+			}
+			dwValueNameLength = sizeof(ValueName);
+			dwValueLength = sizeof(Value);
+			Index++;
 		}
-		n++;
+		RegCloseKey(hKey);
+	}
+	if (n == 0) {
+		int nnum = 0;
+		for (nnum = 1; nnum <= 16; nnum++) {
+			if (device_page == n2) {
+				sprintf(new_path, "\\\\.\\COM%i", nnum);
+				sprintf(tmp_str, "COM%i", nnum);
+				draw_text_button(esContext, new_path, setup.view_mode, tmp_str, FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 1, 0, device_name_save, 0.0);
+			}
+			n++;
+		}
 	}
 #endif
 #ifdef ANDROID

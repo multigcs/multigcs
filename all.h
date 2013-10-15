@@ -23,6 +23,7 @@
 #include <arpa/inet.h>
 #else
 #include <windows.h>
+#include <shlobj.h>
 #endif
 
 #include <sys/time.h>

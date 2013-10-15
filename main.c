@@ -59,6 +59,7 @@ float trans_count = 0.0;
 Button Buttons[MAX_BUTTONS];
 uint8_t connection_found = 0;
 uint8_t view_overview = 0;
+ESContext *GlobalesContext = NULL;
 
 #ifdef HTML_DRAWING
 char display_html[HTML_MAX];
@@ -78,6 +79,10 @@ char *get_datadirectory (void) {
 	static char datradir[1024];
 #ifdef WINDOWS
 	strcpy(datradir, "MultiGCS");
+	char path[1024];
+	path[0] = 0;
+	SHGetSpecialFolderPath(HWND_DESKTOP, path, CSIDL_DESKTOP, FALSE);
+	sprintf(datradir, "%s/MultiGCS", path);
 #else
 #ifdef ANDROID
 	strcpy(datradir, "/sdcard/MultiGCS");
@@ -1864,44 +1869,12 @@ void ShutDown ( ESContext *esContext ) {
 	unlink("/tmp/gcs.run");
 }
 
-
-
-
-ESContext *GlobalesContext = NULL;
-
 int main ( int argc, char *argv[] ) {
 	char dir[1024];
 	char tmp_name[201];
 	ESContext esContext;
 #ifndef SDLGL
 	UserData userData;
-#endif
-
-#ifdef WINDOWS
-	printf("### TEST_REG ###\n");
-	DWORD Index = 0;
-	DWORD dwValueNameLength, dwTypeCode, dwValueLength;
-	char ValueName[256];
-	char Value[256];
-	dwValueNameLength = sizeof(ValueName);
-	dwValueLength = sizeof(Value);
-	LONG lnResult;
-	HKEY hKey;
-	lnResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP\\SERIALCOMM", 0, KEY_READ, &hKey);
-	if (lnResult == ERROR_SUCCESS) {
-		printf("### GET ###\n");
-		while(RegEnumValue(hKey, Index, ValueName, &dwValueNameLength, NULL, &dwTypeCode, (BYTE *)Value, &dwValueLength) == ERROR_SUCCESS) {
-			printf("### %s ###\n", ValueName);
-			if(dwTypeCode == REG_SZ) {
-				printf("### %s ###\n", ValueName);
-			}
-			dwValueNameLength = sizeof(ValueName);
-			dwValueLength = sizeof(Value);
-			Index++;
-		}
-		RegCloseKey(hKey);
-	}
-	printf("### END ###\n");
 #endif
 
 #ifndef WINDOWS
