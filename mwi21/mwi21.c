@@ -240,11 +240,6 @@ void mwi21_update (void) {
 		mwi21_get_new();
 		printf("mwi21: timeout\n");
 	}
-
-
-	printf("mwi21: check\n");
-
-
 	while ((res = serial_read(mwi21_serial_fd, serial_buffer, 1023)) > 0) {
 	    int i = 0;
 	    for (i = 0; i < res; i++) {
@@ -260,7 +255,7 @@ void mwi21_update (void) {
 		if (c == 'M' && last == '$') {
 			mwi21_frame_start = mwi21_serial_n - 2;
 			mwi21_frame_len = 0;
-			printf("mwi21_frame_start: %i\n", mwi21_frame_start);
+//			printf("mwi21_frame_start: %i\n", mwi21_frame_start);
 			tout = 0;
 		}
 		if (mwi21_serial_n - mwi21_frame_start == 4) {

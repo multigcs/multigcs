@@ -27,9 +27,7 @@ void serial_write (int fd, uint8_t *data, int len) {
 #else
 	DWORD dwBytesWritten = 0;
 	WriteFile(hSerial[fd], data, len, &dwBytesWritten, NULL);
-
-printf("## serial set: %i/%i \n", dwBytesWritten, len);
-
+	//printf("## serial set: %i/%i \n", dwBytesWritten, len);
 #endif
 }
 
@@ -41,20 +39,9 @@ ssize_t serial_read(int fd, void *data, size_t len) {
 	return read(fd, data, len);
 #endif
 #else
-
-    HANDLE hReadEvent = CreateEvent(NULL,TRUE,FALSE,"RxEvent");
-    OVERLAPPED ovRead;
-    memset(&ovRead,0,sizeof(ovRead));
-    ovRead.hEvent = hReadEvent;
-
-WaitForSingleObject(hReadEvent,10);
-
-
 	DWORD dwBytesRead = 0;
-        if (HasOverlappedIoCompleted(&ovRead)) {
-		ReadFile(hSerial[fd], data, len, &dwBytesRead, 0);
-	}
-	printf("## serial get: %i/%i \n", dwBytesRead, len);
+	ReadFile(hSerial[fd], data, len, &dwBytesRead, 0);
+	//printf("## serial get: %i/%i \n", dwBytesRead, len);
 	return dwBytesRead;
 #endif
 }
@@ -237,9 +224,9 @@ int serial_open (char *mdevice, uint32_t baud) {
 		hSerial[free_port] = INVALID_HANDLE_VALUE;
 		return -1;
 	}
-	timeouts.ReadIntervalTimeout = 1;
+	timeouts.ReadIntervalTimeout = 0;
 	timeouts.ReadTotalTimeoutConstant = 1;
-	timeouts.ReadTotalTimeoutMultiplier = 1;
+	timeouts.ReadTotalTimeoutMultiplier = 0;
 	timeouts.WriteTotalTimeoutConstant = 1;
 	timeouts.WriteTotalTimeoutMultiplier = 1;
 	if(SetCommTimeouts(hSerial[free_port], &timeouts) == 0) {
