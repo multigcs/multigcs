@@ -51,8 +51,7 @@ exe.rc: data/exe.rc
 	(cat data/exe.rc | sed "s|_VERSION_|$(VERSION)|g" > exe.rc)
 
 exe.res: exe.rc
-	i686-w64-mingw32-windres data/exe.rc -O coff exe.res
-
+	i686-w64-mingw32-windres exe.rc -O coff exe.res
 
 gcs.exe: ${COMMONSRC} ${COMMONHDR} ${GCS} exe.res
 	@echo "linking $@"
