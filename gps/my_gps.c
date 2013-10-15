@@ -26,7 +26,7 @@ void gps_update (void) {
 	static int res;
 	static char serial_buf[2];
 	static char line[1024];
-	if (serial_fd_gps >= 0 && (res = read(serial_fd_gps, serial_buf, 1)) > 0) {
+	if (serial_fd_gps >= 0 && (res = serial_read(serial_fd_gps, serial_buf, 1)) > 0) {
 		last_connection = time(0);
 		if (serial_buf[0] == '\r') {
 		} else if (serial_buf[0] != '\n') {
@@ -149,7 +149,7 @@ int gcs_thread_serial_gps (void *unused) {
 	char serial_buf[2];
 	char line[1024];
 	while (gui_running == 1) {
-		while ((res = read(gcs_serial_fd_gps, serial_buf, 1)) > 0 && gui_running == 1) {
+		while ((res = serial_read(gcs_serial_fd_gps, serial_buf, 1)) > 0 && gui_running == 1) {
 			gcs_last_connection = time(0);
 			if (serial_buf[0] == '\r') {
 			} else if (serial_buf[0] != '\n') {

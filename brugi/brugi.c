@@ -10,7 +10,7 @@ BrugiSetup brugi_setup;
 
 void brugi_send_cmd (char *cmd) {
 	if (brugi_serial_fd >= 0) {
-		write(brugi_serial_fd, cmd, strlen(cmd));
+		serial_write(brugi_serial_fd, cmd, strlen(cmd));
 	}
 }
 
@@ -264,7 +264,7 @@ void brugi_update (void) {
 			brugi_send_cmd("OAC 1\n");
 		}
 	}
-	while ((res = read(brugi_serial_fd, brugi_serial_buf, 1)) > 0) {
+	while ((res = serial_read(brugi_serial_fd, brugi_serial_buf, 1)) > 0) {
 		last_connection = time(0);
 		c = brugi_serial_buf[0];
 

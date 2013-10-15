@@ -40,7 +40,7 @@ void jeti_update (void) {
 	uint8_t c = 0;
 	uint8_t res = 0;
 	if (jeti_serial_fd >= 0) {
-		while ((res = read(jeti_serial_fd, jeti_serial_buf, 1)) > 0) {
+		while ((res = serial_read(jeti_serial_fd, jeti_serial_buf, 1)) > 0) {
 			last_connection = time(0);
 			c = jeti_serial_buf[0];
 //			printf("jeti: %i: %i (%c)\n", jeti_line_cn, c, c);
@@ -56,7 +56,7 @@ void jeti_update (void) {
 					if (jeti_button > 0) {
 						usleep(10000);
 						printf("jeti: Button: %c\n", jeti_button);
-//						write(jeti_serial_fd, jeti_button, 1);
+//						serial_write(jeti_serial_fd, jeti_button, 1);
 						jeti_button = 0;
 					}
 					jeti_ok = 1;

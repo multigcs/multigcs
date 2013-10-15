@@ -61,7 +61,7 @@ void simplebgc_update (void) {
 			send_buffer[3] = (send_buffer[1] + send_buffer[2])%255;
 			send_buffer[4] = 0;
 			if (simplebgc_serial_fd >= 0) {
-				write(simplebgc_serial_fd, send_buffer, 5);
+				serial_write(simplebgc_serial_fd, send_buffer, 5);
 			}
 			simplebgc_cmd = 0;
 		} else if (info_num == 0) {
@@ -72,7 +72,7 @@ void simplebgc_update (void) {
 			send_buffer[3] = (send_buffer[1] + send_buffer[2])%255;
 			send_buffer[4] = 0;
 			if (simplebgc_serial_fd >= 0) {
-				write(simplebgc_serial_fd, send_buffer, 5);
+				serial_write(simplebgc_serial_fd, send_buffer, 5);
 			}
 		} else if (info_num == 1) {
 			char send_buffer[20];
@@ -82,7 +82,7 @@ void simplebgc_update (void) {
 			send_buffer[3] = (send_buffer[1] + send_buffer[2])%255;
 			send_buffer[4] = 0;
 			if (simplebgc_serial_fd >= 0) {
-				write(simplebgc_serial_fd, send_buffer, 5);
+				serial_write(simplebgc_serial_fd, send_buffer, 5);
 			}
 		} else if (info_num == 2) {
 			char send_buffer[20];
@@ -92,11 +92,11 @@ void simplebgc_update (void) {
 			send_buffer[3] = (send_buffer[1] + send_buffer[2])%255;
 			send_buffer[4] = 0;
 			if (simplebgc_serial_fd >= 0) {
-				write(simplebgc_serial_fd, send_buffer, 5);
+				serial_write(simplebgc_serial_fd, send_buffer, 5);
 			}
 		}
 	}
-	while ((res = read(simplebgc_serial_fd, simplebgc_serial_buf, 1)) > 0) {
+	while ((res = serial_read(simplebgc_serial_fd, simplebgc_serial_buf, 1)) > 0) {
 		last_connection = time(0);
 		c = simplebgc_serial_buf[0];
 //		printf("	%i	<<<<<: %i (%c)\n", data_count - 3, c, c);

@@ -48,7 +48,7 @@ int thread_serial_frsky (void *unused) {
 	uint8_t byte_stuffing = 0;
 	uint8_t byte_stuffing_user = 0;
 	while (gui_running == 1 && frsky_thread_running == 1) {
-		while ((read_num = read(serial_fd_frsky, read_buffer, 200)) > 0) {
+		while ((read_num = serial_read(serial_fd_frsky, read_buffer, 200)) > 0) {
 			for (nn = 0; nn < read_num; nn++) {
 				new = read_buffer[nn];
 //				printf("##%i: %i (0x%x)\n", buffer_ptr, new, new);

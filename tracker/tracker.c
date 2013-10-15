@@ -139,7 +139,7 @@ int thread_serial_tracker (void *unused) {
 //	uint8_t read_num = 0;
 	while (gui_running == 1 && tracker_thread_running == 1) {
 /*		if (serial_fd_tracker != -1) {
-			while ((read_num = read(serial_fd_tracker, read_buffer, 200)) > 0) {
+			while ((read_num = serial_read(serial_fd_tracker, read_buffer, 200)) > 0) {
 				for (nn = 0; nn < read_num; nn++) {
 					new = read_buffer[nn];
 					printf("##: %i (0x%x)\n", new, new);
@@ -200,11 +200,11 @@ int thread_serial_tracker (void *unused) {
 				char tmp_str[1024];
 //				sprintf(tmp_str, "A%f %f\n", direction, direction_up * -1.0 + 90.0);
 //				printf("#%s#", tmp_str);
-//				write(serial_fd_tracker, tmp_str, strlen(tmp_str));
+//				serial_write(serial_fd_tracker, tmp_str, strlen(tmp_str));
 
 				sprintf(tmp_str, "P%f %f %f\n", ModelData.p_lat, ModelData.p_long, ModelData.p_alt);
 //				printf("#%s#", tmp_str);
-				write(serial_fd_tracker, tmp_str, strlen(tmp_str));
+				serial_write(serial_fd_tracker, tmp_str, strlen(tmp_str));
 
 			}
 

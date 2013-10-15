@@ -87,7 +87,7 @@ void openpilot_send_ack (void) {
 //		printf("%i: %x (%x)\n", n2, openpilot_write_buf[n2], crc);
 	}
 	openpilot_write_buf[n++] = crc; 	//Checksum
-	write(serial_fd_openpilot, openpilot_write_buf, n);
+	serial_write(serial_fd_openpilot, openpilot_write_buf, n);
 }
 
 void openpilot_save_to_flash (void) {
@@ -120,7 +120,7 @@ void openpilot_save_to_flash (void) {
 		crc = PIOS_CRC_updateByte(crc, openpilot_write_buf[n2]);
 	}
 	openpilot_write_buf[len] = crc; 	//Checksum
-	write(serial_fd_openpilot, openpilot_write_buf, len + 1);
+	serial_write(serial_fd_openpilot, openpilot_write_buf, len + 1);
 }
 
 void openpilot_send_req (uint8_t status) {
@@ -155,7 +155,7 @@ void openpilot_send_req (uint8_t status) {
 //		printf("%i: %x (%x)\n", n2, openpilot_write_buf[n2], crc);
 	}
 	openpilot_write_buf[len] = crc; 	//Checksum
-	write(serial_fd_openpilot, openpilot_write_buf, len + 1);
+	serial_write(serial_fd_openpilot, openpilot_write_buf, len + 1);
 }
 
 void openpilot_send_setting_req (void) {
@@ -190,7 +190,7 @@ void openpilot_send_setting_req (void) {
 //		printf("%i: %x (%x)\n", n2, openpilot_write_buf[n2], crc);
 	}
 	openpilot_write_buf[len] = crc; 	//Checksum
-	write(serial_fd_openpilot, openpilot_write_buf, len + 1);
+	serial_write(serial_fd_openpilot, openpilot_write_buf, len + 1);
 }
 
 void openpilot_request_StabilizationSettings (void) {
@@ -213,7 +213,7 @@ void openpilot_request_StabilizationSettings (void) {
 		crc = PIOS_CRC_updateByte(crc, openpilot_write_buf[n2]);
 	}
 	openpilot_write_buf[len] = crc; 	//Checksum
-	write(serial_fd_openpilot, openpilot_write_buf, len + 1);
+	serial_write(serial_fd_openpilot, openpilot_write_buf, len + 1);
 }
 
 void openpilot_defaults_StabilizationSettings (StabilizationSettingsData *data) {
@@ -291,7 +291,7 @@ void openpilot_send_StabilizationSettings (StabilizationSettingsData *data) {
 		crc = PIOS_CRC_updateByte(crc, openpilot_write_buf[n2]);
 	}
 	openpilot_write_buf[len] = crc; 	//Checksum
-	write(serial_fd_openpilot, openpilot_write_buf, len + 1);
+	serial_write(serial_fd_openpilot, openpilot_write_buf, len + 1);
 }
 
 void openpilot_defaults_HwSettings (HwSettingsData *data) {
@@ -342,7 +342,7 @@ void openpilot_send_HwSettings (HwSettingsData *data) {
 		crc = PIOS_CRC_updateByte(crc, openpilot_write_buf[n2]);
 	}
 	openpilot_write_buf[len] = crc; 	//Checksum
-	write(serial_fd_openpilot, openpilot_write_buf, len + 1);
+	serial_write(serial_fd_openpilot, openpilot_write_buf, len + 1);
 }
 
 void openpilot_request_HwSettings (void) {
@@ -365,7 +365,7 @@ void openpilot_request_HwSettings (void) {
 		crc = PIOS_CRC_updateByte(crc, openpilot_write_buf[n2]);
 	}
 	openpilot_write_buf[len] = crc; 	//Checksum
-	write(serial_fd_openpilot, openpilot_write_buf, len + 1);
+	serial_write(serial_fd_openpilot, openpilot_write_buf, len + 1);
 }
 
 void openpilot_defaults_SystemSettings (SystemSettingsData *data) {
@@ -396,7 +396,7 @@ void openpilot_send_SystemSettings (SystemSettingsData *data) {
 		crc = PIOS_CRC_updateByte(crc, openpilot_write_buf[n2]);
 	}
 	openpilot_write_buf[len] = crc; 	//Checksum
-	write(serial_fd_openpilot, openpilot_write_buf, len + 1);
+	serial_write(serial_fd_openpilot, openpilot_write_buf, len + 1);
 }
 
 void openpilot_request_SystemSettings (void) {
@@ -419,7 +419,7 @@ void openpilot_request_SystemSettings (void) {
 		crc = PIOS_CRC_updateByte(crc, openpilot_write_buf[n2]);
 	}
 	openpilot_write_buf[len] = crc; 	//Checksum
-	write(serial_fd_openpilot, openpilot_write_buf, len + 1);
+	serial_write(serial_fd_openpilot, openpilot_write_buf, len + 1);
 }
 
 void openpilot_update (void) {
@@ -435,14 +435,14 @@ void openpilot_update (void) {
 	if (serial_fd_openpilot >= 0) {
 		if (data_start == 0) {
 		//	printf("-\n");
-			if (read(serial_fd_openpilot, &openpilot_read_buf[0], 1) > 0 && openpilot_read_buf[0] == 0x3c) {
+			if (serial_read(serial_fd_openpilot, &openpilot_read_buf[0], 1) > 0 && openpilot_read_buf[0] == 0x3c) {
 		//		printf("FRAME_START\n");
 				data_start = 1;
 				data_num = 1;
 				data_len = 0;
 			}
 		} else {
-			if ((res = read(serial_fd_openpilot, &openpilot_read_buf[data_num], 1)) > 0) {
+			if ((res = serial_read(serial_fd_openpilot, &openpilot_read_buf[data_num], 1)) > 0) {
 		//		printf("+ %i\n", res);
 				data_num += res;
 				if (data_num > 200) {
