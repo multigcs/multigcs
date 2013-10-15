@@ -55,7 +55,7 @@ test:
 	(cd Windows/MultiGCS/ ; wine MultiGCS.exe)
 
 pack:
-	#rm -rf Windows
+	rm -rf Windows
 	mkdir -p Windows/MultiGCS
 	cp -a gcs.exe Windows/MultiGCS/MultiGCS.exe
 	mkdir -p Windows/MultiGCS/$(BASE_DIR)
