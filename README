@@ -42,6 +42,26 @@ Installation:
 		make -f Makefile.win32-cross all pack
 
 
+Android-Permissions:
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+	to read and write map-files to storrage
+
+    <uses-permission android:name="android.permission.INTERNET" />
+	to get maps and open sevrer-port (closed by default)
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	to get gps-data for the map
+
+    <uses-permission android:name="android.permission.BATTERY_STATS" />
+	to get battery-data
+
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+	for fc-connection over bluetooth
+
+
+
 Raspberry-PI:
 #cat /boot/config.txt 
 hdmi_safe=1
