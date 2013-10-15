@@ -170,7 +170,7 @@ int serial_open (char *mdevice, uint32_t baud) {
 		return -1;
 	}
 
-	hSerial[free_port] = CreateFile(mdevice, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, 0);
+	hSerial[free_port] = CreateFile(mdevice, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 	if (hSerial[free_port] == INVALID_HANDLE_VALUE) {
 		printf("..Failed (INVALID_HANDLE_VALUE: %i)\n", GetLastError());
 		return -1;
@@ -224,9 +224,11 @@ int serial_open (char *mdevice, uint32_t baud) {
 		hSerial[free_port] = INVALID_HANDLE_VALUE;
 		return -1;
 	}
+
 	timeouts.ReadIntervalTimeout = 0;
 	timeouts.ReadTotalTimeoutConstant = 1;
 	timeouts.ReadTotalTimeoutMultiplier = 0;
+
 	timeouts.WriteTotalTimeoutConstant = 1;
 	timeouts.WriteTotalTimeoutMultiplier = 1;
 	if(SetCommTimeouts(hSerial[free_port], &timeouts) == 0) {

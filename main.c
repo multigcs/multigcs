@@ -81,7 +81,7 @@ char *get_datadirectory (void) {
 	strcpy(datradir, "MultiGCS");
 	char path[1024];
 	path[0] = 0;
-	SHGetSpecialFolderPath(HWND_DESKTOP, path, CSIDL_DESKTOP, FALSE);
+	SHGetSpecialFolderPath(HWND_DESKTOP, path, CSIDL_PROFILE, FALSE);
 	sprintf(datradir, "%s/MultiGCS", path);
 #else
 #ifdef ANDROID

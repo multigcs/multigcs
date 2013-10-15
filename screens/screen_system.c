@@ -225,6 +225,7 @@ void screen_overview (ESContext *esContext) {
 			x = 0;
 			y += 1;
 		}
+#ifndef WINDOWS
 #ifndef ANDROID
 		draw_to_buffer();
 		if (n == VIEW_MODE_HUD) {
@@ -278,6 +279,10 @@ void screen_overview (ESContext *esContext) {
 		} else {
 			draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_WHITE, -1.422 + 0.35 + x * 0.71, -0.99 + y * 0.66, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)n);
 		}
+#else
+		sprintf(tmp_str, "%s", view_names[n]);
+		draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_WHITE, -1.422 + 0.35 + x * 0.71, -0.99 + y * 0.66 + 0.3, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)n);
+#endif
 #else
 		sprintf(tmp_str, "%s", view_names[n]);
 		draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_WHITE, -1.422 + 0.35 + x * 0.71, -0.99 + y * 0.66 + 0.3, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)n);
