@@ -1,0 +1,74 @@
+#!/usr/bin/tclsh
+#
+#
+
+
+proc list_files {DIR} {
+	catch {
+		foreach FILE [glob "$DIR/*"] {
+	
+			set FILE2 [string replace $FILE 0 1 ""]
+			set FILE2 [string map "/ \\" $FILE2]
+			if {[file isdir $FILE]} {
+				puts "SetOutPath \"\$INSTDIR\\$FILE2\""
+				list_files "$FILE"
+			} else {
+				puts "  File $FILE2"
+			}
+		}
+	}
+}
+
+puts "  !define MUI_PRODUCT \"MultiGCS\""
+puts "  !define MUI_FILE \"MultiGCS\""
+puts "  !define MUI_VERSION \"0.9\""
+puts "  !define MUI_NAME \"MultiGCS\""
+puts "  !define MUI_BRANDINGTEXT \"MultiGCS\""
+puts "  CRCCheck On"
+puts "  OutFile \"installer.exe\""
+puts "  ShowInstDetails \"nevershow\""
+puts "  ShowUninstDetails \"nevershow\""
+puts "  !define MUI_ICON \"icon.ico\""
+puts "  !define MUI_UNICON \"icon.ico\""
+puts "  !define MUI_SPECIALBITMAP \"Bitmap.bmp\""
+puts "  InstallDir \"\$PROGRAMFILES\\\${MUI_PRODUCT}\""
+puts "  !define MUI_WELCOMEPAGE  "
+puts "  !define MUI_LICENSEPAGE"
+puts "  !define MUI_DIRECTORYPAGE"
+puts "  !define MUI_ABORTWARNING"
+puts "  !define MUI_UNINSTALLER"
+puts "  !define MUI_UNCONFIRMPAGE"
+puts "  !define MUI_FINISHPAGE  "
+#puts "  !insertmacro MUI_LANGUAGE \"English\""
+#puts "  !insertmacro MUI_SYSTEM "
+puts "  LicenseData \"copyright.txt\""
+puts " "
+puts "Section \"install\""
+
+puts "SetOutPath \"\$INSTDIR\""
+list_files "./"
+
+puts "  CreateShortCut \"\$DESKTOP\\\${MUI_PRODUCT}.lnk\" \"\$INSTDIR\\\${MUI_FILE}.exe\" \"\""
+puts "  CreateDirectory \"\$SMPROGRAMS\\\${MUI_PRODUCT}\""
+puts "  CreateShortCut \"\$SMPROGRAMS\\\${MUI_PRODUCT}\\Uninstall.lnk\" \"\$INSTDIR\\Uninstall.exe\" \"\" \"\$INSTDIR\\Uninstall.exe\" 0"
+puts "  CreateShortCut \"\$SMPROGRAMS\\\${MUI_PRODUCT}\\\${MUI_PRODUCT}.lnk\" \"\$INSTDIR\\\${MUI_FILE}.exe\" \"\" \"\$INSTDIR\\\${MUI_FILE}.exe\" 0"
+puts "  WriteUninstaller \"\$INSTDIR\\Uninstall.exe\""
+puts "SectionEnd"
+puts ""
+puts "Section \"Uninstall\""
+puts "  RMDir /r \"\$INSTDIR\\*.*\"    "
+puts "  RMDir \"\$INSTDIR\""
+puts "  Delete \"\$DESKTOP\\\${MUI_PRODUCT}.lnk\""
+puts "  Delete \"\$SMPROGRAMS\\\${MUI_PRODUCT}\\*.*\""
+puts "  RmDir  \"\$SMPROGRAMS\\\${MUI_PRODUCT}\""
+puts "SectionEnd"
+puts " "
+puts "Function .onInstSuccess"
+puts "  MessageBox MB_OK \"You have successfully installed \${MUI_PRODUCT}. Use the desktop icon to start the program.\""
+puts "FunctionEnd"
+puts " "
+puts "Function un.onUninstSuccess"
+puts "  MessageBox MB_OK \"You have successfully uninstalled \${MUI_PRODUCT}.\""
+puts "FunctionEnd"
+
+
