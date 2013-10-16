@@ -86,7 +86,7 @@ typedef struct {
 	uint8_t follow_deadband;
 	uint8_t follow_expo_rate;
 	uint8_t follow_offset_roll;
-	uint8_t follow_offset_putch;
+	uint8_t follow_offset_pitch;
 	int8_t follow_offset_yaw;
 	int8_t axis_top;
 	int8_t axis_right;
@@ -114,4 +114,6 @@ uint8_t simplebgc_connection_status (void);
 void simplebgc_init (char *port, uint32_t baud);
 void simplebgc_exit (void);
 void simplebgc_send_cmd (uint8_t cmd);
+
+extern SimpleBgcSetup simplebgc_setup;
 

@@ -117,6 +117,7 @@
 #include <screen_baseflightcli.h>
 #include <screen_baud.h>
 #include <screen_brugi.h>
+#include <screen_simplebgc.h>
 #include <screen_calibration.h>
 #include <screen_cli.h>
 #include <screen_device.h>

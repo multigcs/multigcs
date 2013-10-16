@@ -7,6 +7,9 @@ uint8_t simplebgc_serial_buf[255];
 static uint32_t last_connection = 1;
 static uint8_t simplebgc_cmd = 0;
 
+SimpleBgcSetup simplebgc_setup;
+
+
 void simplebgc_send_cmd (uint8_t cmd) {
 	simplebgc_cmd = cmd;
 }
@@ -161,6 +164,8 @@ void simplebgc_update (void) {
 				} else if (data_cmd == 'R') {
 					info_num = 2;
 
+					memcpy(&simplebgc_setup, &data_buffer, sizeof(SimpleBgcSetup));
+
 					printf("Profile parameters:\n");
 					printf("	PROFILE %i\n", data_buffer[0]);
 					printf("	ROLL_P %i\n", data_buffer[1]);
@@ -219,7 +224,7 @@ void simplebgc_update (void) {
 					printf("	FOLLOW_DEADBAND %i\n", data_buffer[60]);
 					printf("	FOLLOW_EXPO_RATE %i\n", data_buffer[61]);
 					printf("	FOLLOW_OFFSET_ROLL %i\n", data_buffer[62]);
-					printf("	FOLLOW_OFFSET_PUTCH %i\n", data_buffer[63]);
+					printf("	FOLLOW_OFFSET_PITCH %i\n", data_buffer[63]);
 					printf("	FOLLOW_OFFSET_YAW %i\n", data_buffer[64]);
 					printf("\n");
 					printf("General parameters:\n");

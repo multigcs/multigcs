@@ -1738,6 +1738,8 @@ void Draw (ESContext *esContext) {
 			screen_baseflightcli(esContext);
 		} else if (ModelData.teletype == TELETYPE_BRUGI) {
 			screen_brugi(esContext);
+		} else if (ModelData.teletype == TELETYPE_SIMPLEBGC) {
+			screen_simplebgc(esContext);
 		} else {
 			screen_mavlink_menu(esContext);
 		}
