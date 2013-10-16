@@ -35,6 +35,7 @@ install:
 	cp -a README /usr/share/doc/multigcs/README
 	cp -a copyright /usr/share/doc/multigcs/copyright
 	cp -a gplv3.txt /usr/share/doc/multigcs/gplv3.txt
+	cp -a multigcs.html /usr/share/doc/multigcs/multigcs.html
 	test -e .git && git log | gzip -9 > /usr/share/doc/multigcs/changelog.gz
 	test -e .git && git log | gzip -9 > /usr/share/doc/multigcs/changelog.Debian.gz 
 	mkdir -p $(BASE_DIR)
@@ -53,6 +54,7 @@ install:
 	mkdir -p $(BASE_DIR)/mavlink
 	cp -a mavlink/ParameterMetaData*.xml $(BASE_DIR)/mavlink/
 	mkdir -p $(BASE_DIR)/webserv
+	cp -a multigcs.html $(BASE_DIR)/webserv/multigcs.html
 	cp -a textures/marker.png $(BASE_DIR)/webserv/marker.png
 	cp -a textures/MULTICOPTER.png $(BASE_DIR)/webserv/model.png
 	cp -a net/map.js $(BASE_DIR)/webserv/map.js
@@ -77,6 +79,7 @@ deb: gcs
 	cp -a README package/usr/share/doc/multigcs/README
 	cp -a copyright package/usr/share/doc/multigcs/copyright
 	cp -a gplv3.txt package/usr/share/doc/multigcs/gplv3.txt
+	cp -a multigcs.html package/usr/share/doc/multigcs/multigcs.html
 	git log | gzip -9 > package/usr/share/doc/multigcs/changelog.gz
 	git log | gzip -9 > package/usr/share/doc/multigcs/changelog.Debian.gz 
 	mkdir -p package$(BASE_DIR)
@@ -95,6 +98,7 @@ deb: gcs
 	mkdir -p package$(BASE_DIR)/mavlink
 	cp -a mavlink/ParameterMetaData*.xml package$(BASE_DIR)/mavlink/
 	mkdir -p package$(BASE_DIR)/webserv
+	cp -a multigcs.html package$(BASE_DIR)/webserv/multigcs.html
 	cp -a textures/marker.png package$(BASE_DIR)/webserv/marker.png
 	cp -a textures/MULTICOPTER.png package$(BASE_DIR)/webserv/model.png
 	cp -a net/map.js package$(BASE_DIR)/webserv/map.js

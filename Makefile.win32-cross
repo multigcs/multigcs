@@ -80,6 +80,7 @@ pack:
 	mkdir -p Windows/MultiGCS/$(BASE_DIR)/mavlink
 	cp -a mavlink/ParameterMetaData*.xml Windows/MultiGCS/$(BASE_DIR)/mavlink/
 	mkdir -p Windows/MultiGCS/$(BASE_DIR)/webserv
+	cp -a multigcs.html Windows/MultiGCS/$(BASE_DIR)/webserv/multigcs.html
 	cp -a textures/marker.png Windows/MultiGCS/$(BASE_DIR)/webserv/marker.png
 	cp -a textures/MULTICOPTER.png Windows/MultiGCS/$(BASE_DIR)/webserv/model.png
 	cp -a net/map.js Windows/MultiGCS/$(BASE_DIR)/webserv/map.js
@@ -92,6 +93,7 @@ pack:
 	cp -a copyright Windows/MultiGCS/copyright.txt
 	cp -a gplv3.txt Windows/MultiGCS/gplv3.txt
 	cp -a README Windows/MultiGCS/README.txt
+	cp -a multigcs.html Windows/MultiGCS/multigcs.html
 	test -e .git && git log > Windows/MultiGCS/changelog.txt
 	todos Windows/MultiGCS/copyright.txt
 	todos Windows/MultiGCS/gplv3.txt

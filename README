@@ -7,6 +7,7 @@ Ground-Control-Station for multiple Protocols
 * Support for UAV-Talk (OpenPilot, CC, C3D, ...)
 * Support for NMEA-GPS (über beliebige Serielle Funk-Brücken)
 * Support for FrSky-Telemetrie (inkl GPS & RSSI)
+* Network-Support: HTML5 Frontend and (Live-)Data-Export (Google-Earth, Blender) 
 * Touchscreens-Optimization
 * for Linux-PC's, Mac-OSX, Android, Windows and Raspberry-PI(raspbian)
 * GPL v3

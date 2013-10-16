@@ -40,6 +40,11 @@ app: gcs
 	cp -a data/WMM2010.COF multigcs.app/Contents/MacOS/share/
 	cp -a data/map-services.xml multigcs.app/Contents/MacOS/share/
 	cp -a utils/clean-badmaps.sh multigcs.app/Contents/MacOS/share/clean-badmaps.sh
+	cp -a README multigcs.app/Contents/MacOS/share/README
+	cp -a copyright multigcs.app/Contents/MacOS/share/copyright
+	cp -a gplv3.txt multigcs.app/Contents/MacOS/share/gplv3.txt
+	test -e .git && git log | gzip -9 > multigcs.app/Contents/MacOS/share/changelog.gz
+	test -e .git && git log | gzip -9 > multigcs.app/Contents/MacOS/share/changelog.Debian.gz 
 	mkdir -p multigcs.app/Contents/MacOS/share/obj3d
 	mkdir -p multigcs.app/Contents/MacOS/share/textures
 	cp -a textures/* multigcs.app/Contents/MacOS/share/textures/
@@ -52,6 +57,7 @@ app: gcs
 	mkdir -p multigcs.app/Contents/MacOS/share/mavlink
 	cp -a mavlink/ParameterMetaData*.xml multigcs.app/Contents/MacOS/share/mavlink/
 	mkdir -p multigcs.app/Contents/MacOS/share/webserv
+	cp -a multigcs.html multigcs.app/Contents/MacOS/share/webserv/multigcs.html
 	cp -a textures/marker.png multigcs.app/Contents/MacOS/share/webserv/marker.png
 	cp -a textures/MULTICOPTER.png multigcs.app/Contents/MacOS/share/webserv/model.png
 	cp -a net/map.js multigcs.app/Contents/MacOS/share/webserv/map.js

@@ -2939,7 +2939,9 @@ void webserv_child (int fd) {
 			}
 			printf("## %s ##\n", buffer + 4);
 			webserv_child_dump_file(fd, buffer + 4, "image/jpg");
-
+		} else if (strncmp(buffer + 4,"/multigcs.html", 14) == 0) {
+			sprintf(tmp_str, "%s/webserv/multigcs.html", BASE_DIR);
+			webserv_child_dump_file(fd, tmp_str, "text/html");
 
 		// HTML5 HUD-View + Map
 		} else if (strncmp(buffer + 4,"/map.html", 9) == 0) {
