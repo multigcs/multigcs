@@ -92,9 +92,11 @@ pack:
 	cp -a copyright Windows/MultiGCS/copyright.txt
 	cp -a gplv3.txt Windows/MultiGCS/gplv3.txt
 	cp -a README Windows/MultiGCS/README.txt
+	test -e .git && git log > Windows/MultiGCS/changelog.txt
 	todos Windows/MultiGCS/copyright.txt
 	todos Windows/MultiGCS/gplv3.txt
 	todos Windows/MultiGCS/README.txt
+	todos Windows/MultiGCS/changelog.txt
 	cp /usr/i686-w64-mingw32/bin/libpng3.dll Windows/MultiGCS/
 	cp /usr/i686-w64-mingw32/bin/tcl85.dll Windows/MultiGCS/
 	cp /usr/i686-w64-mingw32/bin/SDL2_image.dll Windows/MultiGCS/

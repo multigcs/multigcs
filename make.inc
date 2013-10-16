@@ -35,8 +35,8 @@ install:
 	cp -a README /usr/share/doc/multigcs/README
 	cp -a copyright /usr/share/doc/multigcs/copyright
 	cp -a gplv3.txt /usr/share/doc/multigcs/gplv3.txt
-	git log | gzip -9 > /usr/share/doc/multigcs/changelog.gz
-	git log | gzip -9 > /usr/share/doc/multigcs/changelog.Debian.gz 
+	test -e .git && git log | gzip -9 > /usr/share/doc/multigcs/changelog.gz
+	test -e .git && git log | gzip -9 > /usr/share/doc/multigcs/changelog.Debian.gz 
 	mkdir -p $(BASE_DIR)
 	cp -a data/WMM2010.COF $(BASE_DIR)/
 	cp -a data/map-services.xml $(BASE_DIR)/
