@@ -52,6 +52,7 @@ puts "Section \"install\""
 puts " SetOutPath \"\$INSTDIR\""
 list_files "./"
 
+puts " SetOutPath \"\$INSTDIR\""
 puts "  CreateShortCut \"\$DESKTOP\\\${MUI_PRODUCT}.lnk\" \"\$INSTDIR\\\${MUI_FILE}.exe\" \"\""
 puts "  CreateDirectory \"\$SMPROGRAMS\\\${MUI_PRODUCT}\""
 puts "  CreateShortCut \"\$SMPROGRAMS\\\${MUI_PRODUCT}\\Uninstall.lnk\" \"\$INSTDIR\\Uninstall.exe\" \"\" \"\$INSTDIR\\Uninstall.exe\" 0"
