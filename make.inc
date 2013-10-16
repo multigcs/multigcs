@@ -28,7 +28,15 @@ clean:
 
 install:
 	cp -a gcs /usr/bin/gl-gcs
-	cp -a utils/gcs.sh /usr/bin/gcs
+	cp -a utils/gcs.sh /usr/bin/multigcs
+	mkdir -p /usr/share/man/man1/
+	cat data/man.1 | gzip -9 > /usr/share/man/man1/multigcs.1.gz
+	mkdir -p /usr/share/doc/multigcs/
+	cp -a README /usr/share/doc/multigcs/README
+	cp -a copyright /usr/share/doc/multigcs/copyright
+	cp -a gplv3.txt /usr/share/doc/multigcs/gplv3.txt
+	git log | gzip -9 /usr/share/doc/multigcs/changelog.gz
+	git log | gzip -9 /usr/share/doc/multigcs/changelog.Debian.gz 
 	mkdir -p $(BASE_DIR)
 	cp -a data/WMM2010.COF $(BASE_DIR)/
 	cp -a data/map-services.xml $(BASE_DIR)/
@@ -55,14 +63,22 @@ install:
 	cp -a net/plane.dae $(BASE_DIR)/webserv/plane.dae
 	cp -a net/simple.dae $(BASE_DIR)/webserv/simple.dae
 	chmod 0755 /usr/bin/gl-gcs
-	chmod 0755 /usr/bin/gcs
+	chmod 0755 /usr/bin/multigcs
 	chmod 0755 $(BASE_DIR)/clean-badmaps.sh
 
 deb: gcs
 	rm -rf package/
 	mkdir -p package/usr/bin
 	cp -a gcs package/usr/bin/gl-gcs
-	cp -a utils/gcs.sh package/usr/bin/gcs
+	cp -a utils/gcs.sh package/usr/bin/multigcs
+	mkdir -p package/usr/share/man/man1/
+	cat data/man.1 | gzip -9 > package/usr/share/man/man1/multigcs.1.gz
+	mkdir -p package/usr/share/doc/multigcs/
+	cp -a README package/usr/share/doc/multigcs/README
+	cp -a copyright package/usr/share/doc/multigcs/copyright
+	cp -a gplv3.txt package/usr/share/doc/multigcs/gplv3.txt
+	git log | gzip -9 package/usr/share/doc/multigcs/changelog.gz
+	git log | gzip -9 package/usr/share/doc/multigcs/changelog.Debian.gz 
 	mkdir -p package$(BASE_DIR)
 	cp -a data/WMM2010.COF package$(BASE_DIR)/
 	cp -a data/map-services.xml package$(BASE_DIR)/
@@ -89,7 +105,7 @@ deb: gcs
 	cp -a net/plane.dae package$(BASE_DIR)/webserv/plane.dae
 	cp -a net/simple.dae package$(BASE_DIR)/webserv/simple.dae
 	chmod 0755 package/usr/bin/gl-gcs
-	chmod 0755 package/usr/bin/gcs
+	chmod 0755 package/usr/bin/multigcs
 	chmod 0755 package$(BASE_DIR)/clean-badmaps.sh
 	mkdir -p package/DEBIAN/
 	echo "Package: multigcs" > package/DEBIAN/control
