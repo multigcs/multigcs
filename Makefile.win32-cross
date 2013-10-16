@@ -63,6 +63,7 @@ test:
 installer:
 	(cd Windows/MultiGCS ; tclsh ../../utils/create-win-installer.tclsh > ../../installer.nsis)
 	cp installer.nsis Windows/MultiGCS/installer.nsis
+	cp data/icon.ico Windows/MultiGCS/icon.ico
 	(cd Windows/MultiGCS ; makensis installer.nsis)
 	mv Windows/MultiGCS/installer.exe Windows/
 
