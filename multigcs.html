@@ -1,7 +1,57 @@
 <HTML>
+<STYLE type="text/css">
+body {
+    background-color: #222A22;
+    color:#FFFFFF;
+}
+a {
+    color:#ABABAB;
+}
+.background {
+    background-color: #111111;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#496949', endColorstr='#111111');
+    background: -webkit-gradient(linear, left top, left bottom, from(#496949), to(#111111));
+    background: -moz-linear-gradient(top,  #496949,  #111111);
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    z-index: -10;
+}
+#table {
+    border: 5px solid #ABABAB;
+    padding: 0px;
+    *border-collapse: collapse;
+    border-spacing: 0;
+    -moz-border-radius: 9px 9px 9px 9px;
+    -webkit-border-radius: 9px 9px 9px 9px;
+    border-radius: 9px 9px 9px 9px;
+    -moz-box-shadow: 10px 10px 5px #000;
+    -webkit-box-shadow: 10px 10px 5px #000;
+    box-shadow: 10px 10px 5px #000;
+}
+th {
+    background-color: #ABABAB;
+    border: 1px solid #ABABAB;
+    color: #000000;
+    padding: 0px;
+    *border-collapse: collapse;
+    border-spacing: 0;
+}
+td {
+    background-color: #222222;
+    border: 1px solid #555555;
+    padding: 0px;
+    *border-collapse: collapse;
+    border-spacing: 0;
+}
+</STYLE>
 <BODY>
+<DIV class="background"></DIV>
 <H1>MultiGCS</H1>
 <HR>
+
 <H3>Overview</H3>
 Ground-Control-Station for multiple Protocols and multiple Platforms
 <BLOCKQUOTE>
@@ -17,9 +67,10 @@ Ground-Control-Station for multiple Protocols and multiple Platforms
 <LI>for Linux-PC's, Mac-OSX, Android, Windows and Raspberry-PI(raspbian-wheezy)
 <LI>GPL v3
 </BLOCKQUOTE>
+
 <H3>Platform-Support</H3>
 <BLOCKQUOTE>
-<TABLE width="90%" border="1">
+<TABLE id="table" width="100%">
 <TR><TH>Function</TH><TH>Linux-Desktop</TH><TH>Raspberry-PI</TH><TH>MacOS-X</TH><TH>Windows</TH><TH>Android</TH></TR>
 <TR><TD>Display</TD><TD>OpenGL</TD><TD>OpenGL-ES2</TD><TD>OpenGL</TD><TD>OpenGL</TD><TD>OpenGL-ES1.1</TD></TR>
 <TR><TD>Draw to Buffer</TD><TD>Yes</TD><TD>No</TD><TD>No</TD><TD>Yes</TD><TD>Yes</TD></TR>
@@ -29,5 +80,6 @@ Ground-Control-Station for multiple Protocols and multiple Platforms
 <TR><TD>Network-Support</TD><TD>Yes</TD><TD>Yes</TD><TD>Yes</TD><TD>No</TD><TD>Yes (buggy/unstable)</TD></TR>
 </TABLE>
 </BLOCKQUOTE>
+
 </BODY>
 </HTML>
