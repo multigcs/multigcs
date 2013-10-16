@@ -6,14 +6,18 @@
 proc list_files {DIR} {
 	catch {
 		foreach FILE [glob "$DIR/*"] {
-	
+			set FILE2 [string replace $FILE 0 1 ""]
+			set FILE2 [string map "/ \\" $FILE2]
+			if {! [file isdir $FILE]} {
+				puts "  File $FILE2"
+			}
+		}
+		foreach FILE [glob "$DIR/*"] {
 			set FILE2 [string replace $FILE 0 1 ""]
 			set FILE2 [string map "/ \\" $FILE2]
 			if {[file isdir $FILE]} {
-				puts "SetOutPath \"\$INSTDIR\\$FILE2\""
+				puts " SetOutPath \"\$INSTDIR\\$FILE2\""
 				list_files "$FILE"
-			} else {
-				puts "  File $FILE2"
 			}
 		}
 	}
@@ -45,7 +49,7 @@ puts "  LicenseData \"copyright.txt\""
 puts " "
 puts "Section \"install\""
 
-puts "SetOutPath \"\$INSTDIR\""
+puts " SetOutPath \"\$INSTDIR\""
 list_files "./"
 
 puts "  CreateShortCut \"\$DESKTOP\\\${MUI_PRODUCT}.lnk\" \"\$INSTDIR\\\${MUI_FILE}.exe\" \"\""

@@ -60,10 +60,8 @@ gcs.exe: ${COMMONSRC} ${COMMONHDR} ${GCS} exe.res
 test:
 	(cd Windows/MultiGCS/ ; wine MultiGCS.exe)
 
-installer.nsis:
+installer:
 	(cd Windows/MultiGCS ; tclsh ../../utils/create-win-installer.tclsh > ../../installer.nsis)
-
-installer: installer.nsis
 	cp installer.nsis Windows/MultiGCS/installer.nsis
 	(cd Windows/MultiGCS ; makensis installer.nsis)
 	mv Windows/MultiGCS/installer.exe Windows/
