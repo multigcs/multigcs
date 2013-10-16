@@ -2,6 +2,10 @@
 #
 #
 
+#(cd /usr/share/nsis/ ; wget -O UltraModernUI_1.00_2010-11-11.zip http://freefr.dl.sourceforge.net/project/ultramodernui/UltraModernUI/UltraModernUI%201.00b2-dev/UltraModernUI_1.00_2010-11-11.zip)
+#(cd /usr/share/nsis/ ; unzip -x UltraModernUI_1.00_2010-11-11.zip)
+
+
 
 proc list_files {DIR} {
 	catch {
@@ -23,58 +27,16 @@ proc list_files {DIR} {
 	}
 }
 
-puts "  !include \"MUI2.nsh\""
-puts "  Name \"MultiGCS\""
-puts "  RequestExecutionLevel user"
-puts "  !define MUI_PRODUCT \"MultiGCS\""
-puts "  !define MUI_FILE \"MultiGCS\""
-puts "  !define MUI_VERSION \"0.9\""
-puts "  !define MUI_NAME \"MultiGCS\""
-puts "  !define MUI_BRANDINGTEXT \"MultiGCS\""
-puts "  CRCCheck On"
-puts "  OutFile \"installer.exe\""
-puts "  ShowInstDetails \"nevershow\""
-puts "  ShowUninstDetails \"nevershow\""
-puts "  !define MUI_ICON \"icon.ico\""
-puts "  !define MUI_UNICON \"icon.ico\""
-puts "  !define MUI_SPECIALBITMAP \"Bitmap.bmp\""
-puts "  InstallDir \"\$PROGRAMFILES\\\${MUI_PRODUCT}\""
-puts "  !define MUI_ABORTWARNING"
-puts "  !insertmacro MUI_PAGE_LICENSE \"copyright.txt\""
-puts "  !insertmacro MUI_PAGE_COMPONENTS"
-puts "  !insertmacro MUI_PAGE_DIRECTORY"
-puts "  !insertmacro MUI_PAGE_INSTFILES"
-puts "  !insertmacro MUI_UNPAGE_CONFIRM"
-puts "  !insertmacro MUI_UNPAGE_INSTFILES"
-puts "  LicenseData \"copyright.txt\""
-puts " "
-puts "Section \"install\""
+set fp [open "../../utils/create-win-installer.pre" r]
+puts "[read $fp]"
+close $fp
+
+puts "Section \"install\" install"
 
 puts " SetOutPath \"\$INSTDIR\""
 list_files "./"
 
-puts " SetOutPath \"\$INSTDIR\""
-puts "  CreateShortCut \"\$DESKTOP\\\${MUI_PRODUCT}.lnk\" \"\$INSTDIR\\\${MUI_FILE}.exe\" \"\""
-puts "  CreateDirectory \"\$SMPROGRAMS\\\${MUI_PRODUCT}\""
-puts "  CreateShortCut \"\$SMPROGRAMS\\\${MUI_PRODUCT}\\Uninstall.lnk\" \"\$INSTDIR\\Uninstall.exe\" \"\" \"\$INSTDIR\\Uninstall.exe\" 0"
-puts "  CreateShortCut \"\$SMPROGRAMS\\\${MUI_PRODUCT}\\\${MUI_PRODUCT}.lnk\" \"\$INSTDIR\\\${MUI_FILE}.exe\" \"\" \"\$INSTDIR\\\${MUI_FILE}.exe\" 0"
-puts "  WriteUninstaller \"\$INSTDIR\\Uninstall.exe\""
-puts "SectionEnd"
-puts ""
-puts "Section \"Uninstall\""
-puts "  RMDir /r \"\$INSTDIR\\*.*\"    "
-puts "  RMDir \"\$INSTDIR\""
-puts "  Delete \"\$DESKTOP\\\${MUI_PRODUCT}.lnk\""
-puts "  Delete \"\$SMPROGRAMS\\\${MUI_PRODUCT}\\*.*\""
-puts "  RmDir  \"\$SMPROGRAMS\\\${MUI_PRODUCT}\""
-puts "SectionEnd"
-puts " "
-puts "Function .onInstSuccess"
-puts "  MessageBox MB_OK \"You have successfully installed \${MUI_PRODUCT}. Use the desktop icon to start the program.\""
-puts "FunctionEnd"
-puts " "
-puts "Function un.onUninstSuccess"
-puts "  MessageBox MB_OK \"You have successfully uninstalled \${MUI_PRODUCT}.\""
-puts "FunctionEnd"
-
+set fp [open "../../utils/create-win-installer.post" r]
+puts "[read $fp]"
+close $fp
 

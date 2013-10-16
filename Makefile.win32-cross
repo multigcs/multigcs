@@ -61,6 +61,9 @@ test:
 	(cd Windows/MultiGCS/ ; wine MultiGCS.exe)
 
 installer:
+	cp data/Bottom.bmp Windows/MultiGCS/
+	cp data/Header.bmp Windows/MultiGCS/
+	cp data/Left.bmp Windows/MultiGCS/
 	(cd Windows/MultiGCS ; tclsh ../../utils/create-win-installer.tclsh > ../../installer.nsis)
 	cp installer.nsis Windows/MultiGCS/installer.nsis
 	cp data/icon.ico Windows/MultiGCS/icon.ico

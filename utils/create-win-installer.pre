@@ -1,0 +1,35 @@
+
+  !include "UMUI.nsh"
+  !include WinMessages.nsh
+
+  Name "MultiGCS"
+  Caption "MultiGCS installer"
+  BrandingText " "
+  !define MUI_PRODUCT "MultiGCS"
+  XPstyle on
+ 
+  RequestExecutionLevel user
+
+
+  CRCCheck On
+
+  OutFile "installer.exe"
+
+  ShowInstDetails show
+  ShowUninstDetails show
+
+
+  !define MUI_ICON "icon.ico"
+  !define MUI_UNICON "icon.ico"
+
+
+
+  !insertmacro MUI_LANGUAGE "English"
+
+  !insertmacro MUI_PAGE_LICENSE "copyright.txt"
+  !insertmacro MUI_PAGE_DIRECTORY
+  !insertmacro MUI_PAGE_INSTFILES
+ 
+
+  InstallDir "$PROGRAMFILES\${MUI_PRODUCT}"
+
