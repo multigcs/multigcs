@@ -29,7 +29,6 @@ typedef struct {
 
 
 typedef struct {
-	uint8_t profile;
 	uint8_t roll_p;
 	uint8_t roll_i;
 	uint8_t roll_d;

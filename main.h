@@ -80,7 +80,7 @@ enum {
 
 #define MAX_BUTTONS 500
 typedef struct {
-	char name[100];
+	char name[200];
 	uint8_t view_mode;
 	float x1;
 	float y1;
@@ -149,8 +149,8 @@ typedef struct {
 	float gearth_interval;
 } GcsSetup;
 
-extern Button Buttons[MAX_BUTTONS];
-extern WayPoint WayPoints[MAX_WAYPOINTS];
+extern Button Buttons[MAX_BUTTONS + 1];
+extern WayPoint WayPoints[MAX_WAYPOINTS + 1];
 extern GcsSetup setup;
 
 extern volatile uint8_t gui_running;

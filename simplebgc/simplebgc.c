@@ -6,6 +6,7 @@ int simplebgc_serial_fd = -1;
 uint8_t simplebgc_serial_buf[255];
 static uint32_t last_connection = 1;
 static uint8_t simplebgc_cmd = 0;
+static uint8_t info_num = 0;
 
 SimpleBgcSetup simplebgc_setup;
 
@@ -23,6 +24,7 @@ uint8_t simplebgc_connection_status (void) {
 
 void simplebgc_init (char *port, uint32_t baud) {
 	printf("init simple-bgc serial port...\n");
+	info_num = 0;
 	simplebgc_serial_fd = serial_open(port, baud);
 }
 
@@ -45,7 +47,6 @@ void simplebgc_update (void) {
 	if (simplebgc_serial_fd < 0) {
 		return;
 	}
-	static uint8_t info_num = 0;
 	static uint8_t info_counter = 0;
 	static uint8_t header_found = 0;
 	static uint8_t data_cmd = 0;
@@ -74,7 +75,8 @@ void simplebgc_update (void) {
 			send_buffer[1] = simplebgc_cmd;
 			send_buffer[2] = 78;
 			send_buffer[3] = (send_buffer[1] + send_buffer[2])%255;
-			memcpy(&data_buffer, &simplebgc_setup, sizeof(SimpleBgcSetup));
+			memcpy(&data_buffer[1], &simplebgc_setup, sizeof(SimpleBgcSetup));
+			data_buffer[0] = 0;
 			data_csum = 0;
 			int nn = 0;
 			for (nn = 0; nn < 78; nn++) {
@@ -132,7 +134,7 @@ void simplebgc_update (void) {
 				} else if (data_count == 1) {
 					data_len = c;
 				} else if (data_count == 2) {
-				} else if (data_count < data_len + 3) {
+				} else if (data_count < data_len + 3 && data_count < 200) {
 					data_buffer[data_count - 3] = c;
 					data_csum += c;
 				} else {
@@ -153,7 +155,7 @@ void simplebgc_update (void) {
 						ModelData.yaw = (float)simplebgc_read16(data_buffer, 42) / 10.0;
 					} else if (data_cmd == 'R') {
 						info_num = 2;
-						memcpy(&simplebgc_setup, &data_buffer, sizeof(SimpleBgcSetup));
+						memcpy(&simplebgc_setup, &data_buffer[1], sizeof(SimpleBgcSetup));
 						printf("Profile parameters:\n");
 						printf("	PROFILE %i\n", data_buffer[0]);
 						printf("	ROLL_P %i\n", data_buffer[1]);

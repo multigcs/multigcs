@@ -41,22 +41,22 @@ volatile uint8_t gui_running = 1;
 float gcs_roll = 0.0;
 float gcs_pitch = 0.0;
 float gcs_yaw = 0.0;
-uint16_t heartbeat_timer = 0;
-uint16_t heartbeat_rc_timer = 0;
-uint16_t blink_timer = 0;
-uint16_t speak_timer = 0;
-uint16_t msg_timer = 0;
+uint32_t heartbeat_timer = 0;
+uint32_t heartbeat_rc_timer = 0;
+uint32_t blink_timer = 0;
+uint32_t speak_timer = 0;
+uint32_t msg_timer = 0;
 uint8_t redraw_flag = 1;
 uint16_t mouse_x = 0;
 uint16_t mouse_y = 0;
 uint8_t message = 0;
 char message_txt[1024];
-WayPoint WayPoints[MAX_WAYPOINTS];
+WayPoint WayPoints[MAX_WAYPOINTS + 1];
 int8_t waypoint_active = 0;
 uint8_t view_mode_last = 255;
 uint8_t view_mode_next = 0;
 float trans_count = 0.0;
-Button Buttons[MAX_BUTTONS];
+Button Buttons[MAX_BUTTONS + 1];
 uint8_t connection_found = 0;
 uint8_t view_overview = 0;
 ESContext *GlobalesContext = NULL;
@@ -1558,9 +1558,9 @@ void Draw (ESContext *esContext) {
 		msg_timer = timer;
 		redraw_flag = 1;
 	}
-	if (timer - heartbeat_timer > 20 || timer < heartbeat_timer) {
-		if (ModelData.heartbeat > 10) {
-			ModelData.heartbeat -= 10;
+	if (timer - heartbeat_timer > 10 || timer < heartbeat_timer) {
+		if (ModelData.heartbeat > 1) {
+			ModelData.heartbeat -= 1;
 		} else {
 			ModelData.heartbeat = 0;
 		}
@@ -1765,9 +1765,9 @@ void Draw (ESContext *esContext) {
 #endif
 
 	glDisable( GL_DEPTH_TEST );
-	draw_circleFilled_f3(esContext, 1.25, 0.92, 0.01, (float)ModelData.heartbeat / 4000.0, 255, 0, 0, ModelData.heartbeat * 2);
+	draw_circleFilled_f3(esContext, 1.3, 0.92, 0.0002, (float)ModelData.heartbeat / 3000.0, 255, 0, 0, ModelData.heartbeat * 2);
 	if (ModelData.found_rc == 1) {
-		draw_circleFilled_f3(esContext, 1.25, 0.87, 0.01, (float)ModelData.heartbeat_rc / 4000.0, 0, 0, 255, ModelData.heartbeat_rc * 2);
+		draw_circleFilled_f3(esContext, 1.3, 0.87, 0.01, (float)ModelData.heartbeat_rc / 4000.0, 0, 0, 255, ModelData.heartbeat_rc * 2);
 	}
 
 	if (view_overview == 0) {
