@@ -27,7 +27,7 @@ void serial_write (int fd, uint8_t *data, int len) {
 #else
 	DWORD dwBytesWritten = 0;
 	WriteFile(hSerial[fd], data, len, &dwBytesWritten, NULL);
-	//printf("## serial set: %i/%i \n", dwBytesWritten, len);
+	//SDL_Log("## serial set: %i/%i \n", dwBytesWritten, len);
 #endif
 }
 
@@ -41,7 +41,7 @@ ssize_t serial_read(int fd, void *data, size_t len) {
 #else
 	DWORD dwBytesRead = 0;
 	ReadFile(hSerial[fd], data, len, &dwBytesRead, 0);
-	//printf("## serial get: %i/%i \n", dwBytesRead, len);
+	//SDL_Log("## serial get: %i/%i \n", dwBytesRead, len);
 	return dwBytesRead;
 #endif
 }
@@ -119,11 +119,11 @@ int serial_open (char *mdevice, uint32_t baud) {
                    break;
 		case 1000000 : baudr = B1000000;
                    break;
-		default      : printf("invalid baudrate\n");
+		default      : SDL_Log("invalid baudrate\n");
                    return(1);
                    break;
 	}
-	printf("	Try to open Serial-Port: %s (%i)...", mdevice, baud);
+	SDL_Log("	Try to open Serial-Port: %s (%i)...", mdevice, baud);
 	if ((fd = open(mdevice, O_RDWR | O_NOCTTY )) >= 0) {
 		tcgetattr(fd, &newtio);
 		memset(&newtio, 0, sizeof(newtio));  /* clear the new struct */
@@ -135,7 +135,7 @@ int serial_open (char *mdevice, uint32_t baud) {
 		newtio.c_cc[VTIME] = 0;     /* block untill a timer expires (n * 100 mSec.) */
 		tcsetattr(fd, TCSANOW, &newtio);
 #else
-	printf("	Try to open Serial-Port: %s (%i)...", mdevice, baud);
+	SDL_Log("	Try to open Serial-Port: %s (%i)...", mdevice, baud);
 	if ((fd = open(mdevice, O_RDWR | O_NOCTTY | O_NONBLOCK )) >= 0) {
 		struct termios theTermios;
 		memset(&theTermios, 0, sizeof(struct termios));
@@ -147,14 +147,14 @@ int serial_open (char *mdevice, uint32_t baud) {
 		ioctl(fd, TIOCEXCL);
 		ioctl(fd, TIOCSETA, &theTermios);
 #endif
-		printf("..Ok\n");
+		SDL_Log("..Ok\n");
 		return fd;
 	}
-	printf("..Failed\n");
+	SDL_Log("..Failed\n");
 
 #else
 
-	printf("	Try to open Serial-Port: %s (%i)...", mdevice, baud);
+	SDL_Log("	Try to open Serial-Port: %s (%i)...", mdevice, baud);
 
 	DCB dcbSerialParams = {0};
 	COMMTIMEOUTS timeouts = {0};
@@ -166,18 +166,18 @@ int serial_open (char *mdevice, uint32_t baud) {
 		}
 	}
 	if (free_port == -1) {
-		printf("..Failed (no usable ports found)\n");
+		SDL_Log("..Failed (no usable ports found)\n");
 		return -1;
 	}
 
 	hSerial[free_port] = CreateFile(mdevice, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 	if (hSerial[free_port] == INVALID_HANDLE_VALUE) {
-		printf("..Failed (INVALID_HANDLE_VALUE: %i)\n", GetLastError());
+		SDL_Log("..Failed (INVALID_HANDLE_VALUE: %i)\n", GetLastError());
 		return -1;
 	}
 	dcbSerialParams.DCBlength = sizeof(dcbSerialParams);
 	if (GetCommState(hSerial[free_port], &dcbSerialParams) == 0) {
-		printf("..Failed (Error getting device state)\n");
+		SDL_Log("..Failed (Error getting device state)\n");
 		CloseHandle(hSerial[free_port]);
 		hSerial[free_port] = INVALID_HANDLE_VALUE;
 		return -1;
@@ -199,7 +199,7 @@ int serial_open (char *mdevice, uint32_t baud) {
                    break;
 		case  115200 : dcbSerialParams.BaudRate = CBR_115200;
                    break;
-		default      : printf("invalid baudrate\n");
+		default      : SDL_Log("invalid baudrate\n");
                    return(1);
                    break;
 	}
@@ -219,7 +219,7 @@ int serial_open (char *mdevice, uint32_t baud) {
 	dcbSerialParams.fAbortOnError = FALSE;
 
 	if(SetCommState(hSerial[free_port], &dcbSerialParams) == 0) {
-		printf("..Failed (Error setting device parameters\n");
+		SDL_Log("..Failed (Error setting device parameters\n");
 		CloseHandle(hSerial[free_port]);
 		hSerial[free_port] = INVALID_HANDLE_VALUE;
 		return -1;
@@ -232,12 +232,12 @@ int serial_open (char *mdevice, uint32_t baud) {
 	timeouts.WriteTotalTimeoutConstant = 1;
 	timeouts.WriteTotalTimeoutMultiplier = 1;
 	if(SetCommTimeouts(hSerial[free_port], &timeouts) == 0) {
-		printf("..Failed (Error setting timeouts)\n");
+		SDL_Log("..Failed (Error setting timeouts)\n");
 		CloseHandle(hSerial[free_port]);
 		hSerial[free_port] = INVALID_HANDLE_VALUE;
 		return -1;
 	}
- 	printf("..Ok\n");
+ 	SDL_Log("..Ok\n");
 	return free_port;
 #endif
 	return -1;
@@ -296,11 +296,11 @@ int serial_open9b (char *mdevice, uint32_t baud) {
 		case 1000000 : baudr = B1000000;
                    break;
 #endif
-		default      : printf("invalid baudrate\n");
+		default      : SDL_Log("invalid baudrate\n");
                    return(1);
                    break;
 	}
-	printf("	Try to open Serial-Port: %s (%i)...", mdevice, baud);
+	SDL_Log("	Try to open Serial-Port: %s (%i)...", mdevice, baud);
 	if ((fd = open(mdevice, O_RDWR | O_NOCTTY )) >= 0) {
 		tcgetattr(fd, &newtio);
 		memset(&newtio, 0, sizeof(newtio));  /* clear the new struct */
@@ -311,11 +311,11 @@ int serial_open9b (char *mdevice, uint32_t baud) {
 		newtio.c_cc[VMIN] = 0;      /* block untill n bytes are received */
 		newtio.c_cc[VTIME] = 0;     /* block untill a timer expires (n * 100 mSec.) */
 		tcsetattr(fd, TCSANOW, &newtio);
-		printf("..Ok\n");
+		SDL_Log("..Ok\n");
 		return fd;
 	}
 #endif
-	printf("..Failed\n");
+	SDL_Log("..Failed\n");
 	return -1;
 }
 

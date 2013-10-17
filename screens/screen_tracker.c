@@ -52,7 +52,7 @@ uint8_t tracker_move (char *name, float x, float y, int8_t button, float data) {
 		}
 		float diff = max - min;
 		float new = percent * diff / 100.0 + min;
-//		printf("slider: %s %f %f %f %f\n", name + 1, x, percent, new, data);
+//		SDL_Log("slider: %s %f %f %f %f\n", name + 1, x, percent, new, data);
 		if (strstr(name, "baud") > 0) {
 			float bauds[] = {1200.0, 2400.0, 9600.0, 38400.0, 57600.0, 115200.0, 200000.0};
 			for (n = 0; n < 6; n++) {

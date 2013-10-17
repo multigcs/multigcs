@@ -108,7 +108,7 @@ void webserv_child_dump_file (int fd, char *file, char *type) {
 #endif
 	SDL_RWops *ops_file = SDL_RWFromFile(file, "r");
 	if (ops_file == NULL) {
-		printf("webserv: file not found: %s\n", file);
+		SDL_Log("webserv: file not found: %s\n", file);
 		sprintf(content, "webserv: file not found: %s\n", file);
 		sprintf(buffer, header_str, (int)strlen(content), "text/plain");
 		write(fd, buffer, strlen(buffer));
@@ -2830,7 +2830,7 @@ void webserv_child (int fd) {
 #ifdef SDLGL
 			if (get_background_model(tmp_str) == 0) {
 				if (obj3d_collada.name[0] == 0) {
-					printf("webserv: convert '%s' to collada-format\n", tmp_str);
+					SDL_Log("webserv: convert '%s' to collada-format\n", tmp_str);
 					object3d_load_data(&obj3d_collada, tmp_str);
 					object3d_save_as_collada(&obj3d_collada, "/tmp/plane.dae");
 				}
@@ -2937,7 +2937,7 @@ void webserv_child (int fd) {
 					break;
 				}
 			}
-			printf("## %s ##\n", buffer + 4);
+			SDL_Log("## %s ##\n", buffer + 4);
 			webserv_child_dump_file(fd, buffer + 4, "image/jpg");
 		} else if (strncmp(buffer + 4,"/multigcs.html", 14) == 0) {
 			sprintf(tmp_str, "%s/webserv/multigcs.html", BASE_DIR);
@@ -3046,9 +3046,9 @@ void webserv_child (int fd) {
 			}
 
 			if (type[0] == 0 || content[0] == 0) {
-				printf("###################\n");
-				printf("%s", buffer);
-				printf("\n###################\n");
+				SDL_Log("###################\n");
+				SDL_Log("%s", buffer);
+				SDL_Log("\n###################\n");
 				sprintf(tmp_str, "%s/webserv/index.html", BASE_DIR);
 				webserv_child_dump_file(fd, tmp_str, "text/html");
 			}
@@ -3090,13 +3090,13 @@ int webserv_thread (void *data) {
 		SDL_Delay(1);
 	}
 	close(listenfd);
-	printf("webserv: exit thread\n");
+	SDL_Log("webserv: exit thread\n");
 	return(0);
 }
 #endif
 
 void webserv_init (void) {
-	printf("webserv: init thread\n");
+	SDL_Log("webserv: init thread\n");
 	obj3d_collada.name[0] = 0;
 	webserv_running = 1;
 #ifdef SDL2
@@ -3107,13 +3107,13 @@ void webserv_init (void) {
 	if (thread_webserv == NULL) {
 		fprintf(stderr, "webserv: thread konnte nicht gestartet werden: %s\n", SDL_GetError());
 	}
-	printf("webserv: running on Port: %i\n", setup.webport);
+	SDL_Log("webserv: running on Port: %i\n", setup.webport);
 }
 
 void webserv_exit (void) {
 	webserv_running = 0;
 	if (thread_webserv != NULL) {
-		printf("webserv: wait thread\n");
+		SDL_Log("webserv: wait thread\n");
 		SDL_WaitThread(thread_webserv, NULL);
 		thread_webserv = NULL;
 	}

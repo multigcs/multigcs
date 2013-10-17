@@ -313,7 +313,7 @@ int loadImage(const char *filename) {
 #endif
 	SDL_Surface *imageSurface1 = IMG_Load(filename);
 	if (! imageSurface1) {
-		printf("Error: loading image: %s\n", filename);
+		SDL_Log("Error: loading image: %s\n", filename);
 		return 0;
 	}
 	SDL_Surface *imageSurface = convert_to_power_of_two(imageSurface1);
@@ -334,7 +334,7 @@ int loadImage(const char *filename) {
                         texture_format = GL_BGR;
                 }
         } else {
-                printf("warning: the image is not truecolor..  this will probably break\n");
+                SDL_Log("warning: the image is not truecolor..  this will probably break\n");
 		return 0;
         }
 	glGenTextures(1, &texture);
@@ -368,21 +368,21 @@ int loadPNG(const char *filename) {
     fread(&sig, 8, sizeof(png_byte), pngFile);
     rewind(pngFile);
     if (!png_check_sig(sig, 8)) {
-        //printf("png sig failure\n");
+        //SDL_Log("png sig failure\n");
         return 0;
     }
     png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if (!png_ptr) {
-        //printf("png ptr not created\n");
+        //SDL_Log("png ptr not created\n");
         return 0;
     }
     if (setjmp(png_jmpbuf(png_ptr))) {
-        //printf("set jmp failed\n");
+        //SDL_Log("set jmp failed\n");
         return 0;
     }
     info_ptr = png_create_info_struct(png_ptr);
     if (!info_ptr) {
-        //printf("cant get png info ptr\n");
+        //SDL_Log("cant get png info ptr\n");
         return 0;
     }
     png_init_io(png_ptr, pngFile);
@@ -428,7 +428,7 @@ int loadPNG(const char *filename) {
     if (components == -1) {
         if (png_ptr)
             png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-        //printf("%s broken?\n", filename);
+        //SDL_Log("%s broken?\n", filename);
         return 0;
     }
 
@@ -453,7 +453,7 @@ int loadPNG(const char *filename) {
     (components == 2) ? (glcolours = GL_LUMINANCE_ALPHA) : (0);
     (components == 1) ? (glcolours = GL_LUMINANCE) : (0);
 
-    //printf("%s has %i colour components\n",filename,components);
+    //SDL_Log("%s has %i colour components\n",filename,components);
     //glTexImage2D(GL_TEXTURE_2D, 0, components, width, height, 0, glcolours, GL_UNSIGNED_BYTE, pixels);
     glTexImage2D(GL_TEXTURE_2D, 0, glcolours, width, height, 0, glcolours, GL_UNSIGNED_BYTE, pixels);
     png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
@@ -472,7 +472,7 @@ void draw_image_uncache (char *file) {
 	for (n = 0; n < MAX_TEXCACHE; n++) {
 		if (strcmp(TexCache[n].name, file) == 0) {
 			tex_num = n;
-			printf("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, tex_num, TexCache[tex_num].atime);
+			SDL_Log("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, tex_num, TexCache[tex_num].atime);
 			glDeleteTextures( 1, &TexCache[tex_num].texture );
 			TexCache[tex_num].name[0] = 0;
 			TexCache[tex_num].texture = -1;
@@ -755,12 +755,12 @@ int16_t get_altitude (float lat, float lon) {
 		}
 		if (alt_num == -1) {
 			alt_num = old_num;
-			printf("remove srtm %s from cache %i (%i)\n", AltCache[alt_num].name, old_num, AltCache[alt_num].atime);
+			SDL_Log("remove srtm %s from cache %i (%i)\n", AltCache[alt_num].name, old_num, AltCache[alt_num].atime);
 //			Delete;
 			AltCache[alt_num].name[0] = 0;
 		}
 		if (alt_num != -1) {
-//			printf("loading srtm %s in to alt-cache %i %i\n", file, alt_num, AltCache[alt_num].atime);
+//			SDL_Log("loading srtm %s in to alt-cache %i %i\n", file, alt_num, AltCache[alt_num].atime);
 			FILE *fr;
 			fr = fopen(file, "rb");
 			if (fr != 0) {
@@ -786,7 +786,7 @@ int16_t get_altitude (float lat, float lon) {
 
 	if (flag == 0) {
 		AltCache[alt_num].atime = time(0);
-//		printf("# using Alt-Cache: %s\n", AltCache[alt_num].name);
+//		SDL_Log("# using Alt-Cache: %s\n", AltCache[alt_num].name);
 		// geting all field-points
 		int16_t y1 = (int)((lat - (float)lat_m) * 1201.0);
 		int16_t x1 = (int)((lon - (float)lon_m) * 1201.0);

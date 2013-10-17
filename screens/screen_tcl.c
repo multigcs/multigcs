@@ -60,10 +60,10 @@ static int Hello_Cmd (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *c
 
 void tcl_init (void) {
 	tcl_startup = 1;
-	printf("Init TCL...\n");
+	SDL_Log("Init TCL...\n");
 	tcl_interp = Tcl_CreateInterp();
 	if (Tcl_Init(tcl_interp) != TCL_OK) {
-		printf("...failed (%s)\n", Tcl_GetStringResult(tcl_interp));
+		SDL_Log("...failed (%s)\n", Tcl_GetStringResult(tcl_interp));
 		return;
 	}
 
@@ -73,7 +73,7 @@ void tcl_init (void) {
 	tcl_draw_init (tcl_interp);
 	tcl_gl_draw_init (tcl_interp);
 
-	printf("...done\n");
+	SDL_Log("...done\n");
 	return;
 }
 
@@ -83,12 +83,12 @@ void tcl_run (char *script) {
 	}
 	tcl_update_modeldata();
 	if (Tcl_Eval(tcl_interp, script) != TCL_OK) {
-		printf("TCL-ERROR:\n");
-		printf("#######################################################\n");
-		printf("%s\n", script);
-		printf("#######################################################\n");
-		printf("%s\n", Tcl_GetStringResult(tcl_interp));
-		printf("#######################################################\n");
+		SDL_Log("TCL-ERROR:\n");
+		SDL_Log("#######################################################\n");
+		SDL_Log("%s\n", script);
+		SDL_Log("#######################################################\n");
+		SDL_Log("%s\n", Tcl_GetStringResult(tcl_interp));
+		SDL_Log("#######################################################\n");
 	}
 }
 
@@ -99,12 +99,12 @@ void tcl_runFile (char *file) {
 	}
 	tcl_update_modeldata();
 	if (Tcl_EvalFile(tcl_interp, file) != TCL_OK) {
-		printf("TCL-ERROR:\n");
-		printf("#######################################################\n");
-		printf("%s\n", file);
-		printf("#######################################################\n");
-		printf("%s\n", Tcl_GetStringResult(tcl_interp));
-		printf("#######################################################\n");
+		SDL_Log("TCL-ERROR:\n");
+		SDL_Log("#######################################################\n");
+		SDL_Log("%s\n", file);
+		SDL_Log("#######################################################\n");
+		SDL_Log("%s\n", Tcl_GetStringResult(tcl_interp));
+		SDL_Log("#######################################################\n");
 	}
 }
 
@@ -131,10 +131,10 @@ void screen_tcl (ESContext *esContext) {
 		tcl_runFile(scriptfile);
 
 		if (Tcl_Eval(tcl_interp, "init") != TCL_OK) {
-			printf("TCL-ERROR:\n");
-			printf("#######################################################\n");
-			printf("%s\n", Tcl_GetStringResult(tcl_interp));
-			printf("#######################################################\n");
+			SDL_Log("TCL-ERROR:\n");
+			SDL_Log("#######################################################\n");
+			SDL_Log("%s\n", Tcl_GetStringResult(tcl_interp));
+			SDL_Log("#######################################################\n");
 		}
 
 	}
@@ -142,10 +142,10 @@ void screen_tcl (ESContext *esContext) {
 	tcl_update_modeldata();
 
 	if (Tcl_Eval(tcl_interp, "view") != TCL_OK) {
-		printf("TCL-ERROR:\n");
-		printf("#######################################################\n");
-		printf("%s\n", Tcl_GetStringResult(tcl_interp));
-		printf("#######################################################\n");
+		SDL_Log("TCL-ERROR:\n");
+		SDL_Log("#######################################################\n");
+		SDL_Log("%s\n", Tcl_GetStringResult(tcl_interp));
+		SDL_Log("#######################################################\n");
 	}
 
 

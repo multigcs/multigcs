@@ -51,7 +51,7 @@ uint8_t brugi_slider_move (char *name, float x, float y, int8_t button, float da
 		}
 		float diff = slider_value->max - slider_value->min;
 		new = percent * diff / 100.0 + slider_value->min;
-//		printf("slider: %s %f %f %f %f\n", name + 1, x, percent, new, data);
+//		SDL_Log("slider: %s %f %f %f %f\n", name + 1, x, percent, new, data);
 	}
 	if (slider_value->type == 0) {
 		slider_value->value = (float)(int)new;

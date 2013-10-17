@@ -151,7 +151,7 @@ uint8_t model_save (char *name, float x, float y, int8_t button, float data) {
 
 
 static void die(char *msg) {
-	printf("%s", msg);
+	SDL_Log("%s", msg);
 	return;
 }
 
@@ -208,7 +208,7 @@ static void model_parseDoc (char *docname) {
 	int len = 0;
 	SDL_RWops *ops_file = SDL_RWFromFile(docname, "r");
 	if (ops_file == NULL) {
-		printf("map: Document open failed: %s\n", docname);
+		SDL_Log("map: Document open failed: %s\n", docname);
 		return;
 	}
 	len = SDL_RWseek(ops_file, 0, SEEK_END);
@@ -220,7 +220,7 @@ static void model_parseDoc (char *docname) {
 	free(buffer);
 
 	if (doc == NULL) {
-		printf("Document parsing failed: %s\n", docname);
+		SDL_Log("Document parsing failed: %s\n", docname);
 		return;
 	}
 	cur = xmlDocGetRootElement(doc);

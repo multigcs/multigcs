@@ -50,7 +50,7 @@ void mwi21_init (char *port, uint32_t baud) {
 		mwi_box_names[n][0] = 0;
 		mwi_pid_names[n][0] = 0;
 	}
-	printf("init multiwii serial port...\n");
+	SDL_Log("init multiwii serial port...\n");
 	mwi21_serial_fd = serial_open(port, baud);
 }
 
@@ -238,7 +238,7 @@ void mwi21_update (void) {
 		tout = 0;
 		mwi21_serial_n = 0;
 		mwi21_get_new();
-		printf("mwi21: timeout\n");
+		SDL_Log("mwi21: timeout\n");
 	}
 	while ((res = serial_read(mwi21_serial_fd, serial_buffer, 1023)) > 0) {
 	    int i = 0;
@@ -246,7 +246,7 @@ void mwi21_update (void) {
 		mwi21_serial_buf[0] = serial_buffer[i];
 		last_connection = time(0);
 		c = mwi21_serial_buf[0];
-//		printf("%i: %i (%c)\n", mwi21_serial_n, c, c);
+//		SDL_Log("%i: %i (%c)\n", mwi21_serial_n, c, c);
 		if (mwi21_serial_n < 250) {
 			mwi21_serial_buf[mwi21_serial_n++] = c;
 		} else {
@@ -255,15 +255,15 @@ void mwi21_update (void) {
 		if (c == 'M' && last == '$') {
 			mwi21_frame_start = mwi21_serial_n - 2;
 			mwi21_frame_len = 0;
-//			printf("mwi21_frame_start: %i\n", mwi21_frame_start);
+//			SDL_Log("mwi21_frame_start: %i\n", mwi21_frame_start);
 			tout = 0;
 		}
 		if (mwi21_serial_n - mwi21_frame_start == 4) {
 			mwi21_frame_len = c;
-//			printf("frame_parse: %i - %i\n", mwi21_serial_n - mwi21_frame_start, mwi21_frame_len);
+//			SDL_Log("frame_parse: %i - %i\n", mwi21_serial_n - mwi21_frame_start, mwi21_frame_len);
 		}
 		if (mwi21_serial_buf[2] == '!' && mwi21_serial_n - mwi21_frame_start > 5) {
-			printf("## MWI CMD_Error: %i\n", mwi21_serial_buf[4]);
+			SDL_Log("## MWI CMD_Error: %i\n", mwi21_serial_buf[4]);
 			mwi21_serial_buf[0] = 0;
 			mwi21_serial_buf[1] = 0;
 			mwi21_serial_buf[2] = 0;
@@ -275,7 +275,7 @@ void mwi21_update (void) {
 		}
 		if (mwi21_frame_len > 0 && mwi21_frame_len + 6 == mwi21_serial_n - mwi21_frame_start) {
 			uint8_t cmd = mwi21_serial_buf[4 + mwi21_frame_start];
-//			printf("--------------- CMD: %i\n", cmd);
+//			SDL_Log("--------------- CMD: %i\n", cmd);
 
 			uint16_t nn = 0;
 			uint8_t chksum = 0;
@@ -284,15 +284,15 @@ void mwi21_update (void) {
 			}
 
 			if (mwi21_serial_buf[mwi21_frame_len + 5 + mwi21_frame_start] != chksum) {
-				printf("mwi21: CSUM-Error (cmd:%i/len:%i):  %i %i %i\n", cmd, mwi21_frame_len, mwi21_serial_buf[mwi21_frame_len + 5 + mwi21_frame_start], chksum, mwi21_frame_start);
+				SDL_Log("mwi21: CSUM-Error (cmd:%i/len:%i):  %i %i %i\n", cmd, mwi21_frame_len, mwi21_serial_buf[mwi21_frame_len + 5 + mwi21_frame_start], chksum, mwi21_frame_start);
 				mwi21_serial_n = 0;
 				cmd = 0;
 				continue;
 			} else {
-//				printf("mwi21: CSUM-OK (cmd:%i/len:%i):  %i %i %i\n", cmd, mwi21_frame_len, mwi21_serial_buf[mwi21_frame_len + 5 + mwi21_frame_start], chksum, mwi21_frame_start);
+//				SDL_Log("mwi21: CSUM-OK (cmd:%i/len:%i):  %i %i %i\n", cmd, mwi21_frame_len, mwi21_serial_buf[mwi21_frame_len + 5 + mwi21_frame_start], chksum, mwi21_frame_start);
 				mwi21_serial_n = 0;
 			}
-//			printf("CSUM %i(%i):  %i %i\n", cmd, mwi21_frame_len, mwi21_serial_buf[mwi21_frame_len + 5 + mwi21_frame_start], chksum);
+//			SDL_Log("CSUM %i(%i):  %i %i\n", cmd, mwi21_frame_len, mwi21_serial_buf[mwi21_frame_len + 5 + mwi21_frame_start], chksum);
 			mwi21_get_new();
 
 			switch (cmd) {
@@ -452,7 +452,7 @@ void mwi21_update (void) {
 					float mwi_wp_lon = (float)mwi21_read32() / 10000000.0;
 					int16_t mwi_wp_alt = mwi21_read16();
 					int8_t mwi_wp_flag = mwi21_read8();
-					printf("### %i %f %f %i %i ###\n", mwi_wp_num, mwi_wp_lat, mwi_wp_lon, mwi_wp_alt, mwi_wp_flag);
+					SDL_Log("### %i %f %f %i %i ###\n", mwi_wp_num, mwi_wp_lat, mwi_wp_lon, mwi_wp_alt, mwi_wp_flag);
 				break;
 			}
 			mwi21_serial_n = 0;

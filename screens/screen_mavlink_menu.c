@@ -191,7 +191,7 @@ uint8_t mavlink_slider_move (char *name, float x, float y, int8_t button, float 
 			int conv = (int)(new);
 			new = (float)conv;
 		}
-//		printf("slider: %s %f %f %f %f\n", name + 1, x, percent, new, data);
+//		SDL_Log("slider: %s %f %f %f %f\n", name + 1, x, percent, new, data);
 		if (strstr(MavLinkVars[selected].name, "baud") > 0 || strstr(MavLinkVars[selected].name, "BAUD") > 0) {
 			float bauds[] = {1200.0, 2400.0, 9600.0, 38400.0, 57600.0, 115200.0, 200000.0};
 			for (n = 0; n < 6; n++) {
@@ -246,7 +246,7 @@ uint8_t mavlink_slider2_move (char *name, float x, float y, int8_t button, float
 			int conv = (int)(new);
 			new = (float)conv;
 		}
-//		printf("slider2: %s %f %f %f %f\n", name + 1, x, percent, new, data);
+//		SDL_Log("slider2: %s %f %f %f %f\n", name + 1, x, percent, new, data);
 		if (strstr(MavLinkVars[selected].name, "baud") > 0 || strstr(MavLinkVars[selected].name, "BAUD") > 0) {
 			float bauds[] = {1200.0, 2400.0, 9600.0, 38400.0, 57600.0, 115200.0, 200000.0};
 			for (n = 0; n < 6; n++) {
@@ -367,9 +367,9 @@ uint8_t mavlink_param_file_save (char *name, float x, float y, int8_t button, fl
 		}
 		fprintf(fr, "\n");
 		fclose(fr);
-		printf("failed to save file: %s\n", filename);
+		SDL_Log("failed to save file: %s\n", filename);
 	} else {
-		printf("saved file: %s\n", filename);
+		SDL_Log("saved file: %s\n", filename);
 	}
 	return 0;
 }
@@ -412,7 +412,7 @@ uint8_t mavlink_flashload (char *name, float x, float y, int8_t button, float da
 }
 
 uint8_t mavlink_aux_toggle (char *name, float x, float y, int8_t button, float data) {
-	printf("aux: %s %f\n", name, data);
+	SDL_Log("aux: %s %f\n", name, data);
 	int n = 0;
 	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
 		if (strcmp(MavLinkVars[n].name, name + 3) == 0) {
@@ -463,7 +463,7 @@ void mavlink_param_read_file (char *param_file) {
         float val = 0.0;
         float min = 0.0;
         float max = 0.0;
-	printf("mavlink: load params: %s\n", param_file);
+	SDL_Log("mavlink: load params: %s\n", param_file);
         fr = fopen (param_file, "r");
         while(fgets(line, 100, fr) != NULL) {
                 var[0] = 0;

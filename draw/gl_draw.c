@@ -809,7 +809,7 @@ void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float 
                         texture_format = GL_BGR;
                 }
         } else {
-                printf("warning: the image is not truecolor..  this will probably break\n");
+                SDL_Log("warning: the image is not truecolor..  this will probably break\n");
 		return;
         }
 	glGenTextures(1, &texture);
@@ -890,26 +890,26 @@ void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2
 		}
 		if (tex_num == -1) {
 			tex_num = old_num;
-//			printf("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
+//			SDL_Log("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
 			glDeleteTextures( 1, &TexCache[tex_num].texture );
 			TexCache[tex_num].name[0] = 0;
 			TexCache[tex_num].texture = 0;
 		}
 		if (tex_num != -1) {
-//			printf("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
+//			SDL_Log("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
 //			if ( (TexCache[tex_num].texture = loadPNG(file)) != 0 ) { 
 			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) { 
 				strncpy(TexCache[tex_num].name, file, 1023);
 				TexCache[tex_num].atime = time(0);
 			} else {
-//				printf("could not load image: %s\n", file);
+//				SDL_Log("could not load image: %s\n", file);
 				unlink(file);
 			}
 		}
 	}
 	if (TexCache[tex_num].texture != 0) {
 		TexCache[tex_num].atime = time(0);
-//		printf("# %s = %i\n", TexCache[tex_num].name, TexCache[tex_num].texture);
+//		SDL_Log("# %s = %i\n", TexCache[tex_num].name, TexCache[tex_num].texture);
 		glColor4f(1.0, 1.0, 1.0, 1.0);
 		glEnable( GL_TEXTURE_2D );
 		glBindTexture( GL_TEXTURE_2D, TexCache[tex_num].texture );
@@ -972,19 +972,19 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 		}
 		if (tex_num == -1) {
 			tex_num = old_num;
-//			printf("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
+//			SDL_Log("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
 			glDeleteTextures( 1, &TexCache[tex_num].texture );
 			TexCache[tex_num].name[0] = 0;
 			TexCache[tex_num].texture = 0;
 		}
 		if (tex_num != -1) {
-//			printf("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
+//			SDL_Log("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
 //			if ( (TexCache[tex_num].texture = loadPNG(file)) != 0 ) {
 			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) {
 				strncpy(TexCache[tex_num].name, file, 1023);
 				TexCache[tex_num].atime = time(0);
 			} else {
-//				printf("could not load image: %s\n", file);
+//				SDL_Log("could not load image: %s\n", file);
 				unlink(file);
 			}
 		}
@@ -1117,7 +1117,7 @@ void draw_char_f3_fast (ESContext *esContext, float x1, float y1, float z1, floa
 	y2 = y2 * -1;
 	if (TexCache[tex_num].texture != 0) {
 		TexCache[tex_num].atime = time(0);
-//		printf("# %s = %i\n", TexCache[tex_num].name, TexCache[tex_num].texture);
+//		SDL_Log("# %s = %i\n", TexCache[tex_num].name, TexCache[tex_num].texture);
 		float tpos_x = (float)(num % 16) * 0.0625;
 		float tpos_y = (float)(num / 16) * 0.0625;
 		if (num < 0) {
@@ -1126,7 +1126,7 @@ void draw_char_f3_fast (ESContext *esContext, float x1, float y1, float z1, floa
 			tpos_y = (float)(nnn / 16) * 0.0625;
 		}
 		if (tpos_x < 0 || tpos_y < 0 || tpos_x > 511 || tpos_y > 511) {
-			printf("CHAR - ERROR\n");
+			SDL_Log("CHAR - ERROR\n");
 			return;
 		}
 		glColor4f(1.0, 1.0, 1.0, 1.0);
@@ -1196,19 +1196,19 @@ void draw_text_f3_fast (ESContext *esContext, float x1, float y1, float z1, floa
 		}
 		if (tex_num == -1) {
 			tex_num = old_num;
-//			printf("remove font %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
+//			SDL_Log("remove font %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
 			glDeleteTextures( 1, &TexCache[tex_num].texture );
 			TexCache[tex_num].name[0] = 0;
 			TexCache[tex_num].texture = 0;
 		}
 		if (tex_num >= 0) {
-//			printf("loading font %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
+//			SDL_Log("loading font %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
 			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) { 
 				strncpy(TexCache[tex_num].name, file, 1023);
 				TexCache[tex_num].atime = time(0);
 
 			} else {
-				printf("could not load image: %s\n", file);
+				SDL_Log("could not load image: %s\n", file);
 				unlink(file);
 			}    
 		}
@@ -1252,19 +1252,19 @@ void draw_char_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 		}
 		if (tex_num == -1) {
 			tex_num = old_num;
-//			printf("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
+//			SDL_Log("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
 			glDeleteTextures( 1, &TexCache[tex_num].texture );
 			TexCache[tex_num].name[0] = 0;
 			TexCache[tex_num].texture = 0;
 		}
 		if (tex_num != -1) {
-//			printf("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
+//			SDL_Log("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
 //			if ( (TexCache[tex_num].texture = loadPNG(file)) != 0 ) { 
 			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) { 
 				strncpy(TexCache[tex_num].name, file, 1023);
 				TexCache[tex_num].atime = time(0);
 			} else {
-				printf("could not load image: %s\n", file);
+				SDL_Log("could not load image: %s\n", file);
 				unlink(file);
 			}
 		}
@@ -1272,7 +1272,7 @@ void draw_char_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 	if (TexCache[tex_num].texture != 0) {
 		TexCache[tex_num].atime = time(0);
 
-//		printf("# %s = %i\n", TexCache[tex_num].name, TexCache[tex_num].texture);
+//		SDL_Log("# %s = %i\n", TexCache[tex_num].name, TexCache[tex_num].texture);
 
 		float tpos_x = (float)(num % 16) * 0.0625;
 		float tpos_y = (float)(num / 16) * 0.0625;
@@ -1282,7 +1282,7 @@ void draw_char_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 			tpos_y = (float)(nnn / 16) * 0.0625;
 		}
 		if (tpos_x < 0 || tpos_y < 0 || tpos_x > 511 || tpos_y > 511) {
-			printf("CHAR - ERROR\n");
+			SDL_Log("CHAR - ERROR\n");
 			return;
 		}
 		glColor4f(1.0, 1.0, 1.0, 1.0);
@@ -1494,14 +1494,14 @@ int glInit ( ESContext *esContext ) {
 	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
 	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
 
-	printf("* GL-Screen BPP: %d\n", WinScreen->format->BitsPerPixel);
+	SDL_Log("* GL-Screen BPP: %d\n", WinScreen->format->BitsPerPixel);
 
 	if (setup.keep_ratio == 0.0) {
 		aspect = (GLfloat)setup.screen_w / (GLfloat)setup.screen_h;
 	} else {
 		aspect = setup.keep_ratio;
 	}
-	printf("* aspect: %f\n", aspect);
+	SDL_Log("* aspect: %f\n", aspect);
 	gl_init(setup.screen_w, setup.screen_h);
 
 	esContext->width = setup.screen_w;

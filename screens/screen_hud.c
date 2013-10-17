@@ -735,7 +735,7 @@ void screen_hud (ESContext *esContext) {
 	// Speed
 	draw_speed_rule(esContext, -1.0, -0.6, 0.0, 0.0);
 
-	//printf("hud#6\n");
+	//SDL_Log("hud#6\n");
 
 	// Status
 	draw_text_f3(esContext, -1.0 - strlen("ARMED") * 0.07 * 0.6 / 2.0, -0.92, 0.002, 0.07, 0.07, FONT_TRANS, "ARMED");
@@ -820,7 +820,7 @@ void screen_hud (ESContext *esContext) {
 		draw_text_f(esContext, 0.2 - strlen(tmp_str) * 0.07 * 0.6 / 2.0 - 0.01, 0.9, 0.07, 0.07, FONT_GREEN, tmp_str);
 	}
 
-	//printf("hud#7\n");
+	//SDL_Log("hud#7\n");
 
 	// Yaw-Arrow
 	if (setup.contrast == 1) {
@@ -881,7 +881,7 @@ void screen_hud (ESContext *esContext) {
 #endif
 	}
 
-	//printf("hud#8\n");
+	//SDL_Log("hud#8\n");
 
 	// Home & Waypoint-Dir
 #ifdef SDLGL
@@ -980,7 +980,7 @@ void screen_hud (ESContext *esContext) {
 #endif
 
 
-	//printf("hud#9\n");
+	//SDL_Log("hud#9\n");
 
 	// Route-Dir Arrow (Home)
 #ifndef SDLGL
@@ -1010,7 +1010,7 @@ void screen_hud (ESContext *esContext) {
 		}
 	}
 
-	//printf("hud#9a\n");
+	//SDL_Log("hud#9a\n");
 
 #ifdef SDLGL
 	glMatrixMode(GL_MODELVIEW);
@@ -1020,13 +1020,13 @@ void screen_hud (ESContext *esContext) {
 	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
-	//printf("hud#9b\n");
+	//SDL_Log("hud#9b\n");
 
 	if (setup.hud_view_screen == 0 || setup.hud_view_screen == 1) {
 		// Turn-Indicator
 		draw_turning_indicator(esContext, 1.15, 0.25, 0.4, 0.1);
 
-	//printf("hud#9c\n");
+	//SDL_Log("hud#9c\n");
 
 		// CPU, Voltage & Speed
 		float volt_mind = 4.0;
@@ -1071,7 +1071,7 @@ void screen_hud (ESContext *esContext) {
 			draw_circleMeter_f3(esContext, -1.05, 0.6, 0.001, 0.14, 0.0, 25.0, 50.0, 180.0, ModelData.ampere, "Strom", tmp_str, 0);
 		}
 
-	//printf("hud#9e\n");
+	//SDL_Log("hud#9e\n");
 
 		if (ModelData.teletype != TELETYPE_MULTIWII_21 && ModelData.teletype != TELETYPE_BASEFLIGHT) {
 			sprintf(tmp_str, "CPU %0.0f%%", ModelData.load);
@@ -1079,7 +1079,7 @@ void screen_hud (ESContext *esContext) {
 			draw_text_button(esContext, "hud_load", VIEW_MODE_HUD, tmp_str, FONT_WHITE, -1.05, 0.025, 0.003, 0.035, 1, 0, hud_null, 0);
 		}
 
-	//printf("hud#9f\n");
+	//SDL_Log("hud#9f\n");
 
 		// RC-Values
 		for (n = 0; n < 8; n++) {
@@ -1158,7 +1158,7 @@ void screen_hud (ESContext *esContext) {
 		static float min_g = 1.0;
 		static float max_g = 0.0;
 
-	//printf("hud#9g\n");
+	//SDL_Log("hud#9g\n");
 
 		float all_g = ModelData.acc_z * -1;
 		if (ModelData.teletype == TELETYPE_MULTIWII_21 || ModelData.teletype == TELETYPE_BASEFLIGHT) {
@@ -1217,7 +1217,7 @@ void screen_hud (ESContext *esContext) {
 		}
 	}
 
-	//printf("hud#10\n");
+	//SDL_Log("hud#10\n");
 
 	// Draw Jeti-Telemetrie
 	if (jeti_ok == 1) {

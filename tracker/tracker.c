@@ -79,7 +79,7 @@ void tracker_setup_save (void) {
 		}
 	        fclose(fr);
 	} else {
-		printf("Can not save setup-file: %s\n", filename);
+		SDL_Log("Can not save setup-file: %s\n", filename);
 	}
 }
 
@@ -101,7 +101,7 @@ void tracker_setup_load (void) {
 				if (atoi(line + 5) < TRACKER_TYPE_LAST) {
 					trackertype = atoi(line + 5);
 				} else {
-					printf("tracker: unknown type (%i)\n", atoi(line + 5));
+					SDL_Log("tracker: unknown type (%i)\n", atoi(line + 5));
 				}
 			} else {
 			        sscanf(line, "%s %f %f %f\n", name, &min, &max, &value);
@@ -116,7 +116,7 @@ void tracker_setup_load (void) {
 		}
 	        fclose(fr);
 	} else {
-		printf("Can not load setup-file: %s\n", filename);
+		SDL_Log("Can not load setup-file: %s\n", filename);
 	}
 }
 
@@ -142,7 +142,7 @@ int thread_serial_tracker (void *unused) {
 			while ((read_num = serial_read(serial_fd_tracker, read_buffer, 200)) > 0) {
 				for (nn = 0; nn < read_num; nn++) {
 					new = read_buffer[nn];
-					printf("##: %i (0x%x)\n", new, new);
+					SDL_Log("##: %i (0x%x)\n", new, new);
 					last = new;
 				}
 			}
@@ -193,17 +193,17 @@ int thread_serial_tracker (void *unused) {
 
 //			float pulse_pan = (tracker_pan_dir_trimmed - TrackerData[TRACKER_PAN_ANGLE_MIN].value) * (TrackerData[TRACKER_PAN_PULSE_MAX].value - TrackerData[TRACKER_PAN_PULSE_MIN].value) / (TrackerData[TRACKER_PAN_ANGLE_MAX].value - TrackerData[TRACKER_PAN_ANGLE_MIN].value) + TrackerData[TRACKER_PAN_PULSE_MIN].value;
 //			float pulse_pitch = (tracker_pitch_dir_trimmed - TrackerData[TRACKER_PITCH_ANGLE_MIN].value) * (TrackerData[TRACKER_PITCH_PULSE_MAX].value - TrackerData[TRACKER_PITCH_PULSE_MIN].value) / (TrackerData[TRACKER_PITCH_ANGLE_MAX].value - TrackerData[TRACKER_PITCH_ANGLE_MIN].value) + TrackerData[TRACKER_PITCH_PULSE_MIN].value;
-//			printf("%fGrad %fGrad - %0.3fkm %0.0fm - %i %i\n", direction, direction_up, dist1, dist2, (int)pulse_pan, (int)pulse_pitch);
+//			SDL_Log("%fGrad %fGrad - %0.3fkm %0.0fm - %i %i\n", direction, direction_up, dist1, dist2, (int)pulse_pan, (int)pulse_pitch);
 
 
 			if (serial_fd_tracker != -1) {
 				char tmp_str[1024];
 //				sprintf(tmp_str, "A%f %f\n", direction, direction_up * -1.0 + 90.0);
-//				printf("#%s#", tmp_str);
+//				SDL_Log("#%s#", tmp_str);
 //				serial_write(serial_fd_tracker, tmp_str, strlen(tmp_str));
 
 				sprintf(tmp_str, "P%f %f %f\n", ModelData.p_lat, ModelData.p_long, ModelData.p_alt);
-//				printf("#%s#", tmp_str);
+//				SDL_Log("#%s#", tmp_str);
 				serial_write(serial_fd_tracker, tmp_str, strlen(tmp_str));
 
 			}
@@ -215,7 +215,7 @@ int thread_serial_tracker (void *unused) {
 
 		usleep(50000);
 	}
-	printf("tracker: exit thread\n");
+	SDL_Log("tracker: exit thread\n");
 	return 0;
 }
 
@@ -224,10 +224,10 @@ uint8_t tracker_mode_get (void) {
 }
 
 uint8_t tracker_init (char *port, uint32_t baud) {
-	printf("tracker: init\n");
+	SDL_Log("tracker: init\n");
 	tracker_thread_running = 1;
 	tracker_setup_load();
-	printf("tracker: init serial port...\n");
+	SDL_Log("tracker: init serial port...\n");
 	serial_fd_tracker = serial_open(port, baud);
 	if (serial_fd_tracker != -1) {
 #ifdef SDL2
@@ -245,7 +245,7 @@ uint8_t tracker_init (char *port, uint32_t baud) {
 
 void tracker_exit (void) {
 	if ( sdl_thread_serial_tracker != NULL ) {
-		printf("tracker: wait thread\n");
+		SDL_Log("tracker: wait thread\n");
 		SDL_WaitThread(sdl_thread_serial_tracker, NULL);
 		sdl_thread_serial_tracker = NULL;
 	}

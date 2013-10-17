@@ -61,7 +61,7 @@ void filesystem_add_filter (char *filter) {
 	if (filesystem_filter_num < FILTER_MAX) {
 		strncpy(filesystem_filter[filesystem_filter_num++], filter, 1023);
 	} else {
-		printf("ERROR: to many filters\n");
+		SDL_Log("ERROR: to many filters\n");
 	}
 }
 

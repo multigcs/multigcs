@@ -17,7 +17,7 @@ char logplay_file[1024];
 
 
 void logplay_export_kml (char *logfile, char *kmlfile, uint8_t type) {
-	printf("logplay: %s -> %s\n", logfile, kmlfile);
+	SDL_Log("logplay: %s -> %s\n", logfile, kmlfile);
 	if (logfile[0] != 0) {
 		float p_lat = 0.0;
 		float p_long = 0.0;
@@ -526,7 +526,7 @@ uint8_t logplay_cmd_open (char *name, float x, float y, int8_t button, float dat
 }
 
 uint8_t logplay_cmd_open_ok (char *name, float x, float y, int8_t button, float data) {
-	printf("## open logfile: %s ##\n", name);
+	SDL_Log("## open logfile: %s ##\n", name);
 	strncpy(logplay_file, name, 1023);
 	logplay_list = 0;
 	logplay_filelist = 0;
@@ -629,7 +629,7 @@ void LogSave (void) {
 	char file[1024];
 	sprintf(file, "%s/logs/%i.log", get_datadirectory(), log_startup_time);
 	if (Logdata != NULL) {
-		printf("logging: save to file: %s\n", file);
+		SDL_Log("logging: save to file: %s\n", file);
 		if (strlen(Logdata) > 200) {
 		        FILE *fr;
 		        fr = fopen(file, "wb");
@@ -641,7 +641,7 @@ void LogSave (void) {
 		free(Logdata);
 		Logdata = NULL;
 	} else {
-		printf("logging: nothing to save\n");
+		SDL_Log("logging: nothing to save\n");
 	}
 }
 
@@ -662,7 +662,7 @@ void LogAppend (char *line) {
 		LogInit();
 	}
 	if (Logdata != NULL) {
-		printf("logging: %s\n", line);
+		SDL_Log("logging: %s\n", line);
 		Logdata = realloc(Logdata, (int)(strlen(Logdata) + strlen(line) + 2));
 		strcat(Logdata, line);
 		strcat(Logdata, "\n");
@@ -690,7 +690,7 @@ void Logging (void) {
 				logplay_open = 1;
 				logplay_startsec = 0;
 				if ((fr_play = fopen(logplay_file, "r")) == NULL) {
-					printf("logplay: error loading file: %s\n", logplay_file);
+					SDL_Log("logplay: error loading file: %s\n", logplay_file);
 				}
 				if (fgets(line, 500, fr_play) != 0) {
 					strncpy(last_line, line, 1023);
@@ -722,7 +722,7 @@ void Logging (void) {
 					} else {
 						if (fgets(line, 500, fr_play) != 0) {
 							strncpy(last_line, line, 1023);
-//							printf("NEXT_LINE: %s\n", line);
+//							SDL_Log("NEXT_LINE: %s\n", line);
 
 							if (strncmp(last_line, "GPS,", 4) == 0) {
 								lmicros += 200;
@@ -730,11 +730,11 @@ void Logging (void) {
 									lsec += 1;
 									lmicros = 0;
 								}
-//								printf("%i %i\n", logplay_msec, (lsec - logplay_startsec) * 1000 + lmicros);
+//								SDL_Log("%i %i\n", logplay_msec, (lsec - logplay_startsec) * 1000 + lmicros);
 							}
 							continue;
 						} else {
-							printf("######## file end ########\n");
+							SDL_Log("######## file end ########\n");
 							logplay_open = 0;
 							logplay_play = 0;
 							fclose(fr_play);
@@ -742,7 +742,7 @@ void Logging (void) {
 							break;
 						}
 					}
-//					printf("%i %i\n", logplay_msec, (lsec - logplay_startsec) * 1000 + lmicros);
+//					SDL_Log("%i %i\n", logplay_msec, (lsec - logplay_startsec) * 1000 + lmicros);
 					if (logplay_msec >= (lsec - logplay_startsec) * 1000 + lmicros) {
 						if (strncmp(last_line, "GPS;", 4) == 0) {
 							float p_lat = 0.0;
@@ -775,18 +775,18 @@ void Logging (void) {
 						}
 						if (fgets(line, 500, fr_play) != NULL) {
 							strncpy(last_line, line, 1023);
-//							printf("NEXT_LINE: %s\n", line);
+//							SDL_Log("NEXT_LINE: %s\n", line);
 							if (strncmp(last_line, "GPS,", 4) == 0) {
 								lmicros += 200;
 								if (lmicros >= 1000) {
 									lsec += 1;
 									lmicros = 0;
 								}
-//								printf("%i %i\n", logplay_msec, (lsec - logplay_startsec) * 1000 + lmicros);
+//								SDL_Log("%i %i\n", logplay_msec, (lsec - logplay_startsec) * 1000 + lmicros);
 							}
 							continue;
 						} else {
-							printf("######## file end ########\n");
+							SDL_Log("######## file end ########\n");
 							logplay_open = 0;
 							logplay_play = 0;
 							fclose(fr_play);

@@ -641,18 +641,18 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 		}
 		if (tex_num == -1) {
 			tex_num = old_num;
-			printf("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
+			SDL_Log("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
 			glDeleteTextures( 1, &TexCache[tex_num].texture );
 			TexCache[tex_num].name[0] = 0;
 			TexCache[tex_num].texture = 0;
 		}
 		if (tex_num != -1) {
-//			printf("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
+//			SDL_Log("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
 			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) {
 				strncpy(TexCache[tex_num].name, file, 1023);
 				TexCache[tex_num].atime = time(0);
 			} else {
-				printf("could not load image: %s\n", file);
+				SDL_Log("could not load image: %s\n", file);
 				if (strstr(file, "/MAPS/") > 0) {
 					unlink(file);
 				}
@@ -769,18 +769,18 @@ void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2
 		}
 		if (tex_num == -1) {
 			tex_num = old_num;
-			printf("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
+			SDL_Log("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
 			glDeleteTextures(1, &TexCache[tex_num].texture);
 			TexCache[tex_num].name[0] = 0;
 			TexCache[tex_num].texture = 0;
 		}
 		if (tex_num != -1) {
-//			printf("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
+//			SDL_Log("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
 			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) { 
 				strncpy(TexCache[tex_num].name, file, 1023);
 				TexCache[tex_num].atime = time(0);
 			} else {
-				printf("could not load image: %s\n", file);
+				SDL_Log("could not load image: %s\n", file);
 				if (strstr(file, "/MAPS/") > 0) {
 					unlink(file);
 				}
@@ -789,7 +789,7 @@ void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2
 	}
 	if (TexCache[tex_num].texture != 0) {
 		TexCache[tex_num].atime = time(0);
-//		printf("# %s = %i\n", TexCache[tex_num].name, TexCache[tex_num].texture);
+//		SDL_Log("# %s = %i\n", TexCache[tex_num].name, TexCache[tex_num].texture);
 		GLfloat vVertices[] = {
 			x1, y1, -2.0f + z,  // Position 0
 			x1, y2, -2.0f + z,  // Position 1
@@ -918,18 +918,18 @@ void draw_text_f3_fast (ESContext *esContext, float x1, float y1, float z1, floa
 		}
 		if (tex_num == -1) {
 			tex_num = old_num;
-			printf("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
+			SDL_Log("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
 			glDeleteTextures( 1, &TexCache[tex_num].texture );
 			TexCache[tex_num].name[0] = 0;
 			TexCache[tex_num].texture = 0;
 		}
 		if (tex_num > 0) {
-//			printf("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
+//			SDL_Log("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
 			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) { 
 				strncpy(TexCache[tex_num].name, file, 1023);
 				TexCache[tex_num].atime = time(0);
 			} else {
-				printf("could not load image: %s\n", file);
+				SDL_Log("could not load image: %s\n", file);
 				if (strstr(file, "/MAPS/") > 0) {
 					unlink(file);
 				}
@@ -1022,19 +1022,19 @@ void draw_char_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 		}
 		if (tex_num == -1) {
 			tex_num = old_num;
-			printf("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
+			SDL_Log("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
 			glDeleteTextures( 1, &TexCache[tex_num].texture );
 			TexCache[tex_num].name[0] = 0;
 			TexCache[tex_num].texture = 0;
 		}
 		if (tex_num != -1) {
-//			printf("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
+//			SDL_Log("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
 			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) { 
 				strncpy(TexCache[tex_num].name, file, 1023);
 				TexCache[tex_num].atime = time(0);
 
 			} else {
-				printf("could not load image: %s\n", file);
+				SDL_Log("could not load image: %s\n", file);
 				if (strstr(file, "/MAPS/") > 0) {
 					unlink(file);
 				}
@@ -1044,7 +1044,7 @@ void draw_char_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 	if (TexCache[tex_num].texture != 0) {
 		TexCache[tex_num].atime = time(0);
 
-//		printf("# %s = %i\n", TexCache[tex_num].name, TexCache[tex_num].texture);
+//		SDL_Log("# %s = %i\n", TexCache[tex_num].name, TexCache[tex_num].texture);
 
 		//glUseProgram(userData->programObject);
 		glActiveTexture(GL_TEXTURE0);
@@ -1071,7 +1071,7 @@ void draw_char_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 			tpos_y = (float)(nnn / 16) / 16;
 		}
 		if (tpos_x < 0 || tpos_y < 0 || tpos_x > 511 || tpos_y > 511) {
-			printf("CHAR - ERROR\n");
+			SDL_Log("CHAR - ERROR\n");
 			return;
 		}
 		vVertices[3] = tpos_x;

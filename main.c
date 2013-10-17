@@ -209,7 +209,7 @@ uint8_t set_button (char *name, uint8_t view_mode, float x1, float y1, float x2,
 			return 0;
 		}
 	}
-	printf("to many buttons\n");
+	SDL_Log("to many buttons\n");
 	return 2;
 }
 
@@ -236,7 +236,7 @@ int8_t check_button (uint8_t view_mode, float x, float y, uint8_t button, uint8_
 	for (n = MAX_BUTTONS - 1; n >= 0; n--) {
 		if (Buttons[n].name[0] != 0 && Buttons[n].view_mode == view_mode && x > Buttons[n].x1 && x < Buttons[n].x2 && y > Buttons[n].y1 && y < Buttons[n].y2) {
 			if (Buttons[n].type == 0 && event == BUTTON_PRESS) {
-//				printf("CB: %s\n", Buttons[n].name);
+//				SDL_Log("CB: %s\n", Buttons[n].name);
 				(*Buttons[n].callback)(Buttons[n].name, x, y, button, Buttons[n].data);
 				return n;
 			} else if (Buttons[n].type == 1 || Buttons[n].type == 2) {
@@ -404,7 +404,7 @@ void setup_save (void) {
 	if (setup.calibration_mode > 0) {
 		setup.calibration_mode = 1;
 	}
-//	printf("** saving file\n");
+//	SDL_Log("** saving file\n");
 	char filename[1024];
 	sprintf(filename, "%s/setup.cfg", get_datadirectory());
         fr = fopen(filename, "wb");
@@ -476,7 +476,7 @@ void setup_save (void) {
 	        }
 	        fclose(fr);
 	} else {
-		printf("Can not save setup-file: %s\n", filename);
+		SDL_Log("Can not save setup-file: %s\n", filename);
 	}
 }
 
@@ -686,7 +686,7 @@ void setup_load (void) {
 	        }
 	        fclose(fr);
 	} else {
-		printf("setup: Can not load setup-file: %s\n", filename);
+		SDL_Log("setup: Can not load setup-file: %s\n", filename);
 	}
 	if (setup.calibration_mode > 0) {
 		setup.calibration_mode = 1;
@@ -735,7 +735,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 		exit(0);
 #ifdef SDL2
 	} else if (event.type == SDL_DROPFILE) {
-		printf("## SDL_DROPFILE: %s ##\n", event.drop.file);
+		SDL_Log("## SDL_DROPFILE: %s ##\n", event.drop.file);
 	} else if (event.type == SDL_WINDOWEVENT) {
 		if (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
 			int w = 0;
@@ -746,7 +746,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 #endif
 		}
 	} else if (event.type == SDL_SYSWMEVENT) {
-		printf("## SDL_SYSWMEVENT ##\n");
+		SDL_Log("## SDL_SYSWMEVENT ##\n");
 #else
 	} else if (event.type == SDL_VIDEORESIZE) {
 #ifdef SDLGL
@@ -1105,7 +1105,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 							int16_t mark_y = lat2y(WayPoints[n].p_lat, lat, zoom);
 							if (bx + 20 > mark_x && bx - 20 < mark_x) {
 								if (by + 20 > mark_y && by - 20 < mark_y) {
-									printf("POINT: %i\n", n);
+									SDL_Log("POINT: %i\n", n);
 									waypoint_active = n;
 									mousemode = 1;
 									break;
@@ -1132,7 +1132,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 						WayPoints[n].orbit = 0.0;
 						sprintf(WayPoints[n].name, "WP%i", n);
 						strncpy(WayPoints[n].command, "WAYPOINT", 127);
-//						printf("GPS;%i;%f;%f;%0.1f;%0.1f\n", time(0), mouse_lat, mouse_long, 25.0, 10.0);
+//						SDL_Log("GPS;%i;%f;%f;%0.1f;%0.1f\n", time(0), mouse_lat, mouse_long, 25.0, 10.0);
 						break;
 					}
 				}
@@ -1163,7 +1163,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 			} else if (event.button.button == 6) {
 			} else if (event.button.button == 7) {
 			} else {
-				printf("Button: %i\n", event.button.button);
+				SDL_Log("Button: %i\n", event.button.button);
 			}
 		}
 		redraw_flag = 1;
@@ -1174,7 +1174,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 		sprintf(tmp_str, "## UNKNOWN_EVENT: %i (0x%x) ##\n", event.type, event.type);
 		SDL_Log(tmp_str);
 #else
-		printf("## UNKNOWN_EVENT: %i (0x%x) ##\n", event.type, event.type);
+		SDL_Log("## UNKNOWN_EVENT: %i (0x%x) ##\n", event.type, event.type);
 #endif
 #endif
 	}
@@ -1209,7 +1209,7 @@ int telemetry_thread (void *data) {
 		}
 		SDL_Delay(2);
 	}
-	printf("telemetry: exit thread\n");
+	SDL_Log("telemetry: exit thread\n");
 	return(0);
 }
 
@@ -1298,14 +1298,14 @@ int touchscreen_thread (void *data) {
 							touch_x = 0;
 							touch_y = 0;
 						}
-//						printf("%i,%i\n", last_x, last_y);
+//						SDL_Log("%i,%i\n", last_x, last_y);
 					}
 				}
 			}
 		}
 	}
 #endif
-	printf("touch: exit thread\n");
+	SDL_Log("touch: exit thread\n");
 	return(0);
 }
 
@@ -1494,7 +1494,7 @@ void Draw (ESContext *esContext) {
 		save_screenshot();
 #endif
 	} else if (keyboard_key[0] != 0) {
-		printf("## keyboard_key: %s ##\n", keyboard_key);
+		SDL_Log("## keyboard_key: %s ##\n", keyboard_key);
 	}
 
 	keyboard_key[0] = 0;
@@ -1815,7 +1815,7 @@ void Draw (ESContext *esContext) {
 void ShutDown ( ESContext *esContext ) {
 //	UserData *userData = esContext->userData;
 
-	printf("Shutdown\n");
+	SDL_Log("Shutdown\n");
 	gui_running = 0;
 	SDL_Delay(600);
 	LogSave();
@@ -1827,10 +1827,10 @@ void ShutDown ( ESContext *esContext ) {
 	gcs_gps_exit();
 	webserv_exit();
 	map_exit();
-	printf("telemetry: thread kill\n");
+	SDL_Log("telemetry: thread kill\n");
 	SDL_KillThread(thread_telemetry);
 #ifdef RPI_NO_X
-	printf("touch: thread kill\n");
+	SDL_Log("touch: thread kill\n");
 	SDL_KillThread(thread);
 #endif
 
@@ -1841,7 +1841,7 @@ void ShutDown ( ESContext *esContext ) {
 #endif
 	system("killall -9 espeak 2> /dev/null > /dev/null");
 
-	printf("texture-cache: clear\n");
+	SDL_Log("texture-cache: clear\n");
 	int16_t n = 0;
 	for (n = 0; n < MAX_TEXCACHE; n++) {
 		if (TexCache[n].name[0] != 0 && TexCache[n].texture != 0 ) {
@@ -1853,10 +1853,10 @@ void ShutDown ( ESContext *esContext ) {
 #ifdef RPI_NO_X
 //	glDeleteProgram ( userData->programObject );
 //	free(esContext->userData);
-	printf("bcm_host: exit\n");
+	SDL_Log("bcm_host: exit\n");
 	bcm_host_deinit();
 #endif
-	printf("sdl: exit\n");
+	SDL_Log("sdl: exit\n");
 #ifdef SDL2
 	SDL_DestroyWindow(MainWindow);
 #endif
@@ -1867,7 +1867,7 @@ void ShutDown ( ESContext *esContext ) {
 	glExit(esContext);
 #endif
 
-	printf("tempfile: remove\n");
+	SDL_Log("tempfile: remove\n");
 	unlink("/tmp/gcs.run");
 }
 
@@ -1916,7 +1916,7 @@ int main ( int argc, char *argv[] ) {
 		if (argc >= 4) {
 			clientmode_port = atoi(argv[3]);
 		}
-		printf("clientmode: %s:%i\n", clientmode_server, clientmode_port);
+		SDL_Log("clientmode: %s:%i\n", clientmode_server, clientmode_port);
 		clientmode = 1;
 	}
 
@@ -1926,7 +1926,7 @@ int main ( int argc, char *argv[] ) {
 #ifndef WINDOWS
 	localtime_r(&liczba_sekund, &strukt); 
 #endif
-//	printf("DATE: %d.%d %d\n", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900); 
+//	SDL_Log("DATE: %d.%d %d\n", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900); 
 
 #ifndef WINDOWS
 	sprintf(tmp_name, "%s/WMM2010.COF", BASE_DIR);
@@ -1947,7 +1947,7 @@ int main ( int argc, char *argv[] ) {
 
 #ifdef RPI_NO_X
 	if ((touch_fd = open(setup.touchscreen_device, O_RDONLY)) >= 0) {
-		printf("touch: init thread\n");
+		SDL_Log("touch: init thread\n");
 #ifdef SDL2
 		thread = SDL_CreateThread(touchscreen_thread, NULL, NULL);
 #else
@@ -1963,7 +1963,7 @@ int main ( int argc, char *argv[] ) {
 #endif
 
 #ifndef CONSOLE_ONLY
-	printf("init GL\n");
+	SDL_Log("init GL\n");
 #ifndef SDLGL
 	esInitContext ( &esContext );
 	esContext.userData = &userData;
@@ -2029,7 +2029,7 @@ gl_update();
 	rcflow_init(setup.rcflow_port, setup.rcflow_baud);
 	tracker_init(setup.tracker_port, setup.tracker_baud);
 
-	printf("telemetry: init thread\n");
+	SDL_Log("telemetry: init thread\n");
 	reset_telemetry();
 #ifdef SDL2
 	thread_telemetry = SDL_CreateThread(telemetry_thread, NULL, NULL);
@@ -2042,9 +2042,9 @@ gl_update();
 	}
 
 	GlobalesContext = &esContext;
-	printf("main: start loop\n");
+	SDL_Log("main: start loop\n");
 #ifdef CONSOLE_ONLY
-	printf("main: now you can connect via Browser or Google-Earth to port :%i\n", setup.webport);
+	SDL_Log("main: now you can connect via Browser or Google-Earth to port :%i\n", setup.webport);
 #endif
 #ifndef SDLGL
 	esMainLoop(&esContext);

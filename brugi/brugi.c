@@ -17,7 +17,7 @@ void brugi_send_cmd (char *cmd) {
 void brugi_set_value (char *var, float val) {
 	char cmd[100];
 	sprintf(cmd, "par %s %f\n", var, val);
-	printf("brugi: %s", cmd);
+	SDL_Log("brugi: %s", cmd);
 	brugi_send_cmd(cmd);
 }
 
@@ -229,7 +229,7 @@ void brugi_init (char *port, uint32_t baud) {
 
 
 
-	printf("init simple-bgc serial port...\n");
+	SDL_Log("init simple-bgc serial port...\n");
 	brugi_serial_fd = serial_open(port, baud);
 }
 
@@ -348,7 +348,7 @@ void brugi_update (void) {
 				sscanf(data_buffer, "%i ACC %i", &acc_y, &acc_x);
 				ModelData.roll = (float)acc_x / 1000.0;
 				ModelData.pitch = (float)acc_y / 1000.0;
-//				printf("#### %f,%f -- %s\n", (float)acc_x / 1000.0, (float)acc_y / 1000.0,  data_buffer);
+//				SDL_Log("#### %f,%f -- %s\n", (float)acc_x / 1000.0, (float)acc_y / 1000.0,  data_buffer);
 				info_num = 2;
 			}
 

@@ -57,7 +57,7 @@ uint8_t overview_set (char *name, float x, float y, int8_t button, float data) {
 }
 
 uint8_t system_baud_set (char *name, float x, float y, int8_t button, float data) {
-	printf("BAUD: %s_baud = %s\n", baud_selected, name);
+	SDL_Log("BAUD: %s_baud = %s\n", baud_selected, name);
         if (strcmp(baud_selected, "gcs_gps") == 0) {
                 setup.gcs_gps_baud = atoi(name);
 		gcs_gps_exit();
@@ -90,7 +90,7 @@ uint8_t system_baud_change (char *name, float x, float y, int8_t button, float d
 }
 
 uint8_t system_device_set (char *name, float x, float y, int8_t button, float data) {
-	printf("DEVICE: %s_port = %s\n", port_selected, name);
+	SDL_Log("DEVICE: %s_port = %s\n", port_selected, name);
         if (strcmp(port_selected, "gcs_gps") == 0) {
                 strncpy(setup.gcs_gps_port, name, 1023);
         } else if (strcmp(port_selected, "rcflow") == 0) {
@@ -424,7 +424,7 @@ void screen_system (ESContext *esContext) {
 			while(!feof(cmd)) {
 				if(fgets(buffer, 1024, cmd) != NULL) {
 					sscanf(buffer, "%s %s %s", (char *)&ip, (char *)&bcast, (char *)&mask);
-		//			printf("## %s, %s, %s ##\n", ip, bcast, mask);
+		//			SDL_Log("## %s, %s, %s ##\n", ip, bcast, mask);
 				}
 			}
 			pclose(cmd);
@@ -434,7 +434,7 @@ void screen_system (ESContext *esContext) {
 			while(!feof(cmd)) {
 				if(fgets(buffer, 1024, cmd) != NULL) {
 					sscanf(buffer, "%s %s %s", (char *)&ip, (char *)&bcast, (char *)&mask);
-		//			printf("## %s, %s, %s ##\n", ip, bcast, mask);
+		//			SDL_Log("## %s, %s, %s ##\n", ip, bcast, mask);
 				}
 			}
 			pclose(cmd);

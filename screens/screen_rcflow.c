@@ -207,11 +207,11 @@ static int rcflow_tcl_output_Cmd (ClientData cdata, Tcl_Interp *interp, int objc
 		return TCL_ERROR;
 	}
 	if (n1 >= MAX_PLUGINS) {
-		printf("rcflow: TCL ERROR: plugin out of range %i (max %i)", n1, MAX_PLUGINS);
+		SDL_Log("rcflow: TCL ERROR: plugin out of range %i (max %i)", n1, MAX_PLUGINS);
 		return TCL_ERROR;
 	}
 	if (n2 >= MAX_OUTPUTS) {
-		printf("rcflow: TCL ERROR: output out of range %i (max %i)", n2, MAX_OUTPUTS);
+		SDL_Log("rcflow: TCL ERROR: output out of range %i (max %i)", n2, MAX_OUTPUTS);
 		return TCL_ERROR;
 	}
 	RcPluginEmbedded[n1].output[n2].value = rcflow_value_limit(n3, -1000, 1000);
@@ -224,15 +224,15 @@ static int rcflow_tcl_output_Cmd (ClientData cdata, Tcl_Interp *interp, int objc
 static void rcflow_tcl_init (void) {
 	rcflow_tcl_startup = 1;
 /*
-	printf("rcflow: init RcFlow-TCL...\n");
+	SDL_Log("rcflow: init RcFlow-TCL...\n");
 	rcflow_tcl_interp = Tcl_CreateInterp();
 	if (TCL_OK != Tcl_Init(rcflow_tcl_interp)) {
-		printf("rcflow: ...failed (%s)\n", Tcl_GetStringResult(rcflow_tcl_interp));
+		SDL_Log("rcflow: ...failed (%s)\n", Tcl_GetStringResult(rcflow_tcl_interp));
 		return;
 	}
 //	Tcl_CreateObjCommand(rcflow_tcl_interp, "ModelData", ModelData_Cmd, NULL, NULL);
 	Tcl_CreateObjCommand(rcflow_tcl_interp, "set_output", rcflow_tcl_output_Cmd, NULL, NULL);
-	printf("...done\n");
+	SDL_Log("...done\n");
 */
 	return;
 }
@@ -244,18 +244,18 @@ static void rcflow_tcl_run (char *script) {
 	}
 	tcl_update_modeldata();
 	if (Tcl_Eval(rcflow_tcl_interp, script) != TCL_OK) {
-		printf("rcflow: TCL-ERROR:\n");
-		printf("rcflow: #######################################################\n");
-		printf("%s\n", script);
-		printf("rcflow: #######################################################\n");
-		printf("%s\n", Tcl_GetStringResult(rcflow_tcl_interp));
-		printf("rcflow: #######################################################\n");
+		SDL_Log("rcflow: TCL-ERROR:\n");
+		SDL_Log("rcflow: #######################################################\n");
+		SDL_Log("%s\n", script);
+		SDL_Log("rcflow: #######################################################\n");
+		SDL_Log("%s\n", Tcl_GetStringResult(rcflow_tcl_interp));
+		SDL_Log("rcflow: #######################################################\n");
 	}
 }
 */
 
 static void die(char *msg) {
-	printf("rcflow: %s", msg);
+	SDL_Log("rcflow: %s", msg);
 	return;
 }
 
@@ -481,7 +481,7 @@ static void rcflow_parseDoc (char *docname) {
 	int len = 0;
 	SDL_RWops *ops_file = SDL_RWFromFile(docname, "r");
 	if (ops_file == NULL) {
-		printf("map: Document open failed: %s\n", docname);
+		SDL_Log("map: Document open failed: %s\n", docname);
 		return;
 	}
 	len = SDL_RWseek(ops_file, 0, SEEK_END);
@@ -493,7 +493,7 @@ static void rcflow_parseDoc (char *docname) {
 	free(buffer);
 
 	if (doc == NULL) {
-		printf("rcflow: Document parsing failed: %s\n", docname);
+		SDL_Log("rcflow: Document parsing failed: %s\n", docname);
 		return;
 	}
 	cur = xmlDocGetRootElement(doc);
@@ -677,7 +677,7 @@ void rcflow_undo_save (void) {
 	int16_t n = 0;
 	char tmp_str[1024];
 	char tmp_str2[1024];
-	printf("rcflow: undo_save \n");
+	SDL_Log("rcflow: undo_save \n");
 	sprintf(tmp_str, "%s/models", get_datadirectory());
 #ifndef WINDOWS
 	mkdir(tmp_str, 0755);
@@ -706,7 +706,7 @@ uint8_t rcflow_redo (char *name, float x, float y, int8_t button, float data) {
 	if (undo > 0) {
 		undo--;
 	}
-	printf("rcflow: redo %i\n", undo);
+	SDL_Log("rcflow: redo %i\n", undo);
         FILE *fr;
 	sprintf(tmp_str, "%s/models/rcflow_undo%i.bin", get_datadirectory(), undo);
         fr = fopen(tmp_str, "r");
@@ -723,7 +723,7 @@ uint8_t rcflow_undo (char *name, float x, float y, int8_t button, float data) {
 	if (undo < MAX_UNDO) {
 		undo++;
 	}
-	printf("rcflow: undo %i\n", undo);
+	SDL_Log("rcflow: undo %i\n", undo);
         FILE *fr;
 	sprintf(tmp_str, "%s/models/rcflow_undo%i.bin", get_datadirectory(), undo);
         fr = fopen(tmp_str, "r");
@@ -829,17 +829,17 @@ uint8_t rcflow_test (char *name, float x, float y, int8_t button, float data) {
 						if (linked == 0) {
 							if (tlist == 0) {
 								tlist = 1;
-								printf("rcflow: %s:\n", plugintype_names[RcPlugin[plugin].type]);
+								SDL_Log("rcflow: %s:\n", plugintype_names[RcPlugin[plugin].type]);
 							}
 							if (plist == 0) {
 								plist = 1;
 								if (RcPlugin[plugin].title[0] == 0) {
-									printf("rcflow: 	%s\n", RcPlugin[plugin].name);
+									SDL_Log("rcflow: 	%s\n", RcPlugin[plugin].name);
 								} else {
-									printf("rcflow: 	%s\n", RcPlugin[plugin].title);
+									SDL_Log("rcflow: 	%s\n", RcPlugin[plugin].title);
 								}
 							}
-							printf("rcflow:     		%s -- %i -- %i\n", RcPlugin[plugin].input[input].name, RcPlugin[plugin].input[input].value, RcPlugin[plugin].input[input].type);
+							SDL_Log("rcflow:     		%s -- %i -- %i\n", RcPlugin[plugin].input[input].name, RcPlugin[plugin].input[input].value, RcPlugin[plugin].input[input].type);
 						}
 					}
 				}
@@ -871,10 +871,10 @@ uint8_t rcflow_update_plugin (int8_t plugin_num) {
 	uint8_t *ptr = (uint8_t *)&RcPluginEmbedded[plugin_num];
 	rcflow_convert_to_Embedded();
 	for (n = 0; n < sizeof(RcFlowPluginEmbedded); n++) {
-//		printf("%i -- %i/%i: ptr = %i (%i)\n", plugin_num, n, sizeof(RcFlowPluginEmbedded), *ptr, chksum);
+//		SDL_Log("%i -- %i/%i: ptr = %i (%i)\n", plugin_num, n, sizeof(RcFlowPluginEmbedded), *ptr, chksum);
 		chksum ^= *ptr++;
 	}
-//	printf("chksum = %i\n", chksum);
+//	SDL_Log("chksum = %i\n", chksum);
 	write(rcflow_fd, &start, 2);
 	write(rcflow_fd, &plugin_num, sizeof(plugin_num));
 	write(rcflow_fd, &RcPluginEmbedded[plugin_num], sizeof(RcFlowPluginEmbedded));
@@ -893,10 +893,10 @@ uint8_t rcflow_update_link (int8_t link_num) {
 	uint8_t *ptr = (uint8_t *)&RcLinkEmbedded[link_num];
 	rcflow_convert_to_Embedded();
 	for (n = 0; n < sizeof(RcFlowLinkEmbedded); n++) {
-//		printf("%i -- %i/%i: ptr = %i (%i)\n", link_num, n, sizeof(RcFlowLinkEmbedded), *ptr, chksum);
+//		SDL_Log("%i -- %i/%i: ptr = %i (%i)\n", link_num, n, sizeof(RcFlowLinkEmbedded), *ptr, chksum);
 		chksum ^= *ptr++;
 	}
-//	printf("chksum = %i\n", chksum);
+//	SDL_Log("chksum = %i\n", chksum);
 	write(rcflow_fd, &start, 2);
 	write(rcflow_fd, &link_num, sizeof(link_num));
 	write(rcflow_fd, &RcLinkEmbedded[link_num], sizeof(RcFlowLinkEmbedded));
@@ -1423,7 +1423,7 @@ uint8_t rcflow_plugin_move (char *name, float x, float y, int8_t button, float d
 		RcPlugin[(int)data].x = x;
 		RcPlugin[(int)data].y = y;
 	}
-//	printf("rcflow: MOVE: %0.2f, %0.2f\n", x, y);
+//	SDL_Log("rcflow: MOVE: %0.2f, %0.2f\n", x, y);
 
 	rcflow_plugin_move_id = (int)data;
 	rcflow_plugin_move_timer = 50;
@@ -2202,7 +2202,7 @@ void rcflow_calc_Embedded (void) {
 		if (RcPluginEmbedded[plugin].type == RCFLOW_PLUGIN_ADC) {
 			for (output = 0; output < 8; output++) {
 				RcPluginEmbedded[plugin].output[output].value = rctransmitter_input[output] * 10;
-				//printf("rcflow: ## %s (%i) == %i ##\n", RcPlugin[plugin].output[output].name, output, rctransmitter_input[output] * 10);
+				//SDL_Log("rcflow: ## %s (%i) == %i ##\n", RcPlugin[plugin].output[output].name, output, rctransmitter_input[output] * 10);
 			}
 		}
 	}
@@ -2220,7 +2220,7 @@ void rcflow_calc_Embedded (void) {
 				} else {
 					RcPluginEmbedded[plugin].output[output].value = adc[output];
 				}
-//				printf("rcflow: ## %s (%i) == %i ##\n", RcPlugin[plugin].output[output].name, output, RcPluginEmbedded[plugin].output[output].value);
+//				SDL_Log("rcflow: ## %s (%i) == %i ##\n", RcPlugin[plugin].output[output].name, output, RcPluginEmbedded[plugin].output[output].value);
 			}
 		}
 	}
@@ -2233,7 +2233,7 @@ void rcflow_calc_Embedded (void) {
 				} else {
 					RcPluginEmbedded[plugin].output[output].value = sw[output];
 				}
-//				printf("rcflow: ## %s (%i) == %i ##\n", RcPlugin[plugin].output[output].name, output, RcPluginEmbedded[plugin].output[output].value);
+//				SDL_Log("rcflow: ## %s (%i) == %i ##\n", RcPlugin[plugin].output[output].name, output, RcPluginEmbedded[plugin].output[output].value);
 			}
 		}
 	}
@@ -2725,7 +2725,7 @@ uint8_t rcflow_init (char *port, uint32_t baud) {
 		rcflow_undo_save();
 	}
 
-	printf("rcflow: init serial port...\n");
+	SDL_Log("rcflow: init serial port...\n");
 	rcflow_fd = serial_open(port, baud);
 
 	return 0;
@@ -2755,22 +2755,22 @@ while (read(rcflow_fd, buf, 1) > 0) {
 				sscanf(buffer, "SW:%i;%i;%i;%i;%i;%i;%i;%i;%i;%i;%i;%i;", &sw[0], &sw[1], &sw[2], &sw[3], &sw[4], &sw[5], &sw[6], &sw[7], &sw[8], &sw[9], &sw[10], &sw[11]);
 			} else if (buffer[0] == 'O' && buffer[1] == 'U' && buffer[2] == 'T' && buffer[3] == ':') {
 				sscanf(buffer, "OUT:%i;%i;%i;%i;%i;%i;%i;%i;", &out[0], &out[1], &out[2], &out[3], &out[4], &out[5], &out[6], &out[7]);
-				printf("rcflow: STM %i %i %i %i %i %i %i %i --\n", out[0], out[1], out[2], out[3], out[4], out[5], out[6], out[7]);
-				printf("rcflow: LIN ");
+				SDL_Log("rcflow: STM %i %i %i %i %i %i %i %i --\n", out[0], out[1], out[2], out[3], out[4], out[5], out[6], out[7]);
+				SDL_Log("rcflow: LIN ");
 				for (plugin = 0; plugin < MAX_PLUGINS; plugin++) {
 					if (RcPluginEmbedded[plugin].type == RCFLOW_PLUGIN_PPM) {
 						for (output = 0; output < 8; output++) {
 							if (RcPluginEmbedded[plugin].input[output].option == 1) {
-								printf("%i ", RcPluginEmbedded[plugin].input[output].value * -1);
+								SDL_Log("%i ", RcPluginEmbedded[plugin].input[output].value * -1);
 							} else {
-								printf("%i ", RcPluginEmbedded[plugin].input[output].value);
+								SDL_Log("%i ", RcPluginEmbedded[plugin].input[output].value);
 							}
 						}
 					}
 				}
-				printf("\n");
+				SDL_Log("\n");
 //			} else if (buffer[0] == 'C' && buffer[1] == 'N' && buffer[2] == 'T' && buffer[3] == ':') {
-//				printf("rcflow: ################# %s ##\n", buffer);
+//				SDL_Log("rcflow: ################# %s ##\n", buffer);
 			}
 			start_flag = 0;
 			buffer_n = 0;
@@ -3025,7 +3025,7 @@ while (read(rcflow_fd, buf, 1) > 0) {
 			}
 		}
 
-//printf("#1: \n", times(0));
+//SDL_Log("#1: \n", times(0));
 
 		// Draw Links
 		for (link = 0; link < MAX_LINKS; link++) {
@@ -3263,7 +3263,7 @@ while (read(rcflow_fd, buf, 1) > 0) {
 	}
 
 	if (keyboard_key[0] != 0) {
-		printf("rcflow: keyboard_key(shift) = %s (%i)\n", keyboard_key, keyboard_shift);
+		SDL_Log("rcflow: keyboard_key(shift) = %s (%i)\n", keyboard_key, keyboard_shift);
 	}
 
 
@@ -3276,7 +3276,7 @@ while (read(rcflow_fd, buf, 1) > 0) {
 //	rcflow_tcl_run("puts $ModelData(name)");
 
 
-//printf("%i %i %i\n", (int)sizeof(RcPluginEmbedded), (int)sizeof(RcLinkEmbedded), (int)sizeof(RcPluginEmbedded) + (int)sizeof(RcLinkEmbedded));
+//SDL_Log("%i %i %i\n", (int)sizeof(RcPluginEmbedded), (int)sizeof(RcLinkEmbedded), (int)sizeof(RcPluginEmbedded) + (int)sizeof(RcLinkEmbedded));
 
 
 }

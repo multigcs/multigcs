@@ -51,7 +51,7 @@ void device_add_filter (char *filter) {
 	if (device_filter_num < FILTER_MAX) {
 		strncpy(device_filter[device_filter_num++], filter, 199);
 	} else {
-		printf("ERROR: to many filters\n");
+		SDL_Log("ERROR: to many filters\n");
 	}
 }
 

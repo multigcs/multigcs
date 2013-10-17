@@ -47,7 +47,7 @@ void baseflightcli_add_value (char *vname, uint8_t type, float vval, float vmin,
 
 	for (n3 = 0; n3 < 399; n3++) {
 		if (strcmp(bf_set_value[n3].name, vname) == 0) {
-//			printf("found: %s = %f\n", vname, vval);
+//			SDL_Log("found: %s = %f\n", vname, vval);
 			bf_set_value[n3].value = vval;
 			if (vmin != 0.0 || vmax != 0.0) {
 				bf_set_value[n3].min = vmin;
@@ -60,7 +60,7 @@ void baseflightcli_add_value (char *vname, uint8_t type, float vval, float vmin,
 		}
 	}
 	if (flag == 0) {
-//		printf("add(%i): %s = %f\n", flag2, vname, vval);
+//		SDL_Log("add(%i): %s = %f\n", flag2, vname, vval);
 		strncpy(bf_set_value[flag2].name, vname, 199);
 		bf_set_value[flag2].value = vval;
 		if (vmin != 0.0 || vmax != 0.0) {
@@ -113,7 +113,7 @@ void baseflightcli_update (void) {
 			} else if (new == '\n') {
 				if (baseflightcli_buffer[0] == 0) {
 				} else if (baseflightcli_buffer[0] == '#') {
-					printf(">%s\n", baseflightcli_buffer);
+					SDL_Log(">%s\n", baseflightcli_buffer);
 				} else if (baseflightcli_buffer[0] == ';') {
 				} else if (strncmp(baseflightcli_buffer, "Available mixers:", 2) == 0) {
 					n2 = 0;
@@ -131,7 +131,7 @@ void baseflightcli_update (void) {
 						}
 					}
 				} else if (strncmp(baseflightcli_buffer, "ERR:", 4) == 0) {
-					printf("## %s\n", baseflightcli_buffer);
+					SDL_Log("## %s\n", baseflightcli_buffer);
 				} else if (strncmp(baseflightcli_buffer, "map ", 4) == 0) {
 					for (n = 4; n < strlen(baseflightcli_buffer); n++) {
 						if (baseflightcli_buffer[n] == 'A') {
@@ -220,7 +220,7 @@ void baseflightcli_update (void) {
 					}
 					baseflightcli_add_value(vname, type, vval, vmin, vmax);
 				} else {
-//					printf("#UNKNOWN# %s\n", baseflightcli_buffer);
+//					SDL_Log("#UNKNOWN# %s\n", baseflightcli_buffer);
 				}
 				baseflightcli_buffer[0] = 0;
 				read_x = 0;
@@ -235,7 +235,7 @@ void baseflightcli_update (void) {
 }
 
 static uint8_t baseflightcli_null (char *name, float x, float y, int8_t button, float data) {
-	printf("baseflightcli_null: %f\n", data);
+	SDL_Log("baseflightcli_null: %f\n", data);
 	return 0;
 }
 
@@ -267,7 +267,7 @@ static uint8_t baseflightcli_xml_save (char *name, float x, float y, int8_t butt
 }
 
 static uint8_t baseflightcli_load_cmix (char *name, float x, float y, int8_t button, float data) {
-	printf("baseflightcli_load_cmix: %f\n", data);
+	SDL_Log("baseflightcli_load_cmix: %f\n", data);
 	int n = 0;
 	int nn = 0;
 	for (nn = 0; nn < 399; nn++) {
@@ -292,7 +292,7 @@ static uint8_t baseflightcli_load_cmix (char *name, float x, float y, int8_t but
 }
 
 static uint8_t baseflightcli_mixer_set (char *name, float x, float y, int8_t button, float data) {
-	printf("baseflightcli_mixer_set: %s %f\n", name, data);
+	SDL_Log("baseflightcli_mixer_set: %s %f\n", name, data);
 	int n = 0;
 	int nn = (int)data;
 	for (n = 0; n < (int)bf_set_value[nn].max; n++) {
@@ -333,7 +333,7 @@ static uint8_t baseflightcli_defaults (char *name, float x, float y, int8_t butt
 	if (baseflightcli_fd < 0) {
 		return 0;
 	}
-	printf("baseflightcli_defaults: %f\n", data);
+	SDL_Log("baseflightcli_defaults: %f\n", data);
 	char tmp_str[400];
 	sprintf(tmp_str, "defaults\n");
 	write(baseflightcli_fd, tmp_str, strlen(tmp_str));
@@ -373,7 +373,7 @@ static uint8_t baseflightcli_read (char *name, float x, float y, int8_t button, 
 	if (baseflightcli_fd < 0) {
 		return 0;
 	}
-	printf("reading baseflight cli...\n");
+	SDL_Log("reading baseflight cli...\n");
 	write(baseflightcli_fd, "####\n", 5);
 	write(baseflightcli_fd, "mixer list\n", 11);
 	write(baseflightcli_fd, "set *\n", 6);
@@ -501,7 +501,7 @@ uint8_t baseflightcli_init (char *port, uint32_t baud) {
 	strcpy(bf_set_groups[group_n++].filter, "d_");
 
 
-	printf("init baseflightcli serial port...\n");
+	SDL_Log("init baseflightcli serial port...\n");
 	baseflightcli_fd = serial_open(port, baud);
 
 
@@ -516,7 +516,7 @@ uint8_t baseflightcli_init (char *port, uint32_t baud) {
 uint8_t baseflightcli_toggle (char *name, float x, float y, int8_t button, float data) {
 	char tmp_str[400];
 	int nn = (int)data;
-	printf("toggle(%i): %s %f\n", nn, bf_set_value[nn].name, bf_set_value[nn].value);
+	SDL_Log("toggle(%i): %s %f\n", nn, bf_set_value[nn].name, bf_set_value[nn].value);
 	bf_set_value[nn].value = 1.0 - bf_set_value[nn].value;
 	if (strncmp(bf_set_value[nn].name, "feature_", 8) == 0) {
 		if (bf_set_value[nn].value == 0.0) {
@@ -769,7 +769,7 @@ void screen_baseflightcli (ESContext *esContext) {
 									} else if (r_x == 0.0 && r_y < 0.0) {
 										arc -= 90.0;
 									}
-									//printf("arc: M%i: %f %f %f\n", n, arc, r_x, r_y);
+									//SDL_Log("arc: M%i: %f %f %f\n", n, arc, r_x, r_y);
 									float p_x = m_x + cos(toRad(arc)) * (r_r2 * mr);
 									float p_y = m_y + sin(toRad(arc)) * (r_r2 * mr);
 									draw_circle_f(esContext, p_x, p_y, 0.2, 255, 255, 255, 127);

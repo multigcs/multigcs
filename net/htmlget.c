@@ -19,7 +19,7 @@
 static int create_tcp_socket () {
 	int sock;
 	if((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0){
-		printf("Can't create TCP socket");
+		SDL_Log("Can't create TCP socket");
 		return -1;
 	}
 	return sock;
@@ -35,7 +35,7 @@ static char *get_ip (char *host) {
 		return NULL;
 	}
 	if(inet_ntop(AF_INET, (void *)hent->h_addr_list[0], ip, iplen) == NULL) {
-		printf("Can't resolve host");
+		SDL_Log("Can't resolve host");
 		return NULL;
 	}
 	return ip;
@@ -82,18 +82,18 @@ int htmlget (char *url, char *file) {
 	tmpres = inet_pton(AF_INET, ip, (void *)(&(remote->sin_addr.s_addr)));
 
 	if( tmpres < 0)  {
-		printf("Can't set remote->sin_addr.s_addr");
+		SDL_Log("Can't set remote->sin_addr.s_addr");
 		close(sock);
 		return -1;
 	} else if (tmpres == 0) {
-		printf("%s is not a valid IP address\n", ip);
+		SDL_Log("%s is not a valid IP address\n", ip);
 		close(sock);
 		return -1;
 	}
 	remote->sin_port = htons(80);
 
 	if (connect(sock, (struct sockaddr *)remote, sizeof(struct sockaddr)) < 0){
-		printf("Could not connect");
+		SDL_Log("Could not connect");
 		close(sock);
 		return -1;
 	}
@@ -103,7 +103,7 @@ int htmlget (char *url, char *file) {
 	while(sent < strlen(get)) {
 		tmpres = send(sock, get+sent, strlen(get)-sent, 0);
 		if(tmpres == -1) {
-			printf("Can't send query");
+			SDL_Log("Can't send query");
 			close(sock);
 			return -1;
 		}
@@ -113,7 +113,7 @@ int htmlget (char *url, char *file) {
         FILE *fd = NULL;
         fd = fopen(file, "wb");
 	if (fd == NULL) {
-		printf("Error open file to write: %s\n", file);
+		SDL_Log("Error open file to write: %s\n", file);
 	}
 
 	memset(buf, 0, sizeof(buf));

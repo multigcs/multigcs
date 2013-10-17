@@ -43,7 +43,7 @@ void webclient_mavlink_get (char *server, uint16_t port) {
 			int type = 0;
 			sscanf(tmp_str, "%i %i %[0-9a-zA-Z_] %f %i", &id1, &id2, name, &value, &type);
 			mavlink_set_value(name, value, type, -1);
-//			printf("webserv: ## %s = %f ##\n", name, value);
+//			SDL_Log("webserv: ## %s = %f ##\n", name, value);
 		}
 	}
 	close(sockfd);
@@ -91,7 +91,7 @@ void webclient_update (char *server, uint16_t port) {
 					break;
 				}
 			}
-//			printf("webserv: ## %s ### %s (%i)##\n", tmp_str, tmp_str + start, start);
+//			SDL_Log("webserv: ## %s ### %s (%i)##\n", tmp_str, tmp_str + start, start);
 
 			if (strcmp(tmp_str, "name") == 0) {
 				strncpy(ModelData.name, tmp_str + start, 199);
@@ -242,7 +242,7 @@ void webclient_send_value (char *server, uint16_t port, char *name, float value,
 	char recvline[1024];
 	struct sockaddr_in servaddr;
 
-	printf("%s %f %i\n", name, value, type);
+	SDL_Log("%s %f %i\n", name, value, type);
 
 	if ((sockfd = socket(AF_INET,SOCK_STREAM,0)) < 0) {
 		return;

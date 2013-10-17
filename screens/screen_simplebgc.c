@@ -114,7 +114,7 @@ uint8_t simplebgc_select (char *name, float x, float y, int8_t button, float dat
 	if (select_name[0] == 0) {
 		return 0;
 	}
-	printf("## %s ##\n", select_name);
+	SDL_Log("## %s ##\n", select_name);
 	for (n = 0; n < VALUES_MAX; n++) {
 		if (strcmp(select_name, vdes[n].name) == 0) {
 			select_n = n;
@@ -178,7 +178,7 @@ uint8_t simplebgc_save (char *name, float x, float y, int8_t button, float data)
 
 uint8_t simplebgc_mode (char *name, float x, float y, int8_t button, float data) {
 	reset_buttons();
-printf("####\n");
+SDL_Log("####\n");
 	if (mode < 2) {
 		mode++;
 	} else {

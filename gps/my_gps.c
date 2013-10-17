@@ -33,7 +33,7 @@ void gps_update (void) {
 			line[n++] = serial_buf[0];
 			line[n] = 0;
 		} else {
-//				printf("gps: %s\n", line);
+//				SDL_Log("gps: %s\n", line);
 			if (strncmp(line, "$GPVTG", 6) == 0) {
 				float track;
 				char ch_T;
@@ -44,7 +44,7 @@ void gps_update (void) {
 				float speed;
 				char ch_K;
 				sscanf( line, "$GPVTG,%f,%c,%c,%c,%f,%c,%f,%c,", &track, &ch_T, &null1, &null2, &speed_knots, &knots, &speed, &ch_K);
-//					printf("gps: %s\n", line);
+//					SDL_Log("gps: %s\n", line);
 				ModelData.speed = speed;
 				redraw_flag = 1;
 			} else if (strncmp(line, "$GPRMC", 6) == 0) {
@@ -60,7 +60,7 @@ void gps_update (void) {
 				float mag_var;
 				char ch_E;
 				sscanf( line, "$GPRMC,%f,%c,%f,%c,%f,%c,%f,%f,%f,%f,%c", &time, &ch_A, &lat1, &ch_N, &lon1, &ch_W, &speed_knots, &curse, &date, &mag_var, &ch_E);
-//					printf("gps: %s %f\n", line, curse);
+//					SDL_Log("gps: %s %f\n", line, curse);
 				ModelData.yaw = curse;
 				redraw_flag = 1;
 			} else if (strncmp(line, "$GPGGA", 6) == 0) {
@@ -77,8 +77,8 @@ void gps_update (void) {
 				float alt1;
 				char alt1_unit;
 				sscanf( line, "$GPGGA,%f,%f,%c,%f,%c,%d,%d,%f,%f,%c,%f,%c", &time, &lat1, &latdir, &lon1, &londir, &quality, &num_sat, &hdilution, &alt2, &alt2_unit, &alt1, &alt1_unit);
-//					printf("gps: %s\n", line);
-//					printf("gps: ###################### %f, %f, %c, %f, %c, %d, %d, %f, %f, %c, %f, %c ##\n", time, lat1, latdir, lon1, londir, quality, num_sat, hdilution, alt2, alt2_unit, alt1, alt1_unit);
+//					SDL_Log("gps: %s\n", line);
+//					SDL_Log("gps: ###################### %f, %f, %c, %f, %c, %d, %d, %f, %f, %c, %f, %c ##\n", time, lat1, latdir, lon1, londir, quality, num_sat, hdilution, alt2, alt2_unit, alt1, alt1_unit);
 				char tmp_str[20];
 				sprintf(tmp_str, "%2.0f", lat1);
 				float hlat = atof(tmp_str + 2) / 60.0;
@@ -98,17 +98,17 @@ void gps_update (void) {
 					redraw_flag = 1;
 				}
 /*
-				printf("#%f - %f (%0.1fm)#\n", hlat, hlon, alt1);
-				printf("Lat:  %f\n", WayPoints[0].p_lat);
-				printf("Lon:  %f\n", hlon);
-				printf("Alt:  %0.1fm (%0.1fm)\n", alt1, alt2);
-				printf("Sats: %i\n", num_sat);
+				SDL_Log("#%f - %f (%0.1fm)#\n", hlat, hlon, alt1);
+				SDL_Log("Lat:  %f\n", WayPoints[0].p_lat);
+				SDL_Log("Lon:  %f\n", hlon);
+				SDL_Log("Alt:  %0.1fm (%0.1fm)\n", alt1, alt2);
+				SDL_Log("Sats: %i\n", num_sat);
 				if (quality == 0) {
-					printf("GPS:  Invalid\n");
+					SDL_Log("GPS:  Invalid\n");
 				} else if (quality == 1) {
-					printf("GPS:  2D Fix\n");
+					SDL_Log("GPS:  2D Fix\n");
 				} else if (quality == 2) {
-					printf("GPS:  3D Fix\n");
+					SDL_Log("GPS:  3D Fix\n");
 				}
 */
 			} else if (strncmp(line, "$IMU", 4) == 0) {
@@ -170,8 +170,8 @@ int gcs_thread_serial_gps (void *unused) {
 					float alt1;
 					char alt1_unit;
 					sscanf( line, "$GPGGA,%f,%f,%c,%f,%c,%d,%d,%f,%f,%c,%f,%c", &time, &lat1, &latdir, &lon1, &londir, &quality, &num_sat, &hdilution, &alt2, &alt2_unit, &alt1, &alt1_unit);
-//					printf("%s\n", line);
-//					printf("###################### %f, %f, %c, %f, %c, %d, %d, %f, %f, %c, %f, %c ##\n", time, lat1, latdir, lon1, londir, quality, num_sat, hdilution, alt2, alt2_unit, alt1, alt1_unit);
+//					SDL_Log("%s\n", line);
+//					SDL_Log("###################### %f, %f, %c, %f, %c, %d, %d, %f, %f, %c, %f, %c ##\n", time, lat1, latdir, lon1, londir, quality, num_sat, hdilution, alt2, alt2_unit, alt1, alt1_unit);
 					char tmp_str[20];
 					sprintf(tmp_str, "%2.0f", lat1);
 					float hlat = atof(tmp_str + 2) / 60.0;
@@ -189,17 +189,17 @@ int gcs_thread_serial_gps (void *unused) {
 						redraw_flag = 1;
 					}
 /*
-					printf("#%f - %f (%0.1fm)#\n", hlat, hlon, alt1);
-					printf("Lat:  %f\n", WayPoints[0].p_lat);
-					printf("Lon:  %f\n", hlon);
-					printf("Alt:  %0.1fm (%0.1fm)\n", alt1, alt2);
-					printf("Sats: %i\n", num_sat);
+					SDL_Log("#%f - %f (%0.1fm)#\n", hlat, hlon, alt1);
+					SDL_Log("Lat:  %f\n", WayPoints[0].p_lat);
+					SDL_Log("Lon:  %f\n", hlon);
+					SDL_Log("Alt:  %0.1fm (%0.1fm)\n", alt1, alt2);
+					SDL_Log("Sats: %i\n", num_sat);
 					if (quality == 0) {
-						printf("GPS:  Invalid\n");
+						SDL_Log("GPS:  Invalid\n");
 					} else if (quality == 1) {
-						printf("GPS:  2D Fix\n");
+						SDL_Log("GPS:  2D Fix\n");
 					} else if (quality == 2) {
-						printf("GPS:  3D Fix\n");
+						SDL_Log("GPS:  3D Fix\n");
 					}
 */
 				}
@@ -208,13 +208,13 @@ int gcs_thread_serial_gps (void *unused) {
 		}
 		usleep(100000);
 	}
-	printf("gcs-gps: exit gps\n");
+	SDL_Log("gcs-gps: exit gps\n");
 	return 0;
 }
 
 
 uint8_t gcs_gps_init (char *port, uint32_t baud) {
-	printf("gcs-gps: init serial port...\n");
+	SDL_Log("gcs-gps: init serial port...\n");
 	gcs_serial_fd_gps = serial_open(port, baud);
 	if (gcs_serial_fd_gps != -1) {
 #ifdef SDL2
@@ -231,14 +231,14 @@ uint8_t gcs_gps_init (char *port, uint32_t baud) {
 }
 
 uint8_t gps_init (char *port, uint32_t baud) {
-	printf("gps: init serial port...\n");
+	SDL_Log("gps: init serial port...\n");
 	serial_fd_gps = serial_open(port, baud);
 	return 0;
 }
 
 void gcs_gps_exit (void) {
 	if ( gcs_sdl_thread_serial_gps != NULL ) {
-		printf("gcs-gps: wait thread\n");
+		SDL_Log("gcs-gps: wait thread\n");
 		SDL_WaitThread(gcs_sdl_thread_serial_gps, NULL);
 		gcs_sdl_thread_serial_gps = NULL;
 	}

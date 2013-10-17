@@ -161,14 +161,14 @@ int init_declination (char *mdfile, int year, int month, int day) {
       while (fgets(inbuff,MAXREAD,stream)) {
               fileline++;                           /* On new line */
               if (strlen(inbuff) != RECL) {
-                  printf("Corrupt record in file %s on line %d.\n", mdfile, fileline);
+                  SDL_Log("Corrupt record in file %s on line %d.\n", mdfile, fileline);
                   fclose(stream);
                   exit(5);
               }
               if (!strncmp(inbuff,"   ",3)) {
                   modelI++;                           /* New model */
                   if (modelI > MAXMOD) {
-                      printf("Too many models in file %s on line %d.", mdfile, fileline);
+                      SDL_Log("Too many models in file %s on line %d.", mdfile, fileline);
                       fclose(stream);
                       return 6;
                   }
@@ -191,9 +191,9 @@ int init_declination (char *mdfile, int year, int month, int day) {
 
       sdate = julday(month, day, year);
       if ((sdate>maxyr)&&(sdate<maxyr+1)) {
-              printf("\nWarning: The date %4.2f is out of range,\n", sdate);
-              printf("         but still within one year of model expiration date.\n");
-              printf("         An updated model file is available before 1.1.%4.0f\n",maxyr);
+              SDL_Log("\nWarning: The date %4.2f is out of range,\n", sdate);
+              SDL_Log("         but still within one year of model expiration date.\n");
+              SDL_Log("         An updated model file is available before 1.1.%4.0f\n",maxyr);
       }
       if (max2[modelI] == 0) {
           getshc(mdfile, 1, irec_pos[modelI], max1[modelI], 1);
@@ -262,7 +262,7 @@ static void print_result(double date, double d, double i, double h, double x, do
   *ret_dd = (int)ddeg;
   *ret_dm = (int)dmin;
 
-//  printf("%id %im\n", ddeg, (int)dmin);
+//  SDL_Log("%id %im\n", ddeg, (int)dmin);
   return;
 } /* print_result */
 
@@ -354,7 +354,7 @@ int       gh;
   stream = fopen(file, "rt");
   if (stream == NULL)
     {
-      printf("\nError on opening file %s", file);
+      SDL_Log("\nError on opening file %s", file);
     }
   else
     {
@@ -390,7 +390,7 @@ int       gh;
                   break;
                 case 2:  gh2[ii] = g;
                   break;
-                default: printf("\nError in subroutine getshc");
+                default: SDL_Log("\nError in subroutine getshc");
                   break;
                 }
               if (m != 0)
@@ -402,7 +402,7 @@ int       gh;
                       break;
                     case 2:  gh2[ii] = hh;
                       break;
-                    default: printf("\nError in subroutine getshc");
+                    default: SDL_Log("\nError in subroutine getshc");
                       break;
                     }
                 }
@@ -486,7 +486,7 @@ int   gh;
                   ghb[ii] = gh1[ii];
                 }
               break;
-            default: printf("\nError in subroutine extrapsh");
+            default: SDL_Log("\nError in subroutine extrapsh");
               break;
             }
           nmax = nmax1;
@@ -507,7 +507,7 @@ int   gh;
                   ghb[ii] = factor * gh2[ii];
                 }
               break;
-            default: printf("\nError in subroutine extrapsh");
+            default: SDL_Log("\nError in subroutine extrapsh");
               break;
             }
           nmax = nmax2;
@@ -525,7 +525,7 @@ int   gh;
           ghb[ii] = gh1[ii] + factor * gh2[ii];
         }
       break;
-    default: printf("\nError in subroutine extrapsh");
+    default: SDL_Log("\nError in subroutine extrapsh");
       break;
     }
   return(nmax);
@@ -604,7 +604,7 @@ static int interpsh(date, dte1, nmax1, dte2, nmax2, gh)
                   ghb[ii] = gh1[ii] + factor * (-gh1[ii]);
                 }
               break;
-            default: printf("\nError in subroutine extrapsh");
+            default: SDL_Log("\nError in subroutine extrapsh");
               break;
             }
           nmax = nmax1;
@@ -625,7 +625,7 @@ static int interpsh(date, dte1, nmax1, dte2, nmax2, gh)
                   ghb[ii] = factor * gh2[ii];
                 }
               break;
-            default: printf("\nError in subroutine extrapsh");
+            default: SDL_Log("\nError in subroutine extrapsh");
               break;
             }
           nmax = nmax2;
@@ -643,7 +643,7 @@ static int interpsh(date, dte1, nmax1, dte2, nmax2, gh)
           ghb[ii] = gh1[ii] + factor * (gh2[ii] - gh1[ii]);
         }
       break;
-    default: printf("\nError in subroutine extrapsh");
+    default: SDL_Log("\nError in subroutine extrapsh");
       break;
     }
   return(nmax);
@@ -759,7 +759,7 @@ static int shval3(igdgc, flat, flon, elev, nmax, gh, iext, ext1, ext2, ext3)
       ytemp = 0;
       ztemp = 0;
       break;
-    default: printf("\nError in subroutine shval3");
+    default: SDL_Log("\nError in subroutine shval3");
       break;
   }
   sd = 0.0;
@@ -829,7 +829,7 @@ static int shval3(igdgc, flat, flon, elev, nmax, gh, iext, ext1, ext2, ext3)
           break;
         case 4:  aa = rr * ghb[l];
           break;
-        default: printf("\nError in subroutine shval3");
+        default: SDL_Log("\nError in subroutine shval3");
           break;
       }
       if (m == 0) {
@@ -840,7 +840,7 @@ static int shval3(igdgc, flat, flon, elev, nmax, gh, iext, ext1, ext2, ext3)
             case 4:  xtemp = xtemp + aa * q[k];
               ztemp = ztemp - aa * p[k];
               break;
-            default: printf("\nError in subroutine shval3");
+            default: SDL_Log("\nError in subroutine shval3");
               break;
             }
           l = l + 1;
@@ -877,7 +877,7 @@ static int shval3(igdgc, flat, flon, elev, nmax, gh, iext, ext1, ext2, ext3)
                 }
               l = l + 2;
               break;
-            default: printf("\nError in subroutine shval3");
+            default: SDL_Log("\nError in subroutine shval3");
               break;
           }
       }
@@ -894,7 +894,7 @@ static int shval3(igdgc, flat, flon, elev, nmax, gh, iext, ext1, ext2, ext3)
           ytemp = ytemp + ext2 * sl[1] - ext3 * cl[1];
           ztemp = ztemp + ext1 * slat + aa * clat;
           break;
-        default:  printf("\nError in subroutine shval3");
+        default:  SDL_Log("\nError in subroutine shval3");
           break;
       }
   }
@@ -907,7 +907,7 @@ static int shval3(igdgc, flat, flon, elev, nmax, gh, iext, ext1, ext2, ext3)
 		xtemp = xtemp * cd + ztemp * sd;
 		ztemp = ztemp * cd - aa * sd;
 		break;
-    default:  printf("\nError in subroutine shval3");
+    default:  SDL_Log("\nError in subroutine shval3");
 		break;
   }
   return(ios);
@@ -1035,7 +1035,7 @@ static int dihf (gh)
             }
         }
 		break;
-    default:  printf("\nError in subroutine dihf");
+    default:  SDL_Log("\nError in subroutine dihf");
 		break;
     }
   return(ios);

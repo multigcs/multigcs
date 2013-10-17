@@ -165,13 +165,13 @@ int check_exist_file(filename)
 
 void do_banner()
 {
-    printf("MiniZip 1.1, demo of zLib + MiniZip64 package, written by Gilles Vollant\n");
-    printf("more info on MiniZip at http://www.winimage.com/zLibDll/minizip.html\n\n");
+    SDL_Log("MiniZip 1.1, demo of zLib + MiniZip64 package, written by Gilles Vollant\n");
+    SDL_Log("more info on MiniZip at http://www.winimage.com/zLibDll/minizip.html\n\n");
 }
 
 void do_help()
 {
-    printf("Usage : minizip [-o] [-a] [-0 to -9] [-p password] [-j] file.zip [files_to_add]\n\n" \
+    SDL_Log("Usage : minizip [-o] [-a] [-0 to -9] [-p password] [-j] file.zip [files_to_add]\n\n" \
            "  -o  Overwrite existing file.zip\n" \
            "  -a  Append to existing file.zip\n" \
            "  -0  Store only\n" \
@@ -203,7 +203,7 @@ int getFileCrc(const char* filenameinzip,void*buf,unsigned long size_buf,unsigne
             if (size_read < size_buf)
                 if (feof(fin)==0)
             {
-                printf("error in reading %s\n",filenameinzip);
+                SDL_Log("error in reading %s\n",filenameinzip);
                 err = ZIP_ERRNO;
             }
 
@@ -217,7 +217,7 @@ int getFileCrc(const char* filenameinzip,void*buf,unsigned long size_buf,unsigne
         fclose(fin);
 
     *result_crc=calculate_crc;
-    printf("file %s crc %lx\n", filenameinzip, calculate_crc);
+    SDL_Log("file %s crc %lx\n", filenameinzip, calculate_crc);
     return err;
 }
 
@@ -232,7 +232,7 @@ int isLargeFile(const char* filename)
     int n = FSEEKO_FUNC(pFile, 0, SEEK_END);
     pos = FTELLO_FUNC(pFile);
 
-                printf("File : %s is %lld bytes\n", filename, pos);
+                SDL_Log("File : %s is %lld bytes\n", filename, pos);
 
     if(pos >= 0xffffffff)
      largeFile = 1;
@@ -307,7 +307,7 @@ int main(argc,argv)
     buf = (void*)malloc(size_buf);
     if (buf==NULL)
     {
-        printf("Error allocating memory\n");
+        SDL_Log("Error allocating memory\n");
         return ZIP_INTERNALERROR;
     }
 
@@ -348,7 +348,7 @@ int main(argc,argv)
                 {
                     char answer[128];
                     int ret;
-                    printf("The file %s exists. Overwrite ? [y]es, [n]o, [a]ppend : ",filename_try);
+                    SDL_Log("The file %s exists. Overwrite ? [y]es, [n]o, [a]ppend : ",filename_try);
                     ret = scanf("%1s",answer);
                     if (ret != 1)
                     {
@@ -380,11 +380,11 @@ int main(argc,argv)
 
         if (zf == NULL)
         {
-            printf("error opening %s\n",filename_try);
+            SDL_Log("error opening %s\n",filename_try);
             err= ZIP_ERRNO;
         }
         else
-            printf("creating %s\n",filename_try);
+            SDL_Log("creating %s\n",filename_try);
 
         for (i=zipfilenamearg+1;(i<argc) && (err==ZIP_OK);i++)
         {
@@ -457,14 +457,14 @@ int main(argc,argv)
                                  password,crcFile, zip64);
 
                 if (err != ZIP_OK)
-                    printf("error in opening %s in zipfile\n",filenameinzip);
+                    SDL_Log("error in opening %s in zipfile\n",filenameinzip);
                 else
                 {
                     fin = FOPEN_FUNC(filenameinzip,"rb");
                     if (fin==NULL)
                     {
                         err=ZIP_ERRNO;
-                        printf("error in opening %s for reading\n",filenameinzip);
+                        SDL_Log("error in opening %s for reading\n",filenameinzip);
                     }
                 }
 
@@ -476,7 +476,7 @@ int main(argc,argv)
                         if (size_read < size_buf)
                             if (feof(fin)==0)
                         {
-                            printf("error in reading %s\n",filenameinzip);
+                            SDL_Log("error in reading %s\n",filenameinzip);
                             err = ZIP_ERRNO;
                         }
 
@@ -485,7 +485,7 @@ int main(argc,argv)
                             err = zipWriteInFileInZip (zf,buf,size_read);
                             if (err<0)
                             {
-                                printf("error in writing %s in the zipfile\n",
+                                SDL_Log("error in writing %s in the zipfile\n",
                                                  filenameinzip);
                             }
 
@@ -501,14 +501,14 @@ int main(argc,argv)
                 {
                     err = zipCloseFileInZip(zf);
                     if (err!=ZIP_OK)
-                        printf("error in closing %s in the zipfile\n",
+                        SDL_Log("error in closing %s in the zipfile\n",
                                     filenameinzip);
                 }
             }
         }
         errclose = zipClose(zf,NULL);
         if (errclose != ZIP_OK)
-            printf("error in closing %s\n",filename_try);
+            SDL_Log("error in closing %s\n",filename_try);
     }
     else
     {

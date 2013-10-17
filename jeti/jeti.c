@@ -43,19 +43,19 @@ void jeti_update (void) {
 		while ((res = serial_read(jeti_serial_fd, jeti_serial_buf, 1)) > 0) {
 			last_connection = time(0);
 			c = jeti_serial_buf[0];
-//			printf("jeti: %i: %i (%c)\n", jeti_line_cn, c, c);
+//			SDL_Log("jeti: %i: %i (%c)\n", jeti_line_cn, c, c);
 			if (c == 254) {
 				jeti_line_cn = 0;
 			} else if (c == 255) {
 				if (jeti_line_cn == 32) {
 					strncpy(jeti_line1, jeti_line, 16);
 					strncpy(jeti_line2, jeti_line + 16, 16);
-//					printf("jeti: | %s |\n", jeti_line1);
-//					printf("jeti: | %s |\n", jeti_line2);
-//					printf("jeti: --------------------\n");
+//					SDL_Log("jeti: | %s |\n", jeti_line1);
+//					SDL_Log("jeti: | %s |\n", jeti_line2);
+//					SDL_Log("jeti: --------------------\n");
 					if (jeti_button > 0) {
 						usleep(10000);
-						printf("jeti: Button: %c\n", jeti_button);
+						SDL_Log("jeti: Button: %c\n", jeti_button);
 //						serial_write(jeti_serial_fd, jeti_button, 1);
 						jeti_button = 0;
 					}
@@ -76,16 +76,16 @@ int thread_serial_jeti (void *unused) {
 		jeti_update();
 		usleep(1000000);
 	}
-	printf("jeti: exit thread\n");
+	SDL_Log("jeti: exit thread\n");
 	return 0;
 }
 
 uint8_t jeti_init (char *mdevice, uint32_t baud) {
 	strncpy(jeti_line1, "--- Jeti Box ---", 16);
 	strncpy(jeti_line2, " wait for data  ", 16);
-	printf("jeti: init\n");
+	SDL_Log("jeti: init\n");
 	jeti_thread_running = 1;
-	printf("jeti: init serial port...\n");
+	SDL_Log("jeti: init serial port...\n");
 	jeti_serial_fd = serial_open9b(mdevice, baud);
 	if (jeti_serial_fd != -1) {
 #ifdef SDL2
@@ -103,7 +103,7 @@ uint8_t jeti_init (char *mdevice, uint32_t baud) {
 
 void jeti_exit (void) {
 	if ( sdl_thread_serial_jeti != NULL ) {
-		printf("jeti: wait thread\n");
+		SDL_Log("jeti: wait thread\n");
 		SDL_WaitThread(sdl_thread_serial_jeti, NULL);
 		sdl_thread_serial_jeti = NULL;
 	}

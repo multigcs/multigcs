@@ -167,7 +167,7 @@ SDL_Surface *load_image (char * buff, int size) {
 	SDL_RWops *rw = SDL_RWFromMem(buff,size );
 	SDL_Surface *temp = IMG_Load_RW(rw, 1);
 	if (temp == NULL) {
-		printf("IMG_Load_RW: %s\n", IMG_GetError());
+		SDL_Log("IMG_Load_RW: %s\n", IMG_GetError());
 		return NULL;
 	}
 	return temp;
@@ -472,9 +472,9 @@ static void init_device(void) {
             return;
         }
     }
-    printf("videocapture: driver  : %s\n", cap.driver);
-    printf("videocapture: card    : %s\n", cap.card);
-    printf("videocapture: bus_info: %s\n", cap.bus_info);
+    SDL_Log("videocapture: driver  : %s\n", cap.driver);
+    SDL_Log("videocapture: card    : %s\n", cap.card);
+    SDL_Log("videocapture: bus_info: %s\n", cap.bus_info);
     if (!(cap.capabilities & V4L2_CAP_VIDEO_CAPTURE)) {
         fprintf(stderr, "videocapture: %s is no video capture device\n", dev_name);
         return;
@@ -579,7 +579,7 @@ static void open_device(void) {
 }
 
 int videodev_stop (void) {
-	printf("videocapture: exit\n");
+	SDL_Log("videocapture: exit\n");
 	stop_capturing();
 	close_device();
 	uninit_device();
@@ -594,17 +594,17 @@ int videodev_stop (void) {
 int videodev_start (char *device, uint16_t width, uint16_t height) {
 	WIDTH = width;
 	HEIGHT = height;
-	printf("videocapture: init\n");
+	SDL_Log("videocapture: init\n");
 	strcpy(dev_name, device);
 	generate_YCbCr_to_RGB_lookup();
 	open_device();
 	if (video_ok == 0) {
-		printf("videocapture: open_device failed\n");
+		SDL_Log("videocapture: open_device failed\n");
 		return 0;
 	}
 	init_device();
 	if (video_ok == 0) {
-		printf("video: init_device failed\n");
+		SDL_Log("video: init_device failed\n");
 		return 0;
 	}
 	buffer_sdl = (uint8_t*)malloc(WIDTH*HEIGHT*3);

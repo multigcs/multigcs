@@ -51,7 +51,7 @@ int thread_serial_frsky (void *unused) {
 		while ((read_num = serial_read(serial_fd_frsky, read_buffer, 200)) > 0) {
 			for (nn = 0; nn < read_num; nn++) {
 				new = read_buffer[nn];
-//				printf("##%i: %i (0x%x)\n", buffer_ptr, new, new);
+//				SDL_Log("##%i: %i (0x%x)\n", buffer_ptr, new, new);
 				if (start == 1) {
 					type = new;
 					start = 0;
@@ -63,27 +63,27 @@ int thread_serial_frsky (void *unused) {
 					ModelData.found_rc = 1;
 					last_connection = time(0);
 					if (type == 0xfe) {
-//						printf("# remote voltage and link quality (len=%i) #\n", buffer_ptr);
-//						printf("	RX-Battery   %0.1f V\n", (float)buffer[0] * 3.3 / 255.0 * 4.0);
-//						printf("	Analog-IN    %0.2f V\n", (float)buffer[1] * 3.3 / 255.0);
-//						printf("	Strom        %0.1f A\n", ((float)buffer[1] - 129.0) * 100.0 / 126.0);
-//						printf("	LQI-UpLink   %i %%\n", (buffer[2] - 40) * 100 / 70);
-//						printf("	LQI-DownLink %i %%\n", buffer[3] / 2);
+//						SDL_Log("# remote voltage and link quality (len=%i) #\n", buffer_ptr);
+//						SDL_Log("	RX-Battery   %0.1f V\n", (float)buffer[0] * 3.3 / 255.0 * 4.0);
+//						SDL_Log("	Analog-IN    %0.2f V\n", (float)buffer[1] * 3.3 / 255.0);
+//						SDL_Log("	Strom        %0.1f A\n", ((float)buffer[1] - 129.0) * 100.0 / 126.0);
+//						SDL_Log("	LQI-UpLink   %i %%\n", (buffer[2] - 40) * 100 / 70);
+//						SDL_Log("	LQI-DownLink %i %%\n", buffer[3] / 2);
 						ModelData.rssi_rx = (buffer[2] - 40) * 100 / 70;
 						ModelData.rssi_tx = buffer[3] / 2;
 						ModelData.voltage_rx = (float)buffer[0] * 3.3 / 255.0 * 4.0;
 						ModelData.ampere = ((float)buffer[1] - 129.0) * 100.0 / 126.0;
 						redraw_flag = 1;
 					} else if (type == 0xfd) {
-//						printf("# user data (len=%i) #\n", buffer[0]);
+//						SDL_Log("# user data (len=%i) #\n", buffer[0]);
 						for (n = 0; n < buffer[0]; n++) {
 							if (buffer[2 + n] == 0x5e && buffer_user_ptr < 4) {
 								buffer_user_ptr = 0;
 							} else if (buffer[2 + n] == 0x5e) {
 /*
-								printf("test %i\n", buffer_user_ptr);
-								printf(" >> 0x%x\n", buffer_user[2]);
-								printf(" >> 0x%x\n", buffer_user[3]);
+								SDL_Log("test %i\n", buffer_user_ptr);
+								SDL_Log(" >> 0x%x\n", buffer_user[2]);
+								SDL_Log(" >> 0x%x\n", buffer_user[3]);
 */
 								uint8_t i = 0;
 								if (buffer_user[1] == 0x06) {
@@ -91,25 +91,25 @@ int thread_serial_frsky (void *unused) {
 									uint16_t cell = buffer_user[2]>>4;
 									ModelData.voltage_zell[cell] = volt;
 									redraw_flag = 1;
-//									printf("############## Voltage: %i = %0.2f Volt\n", cell, volt);
+//									SDL_Log("############## Voltage: %i = %0.2f Volt\n", cell, volt);
 								} else if (buffer_user[1] == 0x03) {
 									uint16_t rpm = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
-									printf("############## RPM: %i\n", rpm);
+									SDL_Log("############## RPM: %i\n", rpm);
 								} else if (buffer_user[1] == 0x02) {
 									int16_t temp1 = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
-									//printf("############## Temp1: %i\n", temp1 * 280 / 0xffff);
+									//SDL_Log("############## Temp1: %i\n", temp1 * 280 / 0xffff);
 									ModelData.temperature[0] = temp1;
 									redraw_flag = 1;
 								} else if (buffer_user[1] == 0x05) {
 									int16_t temp2 = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
-									//printf("############## Temp2: %i\n", temp2 * 280 / 0xffff);
+									//SDL_Log("############## Temp2: %i\n", temp2 * 280 / 0xffff);
 									ModelData.temperature[1] = temp2;
 									redraw_flag = 1;
 								} else if (buffer_user[1] == 0x04) {
-//									printf("############## Fuel: \n");
+//									SDL_Log("############## Fuel: \n");
 								} else if (buffer_user[1] == 0x10) {
 									BARO_alt = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
-//									printf("############## Altx.0: %i\n", BARO_alt);
+//									SDL_Log("############## Altx.0: %i\n", BARO_alt);
 								} else if (buffer_user[1] == 0x21) {
 									uint16_t alt = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
 									if (mode == 1) {
@@ -119,18 +119,18 @@ int thread_serial_frsky (void *unused) {
 										}
 										redraw_flag = 1;
 									}
-//									printf("############## Altx.0: %i\n", alt);
+//									SDL_Log("############## Altx.0: %i\n", alt);
 								} else if (buffer_user[1] == 0x24) {
 									int16_t acc_x = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
-//									printf("############## Acc-x: %f\n", (float)acc_x / 100.0);
+//									SDL_Log("############## Acc-x: %f\n", (float)acc_x / 100.0);
 									ModelData.acc_x = acc_x / 10.0;
 								} else if (buffer_user[1] == 0x25) {
 									int16_t acc_y = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
-//									printf("############## Acc-y: %f\n", (float)acc_y / 100.0);
+//									SDL_Log("############## Acc-y: %f\n", (float)acc_y / 100.0);
 									ModelData.acc_y = acc_y / 10.0;
 								} else if (buffer_user[1] == 0x26) {
 									int16_t acc_z = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
-//									printf("############## Acc-z: %f\n", (float)acc_z / 100.0);
+//									SDL_Log("############## Acc-z: %f\n", (float)acc_z / 100.0);
 									ModelData.acc_z = acc_z / 10.0;
 								} else if (buffer_user[1] == 0x01) {
 									GPS_alt = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
@@ -191,16 +191,16 @@ int thread_serial_frsky (void *unused) {
 									if (GPS_TIME_Year > 11 && GPS_TIME_Second > 0 && GPS_TIME_Day > 0) {
 										char tmp_str[100];
 										sprintf(tmp_str, "date -s \"%02i.%02i.20%02i %02i:%02i:%02i\"", GPS_TIME_Day, GPS_TIME_Month, GPS_TIME_Year, GPS_TIME_Houre, GPS_TIME_Minute, GPS_TIME_Second);
-//										printf("############## GPS_Time: %02i.%02i.20%02i %02i:%02i:%02i\n", GPS_TIME_Day, GPS_TIME_Month, GPS_TIME_Year, GPS_TIME_Houre, GPS_TIME_Minute, GPS_TIME_Second);
+//										SDL_Log("############## GPS_Time: %02i.%02i.20%02i %02i:%02i:%02i\n", GPS_TIME_Day, GPS_TIME_Month, GPS_TIME_Year, GPS_TIME_Houre, GPS_TIME_Minute, GPS_TIME_Second);
 									}
 								} else if (buffer_user[1] == 0x22) {
 									// East/West
 								} else if (buffer_user[1] == 0x23) {
 									// North/South
 								} else {
-//									printf("(0x%x - %i)\n", buffer_user[1], buffer_user[1]);
+//									SDL_Log("(0x%x - %i)\n", buffer_user[1], buffer_user[1]);
 									for (i = 2; i < buffer_user_ptr; i++) {
-//										printf("	(0x%x - %i - %c) --- %i\n", buffer_user[i], buffer_user[i], buffer_user[i], i);
+//										SDL_Log("	(0x%x - %i - %c) --- %i\n", buffer_user[i], buffer_user[i], buffer_user[i], i);
 									}
 								}
 								buffer_user_ptr = 0;
@@ -214,12 +214,12 @@ int thread_serial_frsky (void *unused) {
 								buffer_user[buffer_user_ptr++] = buffer[2 + n];
 							}
 							if (buffer_user_ptr > 30) {
-								printf("frsky: user-buffer overflow / reset\n");
+								SDL_Log("frsky: user-buffer overflow / reset\n");
 								buffer_user_ptr = 0;
 							}
 						}
 					} else {
-//						printf("# unknown data (type=%x; len=%i) #\n", type, buffer_ptr);
+//						SDL_Log("# unknown data (type=%x; len=%i) #\n", type, buffer_ptr);
 					}
 					type = 0;
 					buffer_ptr = 0;
@@ -240,7 +240,7 @@ int thread_serial_frsky (void *unused) {
 		}
 		usleep(1000000);
 	}
-	printf("frsky: exit thread\n");
+	SDL_Log("frsky: exit thread\n");
 	return 0;
 }
 
@@ -252,17 +252,17 @@ void frsky_mode (uint8_t new_mode) {
 	if (mode != new_mode) {
 		mode = new_mode;
 		if (mode == 1) {
-			printf("frsky: extented telemtry\n");
+			SDL_Log("frsky: extented telemtry\n");
 		} else {
-			printf("frsky: normal telemtry\n");
+			SDL_Log("frsky: normal telemtry\n");
 		}
 	}
 }
 
 uint8_t frsky_init (char *port, uint32_t baud) {
-	printf("frsky: init\n");
+	SDL_Log("frsky: init\n");
 	frsky_thread_running = 1;
-	printf("frsky: init serial port...\n");
+	SDL_Log("frsky: init serial port...\n");
 	serial_fd_frsky = serial_open(port, baud);
 	if (serial_fd_frsky != -1) {
 #ifdef SDL2
@@ -280,7 +280,7 @@ uint8_t frsky_init (char *port, uint32_t baud) {
 
 void frsky_exit (void) {
 	if ( sdl_thread_serial_frsky != NULL ) {
-		printf("frsky: wait thread\n");
+		SDL_Log("frsky: wait thread\n");
 		SDL_WaitThread(sdl_thread_serial_frsky, NULL);
 		sdl_thread_serial_frsky = NULL;
 	}

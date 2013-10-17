@@ -34,7 +34,7 @@ void cli_update (void) {
 				}
 				for (n2 = 0; n2 < CLI_MAX_LINES; n2++) {
 					strncpy(cli_buffer[n2 - 1], cli_buffer[n2], CLI_MAX_BUFFER);
-//					printf("## %i: %s\n", n2, cli_buffer[n2]);
+//					SDL_Log("## %i: %s\n", n2, cli_buffer[n2]);
 				}
 				for (n2 = 0; n2 < CLI_MAX_BUFFER; n2++) {
 					cli_buffer[CLI_MAX_LINES - 1][n2] = ' ';
@@ -50,7 +50,7 @@ void cli_update (void) {
 }
 
 uint8_t cli_init (char *port, uint32_t baud) {
-	printf("init cli serial port...\n");
+	SDL_Log("init cli serial port...\n");
 	cli_fd = serial_open(port, baud);
 	return 0;
 }
@@ -133,7 +133,7 @@ void screen_cli (ESContext *esContext) {
 	}
 
 	if (keyboard_key[0] != 0 && strcmp(keyboard_key, "escape") != 0 && strcmp(keyboard_key, "print screen") != 0) {
-//		printf("%s\n", keyboard_key);
+//		SDL_Log("%s\n", keyboard_key);
 		if (strcmp(keyboard_key, "return") == 0) {
 			if (cli_mode == 1) {
 				write(cli_fd, "\r", 1);

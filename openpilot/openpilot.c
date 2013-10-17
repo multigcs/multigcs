@@ -65,7 +65,7 @@ uint8_t openpilot_connection_status (void) {
 
 void openpilot_send_ack (void) {
 #ifdef DEBUG
-	printf(">> SEND_ACK\n");
+	SDL_Log(">> SEND_ACK\n");
 #endif
 	uint8_t openpilot_write_buf[256];
 	uint8_t crc = 0;
@@ -84,7 +84,7 @@ void openpilot_send_ack (void) {
 	crc = 0;
 	for (n2 = 0; n2 < len; n2++) {
 		crc = PIOS_CRC_updateByte(crc, openpilot_write_buf[n2]);
-//		printf("%i: %x (%x)\n", n2, openpilot_write_buf[n2], crc);
+//		SDL_Log("%i: %x (%x)\n", n2, openpilot_write_buf[n2], crc);
 	}
 	openpilot_write_buf[n++] = crc; 	//Checksum
 	serial_write(serial_fd_openpilot, openpilot_write_buf, n);
@@ -130,7 +130,7 @@ void openpilot_send_req (uint8_t status) {
 	uint8_t n2 = 0;
 	uint8_t len = 0;
 #ifdef DEBUG
-	printf(">> SEND_REQ_GCSTELEMETRYSTATS: %i (0x%x)\n", status, status);
+	SDL_Log(">> SEND_REQ_GCSTELEMETRYSTATS: %i (0x%x)\n", status, status);
 #endif
 	FlightTelemetryStatsData data;
 	data.TxDataRate = 0.0;
@@ -152,7 +152,7 @@ void openpilot_send_req (uint8_t status) {
 	crc = 0;
 	for (n2 = 0; n2 < len; n2++) {
 		crc = PIOS_CRC_updateByte(crc, openpilot_write_buf[n2]);
-//		printf("%i: %x (%x)\n", n2, openpilot_write_buf[n2], crc);
+//		SDL_Log("%i: %x (%x)\n", n2, openpilot_write_buf[n2], crc);
 	}
 	openpilot_write_buf[len] = crc; 	//Checksum
 	serial_write(serial_fd_openpilot, openpilot_write_buf, len + 1);
@@ -165,7 +165,7 @@ void openpilot_send_setting_req (void) {
 	uint8_t n2 = 0;
 	uint8_t len = 0;
 //#ifdef DEBUG
-	printf(">> SEND_REQ_OBJECTPERSISTENCE\n");
+	SDL_Log(">> SEND_REQ_OBJECTPERSISTENCE\n");
 //#endif
 	ObjectPersistenceData data;
 	data.ObjectID = 0x3d03de86;
@@ -187,7 +187,7 @@ void openpilot_send_setting_req (void) {
 	crc = 0;
 	for (n2 = 0; n2 < len; n2++) {
 		crc = PIOS_CRC_updateByte(crc, openpilot_write_buf[n2]);
-//		printf("%i: %x (%x)\n", n2, openpilot_write_buf[n2], crc);
+//		SDL_Log("%i: %x (%x)\n", n2, openpilot_write_buf[n2], crc);
 	}
 	openpilot_write_buf[len] = crc; 	//Checksum
 	serial_write(serial_fd_openpilot, openpilot_write_buf, len + 1);
@@ -434,26 +434,26 @@ void openpilot_update (void) {
 	static uint8_t data_len = 0;
 	if (serial_fd_openpilot >= 0) {
 		if (data_start == 0) {
-		//	printf("-\n");
+		//	SDL_Log("-\n");
 			if (serial_read(serial_fd_openpilot, &openpilot_read_buf[0], 1) > 0 && openpilot_read_buf[0] == 0x3c) {
-		//		printf("FRAME_START\n");
+		//		SDL_Log("FRAME_START\n");
 				data_start = 1;
 				data_num = 1;
 				data_len = 0;
 			}
 		} else {
 			if ((res = serial_read(serial_fd_openpilot, &openpilot_read_buf[data_num], 1)) > 0) {
-		//		printf("+ %i\n", res);
+		//		SDL_Log("+ %i\n", res);
 				data_num += res;
 				if (data_num > 200) {
-					printf("BUFFER FULL\n");
+					SDL_Log("BUFFER FULL\n");
 					data_start = 0;
 					data_num = 0;
 					data_len = 0;
 				} if (data_len != 0 && data_num > data_len) {
-		//			printf("FRAME_COMPLETE\n");
+		//			SDL_Log("FRAME_COMPLETE\n");
 					for (n = 0; n < data_len; n++) {
-		//				printf("## %i/%i, %x (%i)\n", n, data_len, openpilot_read_buf[n], openpilot_read_buf[n]);
+		//				SDL_Log("## %i/%i, %x (%i)\n", n, data_len, openpilot_read_buf[n], openpilot_read_buf[n]);
 						if (openpilot_read_buf[n] == 0x3c) {
 							crc = PIOS_CRC_updateByte(0, openpilot_read_buf[n]);
 							n++;
@@ -476,29 +476,29 @@ void openpilot_update (void) {
 							obj_id |= msg_obj_id3<<16;
 							obj_id |= msg_obj_id4<<24;
 							if (msg_len2 > 0) {
-		//						printf("####### msg-len: %i (type:%i)\n", msg_len, msg_type);
+		//						SDL_Log("####### msg-len: %i (type:%i)\n", msg_len, msg_type);
 							}
-		//					printf("########################### Start msg (type: %x, len: %x/%i) ###########################\n", msg_type, msg_len, msg_len);
-		//					printf("########################### Object_ID (%x %x %x %x) ###########################\n", msg_obj_id1, msg_obj_id2, msg_obj_id3, msg_obj_id4);
+		//					SDL_Log("########################### Start msg (type: %x, len: %x/%i) ###########################\n", msg_type, msg_len, msg_len);
+		//					SDL_Log("########################### Object_ID (%x %x %x %x) ###########################\n", msg_obj_id1, msg_obj_id2, msg_obj_id3, msg_obj_id4);
 							for (n2 = 0; n2 < msg_len - 8; n2++) {
-		//						printf("####### msg (%i): %x\n", n2, openpilot_read_buf[n]);
+		//						SDL_Log("####### msg (%i): %x\n", n2, openpilot_read_buf[n]);
 								crc = PIOS_CRC_updateByte(crc, openpilot_read_buf[n++]);
 							}
-		//					printf("crc_test: %x - %x\n", openpilot_read_buf[n], crc);
+		//					SDL_Log("crc_test: %x - %x\n", openpilot_read_buf[n], crc);
 							if (openpilot_read_buf[n] == crc) {
-		//						printf("crc ok (cmd: %x) !\n", obj_id);
-		//						printf("################ msg_type (msg_type: %x) !\n", msg_type);
+		//						SDL_Log("crc ok (cmd: %x) !\n", obj_id);
+		//						SDL_Log("################ msg_type (msg_type: %x) !\n", msg_type);
 								if (msg_type == 0x23) {
 									switch (obj_id) {
 										case GCSTELEMETRYSTATS_OBJID: {
 //#ifdef DEBUG
-											printf("<< GET_ACK GCSTELEMETRYSTATS: %i (0x%x)\n", msg_type, msg_type);
+											SDL_Log("<< GET_ACK GCSTELEMETRYSTATS: %i (0x%x)\n", msg_type, msg_type);
 //#endif
 											break;
 										}
 										default: {
 //#ifdef DEBUG
-											printf("<< GET_ACK UNKNOWN: %i (0x%x)\n", obj_id, obj_id);
+											SDL_Log("<< GET_ACK UNKNOWN: %i (0x%x)\n", obj_id, obj_id);
 //#endif
 											break;
 										}
@@ -507,7 +507,7 @@ void openpilot_update (void) {
 								} else if (msg_type == 0x24) {
 									switch (obj_id) {
 										default: {
-											printf("<< GET_NACK UNKNOWN: %i (0x%x)\n", obj_id, obj_id);
+											SDL_Log("<< GET_NACK UNKNOWN: %i (0x%x)\n", obj_id, obj_id);
 											break;
 										}
 									}
@@ -515,7 +515,7 @@ void openpilot_update (void) {
 								} else if (msg_type == 0x22) {
 								} else if (msg_type == 0x20 || msg_type == 0x21) {
 								} else {
-									printf("################ msg_type (msg_type: %x) !\n", msg_type);
+									SDL_Log("################ msg_type (msg_type: %x) !\n", msg_type);
 									//Object (OBJ): 0x20, Object request (OBJ_REQ): 0x21, Object with acknowledge request (OBJ_ACK): 0x22, Acknowledge (ACK): 0x23, Negative-Acknowledge (NACK) : 0x24. Note: The most significant 4 bits indicate the protocol version (v2 currently)
 								}
 								if (msg_type == 0x22) {
@@ -524,109 +524,109 @@ void openpilot_update (void) {
 								switch (obj_id) {
 									case SYSTEMSETTINGS_OBJID: {
 										SystemSettingsData *data = (SystemSettingsData *)&openpilot_read_buf[8];
-										printf("<< SYSTEMSETTINGS:\\n");
-										printf("	GUIConfigData: %i\\n", data->GUIConfigData);
-										printf("	AirframeType: %i\\n", data->AirframeType);
+										SDL_Log("<< SYSTEMSETTINGS:\\n");
+										SDL_Log("	GUIConfigData: %i\\n", data->GUIConfigData);
+										SDL_Log("	AirframeType: %i\\n", data->AirframeType);
 										break;
 									}
 									case OBJECTPERSISTENCE_OBJID: {
 										ObjectPersistenceData *data = (ObjectPersistenceData *)&openpilot_read_buf[8];
-										printf("<< OBJECTPERSISTENCE: (len=%i; type:0x%x)\n", msg_len, msg_type);
-										printf("	ObjectID: %i (0x%x)\n", data->ObjectID, data->ObjectID);
-										printf("	InstanceID: %i\n", data->InstanceID);
-										printf("	Operation: %i\n", data->Operation);
-										printf("	Selection: %i\n", data->Selection);
+										SDL_Log("<< OBJECTPERSISTENCE: (len=%i; type:0x%x)\n", msg_len, msg_type);
+										SDL_Log("	ObjectID: %i (0x%x)\n", data->ObjectID, data->ObjectID);
+										SDL_Log("	InstanceID: %i\n", data->InstanceID);
+										SDL_Log("	Operation: %i\n", data->Operation);
+										SDL_Log("	Selection: %i\n", data->Selection);
 										break;
 									}
 									case HWSETTINGS_OBJID: {
 										HwSettingsData *data = (HwSettingsData *)&openpilot_read_buf[8];
 										memcpy(&OpenpilotHwSettings, data, sizeof(HwSettingsData));
-										printf("<< HWSETTINGS:\\n");
-										printf("	DSMxBind: %i\n", data->DSMxBind);
-										printf("	CC_RcvrPort: %i\n", data->CC_RcvrPort);
-										printf("	CC_MainPort: %i\n", data->CC_MainPort);
-										printf("	CC_FlexiPort: %i\n", data->CC_FlexiPort);
-										printf("	RV_RcvrPort: %i\n", data->RV_RcvrPort);
-										printf("	RV_AuxPort: %i\n", data->RV_AuxPort);
-										printf("	RV_AuxSBusPort: %i\n", data->RV_AuxSBusPort);
-										printf("	RV_FlexiPort: %i\n", data->RV_FlexiPort);
-										printf("	RV_TelemetryPort: %i\n", data->RV_TelemetryPort);
-										printf("	RV_GPSPort: %i\n", data->RV_GPSPort);
-										printf("	TelemetrySpeed: %i\n", data->TelemetrySpeed);
-										printf("	GPSSpeed: %i\n", data->GPSSpeed);
-										printf("	ComUsbBridgeSpeed: %i\n", data->ComUsbBridgeSpeed);
-										printf("	USB_HIDPort: %i\n", data->USB_HIDPort);
-										printf("	USB_VCPPort: %i\n", data->USB_VCPPort);
-										printf("	OptionalModules(CameraStab): %i\n", data->OptionalModules[0]);
-										printf("	OptionalModules(GPS): %i\n", data->OptionalModules[1]);
-										printf("	OptionalModules(ComUsbBridge): %i\n", data->OptionalModules[2]);
-										printf("	OptionalModules(Fault): %i\n", data->OptionalModules[3]);
-										printf("	OptionalModules(Altitude): %i\n", data->OptionalModules[4]);
-										printf("	OptionalModules(TxPID): %i\n", data->OptionalModules[5]);
-										printf("	OptionalModules(Autotune): %i\n", data->OptionalModules[6]);
+										SDL_Log("<< HWSETTINGS:\\n");
+										SDL_Log("	DSMxBind: %i\n", data->DSMxBind);
+										SDL_Log("	CC_RcvrPort: %i\n", data->CC_RcvrPort);
+										SDL_Log("	CC_MainPort: %i\n", data->CC_MainPort);
+										SDL_Log("	CC_FlexiPort: %i\n", data->CC_FlexiPort);
+										SDL_Log("	RV_RcvrPort: %i\n", data->RV_RcvrPort);
+										SDL_Log("	RV_AuxPort: %i\n", data->RV_AuxPort);
+										SDL_Log("	RV_AuxSBusPort: %i\n", data->RV_AuxSBusPort);
+										SDL_Log("	RV_FlexiPort: %i\n", data->RV_FlexiPort);
+										SDL_Log("	RV_TelemetryPort: %i\n", data->RV_TelemetryPort);
+										SDL_Log("	RV_GPSPort: %i\n", data->RV_GPSPort);
+										SDL_Log("	TelemetrySpeed: %i\n", data->TelemetrySpeed);
+										SDL_Log("	GPSSpeed: %i\n", data->GPSSpeed);
+										SDL_Log("	ComUsbBridgeSpeed: %i\n", data->ComUsbBridgeSpeed);
+										SDL_Log("	USB_HIDPort: %i\n", data->USB_HIDPort);
+										SDL_Log("	USB_VCPPort: %i\n", data->USB_VCPPort);
+										SDL_Log("	OptionalModules(CameraStab): %i\n", data->OptionalModules[0]);
+										SDL_Log("	OptionalModules(GPS): %i\n", data->OptionalModules[1]);
+										SDL_Log("	OptionalModules(ComUsbBridge): %i\n", data->OptionalModules[2]);
+										SDL_Log("	OptionalModules(Fault): %i\n", data->OptionalModules[3]);
+										SDL_Log("	OptionalModules(Altitude): %i\n", data->OptionalModules[4]);
+										SDL_Log("	OptionalModules(TxPID): %i\n", data->OptionalModules[5]);
+										SDL_Log("	OptionalModules(Autotune): %i\n", data->OptionalModules[6]);
 										break;
 									}
 									case STABILIZATIONSETTINGS_OBJID: {
 										StabilizationSettingsData *data = (StabilizationSettingsData *)&openpilot_read_buf[8];
 										memcpy(&OpenpilotStabilizationSettings, data, sizeof(StabilizationSettingsData));
-										printf("<< STABILIZATIONSETTINGS: (len=%i %i; type:0x%x)\n", msg_len, msg_len2, msg_type);
-										printf("	ManualRate(Roll): %f\n", data->ManualRate[0]);
-										printf("	ManualRate(Pitch): %f\n", data->ManualRate[1]);
-										printf("	ManualRate(Yaw): %f\n", data->ManualRate[2]);
-										printf("	MaximumRate(Roll): %f\n", data->MaximumRate[0]);
-										printf("	MaximumRate(Pitch): %f\n", data->MaximumRate[1]);
-										printf("	MaximumRate(Yaw): %f\n", data->MaximumRate[2]);
-										printf("	RollRatePID(Kp): %f\n", data->RollRatePID[0]);
-										printf("	RollRatePID(Ki): %f\n", data->RollRatePID[1]);
-										printf("	RollRatePID(Kd): %f\n", data->RollRatePID[2]);
-										printf("	RollRatePID(ILimit): %f\n", data->RollRatePID[3]);
-										printf("	PitchRatePID(Kp): %f\n", data->PitchRatePID[0]);
-										printf("	PitchRatePID(Ki): %f\n", data->PitchRatePID[1]);
-										printf("	PitchRatePID(Kd): %f\n", data->PitchRatePID[2]);
-										printf("	PitchRatePID(ILimit): %f\n", data->PitchRatePID[3]);
-										printf("	YawRatePID(Kp): %f\n", data->YawRatePID[0]);
-										printf("	YawRatePID(Ki): %f\n", data->YawRatePID[1]);
-										printf("	YawRatePID(Kd): %f\n", data->YawRatePID[2]);
-										printf("	YawRatePID(ILimit): %f\n", data->YawRatePID[3]);
-										printf("	RollPI(Kp): %f\n", data->RollPI[0]);
-										printf("	RollPI(Ki): %f\n", data->RollPI[1]);
-										printf("	RollPI(ILimit): %f\n", data->RollPI[2]);
-										printf("	PitchPI(Kp): %f\n", data->PitchPI[0]);
-										printf("	PitchPI(Ki): %f\n", data->PitchPI[1]);
-										printf("	PitchPI(ILimit): %f\n", data->PitchPI[2]);
-										printf("	YawPI(Kp): %f\n", data->YawPI[0]);
-										printf("	YawPI(Ki): %f\n", data->YawPI[1]);
-										printf("	YawPI(ILimit): %f\n", data->YawPI[2]);
-										printf("	VbarSensitivity(Roll): %f\n", data->VbarSensitivity[0]);
-										printf("	VbarSensitivity(Pitch): %f\n", data->VbarSensitivity[1]);
-										printf("	VbarSensitivity(Yaw): %f\n", data->VbarSensitivity[2]);
-										printf("	VbarRollPI(Kp): %f\n", data->VbarRollPI[0]);
-										printf("	VbarRollPI(Ki): %f\n", data->VbarRollPI[1]);
-										printf("	VbarPitchPI(Kp): %f\n", data->VbarPitchPI[0]);
-										printf("	VbarPitchPI(Ki): %f\n", data->VbarPitchPI[1]);
-										printf("	VbarYawPI(Kp): %f\n", data->VbarYawPI[0]);
-										printf("	VbarYawPI(Ki): %f\n", data->VbarYawPI[1]);
-										printf("	VbarTau: %f\n", data->VbarTau);
-										printf("	GyroTau: %f\n", data->GyroTau);
-										printf("	DerivativeGamma: %f\n", data->DerivativeGamma);
-										printf("	WeakLevelingKp: %f\n", data->WeakLevelingKp);
-										printf("	RollMax: %i\n", data->RollMax);
-										printf("	PitchMax: %i\n", data->PitchMax);
-										printf("	YawMax: %i\n", data->YawMax);
-										printf("	VbarGyroSuppress: %i\n", data->VbarGyroSuppress);
-										printf("	VbarMaxAngle: %i\n", data->VbarMaxAngle);
-										printf("	DerivativeCutoff: %i\n", data->DerivativeCutoff);
-										printf("	MaxAxisLock: %i\n", data->MaxAxisLock);
-										printf("	MaxAxisLockRate: %i\n", data->MaxAxisLockRate);
-										printf("	MaxWeakLevelingRate: %i\n", data->MaxWeakLevelingRate);
-										printf("	VbarPiroComp: %i\n", data->VbarPiroComp);
-										printf("	LowThrottleZeroIntegral: %i\n", data->LowThrottleZeroIntegral);
+										SDL_Log("<< STABILIZATIONSETTINGS: (len=%i %i; type:0x%x)\n", msg_len, msg_len2, msg_type);
+										SDL_Log("	ManualRate(Roll): %f\n", data->ManualRate[0]);
+										SDL_Log("	ManualRate(Pitch): %f\n", data->ManualRate[1]);
+										SDL_Log("	ManualRate(Yaw): %f\n", data->ManualRate[2]);
+										SDL_Log("	MaximumRate(Roll): %f\n", data->MaximumRate[0]);
+										SDL_Log("	MaximumRate(Pitch): %f\n", data->MaximumRate[1]);
+										SDL_Log("	MaximumRate(Yaw): %f\n", data->MaximumRate[2]);
+										SDL_Log("	RollRatePID(Kp): %f\n", data->RollRatePID[0]);
+										SDL_Log("	RollRatePID(Ki): %f\n", data->RollRatePID[1]);
+										SDL_Log("	RollRatePID(Kd): %f\n", data->RollRatePID[2]);
+										SDL_Log("	RollRatePID(ILimit): %f\n", data->RollRatePID[3]);
+										SDL_Log("	PitchRatePID(Kp): %f\n", data->PitchRatePID[0]);
+										SDL_Log("	PitchRatePID(Ki): %f\n", data->PitchRatePID[1]);
+										SDL_Log("	PitchRatePID(Kd): %f\n", data->PitchRatePID[2]);
+										SDL_Log("	PitchRatePID(ILimit): %f\n", data->PitchRatePID[3]);
+										SDL_Log("	YawRatePID(Kp): %f\n", data->YawRatePID[0]);
+										SDL_Log("	YawRatePID(Ki): %f\n", data->YawRatePID[1]);
+										SDL_Log("	YawRatePID(Kd): %f\n", data->YawRatePID[2]);
+										SDL_Log("	YawRatePID(ILimit): %f\n", data->YawRatePID[3]);
+										SDL_Log("	RollPI(Kp): %f\n", data->RollPI[0]);
+										SDL_Log("	RollPI(Ki): %f\n", data->RollPI[1]);
+										SDL_Log("	RollPI(ILimit): %f\n", data->RollPI[2]);
+										SDL_Log("	PitchPI(Kp): %f\n", data->PitchPI[0]);
+										SDL_Log("	PitchPI(Ki): %f\n", data->PitchPI[1]);
+										SDL_Log("	PitchPI(ILimit): %f\n", data->PitchPI[2]);
+										SDL_Log("	YawPI(Kp): %f\n", data->YawPI[0]);
+										SDL_Log("	YawPI(Ki): %f\n", data->YawPI[1]);
+										SDL_Log("	YawPI(ILimit): %f\n", data->YawPI[2]);
+										SDL_Log("	VbarSensitivity(Roll): %f\n", data->VbarSensitivity[0]);
+										SDL_Log("	VbarSensitivity(Pitch): %f\n", data->VbarSensitivity[1]);
+										SDL_Log("	VbarSensitivity(Yaw): %f\n", data->VbarSensitivity[2]);
+										SDL_Log("	VbarRollPI(Kp): %f\n", data->VbarRollPI[0]);
+										SDL_Log("	VbarRollPI(Ki): %f\n", data->VbarRollPI[1]);
+										SDL_Log("	VbarPitchPI(Kp): %f\n", data->VbarPitchPI[0]);
+										SDL_Log("	VbarPitchPI(Ki): %f\n", data->VbarPitchPI[1]);
+										SDL_Log("	VbarYawPI(Kp): %f\n", data->VbarYawPI[0]);
+										SDL_Log("	VbarYawPI(Ki): %f\n", data->VbarYawPI[1]);
+										SDL_Log("	VbarTau: %f\n", data->VbarTau);
+										SDL_Log("	GyroTau: %f\n", data->GyroTau);
+										SDL_Log("	DerivativeGamma: %f\n", data->DerivativeGamma);
+										SDL_Log("	WeakLevelingKp: %f\n", data->WeakLevelingKp);
+										SDL_Log("	RollMax: %i\n", data->RollMax);
+										SDL_Log("	PitchMax: %i\n", data->PitchMax);
+										SDL_Log("	YawMax: %i\n", data->YawMax);
+										SDL_Log("	VbarGyroSuppress: %i\n", data->VbarGyroSuppress);
+										SDL_Log("	VbarMaxAngle: %i\n", data->VbarMaxAngle);
+										SDL_Log("	DerivativeCutoff: %i\n", data->DerivativeCutoff);
+										SDL_Log("	MaxAxisLock: %i\n", data->MaxAxisLock);
+										SDL_Log("	MaxAxisLockRate: %i\n", data->MaxAxisLockRate);
+										SDL_Log("	MaxWeakLevelingRate: %i\n", data->MaxWeakLevelingRate);
+										SDL_Log("	VbarPiroComp: %i\n", data->VbarPiroComp);
+										SDL_Log("	LowThrottleZeroIntegral: %i\n", data->LowThrottleZeroIntegral);
 										break;
 									}
 									case ATTITUDEACTUAL_OBJID: {
 										AttitudeActualData *data = (AttitudeActualData *)&openpilot_read_buf[8];
 #ifdef DEBUG
-										printf("<< Attitude: %f %f %f\n", data->Roll, data->Pitch, data->Yaw);
+										SDL_Log("<< Attitude: %f %f %f\n", data->Roll, data->Pitch, data->Yaw);
 #endif
 										ModelData.roll = data->Roll;
 										ModelData.pitch = data->Pitch;
@@ -637,7 +637,7 @@ void openpilot_update (void) {
 									case ACCELS_OBJID: {
 										AccelsData *data = (AccelsData *)&openpilot_read_buf[8];
 #ifdef DEBUG
-										printf("<< Accel: %f %f %f  %f\n", data->x, data->y, data->z, data->temperature);
+										SDL_Log("<< Accel: %f %f %f  %f\n", data->x, data->y, data->z, data->temperature);
 #endif
 										ModelData.acc_x = data->x / 10.0;
 										ModelData.acc_y = data->y / 10.0;
@@ -648,7 +648,7 @@ void openpilot_update (void) {
 									case GYROS_OBJID: {
 										GyrosData *data = (GyrosData *)&openpilot_read_buf[8];
 #ifdef DEBUG
-										printf("<< Gyro: %f %f %f\n", data->x, data->y, data->z, data->temperature);
+										SDL_Log("<< Gyro: %f %f %f\n", data->x, data->y, data->z, data->temperature);
 #endif
 										ModelData.gyro_x = data->x;
 										ModelData.gyro_y = data->y;
@@ -658,7 +658,7 @@ void openpilot_update (void) {
 									}
 									case STABILIZATIONDESIRED_OBJID: {
 		//								StabilizationDesiredData *data = (StabilizationDesiredData *)&openpilot_read_buf[8];
-		//								printf("<< StabilizationDesired: %f %f %f %f\n", data->Roll, data->Pitch, data->Yaw, data->Throttle);
+		//								SDL_Log("<< StabilizationDesired: %f %f %f %f\n", data->Roll, data->Pitch, data->Yaw, data->Throttle);
 		//								char names[3][30];
 		//								char msg[8][30];
 		//								strcpy(names[0], "ROLL");
@@ -673,14 +673,14 @@ void openpilot_update (void) {
 		//								strcpy(msg[6], "RELAYRATE");
 		//								strcpy(msg[7], "RELAYATTITUDE");
 		//								for (n2 = 0; n2 < 3; n2++) {
-		//									printf("	%s: %s\n", names[n2], msg[data->StabilizationMode[n2]]);
+		//									SDL_Log("	%s: %s\n", names[n2], msg[data->StabilizationMode[n2]]);
 		//								}
 										break;
 									}
 									case SYSTEMSTATS_OBJID: {
 										SystemStatsData *data = (SystemStatsData *)&openpilot_read_buf[8];
 #ifdef DEBUG
-										printf("<< System: %i %i %i\n", data->CPULoad, data->CPUTemp, data->FlightTime);
+										SDL_Log("<< System: %i %i %i\n", data->CPULoad, data->CPUTemp, data->FlightTime);
 #endif
 										ModelData.load = data->CPULoad;
 										ModelData.heartbeat = 100;
@@ -706,7 +706,7 @@ void openpilot_update (void) {
 									}
 									case SYSTEMALARMS_OBJID: {
 										SystemAlarmsData *data = (SystemAlarmsData *)&openpilot_read_buf[8];
-										printf("<< Alarm: \n");
+										SDL_Log("<< Alarm: \n");
 										char names[16][30];
 										char msg[5][30];
 										strcpy(names[0], "OUTOFMEMORY");
@@ -732,30 +732,30 @@ void openpilot_update (void) {
 										strcpy(msg[4], "CRITICAL");
 										for (n2 = 0; n2 < 16; n2++) {
 											if (data->Alarm[n2] != 0 && data->Alarm[n2] != 1) {
-												printf("	%s: %s\n", names[n2], msg[data->Alarm[n2]]);
+												SDL_Log("	%s: %s\n", names[n2], msg[data->Alarm[n2]]);
 											}
 										}
 										break;
 									}
 									case RELAYTUNING_OBJID: {
 		//								RelayTuningData *data = (RelayTuningData *)&openpilot_read_buf[8];
-		//								printf("<< RELAYTUNING:\n");
+		//								SDL_Log("<< RELAYTUNING:\n");
 		//								char names[16][30];
 		//								strcpy(names[0], "ROLL");
 		//								strcpy(names[1], "PITCH");
 		//								strcpy(names[2], "YAW");
 		//								for (n2 = 0; n2 < 3; n2++) {
-		//									printf("	Period: %s: %f\n", names[n2], data->Period[n2]);
+		//									SDL_Log("	Period: %s: %f\n", names[n2], data->Period[n2]);
 		//								}
 		//								for (n2 = 0; n2 < 3; n2++) {
-		//									printf("	Gain: %s: %f\n", names[n2], data->Gain[n2]);
+		//									SDL_Log("	Gain: %s: %f\n", names[n2], data->Gain[n2]);
 		//								}
 										break;
 									}
 									case RECEIVERACTIVITYDATA_OBJID: {
 		//								ReceiverActivityData *data = (ReceiverActivityData *)&openpilot_read_buf[8];
 /*
-										printf("<< RECEIVERACTIVITYDATA:\n");
+										SDL_Log("<< RECEIVERACTIVITYDATA:\n");
 										char names[8][30];
 										strcpy(names[0], "PWM");
 										strcpy(names[1], "PPM");
@@ -764,17 +764,17 @@ void openpilot_update (void) {
 										strcpy(names[4], "SBUS");
 										strcpy(names[5], "GCS");
 										strcpy(names[6], "NONE");
-										printf("	Active (%s): %i\n", names[data->ActiveGroup], data->ActiveChannel);
+										SDL_Log("	Active (%s): %i\n", names[data->ActiveGroup], data->ActiveChannel);
 */
 										break;
 									}
 									case ACTUATORDESIRED_OBJID: {
 		//								ActuatorDesiredData *data = (ActuatorDesiredData *)&openpilot_read_buf[8];
-		//								printf("<< ACTUATORDESIRED\n");
-		//								printf("	Roll: %f\n", data->Roll);
-		//								printf("	Pitch: %f\n", data->Pitch);
-		//								printf("	Yaw: %f\n", data->Yaw);
-		//								printf("	Throttle: %f\n", data->Throttle);
+		//								SDL_Log("<< ACTUATORDESIRED\n");
+		//								SDL_Log("	Roll: %f\n", data->Roll);
+		//								SDL_Log("	Pitch: %f\n", data->Pitch);
+		//								SDL_Log("	Yaw: %f\n", data->Yaw);
+		//								SDL_Log("	Throttle: %f\n", data->Throttle);
 		//								ModelData.radio[0] = (int16_t)(data->Roll * 100);
 		//								ModelData.radio[1] = (int16_t)(data->Pitch * 100);
 		//								ModelData.radio[2] = (int16_t)(data->Yaw * 100);
@@ -786,21 +786,21 @@ void openpilot_update (void) {
 									}
 									case ACCESSORYDESIRED_OBJID: {
 		//								AccessoryDesiredData *data = (AccessoryDesiredData *)&openpilot_read_buf[8];
-		//								printf("<< ACCESSORYDESIRED:\n");
-		//								printf("	AccessoryVal: %f\n", data->AccessoryVal);
+		//								SDL_Log("<< ACCESSORYDESIRED:\n");
+		//								SDL_Log("	AccessoryVal: %f\n", data->AccessoryVal);
 										break;
 									}
 									case MANUALCONTROLCOMMAND_OBJID: {
 										ManualControlCommandData *data = (ManualControlCommandData *)&openpilot_read_buf[8];
-//											printf("<< MANUALCONTROLCOMMAND:\n");
-//											printf("	Connected: %i\n", data->Connected);
-//											printf("	Roll: %f\n", data->Roll);
-//											printf("	Pitch: %f\n", data->Pitch);
-//											printf("	Yaw: %f\n", data->Yaw);
-//											printf("	Throttle: %f\n", data->Throttle);
-//											printf("	Collective: %f\n", data->Collective);
+//											SDL_Log("<< MANUALCONTROLCOMMAND:\n");
+//											SDL_Log("	Connected: %i\n", data->Connected);
+//											SDL_Log("	Roll: %f\n", data->Roll);
+//											SDL_Log("	Pitch: %f\n", data->Pitch);
+//											SDL_Log("	Yaw: %f\n", data->Yaw);
+//											SDL_Log("	Throttle: %f\n", data->Throttle);
+//											SDL_Log("	Collective: %f\n", data->Collective);
 										for (n2 = 0; n2 < 8; n2++) {
-//												printf("	Channel: %i: %i %i\n", n2, data->Channel[n2], ((int16_t)data->Channel[n2] - 1500) / 5);
+//												SDL_Log("	Channel: %i: %i %i\n", n2, data->Channel[n2], ((int16_t)data->Channel[n2] - 1500) / 5);
 											ModelData.radio[n2] = (int16_t)(data->Channel[n2] - 1500) / 5;
 										}
 										ModelData.radio[0] = (int16_t)(data->Roll * 100);
@@ -813,9 +813,9 @@ void openpilot_update (void) {
 									}
 									case ACTUATORCOMMAND_OBJID: {
 //											ActuatorCommandData *data = (ActuatorCommandData *)&openpilot_read_buf[8];
-//											printf("<< ACTUATORCOMMAND:\n");
+//											SDL_Log("<< ACTUATORCOMMAND:\n");
 //											for (n2 = 0; n2 < 8; n2++) {
-//												printf("	Channel: %i: %i\n", n2, data->Channel[n2]);
+//												SDL_Log("	Channel: %i: %i\n", n2, data->Channel[n2]);
 //											}
 										//MaxUpdateTime
 										//UpdateTime
@@ -825,35 +825,35 @@ void openpilot_update (void) {
 									case FLIGHTTELEMETRYSTATS_OBJID: {
 										FlightTelemetryStatsData *data = (FlightTelemetryStatsData *)&openpilot_read_buf[8];
 										if (data->TeleStatus == 0) {
-											printf("<< FlightTelemetryStats: DISCONNECTED\n");
+											SDL_Log("<< FlightTelemetryStats: DISCONNECTED\n");
 											openpilot_send_req(1);
 										} else if (data->TeleStatus == 2) {
-											printf("<< FlightTelemetryStats: HANDSHAKEACK\n");
+											SDL_Log("<< FlightTelemetryStats: HANDSHAKEACK\n");
 											ModelData.armed = MODEL_DISARMED;
 											ModelData.mode = MODEL_MODE_MANUAL;
 											openpilot_send_req(3);
 											openpilot_get = 1;
 											redraw_flag = 1;
 										} else if (data->TeleStatus == 3) {
-//												printf("<< FlightTelemetryStats: CONNECTED\n");
-//												printf("	TxDataRate: %f\n", data->TxDataRate);
-//												printf("	RxDataRate: %f\n", data->RxDataRate);
-//												printf("	TxFailures: %i\n", data->TxFailures);
-//												printf("	RxFailures: %i\n", data->RxFailures);
-//												printf("	TxRetries: %i\n", data->TxRetries);
+//												SDL_Log("<< FlightTelemetryStats: CONNECTED\n");
+//												SDL_Log("	TxDataRate: %f\n", data->TxDataRate);
+//												SDL_Log("	RxDataRate: %f\n", data->RxDataRate);
+//												SDL_Log("	TxFailures: %i\n", data->TxFailures);
+//												SDL_Log("	RxFailures: %i\n", data->RxFailures);
+//												SDL_Log("	TxRetries: %i\n", data->TxRetries);
 										} else {
-											printf("<< FlightTelemetryStats: %i\n", data->TeleStatus);
+											SDL_Log("<< FlightTelemetryStats: %i\n", data->TeleStatus);
 										}
 										break;
 									}
 									case FLIGHTSTATUSDATA_OBJID: {
 										FlightStatusData *data = (FlightStatusData *)&openpilot_read_buf[8];
 										char names[8][30];
-										printf("<< FLIGHTSTATUSDATA\n");
+										SDL_Log("<< FLIGHTSTATUSDATA\n");
 										strcpy(names[0], "DISARMED");
 										strcpy(names[1], "ARMING");
 										strcpy(names[2], "ARMED");
-										printf("	Armed: %s\n", names[data->Armed]);
+										SDL_Log("	Armed: %s\n", names[data->Armed]);
 										if (data->Armed == 0) {
 											ModelData.armed = MODEL_DISARMED;
 										} else if (data->Armed == 1) {
@@ -869,7 +869,7 @@ void openpilot_update (void) {
 										strcpy(names[5], "ALTITUDEHOLD");
 										strcpy(names[6], "VELOCITYCONTROL");
 										strcpy(names[7], "POSITIONHOLD");
-										printf("	FlightMode: %s\n", names[data->FlightMode]);
+										SDL_Log("	FlightMode: %s\n", names[data->FlightMode]);
 										if (data->FlightMode == 0) {
 											ModelData.mode = MODEL_MODE_MANUAL;
 										} else {
@@ -880,10 +880,10 @@ void openpilot_update (void) {
 									}
 									case GPSVELOCITYDATA_OBJID: {
 //											GPSVelocityData *data = (GPSVelocityData *)&openpilot_read_buf[8];
-//											printf("<< GPSVELOCITYDATA:\n");
-//											printf("	North: %f\n", data->North);
-//											printf("	East: %f\n", data->East);
-//											printf("	Down: %f\n", data->Down);
+//											SDL_Log("<< GPSVELOCITYDATA:\n");
+//											SDL_Log("	North: %f\n", data->North);
+//											SDL_Log("	East: %f\n", data->East);
+//											SDL_Log("	Down: %f\n", data->Down);
 										break;
 									}
 									case GPSPOSITION_OBJID: {
@@ -900,7 +900,7 @@ void openpilot_update (void) {
 										break;
 									}
 									default: {
-										printf("<< Unkown: %x\n", obj_id);
+										SDL_Log("<< Unkown: %x\n", obj_id);
 										openpilot_send_ack();
 										break;
 									}
@@ -913,7 +913,7 @@ void openpilot_update (void) {
 					data_len = 0;
 				} else if (data_num > 2) {
 					data_len = openpilot_read_buf[2];
-		//			printf("LEN %i\n", data_len);
+		//			SDL_Log("LEN %i\n", data_len);
 				}
 			}
 		}
@@ -925,7 +925,7 @@ uint8_t openpilot_init (char *port, uint32_t baud) {
 	openpilot_defaults_HwSettings(&OpenpilotHwSettings);
 	openpilot_defaults_SystemSettings(&OpenpilotSystemSettings);
 	openpilot_get = 1;
-	printf("init openpilot serial port...\n");
+	SDL_Log("init openpilot serial port...\n");
 	serial_fd_openpilot = serial_open(port, baud);
 	return 0;
 }
