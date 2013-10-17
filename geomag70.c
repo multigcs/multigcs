@@ -54,6 +54,8 @@
 /*                                                                          */
 /****************************************************************************/
 
+#include <all.h>
+
 #include <stdio.h>
 #include <stdlib.h>            
 #include <string.h>
@@ -63,7 +65,6 @@
 
 #define NaN log(-1.0)
 #define FT2KM (1.0/0.0003048)
-#define PI 3.141592654
 #define RAD2DEG (180.0/PI)
 
 #define IEXT 0
