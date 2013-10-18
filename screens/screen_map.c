@@ -862,10 +862,15 @@ void draw_quad (ESContext *esContext, float mark_lat, float mark_long, float mar
 	esRotate( &modelview, yaw, 0.0, 0.0, 1.0 );
 	esRotate( &modelview, roll, 0.0, 1.0, 0.0 );
 	esRotate( &modelview, pitch, 1.0, 0.0, 0.0 );
-	esTranslate( &modelview, -x1, y1, 2.02 - mark_z);
+	esTranslate( &modelview, -x1, y1, 2.0 - mark_z);
 #ifndef SDLGL
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
+
+	// Ground-Line
+	float z2 = (float)get_altitude(mark_lat, mark_long) / alt_zoom;
+	draw_line_f3(esContext, x1, y1, z2, x1, y1, mark_z, 0, 0, 255, 255);
+	draw_circleFilled_f3(esContext, x1, y1, z2, 0.015, 0, 255, 255, 255);
 
 	// Arrow
 	draw_line_f3(esContext, x1, y1 - 0.1, mark_z, x1, y1, mark_z, 0, 0, 0, 255);
@@ -892,6 +897,7 @@ void draw_quad (ESContext *esContext, float mark_lat, float mark_long, float mar
 	draw_circle_f3(esContext, x1 + size, y1 - size, mark_z, 0.015, 0, 0, 0, 255);
 	draw_circle_f3(esContext, x1 - size, y1 - size, mark_z, 0.015, 0, 0, 0, 255);
 
+
 #ifdef SDLGL
 	glPopMatrix();
 #endif
@@ -906,8 +912,6 @@ void draw_quad (ESContext *esContext, float mark_lat, float mark_long, float mar
 	}
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
-
-	draw_line_f3(esContext, x1, y1, 0.0, x1, y1, mark_z, 0, 0, 255, 255);
 
 #ifdef SDLGL
 	glPopMatrix();
@@ -1886,6 +1890,8 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			}
 		}
 	}
+
+
 #ifdef SDLGL
 	if (nav_map == 1) {
 		glMatrixMode(GL_MODELVIEW);

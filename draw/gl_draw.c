@@ -1033,10 +1033,10 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 				float _thy1 = _hy1 + _dhy / (float)subtiles * (float)ty;
 				float _thy2 = _hy1 + _dhy / (float)subtiles * (float)(ty + 1);
 
-				int16_t _alt1 = get_altitude(_thy1, _thx1) - 20;
-				int16_t _alt2 = get_altitude(_thy1, _thx2) - 20;
-				int16_t _alt3 = get_altitude(_thy2, _thx2) - 20;
-				int16_t _alt4 = get_altitude(_thy2, _thx1) - 20;
+				int16_t _alt1 = get_altitude(_thy1, _thx1);
+				int16_t _alt2 = get_altitude(_thy1, _thx2);
+				int16_t _alt3 = get_altitude(_thy2, _thx2);
+				int16_t _alt4 = get_altitude(_thy2, _thx1);
 
 				z1 = z + (float)_alt1 / alt_zoom;
 				z2 = z + (float)_alt2 / alt_zoom;
