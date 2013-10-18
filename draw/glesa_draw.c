@@ -11,11 +11,15 @@ SDL_Window *MainWindow = NULL;
 SDL_GLContext MainGLcontext;
 SDL_Surface *WinScreen = NULL;
 
+TextureCache TexCache[MAX_TEXCACHE];
+GLfloat colors[4] = {1.0f, 0.0f, 0.0f, 1.0f};
+float aspect = 1.0;
+float alt_zoom = 700.0;
+
 uint8_t RB_Active = 0;
 GLuint RB_texture;
 
 void draw_texture_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, GLuint texture);
-
 
 void esTranslate(ESMatrix *result, GLfloat tx, GLfloat ty, GLfloat tz) {
 	glTranslatef(tx, ty, tz);
@@ -54,7 +58,6 @@ void gluPerspective (GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar) 
     GLfloat m[4][4];
     GLfloat sine, cotangent, deltaZ;
     GLfloat radians=(GLfloat)(fovy/2.0f*__glPi/180.0f);
-
     deltaZ=zFar-zNear;
     sine=(GLfloat)sin(radians);
     if ((deltaZ==0.0f) || (sine==0.0f) || (aspect==0.0f))
@@ -71,7 +74,6 @@ void gluPerspective (GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar) 
     m[3][3] = 0;
     glMultMatrixf(&m[0][0]);
 }
-
 
 void gl_init (ESContext *esContext) {
 	int i;
@@ -139,18 +141,14 @@ void gl_init (ESContext *esContext) {
 		}
 		glViewport(0 + setup.screen_border_x / 2, 0 + setup.screen_border_y / 2, setup.screen_w - setup.screen_border_x, setup.screen_h - setup.screen_border_y);
 		gluPerspective(53.0, aspect, 0.001, 7.0);
-
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-
 //		glShadeModel(GL_SMOOTH);
 		glShadeModel(GL_FLAT);
 		glEnable(GL_TEXTURE_2D);
-
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTexParameterx(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LEQUAL);
 		glDepthMask(GL_TRUE);
@@ -158,16 +156,12 @@ void gl_init (ESContext *esContext) {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 	SDL_GL_MakeCurrent(state->windows[0], context[0]);
-
 	// Draw to Texture Buffer
 	glGenTextures(1, &RB_texture);
 	glBindTexture(GL_TEXTURE_2D, RB_texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, 0x80E1, 256, 256, 0, 0x80E1, GL_UNSIGNED_BYTE, NULL);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-//	glDeleteTextures(1, &RB_texture);
-
 }
 
 int glExit (ESContext *esContext) {
@@ -261,12 +255,6 @@ int glInit ( ESContext *esContext ) {
 	return GL_TRUE;
 }
 
-
-TextureCache TexCache[MAX_TEXCACHE];
-GLfloat colors[4] = {1.0f, 0.0f, 0.0f, 1.0f};
-float aspect = 1.0;
-float alt_zoom = 700.0;
- 
 void draw_circlePointer_f3 (ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	float x2 = x1 - cos(start * DEG2RAD) * radius;
 	float y2 = y1 - sin(start * DEG2RAD) * radius;
@@ -279,33 +267,27 @@ void draw_line_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 	UserData *userData = esContext->userData;
 	y1 = y1 * -1;
 	y2 = y2 * -1;
-
 	vVertices[0] = x1;
 	vVertices[1] = y1;
 	vVertices[2] = -2.0 + z1;
 	vVertices[3] = x2;
 	vVertices[4] = y2;
 	vVertices[5] = -2.0 + z2;
-
 	GLushort indices[] = { 0, 1 };
-
 	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
 	glVertexPointer(3, GL_FLOAT, 0, vVertices);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glDrawElements(GL_LINES, 2, GL_UNSIGNED_SHORT, indices);
-
 }
 
 void draw_circle_f3 (ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	y1 = y1 * -1;
 	GLfloat vVertices[9];
 	UserData *userData = esContext->userData;
-
 	colors[0] = (float)r / 255;
 	colors[1] = (float)g / 255;
 	colors[2] = (float)b / 255;
 	colors[3] = (float)a / 255;
-
 	uint16_t ii = 0;
 	float num_segments = radius * 300.0;
 	if (num_segments < 100.0) {
@@ -333,19 +315,14 @@ void draw_circle_f3 (ESContext *esContext, float x1, float y1, float z1, float r
 		vVertices[3] = last_x;
 		vVertices[4] = last_y;
 		vVertices[5] = -2.0 + z1;
-
 		vVertices[6] = x + x1;
 		vVertices[7] = y + y1;
 		vVertices[8] = -2.0 + z1;
-
 		GLushort indices[] = { 0, 1, 2 };
-
 		glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
 		glVertexPointer(3, GL_FLOAT, 0, vVertices);
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glDrawElements(GL_LINES, 3, GL_UNSIGNED_SHORT, indices);
-	
-
 		last_x = x + x1;
 		last_y = y + y1;
 		tx = -y;
@@ -358,36 +335,6 @@ void draw_circle_f3 (ESContext *esContext, float x1, float y1, float z1, float r
 }
 
 void draw_circle_f3_slow (ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
-	GLfloat vVertices[9];
-	UserData *userData = esContext->userData;
-	y1 = y1 * -1;
-	colors[0] = (float)r / 255;
-	colors[1] = (float)g / 255;
-	colors[2] = (float)b / 255;
-	colors[3] = (float)a / 255;
-	GLfloat i = 0.0;
-	GLfloat step = 9.0;
-	if (radius < 0.05) {
-		step = 36;
-	} else if (radius < 0.1) {
-		step = 18;
-	}
-	for (i = 0; i < 360.0; i += step) {
-		vVertices[0] = x1;
-		vVertices[1] = y1;
-		vVertices[2] = -2.0 + z1;
-		vVertices[3] = x1 + cos(i * DEG2RAD) * radius;
-		vVertices[4] = y1 + sin(i * DEG2RAD) * radius;
-		vVertices[5] = -2.0 + z1;
-		vVertices[6] = x1 + cos((i + step) * DEG2RAD) * radius;
-		vVertices[7] = y1 + sin((i + step) * DEG2RAD) * radius;
-		vVertices[8] = -2.0 + z1;
-		GLushort indices[] = { 0, 1, 2 };
-		glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
-		glVertexPointer(3, GL_FLOAT, 0, vVertices);
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glDrawElements(GL_LINES, 3, GL_UNSIGNED_SHORT, indices);
-	}
 }
 
 void draw_circleFilled_f3 (ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
@@ -442,6 +389,7 @@ void draw_circleFilled_f3 (ESContext *esContext, float x1, float y1, float z1, f
 		x *= radial_factor;
 		y *= radial_factor;
 	}
+	draw_circle_f3(esContext, x1, y1 * -1, z1, radius, r, g, b, a);
 }
 
 void draw_circleFilled_f3_slow (ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
@@ -651,7 +599,6 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 				tex2, tey1,         // TexCoord 2
 			};
 			GLushort indices[] = { 0, 1, 2, 0, 2, 3 };
-
 			glVertexPointer(3, GL_FLOAT, 0, vVertices);
 			glEnableClientState(GL_VERTEX_ARRAY);
 			if (TexCache[tex_num].texture != 0) {
@@ -810,7 +757,6 @@ inline void draw_char_f3_fast (ESContext *esContext, float x1, float y1, float z
 	vVertices[9] = x2;
 	vVertices[10] = y1;
 	vVertices[11] = -2.0 + z1;
-
 	float tpos_x = (float)(num % 16) / 16;
 	float tpos_y = (float)(num / 16) / 16;
 	if (num < 0) {
@@ -826,11 +772,9 @@ inline void draw_char_f3_fast (ESContext *esContext, float x1, float y1, float z
 	vTex[5] = tpos_y + 0.0625;
 	vTex[6] = tpos_x + 0.0625;
 	vTex[7] = tpos_y + 0.005;
-
 	glTexCoordPointer(2, GL_FLOAT, 0, vTex);
 	glVertexPointer(3, GL_FLOAT, 0, vVertices);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
-
 }
 
 void draw_text_f3_fast (ESContext *esContext, float x1, float y1, float z1, float w, float h, char *file, char *text) {
@@ -890,157 +834,9 @@ void draw_text_f3_fast (ESContext *esContext, float x1, float y1, float z1, floa
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		glDisable(GL_TEXTURE_2D);
 	}
-
-
-
-
-/*
-	y1 += h;
-	int n1 = 0;
-	float scale = 32.0;
-	float step = h * 0.6;
-	for (n1 = 0; n1 < strlen(text); n1++) {
-		if (text[n1] - 32 >= 0 && text[n1] - 32 < 95) {
-			uint8_t numC = text[n1] - 32;
-			int numV = simplex[numC][0];
-			int sizeX = simplex[numC][1];
-			float step1 = step - (float)sizeX / scale * h;
-			x1 += step1 / 2.0 + step / 2.0;
-			float last_x = 0.0;
-			float last_y = 0.0;
-			int last_px = -1;
-			int n = 0;
-			for (n = 0; n < numV; n++) {
-				int px = simplex[numC][2 + n * 2];
-				int py = simplex[numC][3 + n * 2];
-				float x = (float)px / scale * h + x1;
-				float y = (float)-py / scale * h + y1;
-				if (px != -1 && last_px != -1) {
-					draw_line_f3(esContext, x, y, 0.0, last_x, last_y, z1, 255, 255, 255, 255);
-				}
-				last_px = px;
-				last_x = x;
-				last_y = y;
-			}
-			x1 += step / 2.0 - step1 / 2.0;
-		} else {
-			x1 += step;
-		}
-	}
-*/
 }
 
-
-
 void draw_char_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, char *file, char num) {
-	UserData *userData = esContext->userData;
-	y1 = y1 * -1;
-	y2 = y2 * -1;
-	int8_t n = 0;
-	int8_t tex_num = -1;
-	int8_t old_num = -1;
-	uint32_t atime_min = 0xFFFFFFFF;
-	if (num == '\n' || num == '\r') {
-		return;
-	}
-	for (n = 0; n < MAX_TEXCACHE; n++) {
-		if (strcmp(TexCache[n].name, file) == 0) {
-			tex_num = n;
-			break;
-		} else if (TexCache[n].atime < atime_min) {
-			old_num = n;
-			atime_min = TexCache[n].atime;
-		}
-	}
-	if (tex_num == -1) {
-		for (n = 0; n < MAX_TEXCACHE; n++) {
-			if (TexCache[n].name[0] == 0) {
-				tex_num = n;
-				break;
-			}
-		}
-		if (old_num == -1) {
-			old_num = 0;
-		}
-		if (tex_num == -1) {
-			tex_num = old_num;
-			SDL_Log("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
-			glDeleteTextures( 1, &TexCache[tex_num].texture );
-			TexCache[tex_num].name[0] = 0;
-			TexCache[tex_num].texture = 0;
-		}
-		if (tex_num != -1) {
-//			SDL_Log("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
-			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) { 
-				strncpy(TexCache[tex_num].name, file, 1023);
-				TexCache[tex_num].atime = time(0);
-
-			} else {
-				SDL_Log("could not load image: %s\n", file);
-				if (strstr(file, "/MAPS/") > 0) {
-					unlink(file);
-				}
-			}    
-		}
-	}
-	if (TexCache[tex_num].texture != 0) {
-		TexCache[tex_num].atime = time(0);
-
-//		SDL_Log("# %s = %i\n", TexCache[tex_num].name, TexCache[tex_num].texture);
-
-		//glUseProgram(userData->programObject);
-		glActiveTexture(GL_TEXTURE0);
-
-		GLfloat vVertices[20];
-		vVertices[0] = x1;
-		vVertices[1] = y1;
-		vVertices[2] = -2.0 + z1;
-		vVertices[5] = x1;
-		vVertices[6] = y2;
-		vVertices[7] = -2.0 + z1;
-		vVertices[10] = x2;
-		vVertices[11] = y2;
-		vVertices[12] = -2.0 + z1;
-		vVertices[15] = x2;
-		vVertices[16] = y1;
-		vVertices[17] = -2.0 + z1;
-
-		float tpos_x = (float)(num % 16) / 16;
-		float tpos_y = (float)(num / 16) / 16;
-		if (num < 0) {
-			int nnn = num + 256;
-			tpos_x = (float)(nnn % 16) / 16;
-			tpos_y = (float)(nnn / 16) / 16;
-		}
-		if (tpos_x < 0 || tpos_y < 0 || tpos_x > 511 || tpos_y > 511) {
-			SDL_Log("CHAR - ERROR\n");
-			return;
-		}
-		vVertices[3] = tpos_x;
-		vVertices[4] = tpos_y + 0.005;
-		vVertices[8] = tpos_x;
-		vVertices[9] = tpos_y + 0.0625;
-		vVertices[13] = tpos_x + 0.0625;
-		vVertices[14] = tpos_y + 0.0625;
-		vVertices[18] = tpos_x + 0.0625;
-		vVertices[19] = tpos_y + 0.005;
-
-		GLushort indices[] = { 0, 1, 2, 0, 2, 3 };
-
-		//glVertexAttribPointer ( userData->positionLoc, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), vVertices );
-		//glEnableVertexAttribArray ( userData->positionLoc );
-
-		//glUniformMatrix4fv( userData->mvpLoc, 1, GL_FALSE, (GLfloat*) &userData->mvpMatrix.m[0][0] );
-
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_BLEND);
-
-		//glVertexAttribPointer ( userData->texCoordLoc, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), &vVertices[3] );
-		//glEnableVertexAttribArray ( userData->texCoordLoc );
-//		glBindTexture (GL_TEXTURE_2D, TexCache[tex_num].texture );
-		//glUniform1i ( userData->samplerLoc, 0 );
-		//glDrawElements ( GL_LINES, 6, GL_UNSIGNED_SHORT, indices );
-	}
 }
 
 void draw_rect_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
@@ -1108,16 +904,12 @@ void draw_circleFilled_f3_part (ESContext *esContext, float x1, float y1, float 
 			vVertices[15] = vVertices[6];
 			vVertices[16] = vVertices[7];
 			vVertices[17] = -2.0 + z1;
-
 			GLushort indices[] = { 0, 1, 2, 3, 4, 5 };
-
 			glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
 			glVertexPointer(3, GL_FLOAT, 0, vVertices);
 			glEnableClientState(GL_VERTEX_ARRAY);
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
-
 		}
-
 		last_x = x1 - x;
 		last_y = y + y1;
 		tx = -y;
@@ -1260,6 +1052,7 @@ void draw_exit (ESContext *esContext) {
 #ifdef SDL2
 	SDL_DestroyWindow(MainWindow);
 #endif
+	glDeleteTextures(1, &RB_texture);
 	glExit(esContext);
 	SDL_Log("texture-cache: clear\n");
 	int16_t n = 0;

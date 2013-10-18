@@ -169,7 +169,7 @@ void draw_turning_indicator (ESContext *esContext, float ti_x, float ti_y, float
 	if (ModelData.teletype == TELETYPE_MULTIWII_21 || ModelData.teletype == TELETYPE_BASEFLIGHT) {
 		accel = (float)ModelData.acc_x / 256.0 * -50.0;
 	}
-	draw_circleFilled_f3_part(esContext, 0.0, 0.0 - (w / 4.0), 0.0005, (w / 2.0), (w / 2.2), 240.0, 300.0, 255, 255, 255, 255);
+	draw_circleFilled_f3_part(esContext, 0.0, 0.0 - (w / 4.0), 0.0005, (w / 2.0), (w / 2.2), 235.0, 300.0, 255, 255, 255, 255);
 	draw_circleFilled_f3_part_end(esContext, 0.0, 0.0 - (w / 4.0), 0.001, (w / 2.0), (w / 2.2), 270.0 + accel, 25, 25, 25, 255);
 #ifdef SDLGL
 	glPopMatrix();

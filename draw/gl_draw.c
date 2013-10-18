@@ -392,18 +392,36 @@ void draw_circle_f3 (ESContext *esContext, float x1, float y1, float z1, float r
 	glEnd();
 }
 
-void draw_circle_f3_slow (ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_circleSS_f3 (ESContext *esContext, float x1, float y1, float z1, float radius, float start, float stop, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
 	y1 = y1 * -1;
-	GLfloat i = 0.0;
-	GLfloat step = 1.0;
-	glBegin(GL_LINES);
+	uint16_t ii = 0;
+	float num_segments = radius * 300.0;
+	if (num_segments < 100.0) {
+		num_segments = 100.0;
+	} else if (num_segments > 360.0) {
+		num_segments = 360.0;
+	}
+	float theta = 2 * 3.1415926 / num_segments;
+	float tangetial_factor = tanf(theta);
+	float radial_factor = cosf(theta);
+	float x = radius;//we start at angle = 0
+	float y = 0;
+	glBegin(GL_LINE_STRIP);
 	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
-	for (i = 0; i < 360.0; i += step) {
-		glVertex3f(x1 + cos(i * DEG2RAD) * radius, y1 + sin(i * DEG2RAD) * radius, -2.0 + z1);
-		glVertex3f(x1 + cos((i + step) * DEG2RAD) * radius, y1 + sin((i + step) * DEG2RAD) * radius, -2.0 + z1);
+	for (ii = 0; ii <= (float)num_segments * stop / 360.0; ii++) {
+		if (ii >= (float)num_segments * start / 360.0) {
+			glVertex3f(x1 - x, y + y1, -2.0 + z1);
+
+		}
+		float tx = -y;
+		float ty = x;
+		x += tx * tangetial_factor;
+		y += ty * tangetial_factor;
+		x *= radial_factor;
+		y *= radial_factor;
 	}
 	glEnd();
 }
@@ -425,22 +443,17 @@ void draw_circleFilled_f3 (ESContext *esContext, float x1, float y1, float z1, f
 	float radial_factor = cosf(theta);
 	float x = radius;//we start at angle = 0
 	float y = 0;
-	float last_x = x + x1;
-	float last_y = y + y1;
 	float tx = -y;
 	float ty = x;
 	x += tx * tangetial_factor;
 	y += ty * tangetial_factor;
 	x *= radial_factor;
 	y *= radial_factor;
-	glBegin(GL_TRIANGLES);
+	glBegin(GL_TRIANGLE_FAN);
 	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
+	glVertex3f(x1, y1, -2.0 + z1);
 	for(ii = 0; ii < num_segments; ii++) {
-		glVertex3f(x1, y1, -2.0 + z1);
-		glVertex3f(last_x, last_y, -2.0 + z1);
 		glVertex3f(x + x1, y + y1, -2.0 + z1);
-		last_x = x + x1;
-		last_y = y + y1;
 		tx = -y;
 		ty = x;
 		x += tx * tangetial_factor;
@@ -449,22 +462,7 @@ void draw_circleFilled_f3 (ESContext *esContext, float x1, float y1, float z1, f
 		y *= radial_factor;
 	}
 	glEnd();
-}
-
-void draw_circleFilled_f3_slow (ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
-#ifdef CONSOLE_ONLY
-	return;
-#endif
-	y1 = y1 * -1;
-	GLfloat i = 0.0;
-	for (i = 0; i < 360.0; i += 2) {
-		glBegin(GL_TRIANGLES);
-		glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
-		glVertex3f(x1, y1, -2.0 + z1);
-		glVertex3f(x1 + cos(i * DEG2RAD) * radius, y1 + sin(i * DEG2RAD) * radius, -2.0 + z1);
-		glVertex3f(x1 + cos((i + 2) * DEG2RAD) * radius, y1 + sin((i + 2) * DEG2RAD) * radius, -2.0 + z1);
-		glEnd();
-	}
+	draw_circle_f3(esContext, x1, y1 * -1, z1, radius, r, g, b, a);
 }
 
 void draw_zylinder_f3 (ESContext *esContext, float x1, float y1, float z1, float z2, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
@@ -519,7 +517,7 @@ void draw_circleFilled_f3_part (ESContext *esContext, float x1, float y1, float 
 	x_inner *= radial_factor;
 	y_inner *= radial_factor;
 
-	float x_inner3 = radius_inner - radius_inner / 3.0;
+	float x_inner3 = radius_inner - radius_inner / 2.0;
 	float y_inner3 = 0;
 	float last_x_inner3 = x1 - x_inner3;
 	float last_y_inner3 = y_inner3 + y1;
@@ -530,44 +528,29 @@ void draw_circleFilled_f3_part (ESContext *esContext, float x1, float y1, float 
 	x_inner3 *= radial_factor;
 	y_inner3 *= radial_factor;
 
-
 	glBegin(GL_TRIANGLES);
-	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
-
 	for (ii = 0; ii < (float)num_segments * stop / 360.0; ii++) {
-
-		if (ii >= (float)num_segments * start / 360.0 && ii < (float)num_segments * stop / 360.0) {
-
+		if (ii >= (float)num_segments * start / 360.0) {
 			glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
-
 			glVertex3f(last_x_inner, last_y_inner, -2.0 + z1);
 			glVertex3f(last_x, last_y, -2.0 + z1);
 			glVertex3f(x1 - x, y + y1, -2.0 + z1);
-
 			glVertex3f(last_x_inner, last_y_inner, -2.0 + z1);
 			glVertex3f(x1 - x, y + y1, -2.0 + z1);
 			glVertex3f(x1 - x_inner, y_inner + y1, -2.0 + z1);
-
-
-			glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0 / 2.0);
+			glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0 / 1.5);
 			glVertex3f(last_x_inner, last_y_inner, -2.0 + z1);
-
 			glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)0.0);
 			glVertex3f(last_x_inner3, last_y_inner3, -2.0 + z1);
-
 			glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)0.0);
 			glVertex3f(x1 - x_inner3, y_inner3 + y1, -2.0 + z1);
-
-			glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0 / 2.0);
+			glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0 / 1.5);
 			glVertex3f(last_x_inner, last_y_inner, -2.0 + z1);
-
 			glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)0.0);
 			glVertex3f(x1 - x_inner3, y_inner3 + y1, -2.0 + z1);
-
-			glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0 / 2.0);
+			glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0 / 1.5);
 			glVertex3f(x1 - x_inner, y_inner + y1, -2.0 + z1);
 		}
-
 		last_x = x1 - x;
 		last_y = y + y1;
 		tx = -y;
@@ -597,6 +580,8 @@ void draw_circleFilled_f3_part (ESContext *esContext, float x1, float y1, float 
 
 	}
 	glEnd();
+	draw_circleSS_f3(esContext, x1, y1 * -1, z1, radius, start, stop, r, g, b, a);
+	draw_circleSS_f3(esContext, x1, y1 * -1, z1, radius_inner, start, stop, r, g, b, a);
 }
 
 void draw_circleFilled_f3_part_slow (ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, float stop, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
@@ -754,12 +739,11 @@ void draw_tria_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 	y1 = y1 * -1;
 	y2 = y2 * -1;
 	y3 = y3 * -1;
-	glBegin(GL_LINES);
+	glBegin(GL_LINE_LOOP);
 	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
 	glVertex3f(x1, y1, -2.0 + z1);
 	glVertex3f(x2, y2, -2.0 + z2);
 	glVertex3f(x3, y3, -2.0 + z3);
-	glVertex3f(x1, y1, -2.0 + z1);
 	glEnd();
 }
 
@@ -781,6 +765,8 @@ void draw_triaFilled_f3 (ESContext *esContext, float x1, float y1, float z1, flo
 	glVertex3f(x2, y2, -2.0 + z2);
 	glVertex3f(x3, y3, -2.0 + z3);
 	glEnd();
+
+	draw_tria_f3(esContext, x1, y1 * -1, z1, x2, y2 * -1, z2, x3, y3 * -1, z3, r, g, b, a);
 }
 
 void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, float alpha, SDL_Surface *screen) {
@@ -1332,29 +1318,9 @@ int gl_init (uint16_t w, uint16_t h) {
 
 	// Anti-Alias
 //	glEnable(GL_POLYGON_SMOOTH);
+	glEnable(GL_POINT_SMOOTH);
+	glEnable(GL_LINE_SMOOTH);
 
-	static float mat_shininess[] = {1.0};
-	static float mat_specular[] = {1.0, 1.0, 1.0, 1.0};
-	glMaterialfv (GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess);
-	glMaterialfv (GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);
-/*
-	// Lichtquelle 0 einstellen
-	static float light0_ambient[] = {1.0, 1.0, 1.0, 1.0};
-	static float light0_diffuse[] = {1.0, 1.0, 1.0, 1.0};
-	static float light0_pos[]    = {400.0, 300.0, 800.0, 1.0};
-	glLightfv (GL_LIGHT0, GL_AMBIENT, light0_ambient);
-	glLightfv (GL_LIGHT0, GL_DIFFUSE, light0_diffuse);
-	glLightfv (GL_LIGHT0, GL_POSITION,light0_pos);
-	// Beleuchtungsmodell waehlen
-	static float lmodel_ambient[] = {1.0, 1.0, 1.0, 1.0};
-	glLightModelfv (GL_LIGHT_MODEL_AMBIENT, lmodel_ambient);
-	glLightModeli (GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
-	// ...und Beleuchtung einschalten. 
-	glEnable (GL_LIGHTING);
-	glEnable (GL_LIGHT0);
-	glEnable (GL_COLOR_MATERIAL);
-	glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-*/
 #ifndef WINDOWS
 	// create Render-Buffer
 	glGenFramebuffers(1, &RB_FramebufferName);

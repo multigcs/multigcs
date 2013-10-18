@@ -848,6 +848,10 @@ void draw_quad (ESContext *esContext, float mark_lat, float mark_long, float mar
 		}
 	}
 
+	// Ground-Line
+	float z2 = (float)get_altitude(mark_lat, mark_long) / alt_zoom;
+	draw_line_f3(esContext, x1, y1, z2, x1, y1, mark_z, 0, 0, 255, 255);
+	draw_circleFilled_f3(esContext, x1, y1, z2, 0.005, 255, 255, 255, 255);
 
 #ifdef SDLGL
 	glMatrixMode(GL_MODELVIEW);
@@ -866,11 +870,6 @@ void draw_quad (ESContext *esContext, float mark_lat, float mark_long, float mar
 #ifndef SDLGL
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
-
-	// Ground-Line
-	float z2 = (float)get_altitude(mark_lat, mark_long) / alt_zoom;
-	draw_line_f3(esContext, x1, y1, z2, x1, y1, mark_z, 0, 0, 255, 255);
-	draw_circleFilled_f3(esContext, x1, y1, z2, 0.015, 0, 255, 255, 255);
 
 	// Arrow
 	draw_line_f3(esContext, x1, y1 - 0.1, mark_z, x1, y1, mark_z, 0, 0, 0, 255);
