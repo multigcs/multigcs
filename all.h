@@ -1,5 +1,4 @@
 
-
 #include <ctype.h>
 #include <dirent.h>
 #include <errno.h>
@@ -14,76 +13,86 @@
 #include <signal.h>
 #include <time.h>
 #include <unistd.h>
-
-#ifndef WINDOWS
+#include <libxml/xmlmemory.h>
+#include <libxml/parser.h>
+#include <sys/time.h>
+#include <sys/stat.h>
+#include <png.h>
+#ifdef RPI_NO_X
+#include <linux/input.h>
+#endif
+#ifndef ANDROID
+#include <tcl.h>
+#endif
+#ifdef WINDOWS
+#include <windows.h>
+#include <shlobj.h>
+#else
 #include <termios.h>
 #include <sys/times.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#else
-#include <windows.h>
-#include <shlobj.h>
 #endif
 
-#include <sys/time.h>
-#include <sys/stat.h>
-#include <png.h>
-
-#ifdef RPI_NO_X
-#include <linux/input.h>
-#endif
-
-
-#ifndef ANDROID
-#include <tcl.h>
-#endif
-
-#include <libxml/xmlmemory.h>
-#include <libxml/parser.h>
-
-#ifdef ANDROID
+#if defined ANDROID
 #include <SDL.h>
-#include <android_gles.h>
 #include <SDL_opengles.h>
 #include <SDL_main.h>
 #include <SDL_image.h>
 #include <SDL_thread.h>
 #include <SDL_events.h>
-
+#include <android_gles.h>
 #include <android/sensor.h>
 #include <android/log.h>
 #include <jni_functions.h>
-
-#else
-
-#ifdef OSX
-#include <SDL_main.h>
-#endif
+#include <userdata.h>
+#include <glesa_draw.h>
+#include <draw.h>
+#elif defined WINDOWS
 #include <SDL.h>
 #include <SDL_thread.h>
 #include <SDL_events.h>
-#ifndef SDLGL
-#include "esUtil.h"
-#else
-#ifndef OSX
+#include <SDL_image.h>
 #define NO_SDL_GLEXT
 #include <GL/glew.h>
-#ifndef WINDOWS
-#include <GL/glext.h>
-#endif
 #include <GL/gl.h>
-#else
-#include <OpenGL/glu.h>
-#endif
-#include <SDL_image.h>
-#ifndef ANDROID
 #include <SDL_opengl.h>
+#include <userdata.h>
+#include <gl_draw.h>
+#include <draw.h>
+#elif defined OSX
+#include <SDL.h>
+#include <SDL_thread.h>
+#include <SDL_events.h>
+#include <SDL_image.h>
+#include <GL/gl.h>
+#include <SDL_opengl.h>
+#include <userdata.h>
+#include <gl_draw.h>
+#include <draw.h>
+#elif defined SDLGL
+#include <SDL.h>
+#include <SDL_thread.h>
+#include <SDL_events.h>
+#include <SDL_image.h>
+#define NO_SDL_GLEXT
+#include <GL/glew.h>
+#include <GL/gl.h>
+#include <SDL_opengl.h>
+#include <userdata.h>
+#include <gl_draw.h>
+#include <draw.h>
 #else
-#include <SDL_opengles.h>
-#endif
-#endif
-
+#include <SDL.h>
+#include <SDL_thread.h>
+#include <SDL_events.h>
+#include <SDL_image.h>
+#include <esUtil.h>
+#define NO_SDL_GLEXT
+#include <userdata.h>
+#include <gles_draw.h>
+#include <draw.h>
 #endif
 
 #ifndef OSX
@@ -98,7 +107,6 @@
 #include <geomag70.h>
 #include <webclient.h>
 #include <my_mavlink.h>
-#include <userdata.h>
 #include <main.h>
 #include <my_gps.h>
 #include <mwi21.h>
@@ -141,19 +149,7 @@
 #include <screen_tcl.h>
 #endif
 
-#ifndef ANDROID
-#include <screen_tcl.h>
+#ifndef SDL_Log
+#define SDL_Log printf
 #endif
-
-
-#ifndef SDLGL
-#include "gles_draw.h"
-#else
-#ifdef ANDROID
-#include "glesa_draw.h"
-#else
-#include "gl_draw.h"
-#endif
-#endif
-#include "draw.h"
 

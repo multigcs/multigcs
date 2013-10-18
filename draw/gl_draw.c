@@ -1585,4 +1585,38 @@ void draw_buffer_to_screen (float x1, float y1, float x2, float y2, float z, flo
 }
 
 
+void draw_update (ESContext *esContext) {
+#ifdef SDL2
+	SDL_GL_SwapWindow(MainWindow);
+#else
+	SDL_GL_SwapBuffers();
+#endif
+	glMatrixMode(GL_MODELVIEW);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
 
+void draw_init (ESContext *esContext) {
+	uint16_t n = 0;
+	for (n = 0; n < MAX_TEXCACHE; n++) {
+		TexCache[n].name[0] = 0;
+		TexCache[n].texture = 0;
+	}
+	glInit(esContext);
+}
+
+void draw_exit (ESContext *esContext) {
+#ifdef SDL2
+	SDL_DestroyWindow(MainWindow);
+#endif
+	glExit(esContext);
+	SDL_Log("texture-cache: clear\n");
+	int16_t n = 0;
+	for (n = 0; n < MAX_TEXCACHE; n++) {
+		if (TexCache[n].name[0] != 0 && TexCache[n].texture != 0 ) {
+			glDeleteTextures( 1, &TexCache[n].texture );
+			TexCache[n].name[0] = 0;
+		}
+	}
+	SDL_Quit();
+}

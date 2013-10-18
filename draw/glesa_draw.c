@@ -14,7 +14,6 @@ SDL_Surface *WinScreen = NULL;
 uint8_t RB_Active = 0;
 GLuint RB_texture;
 
-void gl_update (void);
 void draw_texture_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, GLuint texture);
 
 
@@ -24,59 +23,6 @@ void esTranslate(ESMatrix *result, GLfloat tx, GLfloat ty, GLfloat tz) {
 
 void esRotate(ESMatrix *result, GLfloat angle, GLfloat x, GLfloat y, GLfloat z) {
 	glRotatef(angle, x, y, -z);
-}
-
-void RenderTestDraw (void) {
-	static GLubyte color[8][4] = { {255, 0, 0, 0},
-		{255, 0, 0, 255},
-		{0, 255, 0, 255},
-		{0, 255, 0, 255},
-		{0, 255, 0, 255},
-		{255, 255, 255, 255},
-		{255, 0, 255, 255},
-		{0, 0, 255, 255}
-	};
-	static GLfloat cube[8][3] = { {0.5, 0.5, -0.5},
-		{0.5f, -0.5f, -0.5f},
-		{-0.5f, -0.5f, -0.5f},
-		{-0.5f, 0.5f, -0.5f},
-		{-0.5f, 0.5f, 0.5f},
-		{0.5f, 0.5f, 0.5f},
-		{0.5f, -0.5f, 0.5f},
-		{-0.5f, -0.5f, 0.5f}
-	};
-	static GLubyte indices[36] = { 0, 3, 4,
-		4, 5, 0,
-		0, 5, 6,
-		6, 1, 0,
-		6, 7, 2,
-		2, 1, 6,
-		7, 4, 3,
-		3, 2, 7,
-		5, 4, 7,
-		7, 6, 5,
-		2, 3, 1,
-		3, 0, 1
-	};
-
-//	glClearColor(0.0, 0.0, 0.0, 1.0);
-//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-//	glMatrixMode(GL_MODELVIEW);
-//	glRotatef(5.0, 1.0, 1.0, 1.0);
-
-	glColorPointer(4, GL_UNSIGNED_BYTE, 0, color);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glVertexPointer(3, GL_FLOAT, 0, cube);
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, indices);
-}
-
-void RenderTest (void) {
-	while (1) {
-		RenderTestDraw();
-		gl_update();
-	}
 }
 
 void gl_exit (int rc) {
@@ -222,10 +168,6 @@ void gl_init (ESContext *esContext) {
 
 //	glDeleteTextures(1, &RB_texture);
 
-}
-
-void gl_update (void) {
-	SDL_GL_SwapWindow(state->windows[0]);
 }
 
 int glExit (ESContext *esContext) {
@@ -1289,4 +1231,43 @@ void draw_trifan_f3 (ESContext *esContext, float *poly_array, uint16_t len, uint
 
 void resize_border (void) {
 	glViewport(0 + setup.screen_border_x / 2, 0 + setup.screen_border_y / 2, setup.screen_w - setup.screen_border_x, setup.screen_h - setup.screen_border_y);
+}
+
+void draw_update (ESContext *esContext) {
+	SDL_GL_SwapWindow(state->windows[0]);
+#ifndef SDLGL
+	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	esMatrixLoadIdentity( &modelview );
+	esMatrixMultiply( &userData->mvpMatrix, &modelview, &userData->perspective);
+#else
+	glMatrixMode(GL_MODELVIEW);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+#endif
+}
+
+void draw_init (ESContext *esContext) {
+	uint16_t n = 0;
+	for (n = 0; n < MAX_TEXCACHE; n++) {
+		TexCache[n].name[0] = 0;
+		TexCache[n].texture = 0;
+	}
+	glInit(esContext);
+}
+
+void draw_exit (ESContext *esContext) {
+#ifdef SDL2
+	SDL_DestroyWindow(MainWindow);
+#endif
+	glExit(esContext);
+	SDL_Log("texture-cache: clear\n");
+	int16_t n = 0;
+	for (n = 0; n < MAX_TEXCACHE; n++) {
+		if (TexCache[n].name[0] != 0 && TexCache[n].texture != 0 ) {
+			glDeleteTextures( 1, &TexCache[n].texture );
+			TexCache[n].name[0] = 0;
+		}
+	}
+	SDL_Quit();
 }

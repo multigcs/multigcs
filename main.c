@@ -69,7 +69,6 @@ char display_html2[HTML_MAX];
 SDL_Thread *thread = NULL;
 SDL_Thread *thread_telemetry = NULL;
 
-
 #ifdef SDL2
 void SDL_KillThread(SDL_Thread *thread) {
 }
@@ -77,18 +76,16 @@ void SDL_KillThread(SDL_Thread *thread) {
 
 char *get_datadirectory (void) {
 	static char datradir[1024];
-#ifdef WINDOWS
+#if defined WINDOWS
 	strcpy(datradir, "MultiGCS");
 	char path[1024];
 	path[0] = 0;
 	SHGetSpecialFolderPath(HWND_DESKTOP, path, CSIDL_PROFILE, FALSE);
 	sprintf(datradir, "%s/MultiGCS", path);
-#else
-#ifdef ANDROID
+#elif defined ANDROID
 	strcpy(datradir, "/sdcard/MultiGCS");
 #else
 	sprintf(datradir, "%s/.multigcs", getenv("HOME"));
-#endif
 #endif
 	return datradir;
 }
@@ -109,9 +106,7 @@ void system_say (char *text) {
 #endif
 }
 
-
 #ifdef SDLGL
-
 void save_screenshot (void) {
 	char name[100];
 	char tmp_str[100];
@@ -142,7 +137,6 @@ void save_screenshot (void) {
 	} else if (setup.view_mode == VIEW_MODE_FCMENU) {
 		strncpy(name, teletypes[ModelData.teletype], 99);
 	}
-
 #ifdef SDL2
 	sprintf(tmp_str, "xwd -name \"%s\" -out /tmp/screen.dump; ./utils/save_screenshot.sh /tmp/screen.dump %s", SDL_GetWindowTitle(MainWindow), name);
 #else
@@ -166,7 +160,6 @@ SDL_Surface* CreateSurface(int width,int height) {
 	return NULL;
 #endif
 }
-
 
 void reset_buttons (void) {
 	uint16_t n = 0;
@@ -504,7 +497,6 @@ void setup_load (void) {
 	setup.frsky_baud = 9600;
 	strncpy(setup.tracker_port, "/dev/ttyUSB40", 1023);
 	setup.tracker_baud = 38400;
-
 	setup.fullscreen = 0;
 	setup.borderless = 0;
 	setup.screen_w = SCREEN_W;
@@ -534,7 +526,6 @@ void setup_load (void) {
 	strcpy(setup.videocapture_device, "/dev/video0");
 	setup.videocapture_width = 640;
 	setup.videocapture_height = 480;
-
 	char filename[1024];
 	sprintf(filename, "%s/setup.cfg", get_datadirectory());
         fr = fopen (filename, "r");
@@ -691,16 +682,13 @@ void setup_load (void) {
 	if (setup.calibration_mode > 0) {
 		setup.calibration_mode = 1;
 	}
-
 	strncpy(WayPoints[0].name, "HOME", 127);
 	ModelData.p_lat = WayPoints[0].p_lat;
 	ModelData.p_long = WayPoints[0].p_long;
 	ModelData.p_alt = WayPoints[0].p_alt;
 	ModelData.yaw = WayPoints[0].yaw;
-
 	strncpy(ModelData.teledevice, setup.telemetry_port, 199);
 	ModelData.telebaud = setup.telemetry_baud;
-
 }
 
 void next_point (float x_origin, float y_origin, float winkel, float r1, float *nx1, float *ny1) {
@@ -799,7 +787,6 @@ void check_events (ESContext *esContext, SDL_Event event) {
 		if (strcmp(keyname, "alt gr") == 0) {
 			keyboard_altgr = 1;
 		}
-
 		if (keyboard_shift == 1 && strcmp(keyname, "1") == 0) {
 			strcpy(keyboard_key, "!");
 		} else if (keyboard_shift == 1 && strcmp(keyname, "2") == 0) {
@@ -1169,21 +1156,10 @@ void check_events (ESContext *esContext, SDL_Event event) {
 		redraw_flag = 1;
 #ifdef SDL2
 	} else {
-#ifdef ANDROID
-		char tmp_str[1024];
-		sprintf(tmp_str, "## UNKNOWN_EVENT: %i (0x%x) ##\n", event.type, event.type);
-		SDL_Log(tmp_str);
-#else
 		SDL_Log("## UNKNOWN_EVENT: %i (0x%x) ##\n", event.type, event.type);
-#endif
 #endif
 	}
 }
-
-
-#ifdef ANDROID
-extern void jni_attitudeGetPosition (float *pitch, float *roll, float *yaw);
-#endif
 
 int telemetry_thread (void *data) {
 	while (gui_running == 1) {
@@ -1315,15 +1291,15 @@ void transition_rotate_begin (ESContext *esContext, float trans_count) {
 	UserData *userData = esContext->userData;
 #endif
 #ifndef SDLGL
-		esTranslate( &userData->perspective, 0.0, 0.0, -2.0 );
-		esRotate( &userData->perspective, trans_count, 1.0, 1.0, 1.0 );
-		esTranslate( &userData->perspective, 0.0, 0.0, 2.0 );
+	esTranslate( &userData->perspective, 0.0, 0.0, -2.0 );
+	esRotate( &userData->perspective, trans_count, 1.0, 1.0, 1.0 );
+	esTranslate( &userData->perspective, 0.0, 0.0, 2.0 );
 #else
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		glTranslatef( 0.0, 0.0, -2.0 );
-		glRotatef( trans_count, 1.0, 1.0, 1.0 );
-		glTranslatef( 0.0, 0.0, 2.0 );
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glTranslatef( 0.0, 0.0, -2.0 );
+	glRotatef( trans_count, 1.0, 1.0, 1.0 );
+	glTranslatef( 0.0, 0.0, 2.0 );
 #endif
 }
 
@@ -1332,9 +1308,9 @@ void transition_rotate_end (ESContext *esContext, float trans_count) {
 	UserData *userData = esContext->userData;
 #endif
 #ifndef SDLGL
-		esTranslate( &userData->perspective, 0.0, 0.0, -2.0 );
-		esRotate( &userData->perspective, -trans_count, 1.0, 1.0, 1.0 );
-		esTranslate( &userData->perspective, 0.0, 0.0, 2.0 );
+	esTranslate( &userData->perspective, 0.0, 0.0, -2.0 );
+	esRotate( &userData->perspective, -trans_count, 1.0, 1.0, 1.0 );
+	esTranslate( &userData->perspective, 0.0, 0.0, 2.0 );
 #else
 	glPopMatrix();
 #endif
@@ -1366,59 +1342,12 @@ static uint8_t screen_next (char *name, float x, float y, int8_t button, float d
 	return 0;
 }
 
-
-void display_update (ESContext *esContext) {
-#ifdef ANDROID
-	gl_update();
-#else
-#ifndef SDLGL
-	eglSwapBuffers(esContext->eglDisplay, esContext->eglSurface);
-#else
-#ifdef SDL2
-	SDL_GL_SwapWindow(MainWindow);
-#else
-	SDL_GL_SwapBuffers();
-#endif
-	SDL_Delay(15);
-#endif
-#endif
-
-#ifdef HTML_DRAWING
-
-	strncpy(display_html2, display_html, HTML_MAX - 1);
-
-	display_html[0] = 0;
-	strcat(display_html, "	var canvas = document.getElementById('myCanvas');\n");
-	strcat(display_html, "	var context = canvas.getContext('2d');\n");
-	strcat(display_html, "	context.clearRect(0, 0, canvas.width, canvas.height);\n");
-	strcat(display_html, "	var canvas2 = document.getElementById('myCanvas2');\n");
-	strcat(display_html, "	var context2 = canvas2.getContext('2d');\n");
-	strcat(display_html, "	context2.clearRect(0, 0, canvas2.width, canvas2.height);\n");
-	strcat(display_html, "	context.lineWidth = 1;\n");
-	strcat(display_html, "	context.font = 'bold 16px Arial';\n");
-	strcat(display_html, "	context2.lineWidth = 1;\n");
-	strcat(display_html, "	context2.font = 'bold 16px Arial';\n");
-	strcat(display_html, "	context2.beginPath();\n");
-	strcat(display_html, "	context2.moveTo(0, 0); context2.lineTo(canvas2.width, 0); context2.lineTo(canvas2.width, canvas2.height); context2.lineTo(0, canvas2.height); context2.lineTo(0, 0);\n");
-	strcat(display_html, "	context2.fillStyle = '#000000'; context2.fill();\n");
-	strcat(display_html, "	context2.closePath();\n");
-#endif
-
-}
-
-
 void Draw (ESContext *esContext) {
-#ifndef SDLGL
-	ESMatrix modelview;
-	UserData *userData = esContext->userData;
-#endif
-
 	uint32_t timer = SDL_GetTicks() / 10;
-
 	if (ModelData.heartbeat != 0) {
 		connection_found = 1;
 	}
-
+	Logging();
 	// set RTL-Waypoints to HOME-Position
 	if (setup.view_mode != VIEW_MODE_WPEDIT) {
 		uint16_t n = 0;
@@ -1440,9 +1369,6 @@ void Draw (ESContext *esContext) {
 			}
 		}
 	}
-
-	Logging();
-
 	if (strcmp(keyboard_key, "escape") == 0) {
 		ShutDown( esContext );
 		exit(0);
@@ -1629,18 +1555,6 @@ void Draw (ESContext *esContext) {
 #endif
 	redraw_flag = 0;
 
-
-#ifndef SDLGL
-	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	esMatrixLoadIdentity( &modelview );
-	esMatrixMultiply( &userData->mvpMatrix, &modelview, &userData->perspective);
-#else
-	glMatrixMode(GL_MODELVIEW);
-	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-#endif
-
 	if (view_mode_last != setup.view_mode) {
 		view_mode_last = setup.view_mode;
 		reset_buttons();
@@ -1650,20 +1564,11 @@ void Draw (ESContext *esContext) {
 #ifdef RPI_NO_X
 	if (setup.calibration_mode > 0) {
 		screen_calibration(esContext);
-#ifndef SDLGL
-		eglSwapBuffers(esContext->eglDisplay, esContext->eglSurface);
-#else
-#ifdef SDL2
-		SDL_GL_SwapWindow(MainWindow);
-#else
-		SDL_GL_SwapBuffers();
-#endif
+		draw_update(esContext);
 		SDL_Delay(20);
-#endif
 		return;
 	}
 #endif
-#else
 #endif
 #ifdef SDLGL
 	if (trans_count > 0.0) {
@@ -1758,23 +1663,15 @@ void Draw (ESContext *esContext) {
 	}
 #endif
 
-#ifndef SDLGL
-	esMatrixLoadIdentity(&modelview);
-	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
-	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
-#endif
-
 	glDisable( GL_DEPTH_TEST );
 	draw_circleFilled_f3(esContext, 1.3, 0.92, 0.0002, (float)ModelData.heartbeat / 3000.0, 255, 0, 0, ModelData.heartbeat * 2);
 	if (ModelData.found_rc == 1) {
 		draw_circleFilled_f3(esContext, 1.3, 0.87, 0.01, (float)ModelData.heartbeat_rc / 4000.0, 0, 0, 255, ModelData.heartbeat_rc * 2);
 	}
-
 	if (view_overview == 0) {
 		draw_text_button(esContext, "<<", setup.view_mode, "[<<]", FONT_WHITE, -1.3, -0.95, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, screen_last, 0.0);
 		draw_text_button(esContext, ">>", setup.view_mode, "[>>]", FONT_WHITE, 1.3, -0.95, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, screen_next, 0.0);
 	}
-
 	if (message > 0) {
 		draw_text_f(esContext, 0.0 - strlen(message_txt) * 0.04 * 0.6 / 2 - 0.012, -0.98, 0.04, 0.04, FONT_BLACK_BG, message_txt);
 	}
@@ -1798,23 +1695,37 @@ void Draw (ESContext *esContext) {
 		logplay_draw_control(esContext, 0.0, 0.85);
 	}
 
-#ifndef CONSOLE_ONLY
 #ifndef ANDROID
 	// Mouse-Pointer
 	draw_pointer(esContext, mouse_x, mouse_y, 16, 16, TEXTURE_POINTER);
 #endif
 	glEnable( GL_DEPTH_TEST );
 
-	display_update(esContext);
-#else
-	SDL_Delay(15);
+#ifdef HTML_DRAWING
+	strncpy(display_html2, display_html, HTML_MAX - 1);
+	display_html[0] = 0;
+	strcat(display_html, "	var canvas = document.getElementById('myCanvas');\n");
+	strcat(display_html, "	var context = canvas.getContext('2d');\n");
+	strcat(display_html, "	context.clearRect(0, 0, canvas.width, canvas.height);\n");
+	strcat(display_html, "	var canvas2 = document.getElementById('myCanvas2');\n");
+	strcat(display_html, "	var context2 = canvas2.getContext('2d');\n");
+	strcat(display_html, "	context2.clearRect(0, 0, canvas2.width, canvas2.height);\n");
+	strcat(display_html, "	context.lineWidth = 1;\n");
+	strcat(display_html, "	context.font = 'bold 16px Arial';\n");
+	strcat(display_html, "	context2.lineWidth = 1;\n");
+	strcat(display_html, "	context2.font = 'bold 16px Arial';\n");
+	strcat(display_html, "	context2.beginPath();\n");
+	strcat(display_html, "	context2.moveTo(0, 0); context2.lineTo(canvas2.width, 0); context2.lineTo(canvas2.width, canvas2.height); context2.lineTo(0, canvas2.height); context2.lineTo(0, 0);\n");
+	strcat(display_html, "	context2.fillStyle = '#000000'; context2.fill();\n");
+	strcat(display_html, "	context2.closePath();\n");
 #endif
-
+#ifndef CONSOLE_ONLY
+	draw_update(esContext);
+#endif
+	SDL_Delay(15);
 }
 
 void ShutDown ( ESContext *esContext ) {
-//	UserData *userData = esContext->userData;
-
 	SDL_Log("Shutdown\n");
 	gui_running = 0;
 	SDL_Delay(600);
@@ -1839,35 +1750,14 @@ void ShutDown ( ESContext *esContext ) {
 	videodev_stop();
 #endif
 #endif
+#ifndef OSX
+#ifndef WINDOWS
 	system("killall -9 espeak 2> /dev/null > /dev/null");
-
-	SDL_Log("texture-cache: clear\n");
-	int16_t n = 0;
-	for (n = 0; n < MAX_TEXCACHE; n++) {
-		if (TexCache[n].name[0] != 0 && TexCache[n].texture != 0 ) {
-			glDeleteTextures( 1, &TexCache[n].texture );
-			TexCache[n].name[0] = 0;
-		}
-	}
-
-#ifdef RPI_NO_X
-//	glDeleteProgram ( userData->programObject );
-//	free(esContext->userData);
-	SDL_Log("bcm_host: exit\n");
-	bcm_host_deinit();
 #endif
-	SDL_Log("sdl: exit\n");
-#ifdef SDL2
-	SDL_DestroyWindow(MainWindow);
-#endif
-	SDL_Quit();
-
-
-#ifdef SDLGL
-	glExit(esContext);
 #endif
 
-	SDL_Log("tempfile: remove\n");
+	SDL_Log("draw: exit\n");
+	draw_exit(esContext);
 	unlink("/tmp/gcs.run");
 }
 
@@ -1875,40 +1765,38 @@ int main ( int argc, char *argv[] ) {
 	char dir[1024];
 	char tmp_name[201];
 	ESContext esContext;
-#ifndef SDLGL
-	UserData userData;
-#endif
+	GlobalesContext = &esContext;
 
-#ifndef WINDOWS
+#ifdef WINDOWS
 	sprintf(dir, "%s", get_datadirectory());
-	mkdir(dir, 0755);
+	mkdir(dir);
 	sprintf(dir, "%s/MAPS", get_datadirectory());
-	mkdir(dir, 0755);
+	mkdir(dir);
 	sprintf(dir, "%s/MAPS/part", get_datadirectory());
-	mkdir(dir, 0755);
+	mkdir(dir);
 	sprintf(dir, "%s/logs", get_datadirectory());
-	mkdir(dir, 0755);
+	mkdir(dir);
 	sprintf(dir, "%s/models", get_datadirectory());
-	mkdir(dir, 0755);
+	mkdir(dir);
 	sprintf(dir, "%s/PARAMS", get_datadirectory());
-	mkdir(dir, 0755);
+	mkdir(dir);
 	sprintf(dir, "%s/mavlink", get_datadirectory());
-	mkdir(dir, 0755);
+	mkdir(dir);
 #else
 	sprintf(dir, "%s", get_datadirectory());
-	mkdir(dir);
+	mkdir(dir, 0755);
 	sprintf(dir, "%s/MAPS", get_datadirectory());
-	mkdir(dir);
+	mkdir(dir, 0755);
 	sprintf(dir, "%s/MAPS/part", get_datadirectory());
-	mkdir(dir);
+	mkdir(dir, 0755);
 	sprintf(dir, "%s/logs", get_datadirectory());
-	mkdir(dir);
+	mkdir(dir, 0755);
 	sprintf(dir, "%s/models", get_datadirectory());
-	mkdir(dir);
+	mkdir(dir, 0755);
 	sprintf(dir, "%s/PARAMS", get_datadirectory());
-	mkdir(dir);
+	mkdir(dir, 0755);
 	sprintf(dir, "%s/mavlink", get_datadirectory());
-	mkdir(dir);
+	mkdir(dir, 0755);
 #endif
 
 	if (argc >= 3 && strcmp(argv[1], "-c") == 0) {
@@ -1920,30 +1808,31 @@ int main ( int argc, char *argv[] ) {
 		clientmode = 1;
 	}
 
+#ifndef WINDOWS
 	time_t liczba_sekund;
 	struct tm strukt;
 	time(&liczba_sekund);
-#ifndef WINDOWS
 	localtime_r(&liczba_sekund, &strukt); 
-#endif
-//	SDL_Log("DATE: %d.%d %d\n", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900); 
-
-#ifndef WINDOWS
 	sprintf(tmp_name, "%s/WMM2010.COF", BASE_DIR);
 	init_declination(tmp_name, strukt.tm_year + 1900, strukt.tm_mon + 1, strukt.tm_mday);
 #endif
 
-	uint16_t n = 0;
-	for (n = 0; n < MAX_TEXCACHE; n++) {
-		TexCache[n].name[0] = 0;
-		TexCache[n].texture = 0;
-	}
-
 	setup_waypoints();
 	setup_load();
 
-	strncpy(tmp_name, ModelData.name, 200);
-
+#ifndef CONSOLE_ONLY
+	SDL_Log("init GL\n");
+	draw_init(&esContext);
+	SDL_ShowCursor(0);
+	printf( "* Vendor     : %s\n", glGetString( GL_VENDOR ) );
+	printf( "* Renderer   : %s\n", glGetString( GL_RENDERER ) );
+	printf( "* Version    : %s\n", glGetString( GL_VERSION ) );
+#ifndef OSX
+#ifdef SDLGL
+	videodev_start(setup.videocapture_device, setup.videocapture_width, setup.videocapture_height);
+#endif
+#endif
+#endif
 
 #ifdef RPI_NO_X
 	if ((touch_fd = open(setup.touchscreen_device, O_RDONLY)) >= 0) {
@@ -1963,61 +1852,12 @@ int main ( int argc, char *argv[] ) {
 #endif
 
 #ifndef CONSOLE_ONLY
-	SDL_Log("init GL\n");
-#ifndef SDLGL
-	esInitContext ( &esContext );
-	esContext.userData = &userData;
-	esCreateWindow ( &esContext, "GL-GCS", setup.screen_w, setup.screen_h, ES_WINDOW_RGB );
-
-	if (! glesInit(&esContext)) {
-		return 0;
-	}
-	esRegisterDrawFunc(&esContext, Draw);
-	glClearDepthf( 2.0f );
-	glEnable( GL_DEPTH_TEST );
-	glDepthFunc( GL_LEQUAL );
-	glClearColor(0.0, 0.0, 0.0, 1.0);
-#else
-	glInit(&esContext);
-#endif
-	SDL_ShowCursor(0);
-
-	printf( "* Vendor     : %s\n", glGetString( GL_VENDOR ) );
-	printf( "* Renderer   : %s\n", glGetString( GL_RENDERER ) );
-	printf( "* Version    : %s\n", glGetString( GL_VERSION ) );
-//	printf( "* Extensions : %s\n", glGetString( GL_EXTENSIONS ) );
-
-
-
-#ifndef OSX
-#ifdef SDLGL
-	videodev_start(setup.videocapture_device, setup.videocapture_width, setup.videocapture_height);
-#endif
-#endif
-
-#ifdef ANDROID
-gl_update();
-#else
-#ifndef CONSOLE_ONLY
 	// preload map on startup for faster view-changes
 	draw_text_f3(&esContext, -1.4, -0.95, 0.003, 0.06, 0.06, FONT_WHITE, "PreLoading Maps...");
-#ifndef SDLGL
-	eglSwapBuffers(&esContext.eglDisplay, &esContext.eglSurface);
-#else
-#ifdef SDL2
-	SDL_GL_SwapWindow(MainWindow);
-#else
-	SDL_GL_SwapBuffers();
-#endif
-	SDL_Delay(20);
-#endif
-#endif
-#endif
-#endif
-
-#ifndef ANDROID
+	draw_update(&esContext);
 	screen_map(&esContext, lat, lon, zoom);
 #endif
+
 	int16_t zz = get_altitude(ModelData.p_lat, ModelData.p_long);
 	if (ModelData.p_alt < zz + 10) {
 		ModelData.p_alt = zz + 10;
@@ -2041,7 +1881,6 @@ gl_update();
 		return 0;
 	}
 
-	GlobalesContext = &esContext;
 	SDL_Log("main: start loop\n");
 #ifdef CONSOLE_ONLY
 	SDL_Log("main: now you can connect via Browser or Google-Earth to port :%i\n", setup.webport);

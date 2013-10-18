@@ -1005,3 +1005,54 @@ void draw_trifan_f3 (ESContext *esContext, float *poly_array, uint16_t len, uint
 void resize_border (void) {
 	glViewport(0 + setup.screen_border_x / 2, 0 + setup.screen_border_y / 2, setup.screen_w - setup.screen_border_x, setup.screen_h - setup.screen_border_y);
 }
+
+void draw_update (ESContext *esContext) {
+	ESMatrix modelview;
+	UserData *userData = esContext->userData;
+
+	eglSwapBuffers(esContext->eglDisplay, esContext->eglSurface);
+
+	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	esMatrixLoadIdentity(&modelview);
+	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
+}
+
+void draw_init (ESContext *esContext) {
+	uint16_t n = 0;
+	for (n = 0; n < MAX_TEXCACHE; n++) {
+		TexCache[n].name[0] = 0;
+		TexCache[n].texture = 0;
+	}
+	esInitContext(esContext);
+	esCreateWindow(esContext, "GL-GCS", setup.screen_w, setup.screen_h, ES_WINDOW_RGB);
+	if (! glesInit(esContext)) {
+		return;
+	}
+	esRegisterDrawFunc(esContext, Draw);
+	glClearDepthf(2.0);
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+}
+
+void draw_exit (ESContext *esContext) {
+#ifdef RPI_NO_X
+//	esInitContext(esContext);
+//	esContext->userData = &userData;
+//	glDeleteProgram(userData->programObject);
+//	free(esContext->userData);
+	SDL_Log("bcm_host: exit\n");
+	bcm_host_deinit();
+#endif
+	SDL_Log("texture-cache: clear\n");
+	int16_t n = 0;
+	for (n = 0; n < MAX_TEXCACHE; n++) {
+		if (TexCache[n].name[0] != 0 && TexCache[n].texture != 0 ) {
+			glDeleteTextures( 1, &TexCache[n].texture );
+			TexCache[n].name[0] = 0;
+		}
+	}
+	SDL_Quit();
+}

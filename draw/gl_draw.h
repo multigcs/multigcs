@@ -82,5 +82,8 @@ void draw_to_screen (void);
 uint8_t draw_target (void);
 void draw_buffer_to_screen (float x1, float y1, float x2, float y2, float z, float alpha);
 void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, float alpha, SDL_Surface *screen);
+void draw_update (ESContext *esContext);
+void draw_init (ESContext *esContext);
+void draw_exit (ESContext *esContext);
 
 #endif
