@@ -64,6 +64,14 @@ void Java_org_libsdl_app_ConnectBT_serialReceive (JNIEnv* env, jclass cls, jbyte
 	return;
 }
 
+void Java_org_libsdl_app_SDLActivity_serialReceive (JNIEnv* env, jclass cls, jbyte c) {
+	int n = 0;
+	if (aserbuffer_pos < 2000) {
+		aserbuffer[aserbuffer_pos++] = c;
+	}
+	return;
+}
+
 void Java_org_libsdl_app_ConnectBT_deviceList (JNIEnv* env, jclass cls, jstring dlist) {
 	const char *nativeString = (*env)->GetStringUTFChars(env, dlist, 0);
 	SDL_Log("BT DEVICE_LIST: %s", nativeString);

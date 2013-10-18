@@ -426,7 +426,7 @@ void Android_JNI_OpenLink(const char *text)
     mid = (*mEnv)->GetMethodID(mEnv, mActivityClass,"OpenLink","(Ljava/lang/String;)Z");
     if (mid) {
         jstring jtitle = (jstring)((*mEnv)->NewStringUTF(mEnv, text));
-        (*mEnv)->CallStaticBooleanMethod(mEnv, mActivityClass, mid, jtitle);
+        (*mEnv)->CallBooleanMethod(mEnv, mActivityClass, mid, jtitle);
         (*mEnv)->DeleteLocalRef(mEnv, jtitle);
     }
 }
@@ -441,6 +441,17 @@ void Android_JNI_ConnectSerial(char *name)
         jstring jtitle = (jstring)((*mEnv)->NewStringUTF(mEnv, name));
         (*mEnv)->CallStaticBooleanMethod(mEnv, mActivityClass, mid, jtitle);
         (*mEnv)->DeleteLocalRef(mEnv, jtitle);
+    }
+}
+
+void Android_JNI_ConnectUsbSerial(int baudrate)
+{
+    SDL_Log("JNI_ConnectSerial");
+    jmethodID mid;
+    JNIEnv *mEnv = Android_JNI_GetEnv();
+    mid = (*mEnv)->GetStaticMethodID(mEnv, mActivityClass, "USBserialConnect", "(I)Z");
+    if (mid) {
+        (*mEnv)->CallStaticBooleanMethod(mEnv, mActivityClass, mid, baudrate);
     }
 }
 

@@ -64,12 +64,10 @@ int serial_close (int fd) {
 
 int serial_open (char *mdevice, uint32_t baud) {
 	int fd = -1;
-#ifndef WINDOWS
 #ifdef ANDROID
-	if (strncmp(mdevice, "bt:", 3) == 0) {
-		return 1;
-	}
+	return 1;
 #endif
+#ifndef WINDOWS
 #ifndef OSX
 	int baudr = 9600;
 	switch(baud) {

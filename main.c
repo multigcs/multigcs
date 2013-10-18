@@ -276,6 +276,9 @@ void reset_telemetry (void) {
 	if (clientmode == 1) {
 		return;
 	}
+#ifdef ANDROID
+	Android_JNI_ConnectUsbSerial(setup.telemetry_baud);
+#endif
 	if (ModelData.teletype == TELETYPE_MULTIWII_21 || ModelData.teletype == TELETYPE_BASEFLIGHT) {
 		mwi21_init(setup.telemetry_port, setup.telemetry_baud);
 	} else if (ModelData.teletype == TELETYPE_SIMPLEBGC) {

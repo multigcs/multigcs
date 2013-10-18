@@ -43,6 +43,16 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 
+import android.hardware.usb.*;
+import com.hoho.android.usbserial.driver.*;
+import com.hoho.android.usbserial.util.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+
 
 /**
     SDL Activity
@@ -79,6 +89,11 @@ public class SDLActivity extends Activity {
     static TextToSpeech mTts;
     static ConnectBT cbt;
 
+    // USB-Serial
+    static UsbManager manager;
+    static UsbSerialDriver sDriver = null;
+    static SerialInputOutputManager mSerialIoManager;
+
     // Setup
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,9 +106,7 @@ public class SDLActivity extends Activity {
                 if (status == TextToSpeech.SUCCESS) {
                     int result = mTts.setLanguage(Locale.US);
                     if (result == TextToSpeech.LANG_MISSING_DATA ||
-                        result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    } else {
-        	        mTts.speak("wellcome to multi g c s", TextToSpeech.QUEUE_FLUSH, null);
+                      result == TextToSpeech.LANG_NOT_SUPPORTED) {
                     }
                 }
             }
@@ -111,10 +124,87 @@ public class SDLActivity extends Activity {
         LocationListener ll = new mylocationlistener();
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, ll);
         getBatteryPercentage();
-
+//        USBserialInit(115200);
         setContentView(mLayout);
     }
 
+    private static final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
+    public static native void serialReceive(byte c);
+
+    public static void USBserialInit(int baudrate) {
+        if (sDriver != null) {
+          try {
+            sDriver.close();
+          } catch (IOException e2) {}
+          sDriver = null;
+        }
+        manager = (UsbManager)getContext().getSystemService(Context.USB_SERVICE);
+        for (final UsbDevice device : manager.getDeviceList().values()) {
+            final List<UsbSerialDriver> drivers = UsbSerialProber.probeSingleDevice(manager, device);
+            Log.d("USB", "Found usb device: " + device);
+            if (drivers.isEmpty()) {
+                Log.d("USB", " - No UsbSerialDriver available.");
+            } else {
+                for (UsbSerialDriver driver : drivers) {
+                    sDriver = driver;
+                    Log.d("USB", " + " + sDriver);
+                    try {
+                        sDriver.open();
+                        sDriver.setParameters(baudrate, 8, UsbSerialDriver.STOPBITS_1, UsbSerialDriver.PARITY_NONE);
+                        Log.e("USB", "serial open ok :)");
+                        onDeviceStateChange();
+                    } catch (IOException e) {
+                        Log.e("USB", "Error setting up device: " + e.getMessage(), e);
+                        try {
+                            sDriver.close();
+                        } catch (IOException e2) {}
+                        sDriver = null;
+                        return;
+                    }
+                }
+            }
+        }
+    }
+
+    private static void updateReceivedData(byte[] data) {
+        for(int i = 0; i < data.length; i++) {
+          byte b = data[i];
+          serialReceive(b);
+        }
+    }
+
+    private static final SerialInputOutputManager.Listener mListener =
+       new SerialInputOutputManager.Listener() {
+        @Override
+        public void onRunError(Exception e) {
+            Log.d("USB", "Runner stopped.");
+        }
+        @Override
+        public void onNewData(final byte[] data) {
+          updateReceivedData(data);
+        }
+    };
+
+    private static void stopIoManager() {
+        if (mSerialIoManager != null) {
+            Log.i("USB", "Stopping io manager ..");
+            mSerialIoManager.stop();
+            mSerialIoManager = null;
+        }
+    }
+
+    private static void startIoManager() {
+        if (sDriver != null) {
+            Log.i("USB", "Starting io manager ..");
+            mSerialIoManager = new SerialInputOutputManager(sDriver, mListener);
+            mExecutor.submit(mSerialIoManager);
+        }
+    }
+
+    private static void onDeviceStateChange() {
+        stopIoManager();
+        startIoManager();
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -342,6 +432,11 @@ public class SDLActivity extends Activity {
         SDLActivity.nativeFlipBuffers();
     }
 
+    public static boolean USBserialConnect(int baudrate) {
+        SDLActivity.USBserialInit(baudrate);
+        return true;
+    }
+
     public static boolean serialConnect(String text) {
         cbt.startBT(text);
         return true;
@@ -349,13 +444,20 @@ public class SDLActivity extends Activity {
 
     public static boolean serialWrite(byte c) {
         try  {
-            cbt.sendByte(c);
+            byte buffer[] = new byte[1];
+	    buffer[0] = c;
+            if (sDriver != null) {
+              sDriver.write(buffer, 100);
+            } else {
+              cbt.sendByte(c);
+            }
         }
         catch (IOException ex) { }
         return true;
     }
 
     public static byte[] serialRead(int maxlen) {
+        Log.i("USB", "serialRead");
         try  {
             byte[] data = cbt.readBT(maxlen);
 	    return data;
@@ -555,36 +657,27 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
     public SDLSurface(Context context) {
         super(context);
         getHolder().addCallback(this); 
-    
         setFocusable(true);
         setFocusableInTouchMode(true);
         requestFocus();
         setOnKeyListener(this); 
         setOnTouchListener(this);   
-
         mSensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
-
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-	// sensor-fusion
-        gyroOrientation[0] = 0.0f;
-        gyroOrientation[1] = 0.0f;
-        gyroOrientation[2] = 0.0f;
- 
-        gyroMatrix[0] = 1.0f; gyroMatrix[1] = 0.0f; gyroMatrix[2] = 0.0f;
-        gyroMatrix[3] = 0.0f; gyroMatrix[4] = 1.0f; gyroMatrix[5] = 0.0f;
-        gyroMatrix[6] = 0.0f; gyroMatrix[7] = 0.0f; gyroMatrix[8] = 1.0f;
- 
-        initListeners();
-        fuseTimer.scheduleAtFixedRate(new calculateFusedOrientationTask(), 1000, TIME_CONSTANT);
-      }
-
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+          // sensor-fusion
+          gyroOrientation[0] = 0.0f;
+          gyroOrientation[1] = 0.0f;
+          gyroOrientation[2] = 0.0f;
+          gyroMatrix[0] = 1.0f; gyroMatrix[1] = 0.0f; gyroMatrix[2] = 0.0f;
+          gyroMatrix[3] = 0.0f; gyroMatrix[4] = 1.0f; gyroMatrix[5] = 0.0f;
+          gyroMatrix[6] = 0.0f; gyroMatrix[7] = 0.0f; gyroMatrix[8] = 1.0f;
+          initListeners();
+          fuseTimer.scheduleAtFixedRate(new calculateFusedOrientationTask(), 100, TIME_CONSTANT);
+        }
         // Some arbitrary defaults to avoid a potential division by zero
         mWidth = 1.0f;
         mHeight = 1.0f;
     }
-
-
 
     public Surface getNativeSurface() {
         return getHolder().getSurface();
