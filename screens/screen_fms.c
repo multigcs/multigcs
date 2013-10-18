@@ -108,8 +108,7 @@ void screen_fms (ESContext *esContext) {
 			last_lon = WayPoints[n].p_long;
 			last_alt = WayPoints[n].p_alt;
 			sprintf(tmp_str, "%s", WayPoints[n].name);
-			sprintf(tmp_str2, "%s-%i-a", WayPoints[n].name, n);
-			draw_text_button(esContext, tmp_str2, VIEW_MODE_FMS, tmp_str, FONT_GREEN, -1.2, -0.7 + (n2 * 0.22), 0.002, 0.1, 0, 0, fms_select, (float)n);
+			draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, -1.2, -0.7 + (n2 * 0.22), 0.002, 0.1, 0, 0, fms_select, (float)n);
 
 			if (WayPoints[n].command[0] == 0) {
 				strcpy(tmp_str, "---");
@@ -122,24 +121,26 @@ void screen_fms (ESContext *esContext) {
 			} else {
 				sprintf(tmp_str, "%0.6f", WayPoints[n].p_lat);
 			}
-			sprintf(tmp_str2, "%s-%i-b", WayPoints[n].name, n);
-			draw_text_button(esContext, tmp_str2, VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.7 + (n2 * 0.22), 0.002, 0.1, 0, 0, fms_select, (float)n);
+			draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.7 + (n2 * 0.22), 0.002, 0.1, 0, 0, fms_select, (float)n);
 
 			if (WayPoints[n].p_long == 0.0) {
 				strcpy(tmp_str, "---");
 			} else {
 				sprintf(tmp_str, "%0.6f", WayPoints[n].p_long);
 			}
-			sprintf(tmp_str2, "%s-%i-c", WayPoints[n].name, n);
-			draw_text_button(esContext, tmp_str2, VIEW_MODE_FMS, tmp_str, FONT_GREEN, 0.1, -0.7 + (n2 * 0.22), 0.002, 0.1, 0, 0, fms_select, (float)n);
+			draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, 0.1, -0.7 + (n2 * 0.22), 0.002, 0.1, 0, 0, fms_select, (float)n);
 
 			if (WayPoints[n].p_alt == 0.0) {
 				strcpy(tmp_str, "---");
 			} else {
 				sprintf(tmp_str, "%0.1fm", WayPoints[n].p_alt);
 			}
+			draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, 1.0, -0.7 + (n2 * 0.22), 0.002, 0.1, 2, 0, fms_select, (float)n);
+
+
 			sprintf(tmp_str2, "%s-%i-d", WayPoints[n].name, n);
-			draw_text_button(esContext, tmp_str2, VIEW_MODE_FMS, tmp_str, FONT_GREEN, 1.0, -0.7 + (n2 * 0.22), 0.002, 0.1, 2, 0, fms_select, (float)n);
+			set_button(tmp_str2, VIEW_MODE_FMS, -1.2, -0.55 + ((n2 - 1) * 0.22), 1.3, -0.55 + (n2 * 0.22), fms_select, (float)n, 0);
+
 			n2++;
 		}
 	}
