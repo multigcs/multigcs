@@ -205,9 +205,6 @@ SDL_Surface *openvc_get (void) {
 	if (cv_bg != NULL) {
 		SDL_BlitSurface(cv_bg, NULL, cv_surface, NULL);
 		SDL_UnlockMutex(cv_mutex);
-
-	printf("## frame ##\n");
-
 		return cv_surface;
 	}
 	SDL_UnlockMutex(cv_mutex);

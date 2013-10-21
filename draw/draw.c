@@ -208,12 +208,10 @@ uint8_t draw_image_button (ESContext *esContext, char *name, uint8_t view_mode, 
 #ifdef CONSOLE_ONLY
 	return 0;
 #endif
-
-char text[1024];
-char font[1024];
-strncpy(text, "img", 1023);
-strncpy(font, FONT_GREEN, 1023);
-
+	char text[1024];
+	char font[1024];
+	strncpy(text, "img", 1023);
+	strncpy(font, FONT_GREEN, 1023);
 	uint16_t n = 0;
 	float x1 = x - w / 2.0;
 	float y1 = y;
@@ -233,7 +231,6 @@ strncpy(font, FONT_GREEN, 1023);
 		y1 = y - h / 2;
 		y2 = y + h / 2;
 	}
-
 	draw_image_f3(esContext, x1, y1, x2, y2, 0.0, image);
 //	draw_rect_f3(esContext, x1 - 0.01, y1 - 0.01, z1, x2 + 0.01, y2 + 0.01, z1, 255, 0, 0, 255);
 	for (n = 0; n < MAX_BUTTONS; n++) {

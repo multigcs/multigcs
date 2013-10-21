@@ -769,7 +769,7 @@ void draw_triaFilled_f3 (ESContext *esContext, float x1, float y1, float z1, flo
 	draw_tria_f3(esContext, x1, y1 * -1, z1, x2, y2 * -1, z2, x3, y3 * -1, z3, r, g, b, a);
 }
 
-void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, float alpha, SDL_Surface *screen) {
+void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, float alpha, SDL_Surface *screen2) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -798,6 +798,9 @@ void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float 
                 SDL_Log("warning: the image is not truecolor..  this will probably break\n");
 		return;
         }
+
+	SDL_Surface *screen = convert_to_power_of_two(screen2);
+
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -818,6 +821,7 @@ void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float 
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 	glDeleteTextures(1, &texture);
+	SDL_FreeSurface(screen);
 }
 
 void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, char *file) {
