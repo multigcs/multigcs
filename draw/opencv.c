@@ -98,10 +98,8 @@ void cvar_exit (void) {
 }
 #endif
 
-
-
-
 SDL_Surface *ipl_to_surface (IplImage *opencvimg) {
+printf("## %i %i ##\n", opencvimg->width, opencvimg->height);
 	SDL_Surface *surface = SDL_CreateRGBSurfaceFrom((void*)opencvimg->imageData,
 		opencvimg->width,
 		opencvimg->height,
