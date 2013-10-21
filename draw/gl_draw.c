@@ -779,8 +779,9 @@ void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float 
 		return;
 	}
 
-	SDL_Surface *screen = convert_to_power_of_two(screen2);
+	SDL_Surface *screen = screen2;
 
+//	SDL_Surface *screen = convert_to_power_of_two(screen2);
 
 	GLuint texture;
 	GLenum texture_format;
@@ -823,7 +824,7 @@ void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float 
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 	glDeleteTextures(1, &texture);
-	SDL_FreeSurface(screen);
+//	SDL_FreeSurface(screen);
 }
 
 void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, char *file) {
