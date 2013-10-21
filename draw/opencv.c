@@ -118,6 +118,7 @@ int cv_update (void *data) {
 		SDL_Log("opencv: can not open capture device: %i\n", cv_camid);
 		return 0;
 	}
+	SDL_Log("opencv: open capture device: %i\n", cv_camid);
 	if ((opencvimg = cvQueryFrame(cv_capture)) != NULL) {
 		cv_surface = SDL_CreateRGBSurfaceFrom((void*)opencvimg->imageData,
 			opencvimg->width,
@@ -134,6 +135,8 @@ int cv_update (void *data) {
 			0xff0000, 0x00ff00, 0x0000ff, 0
 		);
 		if (cv_surface != NULL && cv_bg != NULL) {
+
+			SDL_Log("opencv: running thread\n");
 
 			cvar_init();
 
@@ -163,6 +166,7 @@ int cv_update (void *data) {
 }
 
 void openvc_init (int cam_id) {
+	SDL_Log("opencv: init\n");
 	cv_camid = cam_id;
 	cv_running = 1;
 	cv_mutex = SDL_CreateMutex();
