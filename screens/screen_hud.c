@@ -395,7 +395,7 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 #endif
 	char tmp_str[400];
 	int n = 0;
-#ifndef OSX
+
 #ifdef SDLGL
 	glDisable(GL_DEPTH_TEST);
 	if (setup.hud_view_video == 1) {
@@ -412,13 +412,11 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 		draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, vidsurf);
 	}
 #else
+#ifndef OSX
 	draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, videodev_loop());
 #endif
-
-
-
-	}
 #endif
+	}
 #endif
 
 #ifdef SDLGL
