@@ -124,7 +124,7 @@ int cv_update (void *data) {
 		if (cv_surface != NULL && cv_bg != NULL) {
 			SDL_Log("opencv: running thread\n");
 #ifdef OPENCV_EFFECTS
-			if (features == 1) {
+			if (cv_features == 1) {
 				cvar_init();
 			}
 #endif
@@ -132,7 +132,7 @@ int cv_update (void *data) {
 				if ((opencvimg = cvQueryFrame(cv_capture)) != NULL) {
 					SDL_LockMutex(cv_mutex);
 #ifdef OPENCV_EFFECTS
-					if (features == 1) {
+					if (cv_features == 1) {
 						cvar_run(opencvimg);
 					}
 #endif
@@ -186,7 +186,7 @@ void openvc_exit (void) {
 		cv_mutex = NULL;
 	}
 #ifdef OPENCV_EFFECTS
-	if (features == 1) {
+	if (cv_features == 1) {
 		cvar_exit();
 	}
 #endif
