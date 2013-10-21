@@ -163,5 +163,11 @@
 #include <vlcinput.h>
 #endif
 #ifdef USE_OPENCV
+#include <cv.h>
+#include <highgui.h>
 #include <opencv.h>
+#endif
+#ifdef USE_QUIRC
+#include <quirc.h>
+#include <qrcheck.h>
 #endif

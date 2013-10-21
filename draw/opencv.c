@@ -1,11 +1,6 @@
 
 #include <all.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <cv.h>
-#include <highgui.h>
-
 static SDL_mutex *cv_mutex = NULL;
 static SDL_Surface *cv_bg = NULL;
 static SDL_Surface *cv_surface = NULL;
@@ -31,32 +26,24 @@ void cvar_init (void) {
 	warp_matrix = cvCreateMat(3, 3, CV_32FC1);
 }
 
-
-CvMat *prevgrayMat = NULL;
-CvMat *grayMat = NULL;
-CvMat *flowMat = NULL;
-CvMat *cflowMat = NULL;
-
 void drawOptFlowMap (const CvMat* flow, CvMat* cflowmap, int step, double scale, CvScalar color) {
-	int x, y;
-	for( y = 0; y < cflowmap->rows; y += step) {
-		for( x = 0; x < cflowmap->cols; x += step) {
+	int x = 0;
+	int y = 0;
+	for (y = 0; y < cflowmap->rows; y += step) {
+		for (x = 0; x < cflowmap->cols; x += step) {
 			CvPoint2D32f fxy = CV_MAT_ELEM(*flow, CvPoint2D32f, y, x);
-			cvLine(cflowmap, cvPoint(x,y), cvPoint(cvRound(x+fxy.x), cvRound(y+fxy.y)), color, 1, 8, 0);
-			cvCircle(cflowmap, cvPoint(x,y), 2, color, -1, 8, 0);
+			cvLine(cflowmap, cvPoint(x, y), cvPoint(cvRound(x + fxy.x), cvRound(y + fxy.y)), color, 1, 8, 0);
+			cvCircle(cflowmap, cvPoint(x, y), 2, color, -1, 8, 0);
 		}
 	}
 }
 
 void cvar_run (IplImage *image) {
 	int corner_count = 0;
-
 	if (gray == NULL) {
 		gray = cvCreateImage(cvGetSize(image), image->depth, 1);
 	}
-
 	cvCvtColor(image, gray, CV_BGR2GRAY);
-
 	cvFindChessboardCorners(gray, b_size, corners, &corner_count, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
 	cvFindCornerSubPix(gray, corners, corner_count, cvSize(11, 11), cvSize(-1, -1), cvTermCriteria(CV_TERMCRIT_EPS+CV_TERMCRIT_ITER, 30, 0.1));
 	if (corner_count == b_squares) {
@@ -72,14 +59,7 @@ void cvar_run (IplImage *image) {
 		cvLine(image, p[1], p[2], CV_RGB(0, 255, 0), 2, 8, 0);
 		cvLine(image, p[2], p[3], CV_RGB(0, 0, 255), 2, 8, 0);
 		cvLine(image, p[3], p[0], CV_RGB(255, 255, 0), 2, 8, 0);
-//		int n = 0;
-//		for (n = 0; n < 20; n++) {
-//			p[0].x = (int)corners[n].x;
-//			p[0].y = (int)corners[n].y;
-//			cvCircle(image, p[0], 2, CV_RGB(255, 0, 0), 1, 8, 0);
-//		}
 	}
-
 /*
 	CvPoint2D32f src_pnt[4];
 	src_pnt[0] = cvPoint2D32f (p[0].x, p[0].y);
@@ -126,7 +106,6 @@ void cvar_exit (void) {
 #endif
 
 SDL_Surface *ipl_to_surface (IplImage *opencvimg) {
-//	printf("## %i %i ##\n", opencvimg->width, opencvimg->height);
 	SDL_Surface *surface = SDL_CreateRGBSurfaceFrom((void*)opencvimg->imageData,
 		opencvimg->width,
 		opencvimg->height,
@@ -175,6 +154,17 @@ int cv_update (void *data) {
 					SDL_BlitSurface(csf, NULL, cv_bg, NULL);
 					SDL_UnlockMutex(cv_mutex);
 					SDL_FreeSurface(csf);
+#ifdef USE_QUIRC
+					if (setup.qrcheck == 1) {
+						char payload[1024];
+						payload[0] = 0;
+						qrcode_check(cv_bg, payload);
+						if (payload[0] != 0) {
+							sys_message(payload);
+							SDL_Log("quirc: %s\n", payload);
+						}
+					}
+#endif
 				}
 				SDL_Delay(10);
 			}

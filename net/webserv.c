@@ -1466,6 +1466,9 @@ void gcssetup_set (char *name, char *value) {
 	if (strcmp("volt_min", name) == 0) {
 		setup.volt_min = atof(value);
 	}
+	if (strcmp("qrcheck", name) == 0) {
+		setup.qrcheck = atoi(value);
+	}
 	if (strcmp("opencv_device", name) == 0) {
 		setup.opencv_device = atoi(value);
 	}
@@ -2448,6 +2451,16 @@ void webserv_child_gcssetup (int fd, uint8_t mode) {
 		}
 		strcat(content, " <TD>volt_min</TD>");
 		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('volt_min');\" id=\"volt_min\" value=\"%0.1f\" type=\"text\"></TD>\n", setup.volt_min);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>qrcheck</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('qrcheck');\" id=\"qrcheck\" value=\"%i\" type=\"text\"></TD>\n", setup.qrcheck);
 		strcat(content, tmp_str);
 		strcat(content, "</TR>");
 		lc = 1 - lc;

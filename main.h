@@ -144,6 +144,8 @@ typedef struct {
 	int opencv_device;
 	int opencv_features;
 
+	uint8_t qrcheck;
+
 	char videocapture_device[1024];
 	uint16_t videocapture_width;
 	uint16_t videocapture_height;

@@ -449,6 +449,7 @@ void setup_save (void) {
 		fprintf(fr, "calibration_min_y	%i\n", setup.calibration_min_y);
 		fprintf(fr, "calibration_max_y	%i\n", setup.calibration_max_y);
 		fprintf(fr, "videolist_lastfile	%s\n", videolist_lastfile);
+	        fprintf(fr, "qrcheck			%i\n", setup.qrcheck);
 	        fprintf(fr, "opencv_device		%i\n", setup.opencv_device);
 	        fprintf(fr, "opencv_features		%i\n", setup.opencv_features);
 	        fprintf(fr, "videocapture_device	%s\n", setup.videocapture_device);
@@ -529,6 +530,7 @@ void setup_load (void) {
 	setup.view_mode = 0;
 	setup.contrast = 0;
 	strcpy(setup.videocapture_device, "/dev/video0");
+	setup.qrcheck = 0;
 	setup.opencv_device = -1;
 	setup.opencv_features = 0;
 	setup.videocapture_width = 640;
@@ -640,6 +642,8 @@ void setup_load (void) {
 	                                setup.gearth_interval = atoi(val);
 	                        } else if (strcmp(var, "videocapture_device") == 0) {
 	                                strncpy(setup.videocapture_device, val, 1023);
+	                        } else if (strcmp(var, "qrcheck") == 0) {
+	                                setup.qrcheck = atoi(val);
 	                        } else if (strcmp(var, "opencv_device") == 0) {
 	                                setup.opencv_device = atoi(val);
 	                        } else if (strcmp(var, "opencv_features") == 0) {
