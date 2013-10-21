@@ -104,7 +104,7 @@ cp osx/${applicationName}.icns ${applicationName}.app/Contents/Resources/
 echo "## creating dmg-image ##"
 umount /Volumes/${applicationName} 2>/dev/null
 rm -rf ${applicationName}.temp.dmg ${applicationName}.dmg
-hdiutil create -srcfolder "${applicationName}.app" -volname "${applicationName}" -fs HFS+ -fsargs "-c c=64,a=16,e=16" -format UDRW -size 25M ${applicationName}.temp.dmg
+hdiutil create -srcfolder "${applicationName}.app" -volname "${applicationName}" -fs HFS+ -fsargs "-c c=64,a=16,e=16" -format UDRW -size 50M ${applicationName}.temp.dmg
 
 echo "## mounting dmg-image ##"
 device=$(hdiutil attach -readwrite -noverify -noautoopen "${applicationName}.temp.dmg" | egrep '^/dev/' | sed 1q | awk '{print $1}')
