@@ -24,7 +24,7 @@ CFLAGS += -DOSX -DSDLGL -DUSE_OPENCV -O3 -Wall -DSDL2 -DBASE_DIR="\"./share\"" -
 CFLAGS += -ggdb
 #CFLAGS +=  -pg
 
-## ldd gcs  | grep -v /opt | awk '{print $1}' | xargs -r -l dpkg -S  | cut -d":" -f1 | sort -u | tr  "\n" "," ##
+## ldd gcs | grep -v /opt | awk '{print $1}' | xargs -r -l dpkg -S  | cut -d":" -f1 | sort -u | tr  "\n" "," ##
 
 COMMONSRC = draw/opencv.o
 COMMONHRD = 

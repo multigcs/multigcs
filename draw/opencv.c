@@ -13,6 +13,7 @@ static CvCapture *cv_capture = NULL;
 static SDL_Thread *cv_thread = NULL;
 static uint8_t cv_running = 0;
 static int cv_camid = 0;
+static int cv_features = 0;
 
 #ifdef OPENCV_EFFECTS
 static int b_squares;
@@ -25,11 +26,9 @@ static CvPoint p[4];
 void cvar_init (void) {
 	int b_width  = 5;
 	int b_height = 4;
-
 	b_squares = 20;
 	b_size = cvSize(b_width, b_height);
 	warp_matrix = cvCreateMat(3, 3, CV_32FC1);
-
 }
 
 void cvar_run (IplImage *image) {
@@ -53,16 +52,13 @@ void cvar_run (IplImage *image) {
 		cvLine(image, p[1], p[2], CV_RGB(0, 255, 0), 2, 8, 0);
 		cvLine(image, p[2], p[3], CV_RGB(0, 0, 255), 2, 8, 0);
 		cvLine(image, p[3], p[0], CV_RGB(255, 255, 0), 2, 8, 0);
-
 //		int n = 0;
 //		for (n = 0; n < 20; n++) {
 //			p[0].x = (int)corners[n].x;
 //			p[0].y = (int)corners[n].y;
 //			cvCircle(image, p[0], 2, CV_RGB(255, 0, 0), 1, 8, 0);
 //		}
-
 	}
-
 
 /*
 	CvPoint2D32f src_pnt[4];
@@ -128,13 +124,17 @@ int cv_update (void *data) {
 		if (cv_surface != NULL && cv_bg != NULL) {
 			SDL_Log("opencv: running thread\n");
 #ifdef OPENCV_EFFECTS
-			cvar_init();
+			if (features == 1) {
+				cvar_init();
+			}
 #endif
 			while (cv_running == 1) {
 				if ((opencvimg = cvQueryFrame(cv_capture)) != NULL) {
 					SDL_LockMutex(cv_mutex);
 #ifdef OPENCV_EFFECTS
-					cvar_run(opencvimg);
+					if (features == 1) {
+						cvar_run(opencvimg);
+					}
 #endif
 					SDL_Surface *csf = ipl_to_surface(opencvimg);
 					SDL_BlitSurface(csf, NULL, cv_bg, NULL);
@@ -154,9 +154,10 @@ int cv_update (void *data) {
 	return 0;
 }
 
-void openvc_init (int cam_id) {
+void openvc_init (int cam_id, int features) {
 	SDL_Log("opencv: init\n");
 	cv_camid = cam_id;
+	cv_features = features;
 	cv_running = 1;
 	cv_mutex = SDL_CreateMutex();
 #ifdef SDL2
@@ -185,7 +186,9 @@ void openvc_exit (void) {
 		cv_mutex = NULL;
 	}
 #ifdef OPENCV_EFFECTS
-	cvar_exit();
+	if (features == 1) {
+		cvar_exit();
+	}
 #endif
 }
 

@@ -450,6 +450,7 @@ void setup_save (void) {
 		fprintf(fr, "calibration_max_y	%i\n", setup.calibration_max_y);
 		fprintf(fr, "videolist_lastfile	%s\n", videolist_lastfile);
 	        fprintf(fr, "opencv_device		%i\n", setup.opencv_device);
+	        fprintf(fr, "opencv_features		%i\n", setup.opencv_features);
 	        fprintf(fr, "videocapture_device	%s\n", setup.videocapture_device);
 	        fprintf(fr, "videocapture_width	%i\n", setup.videocapture_width);
 	        fprintf(fr, "videocapture_height	%i\n", setup.videocapture_height);
@@ -529,6 +530,7 @@ void setup_load (void) {
 	setup.contrast = 0;
 	strcpy(setup.videocapture_device, "/dev/video0");
 	setup.opencv_device = -1;
+	setup.opencv_features = 0;
 	setup.videocapture_width = 640;
 	setup.videocapture_height = 480;
 	char filename[1024];
@@ -640,6 +642,8 @@ void setup_load (void) {
 	                                strncpy(setup.videocapture_device, val, 1023);
 	                        } else if (strcmp(var, "opencv_device") == 0) {
 	                                setup.opencv_device = atoi(val);
+	                        } else if (strcmp(var, "opencv_features") == 0) {
+	                                setup.opencv_features = atoi(val);
 	                        } else if (strcmp(var, "videocapture_width") == 0) {
 	                                setup.videocapture_width = atoi(val);
 	                        } else if (strcmp(var, "videocapture_height") == 0) {
@@ -1852,7 +1856,7 @@ int main ( int argc, char *argv[] ) {
 #endif
 
 #if defined USE_OPENCV
-	openvc_init(setup.opencv_device);
+	openvc_init(setup.opencv_device, setup.opencv_features);
 #elif defined USE_VLC
 	vlc_init("dshow://");
 #endif

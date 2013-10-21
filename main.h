@@ -142,6 +142,7 @@ typedef struct {
 	float volt_min;
 
 	int opencv_device;
+	int opencv_features;
 
 	char videocapture_device[1024];
 	uint16_t videocapture_width;
