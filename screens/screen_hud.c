@@ -399,7 +399,24 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 #ifdef SDLGL
 	glDisable(GL_DEPTH_TEST);
 	if (setup.hud_view_video == 1) {
-		draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, videodev_loop());
+
+#if defined USE_VLC
+	if (vlc_is_playing() == 0) {
+		vlc_exit();
+		vlc_init("dshow://");
+	}
+	draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, vlc_update());
+#elif defined USE_OPENCV
+	SDL_Surface *vidsurf = openvc_get();
+	if (vidsurf != NULL) {
+		draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, vidsurf);
+	}
+#else
+	draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, videodev_loop());
+#endif
+
+
+
 	}
 #endif
 #endif

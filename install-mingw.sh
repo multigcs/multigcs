@@ -70,6 +70,8 @@ i686-w64-mingw32-gcc -O2 -Wall -W -Iinclude  -o bin/visualinfo.exe src/visualinf
 mkdir -p libjpeg
 test -e libjpeg/libjpeg-9.dll || wget -O libjpeg/libjpeg-9.dll https://raw.github.com/OctaForge/OF-Windows/master/bin_win64/libjpeg-9.dll
 
+##test -e OpenCV-2.4.5VC.zip || wget http://download738.mediafire.com/pu1mf9p4vkgg/t2o7lo7p0vj6pl5/OpenCV-2.4.5VC.zip
+
 mkdir -p /usr/i686-w64-mingw32/bin/
 mkdir -p /usr/i686-w64-mingw32/lib/
 mkdir -p /usr/i686-w64-mingw32/include/
@@ -92,3 +94,7 @@ cp -av glew-1.10.0/lib/* /usr/i686-w64-mingw32/lib/
 cp -av glew-1.10.0/bin/* /usr/i686-w64-mingw32/bin/
 cp -av glew-1.10.0/include/* /usr/i686-w64-mingw32/include/
 cp -av libjpeg/libjpeg-9.dll /usr/i686-w64-mingw32/bin/
+cp -av OpenCV-2.4.5VC/install/bin/* /usr/i686-w64-mingw32/bin/
+cp -av OpenCV-2.4.5VC/install/lib/* /usr/i686-w64-mingw32/lib/
+cp -av OpenCV-2.4.5VC/install/include/* /usr/i686-w64-mingw32/include/
+

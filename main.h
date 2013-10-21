@@ -141,6 +141,8 @@ typedef struct {
 	int8_t speak;
 	float volt_min;
 
+	int opencv_device;
+
 	char videocapture_device[1024];
 	uint16_t videocapture_width;
 	uint16_t videocapture_height;

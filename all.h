@@ -153,3 +153,12 @@
 #define SDL_Log printf
 #endif
 
+#ifdef USE_VLC
+#include <assert.h>
+#include <SDL_mutex.h>
+#include <vlc/vlc.h>
+#include <vlcinput.h>
+#endif
+#ifdef USE_OPENCV
+#include <opencv.h>
+#endif

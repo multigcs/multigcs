@@ -7,19 +7,19 @@ COMP = i686-w64-mingw32-gcc
 
 INCDIR = 
 LIBS = 
-CFLAGS += -DSDLGL -DSDL2 -DWINDOWS -O3 -Wall -DBASE_DIR="\"$(BASE_DIR)\""
+CFLAGS += -DSDLGL -DSDL2 -DWINDOWS -DUSE_OPENCV -O3 -Wall -DBASE_DIR="\"$(BASE_DIR)\""
 #CFLAGS += -ggdb
 #CFLAGS +=  -pg
 
-INCDIR += -I/usr/i686-w64-mingw32/include -I/usr/i686-w64-mingw32/include/SDL2 -I/usr/i686-w64-mingw32/include/libpng12 -I/usr/i686-w64-mingw32/include/tcl
+INCDIR += -I/usr/i686-w64-mingw32/include -I/usr/i686-w64-mingw32/include/SDL2 -I/usr/i686-w64-mingw32/include/libpng12 -I/usr/i686-w64-mingw32/include/tcl -I/usr/i686-w64-mingw32/include/opencv
 LIBS += -Lc:/MinGW/lib/SDL2 -static-libgcc -lmingw32 -lopengl32 -lglu32 -lglew32.dll -lSDL2main -mwindows -lSDL2 -lSDL2_image -lSDL2_net -L/usr/i686-w64-mingw32/bin \
--lm -lxml2 -ltcl85 -lpng
+-lm -lxml2 -ltcl85 -lpng -lopencv_highgui245d -lopencv_core245d -lopencv_imgproc245d
 
 
 ## ldd gcs  | grep -v /opt | awk '{print $1}' | xargs -r -l dpkg -S  | cut -d":" -f1 | sort -u | tr  "\n" "," ##
 
-COMMONSRC=
-COMMONHRD=
+COMMONSRC = draw/opencv.o
+COMMONHRD = 
 
 
 
@@ -58,7 +58,7 @@ gcs.exe: ${COMMONSRC} ${COMMONHDR} ${GCS} exe.res
 	@$(COMP) -DBASE_DIR="\"$(BASE_DIR)\"" $(CFLAGS) ${COMMONSRC} ${GCS} -o $@ ${INCDIR} ${LIBS} exe.res
 
 test:
-	(cd Windows/MultiGCS/ ; wine MultiGCS.exe)
+	(cd Windows/MultiGCS/ ; WINEDEBUG=+loaddll wine MultiGCS.exe)
 
 installer:
 	(cd Windows/MultiGCS ; tclsh ../../utils/create-win-installer.tclsh > ../../installer.nsis)
@@ -116,6 +116,10 @@ pack:
 	cp /usr/i686-w64-mingw32/bin/libxml2.dll Windows/MultiGCS/
 	cp /usr/i686-w64-mingw32/bin/glew32.dll Windows/MultiGCS/
 	cp /usr/i686-w64-mingw32/bin/libjpeg-9.dll Windows/MultiGCS/
-
+	cp /usr/i686-w64-mingw32/bin/libvlc.dll Windows/MultiGCS/
+	cp /usr/i686-w64-mingw32/bin/libvlccore.dll Windows/MultiGCS/
+	cp /usr/i686-w64-mingw32/bin/opencv_highgui245d.dll Windows/MultiGCS/
+	cp /usr/i686-w64-mingw32/bin/opencv_core245d.dll Windows/MultiGCS/
+	cp /usr/i686-w64-mingw32/bin/opencv_imgproc245d.dll Windows/MultiGCS/
 	(cd Windows ; zip -r multigcs-$(VERSION_NAME)_$(VERSION).zip MultiGCS)
 

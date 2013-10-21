@@ -449,6 +449,7 @@ void setup_save (void) {
 		fprintf(fr, "calibration_min_y	%i\n", setup.calibration_min_y);
 		fprintf(fr, "calibration_max_y	%i\n", setup.calibration_max_y);
 		fprintf(fr, "videolist_lastfile	%s\n", videolist_lastfile);
+	        fprintf(fr, "opencv_device		%i\n", setup.opencv_device);
 	        fprintf(fr, "videocapture_device	%s\n", setup.videocapture_device);
 	        fprintf(fr, "videocapture_width	%i\n", setup.videocapture_width);
 	        fprintf(fr, "videocapture_height	%i\n", setup.videocapture_height);
@@ -527,6 +528,7 @@ void setup_load (void) {
 	setup.view_mode = 0;
 	setup.contrast = 0;
 	strcpy(setup.videocapture_device, "/dev/video0");
+	setup.opencv_device = -1;
 	setup.videocapture_width = 640;
 	setup.videocapture_height = 480;
 	char filename[1024];
@@ -636,6 +638,8 @@ void setup_load (void) {
 	                                setup.gearth_interval = atoi(val);
 	                        } else if (strcmp(var, "videocapture_device") == 0) {
 	                                strncpy(setup.videocapture_device, val, 1023);
+	                        } else if (strcmp(var, "opencv_device") == 0) {
+	                                setup.opencv_device = atoi(val);
 	                        } else if (strcmp(var, "videocapture_width") == 0) {
 	                                setup.videocapture_width = atoi(val);
 	                        } else if (strcmp(var, "videocapture_height") == 0) {
@@ -1722,6 +1726,7 @@ void Draw (ESContext *esContext) {
 	strcat(display_html, "	context2.fillStyle = '#000000'; context2.fill();\n");
 	strcat(display_html, "	context2.closePath();\n");
 #endif
+
 #ifndef CONSOLE_ONLY
 	draw_update(esContext);
 #endif
@@ -1729,6 +1734,15 @@ void Draw (ESContext *esContext) {
 }
 
 void ShutDown ( ESContext *esContext ) {
+
+#ifdef USE_VLC
+	vlc_exit();
+#endif
+#ifdef USE_OPENCV
+	openvc_exit();
+#endif
+
+
 	SDL_Log("Shutdown\n");
 	gui_running = 0;
 	SDL_Delay(600);
@@ -1835,6 +1849,12 @@ int main ( int argc, char *argv[] ) {
 	videodev_start(setup.videocapture_device, setup.videocapture_width, setup.videocapture_height);
 #endif
 #endif
+#endif
+
+#if defined USE_OPENCV
+	openvc_init(setup.opencv_device);
+#elif defined USE_VLC
+	vlc_init("dshow://");
 #endif
 
 #ifdef RPI_NO_X

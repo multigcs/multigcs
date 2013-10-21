@@ -2,10 +2,13 @@
   !include "UMUI.nsh"
   !include WinMessages.nsh
 
+  BrandingText " "
+
   Name "MultiGCS"
   Caption "MultiGCS installer"
-  BrandingText " "
   !define MUI_PRODUCT "MultiGCS"
+
+
   XPstyle on
  
   RequestExecutionLevel user
@@ -25,11 +28,19 @@
 
 
   !insertmacro MUI_LANGUAGE "English"
-
   !insertmacro MUI_PAGE_LICENSE "copyright.txt"
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
+
  
+  !define MUI_INNERTEXT_LICENSE_BOTTOM "LICENSE_BOTTOM"
+  !define MUI_TEXT_LICENSE_TITLE "LICENSE_TITLE"
+  !define MUI_TEXT_LICENSE_SUBTITLE "LICENSE_SUBTITLE"
+  !define MUI_INNERTEXT_LICENSE_TOP "LICENSE_TOP"
+  !define MUI_TEXT_DIRECTORY_TITLE "DIRECTORY_TITLE"
+  !define MUI_TEXT_DIRECTORY_SUBTITLE "DIRECTORY_SUBTITLE"
+  !define MUI_TEXT_INSTALLING_TITLE "INSTALLING_TITLE"
+  !define MUI_TEXT_INSTALLING_SUBTITLE "INSTALLING_SUBTITLE"
 
   InstallDir "$PROGRAMFILES\${MUI_PRODUCT}"
 
