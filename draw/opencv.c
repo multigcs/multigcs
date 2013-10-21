@@ -119,6 +119,9 @@ int cv_update (void *data) {
 		return 0;
 	}
 	SDL_Log("opencv: open capture device: %i\n", cv_camid);
+
+SDL_Delay(3000);
+
 	if ((opencvimg = cvQueryFrame(cv_capture)) != NULL) {
 		cv_surface = SDL_CreateRGBSurfaceFrom((void*)opencvimg->imageData,
 			opencvimg->width,
