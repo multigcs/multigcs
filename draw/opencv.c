@@ -31,13 +31,33 @@ void cvar_init (void) {
 	warp_matrix = cvCreateMat(3, 3, CV_32FC1);
 }
 
+
+CvMat *prevgrayMat = NULL;
+CvMat *grayMat = NULL;
+CvMat *flowMat = NULL;
+CvMat *cflowMat = NULL;
+
+void drawOptFlowMap (const CvMat* flow, CvMat* cflowmap, int step, double scale, CvScalar color) {
+	int x, y;
+	for( y = 0; y < cflowmap->rows; y += step) {
+		for( x = 0; x < cflowmap->cols; x += step) {
+			CvPoint2D32f fxy = CV_MAT_ELEM(*flow, CvPoint2D32f, y, x);
+			cvLine(cflowmap, cvPoint(x,y), cvPoint(cvRound(x+fxy.x), cvRound(y+fxy.y)), color, 1, 8, 0);
+			cvCircle(cflowmap, cvPoint(x,y), 2, color, -1, 8, 0);
+		}
+	}
+}
+
 void cvar_run (IplImage *image) {
 	int corner_count = 0;
+
 	if (gray == NULL) {
 		gray = cvCreateImage(cvGetSize(image), image->depth, 1);
 	}
-	int found = cvFindChessboardCorners(image, b_size, corners, &corner_count, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+
 	cvCvtColor(image, gray, CV_BGR2GRAY);
+
+	cvFindChessboardCorners(gray, b_size, corners, &corner_count, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
 	cvFindCornerSubPix(gray, corners, corner_count, cvSize(11, 11), cvSize(-1, -1), cvTermCriteria(CV_TERMCRIT_EPS+CV_TERMCRIT_ITER, 30, 0.1));
 	if (corner_count == b_squares) {
 		p[0].x = (int)corners[0].x;
@@ -76,6 +96,21 @@ void cvar_run (IplImage *image) {
 	IplImage *tmp_img = NULL;
 	tmp_img = cvCloneImage(image);
 	cvWarpPerspective(tmp_img, image, mmat, CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS, cvScalarAll(0)); 
+*/
+/*
+	IplImage *edge = cvCreateImage(cvSize(image->width, image->height), 8, 1);
+	int edge_thresh = 1;
+	CvMemStorage* storage = cvCreateMemStorage(0);
+	cvThreshold(gray, gray, CV_GAUSSIAN, 9, 9);
+	cvSmooth(gray, gray, CV_GAUSSIAN, 11, 11, 0, 0); 
+	cvCanny(gray, edge, (float)edge_thresh, (float)edge_thresh * 3, 5);
+	CvSeq* circles = cvHoughCircles(edge, storage, CV_HOUGH_GRADIENT, 2, gray->height / 4, 200, 100, 10, 100);
+	int i;
+	for (i = 0; i < circles->total; i++) {
+	float* p = (float*)cvGetSeqElem(circles, i);
+		cvCircle(image, cvPoint(cvRound(p[0]),cvRound(p[1])), 3, CV_RGB(0,255,0), -1, 8, 0 );
+		cvCircle(image, cvPoint(cvRound(p[0]),cvRound(p[1])), cvRound(p[2]), CV_RGB(255,0,0), 3, 8, 0 );
+	}
 */
 }
 
