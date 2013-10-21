@@ -2116,7 +2116,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	sprintf(tmp_str, "%0.1fkm (Z:%i)", scale / 1000.0, zoom);
 	draw_text(esContext, 10, esContext->height - 40, 8, 8, FONT_BLACK_BG, tmp_str);
 
-#ifndev OSX
+#ifndef OSX
 	uint16_t cn = 0;
 	uint16_t xn = 0;
 	uint16_t mn = 0;
