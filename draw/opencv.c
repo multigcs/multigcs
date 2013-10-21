@@ -18,7 +18,7 @@ static int cv_camid = 0;
 
 
 
-
+#ifdef OPENCV_EFFECTS
 static int b_squares;
 static CvSize b_size;
 static CvMat *warp_matrix = NULL;
@@ -96,7 +96,7 @@ void cvar_exit (void) {
 		gray = NULL;
 	}
 }
-
+#endif
 
 
 
@@ -119,9 +119,9 @@ int cv_update (void *data) {
 		return 0;
 	}
 	SDL_Log("opencv: open capture device: %i\n", cv_camid);
-
-SDL_Delay(3000);
-
+#ifdef OSX
+	SDL_Delay(2000);
+#endif
 	if ((opencvimg = cvQueryFrame(cv_capture)) != NULL) {
 		cv_surface = SDL_CreateRGBSurfaceFrom((void*)opencvimg->imageData,
 			opencvimg->width,
@@ -138,18 +138,16 @@ SDL_Delay(3000);
 			0xff0000, 0x00ff00, 0x0000ff, 0
 		);
 		if (cv_surface != NULL && cv_bg != NULL) {
-
 			SDL_Log("opencv: running thread\n");
-
+#ifdef OPENCV_EFFECTS
 			cvar_init();
-
+#endif
 			while (cv_running == 1) {
 				if ((opencvimg = cvQueryFrame(cv_capture)) != NULL) {
-
 					SDL_LockMutex(cv_mutex);
-
+#ifdef OPENCV_EFFECTS
 					cvar_run(opencvimg);
-
+#endif
 					SDL_Surface *csf = ipl_to_surface(opencvimg);
 					SDL_BlitSurface(csf, NULL, cv_bg, NULL);
 					SDL_UnlockMutex(cv_mutex);
@@ -198,7 +196,9 @@ void openvc_exit (void) {
 		SDL_DestroyMutex(cv_mutex);
 		cv_mutex = NULL;
 	}
+#ifdef OPENCV_EFFECTS
 	cvar_exit();
+#endif
 
 }
 
