@@ -14,12 +14,12 @@ HANDLE hSerial[10] = {INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE
 
 
 
-void serial_write (int fd, uint8_t *data, int len) {
+void serial_write (int fd, void *data, int len) {
 #ifndef WINDOWS
 #ifdef ANDROID
 	int n = 0;
 	for (n = 0; n < len; n++) {
-		Android_JNI_SendSerial(data[n]);
+		Android_JNI_SendSerial((uint8_t)data[n]);
 	}
 #else
 	write(fd, data, len);
