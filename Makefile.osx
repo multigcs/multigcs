@@ -20,14 +20,14 @@ INCDIR += $(shell pkg-config --cflags sdl2) $(shell pkg-config --cflags SDL2_ima
 LIBS += $(shell pkg-config --libs sdl2) $(shell pkg-config --libs SDL2_image) -framework OpenGL -headerpad_max_install_names
 
 
-CFLAGS += -DOSX -DSDLGL -O3 -Wall -DSDL2 -DBASE_DIR="\"./share\""
+CFLAGS += -DOSX -DSDLGL -DUSE_OPENCV -O3 -Wall -DSDL2 -DBASE_DIR="\"./share\""
 CFLAGS += -ggdb
 #CFLAGS +=  -pg
 
 ## ldd gcs  | grep -v /opt | awk '{print $1}' | xargs -r -l dpkg -S  | cut -d":" -f1 | sort -u | tr  "\n" "," ##
 
-COMMONSRC=
-COMMONHRD=
+COMMONSRC = draw/opencv.o
+COMMONHRD = 
 
 include make.inc
 
