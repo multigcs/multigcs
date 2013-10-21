@@ -775,9 +775,13 @@ void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float 
 #endif
 	y1 = y1 * -1;
 	y2 = y2 * -1;
-	if (screen == NULL) {
+	if (screen2 == NULL) {
 		return;
 	}
+
+	SDL_Surface *screen = convert_to_power_of_two(screen2);
+
+
 	GLuint texture;
 	GLenum texture_format;
 	GLint  nOfColors;
@@ -798,8 +802,6 @@ void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float 
                 SDL_Log("warning: the image is not truecolor..  this will probably break\n");
 		return;
         }
-
-	SDL_Surface *screen = convert_to_power_of_two(screen2);
 
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
