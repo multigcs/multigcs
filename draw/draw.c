@@ -275,7 +275,6 @@ SDL_Surface* convert_to_power_of_two (SDL_Surface* surface) {
 	dstrect.x = 0;
 	dstrect.y = 0;
 	SDL_BlitSurface(surface, NULL, pot_surface, &dstrect);
-	SDL_FreeSurface(surface);
 	return pot_surface;
 }
 
@@ -314,6 +313,7 @@ int loadImage(const char *filename) {
 		return 0;
 	}
 	SDL_Surface *imageSurface = convert_to_power_of_two(imageSurface1);
+	SDL_FreeSurface(imageSurface1);
 	GLuint texture;
 	GLenum texture_format;
 	GLint  nOfColors;

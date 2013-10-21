@@ -66,6 +66,7 @@ uint8_t draw_text_button (ESContext *esContext, char *name, uint8_t view_mode, c
 uint8_t draw_image_button (ESContext *esContext, char *name, uint8_t view_mode, char *image, float x, float y, float z, float w, float h, uint8_t align_x, uint8_t align_y, uint8_t (*callback) (char *, float, float, int8_t, float), float data);
 uint8_t draw_button (ESContext *esContext, char *name, uint8_t view_mode, char *text, char *font, float x1, float y1, float z1, float x2, float y2, float z2, float fh, uint8_t align_x, uint8_t align_y, uint8_t (*callback) (char *, float, float, int8_t, float), float data);
 uint8_t draw_text_align (ESContext *esContext, char *text, char *font, float x, float y, float z, float h, uint8_t align_x, uint8_t align_y);
+SDL_Surface* convert_to_power_of_two (SDL_Surface* surface);
 
 #ifdef SDLGL
 uint32_t getpixel(SDL_Surface *surface, int x, int y);
