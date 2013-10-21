@@ -14,10 +14,6 @@ static SDL_Thread *cv_thread = NULL;
 static uint8_t cv_running = 0;
 static int cv_camid = 0;
 
-
-
-
-
 #ifdef OPENCV_EFFECTS
 static int b_squares;
 static CvSize b_size;
@@ -121,15 +117,7 @@ int cv_update (void *data) {
 	SDL_Delay(2000);
 #endif
 	if ((opencvimg = cvQueryFrame(cv_capture)) != NULL) {
-/*
-		cv_surface = SDL_CreateRGBSurfaceFrom((void*)opencvimg->imageData,
-			opencvimg->width,
-			opencvimg->height,
-			opencvimg->depth*opencvimg->nChannels,
-			opencvimg->widthStep,
-			0xff0000, 0x00ff00, 0x0000ff, 0
-		);
-*/
+		cv_surface = SDL_CreateRGBSurface(0, opencvimg->width, opencvimg->height, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
 		cv_bg = SDL_CreateRGBSurfaceFrom((void*)opencvimg->imageData,
 			opencvimg->width,
 			opencvimg->height,
@@ -137,10 +125,6 @@ int cv_update (void *data) {
 			opencvimg->widthStep,
 			0xff0000, 0x00ff00, 0x0000ff, 0
 		);
-
-		cv_surface = SDL_CreateRGBSurface(0, opencvimg->width, opencvimg->height, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-
-
 		if (cv_surface != NULL && cv_bg != NULL) {
 			SDL_Log("opencv: running thread\n");
 #ifdef OPENCV_EFFECTS
@@ -203,7 +187,6 @@ void openvc_exit (void) {
 #ifdef OPENCV_EFFECTS
 	cvar_exit();
 #endif
-
 }
 
 SDL_Surface *openvc_get (void) {
@@ -216,6 +199,5 @@ SDL_Surface *openvc_get (void) {
 	SDL_UnlockMutex(cv_mutex);
 	return NULL;
 }
-
 
 
