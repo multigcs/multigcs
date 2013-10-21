@@ -66,7 +66,6 @@
 #include <SDL_thread.h>
 #include <SDL_events.h>
 #include <SDL_image.h>
-#define NO_SDL_GLEXT
 #include <SDL_opengl.h>
 #include <userdata.h>
 #include <gl_draw.h>
