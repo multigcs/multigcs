@@ -20,7 +20,7 @@ INCDIR += $(shell pkg-config --cflags sdl2) $(shell pkg-config --cflags SDL2_ima
 LIBS += $(shell pkg-config --libs sdl2) $(shell pkg-config --libs SDL2_image) -framework OpenGL -headerpad_max_install_names $(shell pkg-config --libs opencv)
 
 
-CFLAGS += -DOSX -DSDLGL -DUSE_OPENCV -O3 -Wall -DSDL2 -DBASE_DIR="\"./share\""
+CFLAGS += -DOSX -DSDLGL -DUSE_OPENCV -O3 -Wall -DSDL2 -DBASE_DIR="\"./share\"" -DOPENCV_EFFECTS
 CFLAGS += -ggdb
 #CFLAGS +=  -pg
 
