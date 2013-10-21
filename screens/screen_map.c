@@ -2116,8 +2116,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	sprintf(tmp_str, "%0.1fkm (Z:%i)", scale / 1000.0, zoom);
 	draw_text(esContext, 10, esContext->height - 40, 8, 8, FONT_BLACK_BG, tmp_str);
 
-	sprintf(tmp_str, "%s", mapnames[map_type][MAP_COPYRIGHT]);
-
+#ifndev OSX
 	uint16_t cn = 0;
 	uint16_t xn = 0;
 	uint16_t mn = 0;
@@ -2129,6 +2128,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	uint8_t tmode = 0;
 	char tmp_str2[1024];
 	char tmp_str3[1024];
+	sprintf(tmp_str, "%s", mapnames[map_type][MAP_COPYRIGHT]);
 	for (cn = 0; cn < strlen(mapnames[map_type][MAP_COPYRIGHT]); cn++) {
 		if (tmp_str[cn] == '<') {
 			tag_start = 1;
@@ -2171,7 +2171,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 		lastc = tmp_str[cn];
 	}
-
+#endif
 
 	if (_map_view != 3 && _map_view != 4 && _map_view != 5 && setup.view_mode == VIEW_MODE_MAP) {
 #ifdef SDLGL

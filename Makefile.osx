@@ -4,6 +4,7 @@
 ## sudo port install libsdl2
 ## sudo port install libsdl2_image
 ## sudo port install pkgconfig
+## sudo port install opencv
 ##
 
 ## Mac-OSX SDL2-Version ##
