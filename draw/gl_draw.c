@@ -769,20 +769,15 @@ void draw_triaFilled_f3 (ESContext *esContext, float x1, float y1, float z1, flo
 	draw_tria_f3(esContext, x1, y1 * -1, z1, x2, y2 * -1, z2, x3, y3 * -1, z3, r, g, b, a);
 }
 
-void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, float alpha, SDL_Surface *screen2) {
+void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, float alpha, SDL_Surface *screen) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
 	y1 = y1 * -1;
 	y2 = y2 * -1;
-	if (screen2 == NULL) {
+	if (screen == NULL) {
 		return;
 	}
-
-	SDL_Surface *screen = screen2;
-
-//	SDL_Surface *screen = convert_to_power_of_two(screen2);
-
 	GLuint texture;
 	GLenum texture_format;
 	GLint  nOfColors;
@@ -824,7 +819,6 @@ void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float 
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 	glDeleteTextures(1, &texture);
-//	SDL_FreeSurface(screen);
 }
 
 void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, char *file) {
