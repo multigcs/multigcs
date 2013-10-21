@@ -1469,6 +1469,9 @@ void gcssetup_set (char *name, char *value) {
 	if (strcmp("opencv_device", name) == 0) {
 		setup.opencv_device = atoi(value);
 	}
+	if (strcmp("opencv_features", name) == 0) {
+		setup.opencv_features = atoi(value);
+	}
 	if (strcmp("videocapture_device", name) == 0) {
 		strcpy(setup.videocapture_device, value);
 	}
@@ -2455,6 +2458,16 @@ void webserv_child_gcssetup (int fd, uint8_t mode) {
 		}
 		strcat(content, " <TD>opencv_device</TD>");
 		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('opencv_device');\" id=\"opencv_device\" value=\"%i\" type=\"text\"></TD>\n", setup.opencv_device);
+		strcat(content, tmp_str);
+		strcat(content, "</TR>");
+		lc = 1 - lc;
+		if (lc == 0) {
+			strcat(content, "<TR class=\"first\">");
+		} else {
+			strcat(content, "<TR class=\"sec\">");
+		}
+		strcat(content, " <TD>opencv_features</TD>");
+		sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('opencv_features');\" id=\"opencv_features\" value=\"%i\" type=\"text\"></TD>\n", setup.opencv_features);
 		strcat(content, tmp_str);
 		strcat(content, "</TR>");
 		lc = 1 - lc;
