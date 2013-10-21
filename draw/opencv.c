@@ -26,18 +26,6 @@ void cvar_init (void) {
 	warp_matrix = cvCreateMat(3, 3, CV_32FC1);
 }
 
-void drawOptFlowMap (const CvMat* flow, CvMat* cflowmap, int step, double scale, CvScalar color) {
-	int x = 0;
-	int y = 0;
-	for (y = 0; y < cflowmap->rows; y += step) {
-		for (x = 0; x < cflowmap->cols; x += step) {
-			CvPoint2D32f fxy = CV_MAT_ELEM(*flow, CvPoint2D32f, y, x);
-			cvLine(cflowmap, cvPoint(x, y), cvPoint(cvRound(x + fxy.x), cvRound(y + fxy.y)), color, 1, 8, 0);
-			cvCircle(cflowmap, cvPoint(x, y), 2, color, -1, 8, 0);
-		}
-	}
-}
-
 void cvar_run (IplImage *image) {
 	int corner_count = 0;
 	if (gray == NULL) {
