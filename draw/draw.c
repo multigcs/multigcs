@@ -270,10 +270,10 @@ SDL_Surface* convert_to_power_of_two (SDL_Surface* surface) {
 	int height = next_power_of_two(surface->h);
 	SDL_Surface* pot_surface = SDL_CreateRGBSurface(0, width, height, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
 	SDL_Rect dstrect;
+	dstrect.x = (pot_surface->w - surface->w) / 2;
+	dstrect.y = (pot_surface->h - surface->h) / 2;
 	dstrect.w = surface->w;
-	dstrect.h = surface->h;
-	dstrect.x = 0;
-	dstrect.y = 0;
+	dstrect.h = surface->w;
 	SDL_BlitSurface(surface, NULL, pot_surface, &dstrect);
 	return pot_surface;
 }

@@ -1,6 +1,10 @@
 
 #include <all.h>
 
+#ifdef ANDROID
+#define POWER_OF_TWO
+#endif
+
 static SDL_mutex *cv_mutex = NULL;
 static SDL_Surface *cv_bg = NULL;
 static SDL_Surface *cv_surface = NULL;
@@ -111,22 +115,18 @@ int cv_update (void *data) {
 		return 0;
 	}
 	SDL_Log("opencv: open capture device: %i\n", cv_camid);
-
 #ifdef OSX
 	SDL_Delay(2000);
 #endif
-#ifdef ANDROID
-	cvSize(640, 480);
-#endif
 	if ((opencvimg = cvQueryFrame(cv_capture)) != NULL) {
-		cv_surface = SDL_CreateRGBSurface(0, opencvimg->width, opencvimg->height, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-		cv_bg = SDL_CreateRGBSurfaceFrom((void*)opencvimg->imageData,
-			opencvimg->width,
-			opencvimg->height,
-			opencvimg->depth*opencvimg->nChannels,
-			opencvimg->widthStep,
-			0xff0000, 0x00ff00, 0x0000ff, 0
-		);
+		int img_w = opencvimg->width;
+		int img_h = opencvimg->height;
+#ifdef POWER_OF_TWO
+		img_w = next_power_of_two(img_w);
+		img_h = next_power_of_two(img_h);
+#endif
+		cv_surface = SDL_CreateRGBSurface(0, img_w, img_h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+		cv_bg = SDL_CreateRGBSurface(0, img_w, img_h, opencvimg->depth*opencvimg->nChannels, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
 		if (cv_surface != NULL && cv_bg != NULL) {
 			SDL_Log("opencv: running thread\n");
 #ifdef OPENCV_EFFECTS
@@ -136,16 +136,22 @@ int cv_update (void *data) {
 #endif
 			while (cv_running == 1) {
 				if ((opencvimg = cvQueryFrame(cv_capture)) != NULL) {
-					SDL_LockMutex(cv_mutex);
 #ifdef OPENCV_EFFECTS
 					if (cv_features == 1) {
 						cvar_run(opencvimg);
 					}
 #endif
+#ifdef POWER_OF_TWO
+					IplImage* des_img;
+					des_img = cvCreateImage(cvSize(img_w, img_h), opencvimg->depth, opencvimg->nChannels);
+					cvResize(opencvimg, des_img, CV_INTER_LINEAR);
+					SDL_Surface *csf = ipl_to_surface(des_img);
+#else
 					SDL_Surface *csf = ipl_to_surface(opencvimg);
+#endif
+					SDL_LockMutex(cv_mutex);
 					SDL_BlitSurface(csf, NULL, cv_bg, NULL);
 					SDL_UnlockMutex(cv_mutex);
-					SDL_FreeSurface(csf);
 #ifdef USE_QUIRC
 					if (setup.qrcheck == 1) {
 						char payload[1024];
@@ -156,6 +162,10 @@ int cv_update (void *data) {
 							SDL_Log("quirc: %s\n", payload);
 						}
 					}
+#endif
+					SDL_FreeSurface(csf);
+#ifdef POWER_OF_TWO
+					cvReleaseImage(&des_img);
 #endif
 				}
 				SDL_Delay(10);

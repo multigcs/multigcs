@@ -4,6 +4,13 @@
 #include <SDL_opengles.h>
 #include <vectorfont.h>
 
+#ifndef GL_BGRA
+#define GL_BGRA 0x80E1
+#define GL_RGBA	0x1908
+#define GL_BGR 0x80E0
+#define GL_RGB 0x1907
+#endif
+
 static SDLTest_CommonState *state;
 static SDL_GLContext *context = NULL;
 
@@ -212,6 +219,61 @@ void object3d_load_data (Object3d *o3d, char *filename) {
 }
 
 void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, float alpha, SDL_Surface *screen) {
+	y1 = y1 * -1;
+	y2 = y2 * -1;
+	if (screen == NULL) {
+		return;
+	}
+	GLuint texture;
+	GLenum texture_format;
+	GLint  nOfColors;
+        nOfColors = screen->format->BytesPerPixel;
+        if (nOfColors == 4) {
+                if (screen->format->Rmask == 0x000000ff) {
+                        texture_format = GL_RGBA;
+                } else {
+                        texture_format = GL_BGRA;
+		}
+        } else if (nOfColors == 3) {
+                if (screen->format->Rmask == 0x000000ff) {
+                        texture_format = GL_RGB;
+                } else {
+                        texture_format = GL_BGR;
+                }
+        } else {
+                SDL_Log("warning: the image is not truecolor..  this will probably break\n");
+		return;
+        }
+	GLfloat vVertices[] = {
+		x1, y1, -2.0f + z,  // Position 0
+		x1, y2, -2.0f + z,  // Position 1
+		x2, y2, -2.0f + z,   // Position 2
+		x2, y1, -2.0f + z,   // Position 3
+	};
+	GLfloat vTex[] = {
+		0.0f,  0.0f,         // TexCoord 0 
+		0.0f,  1.0f,         // TexCoord 1
+		1.0f,  1.0f,         // TexCoord 2
+		1.0f,  0.0f          // TexCoord 3
+	};
+	GLushort indices[] = { 0, 1, 2, 0, 2, 3 };
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_BGRA, screen->w, screen->h, 0, texture_format, GL_UNSIGNED_BYTE, screen->pixels);
+
+	glEnable(GL_TEXTURE_2D);
+	glColor4f(1.0, 1.0, 1.0, 0.2);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glTexCoordPointer(2, GL_FLOAT, 0, vTex);
+	glVertexPointer(3, GL_FLOAT, 0, vVertices);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glDisable(GL_TEXTURE_2D);
+	glDeleteTextures(1, &texture);
 }
 
 uint8_t draw_target (void) {

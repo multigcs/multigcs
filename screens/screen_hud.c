@@ -409,7 +409,13 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 #elif defined USE_OPENCV
 	SDL_Surface *vidsurf = openvc_get();
 	if (vidsurf != NULL) {
+#ifdef _ANDROID
+		SDL_Surface *imageSurface = convert_to_power_of_two(vidsurf);
+		draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, imageSurface);
+		SDL_FreeSurface(imageSurface);
+#else
 		draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, vidsurf);
+#endif
 	}
 #else
 #ifndef OSX
@@ -418,7 +424,6 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 #endif
 	}
 #endif
-
 #ifdef SDLGL
 	if (setup.hud_view_map == 1) {
 		if (setup.hud_view_video == 1) {
@@ -434,7 +439,6 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 		}
 	}
 #endif
-
 	// Background
 #ifdef SDLGL
 	glMatrixMode(GL_MODELVIEW);
@@ -468,11 +472,9 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 		}
 		draw_line_f3(esContext, -2.5, 0.0, 0.001, 2.5, 0.0, 0.001, 255, 255, 255, 255);
 	}
-
 #ifdef SDLGL
 	glPopMatrix();
 #endif
-
 if (type == 1) {
 	// Pitch & Roll-Winkel
 	for (n = -30 - ((int)(-ModelData.pitch / 10) % 10 * 10); n <= 20 - ((int)((-ModelData.pitch - 3) / 10) % 10 * 10); n += 10) {
@@ -512,7 +514,6 @@ if (type == 1) {
 		glPopMatrix();
 #endif
 	}
-
 	for (n = -35 - ((int)(-ModelData.pitch / 10) % 10 * 10); n <= 25 - ((int)((-ModelData.pitch - 3) / 10) % 10 * 10); n += 10) {
 		// Pitch
 #ifdef SDLGL
