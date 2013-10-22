@@ -457,7 +457,6 @@ void Android_JNI_ConnectUsbSerial(int baudrate)
 
 void Android_JNI_SendSerial(uint8_t c)
 {
-SDL_Log("JNI_SendSerial");
     jmethodID mid;
     JNIEnv *mEnv = Android_JNI_GetEnv();
     mid = (*mEnv)->GetStaticMethodID(mEnv, mActivityClass, "serialWrite", "(B)Z");

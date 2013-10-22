@@ -11,15 +11,13 @@ struct termios oldtio, newtio;
 HANDLE hSerial[10] = {INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE};
 #endif
 
-
-
-
 void serial_write (int fd, void *data, int len) {
 #ifndef WINDOWS
 #ifdef ANDROID
 	int n = 0;
 	for (n = 0; n < len; n++) {
-		Android_JNI_SendSerial((uint8_t)data[n]);
+		uint8_t *udata = (uint8_t *)data;
+		Android_JNI_SendSerial(udata[n]);
 	}
 #else
 	write(fd, data, len);

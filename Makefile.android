@@ -57,6 +57,5 @@ clean:
 	rm -f android/jni/src/*
 	rm -rf android/gen/
 	rm -rf android/bin/
-	rm -rf android/libs/
 	rm -rf android/obj/ 
 

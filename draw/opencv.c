@@ -111,8 +111,12 @@ int cv_update (void *data) {
 		return 0;
 	}
 	SDL_Log("opencv: open capture device: %i\n", cv_camid);
+
 #ifdef OSX
 	SDL_Delay(2000);
+#endif
+#ifdef ANDROID
+	cvSize(640, 480);
 #endif
 	if ((opencvimg = cvQueryFrame(cv_capture)) != NULL) {
 		cv_surface = SDL_CreateRGBSurface(0, opencvimg->width, opencvimg->height, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);

@@ -1695,7 +1695,7 @@ void Draw (ESContext *esContext) {
 			draw_text_f(esContext, 1.2 - strlen("LOST_RC") * 0.06 * 0.6, 0.9, 0.06, 0.06, FONT_PINK, "LOST_RC");
 		} else if (ModelData.heartbeat == 0 && connection_found == 1) {
 			draw_text_f(esContext, 1.2 - strlen("LOST_CON") * 0.06 * 0.6, 0.9, 0.06, 0.06, FONT_PINK, "LOST_CON");
-		} else if (ModelData.voltage > 1.0 && ModelData.voltage < setup.volt_min) {
+		} else if (ModelData.voltage > 1.0 && ModelData.voltage < setup.volt_min && connection_found == 1) {
 			draw_text_f(esContext, 1.2 - strlen("LOW_BAT") * 0.06 * 0.6, 0.9, 0.06, 0.06, FONT_PINK, "LOW_BAT");
 		}
 	}

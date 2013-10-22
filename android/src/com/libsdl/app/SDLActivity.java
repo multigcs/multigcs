@@ -52,6 +52,9 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
 
 
 /**
@@ -78,6 +81,9 @@ public class SDLActivity extends Activity {
 
     // Load the .so
     static {
+
+        OpenCVLoader.initDebug();
+
         System.loadLibrary("SDL2");
         System.loadLibrary("SDL2_image");
         //System.loadLibrary("SDL2_mixer");
@@ -443,6 +449,7 @@ public class SDLActivity extends Activity {
     }
 
     public static boolean serialWrite(byte c) {
+      if (sDriver != null) {
         try  {
             byte buffer[] = new byte[1];
 	    buffer[0] = c;
@@ -453,6 +460,7 @@ public class SDLActivity extends Activity {
             }
         }
         catch (IOException ex) { }
+      }
         return true;
     }
 
