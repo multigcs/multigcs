@@ -17,7 +17,6 @@ android/ant.properties
 android/build.properties
 android/default.properties
 android/local.properties
-android/project.properties
 android/proguard-project.txt
 android/build.xml
 Windows

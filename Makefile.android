@@ -29,7 +29,6 @@ all:
 	cp -a net/blender-export.py android/assets/webserv/blender-export.py
 	cp -a net/plane.dae android/assets/webserv/plane.dae
 	cp -a net/simple.dae android/assets/webserv/simple.dae
-	cp opencv-android-sdk/sdk/java/bin/classes.jar android/libs/
 	(cd android ; android update project -s -p ./ -t android-18)
 	(cd android ; ndk-build)
 	(cd android ; ant debug)
@@ -52,11 +51,11 @@ clean:
 	rm -f android/build.properties
 	rm -f android/default.properties
 	rm -f android/local.properties
-	rm -f android/project.properties
 	rm -f android/proguard-project.txt
 	rm -f android/build.xml
 	rm -f android/jni/src/*
 	rm -rf android/gen/
 	rm -rf android/bin/
+	rm -rf android/libs/
 	rm -rf android/obj/ 
 

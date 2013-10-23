@@ -531,7 +531,11 @@ void setup_load (void) {
 	setup.contrast = 0;
 	strcpy(setup.videocapture_device, "/dev/video0");
 	setup.qrcheck = 0;
+#ifdef ANDROID
+	setup.opencv_device = 0;
+#else
 	setup.opencv_device = -1;
+#endif
 	setup.opencv_features = 0;
 	setup.videocapture_width = 640;
 	setup.videocapture_height = 480;
