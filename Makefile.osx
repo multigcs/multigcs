@@ -43,7 +43,7 @@ app: gcs
 	cp -a utils/clean-badmaps.sh multigcs.app/Contents/MacOS/share/clean-badmaps.sh
 	cp -a README multigcs.app/Contents/MacOS/share/README
 	cp -a copyright multigcs.app/Contents/MacOS/share/copyright
-	cp -a gplv3.txt multigcs.app/Contents/MacOS/share/gplv3.txt
+	cp -a GPLv3.txt multigcs.app/Contents/MacOS/share/GPLv3.txt
 	test -e .git && git log | gzip -9 > multigcs.app/Contents/MacOS/share/changelog.gz
 	test -e .git && git log | gzip -9 > multigcs.app/Contents/MacOS/share/changelog.Debian.gz 
 	mkdir -p multigcs.app/Contents/MacOS/share/obj3d
@@ -68,6 +68,7 @@ app: gcs
 	cp -a net/blender-export.py multigcs.app/Contents/MacOS/share/webserv/blender-export.py
 	cp -a net/plane.dae multigcs.app/Contents/MacOS/share/webserv/plane.dae
 	cp -a net/simple.dae multigcs.app/Contents/MacOS/share/webserv/simple.dae
-
+	cp -a copyright multigcs.app/Contents/MacOS/share/webserv/copyright
+	cp -a GPLv3.txt multigcs.app/Contents/MacOS/share/webserv/GPLv3.txt
 	sh osx/osx-app.sh multigcs $(VERSION)
 

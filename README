@@ -16,19 +16,18 @@ Ground-Control-Station for multiple Protocols
 Homepage: http://www.multixmedia.org/Multi-GCS/index.html
 
 
-Installation:
-
+Compilation/Installation:
 	Linux/Desktop (OpenGL):
 
-		make -f Makefile.gl-sdl all install
+		make -f Makefile.gl-sdl all install deb
 
 	Linux/Desktop (OpenGL-ES):
 
-		make -f Makefile.gles-x11 all install
+		make -f Makefile.gles-x11 all install deb
 
 	Linux/Raspberry-Pi (OpenGL-ES):
 
-		make all install
+		make all install deb
 
 	Mac-OSX (OpenGL):
 
@@ -40,62 +39,60 @@ Installation:
 
 	Win32 (OpenGL / cross-compile with mingw on linux)
 
-		make -f Makefile.win32-cross all pack
+		make -f Makefile.win32-cross all pack installer
 
 
 Android-Permissions:
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-	to read and write map-files to storrage
-
-    <uses-permission android:name="android.permission.INTERNET" />
-	to get maps and open sevrer-port (closed by default)
-
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-	to get gps-data for the map
-
-    <uses-permission android:name="android.permission.BATTERY_STATS" />
-	to get battery-data
-
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-	for fc-connection over bluetooth
-
+	READ/WRITE_EXTERNAL_STORAGE
+		to read and write map-files on storrage
+	
+	INTERNET
+		to get maps and open server-port for the html5-gui/blender/google-earth support (closed by default)
+	
+	ACCESS_FINE_LOCATION
+		to get gps-data for the map
+	
+	BATTERY_STATS
+		to get battery-data
+	
+	BLUETOOTH / BLUETOOTH_ADMIN
+		for fc-connection over bluetooth
+	
+	CAMERA
+		for video-input/display in the hud-screen
 
 
 Raspberry-PI:
-#cat /boot/config.txt 
-hdmi_safe=1
-hdmi_drive=2
-disable_overscan=1
-overscan_left=0
-overscan_right=0
-overscan_top=0
-overscan_bottom=0
-hdmi_group=2
-hdmi_mode=22
-arm_freq=700
-core_freq=250
-sdram_freq=400
-over_voltage=0
+	#cat /boot/config.txt 
+		hdmi_safe=1
+		hdmi_drive=2
+		disable_overscan=1
+		overscan_left=0
+		overscan_right=0
+		overscan_top=0
+		overscan_bottom=0
+		hdmi_group=2
+		hdmi_mode=22
+		arm_freq=700
+		core_freq=250
+		sdram_freq=400
+		over_voltage=0
 
-#cat /root/.multigcs/setup.cfg 
-model_name		
-view_mode		7
-contrast		0
-screen_w		1280
-screen_h		720
-screen_border_x		32
-screen_border_y		28
-keep_ratio		1.422200
+	#cat /root/.multigcs/setup.cfg 
+		model_name		
+		view_mode		7
+		contrast		0
+		screen_w		1280
+		screen_h		720
+		screen_border_x		32
+		screen_border_y		28
+		keep_ratio		1.422200
 
-#cat /etc/rc.local
-#!/bin/sh -e
-
-/etc/init.d/dbus restart
-/etc/init.d/bluetooth restart
-su - root -c gcs
-
-exit 0
+	#cat /etc/rc.local
+		#!/bin/sh -e
+		/etc/init.d/dbus restart
+		/etc/init.d/bluetooth restart
+		su - root -c gcs
+		exit 0
 
 

@@ -97,13 +97,15 @@ pack:
 	cp -a net/blender-export.py Windows/MultiGCS/$(BASE_DIR)/webserv/blender-export.py
 	cp -a net/plane.dae Windows/MultiGCS/$(BASE_DIR)/webserv/plane.dae
 	cp -a net/simple.dae Windows/MultiGCS/$(BASE_DIR)/webserv/simple.dae
+	cp -a copyright Windows/MultiGCS/$(BASE_DIR)/webserv/copyright
+	cp -a GPLv3.txt Windows/MultiGCS/$(BASE_DIR)/webserv/GPLv3.txt
 	cp -a copyright Windows/MultiGCS/copyright.txt
-	cp -a gplv3.txt Windows/MultiGCS/gplv3.txt
+	cp -a GPLv3.txt Windows/MultiGCS/GPLv3.txt
 	cp -a README Windows/MultiGCS/README.txt
 	cp -a multigcs.html Windows/MultiGCS/multigcs.html
 	test -e .git && git log > Windows/MultiGCS/changelog.txt
 	todos Windows/MultiGCS/copyright.txt
-	todos Windows/MultiGCS/gplv3.txt
+	todos Windows/MultiGCS/GPLv3.txt
 	todos Windows/MultiGCS/README.txt
 	todos Windows/MultiGCS/changelog.txt
 	cp /usr/i686-w64-mingw32/bin/libpng3.dll Windows/MultiGCS/

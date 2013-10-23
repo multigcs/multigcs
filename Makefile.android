@@ -29,6 +29,8 @@ all:
 	cp -a net/blender-export.py android/assets/webserv/blender-export.py
 	cp -a net/plane.dae android/assets/webserv/plane.dae
 	cp -a net/simple.dae android/assets/webserv/simple.dae
+	cp -a copyright android/assets/webserv/copyright
+	cp -a GPLv3.txt android/assets/webserv/GPLv3.txt
 	(cd android ; android update project -s -p ./ -t android-18)
 	(cd android ; ndk-build)
 	(cd android ; ant debug)

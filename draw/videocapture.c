@@ -1,9 +1,6 @@
 /* 
  * Copyright (C) 2012 by Tomasz Moń <desowin@gmail.com>
  *
- * compile with:
- *   gcc -o sdlvideoviewer sdlvideoviewer.c -lSDL
- *
  * Based on V4L2 video capture example
  *
  * All rights reserved.

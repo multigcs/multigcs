@@ -805,6 +805,9 @@ void webserv_child_show_misc (int fd) {
 	strcat(content, "<H3>Misc</H3>\n");
 	strcat(content, "<A href=\"/modeldata\">/modeldata</A> (Model-Data / Telemetry-Data)<BR>\n");
 	strcat(content, "<A href=\"/screenshot\">/screenshot</A> (take a screenshot of the GUI)<BR>\n");
+	strcat(content, "<H3>Copyright</H3>\n");
+	strcat(content, "<A href=\"/copyright\">/copyright</A> (Copyright)<BR>\n");
+	strcat(content, "<A href=\"/GPLv3.txt\">/GPLv3.txt</A> (GPL v3)<BR>\n");
 	strcat(content, "</CENTER>\n");
 	webserv_html_stop(content);
 
@@ -3048,6 +3051,14 @@ void webserv_child (int fd) {
 		} else if (strncmp(buffer + 4,"/favicon.ico", 12) == 0) {
 			sprintf(tmp_str, "%s/webserv/favicon.ico", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "image/png");
+
+		} else if (strncmp(buffer + 4,"/copyright", 10) == 0) {
+			sprintf(tmp_str, "%s/webserv/copyright", BASE_DIR);
+			webserv_child_dump_file(fd, tmp_str, "text/plain");
+		} else if (strncmp(buffer + 4,"/GPLv3.txt", 10) == 0) {
+			sprintf(tmp_str, "%s/webserv/GPLv3.txt", BASE_DIR);
+			webserv_child_dump_file(fd, tmp_str, "text/plain");
+
 #ifndef OSX
 #ifdef SDLGL
 		} else if (strncmp(buffer + 4,"/video.png", 10) == 0) {
