@@ -1,0 +1,141 @@
+<HTML>
+	<STYLE type="text/css">
+		body {
+			color:#FFFFFF;
+		}
+		a {
+			color:#FFFFFF;
+		}
+		.background {
+		    background-color: #232323;
+		    _filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#496949', endColorstr='#111111');
+		    _background: -webkit-gradient(linear, left top, left bottom, from(#496949), to(#111111));
+		    _background: -moz-linear-gradient(top,  #496949,  #111111);
+		    top: 0%;
+		    left: 0%;
+		    width: 100%;
+		    height: 100%;
+		    position: fixed;
+		    z-index: -10;
+		}
+		.preview {
+			width: 581px;
+			height: 355px;
+			background-image: url(nexus7.png);
+			position: relative;
+		}
+		.screen1 {
+			top: 37px;
+			left: 66px;
+			float: none;
+			position: absolute;
+		}
+	</STYLE>
+	<SCRIPT>
+		var image_n = 0;    
+		var images = [
+			"sc_hud1.png", "sc_hud2.png", "sc_hud3.png", "sc_hud4.png", "sc_hud5.png", "sc_hud6.png",
+			"sc_telemetry1.png",
+			"sc_map1.png", "sc_map2.png", "sc_map3.png", "sc_map4.png", "sc_map5.png",
+			"sc_fms1.png", "sc_fms2.png",
+			"sc_model1.png", "sc_model2.png", 
+			"sc_ARDUPILOT1.png", "sc_ARDUPILOT2.png", "sc_ARDUPILOT3.png",
+			"sc_video1.png",
+			"sc_rcflow1.png", "sc_rcflow2.png",
+			"sc_tracker1.png",
+			"sc_tcl1.png",
+			"sc_system1.png", "sc_system2.png"
+		];
+		var logos = [
+			"ARDUPILOT", "AUTOQUAD", "BASEFLIGHT", "BASEFLIGHTCLI", "BRUGI", "CLI", "FRSKY", "GPS_NMEA", "HARAKIRI_ML", "MEGAPIRATE_NG", "MULTIWII_21", "OPENPILOT", "SIMPLEBGC"
+		];
+		function image_load (image) {
+			image_n = images.indexOf(image);
+			var group = image.split("_")[1].split(".")[0].replace(/^[0-9]|[0-9]$/g, "");
+			if (image == "sc_system2.png") {
+				var map = "system";
+			} else {
+				var map = "pn";
+			}
+			document.getElementById('screen').innerHTML ="<IMG class=\"screen1\" src=\"" + images[image_n] + "\" border=\"0\" usemap=\"#map_" + map + "\">";
+			document.getElementById('info').innerHTML = "" + group + " (" + (image_n + 1) + "/" + images.length + ")";
+		}
+		function image_next (num) {
+			image_n += num;
+			if (image_n < 0) {
+				image_n = images.length - 1;
+			} else if (image_n >= images.length) {
+				image_n = 0;
+			}
+			image_load(images[image_n]);
+		}
+		function image_group (group) {
+			var image = "sc_" + group + "1.png";
+			if (group == "ov") {
+				image = "sc_system2.png";
+			}
+			image_load(image);
+		}
+
+
+		function init () {
+			document.getElementById('fcs').innerHTML = "";
+			for (var n = 0; n < logos.length; n++) {
+				document.getElementById('fcs').innerHTML += "<IMG title=\"" + logos[n] + "\" width=\"100px\" src=\"logo-" + logos[n] + ".png\">&nbsp;";
+			}
+		}
+
+
+	</SCRIPT>
+	<map name="map_pn">
+		<area shape="rect" coords="0,0,105,30" onclick="image_next(-1)" />
+		<area shape="rect" coords="320,0,424,30" onclick="image_next(1)" />
+		<area shape="rect" coords="320,184,424,280" onclick="image_group('ov')" />
+	</map>
+	<map name="map_system">
+		<area shape="rect" coords="0,0,105,94" onclick="image_group('hud')" />
+		<area shape="rect" coords="107,0,212,94" onclick="image_group('telemetry')" />
+		<area shape="rect" coords="213,0,319,94" onclick="image_group('map')" />
+		<area shape="rect" coords="320,0,424,94" onclick="image_group('fms')" />
+		<area shape="rect" coords="0,95,105,183" onclick="image_group('model')" />
+		<area shape="rect" coords="107,95,212,183" onclick="image_group('ARDUPILOT')" />
+		<area shape="rect" coords="213,95,319,183" onclick="image_group('rcflow')" />
+		<area shape="rect" coords="320,95,424,183" onclick="image_group('video')" />
+		<area shape="rect" coords="0,184,105,280" onclick="image_group('tcl')" />
+		<area shape="rect" coords="107,184,212,280" onclick="image_group('tracker')" />
+		<area shape="rect" coords="213,184,319,280" onclick="image_group('system')" />
+		<area shape="rect" coords="320,184,424,280" onclick="image_group('system')" />
+	</map>
+	<BODY onload="init();">
+		<DIV class="background"></DIV>
+		<CENTER>
+			<CENTER id="fcs">--</CENTER>
+			<TABLE>
+				<TR><TD>&nbsp;</TD><TD></TD><TD><CENTER>^</CENTER></TD><TD></TD><TD>&nbsp;</TD></TR>
+				<TR><TD>&nbsp;</TD><TD></TD><TD><CENTER><IMG src="usb.png">&nbsp;<IMG src="bluetooth.png">&nbsp;<IMG src="3dr-radio.png"></CENTER></TD><TD></TD><TD>&nbsp;</TD></TR>
+				<TR><TD>&nbsp;</TD><TD></TD><TD><CENTER>v</CENTER></TD><TD></TD><TD>&nbsp;</TD></TR>
+				<TR><TD>&nbsp;</TD><TD></TD><TD><CENTER id="info">hud (1/26)</CENTER></TD><TD></TD><TD>&nbsp;</TD></TR>
+				<TR>
+					<TD width="300px" align="center">
+<IMG height="64px" src="lin.png"><BR><IMG height="64px" src="osx.png"><BR><IMG height="64px" src="win.png"><BR><IMG height="64px" src="android.png"><BR><IMG height="64px" src="raspberry.png">
+					</TD>
+					<TD><DIV onclick="image_next(-1)"><IMG width="64px" src="prev.png"></DIV></TD>
+					<TD><DIV id="screen" class="preview"><IMG class="screen1" src="sc_hud1.png" usemap="#map_pn"></DIV></TD>
+					<TD><DIV onclick="image_next(1)"><IMG width="64px" src="next.png"></DIV></TD>
+					<TD width="300px" align="center">
+<IMG height="64px" src="sdl.png"><BR>
+<IMG height="64px" src="gl.png"><BR>
+<IMG height="64px" src="gles.png"><BR>
+<IMG height="64px" src="opencv.png"><BR><BR>
+<IMG height="64px" src="osm.png">&nbsp;<IMG height="64px" src="gmaps.png">
+					</TD>
+				</TR>
+				<TR><TD>&nbsp;</TD><TD></TD><TD><CENTER>^</CENTER></TD><TD></TD><TD>&nbsp;</TD></TR>
+				<TR><TD>&nbsp;</TD><TD></TD><TD><CENTER><IMG height="64px" src="wifi.png">&nbsp;<IMG height="64px" src="ethnet.png"></CENTER></TD><TD></TD><TD>&nbsp;</TD></TR>
+				<TR><TD>&nbsp;</TD><TD></TD><TD><CENTER>v</CENTER></TD><TD></TD><TD>&nbsp;</TD></TR>
+			</TABLE>
+			<BR>
+			<CENTER><IMG height="64px" src="html5.png">&nbsp;<IMG height="64px" src="blender.png">&nbsp;<IMG height="64px" src="gearth.png">&nbsp;<IMG height="64px" src="multigcs.png"></CENTER>
+		</CENTER>
+	</BODY>
+</HTML>
