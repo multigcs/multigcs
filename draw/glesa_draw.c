@@ -151,6 +151,9 @@ void gl_init (ESContext *esContext) {
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 //		glShadeModel(GL_SMOOTH);
+//		glEnable(GL_POLYGON_SMOOTH);
+		glEnable(GL_POINT_SMOOTH);
+		glEnable(GL_LINE_SMOOTH);
 		glShadeModel(GL_FLAT);
 		glEnable(GL_TEXTURE_2D);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
