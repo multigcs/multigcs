@@ -76,16 +76,12 @@
 			}
 			image_load(image);
 		}
-
-
 		function init () {
 			document.getElementById('fcs').innerHTML = "";
 			for (var n = 0; n < logos.length; n++) {
 				document.getElementById('fcs').innerHTML += "<IMG title=\"" + logos[n] + "\" width=\"100px\" src=\"logo-" + logos[n] + ".png\">&nbsp;";
 			}
 		}
-
-
 	</SCRIPT>
 	<map name="map_pn">
 		<area shape="rect" coords="0,0,105,30" onclick="image_next(-1)" />

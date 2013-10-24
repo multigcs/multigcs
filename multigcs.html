@@ -1,85 +1,387 @@
 <HTML>
+<HEAD>
+	<TITLE>MultiGCS</TITLE>
 <STYLE type="text/css">
+@font-face {
+	font-family: 'Sonsie One'; font-style: normal; font-weight: 400; src: local('Sonsie One'), local('SonsieOne-Regular'), url(infohtml/font.woff) format('woff');
+}
 body {
-    background-color: #222A22;
-    color:#FFFFFF;
+	background-color: #222A22;
+	color:#FFFFFF;
+	font-weight: bold;
+	font-family: 'Sonsie One', cursive;
+	font-size: 16px;
+	letter-spacing: 0.1em;
+	text-shadow: 1px 1px 0px #000;
 }
 a {
-    color:#ABABAB;
+	color:#FFFFFF;
+	font-weight: bold;
+	font-family: 'Sonsie One', cursive;
+	font-size: 16px;
+	letter-spacing: 0.1em;
+	text-shadow: 1px 1px 0px #000;
 }
 .background {
-    background-color: #111111;
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#496949', endColorstr='#111111');
-    background: -webkit-gradient(linear, left top, left bottom, from(#496949), to(#111111));
-    background: -moz-linear-gradient(top,  #496949,  #111111);
-    top: 0%;
-    left: 0%;
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    z-index: -10;
+	background-color: #111111;
+	_filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#222233', endColorstr='#111111');
+	_background: -webkit-gradient(linear, left top, left bottom, from(#222233), to(#111111));
+	_background: -moz-linear-gradient(top,  #222233,  #111111);
+	background-image: url(infohtml/bg.jpg);
+	top: 0%;
+	left: 0%;
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	z-index: -10;
 }
 #table {
-    border: 5px solid #ABABAB;
-    padding: 0px;
-    *border-collapse: collapse;
-    border-spacing: 0;
-    -moz-border-radius: 9px 9px 9px 9px;
-    -webkit-border-radius: 9px 9px 9px 9px;
-    border-radius: 9px 9px 9px 9px;
-    -moz-box-shadow: 10px 10px 5px #000;
-    -webkit-box-shadow: 10px 10px 5px #000;
-    box-shadow: 10px 10px 5px #000;
+	border: 5px solid #555555;
+	padding: 0px;
+	*border-collapse: collapse;
+	border-spacing: 0;
+	-moz-border-radius: 9px 9px 9px 9px;
+	-webkit-border-radius: 9px 9px 9px 9px;
+	border-radius: 9px 9px 9px 9px;
+	-moz-box-shadow: 10px 10px 5px #000;
+	-webkit-box-shadow: 10px 10px 5px #000;
+	box-shadow: 10px 10px 5px #000;
+	font-weight: bold;
+	font-family: 'Sonsie One', cursive;
+	font-size: 16px;
+	letter-spacing: 0.2em;
+	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=70)";
+	filter: alpha(opacity=70);
+	-moz-opacity:0.7;
+	-khtml-opacity: 0.7;
+	opacity: 0.7;
 }
 th {
-    background-color: #ABABAB;
-    border: 1px solid #ABABAB;
-    color: #000000;
-    padding: 0px;
-    *border-collapse: collapse;
-    border-spacing: 0;
+	background-color: #555555;
+	border: 1px solid #555555;
+	padding: 0px;
+	*border-collapse: collapse;
+	border-spacing: 0;
+	text-shadow: 1px 1px 0px #000;
 }
 td {
-    background-color: #222222;
-    border: 1px solid #555555;
-    padding: 0px;
-    *border-collapse: collapse;
-    border-spacing: 0;
+	background-color: #222222;
+	border: 1px solid #555555;
+	padding: 0px;
+	*border-collapse: collapse;
+	border-spacing: 0;
+}
+.preview {
+	top: 30px;
+	width: 581px;
+	height: 355px;
+	left: 100px;
+	background-image: url(infohtml/nexus7.png);
+	position: absolute;
+}
+.screen1 {
+	top: 37px;
+	left: 66px;
+	float: none;
+	position: absolute;
+	z-index: 1;
+}
+.screen2 {
+	top: 37px;
+	left: 66px;
+	float: none;
+	position: absolute;
+	z-index: 2;
+}
+.info {
+	top: 0px;
+	width: 100%;
+	float: none;
+	position: absolute;
+}
+.prev {
+	top: 80px;
+	left: 20px;
+	float: none;
+	position: absolute;
+	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+	filter: alpha(opacity=30);
+	-moz-opacity:0.3;
+	-khtml-opacity: 0.3;
+	opacity: 0.3;
+}
+.next {
+	top: 80px;
+	right: 20px;
+	float: none;
+	position: absolute;
+	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+	filter: alpha(opacity=30);
+	-moz-opacity:0.3;
+	-khtml-opacity: 0.3;
+	opacity: 0.3;
+}
+.left {
+	left: 0px;
+	top: 90px;
+	width: 50%;
+	height: 370px;
+	position: absolute;
+}
+.right {
+	right: 0px;
+	top: 90px;
+	width: 781px;
+	height: 370px;
+	float: none;
+	position: absolute;
+}
+.bottom {
+	left: 0px;
+	top: 450px;
+	width: 100%;
+	float: none;
+	position: absolute;
+}
+h3 {
+	color:#FF33FC;
+	letter-spacing: 0.3em;
+}
+.title {
+	left: 5px;
+	position: absolute;
+	font-weight: bold;
+	font-family: 'Sonsie One', cursive;
+	font-size: 36px;
+	color:#00FF00;
+	letter-spacing: 0.5em;
+}
+.menu {
+	right: 90px;
+	top: 20px;
+	height: 20px;
+	position: absolute;
+}
+.hrline {
+	top: 60px;
+	width: 95%;
+	position: absolute;
+}
+.videos {
+	background-color: #DEDEDE;
+	top: 90px;
+	left: 10%;
+	width: 80%;
+	position: absolute;
+	z-index: 10;
+
+	-moz-border-radius: 9px 9px 9px 9px;
+	-webkit-border-radius: 9px 9px 9px 9px;
+	border-radius: 9px 9px 9px 9px;
+	-moz-box-shadow: 10px 10px 5px #000;
+	-webkit-box-shadow: 10px 10px 5px #000;
+	box-shadow: 10px 10px 5px #000;
+}
+.downloads {
+	background-color: #DEDEDE;
+	top: 90px;
+	left: 10%;
+	width: 80%;
+	height: 80%;
+	position: absolute;
+	z-index: 10;
+
+	-moz-border-radius: 9px 9px 9px 9px;
+	-webkit-border-radius: 9px 9px 9px 9px;
+	border-radius: 9px 9px 9px 9px;
+	-moz-box-shadow: 10px 10px 5px #000;
+	-webkit-box-shadow: 10px 10px 5px #000;
+	box-shadow: 10px 10px 5px #000;
 }
 </STYLE>
-<BODY>
+</HEAD>
+<BODY onLoad="init();">
 <DIV class="background"></DIV>
-<H1>MultiGCS</H1>
-<HR>
-
-<H3>Overview</H3>
-Ground-Control-Station for multiple Protocols and multiple Platforms
-<BLOCKQUOTE>
-<LI>based on OpenGL/OpenGL-ES with SDL/SDL2
-<LI>Support for MavLink (Autoquad6, MegapiratesNG, APM2, ...)
-<LI>Support for MultiWii-2.1 (MultiWii ...)
-<LI>Support for Baseflight (Naze32, MW32 ...)
-<LI>Support for UAV-Talk (OpenPilot, CC, C3D, ...)
-<LI>Support for NMEA-GPS
-<LI>Support for FrSky-Telemetrie (incl. GPS and RSSI)
-<LI>Network-Support: HTML5 Frontend and (Live-)Data-Export (Google-Earth, Blender)
-<LI>Touchscreens-Optimization
-<LI>for Linux-PC's, Mac-OSX, Android, Windows and Raspberry-PI(raspbian-wheezy)
-<LI>GPL v3
-</BLOCKQUOTE>
+<DIV class="title">MultiGCS</DIV>
+<DIV class="menu"><A onclick="overview_show()">OVERVIEW</A>&nbsp;&nbsp;<A onclick="video_show()">VIDEOS</A>&nbsp;&nbsp;<A onclick="download_show()">DOWNLOADS</A></DIV>
+<HR class="hrline">
+<DIV class="left">
+	<H3>Overview</H3>
+	<BLOCKQUOTE>
+	Ground-Control-Station for multiple Protocols and multiple Platforms
+	<LI>based on OpenGL/OpenGL-ES with SDL/SDL2
+	<LI>Support for MavLink (Autoquad6, MegapiratesNG, APM2, ...)
+	<LI>Support for MultiWii-2.1 (MultiWii ...)
+	<LI>Support for Baseflight (Naze32, MW32 ...)
+	<LI>Support for UAV-Talk (OpenPilot, CC, C3D, ...)
+	<LI>Support for NMEA-GPS
+	<LI>Support for FrSky-Telemetrie (incl. GPS and RSSI)
+	<LI>Network-Support: HTML5 Frontend and (Live-)Data-Export (Google-Earth, Blender)
+	<LI>Touchscreens-Optimization
+	<LI>for Linux-PC's, Mac-OSX, Android, Windows and Raspberry-PI(raspbian-wheezy)
+	<LI>GPL v3
+	</BLOCKQUOTE>
+</DIV>
+<DIV class="right">
+	<SCRIPT>
+		var image_n = 0;    
+		var images = [
+			"sc_hud1.png", "sc_hud2.png", "sc_hud3.png", "sc_hud4.png", "sc_hud5.png", "sc_hud6.png",
+			"sc_telemetry1.png",
+			"sc_map1.png", "sc_map2.png", "sc_map3.png", "sc_map4.png", "sc_map5.png",
+			"sc_fms1.png", "sc_fms2.png",
+			"sc_model1.png", "sc_model2.png", 
+			"sc_ARDUPILOT1.png", "sc_ARDUPILOT2.png", "sc_ARDUPILOT3.png",
+			"sc_video1.png",
+			"sc_rcflow1.png", "sc_rcflow2.png",
+			"sc_tracker1.png",
+			"sc_tcl1.png",
+			"sc_system1.png", "sc_system2.png"
+		];
+		var logos = [
+			"ARDUPILOT", "AUTOQUAD", "BASEFLIGHT", "BASEFLIGHTCLI", "BRUGI", "CLI", "FRSKY", "GPS_NMEA", "HARAKIRI_ML", "MEGAPIRATE_NG", "MULTIWII_21", "OPENPILOT", "SIMPLEBGC"
+		];
+		var TimerVar = setInterval(function(){myTimer()}, 2000);
+		var LastIMG = "sc_hud1.png";
+		var fade_val = 0.0;
+		function image_fade () {
+			if (fade_val < 1.0) {
+				fade_val += 0.1;
+				setTimeout(image_fade, 50);
+			}
+			document.getElementsByClassName("screen2")[0].style.opacity = fade_val;
+		}
+		function image_load (image) {
+			image_n = images.indexOf(image);
+			var group = image.split("_")[1].split(".")[0].replace(/^[0-9]|[0-9]$/g, "");
+			if (image == "sc_system2.png") {
+				var map = "system";
+			} else {
+				var map = "pn";
+			}
+			document.getElementById('screen').innerHTML ="<IMG class=\"screen1\" src=\"infohtml/" + LastIMG + "\" border=\"0\" usemap=\"#map_" + map + "\">";
+			document.getElementById('screen2').innerHTML ="<IMG class=\"screen2\" src=\"infohtml/" + image + "\" border=\"0\" usemap=\"#map_" + map + "\">";
+			document.getElementById('info').innerHTML = "<CENTER>" + group.toUpperCase() + " (" + (image_n + 1) + "/" + images.length + ")</CENTER>";
+			fade_val = 0.0;
+			document.getElementsByClassName("screen2")[0].style.opacity = fade_val;
+			image_fade();
+			LastIMG = image;
+		}
+		function image_next (num) {
+			window.clearInterval(TimerVar);
+			image_n += num;
+			if (image_n < 0) {
+				image_n = images.length - 1;
+			} else if (image_n >= images.length) {
+				image_n = 0;
+			}
+			image_load(images[image_n]);
+		}
+		function image_group (group) {
+			window.clearInterval(TimerVar);
+			var image = "sc_" + group + "1.png";
+			if (group == "ov") {
+				image = "sc_system2.png";
+			}
+			image_load(image);
+		}
+		function myTimer () {
+			image_n += 1;
+			if (image_n < 0) {
+				image_n = images.length - 1;
+			} else if (image_n >= images.length) {
+				image_n = 0;
+			}
+			image_load(images[image_n]);
+		}
+		function overview_show () {
+			document.getElementById("videos").style.display = 'none';
+			document.getElementById("downloads").style.display = 'none';
+		}
+		function video_show () {
+			document.getElementById("videos").style.display = 'block';
+			document.getElementById("downloads").style.display = 'none';
+		}
+		function download_show () {
+			document.getElementById("videos").style.display = 'none';
+			document.getElementById("downloads").style.display = 'block';
+		}
+		function init () {
+			video_hide();
+		}
+	</SCRIPT>
+	<map name="map_pn">
+		<area shape="rect" coords="0,0,105,30" onclick="image_next(-1)" />
+		<area shape="rect" coords="320,0,424,30" onclick="image_next(1)" />
+		<area shape="rect" coords="320,184,424,280" onclick="image_group('ov')" />
+	</map>
+	<map name="map_system">
+		<area shape="rect" coords="0,0,105,94" onclick="image_group('hud')" />
+		<area shape="rect" coords="107,0,212,94" onclick="image_group('telemetry')" />
+		<area shape="rect" coords="213,0,319,94" onclick="image_group('map')" />
+		<area shape="rect" coords="320,0,424,94" onclick="image_group('fms')" />
+		<area shape="rect" coords="0,95,105,183" onclick="image_group('model')" />
+		<area shape="rect" coords="107,95,212,183" onclick="image_group('ARDUPILOT')" />
+		<area shape="rect" coords="213,95,319,183" onclick="image_group('rcflow')" />
+		<area shape="rect" coords="320,95,424,183" onclick="image_group('video')" />
+		<area shape="rect" coords="0,184,105,280" onclick="image_group('tcl')" />
+		<area shape="rect" coords="107,184,212,280" onclick="image_group('tracker')" />
+		<area shape="rect" coords="213,184,319,280" onclick="image_group('system')" />
+		<area shape="rect" coords="320,184,424,280" onclick="image_group('system')" />
+	</map>
+	<DIV class="info" id="info"><CENTER>HUD (1/26)</CENTER></DIV>
+	<DIV class="prev" onclick="image_next(-1)"><IMG width="64px" height="256px" src="infohtml/prev.png"></DIV>
+	<DIV id="screen" class="preview"><IMG class="screen1" src="infohtml/sc_hud1.png" usemap="#map_pn"></DIV>
+	<DIV id="screen2" class="preview"><IMG class="screen2" src="infohtml/sc_hud1.png" usemap="#map_pn"></DIV>
+	<DIV class="next" onclick="image_next(1)"><IMG width="64px" height="256px" src="infohtml/next.png"></DIV>
+</DIV>
+<DIV class="bottom">
 
 <H3>Platform-Support</H3>
 <BLOCKQUOTE>
 <TABLE id="table" width="100%">
-<TR><TH>Function</TH><TH>Linux-Desktop</TH><TH>Raspberry-PI</TH><TH>MacOS-X</TH><TH>Windows</TH><TH>Android</TH></TR>
+<TR><TH width="1%">Function</TH><TH width="2%">Linux-Desktop</TH><TH width="2%">Raspberry-PI</TH><TH width="2%">MacOS-X</TH><TH width="2%">Windows</TH><TH width="2%">Android</TH></TR>
 <TR><TD>Display</TD><TD>OpenGL</TD><TD>OpenGL-ES2</TD><TD>OpenGL</TD><TD>OpenGL</TD><TD>OpenGL-ES1.1</TD></TR>
-<TR><TD>Draw to Buffer</TD><TD>Yes</TD><TD>No</TD><TD>No</TD><TD>Yes</TD><TD>Yes</TD></TR>
-<TR><TD>(USB-to-)Serial</TD><TD>Yes</TD><TD>Yes</TD><TD>Yes</TD><TD>Yes</TD><TD>No</TD></TR>
+<TR><TD>(USB-to-)Serial</TD><TD>Yes</TD><TD>Yes</TD><TD>Yes</TD><TD>Yes</TD><TD>Yes</TD></TR>
 <TR><TD>Bluetooth</TD><TD>rfcomm</TD><TD>rfcomm</TD><TD>???</TD><TD>???</TD><TD>Yes (device-name: radio3dr)</TD></TR>
 <TR><TD>Text to Speak</TD><TD>Yes</TD><TD>Yes</TD><TD>Yes</TD><TD>No</TD><TD>Yes</TD></TR>
 <TR><TD>Network-Support</TD><TD>Yes</TD><TD>Yes</TD><TD>Yes</TD><TD>No</TD><TD>Yes (buggy/unstable)</TD></TR>
+<TR><TD>Draw to Buffer</TD><TD>Yes</TD><TD>No</TD><TD>Yes</TD><TD>No</TD><TD>Yes</TD></TR>
 </TABLE>
 </BLOCKQUOTE>
 
+<H3>Protocol-Support</H3>
+<BLOCKQUOTE>
+<TABLE id="table" width="100%">
+<TR><TH width="1%">Function</TH><TH width="2%">MavLink</TH><TH width="2%">MultiWii2.1</TH><TH width="2%">UAV-Talk</TH><TH width="2%">Frsky</TH><TH width="2%">NMEA</TH><TH width="2%">SimpleBGC</TH><TH width="2%">Brugi</TH></TR>
+<TR><TD>HUD</TD><TD>Yes</TD><TD>Yes</TD><TD>Yes</TD><TD>ACC-Only</TD><TD>No</TD><TD>No</TD><TD>No</TD></TR>
+<TR><TD>MAP</TD><TD>Yes</TD><TD>Yes</TD><TD>Yes</TD><TD>Yes</TD><TD>Yes</TD><TD>No</TD><TD>No</TD></TR>
+<TR><TD>Telemetry</TD><TD>Yes</TD><TD>Yes</TD><TD>Yes</TD><TD>Yes</TD><TD>No</TD><TD>No</TD><TD>No</TD></TR>
+<TR><TD>Setup</TD><TD>Yes</TD><TD>Yes</TD><TD>Yes</TD><TD>No</TD><TD>No</TD><TD>Yes</TD><TD>Yes</TD></TR>
+<TR><TD>File-Save/Restore</TD><TD>Yes</TD><TD>No</TD><TD>No</TD><TD>No</TD><TD>No</TD><TD>No</TD><TD>No</TD></TR>
+</TABLE>
+</BLOCKQUOTE>
+</DIV>
+<DIV id="videos" class="videos" style="display:none;">
+<CENTER><BR>
+	<iframe width="420" height="315" src="http://www.youtube.com/embed/9iq7iixyDt0" frameborder="0" allowfullscreen></iframe>
+	<iframe width="420" height="315" src="http://www.youtube.com/embed/X8d1B323wJM" frameborder="0" allowfullscreen></iframe>
+	<iframe width="420" height="315" src="http://www.youtube.com/embed/b9l3jsoXP6Y" frameborder="0" allowfullscreen></iframe>
+	<iframe width="420" height="315" src="http://www.youtube.com/embed/8r8M5irb87o" frameborder="0" allowfullscreen></iframe>
+	<iframe width="420" height="315" src="http://www.youtube.com/embed/P0gsqOYpYQQ" frameborder="0" allowfullscreen></iframe>
+	<iframe width="420" height="315" src="http://www.youtube.com/embed/MWO1KQSfk5c" frameborder="0" allowfullscreen></iframe>
+	<iframe width="420" height="315" src="http://www.youtube.com/embed/_wpgu_E-BV0" frameborder="0" allowfullscreen></iframe>
+	<iframe width="420" height="315" src="http://www.youtube.com/embed/PtVARV14PL4" frameborder="0" allowfullscreen></iframe>
+	<iframe width="420" height="315" src="http://www.youtube.com/embed/jaR6KQMP6LE" frameborder="0" allowfullscreen></iframe>
+	<iframe width="420" height="315" src="http://www.youtube.com/embed/fPJCTeGPp1o" frameborder="0" allowfullscreen></iframe>
+	<iframe width="420" height="315" src="http://www.youtube.com/embed/2Hzu1I2jAT8" frameborder="0" allowfullscreen></iframe>
+	<iframe width="420" height="315" src="http://www.youtube.com/embed/at_vWP97hX4" frameborder="0" allowfullscreen></iframe>
+</CENTER>
+</DIV>
+<DIV id="downloads" class="downloads" style="display:none;">
+<CENTER>
+	<iframe width="100%" height="100%" src="http://www.multixmedia.org/test/MultiGCS/" frameborder="0"></iframe>
+</CENTER>
+</DIV>
 </BODY>
 </HTML>
