@@ -115,6 +115,23 @@
 		<type></type>
 		<copyright></copyright>
 	</overlay_service>
+
+	<overlay_service>
+		<name>AIR</name>
+		<comment></comment>
+		<url>http://www.prosoar.de/airspace/%i/%i/%i.png</url>
+		<file>%s/MAPS/omap_airspace_%i_%i_%i.png</file>
+		<type>ZXY</type>
+		<copyright>Karte von &lt;a href='http://openstreetmap.org/'&gt;OpenStreetMap&lt;/a&gt; und Mitwirkenden unter &lt;a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'&gt;CC-BY-SA&lt;/a&gt;-Lizenz</copyright>
+	</overlay_service>
+	<overlay_service>
+		<name>HILLS</name>
+		<comment></comment>
+		<url>http://toolserver.org/~cmarqu/hill/%i/%i/%i.png</url>
+		<file>%s/MAPS/omap_hill_%i_%i_%i.png</file>
+		<type>ZXY</type>
+		<copyright>Karte von &lt;a href='http://openstreetmap.org/'&gt;OpenStreetMap&lt;/a&gt; und Mitwirkenden unter &lt;a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'&gt;CC-BY-SA&lt;/a&gt;-Lizenz</copyright>
+	</overlay_service>
 	<overlay_service>
 		<name>PREC</name>
 		<comment></comment>

@@ -436,12 +436,16 @@ void get_maps (uint8_t mode) {
 						if (file_exists(tile_name) == 0) {
 							sprintf(tmp_str2, "%s_org.png", tile_name);
 							sprintf(tile_url, omapnames[omap_type][MAP_URL], zoom, tile_x + x_n, tile_y + y_n);
-							SDL_Log("map: %s -> %s\n", tile_url, tmp_str2);
-							file_download(tmp_str2, tile_url);
-							sprintf(tmp_str, "convert -channel Alpha -evaluate Divide 2 %s %s.tmp.png", tmp_str2, tile_name);
-							system(tmp_str);
-							sprintf(tmp_str, "mv %s.tmp.png %s", tile_name, tile_name);
-							system(tmp_str);
+//							SDL_Log("map: %s -> %s\n", tile_url, tmp_str2);
+//							file_download(tmp_str2, tile_url);
+//							sprintf(tmp_str, "convert -channel Alpha -evaluate Divide 2 %s %s.tmp.png", tmp_str2, tile_name);
+//							system(tmp_str);
+//							sprintf(tmp_str, "mv %s.tmp.png %s", tile_name, tile_name);
+//							system(tmp_str);
+
+							SDL_Log("map: %s -> %s\n", tile_url, tile_name);
+							file_download(tile_name, tile_url);
+
 						}
 					}
 					tiles_num++;
