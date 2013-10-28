@@ -111,307 +111,307 @@ void model_parseOpenPilot_StabilizationSettings (xmlDocPtr doc, xmlNodePtr cur, 
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
 		if (1 == 2) {
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"ManualRate_Roll"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"ManualRate_Roll"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->ManualRate[0] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"ManualRate_Pitch"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"ManualRate_Pitch"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->ManualRate[1] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"ManualRate_Yaw"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"ManualRate_Yaw"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->ManualRate[2] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"MaximumRate_Roll"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"MaximumRate_Roll"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->MaximumRate[0] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"MaximumRate_Pitch"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"MaximumRate_Pitch"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->MaximumRate[1] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"MaximumRate_Yaw"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"MaximumRate_Yaw"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->MaximumRate[2] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"RollRatePID_Kp"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"RollRatePID_Kp"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->RollRatePID[0] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"RollRatePID_Ki"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"RollRatePID_Ki"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->RollRatePID[1] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"RollRatePID_Kd"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"RollRatePID_Kd"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->RollRatePID[2] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"RollRatePID_ILimit"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"RollRatePID_ILimit"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->RollRatePID[3] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"PitchRatePID_Kp"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"PitchRatePID_Kp"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->PitchRatePID[0] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"PitchRatePID_Ki"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"PitchRatePID_Ki"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->PitchRatePID[1] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"PitchRatePID_Kd"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"PitchRatePID_Kd"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->PitchRatePID[2] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"PitchRatePID_ILimit"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"PitchRatePID_ILimit"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->PitchRatePID[3] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"YawRatePID_Kp"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"YawRatePID_Kp"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->YawRatePID[0] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"YawRatePID_Ki"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"YawRatePID_Ki"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->YawRatePID[1] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"YawRatePID_Kd"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"YawRatePID_Kd"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->YawRatePID[2] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"YawRatePID_ILimit"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"YawRatePID_ILimit"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->YawRatePID[3] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"RollPI_Kp"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"RollPI_Kp"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->RollPI[0] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"RollPI_Ki"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"RollPI_Ki"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->RollPI[1] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"RollPI_ILimit"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"RollPI_ILimit"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->RollPI[2] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"PitchPI_Kp"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"PitchPI_Kp"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->PitchPI[0] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"PitchPI_Ki"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"PitchPI_Ki"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->PitchPI[1] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"PitchPI_ILimit"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"PitchPI_ILimit"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->PitchPI[2] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"YawPI_Kp"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"YawPI_Kp"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->YawPI[0] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"YawPI_Ki"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"YawPI_Ki"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->YawPI[1] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"YawPI_ILimit"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"YawPI_ILimit"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->YawPI[2] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"VbarSensitivity_Roll"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"VbarSensitivity_Roll"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->VbarSensitivity[0] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"VbarSensitivity_Pitch"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"VbarSensitivity_Pitch"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->VbarSensitivity[1] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"VbarSensitivity_Yaw"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"VbarSensitivity_Yaw"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->VbarSensitivity[2] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"VbarRollPI_Kp"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"VbarRollPI_Kp"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->VbarRollPI[0] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"VbarRollPI_Ki"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"VbarRollPI_Ki"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->VbarRollPI[1] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"VbarPitchPI_Kp"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"VbarPitchPI_Kp"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->VbarPitchPI[0] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"VbarPitchPI_Ki"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"VbarPitchPI_Ki"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->VbarPitchPI[1] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"VbarYawPI_Kp"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"VbarYawPI_Kp"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->VbarYawPI[0] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"VbarYawPI_Ki"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"VbarYawPI_Ki"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->VbarYawPI[1] = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"VbarTau"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"VbarTau"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->VbarTau = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"GyroTau"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"GyroTau"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->GyroTau = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"DerivativeGamma"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"DerivativeGamma"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->DerivativeGamma = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"WeakLevelingKp"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"WeakLevelingKp"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->WeakLevelingKp = atof((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"RollMax"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"RollMax"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->RollMax = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"PitchMax"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"PitchMax"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->PitchMax = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"YawMax"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"YawMax"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->YawMax = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"VbarGyroSuppress"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"VbarGyroSuppress"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->VbarGyroSuppress = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"VbarMaxAngle"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"VbarMaxAngle"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->VbarMaxAngle = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"DerivativeCutoff"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"DerivativeCutoff"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->DerivativeCutoff = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"MaxAxisLock"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"MaxAxisLock"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->MaxAxisLock = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"MaxAxisLockRate"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"MaxAxisLockRate"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->MaxAxisLockRate = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"MaxWeakLevelingRate"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"MaxWeakLevelingRate"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->MaxWeakLevelingRate = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"VbarPiroComp"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"VbarPiroComp"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->VbarPiroComp = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"LowThrottleZeroIntegral"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"LowThrottleZeroIntegral"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->LowThrottleZeroIntegral = atoi((char *)key);
@@ -429,133 +429,133 @@ void model_parseOpenPilot_HwSettings (xmlDocPtr doc, xmlNodePtr cur, HwSettingsD
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
 		if (1 == 2) {
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"DSMxBind"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"DSMxBind"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->DSMxBind = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"CC_RcvrPort"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"CC_RcvrPort"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->CC_RcvrPort = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"CC_MainPort"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"CC_MainPort"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->CC_MainPort = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"CC_FlexiPort"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"CC_FlexiPort"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->CC_FlexiPort = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"RV_RcvrPort"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"RV_RcvrPort"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->RV_RcvrPort = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"RV_AuxPort"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"RV_AuxPort"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->RV_AuxPort = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"RV_AuxSBusPort"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"RV_AuxSBusPort"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->RV_AuxSBusPort = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"RV_FlexiPort"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"RV_FlexiPort"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->RV_FlexiPort = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"RV_TelemetryPort"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"RV_TelemetryPort"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->RV_TelemetryPort = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"RV_GPSPort"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"RV_GPSPort"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->RV_GPSPort = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"TelemetrySpeed"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"TelemetrySpeed"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->TelemetrySpeed = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"GPSSpeed"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"GPSSpeed"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->GPSSpeed = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"ComUsbBridgeSpeed"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"ComUsbBridgeSpeed"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->ComUsbBridgeSpeed = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"USB_HIDPort"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"USB_HIDPort"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->USB_HIDPort = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"USB_VCPPort"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"USB_VCPPort"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->USB_VCPPort = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"OptionalModules_CameraStab"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"OptionalModules_CameraStab"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->OptionalModules[0] = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"OptionalModules_GPS"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"OptionalModules_GPS"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->OptionalModules[1] = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"OptionalModules_ComUsbBridge"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"OptionalModules_ComUsbBridge"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->OptionalModules[2] = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"OptionalModules_Fault"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"OptionalModules_Fault"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->OptionalModules[3] = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"OptionalModules_Altitude"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"OptionalModules_Altitude"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->OptionalModules[4] = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"OptionalModules_TxPID"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"OptionalModules_TxPID"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->OptionalModules[5] = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"OptionalModules_Autotune"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"OptionalModules_Autotune"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->OptionalModules[6] = atoi((char *)key);
@@ -573,13 +573,13 @@ void model_parseOpenPilot_SystemSettings (xmlDocPtr doc, xmlNodePtr cur, SystemS
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
 		if (1 == 2) {
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"GUIConfigData"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"GUIConfigData"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->GUIConfigData = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"AirframeType"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"AirframeType"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				data->AirframeType = atoi((char *)key);
@@ -599,11 +599,11 @@ void model_parseOpenPilot (xmlDocPtr doc, xmlNodePtr cur) {
 	openpilot_defaults_SystemSettings(&OpenpilotSystemSettings);
 	while (cur != NULL) {
 		if (1 == 2) {
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"StabilizationSettings"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"StabilizationSettings"))) {
 			model_parseOpenPilot_StabilizationSettings(doc, cur, &OpenpilotStabilizationSettings);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"HwSettings"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"HwSettings"))) {
 			model_parseOpenPilot_HwSettings(doc, cur, &OpenpilotHwSettings);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"SystemSettings"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"SystemSettings"))) {
 			model_parseOpenPilot_SystemSettings(doc, cur, &OpenpilotSystemSettings);
 		}
 		cur = cur->next;

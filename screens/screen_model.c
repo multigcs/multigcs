@@ -159,31 +159,31 @@ static void model_parseTelemetry (xmlDocPtr doc, xmlNodePtr cur) {
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"type"))) {
+		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"type"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				ModelData.teletype = model_get_teletype_by_name((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"device"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"device"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				strncpy(ModelData.teledevice, (char *)key, 199);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"baud"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"baud"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				ModelData.telebaud = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"bluetooth_addr"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"bluetooth_addr"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				strncpy(ModelData.telebtaddr, (char *)key, 199);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"bluetooth_pin"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"bluetooth_pin"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				strncpy(ModelData.telebtpin, (char *)key, 199);
@@ -232,7 +232,7 @@ static void model_parseDoc (char *docname) {
 	strncpy(ModelData.name, basename(docname), 199);
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"name"))) {
+		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"name"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				strncpy(ModelData.name, (char *)key, 199);
@@ -241,26 +241,26 @@ static void model_parseDoc (char *docname) {
 				}
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"image"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"image"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				strncpy(ModelData.image, (char *)key, 511);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"type"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"type"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				ModelData.modeltype = model_get_modeltype_by_name((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"telemetry"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"telemetry"))) {
 			model_parseTelemetry(doc, cur);
 
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"mavlink"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"mavlink"))) {
 			mavlink_xml_load(doc, cur);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"mwi21"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"mwi21"))) {
 			mwi21_xml_load(doc, cur);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"OpenPilot"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"OpenPilot"))) {
 			openpilot_xml_load(doc, cur);
 
 		}

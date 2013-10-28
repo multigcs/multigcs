@@ -1,6 +1,6 @@
 
 #include <all.h>
-
+#include <kml.h>
 
 volatile float lat = 50.29;
 volatile float lon = 9.12;
@@ -63,7 +63,7 @@ void map_parseMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t map_service) {
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"name"))) {
+		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"name"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
 				strncpy(mapnames[map_service][MAP_NAME], (char *)key, 199);
@@ -71,7 +71,7 @@ void map_parseMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t map_service) {
 				mapnames[map_service][MAP_NAME][0] = 0;
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"url"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"url"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
 				strncpy(mapnames[map_service][MAP_URL], (char *)key, 199);
@@ -79,7 +79,7 @@ void map_parseMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t map_service) {
 				mapnames[map_service][MAP_URL][0] = 0;
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"comment"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"comment"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
 				strncpy(mapnames[map_service][MAP_COMMENT], (char *)key, 199);
@@ -87,7 +87,7 @@ void map_parseMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t map_service) {
 				mapnames[map_service][MAP_COMMENT][0] = 0;
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"copyright"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"copyright"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
 				strncpy(mapnames[map_service][MAP_COPYRIGHT], (char *)key, 199);
@@ -95,7 +95,7 @@ void map_parseMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t map_service) {
 				mapnames[map_service][MAP_COPYRIGHT][0] = 0;
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"file"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"file"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
 				strncpy(mapnames[map_service][MAP_FILE], (char *)key, 199);
@@ -103,7 +103,7 @@ void map_parseMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t map_service) {
 				mapnames[map_service][MAP_FILE][0] = 0;
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"type"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"type"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
 				strncpy(mapnames[map_service][MAP_TYPE], (char *)key, 199);
@@ -121,7 +121,7 @@ void map_parseOverlayMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t omap_ser
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"name"))) {
+		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"name"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
 				strncpy(omapnames[omap_service][MAP_NAME], (char *)key, 199);
@@ -129,7 +129,7 @@ void map_parseOverlayMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t omap_ser
 				omapnames[omap_service][MAP_NAME][0] = 0;
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"url"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"url"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
 				strncpy(omapnames[omap_service][MAP_URL], (char *)key, 199);
@@ -137,7 +137,7 @@ void map_parseOverlayMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t omap_ser
 				omapnames[omap_service][MAP_URL][0] = 0;
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"file"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"file"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
 				strncpy(omapnames[omap_service][MAP_FILE], (char *)key, 199);
@@ -145,7 +145,7 @@ void map_parseOverlayMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t omap_ser
 				omapnames[omap_service][MAP_FILE][0] = 0;
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"type"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"type"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
 				strncpy(omapnames[omap_service][MAP_TYPE], (char *)key, 199);
@@ -197,9 +197,9 @@ static void map_parseDoc (char *docname) {
 	}
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"service"))) {
+		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"service"))) {
 			map_parseMapService (doc, cur, maplen++);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"overlay_service"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"overlay_service"))) {
 			map_parseOverlayMapService (doc, cur, omaplen++);
 		}
 		cur = cur->next;
@@ -2028,6 +2028,9 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 	}
 #ifdef SDLGL
+
+//	map_kml_parseDoc("test.kml");
+
 	// Camview - Target-Marking
 	float nx2 = 0.0;
 	float ny2 = 0.0;

@@ -263,27 +263,27 @@ void rcflow_parseInput (xmlDocPtr doc, xmlNodePtr cur, uint8_t plugin, uint8_t i
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"name"))) {
+		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"name"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			strcpy(RcPlugin[plugin].input[input].name, (char *)key);
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"value"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"value"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			RcPlugin[plugin].input[input].value = atoi((char *)key);
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"type"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"type"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			RcPlugin[plugin].input[input].type = atoi((char *)key);
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"option"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"option"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			RcPlugin[plugin].input[input].option = atoi((char *)key);
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"tmp_value"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"tmp_value"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			RcPlugin[plugin].input[input].tmp_value = atof((char *)key);
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"tmp_text"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"tmp_text"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				strcpy(RcPlugin[plugin].input[input].tmp_text, (char *)key);
@@ -299,27 +299,27 @@ void rcflow_parseOutput (xmlDocPtr doc, xmlNodePtr cur, uint8_t plugin, uint8_t 
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"name"))) {
+		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"name"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			strcpy(RcPlugin[plugin].output[output].name, (char *)key);
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"value"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"value"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			RcPlugin[plugin].output[output].value = atoi((char *)key);
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"type"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"type"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			RcPlugin[plugin].output[output].type = atoi((char *)key);
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"option"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"option"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			RcPlugin[plugin].output[output].option = atoi((char *)key);
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"tmp_value"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"tmp_value"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			RcPlugin[plugin].output[output].tmp_value = atof((char *)key);
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"tmp_text"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"tmp_text"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				strcpy(RcPlugin[plugin].output[output].tmp_text, (char *)key);
@@ -337,49 +337,49 @@ void rcflow_parsePlugin (xmlDocPtr doc, xmlNodePtr cur, uint8_t plugin) {
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"name"))) {
+		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"name"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			strcpy(RcPlugin[plugin].name, (char *)key);
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"title"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"title"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				strcpy(RcPlugin[plugin].title, (char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"text"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"text"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				strcpy(RcPlugin[plugin].text, (char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"type"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"type"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			RcPlugin[plugin].type = atoi((char *)key);
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"option"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"option"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			RcPlugin[plugin].option = atoi((char *)key);
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"x"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"x"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			RcPlugin[plugin].x = atof((char *)key);
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"y"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"y"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			RcPlugin[plugin].y = atof((char *)key);
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"x_virt"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"x_virt"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			RcPlugin[plugin].x_virt = atof((char *)key);
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"y_virt"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"y_virt"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			RcPlugin[plugin].y_virt = atof((char *)key);
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"input"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"input"))) {
 			rcflow_parseInput(doc, cur, plugin, input++);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"output"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"output"))) {
 			rcflow_parseOutput(doc, cur, plugin, output++);
 		}
 		cur = cur->next;
@@ -391,13 +391,13 @@ void rcflow_parseLink (xmlDocPtr doc, xmlNodePtr cur, uint8_t link) {
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"from"))) {
+		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"from"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				strcpy(RcLink[link].from, (char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"to"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"to"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				strcpy(RcLink[link].to, (char *)key);
@@ -413,7 +413,7 @@ void rcflow_parseTelemetry (xmlDocPtr doc, xmlNodePtr cur) {
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"type"))) {
+		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"type"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				ModelData.teletype = rctransmitter_get_type_by_name((char *)key);
@@ -429,13 +429,13 @@ void rcflow_parseMavlinkParam (xmlDocPtr doc, xmlNodePtr cur, uint16_t param) {
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"name"))) {
+		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"name"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				strcpy(MavLinkVars[param].name, (char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"value"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"value"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				MavLinkVars[param].value = atof((char *)key);
@@ -456,7 +456,7 @@ void rcflow_parseMavlink (xmlDocPtr doc, xmlNodePtr cur) {
 	param = 0;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"param"))) {
+		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"param"))) {
 			rcflow_parseMavlinkParam (doc, cur, param++);
 		}
 		cur = cur->next;
@@ -531,7 +531,7 @@ static void rcflow_parseDoc (char *docname) {
 	link = 0;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"name"))) {
+		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"name"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				strcpy(setup_name, (char *)key);
@@ -540,19 +540,19 @@ static void rcflow_parseDoc (char *docname) {
 				}
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"image"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"image"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				strcpy(ModelData.image, (char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"plugin"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"plugin"))) {
 			rcflow_parsePlugin (doc, cur, plugin++);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"link"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"link"))) {
 			rcflow_parseLink (doc, cur, link++);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"telemetry"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"telemetry"))) {
 //			rcflow_parseTelemetry (doc, cur);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"mavlink"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"mavlink"))) {
 			rcflow_parseMavlink (doc, cur);
 		}
 		cur = cur->next;

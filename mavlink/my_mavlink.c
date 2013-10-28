@@ -821,7 +821,7 @@ void mavlink_parseParams1 (xmlDocPtr doc, xmlNodePtr cur, char *name) {
 	}
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"Range"))) {
+		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"Range"))) {
 			float min = 0.0;
 			float max = 0.0;
 			xmlChar *key;
@@ -832,21 +832,21 @@ void mavlink_parseParams1 (xmlDocPtr doc, xmlNodePtr cur, char *name) {
 				MavLinkVars[n].max = max;
 				xmlFree(key);
 			}
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"Description"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"Description"))) {
 			xmlChar *key;
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
 				strncpy(MavLinkVars[n].desc, (char *)key, 1023);
 				xmlFree(key);
 			}
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"Group"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"Group"))) {
 			xmlChar *key;
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
 				strncpy(MavLinkVars[n].group, (char *)key, 20);
 				xmlFree(key);
 			}
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"Values"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"Values"))) {
 			xmlChar *key;
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
@@ -870,7 +870,7 @@ void mavlink_parseParams1 (xmlDocPtr doc, xmlNodePtr cur, char *name) {
 				}
 				xmlFree(key);
 			}
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"Bits"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"Bits"))) {
 			xmlChar *key;
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
@@ -894,7 +894,7 @@ void mavlink_parseParams1 (xmlDocPtr doc, xmlNodePtr cur, char *name) {
 				}
 				xmlFree(key);
 			}
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"DisplayName"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"DisplayName"))) {
 			xmlChar *key;
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
@@ -910,7 +910,7 @@ void mavlink_parseParams1 (xmlDocPtr doc, xmlNodePtr cur, char *name) {
 void mavlink_parseParams (xmlDocPtr doc, xmlNodePtr cur) { 
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((xmlStrcmp(cur->name, (const xmlChar *)"text"))) {
+		if ((xmlStrcasecmp(cur->name, (const xmlChar *)"text"))) {
 			mavlink_parseParams1(doc, cur, (char *)cur->name);
 		}
 		cur = cur->next;
@@ -950,7 +950,7 @@ static void mavlink_parseDoc (char *docname) {
 	}
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((xmlStrcmp(cur->name, (const xmlChar *)"text"))) {
+		if ((xmlStrcasecmp(cur->name, (const xmlChar *)"text"))) {
 			mavlink_parseParams(doc, cur);
 		}
 		cur = cur->next;
@@ -977,13 +977,13 @@ static void model_parseMavlinkParam (xmlDocPtr doc, xmlNodePtr cur, uint16_t par
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"name"))) {
+		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"name"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				strncpy(MavLinkVars[param].name, (char *)key, 20);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"value"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"value"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				MavLinkVars[param].value = atof((char *)key);
@@ -1007,7 +1007,7 @@ void mavlink_xml_load (xmlDocPtr doc, xmlNodePtr cur) {
 	param = 0;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"param"))) {
+		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"param"))) {
 			model_parseMavlinkParam (doc, cur, param++);
 		}
 		cur = cur->next;

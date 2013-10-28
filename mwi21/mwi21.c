@@ -467,19 +467,19 @@ static void model_parseMWI21Pid (xmlDocPtr doc, xmlNodePtr cur, uint16_t pid) {
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"p"))) {
+		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"p"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				mwi_pid[pid][0] = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"i"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"i"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				mwi_pid[pid][1] = atoi((char *)key);
 			}
 			xmlFree(key);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"d"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"d"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				mwi_pid[pid][2] = atoi((char *)key);
@@ -495,7 +495,7 @@ static void model_parseMWI21Box (xmlDocPtr doc, xmlNodePtr cur, uint16_t box) {
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"value"))) {
+		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"value"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				mwi_box[box] = atoi((char *)key);
@@ -512,9 +512,9 @@ void mwi21_xml_load (xmlDocPtr doc, xmlNodePtr cur) {
 	uint16_t box = 0;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((!xmlStrcmp(cur->name, (const xmlChar *)"pid"))) {
+		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"pid"))) {
 			model_parseMWI21Pid (doc, cur, pid++);
-		} else if ((!xmlStrcmp(cur->name, (const xmlChar *)"box"))) {
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"box"))) {
 			model_parseMWI21Box (doc, cur, box++);
 		}
 		cur = cur->next;
