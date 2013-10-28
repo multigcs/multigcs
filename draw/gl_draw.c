@@ -914,6 +914,75 @@ void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2
 	}
 }
 
+void draw_image_f12 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, char *file) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
+	y1 = y1 * -1;
+	y2 = y2 * -1;
+	y3 = y3 * -1;
+	y4 = y4 * -1;
+	int16_t n = 0;
+	int16_t tex_num = -1;
+	int16_t old_num = -1;
+	uint32_t atime_min = 0xFFFFFFFF;
+	for (n = 0; n < MAX_TEXCACHE; n++) {
+		if (strcmp(TexCache[n].name, file) == 0) {
+			tex_num = n;
+			break;
+		} else if (TexCache[n].atime < atime_min) {
+			old_num = n;
+			atime_min = TexCache[n].atime;
+		}
+	}
+	if (tex_num == -1) {
+		for (n = 0; n < MAX_TEXCACHE; n++) {
+			if (TexCache[n].name[0] == 0) {
+				tex_num = n;
+				break;
+			}
+		}
+		if (old_num == -1) {
+			old_num = 0;
+		}
+		if (tex_num == -1) {
+			tex_num = old_num;
+//			SDL_Log("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
+			glDeleteTextures( 1, &TexCache[tex_num].texture );
+			TexCache[tex_num].name[0] = 0;
+			TexCache[tex_num].texture = 0;
+		}
+		if (tex_num != -1) {
+//			SDL_Log("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
+//			if ( (TexCache[tex_num].texture = loadPNG(file)) != 0 ) { 
+			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) { 
+				strncpy(TexCache[tex_num].name, file, 1023);
+				TexCache[tex_num].atime = time(0);
+			} else {
+//				SDL_Log("could not load image: %s\n", file);
+				unlink(file);
+			}
+		}
+	}
+	if (TexCache[tex_num].texture != 0) {
+		TexCache[tex_num].atime = time(0);
+//		SDL_Log("# %s = %i\n", TexCache[tex_num].name, TexCache[tex_num].texture);
+		glColor4f(1.0, 1.0, 1.0, 1.0);
+		glEnable( GL_TEXTURE_2D );
+		glBindTexture( GL_TEXTURE_2D, TexCache[tex_num].texture );
+		glBegin( GL_QUADS );
+			glTexCoord2i( 0, 1 );
+			glVertex3f(x1, y1, -2.0 + z1);
+			glTexCoord2i( 1, 1 );
+			glVertex3f(x2, y2, -2.0 + z2);
+			glTexCoord2i( 1, 0 );
+			glVertex3f(x3, y3, -2.0 + z3);
+			glTexCoord2i( 0, 0 );
+			glVertex3f(x4, y4, -2.0 + z4);
+		glEnd();
+		glDisable( GL_TEXTURE_2D );
+	}
+}
 
 void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file, float lat1, float lon1, float lat2, float lon2, float alpha0, float alpha1, float alpha2, float grid) {
 #ifdef CONSOLE_ONLY

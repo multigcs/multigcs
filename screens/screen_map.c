@@ -2029,7 +2029,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	}
 #ifdef SDLGL
 
-//	map_kml_parseDoc("test.kml");
+	map_kml_parseDoc("test.kml");
 
 	// Camview - Target-Marking
 	float nx2 = 0.0;
