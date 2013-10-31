@@ -66,6 +66,10 @@ char display_html[HTML_MAX];
 char display_html2[HTML_MAX];
 #endif
 
+#ifdef DPF_DISPLAY
+SDL_Thread *thread_dpf = NULL;
+#endif
+
 SDL_Thread *thread = NULL;
 SDL_Thread *thread_telemetry = NULL;
 
@@ -1753,8 +1757,6 @@ void ShutDown ( ESContext *esContext ) {
 #ifdef USE_OPENCV
 	openvc_exit();
 #endif
-
-
 	SDL_Log("Shutdown\n");
 	gui_running = 0;
 	SDL_Delay(600);
@@ -1767,6 +1769,12 @@ void ShutDown ( ESContext *esContext ) {
 	gcs_gps_exit();
 	webserv_exit();
 	map_exit();
+
+#ifdef DPF_DISPLAY
+	SDL_WaitThread(thread_dpf, NULL);
+	dpf_exit();
+#endif
+
 	SDL_Log("telemetry: thread kill\n");
 	SDL_KillThread(thread_telemetry);
 #ifdef RPI_NO_X
@@ -1789,6 +1797,35 @@ void ShutDown ( ESContext *esContext ) {
 	draw_exit(esContext);
 	unlink("/tmp/gcs.run");
 }
+
+#ifdef DPF_DISPLAY
+
+void dpf_fill (uint8_t r, uint8_t g, uint8_t b);
+void dpf_set (uint16_t x, uint16_t y, uint8_t r, uint8_t g, uint8_t b);
+uint16_t dpf_draw_string (uint16_t x, uint16_t y, char *string, uint8_t r, uint8_t g, uint8_t b);
+
+int dpf_thread (void *data) {
+	char tmp_str[100];
+	uint8_t y = 0;
+	uint8_t x = 0;
+	while (gui_running == 1) {
+		dpf_fill(0, 0, 0);
+
+		time_t liczba_sekund;
+		struct tm strukt;
+		time(&liczba_sekund);
+		localtime_r(&liczba_sekund, &strukt); 
+		sprintf(tmp_str, "%02i:%02i:%02i", strukt.tm_hour, strukt.tm_min, strukt.tm_sec);
+
+		sprintf(tmp_str, "%s", message_txt);
+
+		dpf_draw_string(10, 10, tmp_str, 0, 255, x);
+		x += 20;
+		dpf_update();
+		SDL_Delay(10);
+	}
+}
+#endif
 
 int main ( int argc, char *argv[] ) {
 	char dir[1024];
@@ -1844,6 +1881,16 @@ int main ( int argc, char *argv[] ) {
 	localtime_r(&liczba_sekund, &strukt); 
 	sprintf(tmp_name, "%s/WMM2010.COF", BASE_DIR);
 	init_declination(tmp_name, strukt.tm_year + 1900, strukt.tm_mon + 1, strukt.tm_mday);
+#endif
+
+#ifdef DPF_DISPLAY
+	dpf_init();
+	SDL_Log("dpf: init thread\n");
+#ifdef SDL2
+	thread_dpf = SDL_CreateThread(dpf_thread, NULL, NULL);
+#else
+	thread_dpf = SDL_CreateThread(dpf_thread, NULL);
+#endif
 #endif
 
 	setup_waypoints();
