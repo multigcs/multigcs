@@ -45,6 +45,7 @@ void draw_tria_f (ESContext *esContext, float x1, float y1, float x2, float y2, 
 void draw_triaFilled_f (ESContext *esContext, float x1, float y1, float x2, float y2, float x3, float y3, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 void draw_trifan_f3 (ESContext *esContext, float *poly_array, uint16_t len, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file, float lat1, float lon1, float lat2, float lon2, float alpha0, float alpha1, float alpha2, float grid);
+void draw_image_f12 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, char *file);
 void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, char *file);
 void draw_image_f (ESContext *esContext, float x1, float y1, float x2, float y2, char *file);
 void draw_image (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file);

@@ -694,6 +694,9 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 	}
 }
 
+void draw_image_f12 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, char *file) {
+}
+
 void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, char *file) {
 	UserData *userData = esContext->userData;
 	y1 = y1 * -1;
