@@ -41,7 +41,7 @@ void map_log_show (void) {
 				if (p_lat != 0.0 && p_long != 0.0) {
 //					mark_point(GlobalesContext, p_lat, p_long, p_alt, "", "", 0, 0.1, 0.0, lat, lon, zoom);
 					if (last_lat != 0.0 && last_long != 0.0) {
-						mark_route(GlobalesContext, last_lat, last_long, last_alt, p_lat, p_long, p_alt, 0, lat, lon, zoom);
+						mark_route(GlobalesContext, last_lat, last_long, last_alt, p_lat, p_long, p_alt, 4, lat, lon, zoom);
 					}
 					last_lat = p_lat;
 					last_long = p_long;
@@ -62,7 +62,7 @@ void map_log_show (void) {
 				if (p_lat != 0.0 && p_long != 0.0) {
 //					mark_point(GlobalesContext, p_lat, p_long, p_alt, "", "", 0, 0.1, 0.0, lat, lon, zoom);
 					if (last_lat != 0.0 && last_long != 0.0) {
-						mark_route(GlobalesContext, last_lat, last_long, last_alt, p_lat, p_long, p_alt, 0, lat, lon, zoom);
+						mark_route(GlobalesContext, last_lat, last_long, last_alt, p_lat, p_long, p_alt, 4, lat, lon, zoom);
 					}
 					last_lat = p_lat;
 					last_long = p_long;
