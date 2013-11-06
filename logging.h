@@ -23,6 +23,7 @@ uint8_t logplay_cmd_open (char *name, float x, float y, int8_t button, float dat
 uint8_t logplay_cmd_open_ok (char *name, float x, float y, int8_t button, float data);
 uint8_t logplay_cmd_play_updown (char *name, float x, float y, int8_t button, float data);
 void logplay_draw_control (ESContext *esContext, float x1, float y1);
+void map_log_show (void);
 
 void LogSave (void);
 void LogInit (void);

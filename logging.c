@@ -1,6 +1,7 @@
 
 #include <all.h>
 
+static FILE *fr_play = NULL;
 char *Logdata = NULL;
 int log_startup_time = 0;
 uint8_t logmode = 0;
@@ -18,6 +19,60 @@ uint32_t logrec_starttime = 0;
 uint32_t logrec_startsec = 0;
 char logplay_file[1024];
 
+void map_log_show (void) {
+	FILE *fr_log = NULL;
+	char last_line[1025];
+	float last_lat = 0.0;
+	float last_long = 0.0;
+	float last_alt = 0.0;
+	if (logplay_file[0] != 0) {
+		if ((fr_log = fopen(logplay_file, "r")) == NULL) {
+			SDL_Log("logplay: error loading file: %s\n", logplay_file);
+			return;
+		}
+		while (fgets(last_line, 500, fr_log) != 0) {
+			if (strncmp(last_line, "GPS;", 4) == 0) {
+				uint32_t lsec = 0;
+				uint32_t lmicros = 0;
+				float p_lat = 0.0;
+				float p_long = 0.0;
+				float p_alt = 0.0;
+				sscanf(last_line, "GPS;%i.%i;%f;%f;%f", &lsec, &lmicros, &p_lat, &p_long, &p_alt);
+				if (p_lat != 0.0 && p_long != 0.0) {
+//					mark_point(GlobalesContext, p_lat, p_long, p_alt, "", "", 0, 0.1, 0.0, lat, lon, zoom);
+					if (last_lat != 0.0 && last_long != 0.0) {
+						mark_route(GlobalesContext, last_lat, last_long, last_alt, p_lat, p_long, p_alt, 0, lat, lon, zoom);
+					}
+					last_lat = p_lat;
+					last_long = p_long;
+					last_alt = p_alt;
+				}
+			} else if (strncmp(last_line, "GPS,", 4) == 0) {
+				float dn = 0.0;
+				float dn2 = 0.0;
+				float dn4 = 0.0;
+				uint32_t dn3 = 0;
+				float p_lat = 0.0;
+				float p_long = 0.0;
+				float p_alt = 0.0;
+				float speed = 0.0;
+				int gpsfix = 0;
+				int numSat = 0;
+				sscanf(last_line, "GPS,%i,%i,%i,%f,%f,%f,%f,%f,%f,%f", &gpsfix, &dn3, &numSat, &dn, &p_lat, &p_long, &dn2, &p_alt, &speed, &dn4);
+				if (p_lat != 0.0 && p_long != 0.0) {
+//					mark_point(GlobalesContext, p_lat, p_long, p_alt, "", "", 0, 0.1, 0.0, lat, lon, zoom);
+					if (last_lat != 0.0 && last_long != 0.0) {
+						mark_route(GlobalesContext, last_lat, last_long, last_alt, p_lat, p_long, p_alt, 0, lat, lon, zoom);
+					}
+					last_lat = p_lat;
+					last_long = p_long;
+					last_alt = p_alt;
+				}
+			}
+		}
+		fclose(fr_log);
+	}
+}
 
 void logplay_export_kml (char *logfile, char *kmlfile, uint8_t type) {
 	SDL_Log("logplay: %s -> %s\n", logfile, kmlfile);
@@ -579,9 +634,7 @@ void logplay_draw_control (ESContext *esContext, float x1, float y1) {
 #ifndef WINDOWS
 	localtime_r(&liczba_sekund, &strukt); 
 #endif
-//	sprintf(tmp_str, "%04i.%03is", logplay_msec / 1000, logplay_msec % 1000);
 	sprintf(tmp_str, "%02d.%02d.%d %02d:%02d:%02d.%03i", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, logplay_msec % 1000);
-
 
 	draw_text_button(esContext, "timer", setup.view_mode, tmp_str, FONT_GREEN, x + w / 2, y + h / 4 * 1, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, logplay_cmd_play, 0.0);
 	if (logplay_list == 1) {
@@ -682,7 +735,6 @@ void LogAppend (char *line) {
 	}
 }
 
-static FILE *fr_play = NULL;
 void Logging (void) {
 	if (logplay == 1) {
 		char line[1025];
@@ -707,8 +759,6 @@ void Logging (void) {
 				}
 				if (fgets(line, 500, fr_play) != 0) {
 					strncpy(last_line, line, 1023);
-
-
 				} else {
 					logplay_open = 0;
 					logplay_play = 0;
@@ -718,7 +768,6 @@ void Logging (void) {
 			}
 			static uint32_t lsec = 0;
 			static uint32_t lmicros = 0;
-
 			if (fr_play != NULL) {
 				while (1 == 1) {
 					if (last_line[3] == ';') {
@@ -752,17 +801,17 @@ void Logging (void) {
 						}
 					}
 					logplay_fpos = (lsec - logplay_startsec) * 1000 + lmicros;
-
 //					SDL_Log("%i %i\n", logplay_msec, logplay_fpos);
-
 					if (logplay_msec >= logplay_fpos) {
 						if (strncmp(last_line, "GPS;", 4) == 0) {
 							float p_lat = 0.0;
 							float p_long = 0.0;
-							sscanf(last_line, "GPS;%i.%i;%f;%f;%f", &lsec, &lmicros, &p_lat, &p_long, &ModelData.p_alt);
+							float p_alt = 0.0;
+							sscanf(last_line, "GPS;%i.%i;%f;%f;%f", &lsec, &lmicros, &p_lat, &p_long, &p_alt);
 							if (p_lat != 0.0 && p_long != 0.0) {
 								ModelData.p_lat = p_lat;
 								ModelData.p_long = p_long;
+								ModelData.p_alt = p_alt;
 							}
 						} else if (strncmp(last_line, "ATT;", 4) == 0) {
 							sscanf(last_line, "ATT;%i.%i;%f;%f;%f", &lsec, &lmicros, &ModelData.pitch, &ModelData.roll, &ModelData.yaw);
@@ -848,7 +897,7 @@ void Logging (void) {
 		sec = logrec_startsec + (SDL_GetTicks() - logrec_starttime) / 1000;
 		micros = (SDL_GetTicks() - logrec_starttime) % 1000;
 		if (last_lat != ModelData.p_lat || last_lon != ModelData.p_long || (int)last_alt != (int)ModelData.p_alt || last_sats != ModelData.numSat) {
-			sprintf(line, "GPS;%i.%03i;%f;%f;%f;%f;%i;%i", sec, micros, ModelData.p_lat, ModelData.p_long, ModelData.p_alt, ModelData.speed, ModelData.gpsfix, ModelData.numSat);
+			sprintf(line, "GPS;%i.%03i;%f;%f;%f;%f;%i;%i", sec, micros, ModelData.p_lat, ModelData.p_long, ModelData.p_alt - ModelData.alt_offset, ModelData.speed, ModelData.gpsfix, ModelData.numSat);
 			LogAppend(line);
 			last_lat = ModelData.p_lat;
 			last_lon = ModelData.p_long;

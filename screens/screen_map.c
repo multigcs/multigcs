@@ -1250,10 +1250,10 @@ void mark_route (ESContext *esContext, float last_lat, float last_long, float la
 	}
 
 	if (type == 1) {
-		draw_line_f3(esContext, x1, y1, 0.001, x2, y2, 0.001, 255, 0, 0, 128);
+		draw_line_f3(esContext, x1, y1, z1, x2, y2, z2, 255, 0, 0, 128);
 	} else if (type == 4) {
 	} else {
-		draw_line_f3(esContext, x1, y1, 0.001, x2, y2, 0.001, 255, 255, 255, 255);
+		draw_line_f3(esContext, x1, y1, z1, x2, y2, z2, 255, 255, 255, 255);
 	}
 }
 
@@ -1978,6 +1978,8 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	}
 	// Mark Tracker-Position
 	draw_tracker(esContext, tracker_lat, tracker_long, tracker_alt, tracker_pitch_dir, tracker_pan_dir, lat, lon, zoom);
+	// drawing Logfile
+	map_log_show();
 	// drawing Waypoint-Route
 	float last_lat = ModelData.p_lat;
 	float last_lon = ModelData.p_long;
