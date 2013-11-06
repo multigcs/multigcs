@@ -13,6 +13,8 @@ uint32_t logplay_startsec = 0;
 uint32_t logplay_starttime = 0;
 uint8_t logplay_list = 0;
 uint8_t logplay_filelist = 0;
+uint32_t logrec_starttime = 0;
+uint32_t logrec_startsec = 0;
 char logplay_file[1024];
 
 
@@ -570,6 +572,8 @@ void logplay_draw_control (ESContext *esContext, float x1, float y1) {
 #endif
 //	sprintf(tmp_str, "%04i.%03is", logplay_msec / 1000, logplay_msec % 1000);
 	sprintf(tmp_str, "%02d.%02d.%d %02d:%02d:%02d.%03i", strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, logplay_msec % 1000);
+
+
 	draw_text_button(esContext, "timer", setup.view_mode, tmp_str, FONT_GREEN, x + w / 2, y + h / 4 * 1, 0.003, 0.06, ALIGN_CENTER, ALIGN_CENTER, logplay_cmd_play, 0.0);
 	if (logplay_list == 1) {
 		draw_box_f3(esContext, x, -0.8, 0.002, x + w, y, 0.002, 0, 0, 0, 200);
@@ -672,8 +676,8 @@ void LogAppend (char *line) {
 static FILE *fr_play = NULL;
 void Logging (void) {
 	if (logplay == 1) {
-		char line[512];
-		static char last_line[512];
+		char line[1025];
+		static char last_line[1025];
 		if (logplay_play == 2 && logplay_open == 1) {
 			logplay_play = 1;
 			logplay_open = 0;
@@ -703,8 +707,6 @@ void Logging (void) {
 					fr_play = NULL;
 				}
 			}
-			struct timeval tv;
-			gettimeofday(&tv, NULL);
 			static uint32_t lsec = 0;
 			static uint32_t lmicros = 0;
 
@@ -742,7 +744,9 @@ void Logging (void) {
 							break;
 						}
 					}
+
 //					SDL_Log("%i %i\n", logplay_msec, (lsec - logplay_startsec) * 1000 + lmicros);
+
 					if (logplay_msec >= (lsec - logplay_startsec) * 1000 + lmicros) {
 						if (strncmp(last_line, "GPS;", 4) == 0) {
 							float p_lat = 0.0;
@@ -799,12 +803,10 @@ void Logging (void) {
 				}
 			}
 			if (logplay_pause == 0) {
-				struct timeval tv;
-				gettimeofday(&tv, NULL);  
 				if (logplay_starttime == 0) {
-					logplay_starttime = tv.tv_sec;
+					logplay_starttime = SDL_GetTicks();
 				}
-				logplay_msec = (tv.tv_sec - logplay_starttime) * 1000 + (SDL_GetTicks() % 1000);
+				logplay_msec = SDL_GetTicks() - logplay_starttime;
 			}
 		}
 	} else if (logmode == 1) {
@@ -827,12 +829,16 @@ void Logging (void) {
 		static uint8_t last_heartbeat = 0;
 		uint8_t n= 0;
 		uint8_t logflag = 0;
-
 		struct timeval tv;
-		gettimeofday(&tv, NULL);  
-		uint32_t sec = tv.tv_sec;
-		uint32_t micros = SDL_GetTicks() % 1000;
-
+		uint32_t sec = 0;
+		uint32_t micros = 0;
+		if (logrec_starttime == 0) {
+			gettimeofday(&tv, NULL);  
+			logrec_starttime = SDL_GetTicks();
+			logrec_startsec = tv.tv_sec;
+		}
+		sec = logrec_startsec + (SDL_GetTicks() - logrec_starttime) / 1000;
+		micros = (SDL_GetTicks() - logrec_starttime) % 1000;
 		if (last_lat != ModelData.p_lat || last_lon != ModelData.p_long || (int)last_alt != (int)ModelData.p_alt || last_sats != ModelData.numSat) {
 			sprintf(line, "GPS;%i.%03i;%f;%f;%f;%f;%i;%i", sec, micros, ModelData.p_lat, ModelData.p_long, ModelData.p_alt, ModelData.speed, ModelData.gpsfix, ModelData.numSat);
 			LogAppend(line);
