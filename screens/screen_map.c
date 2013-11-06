@@ -1233,6 +1233,8 @@ void mark_route (ESContext *esContext, float last_lat, float last_long, float la
 		draw_line_f3(esContext, x1, y1, last_z, x2, y2, mark_z, 0, 255, 255, 128);
 	} else if (type == 5) {
 		draw_line_f3(esContext, x1, y1, last_z, x2, y2, mark_z, 255, 255, 0, 128);
+	} else if (type == 6) {
+		draw_line_f3(esContext, x1, y1, last_z, x2, y2, mark_z, 255, 0, 0, 255);
 	} else {
 		draw_line_f3(esContext, x1, y1, last_z, x2, y2, mark_z, 255, 255, 255, 255);
 	}
@@ -1252,6 +1254,8 @@ void mark_route (ESContext *esContext, float last_lat, float last_long, float la
 	if (type == 1) {
 		draw_line_f3(esContext, x1, y1, z1, x2, y2, z2, 255, 0, 0, 128);
 	} else if (type == 4) {
+	} else if (type == 6) {
+		draw_line_f3(esContext, x1, y1, z1, x2, y2, z2, 255, 0, 0, 255);
 	} else {
 		draw_line_f3(esContext, x1, y1, z1, x2, y2, z2, 255, 255, 255, 255);
 	}
