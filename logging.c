@@ -500,11 +500,18 @@ uint8_t logplay_cmd_pause (char *name, float x, float y, int8_t button, float da
 
 uint8_t logplay_cmd_step (char *name, float x, float y, int8_t button, float data) {
 	logplay_pause = 1;
-	logplay_msec = logplay_fpos;
-//	logplay_msec += (uint32_t)data;
 	if (data < 0.0) {
+		logplay_msec += (uint32_t)data;
 		logplay_play = 2;
+	} else {
+		logplay_msec = logplay_fpos;
 	}
+	return 0;
+}
+
+uint8_t logplay_cmd_next (char *name, float x, float y, int8_t button, float data) {
+	logplay_pause = 1;
+	logplay_msec = logplay_fpos;
 	return 0;
 }
 
