@@ -9,6 +9,7 @@ uint8_t logplay_open = 0;
 uint8_t logplay_play = 0;
 uint8_t logplay_pause = 0;
 uint32_t logplay_msec = 0;
+uint32_t logplay_fpos = 0;
 uint32_t logplay_startsec = 0;
 uint32_t logplay_starttime = 0;
 uint8_t logplay_list = 0;
@@ -499,7 +500,8 @@ uint8_t logplay_cmd_pause (char *name, float x, float y, int8_t button, float da
 
 uint8_t logplay_cmd_step (char *name, float x, float y, int8_t button, float data) {
 	logplay_pause = 1;
-	logplay_msec += (uint32_t)data;
+	logplay_msec = logplay_fpos;
+//	logplay_msec += (uint32_t)data;
 	if (data < 0.0) {
 		logplay_play = 2;
 	}
@@ -725,14 +727,12 @@ void Logging (void) {
 						if (fgets(line, 500, fr_play) != 0) {
 							strncpy(last_line, line, 1023);
 //							SDL_Log("NEXT_LINE: %s\n", line);
-
 							if (strncmp(last_line, "GPS,", 4) == 0) {
 								lmicros += 200;
 								if (lmicros >= 1000) {
 									lsec += 1;
 									lmicros = 0;
 								}
-//								SDL_Log("%i %i\n", logplay_msec, (lsec - logplay_startsec) * 1000 + lmicros);
 							}
 							continue;
 						} else {
@@ -744,10 +744,11 @@ void Logging (void) {
 							break;
 						}
 					}
+					logplay_fpos = (lsec - logplay_startsec) * 1000 + lmicros;
 
-//					SDL_Log("%i %i\n", logplay_msec, (lsec - logplay_startsec) * 1000 + lmicros);
+//					SDL_Log("%i %i\n", logplay_msec, logplay_fpos);
 
-					if (logplay_msec >= (lsec - logplay_startsec) * 1000 + lmicros) {
+					if (logplay_msec >= logplay_fpos) {
 						if (strncmp(last_line, "GPS;", 4) == 0) {
 							float p_lat = 0.0;
 							float p_long = 0.0;
@@ -786,7 +787,7 @@ void Logging (void) {
 									lsec += 1;
 									lmicros = 0;
 								}
-//								SDL_Log("%i %i\n", logplay_msec, (lsec - logplay_startsec) * 1000 + lmicros);
+//								SDL_Log("%i %i\n", logplay_msec, logplay_fpos);
 							}
 							continue;
 						} else {
