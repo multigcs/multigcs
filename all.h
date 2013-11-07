@@ -123,6 +123,8 @@
 #include <logging.h>
 #include <openpilot_xml.h>
 #include <htmlget.h>
+#include <map.h>
+#include <unzip.h>
 
 #include <screen_background.h>
 #include <screen_baseflightcli.h>

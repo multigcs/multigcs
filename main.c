@@ -909,8 +909,8 @@ void check_events (ESContext *esContext, SDL_Event event) {
 		if (mousemode == 1) {
 			float x1 = (float)event.button.x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 			float y1 = (float)event.button.y / (float)esContext->height * 2.0 - 1.0;
-			x1 += offset_x1;
-			y1 += offset_y1;
+			x1 += mapdata->offset_x1;
+			y1 += mapdata->offset_y1;
 			int16_t bx = (x1 / aspect + 1.0) / 2.0 * (float)esContext->width;
 			int16_t by = (y1 + 1.0) / 2.0 * (float)esContext->height;
 			float mouse_long = x2long(bx, lon, zoom);
@@ -927,8 +927,8 @@ void check_events (ESContext *esContext, SDL_Event event) {
 				WayPoints[waypoint_active].p_lat = mouse_lat;
 				WayPoints[waypoint_active].p_long = mouse_long;
 			} else {
-				offset_x1 -= x1 - mousestart_x;
-				offset_y1 -= y1 - mousestart_y;
+				mapdata->offset_x1 -= x1 - mousestart_x;
+				mapdata->offset_y1 -= y1 - mousestart_y;
 			}
 		} else	if (setup.view_mode == VIEW_MODE_MAP) {
 			float x1 = (float)event.button.x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
@@ -942,8 +942,8 @@ void check_events (ESContext *esContext, SDL_Event event) {
 			} else if (x1 < 0.6 && x1 > 0.3 && y1 > 0.9 && y1 < 0.95) {
 				return;
 			}
-			x1 += offset_x1;
-			y1 += offset_y1;
+			x1 += mapdata->offset_x1;
+			y1 += mapdata->offset_y1;
 			int16_t bx = (x1 / aspect + 1.0) / 2.0 * (float)esContext->width;
 			int16_t by = (y1 + 1.0) / 2.0 * (float)esContext->height;
 			float mouse_long = x2long(bx, lon, zoom);
@@ -974,32 +974,32 @@ void check_events (ESContext *esContext, SDL_Event event) {
 			return;
 		}
 		if (mousemode == 1) {
-			if (offset_x1 < -0.8) {
+			if (mapdata->offset_x1 < -0.8) {
 				int tile_x = long2tilex(lon, zoom);
 				tile_x--;
 				lon = tilex2long(tile_x, zoom);
-				offset_x1 = 0.0;
+				mapdata->offset_x1 = 0.0;
 				mousestart_x = 0.0;
 			}
-			if (offset_x1 > 0.8) {
+			if (mapdata->offset_x1 > 0.8) {
 				int tile_x = long2tilex(lon, zoom);
 				tile_x+= 2;
 				lon = tilex2long(tile_x, zoom);
-				offset_x1 = 0.0;
+				mapdata->offset_x1 = 0.0;
 				mousestart_x = 0.0;
 			}
-			if (offset_y1 < -0.8) {
+			if (mapdata->offset_y1 < -0.8) {
 				int tile_y = lat2tiley(lat, zoom);
 				tile_y+= 2;
 				lat = tiley2lat(tile_y, zoom);
-				offset_y1 = 0.0;
+				mapdata->offset_y1 = 0.0;
 				mousestart_y = 0.0;
 			}
-			if (offset_y1 > 0.8) {
+			if (mapdata->offset_y1 > 0.8) {
 				int tile_y = lat2tiley(lat, zoom);
 				tile_y+= 2;
 				lat = tiley2lat(tile_y, zoom);
-				offset_y1 = 0.0;
+				mapdata->offset_y1 = 0.0;
 				mousestart_y = 0.0;
 			}
 		}
@@ -1045,8 +1045,8 @@ void check_events (ESContext *esContext, SDL_Event event) {
 			return;
 		}
 #endif
-		bx += offset_x1;
-		by += offset_y1;
+		bx += mapdata->offset_x1;
+		by += mapdata->offset_y1;
 		if (event.button.button == 1) {
 			if (event.button.y > esContext->height - 40 && event.button.y < esContext->height) {
 				if (event.button.x > esContext->width - 40 && event.button.x < esContext->width) {
@@ -1058,8 +1058,8 @@ void check_events (ESContext *esContext, SDL_Event event) {
 		if (setup.view_mode == VIEW_MODE_MAP) {
 			float x1 = (float)event.button.x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 			float y1 = (float)event.button.y / (float)esContext->height * 2.0 - 1.0;
-			x1 += offset_x1;
-			y1 += offset_y1;
+			x1 += mapdata->offset_x1;
+			y1 += mapdata->offset_y1;
 			int16_t bx = (x1 / aspect + 1.0) / 2.0 * (float)esContext->width;
 			int16_t by = (y1 + 1.0) / 2.0 * (float)esContext->height;
 			float mouse_long = x2long(bx, lon, zoom);

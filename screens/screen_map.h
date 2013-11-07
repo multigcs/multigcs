@@ -15,14 +15,6 @@ enum {
 #define MAP_OVERLAY	2
 #endif
 
-#define MAX_POIS 100
-typedef struct {
-	float p_lat;
-	float p_long;
-	char name[128];
-	uint8_t type;
-} PointOfInterest;
-
 extern volatile float lat;
 extern volatile float lon;
 extern volatile uint8_t zoom;

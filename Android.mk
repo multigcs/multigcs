@@ -21,7 +21,7 @@ LOCAL_C_INCLUDES += $(LOCAL_PATH)/$(SDL_PATH)/include $(LOCAL_PATH)/$(SDL_IMAGE_
  $(LOCAL_PATH)/opencv-android-sdk/sdk/native/jni/include/opencv $(LOCAL_PATH)/opencv-android-sdk/sdk/native/jni/include
 
 LOCAL_SRC_FILES += $(SDL_PATH)/src/main/android/SDL_android_main.c \
- main.c serial.c draw/draw.c draw/videocapture.c geomag70.c \
+ main.c serial.c draw/draw.c draw/videocapture.c draw/map.c geomag70.c \
  net/htmlget.c \
  minizip/ioapi.c minizip/unzip.c \
  screens/screen_rcflow.c screens/screen_keyboard.c screens/screen_filesystem.c screens/screen_device.c screens/screen_baud.c screens/screen_model.c screens/screen_cli.c screens/screen_baseflightcli.c screens/screen_background.c screens/screen_wpedit.c screens/screen_hud.c screens/screen_map.c screens/screen_calibration.c screens/screen_fms.c screens/screen_system.c screens/screen_mavlink_menu.c screens/screen_brugi.c screens/screen_simplebgc.c screens/screen_tracker.c screens/screen_mwi_menu.c screens/screen_openpilot_menu.c screens/screen_graph.c screens/screen_telemetry.c \
