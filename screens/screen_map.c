@@ -345,6 +345,12 @@ void draw_notam (ESContext *esContext, float lat, float lon, uint8_t zoom) {
 	int dp_lon_m;
 	int dp_lon_s;
 //	char dp_lon_d;
+	int vx_lat_g;
+	int vx_lat_m;
+	int vx_lat_s;
+	int vx_lon_g;
+	int vx_lon_m;
+	int vx_lon_s;
 	uint8_t flag1 = 0;
 	float mark_lat = 0.0;
 	float mark_long = 0.0;
@@ -424,6 +430,40 @@ void draw_notam (ESContext *esContext, float lat, float lon, uint8_t zoom) {
 						dp_top = atof(line + 3);
 					} else {
 						dp_top = atof(line + 3) * 0.3048;
+					}
+				} else if (strncmp(line, "V X=", 4) == 0) {
+					vx_lat_g = atoi(line + 4);
+					vx_lon_g = atoi(line + 15);
+					if (vx_lat_g >= min_lat && vx_lat_g <= max_lat && vx_lon_g >= min_lon && vx_lon_g <= max_lon) {
+						vx_lat_m = atoi(line + 7);
+						vx_lon_m = atoi(line + 19);
+						vx_lat_s = atoi(line + 10);
+						vx_lon_s = atoi(line + 22);
+						mark_lat = vx_lat_g + (vx_lat_m + (vx_lat_s / 60.0)) / 60.0;
+						mark_long = vx_lon_g + (vx_lon_m + (vx_lon_s / 60.0)) / 60.0;
+						int mark_x = long2x(mark_long, lon, zoom);
+						int mark_y = lat2y(mark_lat, lat, zoom);
+						float x1 = (float)mark_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
+						float y1 = (float)mark_y / (float)esContext->height * 2.0 - 1.0;
+						float z1 = (float)get_altitude(mark_lat, mark_long) / alt_zoom;
+						draw_circleFilled_f3(esContext, x1, y1, z1, 0.01, 0, 255, 0, 255);
+					}
+				} else if (strncmp(line, "DC ", 3) == 0) {
+					if (vx_lat_g >= min_lat && vx_lat_g <= max_lat && vx_lon_g >= min_lon && vx_lon_g <= max_lon) {
+						float radius = atof(line + 3);
+						mark_lat = vx_lat_g + (vx_lat_m + (vx_lat_s / 60.0)) / 60.0;
+						mark_long = vx_lon_g + (vx_lon_m + (vx_lon_s / 60.0)) / 60.0;
+						int mark_x = long2x(mark_long, lon, zoom);
+						int mark_y = lat2y(mark_lat, lat, zoom);
+						float x1 = (float)mark_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
+						float y1 = (float)mark_y / (float)esContext->height * 2.0 - 1.0;
+						float z1 = (float)get_altitude(mark_lat, mark_long) / alt_zoom;
+						int16_t bx = (x1 / aspect + 1.0) / 2.0 * (float)GlobalesContext->width + 100;
+						float next_long = x2long(bx, lon, zoom);
+						float dist_nm = get_distance(mark_lat, mark_long, mark_lat, next_long) / 1.85;
+						float radius2 = (float)(radius / dist_nm * 100000.0) / (float)esContext->width * 2.0 * aspect;
+						draw_circleFilled_f3(esContext, x1, y1, z1 + 0.001, radius2, 255, 0, 0, 64);
+						draw_text_f3(esContext, x1, y1, z1, 0.05, 0.05, FONT_BLACK_BG, ap_name);
 					}
 				} else if (strncmp(line, "DP ", 3) == 0) {
 					dp_lat_g = atoi(line + 3);

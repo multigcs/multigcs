@@ -452,7 +452,7 @@ void draw_circleFilled_f3 (ESContext *esContext, float x1, float y1, float z1, f
 	glBegin(GL_TRIANGLE_FAN);
 	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
 	glVertex3f(x1, y1, -2.0 + z1);
-	for(ii = 0; ii < num_segments; ii++) {
+	for(ii = 0; ii <= num_segments; ii++) {
 		glVertex3f(x + x1, y + y1, -2.0 + z1);
 		tx = -y;
 		ty = x;

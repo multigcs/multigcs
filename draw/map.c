@@ -979,10 +979,10 @@ void GeoMap_draw (GeoMap *mapdata) {
 
 
 	// calculate Altitude-Zoom
-	uint32_t zz = (1<<zoom);
+	uint32_t zz = (1<<mapdata->zoom);
 	alt_zoom = 25500000 / (float)zz;
-	int tile_x = long2tilex(lon, zoom);
-	int tile_y = lat2tiley(lat, zoom);
+	int tile_x = long2tilex(mapdata->lon, mapdata->zoom);
+	int tile_y = lat2tiley(mapdata->lat, mapdata->zoom);
 	int x_n = 0;
 	int y_n = 0;
 	char tile_name[1024];
