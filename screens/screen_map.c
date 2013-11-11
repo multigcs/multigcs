@@ -943,6 +943,9 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 		glTranslatef( 0.0, 0.0, 2.0 );
 		glTranslatef(-mapdata->offset_x1, mapdata->offset_y1, 0.0);
+		if (map_side != 0) {
+			glTranslatef(0.0, 0.0, -(ModelData.p_alt - ModelData.alt_offset) / alt_zoom);
+		}
 	} else if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
 		roty = 0.0;
 		glMatrixMode(GL_PROJECTION);
