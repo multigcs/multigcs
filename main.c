@@ -461,6 +461,10 @@ void setup_save (void) {
 	        fprintf(fr, "videocapture_height	%i\n", setup.videocapture_height);
 	        fprintf(fr, "waypoint_active		%i\n", waypoint_active);
 	        fprintf(fr, "\n");
+	        fprintf(fr, "Model_lat		%f\n", ModelData.p_lat);
+	        fprintf(fr, "Model_long		%f\n", ModelData.p_long);
+	        fprintf(fr, "Model_alt		%f\n", ModelData.p_alt);
+	        fprintf(fr, "\n");
 	        fprintf(fr, "[waypoints]\n");
 	        for (n = 0; n < MAX_WAYPOINTS; n++) {
 	                if (WayPoints[n].p_lat != 0.0) {
@@ -660,6 +664,12 @@ void setup_load (void) {
 	                                setup.videocapture_width = atoi(val);
 	                        } else if (strcmp(var, "videocapture_height") == 0) {
 	                                setup.videocapture_height = atoi(val);
+	                        } else if (strcmp(var, "Model_lat") == 0) {
+	                                ModelData.p_lat = atof(val);
+	                        } else if (strcmp(var, "Model_long") == 0) {
+	                                ModelData.p_long = atof(val);
+	                        } else if (strcmp(var, "Model_alt") == 0) {
+	                                ModelData.p_alt = atof(val);
 	                        } else if (strcmp(var, "[waypoints]") == 0) {
 	                                mode = 1;
 	                        }
@@ -706,9 +716,11 @@ void setup_load (void) {
 		setup.calibration_mode = 1;
 	}
 	strncpy(WayPoints[0].name, "HOME", 127);
-	ModelData.p_lat = WayPoints[0].p_lat;
-	ModelData.p_long = WayPoints[0].p_long;
-	ModelData.p_alt = WayPoints[0].p_alt;
+	if (ModelData.p_lat == 0.0) {
+		ModelData.p_lat = WayPoints[0].p_lat;
+		ModelData.p_long = WayPoints[0].p_long;
+		ModelData.p_alt = WayPoints[0].p_alt;
+	}
 	ModelData.yaw = WayPoints[0].yaw;
 	strncpy(ModelData.teledevice, setup.telemetry_port, 199);
 	ModelData.telebaud = setup.telemetry_baud;
