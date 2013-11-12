@@ -628,6 +628,9 @@ void map_draw_buttons (ESContext *esContext) {
 			draw_rect_f3(esContext, -1.15, -0.8 + ny2 * 0.12 - 0.055, 0.002, -0.85, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
 			sprintf(tmp_str, "change_maptype%i", nn);
 			draw_button(esContext, tmp_str, setup.view_mode, mapnames[nn][MAP_NAME], FONT_WHITE, -1.15, -0.8 + ny2 * 0.12 - 0.055, 0.002, -0.85, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, change_maptype, nn);
+
+			draw_text_f3(esContext, -1.15, -0.8 + ny2 * 0.12 - 0.055, 0.003, 0.03, 0.03, FONT_WHITE, mapnames[nn][MAP_COMMENT]);
+
 			ny2++;
 		}
 	}
@@ -1212,6 +1215,10 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	draw_rect(esContext, 10, esContext->height - 50, (scale / S), 5, 0, 0, 0, 255);
 	sprintf(tmp_str, "%0.1fkm (Z:%i)", scale / 1000.0, zoom);
 	draw_text(esContext, 10, esContext->height - 40, 8, 8, FONT_BLACK_BG, tmp_str);
+
+	if (mapnames[map_type][MAP_NAME][0] == 0) {
+		map_type = 0;
+	}
 
 //#ifndef OSX
 #ifdef OSX___
