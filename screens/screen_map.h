@@ -2,6 +2,7 @@
 enum {
 	MAP_NAME,
 	MAP_URL,
+	MAP_URL2,
 	MAP_FILE,
 	MAP_TYPE,
 	MAP_COMMENT,
@@ -23,8 +24,8 @@ extern uint16_t map_h;
 extern uint8_t map_type;
 extern uint8_t map_view;
 extern uint8_t uav_active_waypoint;
-extern char mapnames[20][6][512];
-extern char omapnames[20][6][512];
+extern char mapnames[20][7][512];
+extern char omapnames[20][7][512];
 extern uint8_t map_type;
 extern uint8_t map_type_select;
 extern uint8_t omap_type;

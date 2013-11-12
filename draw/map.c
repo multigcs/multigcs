@@ -5,8 +5,8 @@
 
 uint8_t maplen = 0;
 uint8_t omaplen = 0;
-char mapnames[20][6][512];
-char omapnames[20][6][512];
+char mapnames[20][7][512];
+char omapnames[20][7][512];
 PointOfInterest POIs[MAX_POIS];
 
 GeoMap *mapdata = NULL;
@@ -109,7 +109,7 @@ static void map_parseMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t map_serv
 		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"name"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
-				strncpy(mapnames[map_service][MAP_NAME], (char *)key, 199);
+				strncpy(mapnames[map_service][MAP_NAME], (char *)key, 511);
 			} else {
 				mapnames[map_service][MAP_NAME][0] = 0;
 			}
@@ -117,15 +117,23 @@ static void map_parseMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t map_serv
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"url"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
-				strncpy(mapnames[map_service][MAP_URL], (char *)key, 199);
+				strncpy(mapnames[map_service][MAP_URL], (char *)key, 511);
 			} else {
 				mapnames[map_service][MAP_URL][0] = 0;
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"url2"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if (key != NULL) {
+				strncpy(mapnames[map_service][MAP_URL2], (char *)key, 511);
+			} else {
+				mapnames[map_service][MAP_URL2][0] = 0;
 			}
 			xmlFree(key);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"comment"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
-				strncpy(mapnames[map_service][MAP_COMMENT], (char *)key, 199);
+				strncpy(mapnames[map_service][MAP_COMMENT], (char *)key, 511);
 			} else {
 				mapnames[map_service][MAP_COMMENT][0] = 0;
 			}
@@ -133,7 +141,7 @@ static void map_parseMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t map_serv
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"copyright"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
-				strncpy(mapnames[map_service][MAP_COPYRIGHT], (char *)key, 199);
+				strncpy(mapnames[map_service][MAP_COPYRIGHT], (char *)key, 511);
 			} else {
 				mapnames[map_service][MAP_COPYRIGHT][0] = 0;
 			}
@@ -141,7 +149,7 @@ static void map_parseMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t map_serv
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"file"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
-				strncpy(mapnames[map_service][MAP_FILE], (char *)key, 199);
+				strncpy(mapnames[map_service][MAP_FILE], (char *)key, 511);
 			} else {
 				mapnames[map_service][MAP_FILE][0] = 0;
 			}
@@ -149,7 +157,7 @@ static void map_parseMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t map_serv
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"type"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if (key != NULL) {
-				strncpy(mapnames[map_service][MAP_TYPE], (char *)key, 199);
+				strncpy(mapnames[map_service][MAP_TYPE], (char *)key, 511);
 			} else {
 				mapnames[map_service][MAP_TYPE][0] = 0;
 			}
@@ -345,6 +353,7 @@ void get_maps (uint8_t mode, GeoMap *mapdata) {
 	char tile_url[2024];
 	char tmp_str[2024];
 	char tmp_str2[2024];
+	char url_string[1024];
 	char status_txt[2024];
 	uint8_t tiles_x = (setup.screen_w + 255) / 256;
 	uint8_t tiles_y = (setup.screen_h + 255) / 256;
@@ -386,7 +395,11 @@ void get_maps (uint8_t mode, GeoMap *mapdata) {
 							google_tile_long = google_tile_long1 + (google_tile_long2 - google_tile_long1) / 2;
 							google_tile_lat = tiley2lat(tile_y + y_n + 1, mapdata->zoom);
 							sprintf(tile_name, "%s/MAPS/tobig_google_%i_%i_%i.png", get_datadirectory(), mapdata->zoom, tile_x + x_n, tile_y + y_n);
-							sprintf(tile_url, mapnames[map_type][MAP_URL], google_tile_lat, google_tile_long, mapdata->zoom, 256, 356);
+							if (start == 1 && mapnames[map_type][MAP_URL2][0] != 0) {
+								sprintf(tile_url, mapnames[map_type][MAP_URL2], google_tile_lat, google_tile_long, mapdata->zoom, 256, 356);
+							} else {
+								sprintf(tile_url, mapnames[map_type][MAP_URL], google_tile_lat, google_tile_long, mapdata->zoom, 256, 356);
+							}
 							SDL_Log("map: %s -> %s\n", tile_url, tile_name);
 							file_download(tile_name, tile_url);
 							// Crop map-image for titles
@@ -400,15 +413,20 @@ void get_maps (uint8_t mode, GeoMap *mapdata) {
 							if (file_exists(tile_name) == 0) {
 								sprintf(status_txt, "getting map-tile: %s", tile_name);
 								sys_message(status_txt);
+								if (start == 1 && mapnames[map_type][MAP_URL2][0] != 0) {
+									strcpy(url_string, mapnames[map_type][MAP_URL2]);
+								} else {
+									strcpy(url_string, mapnames[map_type][MAP_URL]);
+								}
 								if (strcmp(mapnames[map_type][MAP_TYPE], "ZYX") == 0) {
-									sprintf(tile_url, mapnames[map_type][MAP_URL], mapdata->zoom, tile_y + y_n, tile_x + x_n);
+									sprintf(tile_url, url_string, mapdata->zoom, tile_y + y_n, tile_x + x_n);
 								} else if (strcmp(mapnames[map_type][MAP_TYPE], "ZXY") == 0) {
-									sprintf(tile_url, mapnames[map_type][MAP_URL], mapdata->zoom, tile_x + x_n, tile_y + y_n);
+									sprintf(tile_url, url_string, mapdata->zoom, tile_x + x_n, tile_y + y_n);
 								} else if (strcmp(mapnames[map_type][MAP_TYPE], "XYZ") == 0) {
-									sprintf(tile_url, mapnames[map_type][MAP_URL], tile_x + x_n, tile_y + y_n, mapdata->zoom);
+									sprintf(tile_url, url_string, tile_x + x_n, tile_y + y_n, mapdata->zoom);
 								} else if (strcmp(mapnames[map_type][MAP_TYPE], "BING") == 0) {
 									char quadKey[100];
-									sprintf(tile_url, mapnames[map_type][MAP_URL], BingtileXYZToQuadKey(quadKey, tile_x + x_n, tile_y + y_n, mapdata->zoom));
+									sprintf(tile_url, url_string, BingtileXYZToQuadKey(quadKey, tile_x + x_n, tile_y + y_n, mapdata->zoom));
 								}
 								SDL_Log("map: %s -> %s\n", tile_url, tile_name);
 								file_download(tile_name, tile_url);

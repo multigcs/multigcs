@@ -1,5 +1,4 @@
 
-
 #define MAX_POIS 100
 
 typedef struct {
@@ -31,8 +30,8 @@ typedef struct {
 extern GeoMap *mapdata;
 extern uint8_t maplen;
 extern uint8_t omaplen;
-extern char mapnames[20][6][512];
-extern char omapnames[20][6][512];
+extern char mapnames[20][7][512];
+extern char omapnames[20][7][512];
 extern PointOfInterest POIs[MAX_POIS];
 
 
