@@ -986,32 +986,32 @@ void check_events (ESContext *esContext, SDL_Event event) {
 			return;
 		}
 		if (mousemode == 1) {
-			if (mapdata->offset_x1 < -0.8) {
+			while (mapdata->offset_x1 <= -256.0 / (float)esContext->width * 2.0 * aspect) {
 				int tile_x = long2tilex(lon, zoom);
 				tile_x--;
 				lon = tilex2long(tile_x, zoom);
-				mapdata->offset_x1 = 0.0;
+				mapdata->offset_x1 += 256.0 / (float)esContext->width * 2.0 * aspect;
 				mousestart_x = 0.0;
 			}
-			if (mapdata->offset_x1 > 0.8) {
+			while (mapdata->offset_x1 >= 256.0 / (float)esContext->width * 2.0 * aspect) {
 				int tile_x = long2tilex(lon, zoom);
-				tile_x+= 2;
+				tile_x += 1;
 				lon = tilex2long(tile_x, zoom);
-				mapdata->offset_x1 = 0.0;
+				mapdata->offset_x1 -= 256.0 / (float)esContext->width * 2.0 * aspect;
 				mousestart_x = 0.0;
 			}
-			if (mapdata->offset_y1 < -0.8) {
+			if (mapdata->offset_y1 <= -256.0 / (float)esContext->height * 2.0) {
 				int tile_y = lat2tiley(lat, zoom);
-				tile_y+= 2;
+				tile_y--;
 				lat = tiley2lat(tile_y, zoom);
-				mapdata->offset_y1 = 0.0;
+				mapdata->offset_y1 += 256.0 / (float)esContext->height * 2.0;
 				mousestart_y = 0.0;
 			}
-			if (mapdata->offset_y1 > 0.8) {
+			if (mapdata->offset_y1 >= 256.0 / (float)esContext->height * 2.0) {
 				int tile_y = lat2tiley(lat, zoom);
-				tile_y+= 2;
+				tile_y += 1;
 				lat = tiley2lat(tile_y, zoom);
-				mapdata->offset_y1 = 0.0;
+				mapdata->offset_y1 -= 256.0 / (float)esContext->height * 2.0;
 				mousestart_y = 0.0;
 			}
 		}
@@ -1077,6 +1077,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 			float mouse_long = x2long(bx, lon, zoom);
 			float mouse_lat = y2lat(by, lat, zoom);
 			if (event.button.button == 1) {
+/*
 				if (by > 0 && by < 80) {
 					int tile_y = lat2tiley(lat, zoom);
 					tile_y--;
@@ -1093,7 +1094,9 @@ void check_events (ESContext *esContext, SDL_Event event) {
 					int tile_x = long2tilex(lon, zoom);
 					tile_x++;
 					lon = tilex2long(tile_x, zoom);
-				} else if (map_addmode == 1) {
+				} else
+*/
+				if (map_addmode == 1) {
 					uint16_t n = 0;
 					int16_t nz = get_altitude(mouse_lat, mouse_long);
 					if (ModelData.p_alt > nz) {

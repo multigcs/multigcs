@@ -621,16 +621,14 @@ void map_draw_buttons (ESContext *esContext) {
 	uint8_t nn = 0;
 	ny++;
 	if (map_type_select == 1) {
-		ny2 = ny;
+		ny2 = ny - 1;
 		nn = 0;
 		for (nn = 0; nn < maplen; nn++) {
 			draw_box_f3(esContext, -1.15, -0.8 + ny2 * 0.12 - 0.055, 0.002, -0.85, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
 			draw_rect_f3(esContext, -1.15, -0.8 + ny2 * 0.12 - 0.055, 0.002, -0.85, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
 			sprintf(tmp_str, "change_maptype%i", nn);
 			draw_button(esContext, tmp_str, setup.view_mode, mapnames[nn][MAP_NAME], FONT_WHITE, -1.15, -0.8 + ny2 * 0.12 - 0.055, 0.002, -0.85, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, change_maptype, nn);
-
 			draw_text_f3(esContext, -1.15, -0.8 + ny2 * 0.12 - 0.055, 0.003, 0.03, 0.03, FONT_WHITE, mapnames[nn][MAP_COMMENT]);
-
 			ny2++;
 		}
 	}
