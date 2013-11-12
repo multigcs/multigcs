@@ -12,8 +12,8 @@ INCDIR =
 LIBS = 
 CFLAGS+=-DMESA -ggdb -O3 -Wall -DBASE_DIR="\"$(BASE_DIR)\""
 
-INCDIR+= $(shell pkg-config --cflags sdl) $(shell pkg-config --cflags SDL_image) $(shell pkg-config --cflags egl) $(shell pkg-config --cflags glesv2)
-LIBS+= $(shell pkg-config --libs sdl) $(shell pkg-config --libs SDL_image) $(shell pkg-config --libs egl) $(shell pkg-config --libs glesv2)
+INCDIR+= $(shell pkg-config --cflags sdl) $(shell pkg-config --cflags SDL_image) $(shell pkg-config --cflags SDL_net) $(shell pkg-config --cflags egl) $(shell pkg-config --cflags glesv2)
+LIBS+= $(shell pkg-config --libs sdl) $(shell pkg-config --libs SDL_image) $(shell pkg-config --libs SDL_net) $(shell pkg-config --libs egl) $(shell pkg-config --libs glesv2)
 
 ## ldd gcs  | grep -v /opt | awk '{print $1}' | xargs -r -l dpkg -S  | cut -d":" -f1 | sort -u | tr  "\n" "," ##
 

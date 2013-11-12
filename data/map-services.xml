@@ -11,7 +11,6 @@
 		<copyright>Karte von &lt;a href='http://openstreetmap.org/'&gt;OpenStreetMap&lt;/a&gt; und Mitwirkenden unter &lt;a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'&gt;CC-BY-SA&lt;/a&gt;-Lizenz</copyright>
 	</service>
 
-
 	<service>
 		<name>GAPI</name>
 		<comment>Google</comment>
@@ -245,6 +244,14 @@
 		<type>ZXY</type>
 		<copyright>Karte von &lt;a href='http://openstreetmap.org/'&gt;OpenStreetMap&lt;/a&gt; und Mitwirkenden unter &lt;a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'&gt;CC-BY-SA&lt;/a&gt;-Lizenz</copyright>
 	</_overlay_service>
+	<service>
+		<name>OEPNV</name>
+		<comment>OEPNV</comment>
+		<url>http://tile.memomaps.de/tilegen/%i/%i/%i.png</url>
+		<file>%s/MAPS/oepnv_%i_%i_%i.png</file>
+		<type>ZXY</type>
+		<copyright>OEPNV</copyright>
+	</service>
 
 
 </map>

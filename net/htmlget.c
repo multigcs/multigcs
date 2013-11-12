@@ -31,11 +31,11 @@ static char *get_ip (char *host) {
 	char *ip = (char *)malloc(iplen+1);
 	memset(ip, 0, iplen+1);
 	if ((hent = gethostbyname(host)) == NULL) {
-		herror("Can't get IP");
+		herror("Can't get IP\n");
 		return NULL;
 	}
 	if(inet_ntop(AF_INET, (void *)hent->h_addr_list[0], ip, iplen) == NULL) {
-		SDL_Log("Can't resolve host");
+		SDL_Log("Can't resolve host: %s (%s)\n", host, ip);
 		return NULL;
 	}
 	return ip;

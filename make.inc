@@ -14,7 +14,7 @@ LIBS += $(shell pkg-config --libs libxml-2.0) $(shell pkg-config --libs x11) $(s
 
 
 GCS = $(EXTRA_OBJECTS) main.o serial.o draw/draw.o draw/videocapture.o draw/map.o geomag70.o \
-	minizip/ioapi.o minizip/unzip.o net/htmlget.o \
+	minizip/ioapi.o minizip/unzip.o net/htmlget-sdl.o \
 	screens/screen_rcflow.o screens/screen_keyboard.o screens/screen_filesystem.o screens/screen_device.o screens/screen_baud.o screens/screen_model.o screens/screen_cli.o screens/screen_baseflightcli.o screens/screen_background.o screens/screen_wpedit.o screens/screen_hud.o screens/screen_map.o screens/screen_calibration.o screens/screen_fms.o screens/screen_system.o screens/screen_tcl.o screens/screen_mavlink_menu.o screens/screen_brugi.o screens/screen_simplebgc.o screens/screen_tracker.o screens/screen_mwi_menu.o screens/screen_openpilot_menu.o screens/screen_videolist.o screens/screen_graph.o screens/screen_telemetry.o \
 	mavlink/my_mavlink.o gps/my_gps.o mwi21/mwi21.o jeti/jeti.o openpilot/openpilot.o openpilot/openpilot_xml.o frsky/frsky.o tracker/tracker.o simplebgc/simplebgc.o brugi/brugi.o net/savepng.o net/webserv.o net/webclient.o logging.o kml.o
 
