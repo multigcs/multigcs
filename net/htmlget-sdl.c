@@ -47,7 +47,7 @@ int htmlget (char *url, char *file) {
 		        FILE *fd = NULL;
 		        fd = fopen(file, "wb");
 			if (fd == NULL) {
-				SDL_Log("Error open file to write: %s\n", file);
+				printf("Error open file to write: %s\n", file);
 				return -1;
 			}
 			fwrite(cl2 + 4, 1, len, fd);

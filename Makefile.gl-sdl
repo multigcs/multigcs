@@ -14,7 +14,7 @@ CFLAGS += -DSDLGL -DOPENCV_EFFECTS -DUSE_OPENCV -DUSE_QUIRC -O3 -Wall -DBASE_DIR
 #CFLAGS += -pg
 
 INCDIR += $(shell pkg-config --cflags sdl) $(shell pkg-config --cflags SDL_image) $(shell pkg-config --cflags SDL_net) $(shell pkg-config --cflags gl) $(shell pkg-config --cflags glu) $(shell pkg-config --cflags opencv) \
--I/usr/local/include -Iquirc -Idpf
+-I/usr/local/include -Iquirc
 LIBS += $(shell pkg-config --libs sdl) $(shell pkg-config --libs SDL_image) $(shell pkg-config --libs SDL_net) $(shell pkg-config --libs gl) $(shell pkg-config --libs glu) $(shell pkg-config --libs glew) $(shell pkg-config --libs opencv)
 
 
@@ -24,9 +24,9 @@ COMMONSRC = draw/opencv.o quirc/decode.o quirc/identify.o quirc/quirc.o quirc/ve
 COMMONHRD = 
 
 # dpf-display support
-COMMONSRC += dpf/display_dpf.o  dpf/dpflib.o  dpf/rawusb.o
-LIBS += -lusb
-CFLAGS += -DDPF_DISPLAY
+#COMMONSRC += dpf/display_dpf.o  dpf/dpflib.o  dpf/rawusb.o
+#LIBS += -lusb
+#CFLAGS += -DDPF_DISPLAY
 
 include make.inc
 
