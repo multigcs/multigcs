@@ -24,7 +24,7 @@ default: all
 all: gcs
 
 clean:
-	rm -f gcs *.o Common/*.o screens/*.o net/*.o draw/*.o tcl/*.o mavlink/*.o gps/*.o mwi21/*.o jeti/*.o openpilot/*.o frsky/*.o tracker/*.o minizip/*.o brugi/*.o simplebgc/*.o tracker/*.o
+	rm -f gcs *.o Common/*.o screens/*.o net/*.o draw/*.o tcl/*.o mavlink/*.o gps/*.o mwi21/*.o jeti/*.o openpilot/*.o frsky/*.o tracker/*.o minizip/*.o brugi/*.o simplebgc/*.o tracker/*.o quirc/*.o
 
 install:
 	cp -a gcs /usr/bin/gl-gcs

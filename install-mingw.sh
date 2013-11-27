@@ -2,7 +2,7 @@
 #
 #
 
-apt-get install binutils-mingw-w64-i686 gcc-mingw-w64-i686 gcc-mingw32 mingw-w64-x86-64-dev mingw-w64-i686-dev mingw32-runtime wine libwine-gl dos2unix nsis nsis-common
+apt-get install binutils-mingw-w64-i686 gcc-mingw-w64-i686 gcc-mingw32 mingw-w64-x86-64-dev mingw-w64-i686-dev mingw32-runtime wine libwine-gl dos2unix nsis nsis-common wget gcc-mingw32 build-essential pkg-config zip unzip tofrodos
 
 mkdir -p winlibs
 cd winlibs
@@ -67,10 +67,12 @@ i686-w64-mingw32-gcc -c -O2 -Wall -W -Iinclude  -o src/visualinfo.o src/visualin
 i686-w64-mingw32-gcc -O2 -Wall -W -Iinclude  -o bin/visualinfo.exe src/visualinfo.o -Llib  -lglew32 -L/mingw/lib -lglu32 -lopengl32 -lgdi32 -luser32 -lkernel32
 )
 
-mkdir -p libjpeg
+test -e libjpeg/ || mkdir -p libjpeg
 test -e libjpeg/libjpeg-9.dll || wget -O libjpeg/libjpeg-9.dll https://raw.github.com/OctaForge/OF-Windows/master/bin_win64/libjpeg-9.dll
 
-##test -e OpenCV-2.4.5VC.zip || wget http://download738.mediafire.com/pu1mf9p4vkgg/t2o7lo7p0vj6pl5/OpenCV-2.4.5VC.zip
+
+test -e OpenCV-2.4.5VC.zip || wget http://www.multixmedia.org/test/OpenCV-2.4.5VC.zip
+unzip -o -x OpenCV-2.4.5VC.zip
 
 mkdir -p /usr/i686-w64-mingw32/bin/
 mkdir -p /usr/i686-w64-mingw32/lib/
@@ -97,4 +99,7 @@ cp -av libjpeg/libjpeg-9.dll /usr/i686-w64-mingw32/bin/
 cp -av OpenCV-2.4.5VC/install/bin/* /usr/i686-w64-mingw32/bin/
 cp -av OpenCV-2.4.5VC/install/lib/* /usr/i686-w64-mingw32/lib/
 cp -av OpenCV-2.4.5VC/install/include/* /usr/i686-w64-mingw32/include/
+
+(cd /usr/share/nsis/ ; wget -O UltraModernUI_1.00_2010-11-11.zip http://freefr.dl.sourceforge.net/project/ultramodernui/UltraModernUI/UltraModernUI%201.00b2-dev/UltraModernUI_1.00_2010-11-11.zip)
+(cd /usr/share/nsis/ ; unzip -x UltraModernUI_1.00_2010-11-11.zip)
 

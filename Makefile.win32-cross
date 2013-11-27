@@ -41,7 +41,7 @@ default: all
 all: gcs.exe
 
 clean:
-	rm -rf gcs.exe exe.rc exe.res installer.nsis gcs Windows *.o Common/*.o screens/*.o net/*.o draw/*.o tcl/*.o mavlink/*.o gps/*.o mwi21/*.o jeti/*.o openpilot/*.o frsky/*.o tracker/*.o minizip/*.o brugi/*.o simplebgc/*.o tracker/*.o
+	rm -rf gcs.exe exe.rc exe.res installer.nsis gcs Windows *.o Common/*.o screens/*.o net/*.o draw/*.o tcl/*.o mavlink/*.o gps/*.o mwi21/*.o jeti/*.o openpilot/*.o frsky/*.o tracker/*.o minizip/*.o brugi/*.o simplebgc/*.o tracker/*.o quirc/*.o
 
 %.o: %.c
 	@echo "$< -> $@"
@@ -118,8 +118,6 @@ pack:
 	cp /usr/i686-w64-mingw32/bin/libxml2.dll Windows/MultiGCS/
 	cp /usr/i686-w64-mingw32/bin/glew32.dll Windows/MultiGCS/
 	cp /usr/i686-w64-mingw32/bin/libjpeg-9.dll Windows/MultiGCS/
-	cp /usr/i686-w64-mingw32/bin/libvlc.dll Windows/MultiGCS/
-	cp /usr/i686-w64-mingw32/bin/libvlccore.dll Windows/MultiGCS/
 	cp /usr/i686-w64-mingw32/bin/opencv_highgui245d.dll Windows/MultiGCS/
 	cp /usr/i686-w64-mingw32/bin/opencv_core245d.dll Windows/MultiGCS/
 	cp /usr/i686-w64-mingw32/bin/opencv_imgproc245d.dll Windows/MultiGCS/

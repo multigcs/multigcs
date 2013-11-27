@@ -196,6 +196,7 @@ void map_overlay (ESContext *esContext, float north, float west, float south, fl
 
 	float diff_x = (x2 - x1) / 2.0;
 	float diff_y = (y2 - y1) / 2.0;
+#ifdef SDLGL
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 
@@ -204,10 +205,8 @@ void map_overlay (ESContext *esContext, float north, float west, float south, fl
 	glTranslatef(-(x1 + diff_x), y1 + diff_y, 0.0);
 	draw_image_f3(esContext, x1, y1, x2, y2, 1.0, file);
 
-
 	glPopMatrix();
-
-
+#endif
 }
 
 

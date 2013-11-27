@@ -501,13 +501,6 @@ int thread_get_maps2 (void *data) {
 
 
 
-
-
-
-
-
-
-
 void draw_quad (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, float roll, float pitch, float yaw, float lat, float lon, uint8_t zoom) {
 	ESMatrix modelview;
 #ifndef SDLGL
@@ -545,7 +538,7 @@ void draw_quad (ESContext *esContext, float mark_lat, float mark_long, float mar
 #else
 	esMatrixLoadIdentity(&modelview);
 	if (map_view != 1 && map_view != 3) {
-		esTranslate( &modelview, -offset_x1, offset_y1, 0.0 );
+		esTranslate( &modelview, -mapdata->offset_x1, mapdata->offset_y1, 0.0 );
 	}
 #endif
 	esTranslate( &modelview, x1, -y1, -2.0 + mark_z);
@@ -587,7 +580,7 @@ void draw_quad (ESContext *esContext, float mark_lat, float mark_long, float mar
 #else
 	esMatrixLoadIdentity(&modelview);
 	if (map_view != 1 && map_view != 3) {
-		esTranslate( &modelview, -offset_x1, offset_y1, 0.0 );
+		esTranslate( &modelview, -mapdata->offset_x1, mapdata->offset_y1, 0.0 );
 	}
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
@@ -615,7 +608,7 @@ void draw_tracker (ESContext *esContext, float mark_lat, float mark_long, float 
 #else
 	esMatrixLoadIdentity(&modelview);
 	if (map_view != 1 && map_view != 3) {
-		esTranslate( &modelview, -offset_x1, offset_y1, 0.0 );
+		esTranslate( &modelview, -mapdata->offset_x1, mapdata->offset_y1, 0.0 );
 	}
 #endif
 	esTranslate( &modelview, x1, -y1, -2.0 + mark_z);
@@ -642,7 +635,7 @@ void draw_tracker (ESContext *esContext, float mark_lat, float mark_long, float 
 #else
 	esMatrixLoadIdentity(&modelview);
 	if (map_view != 1 && map_view != 3) {
-		esTranslate( &modelview, -offset_x1, offset_y1, 0.0 );
+		esTranslate( &modelview, -mapdata->offset_x1, mapdata->offset_y1, 0.0 );
 	}
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
@@ -989,7 +982,7 @@ GeoMap *GeoMap_init (void) {
 void GeoMap_draw (GeoMap *mapdata) {
 	ESMatrix modelview;
 #ifndef SDLGL
-	UserData *userData = esContext->userData;
+	UserData *userData = GlobalesContext->userData;
 	esMatrixLoadIdentity(&modelview);
 	esMatrixMultiply( &userData->mvpMatrix, &modelview, &userData->perspective );
 	esMatrixMultiply( &userData->mvpMatrix2, &modelview, &userData->perspective );

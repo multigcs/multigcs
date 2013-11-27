@@ -3,7 +3,7 @@ include $(CLEAR_VARS)
 
 OPENCV_CAMERA_MODULES:=on
 OPENCV_INSTALL_MODULES:=on
-include ../opencv-android-sdk/sdk/native/jni/OpenCV.mk
+include $(LOCAL_PATH)/android-dev/opencv-android-sdk/sdk/native/jni/OpenCV.mk
 
 LOCAL_MODULE := main
 
@@ -18,7 +18,7 @@ LIBXML2_PATH := ../libxml2
 
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/$(SDL_PATH)/include $(LOCAL_PATH)/$(SDL_IMAGE_PATH) $(LOCAL_PATH)/$(LIBXML2_PATH)/include \
  $(LOCAL_PATH)/Common $(LOCAL_PATH)/screens $(LOCAL_PATH)/net $(LOCAL_PATH)/tcl $(LOCAL_PATH)/draw $(LOCAL_PATH)/mavlink $(LOCAL_PATH)/gps $(LOCAL_PATH)/mwi21 $(LOCAL_PATH)/simplebgc $(LOCAL_PATH)/brugi $(LOCAL_PATH)/jeti $(LOCAL_PATH)/openpilot $(LOCAL_PATH)/frsky $(LOCAL_PATH)/tracker $(LOCAL_PATH)/minizip \
- $(LOCAL_PATH)/opencv-android-sdk/sdk/native/jni/include/opencv $(LOCAL_PATH)/opencv-android-sdk/sdk/native/jni/include
+ $(LOCAL_PATH)/android-dev/opencv-android-sdk/sdk/native/jni/include/opencv $(LOCAL_PATH)/android-dev/opencv-android-sdk/sdk/native/jni/include
 
 LOCAL_SRC_FILES += $(SDL_PATH)/src/main/android/SDL_android_main.c \
  main.c serial.c draw/draw.c draw/videocapture.c draw/map.c geomag70.c \

@@ -1,4 +1,10 @@
 
+SDK_PREFIX = $(shell pwd)/android-dev/android-sdk
+NDK_PREFIX = $(shell pwd)/android-dev/android-ndk
+ADB        = $(SDK_PREFIX)/platform-tools/adb
+NDKBUILD   = $(NDK_PREFIX)/ndk-build
+ANDROID    = $(SDK_PREFIX)/tools/android
+
 all:
 	rm -f android/jni/src/*
 	(cd android/jni/src ; ln -s ../../../* ./)
@@ -31,24 +37,25 @@ all:
 	cp -a net/simple.dae android/assets/webserv/simple.dae
 	cp -a copyright android/assets/webserv/copyright
 	cp -a GPLv3.txt android/assets/webserv/GPLv3.txt
-	(cd android ; android update project -s -p ./ -t android-18)
-	(cd android ; ndk-build)
+	(cd android-dev/opencv-android-sdk/sdk/java/ ; $(ANDROID) update project -s -p ./ -t android-18)
+	(cd android ; $(ANDROID) update project -s -p ./ -t android-18)
+	(cd android ; $(NDKBUILD))
 	(cd android ; ant debug)
 
 install:
-	adb install -r android/bin/MultiGCS-debug.apk
+	$(ADB) install -r android/bin/MultiGCS-debug.apk
 
 run:
-	adb shell am start -n org.libsdl.app/org.libsdl.app.MultiGCS
+	$(ADB) shell am start -n org.libsdl.app/org.libsdl.app.MultiGCS
 
 logcat:
-	adb logcat
+	$(ADB) logcat
 
 tail: logcat
 
 
 clean:
-	(cd android ; ndk-build clean)
+	(cd android ; $(NDKBUILD) clean)
 	rm -f android/ant.properties
 	rm -f android/build.properties
 	rm -f android/default.properties

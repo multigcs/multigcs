@@ -19,8 +19,14 @@ android/default.properties
 android/local.properties
 android/proguard-project.txt
 android/build.xml
+android-dev
 Windows
 winlibs
 exe.rc
 exe.res
 installer.nsis
+android-libs.tgz
+android/jni/SDL2
+android/jni/SDL2_image
+android/jni/libxml2
+3d-models
