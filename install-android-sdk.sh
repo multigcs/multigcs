@@ -23,6 +23,7 @@ mkdir -p android-dev
 	test -e opencv-android-sdk || tar xzvpf opencv-android.tgz
 )
 
-export PATH="$PATH:android-dev/android-ndk:android-dev/android-sdk/tools:android-dev/android-sdk/platform-tools"
-android update sdk -u
+android-dev/android-sdk/tools/android update sdk -u
+
+echo 'export PATH="$PATH:android-dev/android-ndk:android-dev/android-sdk/tools:android-dev/android-sdk/platform-tools"'
 

@@ -19,12 +19,12 @@ Homepage: http://www.multixmedia.org/Multi-GCS/index.html
 Compilation/Installation:
 	Linux/Desktop (OpenGL):
 
-		apt-get install build-essential clang pkg-config libxml2-dev libpng12-dev libx11-dev zlib1g-dev libopencv-dev libglew-dev libglu1-mesa-dev libgl1-mesa-dev libsdl-net1.2-dev libsdl-image1.2-dev libsdl1.2-dev tk8.5-dev libgles2-mesa-dev
+		apt-get install build-essential clang pkg-config libxml2-dev libpng12-dev libx11-dev zlib1g-dev libopencv-dev libglew-dev libglu1-mesa-dev libgl1-mesa-dev libsdl-net1.2-dev libsdl-image1.2-dev libsdl1.2-dev tk8.5-dev libgles2-mesa-dev dpkg-dev
 		make -f Makefile.gl-sdl all install deb
 
 	Linux/Desktop (OpenGL-ES):
 
-		apt-get install build-essential clang pkg-config libxml2-dev libpng12-dev libx11-dev zlib1g-dev libopencv-dev libglew-dev libglu1-mesa-dev libgl1-mesa-dev libsdl-net1.2-dev libsdl-image1.2-dev libsdl1.2-dev tk8.5-dev libgles2-mesa-dev
+		apt-get install build-essential clang pkg-config libxml2-dev libpng12-dev libx11-dev zlib1g-dev libopencv-dev libglew-dev libglu1-mesa-dev libgl1-mesa-dev libsdl-net1.2-dev libsdl-image1.2-dev libsdl1.2-dev tk8.5-dev libgles2-mesa-dev dpkg-dev
 		make -f Makefile.gles-x11 all install deb
 
 	Linux/Raspberry-Pi (OpenGL-ES):
