@@ -94,6 +94,7 @@ typedef struct {
 	char title[16];
 	char name[MAX_NAMELEN];
 	uint8_t type;
+	uint8_t vview;
 	uint16_t option;
 	float x;
 	float y;
@@ -361,6 +362,10 @@ void rcflow_parsePlugin (xmlDocPtr doc, xmlNodePtr cur, uint8_t plugin) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			RcPlugin[plugin].type = atoi((char *)key);
 			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"vview"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			RcPlugin[plugin].vview = atoi((char *)key);
+			xmlFree(key);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"option"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			RcPlugin[plugin].option = atoi((char *)key);
@@ -510,6 +515,7 @@ static void rcflow_parseDoc (char *docname) {
 	for (plugin = 0; plugin < MAX_PLUGINS; plugin++) {
 		RcPlugin[plugin].name[0] = 0;
 		RcPlugin[plugin].type = 255;
+		RcPlugin[plugin].vview = 0;
 		for (input = 0; input < MAX_INPUTS; input++) {
 			RcPlugin[plugin].input[input].name[0] = 0;
 			RcPlugin[plugin].input[input].value = 0;
@@ -553,6 +559,10 @@ static void rcflow_parseDoc (char *docname) {
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"scale"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			scale = atof((char *)key);
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"virt_view"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			virt_view = atoi((char *)key);
 			xmlFree(key);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"plugin"))) {
 			rcflow_parsePlugin (doc, cur, plugin++);
@@ -954,7 +964,6 @@ uint8_t rcflow_test (char *name, float x, float y, int8_t button, float data) {
 	uint8_t plist = 0;
 	uint8_t tlist = 0;
 	char tmp_str[128];
-
 	for (type = 0; type < RCFLOW_PLUGIN_LAST; type++) {
 		tlist = 0;
 		for (plugin = 0; plugin < MAX_PLUGINS; plugin++) {
@@ -1171,6 +1180,7 @@ uint8_t rcflow_save_xml (char *name, float x, float y, int8_t button, float data
 		fprintf(fr, " <name>%s</name>\n", setup_name);
 		fprintf(fr, " <image>%s</image>\n", ModelData.image);
 		fprintf(fr, " <scale>%f</scale>\n", scale);
+		fprintf(fr, " <virt_view>%i</virt_view>\n", virt_view);
 		fprintf(fr, " <mavlink>\n");
 		for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
 			if (MavLinkVars[n].name[0] != 0) {
@@ -1187,7 +1197,7 @@ uint8_t rcflow_save_xml (char *name, float x, float y, int8_t button, float data
 				fprintf(fr, "  <type>%i</type>\n", RcPlugin[plugin].type);
 				fprintf(fr, "  <x>%f</x>\n", RcPlugin[plugin].x);
 				fprintf(fr, "  <y>%f</y>\n", RcPlugin[plugin].y);
-				if (RcPlugin[plugin].type == RCFLOW_PLUGIN_VSW || RcPlugin[plugin].type == RCFLOW_PLUGIN_VADC) {
+				if (RcPlugin[plugin].type == RCFLOW_PLUGIN_VSW || RcPlugin[plugin].type == RCFLOW_PLUGIN_VADC || RcPlugin[plugin].type == RCFLOW_PLUGIN_MULTIPLEX_IN || RcPlugin[plugin].vview == 1) {
 					fprintf(fr, "  <x_virt>%f</x_virt>\n", RcPlugin[plugin].x_virt);
 					fprintf(fr, "  <y_virt>%f</y_virt>\n", RcPlugin[plugin].y_virt);
 				}
@@ -2314,6 +2324,12 @@ void rcflow_draw_vplugin (ESContext *esContext, uint8_t id, uint8_t vnum) {
 	char tmp_str[64];
 	uint8_t num_max = rcflow_plugin_max_get(id);
 	// Plugin
+	if (RcPlugin[id].type == RCFLOW_PLUGIN_MULTIPLEX_IN) {
+		num_max = 3;
+		sprintf(tmp_str, "Select:%i", RcPluginEmbedded[id].input[MAX_INPUTS - 1].value + 1);
+		draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_GREEN, RcPlugin[id].x_virt, RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE + 0.04, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_title_edit, (float)id);
+	}
+
 #ifndef SIMPLE_DRAW
 	if (RcPlugin[id].type == RCFLOW_PLUGIN_INPUT) {
 		draw_box_f3c2(esContext, RcPlugin[id].x_virt - 0.12, RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - 0.02, 0.001, RcPlugin[id].x_virt + 0.12, RcPlugin[id].y_virt + num_max / 2 * LINK_SPACE - 0.02, 0.001, 55, 55, 55, 127, 100, 255, 100, 120);
@@ -2337,8 +2353,9 @@ void rcflow_draw_vplugin (ESContext *esContext, uint8_t id, uint8_t vnum) {
 	} else {
 		draw_text_button(esContext, tmp_str, setup.view_mode, RcPlugin[id].name, FONT_GREEN, RcPlugin[id].x_virt, RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - 0.02, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_title_edit, (float)id);
 	}
+
 	// Output-Sliders
-	if (RcPlugin[id].type == RCFLOW_PLUGIN_ADC || RcPlugin[id].type == RCFLOW_PLUGIN_SW || RcPlugin[id].type == RCFLOW_PLUGIN_ENC || RcPlugin[id].type == RCFLOW_PLUGIN_VADC || RcPlugin[id].type == RCFLOW_PLUGIN_VSW) {
+	if (RcPlugin[id].type == RCFLOW_PLUGIN_ADC || RcPlugin[id].type == RCFLOW_PLUGIN_SW || RcPlugin[id].type == RCFLOW_PLUGIN_ENC || RcPlugin[id].type == RCFLOW_PLUGIN_VADC || RcPlugin[id].type == RCFLOW_PLUGIN_VSW || RcPlugin[plugin].vview == 1) {
 		for (output = 0; output < MAX_OUTPUTS; output++) {
 			if (RcPlugin[id].output[output].name[0] != 0 && RcPlugin[id].output[output].type != RCFLOW_INOUT_TYPE_TEMP) {
 				sprintf(tmp_str, "%s;%s", RcPlugin[id].name, RcPlugin[id].output[output].name);
@@ -2601,7 +2618,7 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 #endif
 	}
 	// Output-Sliders
-	if (RcPlugin[id].type == RCFLOW_PLUGIN_ADC || RcPlugin[id].type == RCFLOW_PLUGIN_SW || RcPlugin[id].type == RCFLOW_PLUGIN_ENC || RcPlugin[id].type == RCFLOW_PLUGIN_VSW || RcPlugin[id].type == RCFLOW_PLUGIN_VADC || RcPlugin[id].type == RCFLOW_PLUGIN_MULTIPLEX_IN) {
+	if (RcPlugin[id].type == RCFLOW_PLUGIN_ADC || RcPlugin[id].type == RCFLOW_PLUGIN_SW || RcPlugin[id].type == RCFLOW_PLUGIN_ENC || RcPlugin[id].type == RCFLOW_PLUGIN_VSW || RcPlugin[id].type == RCFLOW_PLUGIN_VADC || RcPlugin[id].type == RCFLOW_PLUGIN_MULTIPLEX_IN || RcPlugin[plugin].vview == 1) {
 		for (output = 0; output < MAX_OUTPUTS; output++) {
 			sprintf(tmp_str, "%s;%s", RcPlugin[id].name, RcPlugin[id].output[output].name);
 			if (RcPlugin[id].output[output].name[0] != 0 && RcPlugin[id].output[output].type != RCFLOW_INOUT_TYPE_TEMP) {
@@ -3046,7 +3063,6 @@ uint8_t rcflow_init (char *port, uint32_t baud) {
 	uint8_t output = 0;
 	uint8_t link = 0;
 	uint8_t n = 0;
-
 	if (startup == 0) {
 		startup = 1;
 		strcpy(setup_name, "new.xml");
@@ -3325,7 +3341,7 @@ while (read(rcflow_fd, buf, 1) > 0) {
 		// Draw Virtual-Inputs
 		n = 0;
 		for (plugin = 0; plugin < MAX_PLUGINS; plugin++) {
-			if (RcPlugin[plugin].name[0] != 0 && (RcPlugin[plugin].type == RCFLOW_PLUGIN_VADC || RcPlugin[plugin].type == RCFLOW_PLUGIN_VSW)) {
+			if (RcPlugin[plugin].name[0] != 0 && (RcPlugin[plugin].type == RCFLOW_PLUGIN_VADC || RcPlugin[plugin].type == RCFLOW_PLUGIN_VSW || RcPlugin[plugin].type == RCFLOW_PLUGIN_MULTIPLEX_IN || RcPlugin[plugin].vview == 1)) {
 				rcflow_draw_vplugin(esContext, plugin, n++);
 			}
 		}
