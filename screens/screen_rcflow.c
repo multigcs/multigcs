@@ -2893,7 +2893,6 @@ void rcflow_calc_Embedded (void) {
 			}
 			RcPluginEmbedded[plugin].option = select;
 			if (select != RcPluginEmbedded[plugin].input[MAX_INPUTS - 1].value) {
-				printf("switched to select: %i (%i)\n", select, RcPluginEmbedded[plugin].output[0].value);
 				for (link = 0; link < MAX_LINKS; link++) {
 					if (RcLinkEmbedded[link].to[0] == plugin && RcLinkEmbedded[link].to[1] == 0) {
 						RcPluginEmbedded[RcLinkEmbedded[link].from[0]].output[RcLinkEmbedded[link].from[1]].value = RcPluginEmbedded[plugin].output[select + 2].value;
