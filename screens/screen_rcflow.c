@@ -672,12 +672,12 @@ void rcflow_convert_from_Embedded (void) {
 }
 
 uint8_t rcflow_virt_view (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -724,12 +724,12 @@ void rcflow_undo_save (void) {
 
 
 uint8_t rcflow_redo (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -755,12 +755,12 @@ uint8_t rcflow_redo (char *name, float x, float y, int8_t button, float data) {
 }
 
 uint8_t rcflow_undo (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -805,12 +805,12 @@ static int16_t menu_set_plugin = 0;
 static int16_t menu_set_input = 0;
 
 uint8_t rcflow_menu_set (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -825,12 +825,12 @@ uint8_t rcflow_menu_set (char *name, float x, float y, int8_t button, float data
 }
 
 uint8_t rcflow_menu_set_reverse_dir (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -851,12 +851,12 @@ uint8_t rcflow_menu_set_reverse_dir (char *name, float x, float y, int8_t button
 }
 
 uint8_t rcflow_menu_set_reverse (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -871,12 +871,12 @@ uint8_t rcflow_menu_set_reverse (char *name, float x, float y, int8_t button, fl
 }
 
 uint8_t rcflow_menu_set_input (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -891,12 +891,12 @@ uint8_t rcflow_menu_set_input (char *name, float x, float y, int8_t button, floa
 }
 
 uint8_t rcflow_menu_set_plugin (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -911,12 +911,12 @@ uint8_t rcflow_menu_set_plugin (char *name, float x, float y, int8_t button, flo
 }
 
 uint8_t rcflow_menu_set_type (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -932,12 +932,12 @@ uint8_t rcflow_menu_set_type (char *name, float x, float y, int8_t button, float
 }
 
 uint8_t rcflow_test (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -998,12 +998,12 @@ uint8_t rcflow_test (char *name, float x, float y, int8_t button, float data) {
 }
 
 uint8_t rcflow_update (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -1069,12 +1069,12 @@ uint8_t rcflow_update_link (int8_t link_num) {
 }
 
 uint8_t rcflow_load_xml (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -1089,12 +1089,12 @@ uint8_t rcflow_load_xml (char *name, float x, float y, int8_t button, float data
 }
 
 uint8_t rcflow_load (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -1115,12 +1115,12 @@ uint8_t rcflow_load (char *name, float x, float y, int8_t button, float data) {
 }
 
 uint8_t rcflow_lock (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -1135,12 +1135,12 @@ uint8_t rcflow_lock (char *name, float x, float y, int8_t button, float data) {
 }
 
 uint8_t rcflow_save_xml (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -1232,12 +1232,12 @@ uint8_t rcflow_save_xml (char *name, float x, float y, int8_t button, float data
 }
 
 uint8_t rcflow_save (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -1254,12 +1254,12 @@ uint8_t rcflow_save (char *name, float x, float y, int8_t button, float data) {
 }
 
 uint8_t rcflow_plugin_del (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -1274,12 +1274,12 @@ uint8_t rcflow_plugin_del (char *name, float x, float y, int8_t button, float da
 }
 
 uint8_t rcflow_plugin_add (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -1655,12 +1655,12 @@ uint8_t rcflow_plugin_add (char *name, float x, float y, int8_t button, float da
 }
 
 uint8_t rcflow_plugin_select (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -1679,12 +1679,12 @@ int rcflow_plugin_move_id = -1;
 int rcflow_plugin_move_timer = 0;
 
 uint8_t rcflow_plugin_move (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -1764,12 +1764,12 @@ float rcflow_value_limit_float (float value, float min, float max) {
 }
 
 uint8_t rcflow_canvas_center (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -1784,12 +1784,12 @@ uint8_t rcflow_canvas_center (char *name, float x, float y, int8_t button, float
 }
 
 uint8_t rcflow_canvas_move (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -1810,12 +1810,12 @@ uint8_t rcflow_canvas_move (char *name, float x, float y, int8_t button, float d
 }
 
 uint8_t rcflow_link_add (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -1853,12 +1853,12 @@ uint8_t rcflow_link_add (char *name, float x, float y, int8_t button, float data
 }
 
 uint8_t rcflow_link_mark (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -1924,12 +1924,12 @@ uint8_t rcflow_link_mark (char *name, float x, float y, int8_t button, float dat
 }
 
 uint8_t rcflow_plugin_title_set (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -1944,12 +1944,12 @@ uint8_t rcflow_plugin_title_set (char *name, float x, float y, int8_t button, fl
 }
 
 uint8_t rcflow_plugin_title_edit (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -1988,12 +1988,12 @@ uint8_t rcflow_plugin_max_get (uint8_t id) {
 }
 
 uint8_t rcflow_plugin_curve_preset (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -2038,12 +2038,12 @@ uint8_t rcflow_plugin_curve_preset (char *name, float x, float y, int8_t button,
 }
 
 uint8_t rcflow_switch_change (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -2116,12 +2116,12 @@ uint8_t rcflow_switch_change (char *name, float x, float y, int8_t button, float
 }
 
 uint8_t rcflow_slider_move (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -2356,12 +2356,12 @@ static int rcflow_sript_view_flag = -1;
 static char rcflow_sript_view_text[2048];
 
 static uint8_t rcflow_sript_view (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
@@ -2383,12 +2383,12 @@ static uint8_t rcflow_sript_view (char *name, float x, float y, int8_t button, f
 }
 
 static uint8_t rcflow_sript_view_save (char *name, float x, float y, int8_t button, float data) {
-	if (button == 4) {
+	if (button == 5) {
 		if (scale > 0.1) {
 			scale -= 0.1;
 		}
 		return 0;
-	} else if (button == 5) {
+	} else if (button == 4) {
 		if (scale < 4.0) {
 			scale += 0.1;
 		}
