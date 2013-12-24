@@ -238,15 +238,19 @@ int8_t check_button (uint8_t view_mode, float x, float y, uint8_t button, uint8_
 				return n;
 			} else if (Buttons[n].type == 1 || Buttons[n].type == 2) {
 				if (event == BUTTON_PRESS) {
-					Buttons[n].status = event;
-					Buttons[n].start_x = x;
-					Buttons[n].start_y = y;
-					if (Buttons[n].type == 2) {
-						(*Buttons[n].callback)(Buttons[n].name, x - Buttons[n].start_x, y - Buttons[n].start_y, button, Buttons[n].data);
+					if (button == 4 || button == 5) {
+						(*Buttons[n].callback)(Buttons[n].name, x, y, button, Buttons[n].data);
+					} else {
+						Buttons[n].status = event;
 						Buttons[n].start_x = x;
 						Buttons[n].start_y = y;
-					} else {
-						(*Buttons[n].callback)(Buttons[n].name, x, y, button, Buttons[n].data);
+						if (Buttons[n].type == 2) {
+							(*Buttons[n].callback)(Buttons[n].name, x - Buttons[n].start_x, y - Buttons[n].start_y, button, Buttons[n].data);
+							Buttons[n].start_x = x;
+							Buttons[n].start_y = y;
+						} else {
+							(*Buttons[n].callback)(Buttons[n].name, x, y, button, Buttons[n].data);
+						}
 					}
 					return n;
 				}
@@ -749,7 +753,7 @@ void next_point_ll (ESContext *esContext, float mark_long, float mark_lat, float
 uint8_t key_pressed = 0;
 void check_events (ESContext *esContext, SDL_Event event) {
 	static uint8_t mousemode = 0;
-
+	static uint8_t mousewheel_flag = 0;
 	static float mousestart_x = 0.0;
 	static float mousestart_y = 0.0;
 
@@ -910,6 +914,12 @@ void check_events (ESContext *esContext, SDL_Event event) {
 	} else if (event.type == SDL_MOUSEMOTION) {
 #endif
 		event.type = 0;
+#ifdef SDL2
+		// Bug in SDL2 ???
+		if (event.button.button == 4) {
+			event.button.button = 3;
+		}
+#endif
 		mouse_x = event.button.x;
 		mouse_y = event.button.y;
 		float bx = (float)event.button.x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
@@ -1032,6 +1042,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 #ifdef SDL2
 	} else if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEWHEEL) {
 		if (event.type == SDL_MOUSEWHEEL) {
+			mousewheel_flag = 1;
 			if (event.button.x > 0) {
 				event.button.button = 4;
 			} else if (event.button.x < 0) {
@@ -1044,14 +1055,15 @@ void check_events (ESContext *esContext, SDL_Event event) {
 	} else if (event.type == SDL_MOUSEBUTTONDOWN) {
 #endif
 #endif
+
 		float bx = (float)event.button.x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 		float by = (float)event.button.y / (float)esContext->height * 2.0 - 1.0;
 #ifdef SDL2
-		if (event.type != SDL_MOUSEWHEEL) {
+//		if (event.type != SDL_MOUSEWHEEL) {
 			if (check_button(setup.view_mode, bx, by, event.button.button, BUTTON_PRESS) != -1) {
 				return;
 			}
-		}
+//		}
 #else
 		if (check_button(setup.view_mode, bx, by, event.button.button, BUTTON_PRESS) != -1) {
 			return;
@@ -1196,6 +1208,14 @@ void check_events (ESContext *esContext, SDL_Event event) {
 	} else {
 		SDL_Log("## UNKNOWN_EVENT: %i (0x%x) ##\n", event.type, event.type);
 #endif
+	}
+	if (mousewheel_flag == 1) {
+		mousewheel_flag = 0;
+		SDL_Event user_event;
+		user_event.type = SDL_MOUSEBUTTONUP;
+		user_event.button.x = last_x;
+		user_event.button.y = last_y;
+		SDL_PushEvent(&user_event);
 	}
 }
 
