@@ -78,6 +78,7 @@ enum {
 	RCFLOW_PLUGIN_BUTTERFLY,
 	RCFLOW_PLUGIN_MULTIPLEX_IN,
 	RCFLOW_PLUGIN_MULTIPLEX_OUT,
+	RCFLOW_PLUGIN_MULTIVALUE,
 	RCFLOW_PLUGIN_LAST,
 };
 
@@ -270,30 +271,40 @@ void rcflow_parseInput (xmlDocPtr doc, xmlNodePtr cur, uint8_t plugin, uint8_t i
 	while (cur != NULL) {
 		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"name"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			strcpy(RcPlugin[plugin].input[input].name, (char *)key);
-			xmlFree(key);
+			if ((char *)key != NULL) {
+				strcpy(RcPlugin[plugin].input[input].name, (char *)key);
+				xmlFree(key);
+			}
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"value"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			RcPlugin[plugin].input[input].value = atoi((char *)key);
-			xmlFree(key);
+			if ((char *)key != NULL) {
+				RcPlugin[plugin].input[input].value = atoi((char *)key);
+				xmlFree(key);
+			}
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"type"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			RcPlugin[plugin].input[input].type = atoi((char *)key);
-			xmlFree(key);
+			if ((char *)key != NULL) {
+				RcPlugin[plugin].input[input].type = atoi((char *)key);
+				xmlFree(key);
+			}
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"option"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			RcPlugin[plugin].input[input].option = atoi((char *)key);
-			xmlFree(key);
+			if ((char *)key != NULL) {
+				RcPlugin[plugin].input[input].option = atoi((char *)key);
+				xmlFree(key);
+			}
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"tmp_value"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			RcPlugin[plugin].input[input].tmp_value = atof((char *)key);
-			xmlFree(key);
+			if ((char *)key != NULL) {
+				RcPlugin[plugin].input[input].tmp_value = atof((char *)key);
+				xmlFree(key);
+			}
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"tmp_text"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				strcpy(RcPlugin[plugin].input[input].tmp_text, (char *)key);
+				xmlFree(key);
 			}
-			xmlFree(key);
 		}
 		cur = cur->next;
 	}
@@ -306,30 +317,40 @@ void rcflow_parseOutput (xmlDocPtr doc, xmlNodePtr cur, uint8_t plugin, uint8_t 
 	while (cur != NULL) {
 		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"name"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			strcpy(RcPlugin[plugin].output[output].name, (char *)key);
-			xmlFree(key);
+			if ((char *)key != NULL) {
+				strcpy(RcPlugin[plugin].output[output].name, (char *)key);
+				xmlFree(key);
+			}
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"value"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			RcPlugin[plugin].output[output].value = atoi((char *)key);
-			xmlFree(key);
+			if ((char *)key != NULL) {
+				RcPlugin[plugin].output[output].value = atoi((char *)key);
+				xmlFree(key);
+			}
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"type"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			RcPlugin[plugin].output[output].type = atoi((char *)key);
-			xmlFree(key);
+			if ((char *)key != NULL) {
+				RcPlugin[plugin].output[output].type = atoi((char *)key);
+				xmlFree(key);
+			}
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"option"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			RcPlugin[plugin].output[output].option = atoi((char *)key);
-			xmlFree(key);
+			if ((char *)key != NULL) {
+				RcPlugin[plugin].output[output].option = atoi((char *)key);
+				xmlFree(key);
+			}
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"tmp_value"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			RcPlugin[plugin].output[output].tmp_value = atof((char *)key);
-			xmlFree(key);
+			if ((char *)key != NULL) {
+				RcPlugin[plugin].output[output].tmp_value = atof((char *)key);
+				xmlFree(key);
+			}
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"tmp_text"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				strcpy(RcPlugin[plugin].output[output].tmp_text, (char *)key);
+				xmlFree(key);
 			}
-			xmlFree(key);
 		}
 		cur = cur->next;
 	}
@@ -599,18 +620,14 @@ void rcflow_convert_to_Embedded (void) {
 			RcPluginEmbedded[plugin].type = RcPlugin[plugin].type;
 			RcPluginEmbedded[plugin].option = RcPlugin[plugin].option;
 			for (input = 0; input < MAX_INPUTS; input++) {
-				if (RcPlugin[plugin].input[input].name[0] != 0) {
-					RcPluginEmbedded[plugin].input[input].value = RcPlugin[plugin].input[input].value;
-					RcPluginEmbedded[plugin].input[input].type = RcPlugin[plugin].input[input].type;
-					RcPluginEmbedded[plugin].input[input].option = RcPlugin[plugin].input[input].option;
-				}
+				RcPluginEmbedded[plugin].input[input].value = RcPlugin[plugin].input[input].value;
+				RcPluginEmbedded[plugin].input[input].type = RcPlugin[plugin].input[input].type;
+				RcPluginEmbedded[plugin].input[input].option = RcPlugin[plugin].input[input].option;
 			}
 			for (output = 0; output < MAX_INPUTS; output++) {
-				if (RcPlugin[plugin].output[output].name[0] != 0) {
-					RcPluginEmbedded[plugin].output[output].value = RcPlugin[plugin].output[output].value;
-					RcPluginEmbedded[plugin].output[output].type = RcPlugin[plugin].output[output].type;
-					RcPluginEmbedded[plugin].output[output].option = RcPlugin[plugin].output[output].option;
-				}
+				RcPluginEmbedded[plugin].output[output].value = RcPlugin[plugin].output[output].value;
+				RcPluginEmbedded[plugin].output[output].type = RcPlugin[plugin].output[output].type;
+				RcPluginEmbedded[plugin].output[output].option = RcPlugin[plugin].output[output].option;
 			}
 		}
 	}
@@ -656,16 +673,12 @@ void rcflow_convert_from_Embedded (void) {
 			RcPlugin[plugin].type = RcPluginEmbedded[plugin].type;
 			RcPlugin[plugin].option = RcPluginEmbedded[plugin].option;
 			for (input = 0; input < MAX_INPUTS; input++) {
-				if (RcPlugin[plugin].input[input].name[0] != 0) {
-					RcPlugin[plugin].input[input].value = RcPluginEmbedded[plugin].input[input].value;
-					RcPlugin[plugin].input[input].option = RcPluginEmbedded[plugin].input[input].option;
-				}
+				RcPlugin[plugin].input[input].value = RcPluginEmbedded[plugin].input[input].value;
+				RcPlugin[plugin].input[input].option = RcPluginEmbedded[plugin].input[input].option;
 			}
 			for (output = 0; output < MAX_INPUTS; output++) {
-				if (RcPlugin[plugin].output[output].name[0] != 0) {
-					RcPlugin[plugin].output[output].value = RcPluginEmbedded[plugin].output[output].value;
-					RcPlugin[plugin].output[output].option = RcPluginEmbedded[plugin].output[output].option;
-				}
+				RcPlugin[plugin].output[output].value = RcPluginEmbedded[plugin].output[output].value;
+				RcPlugin[plugin].output[output].option = RcPluginEmbedded[plugin].output[output].option;
 			}
 		}
 	}
@@ -1195,33 +1208,30 @@ uint8_t rcflow_save_xml (char *name, float x, float y, int8_t button, float data
 				fprintf(fr, "  <title>%s</title>\n", RcPlugin[plugin].title);
 				fprintf(fr, "  <text>%s</text>\n", RcPlugin[plugin].text);
 				fprintf(fr, "  <type>%i</type>\n", RcPlugin[plugin].type);
+				fprintf(fr, "  <option>%i</option>\n", RcPlugin[plugin].option);
 				fprintf(fr, "  <x>%f</x>\n", RcPlugin[plugin].x);
 				fprintf(fr, "  <y>%f</y>\n", RcPlugin[plugin].y);
-				if (RcPlugin[plugin].type == RCFLOW_PLUGIN_VSW || RcPlugin[plugin].type == RCFLOW_PLUGIN_VADC || RcPlugin[plugin].type == RCFLOW_PLUGIN_MULTIPLEX_IN || RcPlugin[plugin].vview == 1) {
-					fprintf(fr, "  <x_virt>%f</x_virt>\n", RcPlugin[plugin].x_virt);
-					fprintf(fr, "  <y_virt>%f</y_virt>\n", RcPlugin[plugin].y_virt);
-				}
+				fprintf(fr, "  <x_virt>%f</x_virt>\n", RcPlugin[plugin].x_virt);
+				fprintf(fr, "  <y_virt>%f</y_virt>\n", RcPlugin[plugin].y_virt);
 				for (input = 0; input < MAX_INPUTS; input++) {
-					if (RcPlugin[plugin].input[input].name[0] != 0) {
-						fprintf(fr, "  <input>\n");
-						fprintf(fr, "    <name>%s</name>\n", RcPlugin[plugin].input[input].name);
-						fprintf(fr, "    <value>%i</value>\n", RcPlugin[plugin].input[input].value);
-						fprintf(fr, "    <type>%i</type>\n", RcPlugin[plugin].input[input].type);
-						fprintf(fr, "    <tmp_value>%f</tmp_value>\n", RcPlugin[plugin].input[input].tmp_value);
-						fprintf(fr, "    <tmp_text>%s</tmp_text>\n", RcPlugin[plugin].input[input].tmp_text);
-						fprintf(fr, "  </input>\n");
-					}
+					fprintf(fr, "  <input>\n");
+					fprintf(fr, "    <name>%s</name>\n", RcPlugin[plugin].input[input].name);
+					fprintf(fr, "    <value>%i</value>\n", RcPlugin[plugin].input[input].value);
+					fprintf(fr, "    <type>%i</type>\n", RcPlugin[plugin].input[input].type);
+					fprintf(fr, "    <tmp_value>%f</tmp_value>\n", RcPlugin[plugin].input[input].tmp_value);
+					fprintf(fr, "    <tmp_text>%s</tmp_text>\n", RcPlugin[plugin].input[input].tmp_text);
+					fprintf(fr, "    <option>%i</option>\n", RcPlugin[plugin].input[input].option);
+					fprintf(fr, "  </input>\n");
 				}
 				for (output = 0; output < MAX_OUTPUTS; output++) {
-					if (RcPlugin[plugin].output[output].name[0] != 0) {
-						fprintf(fr, "  <output>\n");
-						fprintf(fr, "    <name>%s</name>\n", RcPlugin[plugin].output[output].name);
-						fprintf(fr, "    <value>%i</value>\n", RcPlugin[plugin].output[output].value);
-						fprintf(fr, "    <type>%i</type>\n", RcPlugin[plugin].output[output].type);
-						fprintf(fr, "    <tmp_value>%f</tmp_value>\n", RcPlugin[plugin].output[output].tmp_value);
-						fprintf(fr, "    <tmp_text>%s</tmp_text>\n", RcPlugin[plugin].output[output].tmp_text);
-						fprintf(fr, "  </output>\n");
-					}
+					fprintf(fr, "  <output>\n");
+					fprintf(fr, "    <name>%s</name>\n", RcPlugin[plugin].output[output].name);
+					fprintf(fr, "    <value>%i</value>\n", RcPlugin[plugin].output[output].value);
+					fprintf(fr, "    <type>%i</type>\n", RcPlugin[plugin].output[output].type);
+					fprintf(fr, "    <tmp_value>%f</tmp_value>\n", RcPlugin[plugin].output[output].tmp_value);
+					fprintf(fr, "    <tmp_text>%s</tmp_text>\n", RcPlugin[plugin].output[output].tmp_text);
+					fprintf(fr, "    <option>%i</option>\n", RcPlugin[plugin].output[output].option);
+					fprintf(fr, "  </output>\n");
 				}
 				fprintf(fr, " </plugin>\n");
 			}
@@ -1404,6 +1414,15 @@ uint8_t rcflow_plugin_add (char *name, float x, float y, int8_t button, float da
 		strcpy(RcPlugin[plugin].input[4].name, "in5");
 		strcpy(RcPlugin[plugin].input[5].name, "in6");
 		strcpy(RcPlugin[plugin].input[6].name, "sel");
+		strcpy(RcPlugin[plugin].output[0].name, "out");
+	} else if ((uint8_t)data == RCFLOW_PLUGIN_MULTIVALUE) {
+		sprintf(RcPlugin[plugin].name, "mulv%i", plugin);
+		strcpy(RcPlugin[plugin].title, "Multival");
+		RcPlugin[plugin].type = RCFLOW_PLUGIN_MULTIVALUE;
+		RcPlugin[plugin].x = 0.0;
+		RcPlugin[plugin].y = 0.0;
+		strcpy(RcPlugin[plugin].input[0].name, "in1");
+		strcpy(RcPlugin[plugin].input[1].name, "sel");
 		strcpy(RcPlugin[plugin].output[0].name, "out");
 	} else if ((uint8_t)data == RCFLOW_PLUGIN_MIXER) {
 		sprintf(RcPlugin[plugin].name, "mix%i", plugin);
@@ -2355,7 +2374,7 @@ void rcflow_draw_vplugin (ESContext *esContext, uint8_t id, uint8_t vnum) {
 	}
 
 	// Output-Sliders
-	if (RcPlugin[id].type == RCFLOW_PLUGIN_ADC || RcPlugin[id].type == RCFLOW_PLUGIN_SW || RcPlugin[id].type == RCFLOW_PLUGIN_ENC || RcPlugin[id].type == RCFLOW_PLUGIN_VADC || RcPlugin[id].type == RCFLOW_PLUGIN_VSW || RcPlugin[plugin].vview == 1) {
+	if (RcPlugin[id].type == RCFLOW_PLUGIN_ADC || RcPlugin[id].type == RCFLOW_PLUGIN_SW || RcPlugin[id].type == RCFLOW_PLUGIN_ENC || RcPlugin[id].type == RCFLOW_PLUGIN_VADC || RcPlugin[id].type == RCFLOW_PLUGIN_VSW || RcPlugin[id].vview == 1) {
 		for (output = 0; output < MAX_OUTPUTS; output++) {
 			if (RcPlugin[id].output[output].name[0] != 0 && RcPlugin[id].output[output].type != RCFLOW_INOUT_TYPE_TEMP) {
 				sprintf(tmp_str, "%s;%s", RcPlugin[id].name, RcPlugin[id].output[output].name);
@@ -2444,7 +2463,6 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 				draw_box_f3(esContext, (RcPlugin[id].x - 0.12 - 0.15 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x - 0.12 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 100, 100, 100, 255);
 			}
 #endif
-
 			if (RcPlugin[id].type == RCFLOW_PLUGIN_MULTIPLEX_OUT) {
 				uint8_t select = 0;
 				int16_t range_begin;
@@ -2462,8 +2480,6 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 					draw_rect_f3(esContext, (RcPlugin[id].x - 0.12 - 0.15 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x - 0.12 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 255);
 				}
 			}
-
-
 			set_button(tmp_str, setup.view_mode, (RcPlugin[id].x - 0.12 - 0.15 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, (RcPlugin[id].x - 0.12 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.1 + canvas_y) * scale, rcflow_link_mark, (float)1, 0);
 			draw_text_f3(esContext, (RcPlugin[id].x - 0.12 - 0.15 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.005, 0.03 * scale, 0.03 * scale, FONT_GREEN, RcPlugin[id].input[input].name);
 #ifndef SIMPLE_DRAW
@@ -2551,6 +2567,12 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 	} else {
 		draw_text_button(esContext, tmp_str, setup.view_mode, RcPlugin[id].name, FONT_GREEN, (RcPlugin[id].x + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE - 0.02 + canvas_y) * scale, 0.002, 0.04 * scale, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_title_edit, (float)id);
 	}
+
+	if (del_plugin == 1) {
+		return;
+	}
+
+
 	if (RcPlugin[id].type == RCFLOW_PLUGIN_INPUT) {
 	} else if (RcPlugin[id].type == RCFLOW_PLUGIN_OUTPUT) {
 	} else if (RcPlugin[id].type == RCFLOW_PLUGIN_ATV) {
@@ -2568,8 +2590,11 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 				sprintf(tmp_str, "%s;%s", RcPlugin[id].name, RcPlugin[id].input[input].name);
 				if (RcPlugin[id].input[input].type == RCFLOW_INOUT_TYPE_ONOFF) {
 					rcflow_draw_switch(esContext, tmp_str, RcPlugin[id].x + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.02 + canvas_y, 0.2, RcPlugin[id].input[input].value, RcPlugin[id].input[input].type);
+				} else if (RcPlugin[id].type == RCFLOW_PLUGIN_MULTIVALUE && input == 1) {
+					sprintf(tmp_str, "mode: %i", RcPlugin[id].option + 1);
+					draw_text_f3(esContext, (RcPlugin[id].x - 0.1 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.02 + canvas_y) * scale, 0.005, 0.04 * scale, 0.04 * scale, FONT_GREEN, tmp_str);
 				} else if (RcPlugin[id].input[input].type == RCFLOW_INOUT_TYPE_TEXT) {
-					draw_text_f3(esContext, RcPlugin[id].x - 0.1 + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.02 + canvas_y, 0.005, 0.03 * scale, 0.03 * scale, FONT_GREEN, RcPlugin[id].input[input].tmp_text);
+					draw_text_f3(esContext, (RcPlugin[id].x - 0.1 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.02 + canvas_y) * scale, 0.005, 0.03 * scale, 0.03 * scale, FONT_GREEN, RcPlugin[id].input[input].tmp_text);
 				} else {
 					if (input == 0) {
 						rcflow_draw_slider(esContext, tmp_str, RcPlugin[id].x + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.02 + canvas_y, 0.2, RcPlugin[id].input[input].value, RcPlugin[id].output[0].value, RcPlugin[id].input[input].type);
@@ -2618,7 +2643,7 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 #endif
 	}
 	// Output-Sliders
-	if (RcPlugin[id].type == RCFLOW_PLUGIN_ADC || RcPlugin[id].type == RCFLOW_PLUGIN_SW || RcPlugin[id].type == RCFLOW_PLUGIN_ENC || RcPlugin[id].type == RCFLOW_PLUGIN_VSW || RcPlugin[id].type == RCFLOW_PLUGIN_VADC || RcPlugin[id].type == RCFLOW_PLUGIN_MULTIPLEX_IN || RcPlugin[plugin].vview == 1) {
+	if (RcPlugin[id].type == RCFLOW_PLUGIN_ADC || RcPlugin[id].type == RCFLOW_PLUGIN_SW || RcPlugin[id].type == RCFLOW_PLUGIN_ENC || RcPlugin[id].type == RCFLOW_PLUGIN_VSW || RcPlugin[id].type == RCFLOW_PLUGIN_VADC || RcPlugin[id].type == RCFLOW_PLUGIN_MULTIPLEX_IN || RcPlugin[id].vview == 1) {
 		for (output = 0; output < MAX_OUTPUTS; output++) {
 			sprintf(tmp_str, "%s;%s", RcPlugin[id].name, RcPlugin[id].output[output].name);
 			if (RcPlugin[id].output[output].name[0] != 0 && RcPlugin[id].output[output].type != RCFLOW_INOUT_TYPE_TEMP) {
@@ -2823,7 +2848,6 @@ void rcflow_calc_Embedded (void) {
 				}
 			}
 			if (select != RcPluginEmbedded[plugin].input[MAX_INPUTS - 1].value) {
-				printf("switched to select: %i (%i)\n", select, RcPluginEmbedded[plugin].output[0].value);
 				for (link = 0; link < MAX_LINKS; link++) {
 					if (RcLinkEmbedded[link].to[0] == plugin && RcLinkEmbedded[link].to[1] == 0) {
 						RcPluginEmbedded[RcLinkEmbedded[link].from[0]].output[RcLinkEmbedded[link].from[1]].value = RcPluginEmbedded[plugin].output[select].value;
@@ -2844,9 +2868,8 @@ void rcflow_calc_Embedded (void) {
 					break;
 				}
 			}
-			RcPlugin[plugin].input[6].option = select;
+			RcPluginEmbedded[plugin].option = select;
 			if (select != RcPluginEmbedded[plugin].input[MAX_INPUTS - 1].value) {
-				printf("switched to select: %i (%i)\n", select, RcPluginEmbedded[plugin].output[0].value);
 				for (link = 0; link < MAX_LINKS; link++) {
 					if (RcLinkEmbedded[link].to[0] == plugin && RcLinkEmbedded[link].to[1] == select) {
 						RcPluginEmbedded[RcLinkEmbedded[link].from[0]].output[RcLinkEmbedded[link].from[1]].value = RcPluginEmbedded[plugin].output[select + 2].value;
@@ -2855,6 +2878,31 @@ void rcflow_calc_Embedded (void) {
 			}
 			RcPluginEmbedded[plugin].output[0].value = RcPluginEmbedded[plugin].input[select].value;
 			RcPluginEmbedded[plugin].output[select + 2].value = RcPluginEmbedded[plugin].input[select].value;
+			RcPluginEmbedded[plugin].input[MAX_INPUTS - 1].value = select;
+		} else if (RcPluginEmbedded[plugin].type == RCFLOW_PLUGIN_MULTIVALUE) {
+			uint8_t select = 0;
+			int16_t range_begin;
+			int16_t range_end;
+			for (n = 0; n < 7; n++) {
+				range_begin = n * 2000 / 6 - 1000;
+				range_end = (n + 1) * 2000 / 6 - 1000;
+				if (RcPluginEmbedded[plugin].input[1].value >= range_begin && RcPluginEmbedded[plugin].input[1].value <= range_end && n < 6) {
+					select = n;
+					break;
+				}
+			}
+			RcPluginEmbedded[plugin].option = select;
+			if (select != RcPluginEmbedded[plugin].input[MAX_INPUTS - 1].value) {
+				printf("switched to select: %i (%i)\n", select, RcPluginEmbedded[plugin].output[0].value);
+				for (link = 0; link < MAX_LINKS; link++) {
+					if (RcLinkEmbedded[link].to[0] == plugin && RcLinkEmbedded[link].to[1] == 0) {
+						RcPluginEmbedded[RcLinkEmbedded[link].from[0]].output[RcLinkEmbedded[link].from[1]].value = RcPluginEmbedded[plugin].output[select + 2].value;
+						RcPluginEmbedded[plugin].input[0].value = RcPluginEmbedded[plugin].output[select + 2].value;
+					}
+				}
+			}
+			RcPluginEmbedded[plugin].output[0].value = RcPluginEmbedded[plugin].input[0].value;
+			RcPluginEmbedded[plugin].output[select + 2].value = RcPluginEmbedded[plugin].input[0].value;
 			RcPluginEmbedded[plugin].input[MAX_INPUTS - 1].value = select;
 		} else if (RcPluginEmbedded[plugin].type == RCFLOW_PLUGIN_MIXER) {
 			if (RcPluginEmbedded[plugin].input[4].value > 0) {
@@ -3640,6 +3688,8 @@ while (read(rcflow_fd, buf, 1) > 0) {
 		draw_text_button(esContext, "add_mpxi", setup.view_mode, "MPX-In", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_MULTIPLEX_IN);
 		plugin++;
 		draw_text_button(esContext, "add_mpxo", setup.view_mode, "MPX-Out", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_MULTIPLEX_OUT);
+		plugin++;
+		draw_text_button(esContext, "add_multiv", setup.view_mode, "Multi-Value", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_MULTIVALUE);
 		plugin++;
 		draw_text_button(esContext, "add_tcl", setup.view_mode, "TCL (Script)", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_TCL);
 		plugin++;
