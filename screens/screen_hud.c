@@ -1,6 +1,8 @@
 
 #include <all.h>
 
+//#define CAR_MODE 1
+
 extern GLuint RB_texture;
 void draw_texture_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, GLuint texture);
 
@@ -696,6 +698,24 @@ if (type == 1) {
 }
 
 
+
+void draw_circleMarker_f3 (ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+	y1 = y1 * -1;
+	float i = start;
+	glBegin(GL_LINES);
+	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0 + z1);
+	glVertex3f(x1 - cos(i * DEG2RAD) * radius, y1 + sin(i * DEG2RAD) * radius, -2.0 + z1);
+	glVertex3f(x1 - cos(i * DEG2RAD) * radius_inner, y1 + sin(i * DEG2RAD) * radius_inner, -2.0 + z1);
+	glEnd();
+}
+
+void draw_circleText_f3 (ESContext *esContext, float x1, float y1, float z1, float radius, float start, float size, char *text, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+	float i = start;
+	x1 -= cos(i * DEG2RAD) * radius;
+	y1 -= sin(i * DEG2RAD) * radius;
+	draw_text_f3(esContext, x1 - strlen(text) * size * 0.6 / 2.0 - 0.015, y1 - size / 2.0, z1, size, size, FONT_WHITE, text);
+}
+
 void screen_hud (ESContext *esContext) {
 	ESMatrix modelview;
 #ifndef SDLGL
@@ -711,6 +731,228 @@ void screen_hud (ESContext *esContext) {
 #endif
 #endif
 	glDisable(GL_DEPTH_TEST);
+
+
+
+#ifdef CAR_MODE
+
+	static int pointer_pm = 0;
+	static float pointer_val = 0.0;
+	if (pointer_pm == 0) {
+		if (pointer_val < 200.0) {
+			pointer_val += 1.0;
+		} else {
+			pointer_pm = 1;
+		}
+	} else {
+		if (pointer_val > -54.0) {
+			pointer_val -= 3.0;
+		} else {
+			pointer_pm = 0;
+		}
+	}
+	float upm = (pointer_val + 54.0) * 8000.0 / 288;
+
+
+	if (setup.hud_view_screen != 2 && draw_target() == 0) {
+
+		if (upm < 800.0) {
+			draw_image_f3(esContext, 0.0 - 0.2, 0.0 - 0.3, 0.0 + 0.2, 0.0 + 0.1, 0.012, "car-door.png");
+		} else if (upm < 1600.0) {
+			draw_image_f3(esContext, 0.0 - 0.2, 0.0 - 0.3, 0.0 + 0.2, 0.0 + 0.1, 0.012, "car.png");
+		} else {
+			draw_buffer_to_screen(0.0 - 0.6, -0.1 - 0.4, 0.0 + 0.6, -0.1 + 0.4, 0.0, 1.0);
+		}
+
+		glLineWidth(7);
+		draw_line_f3 (esContext, 0.0 - 0.6, -0.1 - 0.4, 0.001, 0.0 + 0.6, -0.1 - 0.4, 0.001, 75, 75, 75, 255);
+		draw_line_f3 (esContext, 0.0 - 0.6, -0.1 + 0.4, 0.001, 0.0 + 0.6, -0.1 + 0.4, 0.001, 75, 75, 75, 255);
+		glLineWidth(3);
+		draw_line_f3 (esContext, 0.0 - 0.6, -0.1 - 0.4, 0.001, 0.0 + 0.6, -0.1 - 0.4, 0.001, 200, 200, 200, 255);
+		draw_line_f3 (esContext, 0.0 - 0.6, -0.1 + 0.4, 0.001, 0.0 + 0.6, -0.1 + 0.4, 0.001, 200, 200, 200, 255);
+
+	}
+
+	float i1x = -0.8;
+	float i2x = 0.8;
+
+
+//	draw_image_f3(esContext, -1.2, -0.62, -0.19, 0.42, 0.012, "tacho.png");
+//	draw_image_f3(esContext, 0.21, -0.62, 1.21, 0.42, 0.012, "tacho2.png");
+
+	draw_circleFilled_f(esContext, i1x, -0.1, 0.5, 0, 0, 0, 255);
+//	draw_circleFilled_f(esContext, i1x, -0.1, 0.5, 40, 40, 40, 255);
+//	draw_circleFilled_f3_part(esContext, i1x, -0.1, 0.0005, 0.5, 0.5, 0.0, 360.0, 60, 60, 255, 255);
+
+	draw_text_f3(esContext, -0.6, 0.05, 0.002, 0.04, 0.04, FONT_WHITE, "1/min*1000");
+	draw_circleFilled_f(esContext, i2x, -0.1, 0.5, 0, 0, 0, 255);
+//	draw_circleFilled_f(esContext, i2x, -0.1, 0.5, 40, 40, 40, 255);
+//	draw_circleFilled_f3_part(esContext, i2x, -0.1, 0.0005, 0.5, 0.5, 0.0, 360.0, 60, 60, 255, 255);
+
+	char tmp_str3[10];
+	float a = 0.0;
+	glLineWidth(3);
+	for (a = -54.0; a <= 234.0; a += 7.2) {
+		if (a < 180.0) {
+			draw_circleMarker_f3(esContext, i1x, -0.1, 0.0002, 0.5, 0.45, a, 255, 255, 255, 255);
+		} else {
+			draw_circleMarker_f3(esContext, i1x, -0.1, 0.0002, 0.5, 0.45, a, 255, 0, 0, 255);
+		}
+	}
+	glLineWidth(6);
+	int nt = 0;
+	for (a = -54.0; a <= 234.0; a += 36.0) {
+		if (a < 180.0) {
+			draw_circleMarker_f3(esContext, i1x, -0.1, 0.0002, 0.5, 0.4, a, 255, 255, 255, 255);
+		} else {
+			draw_circleMarker_f3(esContext, i1x, -0.1, 0.0002, 0.5, 0.4, a, 255, 0, 0, 255);
+		}
+		sprintf(tmp_str3, "%i", nt);
+		draw_circleText_f3(esContext, i1x, -0.1, 0.0002, 0.365, a, 0.07, tmp_str3, 255, 255, 255, 255);
+		nt += 1;
+	}
+
+
+	glLineWidth(3);
+	for (a = -54.0; a <= 234.0; a += 9.0) {
+		draw_circleMarker_f3(esContext, i2x, -0.1, 0.0002, 0.5, 0.45, a, 255, 255, 255, 255);
+	}
+	glLineWidth(6);
+	nt = 0;
+	for (a = -54.0; a <= 234.0; a += 18.0) {
+		draw_circleMarker_f3(esContext, i2x, -0.1, 0.0002, 0.5, 0.43, a, 255, 255, 255, 255);
+		sprintf(tmp_str3, "%i", nt);
+		draw_circleText_f3(esContext, i2x, -0.1, 0.0002, 0.365, a, 0.07, tmp_str3, 255, 255, 255, 255);
+		if (nt < 60) {
+			nt += 10;
+		} else {
+			nt += 20;
+		}
+	}
+
+
+
+//	draw_box_f3(esContext, i1x - 0.15, -0.1 + 0.3 - 0.09, 0.001, i1x + 0.15, -0.1 + 0.3 + 0.09, 0.001, 0, 0, 0, 255);
+//	draw_text_f(esContext, i1x - 0.12, -0.1 + 0.33 - 0.1, 0.07, 0.07, FONT_GREEN, "09:47");
+//	draw_text_f(esContext, i1x - 0.135, -0.1 + 0.4 - 0.1, 0.07, 0.07, FONT_GREEN, "001145");
+
+
+//	draw_circleFilled_f(esContext, i1x + 0.005, -0.1 + 0.005, 0.075, 30, 30, 30, 255);
+//	draw_circlePointer_f3(esContext, i1x, -0.1, 0.0001, 0.45, 0.02, pointer_val, 255, 255, 255, 255);
+//	draw_circleFilled_f(esContext, i1x, -0.1, 0.07, 127, 127, 127, 255);
+//	draw_circle_f3(esContext, i1x, -0.1, 0.002, 0.07, 155, 155, 155, 255);
+
+
+//	draw_box_f3(esContext, i2x - 0.15, -0.1 + 0.3 - 0.09, 0.001, i2x + 0.15, -0.1 + 0.3 + 0.09, 0.001, 0, 0, 0, 255);
+//	draw_text_f(esContext, i2x - 0.12, -0.1 + 0.33 - 0.1, 0.07, 0.07, FONT_GREEN, "02547");
+//	draw_text_f(esContext, i2x - 0.135, -0.1 + 0.4 - 0.1, 0.07, 0.07, FONT_GREEN, "006287");
+
+
+//	draw_circleFilled_f(esContext, i2x + 0.005, -0.1 + 0.005, 0.075, 30, 30, 30, 255);
+//	draw_circlePointer_f3(esContext, i2x, -0.1, 0.0001, 0.45, 0.02, pointer_val, 255, 255, 255, 255);
+//	draw_circleFilled_f(esContext, i2x, -0.1, 0.07, 127, 127, 127, 255);
+//	draw_circle_f3(esContext, i2x, -0.1, 0.002, 0.07, 155, 155, 155, 255);
+
+
+	glLineWidth(4);
+	draw_circleMarker_f3(esContext, i1x, -0.1, 0.0002, 0.43, 0.3, pointer_val, 255, 55, 55, 255);
+	draw_circleMarker_f3(esContext, i2x, -0.1, 0.0002, 0.43, 0.3, pointer_val, 255, 55, 55, 255);
+	glLineWidth(1);
+
+	if (upm > 6000.0) {
+		draw_circleFilled_f3_part(esContext, i1x, -0.1, 0.0005, 0.3, 0.3, 0.0, 360.0, 160, 60, 60, 255);
+	} else {
+		draw_circleFilled_f3_part(esContext, i1x, -0.1, 0.0005, 0.3, 0.3, 0.0, 360.0, 60, 60, 160, 255);
+	}
+	draw_circleFilled_f3_part(esContext, i2x, -0.1, 0.0005, 0.3, 0.3, 0.0, 360.0, 60, 60, 160, 255);
+
+
+
+	sprintf(tmp_str3, "%0.0fupm", upm);
+	if (upm > 6000.0) {
+		draw_text_f(esContext, i1x - strlen(tmp_str3) * 0.07 * 0.6 / 2.0 - 0.015, -0.1 - 0.05 - 0.035, 0.07, 0.07, FONT_PINK, tmp_str3);
+	} else {
+		draw_text_f(esContext, i1x - strlen(tmp_str3) * 0.07 * 0.6 / 2.0 - 0.015, -0.1 - 0.05 - 0.035, 0.07, 0.07, FONT_GREEN, tmp_str3);
+	}
+	sprintf(tmp_str3, "%0.0fl", 46.0);
+	draw_text_f(esContext, i1x - strlen(tmp_str3) * 0.07 * 0.6 / 2.0 - 0.015, -0.1 - 0.05 - 0.035 + 0.1, 0.07, 0.07, FONT_GREEN, tmp_str3);
+
+	sprintf(tmp_str3, "%0.0fkm/h", (pointer_val + 54.0) * 260.0 / 288);
+	draw_text_f(esContext, i2x - strlen(tmp_str3) * 0.07 * 0.6 / 2.0 - 0.015, -0.1 - 0.05 - 0.035, 0.07, 0.07, FONT_GREEN, tmp_str3);
+	sprintf(tmp_str3, "10.6l/100km");
+	draw_text_f(esContext, i2x - strlen(tmp_str3) * 0.05 * 0.6 / 2.0 - 0.015, -0.1 - 0.05 - 0.035 + 0.1, 0.05, 0.05, FONT_GREEN, tmp_str3);
+
+
+
+	glLineWidth(7);
+	draw_circle_f3(esContext, i1x, -0.1, 0.001, 0.5, 75, 75, 75, 255);
+	draw_circle_f3(esContext, i2x, -0.1, 0.001, 0.5, 75, 75, 75, 255);
+
+	draw_circle_f3(esContext, i1x, -0.1, 0.001, 0.3, 75, 75, 75, 255);
+	draw_circle_f3(esContext, i2x, -0.1, 0.001, 0.3, 75, 75, 75, 255);
+
+
+	glLineWidth(3);
+	draw_circle_f3(esContext, i1x, -0.1, 0.001, 0.5, 255, 255, 255, 255);
+	draw_circle_f3(esContext, i2x, -0.1, 0.001, 0.5, 255, 255, 255, 255);
+
+	draw_circle_f3(esContext, i1x, -0.1, 0.001, 0.3, 200, 200, 200, 255);
+	draw_circle_f3(esContext, i2x, -0.1, 0.001, 0.3, 200, 200, 200, 255);
+
+	glLineWidth(1);
+
+
+	draw_image_f3(esContext, i1x - 0.1, 0.3 - 0.05, i1x + 0.1, 0.3 + 0.05, 0.012, "s6-logo.png");
+
+
+	char icons[20][50];
+	strcpy(icons[0], "textures/tacho-abs.png");
+	strcpy(icons[1], "textures/tacho-bat.png");
+	strcpy(icons[2], "textures/tacho-fern.png");
+	strcpy(icons[3], "textures/tacho-nebel.png");
+	strcpy(icons[4], "textures/tacho-oel.png");
+	strcpy(icons[5], "textures/tacho-wasser.png");
+	strcpy(icons[6], "textures/tacho-airbag.png");
+	strcpy(icons[7], "textures/tacho-cat.png");
+	strcpy(icons[8], "textures/tacho-hmm.png");
+	strcpy(icons[9], "textures/tacho-motor.png");
+	strcpy(icons[10], "textures/tacho-nebel2.png");
+	strcpy(icons[11], "textures/tacho-tank.png");
+	strcpy(icons[12], "");
+	int nn1 = 0;
+	for (nn1 = 0; nn1 < 20 && icons[nn1][0] != 0; nn1++) {
+		draw_image_f3(esContext, (nn1 * 0.12 - 0.65) - 0.05, -0.65 - 0.05, (nn1 * 0.12 - 0.65) + 0.05, -0.65 + 0.05, 0.012, icons[nn1]);
+		if ((int)upm / 500 != nn1 && (int)upm < 6000) {
+			draw_box_f3(esContext, (nn1 * 0.12 - 0.65) - 0.05, -0.65 - 0.05, 0.012, (nn1 * 0.12 - 0.65) + 0.05, -0.65 + 0.05, 0.012, 0, 0, 0, 200);
+		}
+	}
+
+
+
+
+#ifdef SDLGL
+#ifndef WINDOWS
+	if (setup.hud_view_screen != 2 && draw_target() == 0) {
+//		draw_buffer_to_screen(0.9, 0.4, 1.4, 0.85, 0.0, 1.0);
+//		draw_rect_f3(esContext, 0.9, 0.4, 0.002, 1.4, 0.85, 0.002, 0, 0, 0, 255);
+//		draw_rect_f3(esContext, 0.9 - 0.005, 0.4 - 0.005, 0.002, 1.4 + 0.005, 0.85 + 0.005, 0.002, 255, 255, 255, 255);
+//		set_button("goto_map", setup.view_mode, 0.9, 0.4, 1.4, 0.85, hud_goto_screen, (float)VIEW_MODE_MAP, 0);
+	}
+#endif
+#endif
+#ifdef SDLGL
+	glPopMatrix();
+#endif
+	glEnable(GL_DEPTH_TEST);
+
+
+	return;
+#endif
+
+
+
+
+
 	char tmp_str[400];
 	char tmp_str2[400];
 	int n = 0;
@@ -1307,6 +1549,4 @@ void screen_hud (ESContext *esContext) {
 #endif
 	glEnable(GL_DEPTH_TEST);
 }
-
-
 

@@ -1,0 +1,97 @@
+
+
+RCFLOW_PLUGIN_INPUT:
+		Ein Geber-Kanal (Schalter, Poti's, Schalter, Knüppel, ...)
+
+RCFLOW_PLUGIN_OUTPUT:
+		Ein Ausgans-Kanal (Servo/PPM-Encoder)
+
+RCFLOW_PLUGIN_ATV:
+		Weg-Reduzierung
+			für kleinere Ruder-Ausschläge (Proportional über den kompletten Weg)
+
+RCFLOW_PLUGIN_LIMIT:
+		Weg-Begrenzung
+			zum limitieren Ruder-Ausschlägen (nur die Entpunkte wegen abgeschnitten/begrenzt)
+
+RCFLOW_PLUGIN_MIXER:
+		Signal-Mixer
+			zum mischen zweier Signale (Mischverhältnis ist einstellbar)
+
+RCFLOW_PLUGIN_CURVE:
+		7-Punkt Kurve
+			zum für Gas-Kurven beim Heli
+
+RCFLOW_PLUGIN_EXPO:
+		Expo
+			Um den Mittleren Bereich feinfühliger zu stellen ohne die Wege zu limitieren
+
+RCFLOW_PLUGIN_DELAY:
+		Signal-Verzögerung
+			Für Sonderfunktionen wie Einziehfahrwerke oder andere längsame Bewegungen
+
+RCFLOW_PLUGIN_ADC:
+		Die Hardware Analogkonverter (Poti's und Knüppel)
+
+RCFLOW_PLUGIN_SW:
+		Die Hardware Schaltsignale (Schalter)
+
+RCFLOW_PLUGIN_ENC:
+		Die Hardware Encodersignale (Digitale-Drehregler)
+
+RCFLOW_PLUGIN_PPM:
+		Der PPM-Encoder
+
+RCFLOW_PLUGIN_H120:
+		Taumelscheiben-Mischer für Heli's
+
+RCFLOW_PLUGIN_SWITCH:
+		Signalweiche
+			Umschalten eines signal's auf 2 verschiedene wege
+
+RCFLOW_PLUGIN_RANGESW:
+		Schalten den Ausgang sobald das eingangs-signal in einem bestimten bereich liegt (min/max)
+
+RCFLOW_PLUGIN_TIMER:
+		Schaltet den Ausgang nach einer einstellbaren Zeit-Verzögerung
+
+RCFLOW_PLUGIN_AND:
+		Logisches UND
+
+RCFLOW_PLUGIN_OR:
+		Logisches ODER
+
+RCFLOW_PLUGIN_PULSE:
+		Erzeugt einen Puls
+
+RCFLOW_PLUGIN_SINUS:
+		Erzeugt ein Sinus-Signal
+
+RCFLOW_PLUGIN_ALARM:
+		Schalten den Ausgang sobald das eingangs-signal in einem bestimten bereich liegt (min/max)
+
+RCFLOW_PLUGIN_VADC:
+		Virtueller Regler (nur per Touchscreen bedienbar)
+
+RCFLOW_PLUGIN_VSW:
+		Virtueller Schalter (nur per Touchscreen bedienbar)
+
+RCFLOW_PLUGIN_TCL:
+		Script-Plugin
+
+RCFLOW_PLUGIN_BUTTERFLY:
+		Butterfly-Mixer
+			Zum einfachen ansteuern der Rudern von Flugmodellen
+
+RCFLOW_PLUGIN_MULTIPLEX_IN:
+		Signalweiche
+			Umschalten eines signal's auf 6 verschiedene wege
+
+RCFLOW_PLUGIN_MULTIPLEX_OUT:
+		Signalweiche
+			Umschalten voin 6 verschiedenen signalen auf einen wege
+
+RCFLOW_PLUGIN_MULTIVALUE:
+		????
+
+

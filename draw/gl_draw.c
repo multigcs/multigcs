@@ -486,6 +486,9 @@ void draw_circleFilled_f3_part (ESContext *esContext, float x1, float y1, float 
 	return;
 #endif
 	y1 = y1 * -1;
+	if (start < 0.0) {
+		start = start + 360.0;
+	}
 	uint16_t ii = 0;
 	float num_segments = radius * 300.0;
 	if (num_segments < 100.0) {

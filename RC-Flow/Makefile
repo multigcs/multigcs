@@ -92,6 +92,6 @@ _flash: $(BINARY)
 	st-flash write $(BINARY) 0x08000000
 
 flash: $(BINARY)
-	../dfuse-dfu-util/src/dfu-util --dfuse-address 0x8000000 -a 0 -R -D $(BINARY)
+	../utils/dfuse-dfu-util/src/dfu-util --dfuse-address 0x8000000 -a 0 -R -D $(BINARY)
 
 
