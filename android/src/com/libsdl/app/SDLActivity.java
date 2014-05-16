@@ -459,9 +459,16 @@ public class SDLActivity extends Activity {
               cbt.sendByte(c);
             }
         }
-        catch (IOException ex) { }
+        catch (IOException ex) {}
+      } else if ( cbt != null) {
+        try {
+          cbt.sendByte(c);
+        } catch (IOException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
       }
-        return true;
+      return true;
     }
 
     public static byte[] serialRead(int maxlen) {
@@ -1461,10 +1468,11 @@ class ConnectBT {
 
     public void beginListenForData() {
         if (mmSocket == null) {
+            Log.e("bt", "socket = null");
             return;
         }
-        final Handler handler = new Handler(); 
-        final byte delimiter = 10; //This is the ASCII code for a newline character
+        //final Handler handler = new Handler(); 
+        //final byte delimiter = 10; //This is the ASCII code for a newline character
         stopWorker = false;
         readBufferPosition = 0;
         readBuffer = new byte[1024];
