@@ -51,7 +51,7 @@
 		<name>Nokia</name>
 		<comment>Nokia Normal</comment>
 		<url>http://maptile.maps.svc.ovi.com/maptiler/maptile/newest/normal.day/%i/%i/%i/256/png8</url>
-		<file>%s/MAPS/nokia_%i_%i_%i.jpg</file>
+		<file>%s/MAPS/nokia_%i_%i_%i.png</file>
 		<type>ZXY</type>
 		<copyright>Karte von &lt;a href='http://openstreetmap.org/'&gt;OpenStreetMap&lt;/a&gt; und Mitwirkenden unter &lt;a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'&gt;CC-BY-SA&lt;/a&gt;-Lizenz</copyright>
 	</service>
