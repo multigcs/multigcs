@@ -697,9 +697,9 @@ if (type == 1) {
 	}
 }
 
-
-
+#ifdef CAR_MODE
 void draw_circleMarker_f3 (ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef SDLGL
 	y1 = y1 * -1;
 	float i = start;
 	glBegin(GL_LINES);
@@ -707,7 +707,9 @@ void draw_circleMarker_f3 (ESContext *esContext, float x1, float y1, float z1, f
 	glVertex3f(x1 - cos(i * DEG2RAD) * radius, y1 + sin(i * DEG2RAD) * radius, -2.0 + z1);
 	glVertex3f(x1 - cos(i * DEG2RAD) * radius_inner, y1 + sin(i * DEG2RAD) * radius_inner, -2.0 + z1);
 	glEnd();
+#endif
 }
+#endif
 
 void draw_circleText_f3 (ESContext *esContext, float x1, float y1, float z1, float radius, float start, float size, char *text, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	float i = start;
