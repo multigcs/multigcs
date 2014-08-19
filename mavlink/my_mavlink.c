@@ -946,10 +946,6 @@ size_t trimline (char *out, size_t len, const char *str) {
 
 void mavlink_parseParams1New (xmlDocPtr doc, xmlNodePtr cur, char *name, char *disp, char *desc) { 
 	int n = 0;
-	int n2 = 0;
-	int n3 = 0;
-	int n4 = 0;
-	char tmp_str3[1024];
 	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
 		if (strcmp(MavLinkVars[n].name, name) == 0) {
 			break;
@@ -1004,7 +1000,7 @@ void mavlink_parseParams1New (xmlDocPtr doc, xmlNodePtr cur, char *name, char *d
 						}
 						strcat(MavLinkVars[n].values, Value2);
 						strcat(MavLinkVars[n].values, ":");
-						strcat(MavLinkVars[n].values, key);
+						strcat(MavLinkVars[n].values, (char *)key);
 						xmlFree(key);
 					}
 				}
