@@ -540,7 +540,9 @@ void screen_mavlink_menu (ESContext *esContext) {
 		}
 	}
 	if (option_menu != -1) {
-		draw_text_button(esContext, "#", VIEW_MODE_FCMENU, MavLinkVars[option_menu].name, FONT_GREEN, 0.0, -0.8, 0.002, 0.08, 1, 0, mavlink_options_menu, (float)-1);
+		draw_text_button(esContext, "#", VIEW_MODE_FCMENU, MavLinkVars[option_menu].name, FONT_GREEN, 0.0, -0.86, 0.002, 0.08, 1, 0, mavlink_options_menu, (float)-1);
+		draw_text_button(esContext, "#", VIEW_MODE_FCMENU, MavLinkVars[option_menu].display, FONT_GREEN, 0.0, -0.79, 0.002, 0.04, 1, 0, mavlink_options_menu, (float)-1);
+		draw_text_button(esContext, "#", VIEW_MODE_FCMENU, MavLinkVars[option_menu].desc, FONT_GREEN, 0.0, -0.75, 0.002, 0.04, 1, 0, mavlink_options_menu, (float)-1);
 		int n3 = 0;
 		for (n2 = (int)MavLinkVars[option_menu].min; n2 <= (int)MavLinkVars[option_menu].max; n2++) {
 			tmp_str2[0] = 0;

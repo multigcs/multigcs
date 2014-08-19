@@ -907,10 +907,141 @@ void mavlink_parseParams1 (xmlDocPtr doc, xmlNodePtr cur, char *name) {
 	return;
 }
 
+void mavlink_parseParamsGetAttr (xmlDocPtr doc, xmlNodePtr cur, char *attrName, char *attrValue) {
+	xmlAttrPtr attribute = NULL;
+	for (attribute = cur->properties; attribute != NULL; attribute = attribute->next){
+		if (!(xmlStrcasecmp(attribute->name, (const xmlChar *)attrName))) {
+			xmlChar *content = xmlNodeListGetString(doc, attribute->children, 1);
+			strcpy(attrValue, (char *)content);
+			xmlFree(content);
+			return;
+		}
+	}
+	attrValue[0] = 0;
+}
+
+size_t trimline (char *out, size_t len, const char *str) {
+	if(len == 0) {
+		return 0;
+	}
+	const char *end;
+	size_t out_size;
+	while (*str == ' ' || *str == '\r' || *str == '\n') {
+		str++;
+	}
+	if (*str == 0) {
+		*out = 0;
+		return 1;
+	}
+	end = str + strlen(str) - 1;
+	while(end > str && (*end == ' ' || *end == '\r' || *end == '\n')) {
+		end--;
+	}
+	end++;
+	out_size = (end - str) < (int)len - 1 ? (end - str) : len - 1;
+	memcpy(out, str, out_size);
+	out[out_size] = 0;
+	return out_size;
+}
+
+void mavlink_parseParams1New (xmlDocPtr doc, xmlNodePtr cur, char *name, char *disp, char *desc) { 
+	int n = 0;
+	int n2 = 0;
+	int n3 = 0;
+	int n4 = 0;
+	char tmp_str3[1024];
+	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
+		if (strcmp(MavLinkVars[n].name, name) == 0) {
+			break;
+		}
+	}
+	if (n == MAVLINK_PARAMETER_MAX) {
+		return;
+	}
+	strncpy(MavLinkVars[n].desc, (char *)desc, 1023);
+	strncpy(MavLinkVars[n].display, (char *)disp, 100);
+	cur = cur->xmlChildrenNode;
+	while (cur != NULL) {
+		char attrValue[1024];
+		mavlink_parseParamsGetAttr(doc, cur, "Name", attrValue);
+		if ((!xmlStrcasecmp((const xmlChar *)attrValue, (const xmlChar *)"Range"))) {
+			float min = 0.0;
+			float max = 0.0;
+			xmlChar *key;
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if (key != NULL) {
+				sscanf((char *)key, "%f %f", &min, &max);
+				MavLinkVars[n].min = min;
+				MavLinkVars[n].max = max;
+				xmlFree(key);
+			}
+		} else if ((!xmlStrcasecmp((const xmlChar *)attrValue, (const xmlChar *)"Group"))) {
+			xmlChar *key;
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if (key != NULL) {
+				strncpy(MavLinkVars[n].group, (char *)key, 20);
+				xmlFree(key);
+			}
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"Values"))) {
+			float last_val = 0.0;
+			MavLinkVars[n].values[0] = 0;
+			xmlNodePtr cur2 = cur->xmlChildrenNode;
+			while (cur2 != NULL) {
+				if (!(xmlStrcasecmp(cur2->name, (const xmlChar *)"Value"))) {
+					xmlChar *key;
+					key = xmlNodeListGetString(doc, cur2->xmlChildrenNode, 1);
+					if (key != NULL) {
+						char Value[1024];
+						char Value2[1024];
+						mavlink_parseParamsGetAttr(doc, cur2, "Code", Value);
+						trimline(Value2, 1024, Value);
+						last_val = atof(Value2);
+
+						if (MavLinkVars[n].values[0] == 0) {
+							MavLinkVars[n].min = last_val;
+						} else {
+							strcat(MavLinkVars[n].values, ",");
+						}
+						strcat(MavLinkVars[n].values, Value2);
+						strcat(MavLinkVars[n].values, ":");
+						strcat(MavLinkVars[n].values, key);
+						xmlFree(key);
+					}
+				}
+				cur2 = cur2->next;
+			}
+			MavLinkVars[n].max = last_val;
+		}
+		cur = cur->next;
+	}
+	return;
+}
+
+void mavlink_parseParamsNew (xmlDocPtr doc, xmlNodePtr cur) { 
+	cur = cur->xmlChildrenNode;
+	while (cur != NULL) {
+		if (!(xmlStrcasecmp(cur->name, (const xmlChar *)"param"))) {
+			char attrValue[1024];
+			char Desc[1024];
+			char Disp[1024];
+			mavlink_parseParamsGetAttr(doc, cur, "Name", attrValue);
+			mavlink_parseParamsGetAttr(doc, cur, "Documentation", Desc);
+			mavlink_parseParamsGetAttr(doc, cur, "humanName", Disp);
+			if (strncmp(attrValue, "ArduCopter:", 11) == 0) {
+				mavlink_parseParams1New(doc, cur, attrValue + 11, Disp, Desc);
+			}
+		}
+		cur = cur->next;
+	}
+	return;
+}
+
 void mavlink_parseParams (xmlDocPtr doc, xmlNodePtr cur) { 
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((xmlStrcasecmp(cur->name, (const xmlChar *)"text"))) {
+		if (!(xmlStrcasecmp(cur->name, (const xmlChar *)"parameters"))) {
+			mavlink_parseParamsNew(doc, cur);
+		} else if ((xmlStrcasecmp(cur->name, (const xmlChar *)"text"))) {
 			mavlink_parseParams1(doc, cur, (char *)cur->name);
 		}
 		cur = cur->next;
@@ -951,6 +1082,8 @@ static void mavlink_parseDoc (char *docname) {
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
 		if ((xmlStrcasecmp(cur->name, (const xmlChar *)"text"))) {
+			mavlink_parseParams(doc, cur);
+		} else if ((xmlStrcasecmp(cur->name, (const xmlChar *)"vehicles"))) {
 			mavlink_parseParams(doc, cur);
 		}
 		cur = cur->next;
