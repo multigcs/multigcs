@@ -5,16 +5,16 @@
 
 static int8_t filesystem_page = 0;
 static uint8_t show_filesystem = 0;
-static uint8_t (*save_callback) (char *, float, float, int8_t, float);
+static uint8_t (*save_callback) (char *, float, float, int8_t, float, uint8_t);
 static char filesystem_rootdir[1024];
 static char filesystem_filter[FILTER_MAX][1024];
 static uint8_t filesystem_filter_num = 0;
 
-void filesystem_set_callback (uint8_t (*callback) (char *, float, float, int8_t, float)) {
+void filesystem_set_callback (uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t)) {
 	save_callback = callback;
 }
 
-uint8_t filesystem_page_move (char *name, float x, float y, int8_t button, float data) {
+uint8_t filesystem_page_move (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (data < 0.0) {
 		if (filesystem_page > 0) {
 			filesystem_page += (int8_t)data;
@@ -73,19 +73,19 @@ void filesystem_reset_filter (void) {
 	filesystem_filter_num = 0;
 }
 
-uint8_t filesystem_name_cancel (char *name, float x, float y, int8_t button, float data) {
+uint8_t filesystem_name_cancel (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	show_filesystem = 0;
-	(*save_callback)("", x, y, button, 1.0);
+	(*save_callback)("", x, y, button, 1.0, 0);
 	return 0;
 }
 
-uint8_t filesystem_name_save (char *name, float x, float y, int8_t button, float data) {
+uint8_t filesystem_name_save (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	show_filesystem = 0;
-	(*save_callback)(name, x, y, button, 1.0);
+	(*save_callback)(name, x, y, button, 1.0, 0);
 	return 0;
 }
 
-uint8_t filesystem_dir_open (char *name, float x, float y, int8_t button, float data) {
+uint8_t filesystem_dir_open (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	strncpy(filesystem_rootdir, name, 1023);
 	filesystem_page = 0;
 	return 0;

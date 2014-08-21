@@ -4,13 +4,13 @@
 
 static uint8_t show_baud = 0;
 static uint8_t baud_page = 0;
-static uint8_t (*save_callback) (char *, float, float, int8_t, float);
+static uint8_t (*save_callback) (char *, float, float, int8_t, float, uint8_t);
 
-void baud_set_callback (uint8_t (*callback) (char *, float, float, int8_t, float)) {
+void baud_set_callback (uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t)) {
 	save_callback = callback;
 }
 
-uint8_t baud_page_move (char *name, float x, float y, int8_t button, float data) {
+uint8_t baud_page_move (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (data < 0.0) {
 		if (baud_page > 0) {
 			baud_page += (int8_t)data;
@@ -30,14 +30,14 @@ uint8_t baud_get_mode (void) {
 	return show_baud;
 }
 
-uint8_t baud_name_cancel (char *name, float x, float y, int8_t button, float data) {
+uint8_t baud_name_cancel (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	show_baud = 0;
 	return 0;
 }
 
-uint8_t baud_name_save (char *name, float x, float y, int8_t button, float data) {
+uint8_t baud_name_save (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	show_baud = 0;
-	(*save_callback)(name, x, y, button, 1.0);
+	(*save_callback)(name, x, y, button, 1.0, action);
 	return 0;
 }
 

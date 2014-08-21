@@ -46,7 +46,7 @@ int long2x (float mark_long, float lon, float zoom);
 char *BingtileXYZToQuadKey(char *quadKey, int x, int y, int z);
 void map_parseDoc (char *docname);
 void get_maps (uint8_t mode, GeoMap *mapdata);
-uint8_t map_downloader (char *name, float x, float y, int8_t button, float data);
+uint8_t map_downloader (char *name, float x, float y, int8_t button, float data, uint8_t action);
 int thread_get_maps1 (void *data);
 int thread_get_maps2 (void *data);
 void draw_quad (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, float roll, float pitch, float yaw, float lat, float lon, uint8_t zoom);

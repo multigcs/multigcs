@@ -6,11 +6,11 @@ uint8_t videolist_startup = 0;
 char videolist_path[1024];
 char videolist_lastfile[1024];
 
-uint8_t videolist_null (char *name, float x, float y, int8_t button, float data) {
+uint8_t videolist_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 0;
 }
 
-uint8_t videolist_file_play (char *name, float x, float y, int8_t button, float data) {
+uint8_t videolist_file_play (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	char cmd[401];
 	strncpy(videolist_lastfile, name, 1023);
 	sprintf(cmd, "echo \"%s\" > /tmp/gcs.playfile", name);

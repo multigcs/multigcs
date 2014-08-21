@@ -6,66 +6,66 @@ uint16_t wpedit_pos = 0;
 uint16_t wpedit_sel = 0;
 uint8_t wpedit_last_mode = VIEW_MODE_MAP;
 
-uint8_t read_wp (char *name, float x, float y, int8_t button, float data) {
-	show_wp(name, x, y, button, 1);
+uint8_t read_wp (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	show_wp(name, x, y, button, 1, 0);
 	mavlink_read_waypoints();
 	return 0;
 }
 
-uint8_t write_wp (char *name, float x, float y, int8_t button, float data) {
+uint8_t write_wp (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	mavlink_send_waypoints();
 	return 0;
 }
 
-uint8_t wpedit_waypoint_edit (char *name, float x, float y, int8_t button, float data) {
+uint8_t wpedit_waypoint_edit (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	wpedit_last_mode = (uint8_t)data;
 	setup.view_mode = VIEW_MODE_WPEDIT;
 	view_mode_next = VIEW_MODE_WPEDIT;
 	return 0;
 }
 
-uint8_t wpedit_back (char *name, float x, float y, int8_t button, float data) {
+uint8_t wpedit_back (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	setup.view_mode = wpedit_last_mode;
 	view_mode_next = wpedit_last_mode;
 	return 0;
 }
 
-uint8_t wpedit_waypoint_lat_set (char *name, float x, float y, int8_t button, float data) {
+uint8_t wpedit_waypoint_lat_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	WayPoints[waypoint_active].p_lat += data;
 	return 0;
 }
 
-uint8_t wpedit_waypoint_lon_set (char *name, float x, float y, int8_t button, float data) {
+uint8_t wpedit_waypoint_lon_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	WayPoints[waypoint_active].p_long += data;
 	return 0;
 }
 
-uint8_t wpedit_waypoint_alt_set (char *name, float x, float y, int8_t button, float data) {
+uint8_t wpedit_waypoint_alt_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	WayPoints[waypoint_active].p_alt += data;
 	return 0;
 }
 
-uint8_t wpedit_waypoint_yaw_set (char *name, float x, float y, int8_t button, float data) {
+uint8_t wpedit_waypoint_yaw_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	WayPoints[waypoint_active].yaw += data;
 	return 0;
 }
 
-uint8_t wpedit_waypoint_wait_set (char *name, float x, float y, int8_t button, float data) {
+uint8_t wpedit_waypoint_wait_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	WayPoints[waypoint_active].wait += data;
 	return 0;
 }
 
-uint8_t wpedit_waypoint_orbit_set (char *name, float x, float y, int8_t button, float data) {
+uint8_t wpedit_waypoint_orbit_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	WayPoints[waypoint_active].orbit += data;
 	return 0;
 }
 
-uint8_t wpedit_waypoint_radius_set (char *name, float x, float y, int8_t button, float data) {
+uint8_t wpedit_waypoint_radius_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	WayPoints[waypoint_active].radius += data;
 	return 0;
 }
 
-uint8_t wpedit_waypoint_type_select (char *name, float x, float y, int8_t button, float data) {
+uint8_t wpedit_waypoint_type_select (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (strcmp(WayPoints[waypoint_active].command, "WAYPOINT") == 0) {
 		strcpy(WayPoints[waypoint_active].command, "RTL");
 	} else if (strcmp(WayPoints[waypoint_active].command, "RTL") == 0) {

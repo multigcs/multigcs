@@ -234,12 +234,12 @@ void baseflightcli_update (void) {
 	}
 }
 
-static uint8_t baseflightcli_null (char *name, float x, float y, int8_t button, float data) {
+static uint8_t baseflightcli_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	SDL_Log("baseflightcli_null: %f\n", data);
 	return 0;
 }
 
-static uint8_t baseflightcli_xml_save (char *name, float x, float y, int8_t button, float data) {
+static uint8_t baseflightcli_xml_save (char *name, float x, float y, int8_t button, float data, uint8_t action) {
         FILE *fr;
         fr = fopen("/tmp/ParameterMetaData.xml", "wb");
 	if (fr != 0) {
@@ -266,7 +266,7 @@ static uint8_t baseflightcli_xml_save (char *name, float x, float y, int8_t butt
 	return 0;
 }
 
-static uint8_t baseflightcli_load_cmix (char *name, float x, float y, int8_t button, float data) {
+static uint8_t baseflightcli_load_cmix (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	SDL_Log("baseflightcli_load_cmix: %f\n", data);
 	int n = 0;
 	int nn = 0;
@@ -291,7 +291,7 @@ static uint8_t baseflightcli_load_cmix (char *name, float x, float y, int8_t but
 	return 0;
 }
 
-static uint8_t baseflightcli_mixer_set (char *name, float x, float y, int8_t button, float data) {
+static uint8_t baseflightcli_mixer_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	SDL_Log("baseflightcli_mixer_set: %s %f\n", name, data);
 	int n = 0;
 	int nn = (int)data;
@@ -308,7 +308,7 @@ static uint8_t baseflightcli_mixer_set (char *name, float x, float y, int8_t but
 	return 0;
 }
 
-static uint8_t baseflightcli_aux_toggle (char *name, float x, float y, int8_t button, float data) {
+static uint8_t baseflightcli_aux_toggle (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	int aux_n = atoi(name + 4);
 	int n = atoi(name + 6);
 	if (name[6] == '_') {
@@ -329,7 +329,7 @@ static uint8_t baseflightcli_aux_toggle (char *name, float x, float y, int8_t bu
 	return 0;
 }
 
-static uint8_t baseflightcli_defaults (char *name, float x, float y, int8_t button, float data) {
+static uint8_t baseflightcli_defaults (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (baseflightcli_fd < 0) {
 		return 0;
 	}
@@ -343,7 +343,7 @@ static uint8_t baseflightcli_defaults (char *name, float x, float y, int8_t butt
 }
 
 
-static uint8_t baseflightcli_group_open (char *name, float x, float y, int8_t button, float data) {
+static uint8_t baseflightcli_group_open (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	reset_buttons();
 	if (button == 4) {
 		if (baseflightcli_group > 0) {
@@ -369,7 +369,7 @@ static uint8_t baseflightcli_group_open (char *name, float x, float y, int8_t bu
 	return 0;
 }
 
-static uint8_t baseflightcli_read (char *name, float x, float y, int8_t button, float data) {
+static uint8_t baseflightcli_read (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (baseflightcli_fd < 0) {
 		return 0;
 	}
@@ -383,7 +383,7 @@ static uint8_t baseflightcli_read (char *name, float x, float y, int8_t button, 
 	return 0;
 }
 
-static uint8_t baseflightcli_save (char *name, float x, float y, int8_t button, float data) {
+static uint8_t baseflightcli_save (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (baseflightcli_fd < 0) {
 		return 0;
 	}
@@ -513,7 +513,7 @@ uint8_t baseflightcli_init (char *port, uint32_t baud) {
 #define SLIDER_START	0.2
 #define SLIDER_LEN	0.45
 
-uint8_t baseflightcli_toggle (char *name, float x, float y, int8_t button, float data) {
+uint8_t baseflightcli_toggle (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	char tmp_str[400];
 	int nn = (int)data;
 	SDL_Log("toggle(%i): %s %f\n", nn, bf_set_value[nn].name, bf_set_value[nn].value);
@@ -536,7 +536,7 @@ uint8_t baseflightcli_toggle (char *name, float x, float y, int8_t button, float
 	return 0;
 }
 
-uint8_t baseflightcli_slider_move (char *name, float x, float y, int8_t button, float data) {
+uint8_t baseflightcli_slider_move (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	int n = 0;
 	int nn = (int)data;
 	if (button == 4) {
@@ -854,7 +854,7 @@ void screen_baseflightcli (ESContext *esContext) {
 	}
 
 	if (baseflightcli_startup == 0) {
-		baseflightcli_read("", 0.0, 0.0, 0, 0.0);
+		baseflightcli_read("", 0.0, 0.0, 0, 0.0, 0);
 	}
 
 }

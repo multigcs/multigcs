@@ -7,7 +7,7 @@
 
 static uint8_t set_type = 0;
 
-uint8_t tracker_cmd (char *name, float x, float y, int8_t button, float data) {
+uint8_t tracker_cmd (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (strcmp(name + 1, "PAN_TRIM") == 0) {
 		TrackerData[TRACKER_PAN_TRIM].value = tracker_pan_dir;
 	} else if (strcmp(name + 1, "PITCH_TRIM") == 0) {
@@ -31,7 +31,7 @@ uint8_t tracker_cmd (char *name, float x, float y, int8_t button, float data) {
 	return 0;
 }
 
-uint8_t tracker_move (char *name, float x, float y, int8_t button, float data) {
+uint8_t tracker_move (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	int n = 0;
 	float value = 0.0;
 	float min = -100.0;

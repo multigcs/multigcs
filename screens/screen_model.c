@@ -28,17 +28,17 @@ uint8_t model_get_modeltype_by_name (char *name) {
 	return 0;
 }
 
-static uint8_t model_null (char *name, float x, float y, int8_t button, float data) {
+static uint8_t model_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 0;
 }
 
-static uint8_t model_reconnect (char *name, float x, float y, int8_t button, float data) {
+static uint8_t model_reconnect (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	set_telemetry(ModelData.teledevice, ModelData.telebaud);
 	return 0;
 }
 
 
-uint8_t model_teletype_set (char *name, float x, float y, int8_t button, float data) {
+uint8_t model_teletype_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int)data < TELETYPE_LAST) {
 		ModelData.teletype = (int)data;
 	}
@@ -47,7 +47,7 @@ uint8_t model_teletype_set (char *name, float x, float y, int8_t button, float d
 	return 0;
 }
 
-static uint8_t model_modeltype_change (char *name, float x, float y, int8_t button, float data) {
+static uint8_t model_modeltype_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (ModelData.modeltype < MODELTYPE_LAST - 1) {
 		ModelData.modeltype++;
 	} else {
@@ -57,30 +57,30 @@ static uint8_t model_modeltype_change (char *name, float x, float y, int8_t butt
 }
 
 
-static uint8_t model_teletype_change (char *name, float x, float y, int8_t button, float data) {
+static uint8_t model_teletype_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	select_teletype = 1;
 	return 0;
 }
 
 
-static uint8_t model_baud_set (char *name, float x, float y, int8_t button, float data) {
+static uint8_t model_baud_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	ModelData.telebaud = atoi(name);
 	return 0;
 }
 
-static uint8_t model_baud_change (char *name, float x, float y, int8_t button, float data) {
+static uint8_t model_baud_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	baud_set_callback(model_baud_set);
 	baud_set_mode(setup.view_mode);
 	return 0;
 }
 
 
-static uint8_t model_device_set (char *name, float x, float y, int8_t button, float data) {
+static uint8_t model_device_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	strncpy(ModelData.teledevice, name, 199);
 	return 0;
 }
 
-static uint8_t model_device_change (char *name, float x, float y, int8_t button, float data) {
+static uint8_t model_device_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	device_set_callback(model_device_set);
 	device_reset_filter();
 	device_add_filter("ttyUSB");
@@ -91,19 +91,19 @@ static uint8_t model_device_change (char *name, float x, float y, int8_t button,
 	return 0;
 }
 
-static uint8_t model_name_set (char *name, float x, float y, int8_t button, float data) {
+static uint8_t model_name_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	strncpy(ModelData.name, name, 199);
 	return 0;
 }
 
-static uint8_t model_name_edit (char *name, float x, float y, int8_t button, float data) {
+static uint8_t model_name_edit (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	keyboard_set_callback(model_name_set);
 	keyboard_set_text(ModelData.name);
 	keyboard_set_mode(setup.view_mode);
 	return 0;
 }
 
-static uint8_t model_save_xml (char *name, float x, float y, int8_t button, float data) {
+static uint8_t model_save_xml (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	reset_buttons();
         FILE *fr;
 	char tmp_str[128];
@@ -134,7 +134,7 @@ static uint8_t model_save_xml (char *name, float x, float y, int8_t button, floa
 	return 0;
 }
 
-uint8_t model_save (char *name, float x, float y, int8_t button, float data) {
+uint8_t model_save (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	char tmp_str[200];
 	reset_buttons();
 	keyboard_set_callback(model_save_xml);
@@ -270,13 +270,13 @@ static void model_parseDoc (char *docname) {
 	return;
 }
 
-static uint8_t model_load_xml (char *name, float x, float y, int8_t button, float data) {
+static uint8_t model_load_xml (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	model_parseDoc(name);
 	reset_buttons();
 	return 0;
 }
 
-static uint8_t model_load (char *name, float x, float y, int8_t button, float data) {
+static uint8_t model_load (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	reset_buttons();
 	char tmp_str[128];
 	sprintf(tmp_str, "%s/models", get_datadirectory());
@@ -288,13 +288,13 @@ static uint8_t model_load (char *name, float x, float y, int8_t button, float da
 	return 0;
 }
 
-static uint8_t model_image_set (char *name, float x, float y, int8_t button, float data) {
+static uint8_t model_image_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	strncpy(ModelData.image, name, 511);
 	reset_buttons();
 	return 0;
 }
 
-static uint8_t model_image_change (char *name, float x, float y, int8_t button, float data) {
+static uint8_t model_image_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	reset_buttons();
 	char tmp_str[128];
 	sprintf(tmp_str, "%s", BASE_DIR);

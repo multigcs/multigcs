@@ -107,7 +107,7 @@ static vDescription vdes[VALUES_MAX] = {
 	{&simplebgc_setup.cur_profile, "cur_profile", "CUR_PROFILE", TYPE_U8, 0, 2},
 };
 
-uint8_t simplebgc_select (char *name, float x, float y, int8_t button, float data) {
+uint8_t simplebgc_select (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	reset_buttons();
 	strcpy(select_name, name + 1);
 	int n = 0;
@@ -142,7 +142,7 @@ uint8_t simplebgc_select (char *name, float x, float y, int8_t button, float dat
 	return 0;
 }
 
-uint8_t simplebgc_change (char *name, float x, float y, int8_t button, float data) {
+uint8_t simplebgc_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	select_value += (int32_t)data;
 	if (select_value > select_max) {
 		select_value = select_max;
@@ -166,17 +166,17 @@ uint8_t simplebgc_change (char *name, float x, float y, int8_t button, float dat
 	return 0;
 }
 
-uint8_t simplebgc_reload (char *name, float x, float y, int8_t button, float data) {
+uint8_t simplebgc_reload (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	simplebgc_send_cmd('R');
 	return 0;
 }
 
-uint8_t simplebgc_save (char *name, float x, float y, int8_t button, float data) {
+uint8_t simplebgc_save (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	simplebgc_send_cmd('W');
 	return 0;
 }
 
-uint8_t simplebgc_mode (char *name, float x, float y, int8_t button, float data) {
+uint8_t simplebgc_mode (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	reset_buttons();
 SDL_Log("####\n");
 	if (mode < 2) {

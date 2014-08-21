@@ -6,23 +6,23 @@
 extern GLuint RB_texture;
 void draw_texture_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, GLuint texture);
 
-uint8_t hud_null (char *name, float x, float y, int8_t button, float data) {
+uint8_t hud_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 0;
 }
 
-uint8_t hud_goto_screen (char *name, float x, float y, int8_t button, float data) {
+uint8_t hud_goto_screen (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	setup.view_mode = (int)data;
 	view_mode_next = (int)data;
 	return 0;
 }
 
-uint8_t hud_altitude_null (char *name, float x, float y, int8_t button, float data) {
+uint8_t hud_altitude_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	float ground_alt = (float)get_altitude(ModelData.p_lat, ModelData.p_long);
 	ModelData.alt_offset = ModelData.p_alt - ground_alt;
 	return 0;
 }
 
-uint8_t view_hud (char *name, float x, float y, int8_t button, float data) {
+uint8_t view_hud (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (setup.hud_view_screen == 0) {
 		setup.hud_view_screen = 1;
 	} else if (setup.hud_view_screen == 1) {
@@ -34,7 +34,7 @@ uint8_t view_hud (char *name, float x, float y, int8_t button, float data) {
 }
 
 
-uint8_t view_hud_stab (char *name, float x, float y, int8_t button, float data) {
+uint8_t view_hud_stab (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (setup.hud_view_stab < 2) {
 		setup.hud_view_stab++;
 	} else {
@@ -43,22 +43,22 @@ uint8_t view_hud_stab (char *name, float x, float y, int8_t button, float data) 
 	return 0;
 }
 
-uint8_t view_hud_bw (char *name, float x, float y, int8_t button, float data) {
+uint8_t view_hud_bw (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	setup.contrast = 1 - setup.contrast;
 	return 0;
 }
 
-uint8_t view_hud_mark (char *name, float x, float y, int8_t button, float data) {
+uint8_t view_hud_mark (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	setup.hud_view_mark = 1;	
 	return 0;
 }
 
-uint8_t view_hud_tunnel (char *name, float x, float y, int8_t button, float data) {
+uint8_t view_hud_tunnel (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	setup.hud_view_tunnel = 1 - setup.hud_view_tunnel;
 	return 0;
 }
 
-uint8_t view_hud_map (char *name, float x, float y, int8_t button, float data) {
+uint8_t view_hud_map (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (setup.hud_view_map == 0) {
 		setup.hud_view_map = 1;
 	} else if (setup.hud_view_map == 1) {
@@ -69,7 +69,7 @@ uint8_t view_hud_map (char *name, float x, float y, int8_t button, float data) {
 	return 0;
 }
 
-uint8_t view_hud_video (char *name, float x, float y, int8_t button, float data) {
+uint8_t view_hud_video (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	setup.hud_view_video = 1 - setup.hud_view_video;
 	return 0;
 }

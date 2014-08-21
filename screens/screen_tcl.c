@@ -108,7 +108,7 @@ void tcl_runFile (char *file) {
 	}
 }
 
-uint8_t tcl_test (char *name, float x, float y, int8_t button, float data) {
+uint8_t tcl_test (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	char script[] = "puts \"[hello 1 2]\"";
 	tcl_run(script);
 	return 0;

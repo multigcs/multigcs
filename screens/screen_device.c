@@ -5,15 +5,15 @@
 
 static uint8_t show_device = 0;
 static uint8_t device_page = 0;
-static uint8_t (*save_callback) (char *, float, float, int8_t, float);
+static uint8_t (*save_callback) (char *, float, float, int8_t, float, uint8_t);
 static char device_filter[FILTER_MAX][200];
 static uint8_t device_filter_num = 0;
 
-void device_set_callback (uint8_t (*callback) (char *, float, float, int8_t, float)) {
+void device_set_callback (uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t action)) {
 	save_callback = callback;
 }
 
-uint8_t device_page_move (char *name, float x, float y, int8_t button, float data) {
+uint8_t device_page_move (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (data < 0.0) {
 		if (device_page > 0) {
 			device_page += (int8_t)data;
@@ -63,14 +63,14 @@ void device_reset_filter (void) {
 	device_filter_num = 0;
 }
 
-uint8_t device_name_cancel (char *name, float x, float y, int8_t button, float data) {
+uint8_t device_name_cancel (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	show_device = 0;
 	return 0;
 }
 
-uint8_t device_name_save (char *name, float x, float y, int8_t button, float data) {
+uint8_t device_name_save (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	show_device = 0;
-	(*save_callback)(name, x, y, button, 1.0);
+	(*save_callback)(name, x, y, button, 1.0, 0);
 	return 0;
 }
 

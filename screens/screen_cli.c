@@ -64,12 +64,12 @@ uint8_t cli_exit (void) {
 	return 0;
 }
 
-static uint8_t cli_set_mode (char *name, float x, float y, int8_t button, float data) {
+static uint8_t cli_set_mode (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	cli_mode = 1 - cli_mode;
 	return 0;
 }
 
-uint8_t cli_move (char *name, float x, float y, int8_t button, float data) {
+uint8_t cli_move (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 4) {
 		if (cli_history < CLI_MAX_LINES - 25) {
 			cli_history++;
@@ -82,7 +82,7 @@ uint8_t cli_move (char *name, float x, float y, int8_t button, float data) {
 	return 0;
 }
 
-uint8_t cli_scroll (char *name, float x, float y, int8_t button, float data) {
+uint8_t cli_scroll (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	reset_buttons();
 	if ((int)data < 0) {
 		if (cli_history < CLI_MAX_LINES - 25) {

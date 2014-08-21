@@ -9,33 +9,33 @@ static int16_t brugi_selected = -1;
 static BrugiValue *slider_value = NULL;
 static char *slider_name = NULL;
 
-uint8_t brugi_gyrocal (char *name, float x, float y, int8_t button, float data) {
+uint8_t brugi_gyrocal (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	brugi_send_cmd("GC\n");
 	return 0;
 }
 
-uint8_t brugi_defaults (char *name, float x, float y, int8_t button, float data) {
+uint8_t brugi_defaults (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	brugi_send_cmd("SD\n");
 	SDL_Delay(100);
 	brugi_send_cmd("par\n");
 	return 0;
 }
 
-uint8_t brugi_save_to_flash (char *name, float x, float y, int8_t button, float data) {
+uint8_t brugi_save_to_flash (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	brugi_send_cmd("WE\n");
 	SDL_Delay(100);
 	brugi_send_cmd("par\n");
 	return 0;
 }
 
-uint8_t brugi_read_from_flash (char *name, float x, float y, int8_t button, float data) {
+uint8_t brugi_read_from_flash (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	brugi_send_cmd("RE\n");
 	SDL_Delay(100);
 	brugi_send_cmd("par\n");
 	return 0;
 }
 
-uint8_t brugi_slider_move (char *name, float x, float y, int8_t button, float data) {
+uint8_t brugi_slider_move (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	float new = slider_value->value;
 	if (button == 4) {
 		new += slider_value->step;
@@ -63,7 +63,7 @@ uint8_t brugi_slider_move (char *name, float x, float y, int8_t button, float da
 }
 
 
-static uint8_t brugi_select (char *name, float x, float y, int8_t button, float data) {
+static uint8_t brugi_select (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	reset_buttons();
 	brugi_selected = (int16_t)data;
 	return 0;

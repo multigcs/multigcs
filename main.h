@@ -40,6 +40,12 @@
 #define ALIGN_RIGHT	2
 #define ALIGN_BOTTOM	2
 
+
+#define BUTTON_PRESSED	0
+#define BUTTON_MOVED	1
+#define BUTTON_RELEASED	2
+
+
 enum {
 	VIEW_MODE_HUD,
 	VIEW_MODE_TELEMETRY,
@@ -91,7 +97,7 @@ typedef struct {
 	uint8_t status;
 	float start_x;
 	float start_y;
-	uint8_t (*callback) (char *, float, float, int8_t, float);
+	uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t);
 } Button;
 
 struct list_element {
@@ -187,7 +193,7 @@ void stop_telemetry (void);
 void set_telemetry (char *device, uint32_t baud);
 uint8_t need_bluetooth (void);
 void reset_buttons (void);
-uint8_t set_button (char *name, uint8_t view_mode, float x1, float y1, float x2, float y2, uint8_t (*callback) (char *, float, float, int8_t, float), float data, uint8_t type);
+uint8_t set_button (char *name, uint8_t view_mode, float x1, float y1, float x2, float y2, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t), float data, uint8_t type);
 int8_t check_button (uint8_t view_mode, float x, float y, uint8_t button, uint8_t event);
 void setup_waypoints (void);
 void sys_message (char *msg);

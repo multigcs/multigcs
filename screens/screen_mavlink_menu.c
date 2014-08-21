@@ -119,7 +119,7 @@ void mavlink_meta_get_bits (int id, char *name, char *entry) {
 	}
 }
 
-uint8_t mavlink_param_set (char *name, float x, float y, int8_t button, float data) {
+uint8_t mavlink_param_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	int n = 0;
 	int selected = -1;
 	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
@@ -138,7 +138,7 @@ uint8_t mavlink_param_set (char *name, float x, float y, int8_t button, float da
 	return 0;
 }
 
-uint8_t mavlink_param_diff (char *name, float x, float y, int8_t button, float data) {
+uint8_t mavlink_param_diff (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	int n = 0;
 	int selected = -1;
 	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
@@ -157,7 +157,7 @@ uint8_t mavlink_param_diff (char *name, float x, float y, int8_t button, float d
 	return 0;
 }
 
-uint8_t mavlink_slider_move (char *name, float x, float y, int8_t button, float data) {
+uint8_t mavlink_slider_move (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	int n = 0;
 	int selected = -1;
 	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
@@ -212,7 +212,7 @@ uint8_t mavlink_slider_move (char *name, float x, float y, int8_t button, float 
 	return 0;
 }
 
-uint8_t mavlink_slider2_move (char *name, float x, float y, int8_t button, float data) {
+uint8_t mavlink_slider2_move (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	int n = 0;
 	int selected = -1;
 	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
@@ -267,7 +267,7 @@ uint8_t mavlink_slider2_move (char *name, float x, float y, int8_t button, float
 	return 0;
 }
 
-uint8_t mavlink_set_magdecl (char *name, float x, float y, int8_t button, float data) {
+uint8_t mavlink_set_magdecl (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	int n = 0;
 	int selected = -1;
 	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
@@ -289,13 +289,13 @@ uint8_t mavlink_set_magdecl (char *name, float x, float y, int8_t button, float 
 	return 0;
 }
 
-uint8_t mavlink_options_menu (char *name, float x, float y, int8_t button, float data) {
+uint8_t mavlink_options_menu (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	reset_buttons();
 	option_menu = (int)data;
 	return 0;
 }
 
-uint8_t mavlink_option_sel (char *name, float x, float y, int8_t button, float data) {
+uint8_t mavlink_option_sel (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	int n = 0;
 	int selected = -1;
 	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
@@ -313,7 +313,7 @@ uint8_t mavlink_option_sel (char *name, float x, float y, int8_t button, float d
 	return 0;
 }
 
-uint8_t mavlink_param_menu (char *name, float x, float y, int8_t button, float data) {
+uint8_t mavlink_param_menu (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	reset_buttons();
 	param_menu = (int)data;
 	if (param_menu != -1) {
@@ -322,13 +322,13 @@ uint8_t mavlink_param_menu (char *name, float x, float y, int8_t button, float d
 	return 0;
 }
 
-uint8_t mavlink_bits_menu (char *name, float x, float y, int8_t button, float data) {
+uint8_t mavlink_bits_menu (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	reset_buttons();
 	bits_menu = (int)data;
 	return 0;
 }
 
-uint8_t mavlink_bits_sel (char *name, float x, float y, int8_t button, float data) {
+uint8_t mavlink_bits_sel (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	int n = 0;
 	int selected = -1;
 	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
@@ -351,7 +351,7 @@ uint8_t mavlink_bits_sel (char *name, float x, float y, int8_t button, float dat
 	return 0;
 }
 
-uint8_t mavlink_param_file_save (char *name, float x, float y, int8_t button, float data) {
+uint8_t mavlink_param_file_save (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	char filename[1024];
 	FILE *fr;
 	int n = 0;
@@ -374,7 +374,7 @@ uint8_t mavlink_param_file_save (char *name, float x, float y, int8_t button, fl
 	return 0;
 }
 
-uint8_t mavlink_param_save (char *name, float x, float y, int8_t button, float data) {
+uint8_t mavlink_param_save (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	char filename[1024];
 	sprintf(filename, "%s.txt", ModelData.name);
 	keyboard_set_callback(mavlink_param_file_save);
@@ -383,13 +383,13 @@ uint8_t mavlink_param_save (char *name, float x, float y, int8_t button, float d
 	return 0;
 }
 
-uint8_t mavlink_param_file_load (char *name, float x, float y, int8_t button, float data) {
+uint8_t mavlink_param_file_load (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	mavlink_param_read_file(name);
 	mavlink_param_xml_meta_load();
 	return 0;
 }
 
-uint8_t mavlink_param_load (char *name, float x, float y, int8_t button, float data) {
+uint8_t mavlink_param_load (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	char directory[200];
 	sprintf(directory, "%s/PARAMS", get_datadirectory());
 	filesystem_set_callback(mavlink_param_file_load);
@@ -401,17 +401,17 @@ uint8_t mavlink_param_load (char *name, float x, float y, int8_t button, float d
 	return 0;
 }
 
-uint8_t mavlink_flash (char *name, float x, float y, int8_t button, float data) {
+uint8_t mavlink_flash (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	mavlink_save_to_flash();
 	return 0;
 }
 
-uint8_t mavlink_flashload (char *name, float x, float y, int8_t button, float data) {
+uint8_t mavlink_flashload (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	mavlink_load_from_flash();
 	return 0;
 }
 
-uint8_t mavlink_aux_toggle (char *name, float x, float y, int8_t button, float data) {
+uint8_t mavlink_aux_toggle (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	SDL_Log("aux: %s %f\n", name, data);
 	int n = 0;
 	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
@@ -431,21 +431,21 @@ uint8_t mavlink_aux_toggle (char *name, float x, float y, int8_t button, float d
 	return 0;
 }
 
-uint8_t mavlink_select_main (char *name, float x, float y, int8_t button, float data) {
+uint8_t mavlink_select_main (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	strncpy(select_section, name + 8, 1023);
 	set_sel = 0;
 	reset_buttons();
 	return 0;
 }
 
-uint8_t mavlink_select_sel (char *name, float x, float y, int8_t button, float data) {
+uint8_t mavlink_select_sel (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	select_section[0] = 0;
 	set_sel = 0;
 	reset_buttons();
 	return 0;
 }
 
-uint8_t mavlink_select_sel_scroll (char *name, float x, float y, int8_t button, float data) {
+uint8_t mavlink_select_sel_scroll (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int)data > 0) {
 		set_sel++;
 	} else if (set_sel > 0) {
@@ -483,7 +483,7 @@ void mavlink_param_read_file (char *param_file) {
 	reset_buttons();
 }
 
-uint8_t mavlink_param_upload_all (char *name, float x, float y, int8_t button, float data) {
+uint8_t mavlink_param_upload_all (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	int n = 0;
 	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
 		if (MavLinkVars[n].name[0] != 0) {

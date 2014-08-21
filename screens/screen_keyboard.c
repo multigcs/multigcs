@@ -5,9 +5,9 @@
 static uint8_t show_keyboard = 0;
 static char new_name[200];
 static uint8_t new_name_cnt = 0;
-static uint8_t (*save_callback) (char *, float, float, int8_t, float);
+static uint8_t (*save_callback) (char *, float, float, int8_t, float, uint8_t);
 
-void keyboard_set_callback (uint8_t (*callback) (char *, float, float, int8_t, float)) {
+void keyboard_set_callback (uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t)) {
 	save_callback = callback;
 }
 
@@ -28,23 +28,23 @@ char *keyboard_get_text (void) {
 	return new_name;
 }
 
-uint8_t keyboard_name_cancel (char *name, float x, float y, int8_t button, float data) {
+uint8_t keyboard_name_cancel (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	show_keyboard = 0;
 	return 0;
 }
 
-uint8_t keyboard_name_save (char *name, float x, float y, int8_t button, float data) {
+uint8_t keyboard_name_save (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	show_keyboard = 0;
-	(*save_callback)(new_name, x, y, button, 1.0);
+	(*save_callback)(new_name, x, y, button, 1.0, 0);
 	return 0;
 }
 
-uint8_t keyboard_pos_char (char *name, float x, float y, int8_t button, float data) {
+uint8_t keyboard_pos_char (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	new_name_cnt = (int)data;
 	return 0;
 }
 
-uint8_t keyboard_add_char (char *name, float x, float y, int8_t button, float data) {
+uint8_t keyboard_add_char (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (data == 0) {
 		new_name[new_name_cnt] = data;
 		new_name_cnt--;
@@ -124,26 +124,26 @@ void screen_keyboard (ESContext *esContext) {
 
 	if (keyboard_key[0] != 0) {
 		if (strcmp(keyboard_key, "return") == 0) {
-			keyboard_name_save("", 0.0, 0.0, 0, 0.0);
+			keyboard_name_save("", 0.0, 0.0, 0, 0.0, 0);
 		} else if (strcmp(keyboard_key, "backspace") == 0) {
 			new_name_cnt--;
 		} else if (strcmp(keyboard_key, "delete") == 0) {
-			keyboard_add_char("", 0.0, 0.0, 0, 0.0);
+			keyboard_add_char("", 0.0, 0.0, 0, 0.0, 0);
 		} else if (strcmp(keyboard_key, "up") == 0) {
 		} else if (strcmp(keyboard_key, "down") == 0) {
 		} else if (strcmp(keyboard_key, "end") == 0) {
 		} else if (strcmp(keyboard_key, "home") == 0) {
 			new_name_cnt = 0;
 		} else if (strcmp(keyboard_key, "escape") == 0) {
-			keyboard_name_cancel("", 0.0, 0.0, 0, 0.0);
+			keyboard_name_cancel("", 0.0, 0.0, 0, 0.0, 0);
 		} else if (strcmp(keyboard_key, "left") == 0) {
 			new_name_cnt--;
 		} else if (strcmp(keyboard_key, "right") == 0) {
 			new_name_cnt++;
 		} else if (strcmp(keyboard_key, "space") == 0) {
-			keyboard_add_char("", 0.0, 0.0, 0, ' ');
+			keyboard_add_char("", 0.0, 0.0, 0, ' ', 0);
 		} else if (keyboard_key[1] == 0) {
-			keyboard_add_char("", 0.0, 0.0, 0, keyboard_key[0]);
+			keyboard_add_char("", 0.0, 0.0, 0, keyboard_key[0], 0);
 		}
 		keyboard_key[0] = 0;
 	}

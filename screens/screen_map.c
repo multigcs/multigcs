@@ -26,7 +26,7 @@ uint8_t map_dir = 0;
 
 //#define HTTP_USE_WGET 1
 
-uint8_t map_goto_screen (char *name, float x, float y, int8_t button, float data) {
+uint8_t map_goto_screen (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	setup.view_mode = (int)data;
 	view_mode_next = (int)data;
 	return 0;
@@ -59,11 +59,11 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream) {
 	return written;
 }
 
-uint8_t map_null (char *name, float x, float y, int8_t button, float data) {
+uint8_t map_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 0;
 }
 
-uint8_t map_link_open (char *name, float x, float y, int8_t button, float data) {
+uint8_t map_link_open (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	sys_message(name);
 #ifdef ANDROID
 	Android_JNI_OpenLink(name);
@@ -82,7 +82,7 @@ uint8_t map_link_open (char *name, float x, float y, int8_t button, float data) 
 	return 0;
 }
 
-uint8_t map_nav (char *name, float x, float y, int8_t button, float data) {
+uint8_t map_nav (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	nav_map = 1 - nav_map;
 	if (nav_map == 1) {
 		center_map = 1;
@@ -93,7 +93,7 @@ uint8_t map_nav (char *name, float x, float y, int8_t button, float data) {
 	return 0;
 }
 
-uint8_t map_center (char *name, float x, float y, int8_t button, float data) {
+uint8_t map_center (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	nav_map = 0;
 	if (center_map < 2) {
 		center_map++;
@@ -103,7 +103,7 @@ uint8_t map_center (char *name, float x, float y, int8_t button, float data) {
 	return 0;
 }
 
-uint8_t map_dir_change (char *name, float x, float y, int8_t button, float data) {
+uint8_t map_dir_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (map_dir < 1) {
 		map_dir++;
 	} else {
@@ -112,17 +112,17 @@ uint8_t map_dir_change (char *name, float x, float y, int8_t button, float data)
 	return 0;
 }
 
-uint8_t map_rotate_change (char *name, float x, float y, int8_t button, float data) {
+uint8_t map_rotate_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	map_rotate = 1 - map_rotate;
 	return 0;
 }
 
-uint8_t map_side_change (char *name, float x, float y, int8_t button, float data) {
+uint8_t map_side_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	map_side = 1 - map_side;
 	return 0;
 }
 
-uint8_t map_view_change (char *name, float x, float y, int8_t button, float data) {
+uint8_t map_view_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	nav_map = 0;
 	if (map_view < 1) {
 		map_view++;
@@ -132,7 +132,7 @@ uint8_t map_view_change (char *name, float x, float y, int8_t button, float data
 	return 0;
 }
 
-uint8_t map_color_change (char *name, float x, float y, int8_t button, float data) {
+uint8_t map_color_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (map_color < 1) {
 		map_color++;
 	} else {
@@ -141,7 +141,7 @@ uint8_t map_color_change (char *name, float x, float y, int8_t button, float dat
 	return 0;
 }
 
-uint8_t change_maptype (char *name, float x, float y, int8_t button, float data) {
+uint8_t change_maptype (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	SDL_Log("map: change_maptype\n");
 	if (data == -1) {
 		map_type_select = 1 - map_type_select;
@@ -152,7 +152,7 @@ uint8_t change_maptype (char *name, float x, float y, int8_t button, float data)
 	return 0;
 }
 
-uint8_t change_omaptype (char *name, float x, float y, int8_t button, float data) {
+uint8_t change_omaptype (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	SDL_Log("map: change_omaptype\n");
 	if (data == -1) {
 		omap_type_select = 1 - omap_type_select;
@@ -163,7 +163,7 @@ uint8_t change_omaptype (char *name, float x, float y, int8_t button, float data
 	return 0;
 }
 
-uint8_t map_zoom (char *name, float x, float y, int8_t button, float data) {
+uint8_t map_zoom (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (data < 0.0) {
 		if (zoom > 0) {
 			zoom--;
@@ -176,7 +176,7 @@ uint8_t map_zoom (char *name, float x, float y, int8_t button, float data) {
 	return 0;
 }
 
-uint8_t show_wp (char *name, float x, float y, int8_t button, float data) {
+uint8_t show_wp (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int)data == 1) {
 		map_show_wp = 1;
 	} else {
@@ -185,7 +185,7 @@ uint8_t show_wp (char *name, float x, float y, int8_t button, float data) {
 	return 0;
 }
 
-uint8_t show_notam (char *name, float x, float y, int8_t button, float data) {
+uint8_t show_notam (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int)data == 1) {
 		map_show_notam = 1;
 	} else {
@@ -194,7 +194,7 @@ uint8_t show_notam (char *name, float x, float y, int8_t button, float data) {
 	return 0;
 }
 
-uint8_t show_poi (char *name, float x, float y, int8_t button, float data) {
+uint8_t show_poi (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int)data == 1) {
 		map_show_poi = 1;
 	} else {
@@ -203,7 +203,7 @@ uint8_t show_poi (char *name, float x, float y, int8_t button, float data) {
 	return 0;
 }
 
-uint8_t map_goto (char *name, float x, float y, int8_t button, float data) {
+uint8_t map_goto (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (data == -1.0) {
 		int tile_y = lat2tiley(ModelData.p_lat, mapdata->zoom) - 1;
 		int tile_x = long2tilex(ModelData.p_long, mapdata->zoom) - 1;
@@ -218,20 +218,20 @@ uint8_t map_goto (char *name, float x, float y, int8_t button, float data) {
 	return 0;
 }
 
-uint8_t map_uav2home (char *name, float x, float y, int8_t button, float data) {
+uint8_t map_uav2home (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	ModelData.p_lat = WayPoints[0].p_lat;
 	ModelData.p_long = WayPoints[0].p_long;
 	ModelData.p_alt = WayPoints[0].p_alt;
 	return 0;
 }
 
-uint8_t map_add (char *name, float x, float y, int8_t button, float data) {
+uint8_t map_add (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	map_addmode = 1 - map_addmode;
 	map_show_wp = 1;
 	return 0;
 }
 
-uint8_t map_del (char *name, float x, float y, int8_t button, float data) {
+uint8_t map_del (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	uint16_t n = 0;
 	uint16_t n2 = waypoint_active + 1;
 	for (n = waypoint_active; n < MAX_WAYPOINTS; n++) {
@@ -882,16 +882,16 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	if (center_map == 1 || _map_view == 3 || _map_view == 4 || _map_view == 5) {
 		draw_xy(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset), lat, lon, zoom, &mapdata->offset_x1, &mapdata->offset_y1);
 		if (mapdata->offset_x1 < -0.8) {
-			map_goto("UAV", 0.0, 0.0, 1, -1.0);
+			map_goto("UAV", 0.0, 0.0, 1, -1.0, 0);
 		}
 		if (mapdata->offset_x1 > 0.8) {
-			map_goto("UAV", 0.0, 0.0, 1, -1.0);
+			map_goto("UAV", 0.0, 0.0, 1, -1.0, 0);
 		}
 		if (mapdata->offset_y1 < -0.8) {
-			map_goto("UAV", 0.0, 0.0, 1, -1.0);
+			map_goto("UAV", 0.0, 0.0, 1, -1.0, 0);
 		}
 		if (mapdata->offset_y1 > 0.8) {
-			map_goto("UAV", 0.0, 0.0, 1, -1.0);
+			map_goto("UAV", 0.0, 0.0, 1, -1.0, 0);
 		}
 	}
 	if (map_rotate == 1) {

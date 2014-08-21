@@ -542,18 +542,18 @@ if (type & (1<<3)) {
 	}
 }
 
-uint8_t logplay_cmd_kml (char *name, float x, float y, int8_t button, float data) {
+uint8_t logplay_cmd_kml (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	logplay_export_kml(logplay_file, "/tmp/export.kml", 0);
 	system("(googleearth /tmp/export.kml || google-earth /tmp/export.kml) &");
 	return 0;
 }
 
-uint8_t logplay_cmd_pause (char *name, float x, float y, int8_t button, float data) {
+uint8_t logplay_cmd_pause (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	logplay_pause = 1 - logplay_pause;
 	return 0;
 }
 
-uint8_t logplay_cmd_step (char *name, float x, float y, int8_t button, float data) {
+uint8_t logplay_cmd_step (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	logplay_pause = 1;
 	if (data < 0.0) {
 		logplay_msec += (uint32_t)data;
@@ -564,13 +564,13 @@ uint8_t logplay_cmd_step (char *name, float x, float y, int8_t button, float dat
 	return 0;
 }
 
-uint8_t logplay_cmd_next (char *name, float x, float y, int8_t button, float data) {
+uint8_t logplay_cmd_next (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	logplay_pause = 1;
 	logplay_msec = logplay_fpos;
 	return 0;
 }
 
-uint8_t logplay_cmd_play (char *name, float x, float y, int8_t button, float data) {
+uint8_t logplay_cmd_play (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (logplay_file[0] != 0) {
 		logplay_play = 1 - logplay_play;
 		logplay_pause = 0;
@@ -582,7 +582,7 @@ uint8_t logplay_cmd_play (char *name, float x, float y, int8_t button, float dat
 	return 0;
 }
 
-uint8_t logplay_cmd_open (char *name, float x, float y, int8_t button, float data) {
+uint8_t logplay_cmd_open (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	logplay_list = 1 - logplay_list;
 	logplay_filelist = 0;
 	logplay_play = 0;
@@ -591,7 +591,7 @@ uint8_t logplay_cmd_open (char *name, float x, float y, int8_t button, float dat
 	return 0;
 }
 
-uint8_t logplay_cmd_open_ok (char *name, float x, float y, int8_t button, float data) {
+uint8_t logplay_cmd_open_ok (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	SDL_Log("## open logfile: %s ##\n", name);
 	strncpy(logplay_file, name, 1023);
 	logplay_list = 0;
@@ -599,7 +599,7 @@ uint8_t logplay_cmd_open_ok (char *name, float x, float y, int8_t button, float 
 	return 0;
 }
 
-uint8_t logplay_cmd_play_updown (char *name, float x, float y, int8_t button, float data) {
+uint8_t logplay_cmd_play_updown (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (data < 0.0 && logplay_filelist == 0) {
 		return 0;
 	}

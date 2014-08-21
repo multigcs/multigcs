@@ -5,37 +5,37 @@
 uint8_t mwi_view = 0;
 uint8_t mwi_mode = 1;
 
-uint8_t mwi_null (char *name, float x, float y, int8_t button, float data) {
+uint8_t mwi_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 0;
 }
 
-uint8_t mwi_cal_acc (char *name, float x, float y, int8_t button, float data) {
+uint8_t mwi_cal_acc (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	mwi21_cal_acc();
 	return 0;
 }
 
-uint8_t mwi_cal_mac (char *name, float x, float y, int8_t button, float data) {
+uint8_t mwi_cal_mac (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	mwi21_cal_mac();
 	return 0;
 }
 
-uint8_t mwi_write_rom (char *name, float x, float y, int8_t button, float data) {
+uint8_t mwi_write_rom (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	mwi21_write_rom();
 	return 0;
 }
 
-uint8_t mwi_get_values (char *name, float x, float y, int8_t button, float data) {
+uint8_t mwi_get_values (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	mwi21_get_values();
 	return 0;
 }
 
-uint8_t mwi_view_change (char *name, float x, float y, int8_t button, float data) {
+uint8_t mwi_view_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	mwi_view = 1 - mwi_view;
 	reset_buttons();
 	return 0;
 }
 
-uint8_t mwi_status_set (char *name, float x, float y, int8_t button, float data) {
+uint8_t mwi_status_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	uint8_t n = (uint8_t)data;
 	if (mwi_status & (1<<n)) {
 		mwi_status &= ~(1<<n);
@@ -45,7 +45,7 @@ uint8_t mwi_status_set (char *name, float x, float y, int8_t button, float data)
 	return 0;
 }
 
-uint8_t mwi_pid_set (char *name, float x, float y, int8_t button, float data) {
+uint8_t mwi_pid_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	uint8_t n = 0;
 	int8_t n2 = 0;
 	int8_t v = 0;
@@ -82,7 +82,7 @@ uint8_t mwi_pid_set (char *name, float x, float y, int8_t button, float data) {
 	return 0;
 }
 
-uint8_t mwi_box_set (char *name, float x, float y, int8_t button, float data) {
+uint8_t mwi_box_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	uint8_t n = 0;
 	int8_t n2 = 0;
 	int8_t n3 = 0;
@@ -109,7 +109,7 @@ uint8_t mwi_box_set (char *name, float x, float y, int8_t button, float data) {
 	return 0;
 }
 
-uint8_t mwi_sensors_set (char *name, float x, float y, int8_t button, float data) {
+uint8_t mwi_sensors_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	uint8_t n = (uint8_t)data;
 	if (mwi_sensors & (1<<n)) {
 		mwi_sensors &= ~(1<<n);

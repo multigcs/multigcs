@@ -7,23 +7,23 @@
 static int8_t page = 0;
 static uint8_t mode = 0;
 
-uint8_t openpilot_null (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 0;
 }
 
-uint8_t openpilot_defaults (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_defaults (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	openpilot_defaults_StabilizationSettings(&OpenpilotStabilizationSettings);
 	openpilot_defaults_HwSettings(&OpenpilotHwSettings);
 	openpilot_defaults_SystemSettings(&OpenpilotSystemSettings);
 	return 0;
 }
 
-uint8_t openpilot_flash (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_flash (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	openpilot_save_to_flash();
 	return 0;
 }
 
-uint8_t openpilot_mode (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_mode (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (mode < 2) {
 		mode++;
 	} else {
@@ -33,24 +33,24 @@ uint8_t openpilot_mode (char *name, float x, float y, int8_t button, float data)
 	return 0;
 }
 
-uint8_t openpilot_setup_get (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_setup_get (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	openpilot_get = 1;
 	return 0;
 }
 
-uint8_t openpilot_setup_set (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_setup_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	openpilot_set = 1;
 	return 0;
 }
 
-uint8_t openpilot_down (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_down (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (page < 0) {
 		page += (int8_t)data;
 	}
 	return 0;
 }
 
-uint8_t openpilot_up (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_up (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (page > -50) {
 		page -= (int8_t)data;
 	}
@@ -58,252 +58,252 @@ uint8_t openpilot_up (char *name, float x, float y, int8_t button, float data) {
 }
 
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_ManualRate_Roll (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_ManualRate_Roll (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.ManualRate[0] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_ManualRate_Pitch (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_ManualRate_Pitch (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.ManualRate[1] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_ManualRate_Yaw (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_ManualRate_Yaw (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.ManualRate[2] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_MaximumRate_Roll (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_MaximumRate_Roll (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.MaximumRate[0] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_MaximumRate_Pitch (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_MaximumRate_Pitch (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.MaximumRate[1] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_MaximumRate_Yaw (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_MaximumRate_Yaw (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.MaximumRate[2] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_RollRatePID_Kp (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_RollRatePID_Kp (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.RollRatePID[0] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_RollRatePID_Ki (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_RollRatePID_Ki (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.RollRatePID[1] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_RollRatePID_Kd (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_RollRatePID_Kd (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.RollRatePID[2] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_RollRatePID_ILimit (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_RollRatePID_ILimit (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.RollRatePID[3] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_PitchRatePID_Kp (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_PitchRatePID_Kp (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.PitchRatePID[0] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_PitchRatePID_Ki (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_PitchRatePID_Ki (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.PitchRatePID[1] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_PitchRatePID_Kd (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_PitchRatePID_Kd (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.PitchRatePID[2] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_PitchRatePID_ILimit (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_PitchRatePID_ILimit (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.PitchRatePID[3] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_YawRatePID_Kp (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_YawRatePID_Kp (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.YawRatePID[0] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_YawRatePID_Ki (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_YawRatePID_Ki (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.YawRatePID[1] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_YawRatePID_Kd (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_YawRatePID_Kd (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.YawRatePID[2] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_YawRatePID_ILimit (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_YawRatePID_ILimit (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.YawRatePID[3] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_RollPI_Kp (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_RollPI_Kp (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.RollPI[0] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_RollPI_Ki (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_RollPI_Ki (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.RollPI[1] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_RollPI_ILimit (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_RollPI_ILimit (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.RollPI[2] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_PitchPI_Kp (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_PitchPI_Kp (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.PitchPI[0] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_PitchPI_Ki (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_PitchPI_Ki (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.PitchPI[1] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_PitchPI_ILimit (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_PitchPI_ILimit (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.PitchPI[2] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_YawPI_Kp (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_YawPI_Kp (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.YawPI[0] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_YawPI_Ki (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_YawPI_Ki (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.YawPI[1] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_YawPI_ILimit (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_YawPI_ILimit (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.YawPI[2] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarSensitivity_Roll (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarSensitivity_Roll (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.VbarSensitivity[0] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarSensitivity_Pitch (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarSensitivity_Pitch (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.VbarSensitivity[1] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarSensitivity_Yaw (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarSensitivity_Yaw (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.VbarSensitivity[2] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarRollPI_Kp (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarRollPI_Kp (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.VbarRollPI[0] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarRollPI_Ki (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarRollPI_Ki (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.VbarRollPI[1] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarPitchPI_Kp (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarPitchPI_Kp (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.VbarPitchPI[0] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarPitchPI_Ki (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarPitchPI_Ki (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.VbarPitchPI[1] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarYawPI_Kp (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarYawPI_Kp (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.VbarYawPI[0] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarYawPI_Ki (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarYawPI_Ki (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.VbarYawPI[1] += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarTau (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarTau (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.VbarTau += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_GyroTau (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_GyroTau (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.GyroTau += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_DerivativeGamma (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_DerivativeGamma (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.DerivativeGamma += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_WeakLevelingKp (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_WeakLevelingKp (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.WeakLevelingKp += (float)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_RollMax (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_RollMax (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.RollMax += (int8_t)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_PitchMax (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_PitchMax (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.PitchMax += (int8_t)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_YawMax (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_YawMax (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.YawMax += (int8_t)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarGyroSuppress (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarGyroSuppress (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.VbarGyroSuppress += (int8_t)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarMaxAngle (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarMaxAngle (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.VbarMaxAngle += (int8_t)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_DerivativeCutoff (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_DerivativeCutoff (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.DerivativeCutoff += (int8_t)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_MaxAxisLock (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_MaxAxisLock (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.MaxAxisLock += (int8_t)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_MaxAxisLockRate (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_MaxAxisLockRate (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.MaxAxisLockRate += (int8_t)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_MaxWeakLevelingRate (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_MaxWeakLevelingRate (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotStabilizationSettings.MaxWeakLevelingRate += (int8_t)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarPiroComp (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarPiroComp (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int8_t)data < 0 && OpenpilotStabilizationSettings.VbarPiroComp > 0) {
 		OpenpilotStabilizationSettings.VbarPiroComp += (int8_t)data;
 	} else if ((int8_t)data > 0 && OpenpilotStabilizationSettings.VbarPiroComp < 2 - 1) {
@@ -314,7 +314,7 @@ uint8_t openpilot_change_OpenpilotStabilizationSettings_VbarPiroComp (char *name
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotStabilizationSettings_LowThrottleZeroIntegral (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotStabilizationSettings_LowThrottleZeroIntegral (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int8_t)data < 0 && OpenpilotStabilizationSettings.LowThrottleZeroIntegral > 0) {
 		OpenpilotStabilizationSettings.LowThrottleZeroIntegral += (int8_t)data;
 	} else if ((int8_t)data > 0 && OpenpilotStabilizationSettings.LowThrottleZeroIntegral < 2 - 1) {
@@ -1223,12 +1223,12 @@ void openpilot_StabilizationSettings (ESContext *esContext) {
 }
 
 
-uint8_t openpilot_change_OpenpilotHwSettings_DSMxBind (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotHwSettings_DSMxBind (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotHwSettings.DSMxBind += (int8_t)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotHwSettings_CC_RcvrPort (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotHwSettings_CC_RcvrPort (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int8_t)data < 0 && OpenpilotHwSettings.CC_RcvrPort > 0) {
 		OpenpilotHwSettings.CC_RcvrPort += (int8_t)data;
 	} else if ((int8_t)data > 0 && OpenpilotHwSettings.CC_RcvrPort < 6 - 1) {
@@ -1239,7 +1239,7 @@ uint8_t openpilot_change_OpenpilotHwSettings_CC_RcvrPort (char *name, float x, f
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotHwSettings_CC_MainPort (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotHwSettings_CC_MainPort (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int8_t)data < 0 && OpenpilotHwSettings.CC_MainPort > 0) {
 		OpenpilotHwSettings.CC_MainPort += (int8_t)data;
 	} else if ((int8_t)data > 0 && OpenpilotHwSettings.CC_MainPort < 11 - 1) {
@@ -1250,7 +1250,7 @@ uint8_t openpilot_change_OpenpilotHwSettings_CC_MainPort (char *name, float x, f
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotHwSettings_CC_FlexiPort (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotHwSettings_CC_FlexiPort (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int8_t)data < 0 && OpenpilotHwSettings.CC_FlexiPort > 0) {
 		OpenpilotHwSettings.CC_FlexiPort += (int8_t)data;
 	} else if ((int8_t)data > 0 && OpenpilotHwSettings.CC_FlexiPort < 11 - 1) {
@@ -1261,7 +1261,7 @@ uint8_t openpilot_change_OpenpilotHwSettings_CC_FlexiPort (char *name, float x, 
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotHwSettings_RV_RcvrPort (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotHwSettings_RV_RcvrPort (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int8_t)data < 0 && OpenpilotHwSettings.RV_RcvrPort > 0) {
 		OpenpilotHwSettings.RV_RcvrPort += (int8_t)data;
 	} else if ((int8_t)data > 0 && OpenpilotHwSettings.RV_RcvrPort < 5 - 1) {
@@ -1272,7 +1272,7 @@ uint8_t openpilot_change_OpenpilotHwSettings_RV_RcvrPort (char *name, float x, f
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotHwSettings_RV_AuxPort (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotHwSettings_RV_AuxPort (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int8_t)data < 0 && OpenpilotHwSettings.RV_AuxPort > 0) {
 		OpenpilotHwSettings.RV_AuxPort += (int8_t)data;
 	} else if ((int8_t)data > 0 && OpenpilotHwSettings.RV_AuxPort < 9 - 1) {
@@ -1283,7 +1283,7 @@ uint8_t openpilot_change_OpenpilotHwSettings_RV_AuxPort (char *name, float x, fl
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotHwSettings_RV_AuxSBusPort (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotHwSettings_RV_AuxSBusPort (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int8_t)data < 0 && OpenpilotHwSettings.RV_AuxSBusPort > 0) {
 		OpenpilotHwSettings.RV_AuxSBusPort += (int8_t)data;
 	} else if ((int8_t)data > 0 && OpenpilotHwSettings.RV_AuxSBusPort < 9 - 1) {
@@ -1294,7 +1294,7 @@ uint8_t openpilot_change_OpenpilotHwSettings_RV_AuxSBusPort (char *name, float x
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotHwSettings_RV_FlexiPort (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotHwSettings_RV_FlexiPort (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int8_t)data < 0 && OpenpilotHwSettings.RV_FlexiPort > 0) {
 		OpenpilotHwSettings.RV_FlexiPort += (int8_t)data;
 	} else if ((int8_t)data > 0 && OpenpilotHwSettings.RV_FlexiPort < 9 - 1) {
@@ -1305,7 +1305,7 @@ uint8_t openpilot_change_OpenpilotHwSettings_RV_FlexiPort (char *name, float x, 
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotHwSettings_RV_TelemetryPort (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotHwSettings_RV_TelemetryPort (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int8_t)data < 0 && OpenpilotHwSettings.RV_TelemetryPort > 0) {
 		OpenpilotHwSettings.RV_TelemetryPort += (int8_t)data;
 	} else if ((int8_t)data > 0 && OpenpilotHwSettings.RV_TelemetryPort < 4 - 1) {
@@ -1316,7 +1316,7 @@ uint8_t openpilot_change_OpenpilotHwSettings_RV_TelemetryPort (char *name, float
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotHwSettings_RV_GPSPort (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotHwSettings_RV_GPSPort (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int8_t)data < 0 && OpenpilotHwSettings.RV_GPSPort > 0) {
 		OpenpilotHwSettings.RV_GPSPort += (int8_t)data;
 	} else if ((int8_t)data > 0 && OpenpilotHwSettings.RV_GPSPort < 5 - 1) {
@@ -1327,7 +1327,7 @@ uint8_t openpilot_change_OpenpilotHwSettings_RV_GPSPort (char *name, float x, fl
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotHwSettings_TelemetrySpeed (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotHwSettings_TelemetrySpeed (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int8_t)data < 0 && OpenpilotHwSettings.TelemetrySpeed > 0) {
 		OpenpilotHwSettings.TelemetrySpeed += (int8_t)data;
 	} else if ((int8_t)data > 0 && OpenpilotHwSettings.TelemetrySpeed < 7 - 1) {
@@ -1338,7 +1338,7 @@ uint8_t openpilot_change_OpenpilotHwSettings_TelemetrySpeed (char *name, float x
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotHwSettings_GPSSpeed (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotHwSettings_GPSSpeed (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int8_t)data < 0 && OpenpilotHwSettings.GPSSpeed > 0) {
 		OpenpilotHwSettings.GPSSpeed += (int8_t)data;
 	} else if ((int8_t)data > 0 && OpenpilotHwSettings.GPSSpeed < 7 - 1) {
@@ -1349,7 +1349,7 @@ uint8_t openpilot_change_OpenpilotHwSettings_GPSSpeed (char *name, float x, floa
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotHwSettings_ComUsbBridgeSpeed (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotHwSettings_ComUsbBridgeSpeed (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int8_t)data < 0 && OpenpilotHwSettings.ComUsbBridgeSpeed > 0) {
 		OpenpilotHwSettings.ComUsbBridgeSpeed += (int8_t)data;
 	} else if ((int8_t)data > 0 && OpenpilotHwSettings.ComUsbBridgeSpeed < 7 - 1) {
@@ -1360,7 +1360,7 @@ uint8_t openpilot_change_OpenpilotHwSettings_ComUsbBridgeSpeed (char *name, floa
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotHwSettings_USB_HIDPort (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotHwSettings_USB_HIDPort (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int8_t)data < 0 && OpenpilotHwSettings.USB_HIDPort > 0) {
 		OpenpilotHwSettings.USB_HIDPort += (int8_t)data;
 	} else if ((int8_t)data > 0 && OpenpilotHwSettings.USB_HIDPort < 3 - 1) {
@@ -1371,7 +1371,7 @@ uint8_t openpilot_change_OpenpilotHwSettings_USB_HIDPort (char *name, float x, f
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotHwSettings_USB_VCPPort (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotHwSettings_USB_VCPPort (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int8_t)data < 0 && OpenpilotHwSettings.USB_VCPPort > 0) {
 		OpenpilotHwSettings.USB_VCPPort += (int8_t)data;
 	} else if ((int8_t)data > 0 && OpenpilotHwSettings.USB_VCPPort < 3 - 1) {
@@ -1382,7 +1382,7 @@ uint8_t openpilot_change_OpenpilotHwSettings_USB_VCPPort (char *name, float x, f
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotHwSettings_OptionalModules_CameraStab (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotHwSettings_OptionalModules_CameraStab (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int8_t)data < 0 && OpenpilotHwSettings.OptionalModules[0] > 0) {
 		OpenpilotHwSettings.OptionalModules[0] += (int8_t)data;
 	} else if ((int8_t)data > 0 && OpenpilotHwSettings.OptionalModules[0] < 2 - 1) {
@@ -1393,7 +1393,7 @@ uint8_t openpilot_change_OpenpilotHwSettings_OptionalModules_CameraStab (char *n
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotHwSettings_OptionalModules_GPS (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotHwSettings_OptionalModules_GPS (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int8_t)data < 0 && OpenpilotHwSettings.OptionalModules[1] > 0) {
 		OpenpilotHwSettings.OptionalModules[1] += (int8_t)data;
 	} else if ((int8_t)data > 0 && OpenpilotHwSettings.OptionalModules[1] < 2 - 1) {
@@ -1404,7 +1404,7 @@ uint8_t openpilot_change_OpenpilotHwSettings_OptionalModules_GPS (char *name, fl
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotHwSettings_OptionalModules_ComUsbBridge (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotHwSettings_OptionalModules_ComUsbBridge (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int8_t)data < 0 && OpenpilotHwSettings.OptionalModules[2] > 0) {
 		OpenpilotHwSettings.OptionalModules[2] += (int8_t)data;
 	} else if ((int8_t)data > 0 && OpenpilotHwSettings.OptionalModules[2] < 2 - 1) {
@@ -1415,7 +1415,7 @@ uint8_t openpilot_change_OpenpilotHwSettings_OptionalModules_ComUsbBridge (char 
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotHwSettings_OptionalModules_Fault (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotHwSettings_OptionalModules_Fault (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int8_t)data < 0 && OpenpilotHwSettings.OptionalModules[3] > 0) {
 		OpenpilotHwSettings.OptionalModules[3] += (int8_t)data;
 	} else if ((int8_t)data > 0 && OpenpilotHwSettings.OptionalModules[3] < 2 - 1) {
@@ -1426,7 +1426,7 @@ uint8_t openpilot_change_OpenpilotHwSettings_OptionalModules_Fault (char *name, 
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotHwSettings_OptionalModules_Altitude (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotHwSettings_OptionalModules_Altitude (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int8_t)data < 0 && OpenpilotHwSettings.OptionalModules[4] > 0) {
 		OpenpilotHwSettings.OptionalModules[4] += (int8_t)data;
 	} else if ((int8_t)data > 0 && OpenpilotHwSettings.OptionalModules[4] < 2 - 1) {
@@ -1437,7 +1437,7 @@ uint8_t openpilot_change_OpenpilotHwSettings_OptionalModules_Altitude (char *nam
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotHwSettings_OptionalModules_TxPID (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotHwSettings_OptionalModules_TxPID (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int8_t)data < 0 && OpenpilotHwSettings.OptionalModules[5] > 0) {
 		OpenpilotHwSettings.OptionalModules[5] += (int8_t)data;
 	} else if ((int8_t)data > 0 && OpenpilotHwSettings.OptionalModules[5] < 2 - 1) {
@@ -1448,7 +1448,7 @@ uint8_t openpilot_change_OpenpilotHwSettings_OptionalModules_TxPID (char *name, 
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotHwSettings_OptionalModules_Autotune (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotHwSettings_OptionalModules_Autotune (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int8_t)data < 0 && OpenpilotHwSettings.OptionalModules[6] > 0) {
 		OpenpilotHwSettings.OptionalModules[6] += (int8_t)data;
 	} else if ((int8_t)data > 0 && OpenpilotHwSettings.OptionalModules[6] < 2 - 1) {
@@ -2049,12 +2049,12 @@ void openpilot_HwSettings (ESContext *esContext) {
 }
 
 
-uint8_t openpilot_change_OpenpilotSystemSettings_GUIConfigData (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotSystemSettings_GUIConfigData (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	OpenpilotSystemSettings.GUIConfigData += (int8_t)data;
 	return 0;
 }
 
-uint8_t openpilot_change_OpenpilotSystemSettings_AirframeType (char *name, float x, float y, int8_t button, float data) {
+uint8_t openpilot_change_OpenpilotSystemSettings_AirframeType (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int8_t)data < 0 && OpenpilotSystemSettings.AirframeType > 0) {
 		OpenpilotSystemSettings.AirframeType += (int8_t)data;
 	} else if ((int8_t)data > 0 && OpenpilotSystemSettings.AirframeType < 19 - 1) {

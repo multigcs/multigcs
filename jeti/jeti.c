@@ -20,19 +20,19 @@ uint8_t jeti_connection_status (void) {
 	return last_connection;
 }
 
-uint8_t jeti_left (char *name, float x, float y, int8_t button, float data) {
+uint8_t jeti_left (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 0;
 }
 
-uint8_t jeti_up (char *name, float x, float y, int8_t button, float data) {
+uint8_t jeti_up (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 0;
 }
 
-uint8_t jeti_down (char *name, float x, float y, int8_t button, float data) {
+uint8_t jeti_down (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 0;
 }
 
-uint8_t jeti_right (char *name, float x, float y, int8_t button, float data) {
+uint8_t jeti_right (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 0;
 }
 

@@ -25,7 +25,7 @@ static char view_names[VIEW_MODE_LAST][100] = {
 
 extern uint8_t view_overview;
 
-uint8_t option_cmd (char *name, float x, float y, int8_t button, float data) {
+uint8_t option_cmd (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (strcmp(name, "WEBSERV") == 0) {
 		if (clientmode != 1 && setup.webport != 0) {
 			if (webserv_is_running() == 1) {
@@ -49,14 +49,14 @@ uint8_t option_cmd (char *name, float x, float y, int8_t button, float data) {
 	return 0;
 }
 
-uint8_t overview_set (char *name, float x, float y, int8_t button, float data) {
+uint8_t overview_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	view_overview = 0;
 	setup.view_mode = (int)data;
 	view_mode_next = (int)data;
 	return 0;
 }
 
-uint8_t system_baud_set (char *name, float x, float y, int8_t button, float data) {
+uint8_t system_baud_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	SDL_Log("BAUD: %s_baud = %s\n", baud_selected, name);
         if (strcmp(baud_selected, "gcs_gps") == 0) {
                 setup.gcs_gps_baud = atoi(name);
@@ -82,14 +82,14 @@ uint8_t system_baud_set (char *name, float x, float y, int8_t button, float data
 	return 0;
 }
 
-uint8_t system_baud_change (char *name, float x, float y, int8_t button, float data) {
+uint8_t system_baud_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	strncpy(baud_selected, name, 99);
 	baud_set_callback(system_baud_set);
 	baud_set_mode(VIEW_MODE_SYSTEM);
 	return 0;
 }
 
-uint8_t system_device_set (char *name, float x, float y, int8_t button, float data) {
+uint8_t system_device_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	SDL_Log("DEVICE: %s_port = %s\n", port_selected, name);
         if (strcmp(port_selected, "gcs_gps") == 0) {
                 strncpy(setup.gcs_gps_port, name, 1023);
@@ -103,15 +103,15 @@ uint8_t system_device_set (char *name, float x, float y, int8_t button, float da
                 strncpy(setup.tracker_port, name, 1023);
 	}
 	if (strcmp(name, "UNSET") != 0) {
-		system_baud_change(port_selected, x, y, button, data);
+		system_baud_change(port_selected, x, y, button, data, 0);
 	} else {
 		strncpy(baud_selected, name, 99);
-		system_baud_set("1200", x, y, button, data);
+		system_baud_set("1200", x, y, button, data, 0);
 	}
 	return 0;
 }
 
-uint8_t system_device_change (char *name, float x, float y, int8_t button, float data) {
+uint8_t system_device_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	strncpy(port_selected, name, 99);
 	device_set_callback(system_device_set);
 	device_reset_filter();
@@ -123,12 +123,12 @@ uint8_t system_device_change (char *name, float x, float y, int8_t button, float
 	return 0;
 }
 
-uint8_t system_dhclient (char *name, float x, float y, int8_t button, float data) {
+uint8_t system_dhclient (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	system("dhclient eth0");
 	return 0;
 }
 
-uint8_t system_update (char *name, float x, float y, int8_t button, float data) {
+uint8_t system_update (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	system("echo \"cd /tmp/ ; wget http://www.multixmedia.org/test/AutoQuad/gl-gcs/gl-gcs_last.deb && dpkg -i gl-gcs_last.deb\" > /tmp/gcs.execute");
 	SDL_Event user_event;
 	user_event.type = SDL_QUIT;
@@ -136,11 +136,11 @@ uint8_t system_update (char *name, float x, float y, int8_t button, float data) 
 	return 0;
 }
 
-uint8_t system_null (char *name, float x, float y, int8_t button, float data) {
+uint8_t system_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 0;
 }
 
-uint8_t system_set_ratio (char *name, float x, float y, int8_t button, float data) {
+uint8_t system_set_ratio (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (data == 0.0) {
 		if (setup.keep_ratio == 0.0) {
 			setup.keep_ratio = 1.422;
@@ -164,7 +164,7 @@ uint8_t system_set_ratio (char *name, float x, float y, int8_t button, float dat
 	return 0;
 }
 
-uint8_t system_set_fullscreen (char *name, float x, float y, int8_t button, float data) {
+uint8_t system_set_fullscreen (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 #ifdef SDL2
 	if (setup.fullscreen == 0) {
 		setup.fullscreen = 1;
@@ -178,7 +178,7 @@ uint8_t system_set_fullscreen (char *name, float x, float y, int8_t button, floa
 	return 0;
 }
 
-uint8_t system_set_border_x (char *name, float x, float y, int8_t button, float data) {
+uint8_t system_set_border_x (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int)data == 0) {
 		setup.screen_border_x = 0;
 	} else if ((int)data > 0) {
@@ -190,7 +190,7 @@ uint8_t system_set_border_x (char *name, float x, float y, int8_t button, float 
 	return 0;
 }
 
-uint8_t system_set_border_y (char *name, float x, float y, int8_t button, float data) {
+uint8_t system_set_border_y (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int)data == 0) {
 		setup.screen_border_y = 0;
 	} else if ((int)data > 0) {

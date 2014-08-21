@@ -180,7 +180,7 @@ void reset_buttons (void) {
 	}
 }
 
-uint8_t set_button (char *name, uint8_t view_mode, float x1, float y1, float x2, float y2, uint8_t (*callback) (char *, float, float, int8_t, float), float data, uint8_t type) {
+uint8_t set_button (char *name, uint8_t view_mode, float x1, float y1, float x2, float y2, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t), float data, uint8_t type) {
 	uint16_t n = 0;
 	for (n = 0; n < MAX_BUTTONS; n++) {
 		if (strcmp(Buttons[n].name, name) == 0) {
@@ -214,17 +214,26 @@ int8_t check_button (uint8_t view_mode, float x, float y, uint8_t button, uint8_
 	int16_t n = 0;
 	if (event == BUTTON_RELEASE) {
 		for (n = 0; n < MAX_BUTTONS; n++) {
+			if (Buttons[n].status == BUTTON_PRESS) {
+				if (Buttons[n].type == 2) {
+					(*Buttons[n].callback)(Buttons[n].name, x - Buttons[n].start_x, y - Buttons[n].start_y, button, Buttons[n].data, BUTTON_RELEASED);
+					Buttons[n].start_x = x;
+					Buttons[n].start_y = y;
+				} else {
+					(*Buttons[n].callback)(Buttons[n].name, x, y, button, Buttons[n].data, BUTTON_RELEASED);
+				}
+			}
 			Buttons[n].status = 0;
 		}
 	} else if (event == BUTTON_MOVE) {
 		for (n = 0; n < MAX_BUTTONS; n++) {
 			if (Buttons[n].status == BUTTON_PRESS) {
 				if (Buttons[n].type == 2) {
-					(*Buttons[n].callback)(Buttons[n].name, x - Buttons[n].start_x, y - Buttons[n].start_y, button, Buttons[n].data);
+					(*Buttons[n].callback)(Buttons[n].name, x - Buttons[n].start_x, y - Buttons[n].start_y, button, Buttons[n].data, BUTTON_MOVED);
 					Buttons[n].start_x = x;
 					Buttons[n].start_y = y;
 				} else {
-					(*Buttons[n].callback)(Buttons[n].name, x, y, button, Buttons[n].data);
+					(*Buttons[n].callback)(Buttons[n].name, x, y, button, Buttons[n].data, BUTTON_MOVED);
 				}
 				return n;
 			}
@@ -234,22 +243,23 @@ int8_t check_button (uint8_t view_mode, float x, float y, uint8_t button, uint8_
 		if (Buttons[n].name[0] != 0 && Buttons[n].view_mode == view_mode && x > Buttons[n].x1 && x < Buttons[n].x2 && y > Buttons[n].y1 && y < Buttons[n].y2) {
 			if (Buttons[n].type == 0 && event == BUTTON_PRESS) {
 //				SDL_Log("CB: %s\n", Buttons[n].name);
-				(*Buttons[n].callback)(Buttons[n].name, x, y, button, Buttons[n].data);
-				return n;
+				if ((*Buttons[n].callback)(Buttons[n].name, x, y, button, Buttons[n].data, BUTTON_PRESSED) == 0) {
+					return n;
+				}
 			} else if (Buttons[n].type == 1 || Buttons[n].type == 2) {
 				if (event == BUTTON_PRESS) {
 					if (button == 4 || button == 5) {
-						(*Buttons[n].callback)(Buttons[n].name, x, y, button, Buttons[n].data);
+						(*Buttons[n].callback)(Buttons[n].name, x, y, button, Buttons[n].data, BUTTON_PRESSED);
 					} else {
 						Buttons[n].status = event;
 						Buttons[n].start_x = x;
 						Buttons[n].start_y = y;
 						if (Buttons[n].type == 2) {
-							(*Buttons[n].callback)(Buttons[n].name, x - Buttons[n].start_x, y - Buttons[n].start_y, button, Buttons[n].data);
+							(*Buttons[n].callback)(Buttons[n].name, x - Buttons[n].start_x, y - Buttons[n].start_y, button, Buttons[n].data, BUTTON_PRESSED);
 							Buttons[n].start_x = x;
 							Buttons[n].start_y = y;
 						} else {
-							(*Buttons[n].callback)(Buttons[n].name, x, y, button, Buttons[n].data);
+							(*Buttons[n].callback)(Buttons[n].name, x, y, button, Buttons[n].data, BUTTON_PRESSED);
 						}
 					}
 					return n;
@@ -1374,12 +1384,12 @@ void transition_rotate_end (ESContext *esContext, float trans_count) {
 #endif
 }
 
-static uint8_t overview_show (char *name, float x, float y, int8_t button, float data) {
+static uint8_t overview_show (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	view_overview = 1 - view_overview;
 	return 0;
 }
 
-static uint8_t screen_last (char *name, float x, float y, int8_t button, float data) {
+static uint8_t screen_last (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (view_mode_next > 0) {
 		view_mode_next = setup.view_mode - 1;
 	} else {
@@ -1390,7 +1400,7 @@ static uint8_t screen_last (char *name, float x, float y, int8_t button, float d
 	return 0;
 }
 
-static uint8_t screen_next (char *name, float x, float y, int8_t button, float data) {
+static uint8_t screen_next (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	view_mode_next = setup.view_mode + 1;
 	if (view_mode_next > VIEW_MODE_LAST - 1) {
 		view_mode_next = 0;

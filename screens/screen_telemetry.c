@@ -3,7 +3,7 @@
 
 
 
-uint8_t telemetry_null (char *name, float x, float y, int8_t button, float data) {
+uint8_t telemetry_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 0;
 }
 

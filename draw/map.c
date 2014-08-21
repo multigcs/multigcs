@@ -325,7 +325,7 @@ void download_map_range (float from_lat, float from_lon, float to_lat, float to_
 	}
 }
 
-uint8_t map_downloader (char *name, float x, float y, int8_t button, float data) {
+uint8_t map_downloader (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	uint8_t zoom = 0;
 	float lat = 50.2;
 	float lon = 9.0;
@@ -516,16 +516,16 @@ void draw_quad (ESContext *esContext, float mark_lat, float mark_long, float mar
 	}
 	if (center_map == 2) {
 		if (x1 < -0.8) {
-			map_goto("UAV", 0.0, 0.0, 1, -1.0);
+			map_goto("UAV", 0.0, 0.0, 1, -1.0, 0);
 		}
 		if (x1 > 0.8) {
-			map_goto("UAV", 0.0, 0.0, 1, -1.0);
+			map_goto("UAV", 0.0, 0.0, 1, -1.0, 0);
 		}
 		if (y1 < -0.8) {
-			map_goto("UAV", 0.0, 0.0, 1, -1.0);
+			map_goto("UAV", 0.0, 0.0, 1, -1.0, 0);
 		}
 		if (y1 > 0.8) {
-			map_goto("UAV", 0.0, 0.0, 1, -1.0);
+			map_goto("UAV", 0.0, 0.0, 1, -1.0, 0);
 		}
 	}
 	// Ground-Line

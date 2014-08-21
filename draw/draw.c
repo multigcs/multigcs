@@ -24,7 +24,7 @@ const GLfloat DEG2RAD = 3.14159 / 180.0;
 #define GL_RGB 0x1907
 #endif
 
-void draw_scrollbar (ESContext *esContext, uint16_t page, uint16_t page_max, uint8_t (*callback) (char *, float, float, int8_t, float)) {
+void draw_scrollbar (ESContext *esContext, uint16_t page, uint16_t page_max, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t)) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -62,7 +62,7 @@ void draw_title (ESContext *esContext, char *text) {
 	draw_text_f3(esContext, 0.0 - strlen(text) * 0.06 * 0.6 / 2.0 - 0.012, -0.95, 0.02, 0.06, 0.06, FONT_GREEN, text);
 }
 
-uint8_t draw_button (ESContext *esContext, char *name, uint8_t view_mode, char *text, char *font, float x1, float y1, float z1, float x2, float y2, float z2, float fh, uint8_t align_x, uint8_t align_y, uint8_t (*callback) (char *, float, float, int8_t, float), float data) {
+uint8_t draw_button (ESContext *esContext, char *name, uint8_t view_mode, char *text, char *font, float x1, float y1, float z1, float x2, float y2, float z2, float fh, uint8_t align_x, uint8_t align_y, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t), float data) {
 #ifdef CONSOLE_ONLY
 	return 0;
 #endif
@@ -123,7 +123,7 @@ uint8_t draw_button (ESContext *esContext, char *name, uint8_t view_mode, char *
 	return 2;
 }
 
-uint8_t draw_text_button (ESContext *esContext, char *name, uint8_t view_mode, char *text, char *font, float x, float y, float z, float h, uint8_t align_x, uint8_t align_y, uint8_t (*callback) (char *, float, float, int8_t, float), float data) {
+uint8_t draw_text_button (ESContext *esContext, char *name, uint8_t view_mode, char *text, char *font, float x, float y, float z, float h, uint8_t align_x, uint8_t align_y, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t), float data) {
 #ifdef CONSOLE_ONLY
 	return 0;
 #endif
@@ -204,7 +204,7 @@ uint8_t draw_text_align (ESContext *esContext, char *text, char *font, float x, 
 	return 0;
 }
 
-uint8_t draw_image_button (ESContext *esContext, char *name, uint8_t view_mode, char *image, float x, float y, float z, float w, float h, uint8_t align_x, uint8_t align_y, uint8_t (*callback) (char *, float, float, int8_t, float), float data) {
+uint8_t draw_image_button (ESContext *esContext, char *name, uint8_t view_mode, char *image, float x, float y, float z, float w, float h, uint8_t align_x, uint8_t align_y, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t), float data) {
 #ifdef CONSOLE_ONLY
 	return 0;
 #endif

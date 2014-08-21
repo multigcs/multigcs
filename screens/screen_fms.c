@@ -4,15 +4,15 @@
 int16_t fms_pos = 0;
 uint16_t fms_sel = 0;
 
-uint8_t fms_null (char *name, float x, float y, int8_t button, float data) {
+uint8_t fms_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 0;
 }
 
-uint8_t fms_add (char *name, float x, float y, int8_t button, float data) {
+uint8_t fms_add (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 0;
 }
 
-uint8_t fms_del (char *name, float x, float y, int8_t button, float data) {
+uint8_t fms_del (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	reset_buttons();
 	uint16_t n = 0;
 	uint16_t n2 = waypoint_active + 1;
@@ -31,7 +31,7 @@ uint8_t fms_del (char *name, float x, float y, int8_t button, float data) {
 	return 0;
 }
 
-uint8_t fms_scroll (char *name, float x, float y, int8_t button, float data) {
+uint8_t fms_scroll (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	reset_buttons();
 	if ((int)data < 0) {
 		if (fms_pos > 0) {
@@ -43,7 +43,7 @@ uint8_t fms_scroll (char *name, float x, float y, int8_t button, float data) {
 	return 0;
 }
 
-uint8_t fms_select (char *name, float x, float y, int8_t button, float data) {
+uint8_t fms_select (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	reset_buttons();
 	waypoint_active = (int)data;
 	return 0;
