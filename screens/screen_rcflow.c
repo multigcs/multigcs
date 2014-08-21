@@ -6,10 +6,12 @@
 #define SIMPLE_DRAW	1
 #endif
 
-#define LINK_SPACE	0.08
+#define LINK_SPACE	0.075
+#define LINK_WIDTH	0.15
+#define CONN_RADIUS	0.025
 #define TITLE_HEIGHT	0.05
 #define PLUGIN_WIDTH 	0.3
-#define SLIDER_WIDTH 	0.25
+#define SLIDER_WIDTH 	0.22
 
 #define PLUGIN_X1 ((RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) + canvas_x) * scale)
 #define PLUGIN_Y1 ((RcPlugin[id].y - num_max / 2 * LINK_SPACE - TITLE_HEIGHT + canvas_y) * scale)
@@ -729,6 +731,10 @@ void rcflow_convert_from_Embedded (void) {
 			RcPlugin[RcLinkEmbedded[link].to[0]].input[RcLinkEmbedded[link].to[1]].value = RcPluginEmbedded[RcLinkEmbedded[link].to[0]].input[RcLinkEmbedded[link].to[1]].value;
 		}
 	}
+}
+
+uint8_t rcflow_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	return 1;
 }
 
 uint8_t rcflow_virt_view (char *name, float x, float y, int8_t button, float data, uint8_t action) {
@@ -1799,8 +1805,13 @@ uint8_t rcflow_plugin_move (char *name, float x, float y, int8_t button, float d
 	x = (float)((int)(x * 50)) / 50.0;
 	y = (float)((int)(y * 50)) / 50.0;
 	if (action == 0) {
-		move_diff_x = RcPlugin[(int)data].x * scale - x;
-		move_diff_y = RcPlugin[(int)data].y * scale - y;
+		if (virt_view == 1) {
+			move_diff_x = RcPlugin[(int)data].x_virt * scale - x;
+			move_diff_y = RcPlugin[(int)data].y_virt * scale - y;
+		} else {
+			move_diff_x = RcPlugin[(int)data].x * scale - x;
+			move_diff_y = RcPlugin[(int)data].y * scale - y;
+		}
 	}
 	x += move_diff_x;
 	y += move_diff_y;
@@ -2249,7 +2260,11 @@ uint8_t rcflow_slider_move (char *name, float x, float y, int8_t button, float d
 								RcPlugin[plugin].input[input].value = 0;
 							}
 						} else {
-							RcPlugin[plugin].input[input].value = (xp - x) * -2000 / SLIDER_WIDTH / scale;
+							if (button == 3) {
+								RcPlugin[plugin].input[input].value = 0;
+							} else {
+								RcPlugin[plugin].input[input].value = (xp - x) * -2000 / SLIDER_WIDTH / scale;
+							}
 							RcPlugin[plugin].input[input].value = (float)((int)rcflow_value_limit(RcPlugin[plugin].input[input].value, -1000, 1000));
 						}
 						unsave = 1;
@@ -2277,7 +2292,11 @@ uint8_t rcflow_slider_move (char *name, float x, float y, int8_t button, float d
 								RcPlugin[plugin].output[output].value = 0;
 							}
 						} else {
-							RcPlugin[plugin].output[output].value = (xp - x) * -2000 / SLIDER_WIDTH;
+							if (button == 3) {
+								RcPlugin[plugin].output[output].value = 0;
+							} else {
+								RcPlugin[plugin].output[output].value = (xp - x) * -2000 / SLIDER_WIDTH;
+							}
 							RcPlugin[plugin].output[output].value = (float)((int)rcflow_value_limit(RcPlugin[plugin].output[output].value, -1000, 1000));
 						}
 						unsave = 1;
@@ -2293,104 +2312,111 @@ uint8_t rcflow_slider_move (char *name, float x, float y, int8_t button, float d
 }
 
 void rcflow_draw_switch (ESContext *esContext, char *name, float x, float y, float w, float value, uint8_t type) {
-	char tmp_str[64];
-	sprintf(tmp_str, "sw_%s", name);
+	char tmp_str[1024];
 	if (value > 0) {
 #ifndef SIMPLE_DRAW
-		draw_box_f3c2(esContext, (x - (w / 2)) * scale, (y) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.025) * scale, 0.001, 255, 255, 255, 200, 25, 25, 25, 150);
-		draw_box_f3c2(esContext, (x - (w / 2)) * scale, (y + 0.025) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.05) * scale, 0.001, 25, 25, 25, 150, 255, 255, 255, 200);
-#endif
+//		draw_box_f3c2(esContext, (x - (w / 2)) * scale, (y) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.025) * scale, 0.001, 255, 255, 255, 200, 25, 25, 25, 150);
+//		draw_box_f3c2(esContext, (x - (w / 2)) * scale, (y + 0.025) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.05) * scale, 0.001, 25, 25, 25, 150, 255, 255, 255, 200);
+
+		sprintf(tmp_str, "%s/textures/led-on.png", BASE_DIR);
+		draw_image_f3(esContext, (x - 0.04 - CONN_RADIUS) * scale, (y + 0.025 - CONN_RADIUS) * scale, (x - 0.04 + CONN_RADIUS) * scale, (y + 0.025 + CONN_RADIUS) * scale, 0.02, tmp_str);
+
+		sprintf(tmp_str, "%s/textures/sw-on.png", BASE_DIR);
+		draw_image_f3(esContext, (x + 0.04 - CONN_RADIUS) * scale, (y + 0.025 - CONN_RADIUS) * scale, (x + 0.04 + CONN_RADIUS) * scale, (y + 0.025 + CONN_RADIUS) * scale, 0.02, tmp_str);
+
+		sprintf(tmp_str, "sw_%s", name);
+		draw_text_button(esContext, tmp_str, setup.view_mode, "        ", FONT_GREEN, x * scale, y * scale, 0.002, 0.05 * scale, ALIGN_CENTER, ALIGN_TOP, rcflow_switch_change, 0.0);
+#else
+		sprintf(tmp_str, "sw_%s", name);
 		draw_text_button(esContext, tmp_str, setup.view_mode, "ON", FONT_GREEN, x * scale, y * scale, 0.002, 0.05 * scale, ALIGN_CENTER, ALIGN_TOP, rcflow_switch_change, 0.0);
+#endif
 	} else {
 #ifndef SIMPLE_DRAW
-		draw_box_f3c2(esContext, (x - (w / 2)) * scale, (y) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.025) * scale, 0.001, 25, 25, 25, 150, 255, 255, 255, 200);
-		draw_box_f3c2(esContext, (x - (w / 2)) * scale, (y + 0.025) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.05) * scale, 0.001, 255, 255, 255, 200, 25, 25, 25, 150);
-#endif
+//		draw_box_f3c2(esContext, (x - (w / 2)) * scale, (y) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.025) * scale, 0.001, 25, 25, 25, 150, 255, 255, 255, 200);
+//		draw_box_f3c2(esContext, (x - (w / 2)) * scale, (y + 0.025) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.05) * scale, 0.001, 255, 255, 255, 200, 25, 25, 25, 150);
+
+		sprintf(tmp_str, "%s/textures/led-off.png", BASE_DIR);
+		draw_image_f3(esContext, (x - 0.04 - CONN_RADIUS) * scale, (y + 0.025 - CONN_RADIUS) * scale, (x - 0.04 + CONN_RADIUS) * scale, (y + 0.025 + CONN_RADIUS) * scale, 0.02, tmp_str);
+
+		sprintf(tmp_str, "%s/textures/sw-off.png", BASE_DIR);
+		draw_image_f3(esContext, (x + 0.04 - CONN_RADIUS) * scale, (y + 0.025 - CONN_RADIUS) * scale, (x + 0.04 + CONN_RADIUS) * scale, (y + 0.025 + CONN_RADIUS) * scale, 0.02, tmp_str);
+
+		sprintf(tmp_str, "sw_%s", name);
+		draw_text_button(esContext, tmp_str, setup.view_mode, "        ", FONT_GREEN, x * scale, y * scale, 0.002, 0.05 * scale, ALIGN_CENTER, ALIGN_TOP, rcflow_switch_change, 0.0);
+#else
+		sprintf(tmp_str, "sw_%s", name);
 		draw_text_button(esContext, tmp_str, setup.view_mode, "OFF", FONT_WHITE, x * scale, y * scale, 0.002, 0.05 * scale, ALIGN_CENTER, ALIGN_TOP, rcflow_switch_change, 0.0);
-	}
-#ifndef SIMPLE_DRAW
-	draw_rect_f3(esContext, (x - (w / 2)) * scale, y * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.05) * scale, 0.001, 0, 0, 0, 255);
 #endif
+	}
 }
 
 void rcflow_draw_slider (ESContext *esContext, char *name, float x, float y, float w, float value, float value2, uint8_t type) {
-	char tmp_str[64];
+	uint8_t n = 0;
+	char tmp_str[1024];
 	if (type != 3) {
-#ifndef SIMPLE_DRAW
-		draw_box_f3c2(esContext, (x - (w / 2)) * scale, (y) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.025) * scale, 0.001, 25, 25, 25, 150, 255, 255, 255, 200);
-		draw_box_f3c2(esContext, (x - (w / 2)) * scale, (y + 0.025) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.05) * scale, 0.001, 255, 255, 255, 200, 25, 25, 25, 150);
-#else
+#ifdef SIMPLE_DRAW
 		draw_box_f3(esContext, (x - (w / 2)) * scale, (y) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.05) * scale, 0.001, 255, 255, 255, 255);
 #endif
-		if (type == RCFLOW_INOUT_TYPE_ONOFF) {
-			if (value > 0) {
-				value = 1000;
-			} else {
-				value = -1000;
-			}
-#ifndef SIMPLE_DRAW
-			draw_box_f3c2(esContext, (x - (w / 2)) * scale, (y) * scale, 0.001, (x + (value * w / 2000)) * scale, (y + 0.025) * scale, 0.001, 5, 145, 185, 50, 255, 255, 255, 220);
-			draw_box_f3c2(esContext, (x - (w / 2)) * scale, (y + 0.025) * scale, 0.001, (x + (value * w / 2000)) * scale, (y + 0.05) * scale, 0.001, 255, 255, 255, 220, 5, 145, 185, 50);
-#else
-			draw_box_f3(esContext, (x - (w / 2)) * scale, (y) * scale, 0.001, (x + (value * w / 2000)) * scale, (y + 0.05) * scale, 0.001, 5, 145, 185, 255);
-#endif
-		} else if (type == RCFLOW_INOUT_TYPE_LINEAR) {
-#ifndef SIMPLE_DRAW
-			draw_box_f3c2(esContext, x - (w / 2), y, 0.001, x + (value * w / 2000), y + 0.025, 0.001, 5, 145, 185, 50, 255, 255, 255, 220);
-			draw_box_f3c2(esContext, x - (w / 2), y + 0.025, 0.001, x + (value * w / 2000), y + 0.05, 0.001, 255, 255, 255, 220, 5, 145, 185, 50);
-#else
-			draw_box_f3(esContext, x - (w / 2), y, 0.001, x + (value * w / 2000), y + 0.05, 0.001, 5, 145, 185, 255);
-#endif
-		} else if (type == RCFLOW_INOUT_TYPE_SWITCH) {
+		if (type == RCFLOW_INOUT_TYPE_SWITCH) {
 			if (value < -333) {
 				value = -1000;
 				value2 = -333;
-#ifndef SIMPLE_DRAW
-				draw_box_f3c2(esContext, (x + (value * w / 2000)) * scale, y * scale, 0.001, (x + (value2 * w / 2000)) * scale, (y + 0.025) * scale, 0.001, 5, 125, 25, 50, 255, 255, 255, 220);
-				draw_box_f3c2(esContext, (x + (value * w / 2000)) * scale, (y + 0.025) * scale, 0.001, (x + (value2 * w / 2000)) * scale, (y + 0.05) * scale, 0.001, 255, 255, 255, 220, 5, 125, 25, 50);
-#else
-				draw_box_f3(esContext, (x + (value * w / 2000)) * scale, y * scale, 0.001, (x + (value2 * w / 2000)) * scale, (y + 0.05) * scale, 0.001, 255, 255, 155, 255);
-#endif
+				draw_box_f3(esContext, (x + (value * w / 2000)) * scale, y * scale, 0.001, (x + (value2 * w / 2000)) * scale, (y + 0.05) * scale, 0.001, 255, 255, 155, 127);
 			} else if (value > 333) {
 				value = 333;
 				value2 = 1000;
-#ifndef SIMPLE_DRAW
-				draw_box_f3c2(esContext, (x + (value * w / 2000)) * scale, y * scale, 0.001, (x + (value2 * w / 2000)) * scale, (y + 0.025) * scale, 0.001, 5, 125, 25, 50, 255, 255, 255, 220);
-				draw_box_f3c2(esContext, (x + (value * w / 2000)) * scale, (y + 0.025) * scale, 0.001, (x + (value2 * w / 2000)) * scale, (y + 0.05) * scale, 0.001, 255, 255, 255, 220, 5, 125, 25, 50);
-#else
-				draw_box_f3(esContext, (x + (value * w / 2000)) * scale, y * scale, 0.001, (x + (value2 * w / 2000)) * scale, (y + 0.05) * scale, 0.001, 5, 125, 25, 255);
-#endif
+				draw_box_f3(esContext, (x + (value * w / 2000)) * scale, y * scale, 0.001, (x + (value2 * w / 2000)) * scale, (y + 0.05) * scale, 0.001, 5, 125, 25, 127);
 			} else {
 				value = -333;
 				value2 = 333;
-#ifndef SIMPLE_DRAW
-				draw_box_f3c2(esContext, (x + (value * w / 2000)) * scale, (y) * scale, 0.001, (x + (value2 * w / 2000)) * scale, (y + 0.025) * scale, 0.001, 145, 5, 25, 50, 255, 255, 255, 220);
-				draw_box_f3c2(esContext, (x + (value * w / 2000)) * scale, (y + 0.025) * scale, 0.001, (x + (value2 * w / 2000)) * scale, (y + 0.05) * scale, 0.001, 255, 255, 255, 220, 145, 5, 25, 50);
-#else
-				draw_box_f3(esContext, (x + (value * w / 2000)) * scale, y, 0.001, x + (value2 * w / 2000), y + 0.05, 0.001, 145, 5, 25, 255);
-#endif
+				draw_box_f3(esContext, (x + (value * w / 2000)) * scale, y * scale, 0.001, (x + (value2 * w / 2000)) * scale, (y + 0.05) * scale, 0.001, 145, 5, 25, 127);
 			}
+#ifndef SIMPLE_DRAW
+			draw_box_f3(esContext, (x - (w / 2)) * scale, (y + 0.009) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.05 - 0.009) * scale, 0.001, 50, 50, 50, 255);
+			draw_line_f3(esContext, (x - (w / 2)) * scale, (y + 0.009) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.009) * scale, 0.001, 0, 0, 0, 255);
+			draw_line_f3(esContext, (x - (w / 2)) * scale, (y + 0.009) * scale, 0.001, (x - (w / 2)) * scale, (y + 0.05 - 0.009) * scale, 0.001, 0, 0, 0, 255);
+			draw_line_f3(esContext, (x - (w / 2)) * scale, (y + 0.05 - 0.009) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.05 - 0.009) * scale, 0.001, 150, 150, 150, 255);
+			draw_line_f3(esContext, (x - (w / 2) + w) * scale, (y + 0.009) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.05 - 0.009) * scale, 0.001, 150, 150, 150, 255);
+			draw_box_f3(esContext, (x - (w / 2) + 0.035 - 0.001) * scale, (y + 0.025 - 0.003) * scale, 0.001, (x - (w / 2) + w - 0.035 + 0.01) * scale, (y + 0.025 + 0.003) * scale, 0.001, 0, 0, 0, 255);
+			for (n = 0; n <= 6; n++) {
+				#define SHADOW_OFFSET 0.002
+				draw_box_f3(esContext, (x - (w / 2.0) + (w * (float)n / 6.0) - 0.001 + SHADOW_OFFSET) * scale, (y + 0.001 + SHADOW_OFFSET) * scale, 0.001, (x - (w / 2.0) + (w * (float)n / 6.0) + 0.001 + SHADOW_OFFSET) * scale, (y + 0.007 + SHADOW_OFFSET) * scale, 0.001, 2, 2, 2, 255);
+				draw_box_f3(esContext, (x - (w / 2.0) + (w * (float)n / 6.0) - 0.001) * scale, (y + 0.001) * scale, 0.001, (x - (w / 2.0) + (w * (float)n / 6.0) + 0.001) * scale, (y + 0.007) * scale, 0.001, 255, 255, 255, 255);
+			}
+			sprintf(tmp_str, "%s/textures/slider.png", BASE_DIR);
+			draw_image_f3(esContext, (x + (value * w / 2000)) * scale, (y + 0.01) * scale, (x + (value2 * w / 2000)) * scale, (y + 0.05 - 0.01) * scale, 0.02, tmp_str);
+#endif
 			draw_line_f3(esContext, (x - (w / 2) + w / 3.0 * 1.0) * scale, (y - 0.001) * scale, 0.001, (x - (w / 2) + w / 3.0 * 1.0) * scale, (y + 0.05 + 0.001) * scale, 0.001, 127, 127, 127, 255);
 			draw_line_f3(esContext, (x - (w / 2) + w / 3.0 * 2.0) * scale, (y - 0.001) * scale, 0.001, (x - (w / 2) + w / 3.0 * 2.0) * scale, (y + 0.05 + 0.001) * scale, 0.001, 127, 127, 127, 255);
 		} else {
+			if (type == RCFLOW_INOUT_TYPE_LINEAR) {
+				draw_box_f3(esContext, (x - (w / 2)) * scale, y * scale, 0.001, (x + (value * w / 2000)) * scale, (y + 0.05) * scale, 0.001, 5, 145, 185, 255);
+			} else {
+				draw_box_f3(esContext, (x - (w / 2) + w / 2.0) * scale, y * scale, 0.001, (x - (w / 2) + w / 2.0 + (value * w / 2000)) * scale, (y + 0.05) * scale, 0.001, 5, 145, 185, 127);
+				draw_box_f3(esContext, (x - (w / 2) + w / 2.0) * scale, y * scale, 0.001, (x - (w / 2) + w / 2.0 + (value2 * w / 2000)) * scale, (y + 0.05) * scale, 0.001, 175, 145, 85, 127);
+			}
 #ifndef SIMPLE_DRAW
-			draw_box_f3c2(esContext, (x - (w / 2) + w / 2.0) * scale, (y) * scale, 0.001, (x - (w / 2) + w / 2.0 + (value * w / 2000)) * scale, (y + 0.025) * scale, 0.001, 5, 145, 185, 50, 255, 255, 255, 220);
-			draw_box_f3c2(esContext, (x - (w / 2) + w / 2.0) * scale, (y + 0.025) * scale, 0.001, (x - (w / 2) + w / 2.0 + (value * w / 2000)) * scale, (y + 0.05) * scale, 0.001, 255, 255, 255, 220, 5, 145, 185, 50);
-			draw_box_f3c2(esContext, (x - (w / 2) + w / 2.0) * scale, (y) * scale, 0.001, (x - (w / 2) + w / 2.0 + (value2 * w / 2000)) * scale, (y + 0.025) * scale, 0.001, 175, 145, 85, 50, 255, 255, 55, 100);
-			draw_box_f3c2(esContext, (x - (w / 2) + w / 2.0) * scale, (y + 0.025) * scale, 0.001, (x - (w / 2) + w / 2.0 + (value2 * w / 2000)) * scale, (y + 0.05) * scale, 0.001, 255, 255, 55, 220, 175, 145, 85, 100);
+			draw_box_f3(esContext, (x - (w / 2) - 0.032) * scale, (y + 0.009) * scale, 0.001, (x - (w / 2) + w + 0.032) * scale, (y + 0.05 - 0.009) * scale, 0.001, 50, 50, 50, 255);
+			draw_line_f3(esContext, (x - (w / 2) - 0.032) * scale, (y + 0.009) * scale, 0.001, (x - (w / 2) + w + 0.032) * scale, (y + 0.009) * scale, 0.001, 0, 0, 0, 255);
+			draw_line_f3(esContext, (x - (w / 2) - 0.032) * scale, (y + 0.009) * scale, 0.001, (x - (w / 2) - 0.032) * scale, (y + 0.05 - 0.009) * scale, 0.001, 0, 0, 0, 255);
+			draw_line_f3(esContext, (x - (w / 2) - 0.032) * scale, (y + 0.05 - 0.009) * scale, 0.001, (x - (w / 2) + w + 0.032) * scale, (y + 0.05 - 0.009) * scale, 0.001, 150, 150, 150, 255);
+			draw_line_f3(esContext, (x - (w / 2) + w + 0.032) * scale, (y + 0.009) * scale, 0.001, (x - (w / 2) + w + 0.032) * scale, (y + 0.05 - 0.009) * scale, 0.001, 150, 150, 150, 255);
+			draw_box_f3(esContext, (x - (w / 2) - 0.01) * scale, (y + 0.025 - 0.003) * scale, 0.001, (x - (w / 2) + w + 0.01) * scale, (y + 0.025 + 0.003) * scale, 0.001, 0, 0, 0, 255);
+			for (n = 0; n <= 10; n++) {
+				#define SHADOW_OFFSET 0.002
+				draw_box_f3(esContext, (x - (w / 2.0) + (w * (float)n / 10.0) - 0.001 + SHADOW_OFFSET) * scale, (y + 0.001 + SHADOW_OFFSET) * scale, 0.001, (x - (w / 2.0) + (w * (float)n / 10.0) + 0.001 + SHADOW_OFFSET) * scale, (y + 0.007 + SHADOW_OFFSET) * scale, 0.001, 2, 2, 2, 255);
+				draw_box_f3(esContext, (x - (w / 2.0) + (w * (float)n / 10.0) - 0.001) * scale, (y + 0.001) * scale, 0.001, (x - (w / 2.0) + (w * (float)n / 10.0) + 0.001) * scale, (y + 0.007) * scale, 0.001, 255, 255, 255, 255);
+			}
+			sprintf(tmp_str, "%s/textures/slider.png", BASE_DIR);
+			draw_image_f3(esContext, (x + (value * w / 2000) - 0.03) * scale, (y + 0.01) * scale, (x + (value * w / 2000) + 0.03) * scale, (y + 0.05 - 0.01) * scale, 0.02, tmp_str);
 #else
-			draw_box_f3(esContext, (x - (w / 2) + w / 2.0) * scale, y * scale, 0.001, (x - (w / 2) + w / 2.0 + (value * w / 2000)) * scale, (y + 0.05) * scale, 0.001, 5, 145, 185, 127);
-			draw_box_f3(esContext, (x - (w / 2) + w / 2.0) * scale, y * scale, 0.001, (x - (w / 2) + w / 2.0 + (value2 * w / 2000)) * scale, (y + 0.05) * scale, 0.001, 175, 145, 85, 255);
-#endif
 			draw_line_f3(esContext, (x - (w / 2) + w / 2.0 + (value2 * w / 2000)) * scale, (y - 0.001) * scale, 0.001, (x - (w / 2) + w / 2.0 + (value2 * w / 2000)) * scale, (y + 0.05 + 0.001) * scale, 0.001, 127, 127, 127, 255);
 			draw_line_f3(esContext, (x - (w / 2) + w / 2.0) * scale, (y - 0.001) * scale, 0.001, (x - (w / 2) + w / 2.0) * scale, (y + 0.05 + 0.001) * scale, 0.001, 127, 127, 127, 255);
-		}
-#ifndef SIMPLE_DRAW
-		draw_rect_f3(esContext, (x - (w / 2)) * scale, (y) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.05) * scale, 0.001, 0, 0, 0, 255);
 #endif
+		}
 	}
 	sprintf(tmp_str, "slider_%s", name);
-	set_button(tmp_str, setup.view_mode, (x - (w / 2)) * scale, (y) * scale, (x - (w / 2) + w) * scale, (y + 0.05) * scale, rcflow_slider_move, (float)0, 1);
+	set_button(tmp_str, setup.view_mode, (x - (w / 2) - 0.032) * scale, (y) * scale, (x - (w / 2) + w + 0.032) * scale, (y + 0.05) * scale, rcflow_slider_move, (float)0, 1);
 }
 
 void rcflow_draw_vplugin (ESContext *esContext, uint8_t id, uint8_t vnum) {
@@ -2504,47 +2530,58 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 	// Plugin
 #ifndef SIMPLE_DRAW
 	// Background
+/*
 	if (RcPlugin[id].open == 1) {
 		if (RcPlugin[id].type == RCFLOW_PLUGIN_INPUT) {
-			draw_box_f3c2(esContext, PLUGIN_X1, PLUGIN_Y1, 0.001, PLUGIN_X2, PLUGIN_Y2, 0.001, 55, 55, 55, 127, 100, 255, 100, 120);
+			draw_box_f3c2(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1, 0.001, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y2, 0.001, 55, 55, 55, 127, 100, 255, 100, 120);
 		} else if (RcPlugin[id].type == RCFLOW_PLUGIN_OUTPUT) {
-			draw_box_f3c2(esContext, PLUGIN_X1, PLUGIN_Y1, 0.001, PLUGIN_X2, PLUGIN_Y2, 0.001, 55, 55, 55, 127, 255, 100, 100, 120);
+			draw_box_f3c2(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1, 0.001, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y2, 0.001, 55, 55, 55, 127, 255, 100, 100, 120);
 		} else if (RcPlugin[id].type == RCFLOW_PLUGIN_ADC || RcPlugin[id].type == RCFLOW_PLUGIN_SW || RcPlugin[id].type == RCFLOW_PLUGIN_ENC) {
-			draw_box_f3c2(esContext, PLUGIN_X1, PLUGIN_Y1, 0.001, PLUGIN_X2, PLUGIN_Y2, 0.001, 55, 55, 55, 127, 255, 255, 100, 120);
+			draw_box_f3c2(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1, 0.001, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y2, 0.001, 55, 55, 55, 127, 255, 255, 100, 120);
 		} else {
-			draw_box_f3c2(esContext, PLUGIN_X1, PLUGIN_Y1, 0.001, PLUGIN_X2, PLUGIN_Y2, 0.001, 55, 55, 55, 127, 100, 100, 255, 120);
+			draw_box_f3c2(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1, 0.001, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y2, 0.001, 55, 55, 55, 127, 100, 100, 255, 120);
 		}
 	}
+*/
+
+//	draw_box_f3(esContext, PLUGIN_X1 - (LINK_WIDTH - 0.01) * scale, PLUGIN_Y1 + (0.01 * scale), 0.001, PLUGIN_X2 + (LINK_WIDTH + 0.01) * scale, PLUGIN_Y2 + (0.01 * scale), 0.001, 0, 0, 0, 190);
+
+	if (RcPlugin[id].open == 1) {
+		draw_box_f3c2(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1, 0.001, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y2, 0.001, 50, 50, 50, 255, 90, 90, 90, 255);
+		draw_rect_f3(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1, 0.001, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y2, 0.001, 0, 0, 0, 255);
+	}
+
 	// Title-Bar
-	draw_box_f3c2(esContext, PLUGIN_X1, PLUGIN_Y1, 0.0011, PLUGIN_X2, PLUGIN_Y1 + (TITLE_HEIGHT / 2.0 * scale), 0.0011, 5, 5, 55, 255, 55, 55, 55, 255);
-	draw_box_f3c2(esContext, PLUGIN_X1, PLUGIN_Y1 + (TITLE_HEIGHT / 2.0 * scale), 0.0011, PLUGIN_X2, PLUGIN_Y1 + (TITLE_HEIGHT * scale), 0.0011, 55, 55, 55, 255, 5, 5, 55, 255);
-	draw_line_f3(esContext, PLUGIN_X1, PLUGIN_Y1 + (TITLE_HEIGHT * scale), 0.0011, PLUGIN_X2, PLUGIN_Y1 + (TITLE_HEIGHT * scale), 0.001, 10, 10, 10, 255);
+	draw_box_f3c2(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1, 0.0011, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y1 + (TITLE_HEIGHT / 2.0 * scale), 0.0011, 5, 5, 15, 255, 45, 45, 45, 255);
+	draw_box_f3c2(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1 + (TITLE_HEIGHT / 2.0 * scale), 0.0011, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y1 + (TITLE_HEIGHT * scale), 0.0011, 45, 45, 45, 255, 5, 5, 15, 255);
+	draw_line_f3(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1 + (TITLE_HEIGHT * scale), 0.0011, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y1 + (TITLE_HEIGHT * scale), 0.001, 10, 10, 10, 255);
 #else
 	if (RcPlugin[id].open == 1) {
-		draw_box_f3(esContext, PLUGIN_X1, PLUGIN_Y1, 0.001, PLUGIN_X2, PLUGIN_Y2, 0.001, 100, 100, 100, 255);
+		draw_box_f3(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1, 0.001, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y2, 0.001, 100, 100, 100, 255);
 	}
 	draw_line_f3(esContext, PLUGIN_X1, PLUGIN_Y1 + (TITLE_HEIGHT * scale), 0.0011, PLUGIN_X2, PLUGIN_Y1 + (TITLE_HEIGHT * scale), 0.001, 10, 10, 10, 255);
 #endif
 
 	if (id == rcflow_plugin_move_id && rcflow_plugin_move_timer > 0) {
-		draw_rect_f3(esContext, PLUGIN_X1, PLUGIN_Y1, 0.001, PLUGIN_X2, PLUGIN_Y2, 0.001, 255, 0, 0, 255);
+		draw_rect_f3(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1, 0.001, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y2, 0.001, 255, 0, 0, rcflow_plugin_move_timer * 3);
 		rcflow_plugin_move_timer--;
 	}
 
 	if (lock == 0 || del_plugin == 1) {
-		set_button(RcPlugin[id].name, setup.view_mode, PLUGIN_X1, PLUGIN_Y1, PLUGIN_X2, (RcPlugin[id].y + num_max / 2 * LINK_SPACE - TITLE_HEIGHT + canvas_y) * scale, rcflow_plugin_move, (float)id, 1);
+		set_button(RcPlugin[id].name, setup.view_mode, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1, PLUGIN_X2 + (LINK_WIDTH * scale), (RcPlugin[id].y + num_max / 2 * LINK_SPACE - TITLE_HEIGHT + canvas_y) * scale, rcflow_plugin_move, (float)id, 1);
 	}
-
 
 	if (RcPlugin[id].open == 1) {
 		sprintf(tmp_str, "%s/textures/icon_up.png", BASE_DIR);
 	} else {
 		sprintf(tmp_str, "%s/textures/icon_down.png", BASE_DIR);
 	}
-	draw_image_f3(esContext, PLUGIN_X2 - (0.01 + TITLE_HEIGHT - 0.02) * scale, PLUGIN_Y1 + 0.01 * scale, PLUGIN_X2 - 0.01 * scale, PLUGIN_Y1 + (0.01 + TITLE_HEIGHT - 0.02) * scale, 0.002, tmp_str);
-
+	draw_image_f3(esContext, PLUGIN_X2 + (LINK_WIDTH * scale) - (0.01 + TITLE_HEIGHT - 0.02) * scale, PLUGIN_Y1 + 0.01 * scale, PLUGIN_X2 + (LINK_WIDTH * scale) - 0.01 * scale, PLUGIN_Y1 + (0.01 + TITLE_HEIGHT - 0.02) * scale, 0.002, tmp_str);
 	sprintf(tmp_str, "open_%i", id);
-	set_button(tmp_str, setup.view_mode, PLUGIN_X2 - (0.01 + TITLE_HEIGHT - 0.02) * scale, PLUGIN_Y1 + 0.01 * scale, PLUGIN_X2 - 0.01 * scale, PLUGIN_Y1 + (0.01 + TITLE_HEIGHT - 0.02) * scale, rcflow_open, (float)id, 0);
+	set_button(tmp_str, setup.view_mode, PLUGIN_X2 + (LINK_WIDTH * scale) - (0.01 + TITLE_HEIGHT - 0.02) * scale, PLUGIN_Y1 + 0.01 * scale, PLUGIN_X2 + (LINK_WIDTH * scale) - 0.01 * scale, PLUGIN_Y1 + (0.01 + TITLE_HEIGHT - 0.02) * scale, rcflow_open, (float)id, 0);
+
+	draw_line_f3(esContext, PLUGIN_X2 + (LINK_WIDTH * scale) - (TITLE_HEIGHT) * scale, PLUGIN_Y1, 0.001, PLUGIN_X2 + (LINK_WIDTH * scale) - (TITLE_HEIGHT) * scale, PLUGIN_Y1 + TITLE_HEIGHT * scale, 0.001, 10, 10, 10, 255);
+
 
 
 //	draw_rect_f3(esContext, PLUGIN_X1, PLUGIN_Y1, 0.001, PLUGIN_X2, PLUGIN_Y2, 0.001, 200, 200, 200, 155);
@@ -2552,9 +2589,9 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 
 	sprintf(tmp_str, "name_%s", RcPlugin[id].name);
 	if (RcPlugin[id].title[0] != 0) {
-		draw_text_button(esContext, tmp_str, setup.view_mode, RcPlugin[id].title, FONT_GREEN, (RcPlugin[id].x + canvas_x) * scale, PLUGIN_Y1, 0.002, 0.04 * scale, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_title_edit, (float)id);
+		draw_text_button(esContext, tmp_str, setup.view_mode, RcPlugin[id].title, FONT_GREEN, PLUGIN_X1 - (LINK_WIDTH - 0.01) * scale, PLUGIN_Y1, 0.002, 0.04 * scale, ALIGN_LEFT, ALIGN_TOP, rcflow_plugin_title_edit, (float)id);
 	} else {
-		draw_text_button(esContext, tmp_str, setup.view_mode, RcPlugin[id].name, FONT_GREEN, (RcPlugin[id].x + canvas_x) * scale, PLUGIN_Y1, 0.002, 0.04 * scale, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_title_edit, (float)id);
+		draw_text_button(esContext, tmp_str, setup.view_mode, RcPlugin[id].name, FONT_GREEN, PLUGIN_X1 - (LINK_WIDTH - 0.01) * scale, PLUGIN_Y1, 0.002, 0.04 * scale, ALIGN_LEFT, ALIGN_TOP, rcflow_plugin_title_edit, (float)id);
 	}
 
 	if (RcPlugin[id].open == 0) {
@@ -2564,19 +2601,22 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 	// Inputs
 	for (input = 0; input < MAX_INPUTS; input++) {
 		if (RcPlugin[id].input[input].name[0] != 0 && RcPlugin[id].input[input].type != RCFLOW_INOUT_TYPE_TEMP) {
+			sprintf(tmp_str, "%s/textures/conn.png", BASE_DIR);
+			draw_image_f3(esContext, PLUGIN_X1 - (LINK_WIDTH - 0.025 + CONN_RADIUS) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + (LINK_SPACE / 2.0) - CONN_RADIUS + canvas_y) * scale, PLUGIN_X1 - (LINK_WIDTH - 0.025 - CONN_RADIUS) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + (LINK_SPACE / 2.0) + CONN_RADIUS + canvas_y) * scale, 0.02, tmp_str);
+
 			sprintf(tmp_str, "%s;%s", RcPlugin[id].name, RcPlugin[id].input[input].name);
 #ifndef SIMPLE_DRAW
 			if (strcmp(link_select_to, tmp_str) == 0) {
-				draw_box_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - 0.15 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 125);
-			} else {
-				draw_box_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - 0.15 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 100, 100, 100, 125);
+				draw_box_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 125);
+//			} else {
+//				draw_box_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 100, 100, 100, 125);
 			}
-			draw_rect_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - 0.15 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 255, 255, 125);
+//			draw_rect_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 255, 255, 125);
 #else
 			if (strcmp(link_select_to, tmp_str) == 0) {
-				draw_box_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - 0.15 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 255);
+				draw_box_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 255);
 			} else {
-				draw_box_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - 0.15 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 100, 100, 100, 255);
+				draw_box_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 100, 100, 100, 255);
 			}
 #endif
 			if (RcPlugin[id].type == RCFLOW_PLUGIN_MULTIPLEX_OUT) {
@@ -2593,37 +2633,48 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 					}
 				}
 				if (select == input) {
-					draw_rect_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - 0.15 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 255);
+					draw_rect_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 255);
 				}
 			}
-			set_button(tmp_str, setup.view_mode, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - 0.15 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.1 + canvas_y) * scale, rcflow_link_mark, (float)1, 0);
-			draw_text_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - 0.15 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.005, 0.03 * scale, 0.03 * scale, FONT_GREEN, RcPlugin[id].input[input].name);
+			set_button(tmp_str, setup.view_mode, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.1 + canvas_y) * scale, rcflow_link_mark, (float)1, 0);
+			draw_text_button(esContext, "#", setup.view_mode, RcPlugin[id].input[input].name, FONT_GREEN, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.002, 0.03 * scale, ALIGN_RIGHT, ALIGN_TOP, rcflow_null, 0.0);
 #ifndef SIMPLE_DRAW
 			if (RcPlugin[id].input[input].type == RCFLOW_INOUT_TYPE_LINEAR) {
 				sprintf(tmp_str, "%i", (RcPlugin[id].input[input].value + 1000) / 2);
 			} else {
 				sprintf(tmp_str, "%i", RcPlugin[id].input[input].value);
 			}
-			draw_text_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - 0.15 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y + 0.04) * scale, 0.005, 0.03 * scale, 0.03 * scale, FONT_GREEN, tmp_str);
+//			draw_text_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y + 0.04) * scale, 0.005, 0.03 * scale, 0.03 * scale, FONT_GREEN, tmp_str);
+
+
+	draw_text_button(esContext, "#", setup.view_mode, tmp_str, FONT_GREEN, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y + 0.04) * scale, 0.002, 0.03 * scale, ALIGN_RIGHT, ALIGN_TOP, rcflow_null, 0.0);
+
 #endif
 		}
 	}
 	// Outputs
 	for (output = 0; output < MAX_OUTPUTS; output++) {
 		if (RcPlugin[id].output[output].name[0] != 0 && RcPlugin[id].output[output].type != RCFLOW_INOUT_TYPE_TEMP) {
+
+
+			sprintf(tmp_str, "%s/textures/conn.png", BASE_DIR);
+			draw_image_f3(esContext, PLUGIN_X2 + (LINK_WIDTH - 0.025 - CONN_RADIUS) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + (LINK_SPACE / 2.0) - CONN_RADIUS + canvas_y) * scale, PLUGIN_X2 + (LINK_WIDTH - 0.025 + CONN_RADIUS) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + (LINK_SPACE / 2.0) + CONN_RADIUS + canvas_y) * scale, 0.02, tmp_str);
+
+
 			sprintf(tmp_str, "%s;%s", RcPlugin[id].name, RcPlugin[id].output[output].name);
+
 #ifndef SIMPLE_DRAW
 			if (strcmp(link_select_from, tmp_str) == 0) {
-				draw_box_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + 0.15 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 125);
-			} else {
-				draw_box_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + 0.15 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 100, 100, 100, 125);
+				draw_box_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 125);
+//			} else {
+//				draw_box_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 100, 100, 100, 125);
 			}
-			draw_rect_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + 0.15 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 255, 255, 125);
+//			draw_rect_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 255, 255, 125);
 #else
 			if (strcmp(link_select_from, tmp_str) == 0) {
-				draw_box_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + 0.15 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 255);
+				draw_box_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 255);
 			} else {
-				draw_box_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + 0.15 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 100, 100, 100, 255);
+				draw_box_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 100, 100, 100, 255);
 			}
 #endif
 			if (RcPlugin[id].type == RCFLOW_PLUGIN_MULTIPLEX_IN) {
@@ -2640,10 +2691,10 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 					}
 				}
 				if (select == output) {
-					draw_rect_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + 0.15 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 255);
+					draw_rect_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 255);
 				}
 			}
-			set_button(tmp_str, setup.view_mode, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + 0.15 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.1 + canvas_y) * scale, rcflow_link_mark, (float)0, 0);
+			set_button(tmp_str, setup.view_mode, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.1 + canvas_y) * scale, rcflow_link_mark, (float)0, 0);
 			draw_text_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.005, 0.03 * scale, 0.03 * scale, FONT_GREEN, RcPlugin[id].output[output].name);
 #ifndef SIMPLE_DRAW
 			sprintf(tmp_str, "%i", RcPlugin[id].output[output].value);
@@ -2764,12 +2815,11 @@ void rcflow_draw_link (ESContext *esContext, uint8_t id) {
 						sprintf(tmp_str, "%s;%s", RcPlugin[plugin].name, RcPlugin[plugin].output[output].name);
 						if (strcmp(RcLink[id].from, tmp_str) == 0) {
 							uint8_t num_max = rcflow_plugin_max_get(plugin);
+							b_x = RcPlugin[plugin].x + (PLUGIN_WIDTH / 2.0) + LINK_WIDTH - 0.025 + canvas_x;
 							if (RcPlugin[plugin].open == 1) {
-								b_x = RcPlugin[plugin].x + (PLUGIN_WIDTH / 2.0) + 0.15 + canvas_x;
-								b_y = RcPlugin[plugin].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.035 + canvas_y;
+								b_y = RcPlugin[plugin].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + (LINK_SPACE / 2.0) + canvas_y;
 								flag1 = 1;
 							} else {
-								b_x = RcPlugin[plugin].x + (PLUGIN_WIDTH / 2.0) + canvas_x;
 								b_y = RcPlugin[plugin].y - num_max / 2 * LINK_SPACE - (TITLE_HEIGHT / 2.0) + canvas_y;
 								flag1 = 2;
 							}
@@ -2783,12 +2833,11 @@ void rcflow_draw_link (ESContext *esContext, uint8_t id) {
 						sprintf(tmp_str, "%s;%s", RcPlugin[plugin].name, RcPlugin[plugin].input[input].name);
 						if (strcmp(RcLink[id].to, tmp_str) == 0) {
 							uint8_t num_max = rcflow_plugin_max_get(plugin);
+							a_x = RcPlugin[plugin].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + 0.025 + canvas_x;
 							if (RcPlugin[plugin].open == 1) {
-								a_x = RcPlugin[plugin].x - (PLUGIN_WIDTH / 2.0) - 0.15 + canvas_x;
-								a_y = RcPlugin[plugin].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.035 + canvas_y;
+								a_y = RcPlugin[plugin].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + (LINK_SPACE / 2.0) + canvas_y;
 								flag2 = 1;
 							} else {
-								a_x = RcPlugin[plugin].x - (PLUGIN_WIDTH / 2.0) + canvas_x;
 								a_y = RcPlugin[plugin].y - num_max / 2 * LINK_SPACE - (TITLE_HEIGHT / 2.0) + canvas_y;
 								flag2 = 2;
 							}
@@ -2802,13 +2851,15 @@ void rcflow_draw_link (ESContext *esContext, uint8_t id) {
 	if (flag1 != 0 && flag2 != 0) {
 #ifndef SIMPLE_DRAW
 		if (flag2 == 1) {
-			draw_circleFilled_f3(esContext, (a_x) * scale, (a_y) * scale, 0.005, (0.01) * scale, 0, 0, 255, 255);
+//			draw_circleFilled_f3(esContext, (a_x) * scale, (a_y) * scale, 0.005, (0.005) * scale, 0, 0, 255, 128);
 		}
 		if (flag1 == 1) {
-			draw_circleFilled_f3(esContext, (b_x) * scale, (b_y) * scale, 0.005, (0.01) * scale, 0, 0, 255, 255);
+//			draw_circleFilled_f3(esContext, (b_x) * scale, (b_y) * scale, 0.005, (0.005) * scale, 0, 0, 255, 128);
 		}
 #endif
+		glLineWidth(3);
 		draw_line_f3(esContext, (a_x) * scale, (a_y) * scale, 0.005, (b_x) * scale, (b_y) * scale, 0.005, 100, 100 + (uint8_t)color, 160, 255);
+		glLineWidth(1);
 	}
 }
 
@@ -3688,6 +3739,9 @@ void screen_rcflow (ESContext *esContext) {
 	} else {
 		// Drawing
 		glDisable( GL_DEPTH_TEST );
+#ifndef SIMPLE_DRAW
+		draw_box_f3c2(esContext, -1.5, -1.0, 0.05, 1.5, 1.0, 0.05, 2, 2, 2, 255, 0x4d, 0x56, 0x67, 255);
+#endif
 		set_button("canvas", setup.view_mode, -1.5, -0.9, 1.5, 1.0, rcflow_canvas_move, (float)0, 2);
 		// Draw Plugins
 		for (plugin = 0; plugin < MAX_PLUGINS; plugin++) {
