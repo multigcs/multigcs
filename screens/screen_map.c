@@ -333,6 +333,8 @@ void show_dir (ESContext *esContext, uint16_t px, uint16_t py, float lat_from, f
 Info at: http://www.winpilot.com/usersguide/userairspace.asp
 OLD: Data: http://soaringweb.org/Airspace/DE/DE120312.txt
 Data: http://soaringweb.org/Airspace/DE/Germany_CW10_2013.txt
+Data: http://www.winpilot.com/OpenAir/Europe/Germany/airspace.txt
+Data: http://www.daec.de/fileadmin/user_upload/files/2012/fachbereiche/luftraum/20140808OpenAir.txt
 */
 void draw_notam (ESContext *esContext, float lat, float lon, uint8_t zoom) {
 	FILE *fr;
@@ -381,7 +383,9 @@ void draw_notam (ESContext *esContext, float lat, float lon, uint8_t zoom) {
 		sprintf(status_txt, "getting Airspace-Data: Airspace.txt");
 		sys_message(status_txt);
 		SDL_Log("map: %s\n", status_txt);
-		file_download(tmp_str, "http://soaringweb.org/Airspace/DE/Germany_CW10_2013.txt");
+//		file_download(tmp_str, "http://soaringweb.org/Airspace/DE/Germany_CW10_2013.txt");
+//		file_download(tmp_str, "http://www.winpilot.com/OpenAir/Europe/Germany/airspace.txt");
+		file_download(tmp_str, "http://www.daec.de/fileadmin/user_upload/files/2012/fachbereiche/luftraum/20140808OpenAir.txt");
 	}
         if ((fr = fopen(tmp_str, "rb")) > 0) {
 	        while(fgets(line, 200, fr) != NULL) {

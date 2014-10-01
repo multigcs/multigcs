@@ -31,7 +31,7 @@
 #define PLUGIN_X2 ((RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + canvas_x) * scale)
 #define PLUGIN_Y2 ((RcPlugin[id].y + num_max / 2 * LINK_SPACE + canvas_y) * scale)
 
-//#define ADC_TEST 1
+#define ADC_TEST 1
 
 static int16_t edit_title = -1;
 static uint8_t startup = 0;
