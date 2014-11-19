@@ -23,6 +23,8 @@ uint8_t map_show_poi = 0;
 uint8_t map_rotate = 0;
 uint8_t map_side = 1;
 uint8_t map_dir = 0;
+float alt_profile_scale_h = 512.0;
+float alt_profile_scale_w = 1024.0;
 
 //#define HTTP_USE_WGET 1
 
@@ -60,6 +62,25 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream) {
 }
 
 uint8_t map_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	return 0;
+}
+
+uint8_t map_profile (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (strcmp(name, "alt_profile_scale_w") == 0) {
+		if (button == 4) {
+			alt_profile_scale_w += 10.0;
+		}
+		if (button == 5) {
+			alt_profile_scale_w -= 10.0;
+		}
+	} else if (strcmp(name, "alt_profile_scale_h") == 0) {
+		if (button == 4) {
+			alt_profile_scale_h += 10.0;
+		}
+		if (button == 5) {
+			alt_profile_scale_h -= 10.0;
+		}
+	}
 	return 0;
 }
 
@@ -602,6 +623,78 @@ void map_exit (void) {
 	GeoMap_exit(mapdata);
 }
 
+void map_draw_alt_profile (ESContext *esContext) {
+	char tmp_str[128];
+	float px1 = -0.8;
+	float py1 = 0.7;
+	float px2 = 0.8;
+	float py2 = 0.99;
+	float pw = px2 - px1;
+	float ph = py2 - py1;
+	draw_box_f3(esContext, px1, py1, 0.002, px2, py2, 0.002, 0, 0, 0, 127);
+	// Camview - Target-Marking
+	float nx2 = 0.0;
+	float ny2 = 0.0;
+	float nf = 0.0;
+	float mark_alt = 0.0;
+	float DEG2RAD = 3.14159 / 180.0;
+	float distance = 0.0;
+	float nalt = 0.0;
+	float last_px = 0.0;
+	float last_py = 0.0;
+	float max_py = -99999.0;
+	float max_alt = -99999.0;
+	float min_alt = 99999.0;
+	next_point_ll(esContext, ModelData.p_long, ModelData.p_lat, ModelData.yaw * -1.0 - 90.0, alt_profile_scale_w, &nx2, &ny2);
+	float distance_max = get_distance(ModelData.p_lat, ModelData.p_long, ny2, nx2);
+	for (nf = 1.0; nf < alt_profile_scale_w; nf += 2.0) {
+		next_point_ll(esContext, ModelData.p_long, ModelData.p_lat, ModelData.yaw * -1.0 - 90.0, nf, &nx2, &ny2);
+		distance = get_distance(ModelData.p_lat, ModelData.p_long, ny2, nx2);
+		nalt = (ModelData.p_alt - ModelData.alt_offset) + distance * tan(ModelData.pitch * DEG2RAD * 0.7);
+		mark_alt = get_altitude(ny2, nx2);
+		float px = nf * pw / alt_profile_scale_w;
+		float py = (mark_alt - ModelData.p_alt) * ph / alt_profile_scale_h;
+		if (max_alt < mark_alt) {
+			max_alt = mark_alt;
+			max_py = py;
+		}
+		if (min_alt > mark_alt) {
+			min_alt = mark_alt;
+		}
+		if (last_px != 0.0) {
+			if (py > (ph / 2.0)) {
+				py = (ph / 2.0);
+			}
+			draw_line_f3(esContext, px1 + last_px, py1 + (ph / 2.0) - last_py, 0.004, px1 + px, py1 + (ph / 2.0) - py, 0.004, 255, 255, 255, 255);
+			if (ModelData.p_alt > mark_alt) {
+				draw_line_f3(esContext, px1 + px, py1 + (ph / 2.0) - py, 0.004, px1 + px, py2, 0.004, 255, 255, 255, 128);
+			} else {
+				draw_line_f3(esContext, px1 + px, py1 + (ph / 2.0) - py, 0.004, px1 + px, py1 + (ph / 2.0), 0.004, 255, 0, 0, 128);
+				draw_line_f3(esContext, px1 + px, py1 + (ph / 2.0), 0.004, px1 + px, py2, 0.004, 255, 255, 255, 128);
+			}
+		}
+		last_px = px;
+		last_py = py;
+	}
+	draw_line_f3(esContext, px1, py1 + (ph / 2.0), 0.004, px2, py1 + (ph / 2.0), 0.004, 255, 255, 255, 255);
+	if (max_py <= (ph / 2.0)) {
+		draw_line_f3(esContext, px1, py1 + (ph / 2.0) - max_py, 0.004, px2, py1 + (ph / 2.0) - max_py, 0.004, 255, 255, 255, 255);
+		sprintf(tmp_str, "%0.0fm", max_alt);
+		draw_text_button(esContext, "alt_profile_max", setup.view_mode, tmp_str, FONT_GREEN, px2, py1 + (ph / 2.0) - max_py, 0.005, 0.04, ALIGN_RIGHT, ALIGN_TOP, map_null, 0.0);
+	} else {
+		sprintf(tmp_str, "%0.0fm", max_alt);
+		draw_text_button(esContext, "alt_profile_max", setup.view_mode, tmp_str, FONT_GREEN, px2, py1, 0.005, 0.04, ALIGN_RIGHT, ALIGN_TOP, map_null, 0.0);
+	}
+	sprintf(tmp_str, "%0.0fm", distance_max);
+	draw_text_button(esContext, "alt_profile_scale_w", setup.view_mode, tmp_str, FONT_GREEN, px1 + (pw / 2.0), py1, 0.003, 0.04, ALIGN_CENTER, ALIGN_TOP, map_profile, 0.0);
+	sprintf(tmp_str, "%0.0fm", min_alt);
+	draw_text_button(esContext, "alt_profile_max", setup.view_mode, tmp_str, FONT_GREEN, px2, py2 - 0.04, 0.005, 0.04, ALIGN_RIGHT, ALIGN_TOP, map_null, 0.0);
+	sprintf(tmp_str, "%0.0fm", ModelData.p_alt);
+	draw_text_button(esContext, "alt_profile_max", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (ph / 2.0) - 0.04, 0.005, 0.04, ALIGN_LEFT, ALIGN_TOP, map_null, 0.0);
+	sprintf(tmp_str, "alt-scale: %0.0fm", alt_profile_scale_h);
+	draw_text_button(esContext, "alt_profile_scale_h", setup.view_mode, tmp_str, FONT_GREEN, px1 + (pw / 2.0), py2 - 0.04, 0.005, 0.04, ALIGN_CENTER, ALIGN_TOP, map_profile, 0.0);
+	draw_rect_f3(esContext, px1, py1, 0.005, px2, py2, 0.005, 255, 255, 255, 255);
+}
 
 void map_draw_buttons (ESContext *esContext) {
 	char tmp_str[1024];
@@ -1279,6 +1372,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 #endif
 	if (_map_view != 3 && _map_view != 4 && _map_view != 5 && setup.view_mode == VIEW_MODE_MAP) {
 		map_draw_buttons(esContext);
+		map_draw_alt_profile(esContext);
 	}
 #ifdef SDLGL
 	if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
