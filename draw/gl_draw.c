@@ -1367,7 +1367,8 @@ int gl_init (uint16_t w, uint16_t h) {
 	glewInit();
 #endif
 #endif
-	glClear( GL_COLOR_BUFFER_BIT );
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
 
@@ -1379,9 +1380,19 @@ int gl_init (uint16_t w, uint16_t h) {
 	glLoadIdentity();
 
 	glClearDepth(1.0);
+	glClearStencil(0);
 	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
 	glDepthMask(GL_TRUE);
+	glDepthFunc(GL_LEQUAL);
+
+/*
+	glClearStencil(0x0);
+	glEnable(GL_STENCIL_TEST);
+	glStencilFunc (GL_EQUAL, 0x1, 0x1);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+	glClear(GL_STENCIL_BUFFER_BIT);
+	glStencilMask(GL_TRUE);
+*/
 
 	glEnable(GL_VERTEX_ARRAY);
 
@@ -1411,6 +1422,7 @@ int gl_init (uint16_t w, uint16_t h) {
 	glDrawBuffers(1, RB_DrawBuffers);
 	draw_to_screen();
 #endif
+
 	return 0;
 }
 
@@ -1586,7 +1598,7 @@ void draw_to_buffer (void) {
 	glViewport(0,0,1024,768); // Render on the whole framebuffer, complete from the lower left corner to the upper right
 	glMatrixMode(GL_MODELVIEW);
 	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 #endif
 }
 
@@ -1632,7 +1644,7 @@ void draw_update (ESContext *esContext) {
 #endif
 	glMatrixMode(GL_MODELVIEW);
 	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
 void draw_init (ESContext *esContext) {

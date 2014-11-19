@@ -2,6 +2,13 @@
 #include <all.h>
 #include <kml.h>
 
+#ifdef USE_FMAP
+int fdMap;
+float fmap_zoom = 2.5;
+float fmap_scale = 0.0745;
+char *fmap_path = "fmap/Tiles";
+#endif
+
 volatile float lat = 50.29;
 volatile float lon = 9.12;
 volatile uint8_t zoom = 16;
@@ -23,8 +30,18 @@ uint8_t map_show_poi = 0;
 uint8_t map_rotate = 0;
 uint8_t map_side = 1;
 uint8_t map_dir = 0;
+uint8_t map_overlay_set = 0;
 float alt_profile_scale_h = 512.0;
 float alt_profile_scale_w = 1024.0;
+
+float cam_film_width = 36.0;  // 35 mm standard film
+float cam_film_height = 24.0; // 35 mm standard film
+float cam_sensor_mult = 1.62; // Formatfaktor / APS-C-Sensor (Canon)
+float cam_lense = 20.0; // Brennweite in mm
+uint8_t map_show_fov = 0;
+uint8_t map_show_cam_setup = 0;
+uint8_t map_show_profile = 0;
+
 
 //#define HTTP_USE_WGET 1
 
@@ -61,10 +78,6 @@ size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream) {
 	return written;
 }
 
-uint8_t map_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	return 0;
-}
-
 uint8_t map_profile (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (strcmp(name, "alt_profile_scale_w") == 0) {
 		if (button == 4) {
@@ -81,6 +94,23 @@ uint8_t map_profile (char *name, float x, float y, int8_t button, float data, ui
 			alt_profile_scale_h -= 10.0;
 		}
 	}
+	return 0;
+}
+
+uint8_t map_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+#ifdef USE_FMAP
+	if (button == 4) {
+		fmap_scale += 0.0001;
+	}
+	if (button == 5) {
+		fmap_scale -= 0.0001;
+	}
+#endif
+	return 0;
+}
+
+uint8_t map_overlay_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	map_overlay_set = 1 - map_overlay_set;
 	return 0;
 }
 
@@ -211,6 +241,15 @@ uint8_t show_notam (char *name, float x, float y, int8_t button, float data, uin
 		map_show_notam = 1;
 	} else {
 		map_show_notam = 1 - map_show_notam;
+	}
+	return 0;
+}
+
+uint8_t show_profile (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if ((int)data == 1) {
+		map_show_profile = 1;
+	} else {
+		map_show_profile = 1 - map_show_profile;
 	}
 	return 0;
 }
@@ -485,7 +524,7 @@ void draw_notam (ESContext *esContext, float lat, float lon, uint8_t zoom) {
 						float z1 = (float)get_altitude(mark_lat, mark_long) / alt_zoom;
 						int16_t bx = (x1 / aspect + 1.0) / 2.0 * (float)GlobalesContext->width + 100;
 						float next_long = x2long(bx, lon, zoom);
-						float dist_nm = get_distance(mark_lat, mark_long, mark_lat, next_long) / 1.85;
+						float dist_nm = get_distance(mark_lat, mark_long, mark_lat, next_long, 0.0) / 1.85;
 						float radius2 = (float)(radius / dist_nm * 100000.0) / (float)esContext->width * 2.0 * aspect;
 						draw_circleFilled_f3(esContext, x1, y1, z1 + 0.001, radius2, 255, 0, 0, 64);
 						draw_text_f3(esContext, x1, y1, z1, 0.05, 0.05, FONT_BLACK_BG, ap_name);
@@ -623,6 +662,104 @@ void map_exit (void) {
 	GeoMap_exit(mapdata);
 }
 
+void draw_fov (ESContext *esContext, float p_lat, float p_long, float p_alt) {
+	float mpp = get_m_per_pixel(lat, zoom);
+	float pos_alt = get_altitude(p_lat, p_long);
+	float dist = p_alt - pos_alt; // Abstand in Metern
+	float h = 0.0;
+	float w = 0.0;
+	calc_fov(cam_film_width, cam_film_height, cam_sensor_mult, cam_lense, dist, &w, &h);
+	int mp_x = long2x(p_long, lon, zoom);
+	int mp_y = lat2y(p_lat, lat, zoom);
+	float mx1 = ((float)mp_x - (w / mpp) / 2.0) / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
+	float my1 = ((float)mp_y - (h / mpp) / 2.0) / (float)esContext->height * 2.0 - 1.0;
+	float mx2 = ((float)mp_x + (w / mpp) / 2.0) / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
+	float my2 = ((float)mp_y + (h / mpp) / 2.0) / (float)esContext->height * 2.0 - 1.0;
+	float z2 = pos_alt / alt_zoom;
+	draw_box_f3(esContext, mx1, my1, z2, mx2, my2, z2, 255, 0, 0, 64);
+}
+
+uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (strncmp(name, "cam_lense_", 10) == 0) {
+		cam_lense = atof(name + 10);
+	} else if (strcmp(name, "cam_lense") == 0) {
+		if (button == 4) {
+			cam_lense += 1.0;
+		}
+		if (button == 5) {
+			cam_lense -= 1.0;
+		}
+	} else if (strcmp(name, "cam_film_width") == 0) {
+		if (button == 4) {
+			cam_film_width += 1.0;
+		}
+		if (button == 5) {
+			cam_film_width -= 1.0;
+		}
+	} else if (strcmp(name, "cam_film_height") == 0) {
+		if (button == 4) {
+			cam_film_height += 1.0;
+		}
+		if (button == 5) {
+			cam_film_height -= 1.0;
+		}
+	} else if (strcmp(name, "cam_sensor_mult") == 0) {
+		if (button == 4) {
+			cam_sensor_mult += 0.01;
+		}
+		if (button == 5) {
+			cam_sensor_mult -= 0.01;
+		}
+	} else if (strncmp(name, "cam_sensor_", 11) == 0) {
+		cam_film_width = 36.0;
+		cam_film_height = 24.0;
+		cam_sensor_mult = atof(name + 11);
+	} else if (strcmp(name, "cam_setup") == 0) {
+		map_show_cam_setup = 1 - map_show_cam_setup;
+	} else if (strcmp(name, "cam_setup_done") == 0) {
+		map_show_cam_setup = 1 - map_show_cam_setup;
+	}
+	return 0;
+}
+
+void map_draw_cam_setup (ESContext *esContext) {
+	char tmp_str[128];
+	float px1 = -0.8;
+	float py1 = -0.9;
+	float px2 = 0.8;
+	float py2 = -0.4;
+	draw_box_f3(esContext, px1, py1, 0.002, px2, py2, 0.002, 0, 0, 0, 127);
+	draw_box_f3(esContext, px1, py1, 0.005, px2, py1 + 0.05, 0.005, 255, 255, 255, 127);
+	draw_rect_f3(esContext, px1, py1, 0.005, px2, py1 + 0.05, 0.005, 255, 255, 255, 255);
+	draw_text_button(esContext, "cam_setup_title", setup.view_mode, "Cam-Setup", FONT_GREEN, px1, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+	int ny = 1;
+	// Lense
+	draw_text_button(esContext, "cam_lense", setup.view_mode, "Lense:", FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+	draw_text_button(esContext, "cam_lense_20", setup.view_mode, "[20mm]", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
+	draw_text_button(esContext, "cam_lense_50", setup.view_mode, "[50mm]", FONT_GREEN, px1 + 1.1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
+	draw_text_button(esContext, "cam_lense_70", setup.view_mode, "[70mm]", FONT_GREEN, px1 + 1.4, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
+	ny++;
+	sprintf(tmp_str, "  focal length: %0.0fmm", cam_lense);
+	draw_text_button(esContext, "cam_lense", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+	ny++;
+	// Sensor
+	draw_text_button(esContext, "cam_sensor", setup.view_mode, "Sensor:", FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+	draw_text_button(esContext, "cam_sensor_1.0", setup.view_mode, "[Full]", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
+	draw_text_button(esContext, "cam_sensor_1.4", setup.view_mode, "[APS-E]", FONT_GREEN, px1 + 1.1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
+	draw_text_button(esContext, "cam_sensor_1.6", setup.view_mode, "[APS-C]", FONT_GREEN, px1 + 1.4, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
+	ny++;
+	sprintf(tmp_str, "  Film-Width: %0.0fmm", cam_film_width);
+	draw_text_button(esContext, "cam_film_width", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+	ny++;
+	sprintf(tmp_str, "  Film-Height: %0.0fmm", cam_film_height);
+	draw_text_button(esContext, "cam_film_height", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+	ny++;
+	sprintf(tmp_str, "  Sensor-Mult.: %0.2fx", cam_sensor_mult);
+	draw_text_button(esContext, "cam_sensor_mult", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+	draw_text_button(esContext, "cam_setup_done", setup.view_mode, "[DONE]", FONT_GREEN, px2 - 0.02, py2 - 0.075, 0.005, 0.07, ALIGN_RIGHT, ALIGN_TOP, map_cam_set, 0.0);
+	draw_rect_f3(esContext, px1, py1, 0.005, px2, py2, 0.005, 255, 255, 255, 255);
+}
+
 void map_draw_alt_profile (ESContext *esContext) {
 	char tmp_str[128];
 	float px1 = -0.8;
@@ -631,8 +768,6 @@ void map_draw_alt_profile (ESContext *esContext) {
 	float py2 = 0.99;
 	float pw = px2 - px1;
 	float ph = py2 - py1;
-	draw_box_f3(esContext, px1, py1, 0.002, px2, py2, 0.002, 0, 0, 0, 127);
-	// Camview - Target-Marking
 	float nx2 = 0.0;
 	float ny2 = 0.0;
 	float nf = 0.0;
@@ -646,12 +781,16 @@ void map_draw_alt_profile (ESContext *esContext) {
 	float max_alt = -99999.0;
 	float min_alt = 99999.0;
 	next_point_ll(esContext, ModelData.p_long, ModelData.p_lat, ModelData.yaw * -1.0 - 90.0, alt_profile_scale_w, &nx2, &ny2);
-	float distance_max = get_distance(ModelData.p_lat, ModelData.p_long, ny2, nx2);
+	mark_alt = get_altitude(ny2, nx2);
+	float distance_max = get_distance(ModelData.p_lat, ModelData.p_long, ny2, nx2, mark_alt);
+
+	draw_box_f3(esContext, px1, py1, 0.002, px2, py2, 0.002, 0, 0, 0, 127);
+
 	for (nf = 1.0; nf < alt_profile_scale_w; nf += 2.0) {
 		next_point_ll(esContext, ModelData.p_long, ModelData.p_lat, ModelData.yaw * -1.0 - 90.0, nf, &nx2, &ny2);
-		distance = get_distance(ModelData.p_lat, ModelData.p_long, ny2, nx2);
-		nalt = (ModelData.p_alt - ModelData.alt_offset) + distance * tan(ModelData.pitch * DEG2RAD * 0.7);
 		mark_alt = get_altitude(ny2, nx2);
+		distance = get_distance(ModelData.p_lat, ModelData.p_long, ny2, nx2, mark_alt);
+		nalt = (ModelData.p_alt - ModelData.alt_offset) + distance * tan(ModelData.pitch * DEG2RAD * 0.7);
 		float px = nf * pw / alt_profile_scale_w;
 		float py = (mark_alt - ModelData.p_alt) * ph / alt_profile_scale_h;
 		if (max_alt < mark_alt) {
@@ -721,11 +860,16 @@ void map_draw_buttons (ESContext *esContext) {
 		ny2 = ny - 1;
 		nn = 0;
 		for (nn = 0; nn < maplen; nn++) {
-			draw_box_f3(esContext, -1.15, -0.8 + ny2 * 0.12 - 0.055, 0.002, -0.85, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
-			draw_rect_f3(esContext, -1.15, -0.8 + ny2 * 0.12 - 0.055, 0.002, -0.85, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
+#ifndef USE_FMAP
+			if (strcmp(mapnames[nn][MAP_TYPE], "FMAP") == 0) {
+				continue;
+			}
+#endif
+			draw_box_f3(esContext, -1.15, -0.9 + ny2 * 0.12 - 0.055, 0.002, -0.85, -0.9 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
+			draw_rect_f3(esContext, -1.15, -0.9 + ny2 * 0.12 - 0.055, 0.002, -0.85, -0.9 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
 			sprintf(tmp_str, "change_maptype%i", nn);
-			draw_button(esContext, tmp_str, setup.view_mode, mapnames[nn][MAP_NAME], FONT_WHITE, -1.15, -0.8 + ny2 * 0.12 - 0.055, 0.002, -0.85, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, change_maptype, nn);
-			draw_text_f3(esContext, -1.15, -0.8 + ny2 * 0.12 - 0.055, 0.003, 0.03, 0.03, FONT_WHITE, mapnames[nn][MAP_COMMENT]);
+			draw_button(esContext, tmp_str, setup.view_mode, mapnames[nn][MAP_NAME], FONT_WHITE, -1.15, -0.9 + ny2 * 0.12 - 0.055, 0.002, -0.85, -0.9 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, change_maptype, nn);
+			draw_text_f3(esContext, -1.15, -0.9 + ny2 * 0.12 - 0.055, 0.003, 0.03, 0.03, FONT_WHITE, mapnames[nn][MAP_COMMENT]);
 			ny2++;
 		}
 	}
@@ -883,20 +1027,52 @@ void map_draw_buttons (ESContext *esContext) {
 	ny++;
 	draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 	draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
-	if (map_show_notam == 1) {
-		draw_button(esContext, "map_show_notam", setup.view_mode, "NOTAM", FONT_GREEN, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_notam, 0.0);
+	if (map_overlay_set == 1) {
+		draw_button(esContext, "map_overlay_set", setup.view_mode, "OVL", FONT_GREEN, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_overlay_change, 0.0);
+
+		ny2 = ny - 1;
+		draw_box_f3(esContext, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
+		draw_rect_f3(esContext, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
+		if (map_show_notam == 1) {
+			draw_button(esContext, "map_show_notam", setup.view_mode, "NOTAM", FONT_GREEN, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_notam, 0.0);
+		} else {
+			draw_button(esContext, "map_show_notam", setup.view_mode, "NOTAM", FONT_WHITE, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_notam, 0.0);
+		}
+		ny2++;
+
+		draw_box_f3(esContext, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
+		draw_rect_f3(esContext, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
+		if (map_show_poi == 1) {
+			draw_button(esContext, "map_show_poi", setup.view_mode, "POI", FONT_GREEN, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_poi, 0.0);
+		} else {
+			draw_button(esContext, "map_show_poi", setup.view_mode, "POI", FONT_WHITE, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_poi, 0.0);
+		}
+		ny2++;
+
+
+		draw_box_f3(esContext, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
+		draw_rect_f3(esContext, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
+		if (map_show_profile == 1) {
+			draw_button(esContext, "map_show_profile", setup.view_mode, "PROF", FONT_GREEN, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_profile, 0.0);
+		} else {
+			draw_button(esContext, "map_show_profile", setup.view_mode, "PROF", FONT_WHITE, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_profile, 0.0);
+		}
+		ny2++;
+
+
 	} else {
-		draw_button(esContext, "map_show_notam", setup.view_mode, "NOTAM", FONT_WHITE, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_notam, 0.0);
+		draw_button(esContext, "map_overlay_set", setup.view_mode, "OVL", FONT_WHITE, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_overlay_change, 0.0);
 	}
 	ny++;
 	draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 	draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
-	if (map_show_poi == 1) {
-		draw_button(esContext, "map_show_poi", setup.view_mode, "POI", FONT_GREEN, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_poi, 0.0);
+	if (map_show_cam_setup == 1) {
+		draw_button(esContext, "cam_setup", setup.view_mode, "CAM", FONT_GREEN, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_cam_set, 0.0);
 	} else {
-		draw_button(esContext, "map_show_poi", setup.view_mode, "POI", FONT_WHITE, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_poi, 0.0);
+		draw_button(esContext, "cam_setup", setup.view_mode, "CAM", FONT_WHITE, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_cam_set, 0.0);
 	}
 	ny++;
+
 #ifndef RPI_NO_X
 	draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 	draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
@@ -1077,9 +1253,65 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		zoom = 18;
 	}
 
-
 	// draw Map
-	GeoMap_draw(mapdata);
+	if (strcmp(mapnames[map_type][MAP_TYPE], "FMAP") != 0) {
+		GeoMap_draw(mapdata);
+#ifdef USE_FMAP
+	} else {
+		static uint8_t startup = 0;
+		map_view = 0;
+		map_dir = 0;
+		center_map = 1;
+		if (startup == 0) {
+			startup = 1;
+			fdMap = mpMapCreate (fmap_path, "");
+			if (!fdMap) {
+				fprintf (stderr, "could not open map <%s>\n", fmap_path);
+			}
+			int bgUpdate;
+			mpMapSetBackgroundLoad(fdMap, 1, &bgUpdate);
+			mpMapSetDirection (fdMap, MAP_DIR_UP);
+			mpMapSetRelPos (fdMap, 0.0f, 0.0f);
+			mpMapSetMaxTextureMem (fdMap, 128);
+			mpMapSetWindowSize(fdMap, esContext->width, esContext->height);
+			mpMapSetTilesVisible(fdMap, 1);
+		}
+		if (fdMap) {
+			glMatrixMode( GL_PROJECTION );
+			glPushMatrix();
+			glLoadIdentity();
+			glMatrixMode( GL_MODELVIEW );
+			glLoadIdentity();
+			glPushMatrix();
+			glScalef(2.0 / esContext->width, 2.0 / esContext->height, 1.0);
+			glTranslatef(-(float)esContext->width / 2.0, -(float)esContext->height / 2.0, -0.5);
+			T_Color mred = {255, 0, 0, 255};
+			mpMarkerClear(fdMap);
+			mpMarkerSet(fdMap, ModelData.p_lat, ModelData.p_long, ModelData.yaw, "PLANE", mred);
+			int fn = 0;
+			fmap_zoom = fmap_scale;
+			for (fn = 0; fn < 20 - zoom; fn++) {
+				fmap_zoom *= 2;
+			}
+			if (fmap_zoom < 1.0) {
+				fmap_zoom = 1.0;
+			}
+			mpMapSetVisibleRange(fdMap, fmap_zoom * (float)esContext->width / (float)esContext->height, fmap_zoom);
+			if (map_dir == 0) {
+				mpMapDrawPlane(fdMap, ModelData.p_lat, ModelData.p_long, 0.0, 0);
+			} else {
+				mpMapDrawPlane(fdMap, ModelData.p_lat, ModelData.p_long, ModelData.yaw, 0);
+			}
+			mpMarkerDraw(fdMap);
+			glPopMatrix();
+			glMatrixMode( GL_PROJECTION );
+			glPopMatrix();
+			glEnable(GL_BLEND);
+			glDisable( GL_DEPTH_TEST );
+		}
+#endif
+	}
+
 
 #ifdef SDLGL
 	if (nav_map == 1) {
@@ -1098,7 +1330,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			esTranslate(&modelview, 0.0, 0.0, 2.0);
 			if (n % 10 == 0) {
 				draw_line_f3(esContext, 0.0, 0.8, 0.003, 0.0, 0.85, 0.003, 255, 255, 255, 255);
-				char tmp_str[1024];
 				sprintf(tmp_str, "%i", n);
 				draw_text_f3(esContext, 0.0 - strlen(tmp_str) * 0.05 * 0.6 / 2.0 - 0.01, -0.8, 0.003, 0.05, 0.05, FONT_WHITE, tmp_str);
 			} else {
@@ -1215,10 +1446,15 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			draw_quad(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset), ModelData.roll, ModelData.pitch, ModelData.yaw, mapdata->lat, mapdata->lon, mapdata->zoom);
 		}
 	}
+
+
+	if (map_show_fov == 1 || map_show_cam_setup == 1) {
+		draw_fov(esContext, ModelData.p_lat, ModelData.p_long, ModelData.p_alt);
+	}
+
+
 #ifdef SDLGL
-
 //	map_kml_parseDoc("test.kml");
-
 	// Camview - Target-Marking
 	float nx2 = 0.0;
 	float ny2 = 0.0;
@@ -1229,10 +1465,10 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	float nalt = 0.0;
 	for (nf = 1; nf < 1024; nf += 20) {
 		next_point_ll(esContext, ModelData.p_long, ModelData.p_lat, ModelData.yaw * -1.0 - 90.0, nf, &nx2, &ny2);
-		distance = get_distance(ModelData.p_lat, ModelData.p_long, ny2, nx2);
+		mark_alt = get_altitude(ny2, nx2);
+		distance = get_distance(ModelData.p_lat, ModelData.p_long, ny2, nx2, mark_alt);
 		nalt = (ModelData.p_alt - ModelData.alt_offset) + distance * tan(ModelData.pitch * DEG2RAD * 0.7);
 //		mark_point(esContext, ny2, nx2, nalt, "", "", 0, 0.1, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
-		mark_alt = get_altitude(ny2, nx2);
 		if (mark_alt >= (int16_t)nalt) {
 			break;
 		}
@@ -1240,10 +1476,10 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	if (nf < 1024 && nf > 20) {
 		for (nf -= 20; nf < 1024; nf += 1) {
 			next_point_ll(esContext, ModelData.p_long, ModelData.p_lat, ModelData.yaw * -1.0 - 90.0, nf, &nx2, &ny2);
-			distance = get_distance(ModelData.p_lat, ModelData.p_long, ny2, nx2);
+			mark_alt = get_altitude(ny2, nx2);
+			distance = get_distance(ModelData.p_lat, ModelData.p_long, ny2, nx2, mark_alt);
 			nalt = (ModelData.p_alt - ModelData.alt_offset) + distance * tan(ModelData.pitch * DEG2RAD * 0.7);
 //			mark_point(esContext, ny2, nx2, nalt, "", "", 0, 0.1, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
-			mark_alt = get_altitude(ny2, nx2);
 			if (mark_alt >= (int16_t)nalt) {
 				break;
 			}
@@ -1265,6 +1501,19 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 	}
 #endif
+
+#ifdef USE_FMAP
+	if (strcmp(mapnames[map_type][MAP_TYPE], "FMAP") == 0) {
+		if (fdMap) {
+			glPopMatrix();
+			glMatrixMode( GL_PROJECTION );
+			glPopMatrix();
+			glEnable(GL_BLEND);
+			glDisable( GL_DEPTH_TEST );
+		}
+	}
+#endif
+
 	// rotate map back
 #ifndef SDLGL
 	if (_map_view == 1) {
@@ -1372,7 +1621,12 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 #endif
 	if (_map_view != 3 && _map_view != 4 && _map_view != 5 && setup.view_mode == VIEW_MODE_MAP) {
 		map_draw_buttons(esContext);
-		map_draw_alt_profile(esContext);
+		if (map_show_profile == 1) {
+			map_draw_alt_profile(esContext);
+		}
+		if (map_show_cam_setup == 1) {
+			map_draw_cam_setup(esContext);
+		}
 	}
 #ifdef SDLGL
 	if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
@@ -1385,9 +1639,11 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 #endif
 }
 
+
 void screen_map (ESContext *esContext, float lat, float lon, uint8_t zoom) {
 	display_map(esContext, lat, lon, zoom, map_view, 1, 1.0, 0.0, 0.0, 0.0);
 }
+
 
 
 

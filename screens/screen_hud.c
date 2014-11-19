@@ -1,14 +1,130 @@
 
 #include <all.h>
 
-//#define CAR_MODE 1
-
 extern GLuint RB_texture;
 void draw_texture_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, GLuint texture);
+
+#ifdef USE_VISTA2D
+
+static int vdView;
+static uint8_t ratio = 1;
+static float z = 0.0;
+static uint8_t hud_use_vista2d = 1;
+
+#endif
 
 uint8_t hud_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 0;
 }
+
+
+#ifdef USE_VISTA2D
+
+uint8_t vista2d_cmd (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (button == 4) {
+		z += 0.01;
+		return 0;
+	}
+	if (button == 5) {
+		z -= 0.01;
+		return 0;
+	}
+	if (strcmp(name + 1, "RATIO") == 0) {
+		ratio = 1 - ratio;
+	} else if (strcmp(name + 1, "INTERNAL") == 0) {
+		hud_use_vista2d = 1 - hud_use_vista2d;
+	} else if (strcmp(name + 1, "VIEW1") == 0) {
+		vdViewStopAnim(vdView);
+		vdViewFree(vdView);
+		vdView = vdViewLoad("./vista2d/views/view1.v");
+		vdViewStartAnim(vdView);
+	} else if (strcmp(name + 1, "VIEW2") == 0) {
+		vdViewStopAnim(vdView);
+		vdViewFree(vdView);
+		vdView = vdViewLoad("./vista2d/views/view2.v");
+		vdViewStartAnim(vdView);
+	} else if (strcmp(name + 1, "VIEW3") == 0) {
+		vdViewStopAnim(vdView);
+		vdViewFree(vdView);
+		vdView = vdViewLoad("./vista2d/views/view3.v");
+		vdViewStartAnim(vdView);
+	} else if (strcmp(name + 1, "VIEW4") == 0) {
+		vdViewStopAnim(vdView);
+		vdViewFree(vdView);
+		vdView = vdViewLoad("./vista2d/views/view4.v");
+		vdViewStartAnim(vdView);
+	} else if (strcmp(name + 1, "VIEW5") == 0) {
+		vdViewStopAnim(vdView);
+		vdViewFree(vdView);
+		vdView = vdViewLoad("./vista2d/views/instruments.v");
+		vdViewStartAnim(vdView);
+	}
+	return 0;
+}
+
+void screen_hud_vista2d (ESContext *esContext) {
+	static uint8_t startup = 0;
+	if (startup == 0) {
+		startup = 1;
+		vdView = vdViewLoad ("vista2d/views/view1.v");
+		vdViewStartAnim(vdView);
+	}
+	char tmp_str[128];
+	vdVarSetStr(vdView, "NAME", ModelData.name);
+	sprintf(tmp_str, "%f", ModelData.roll);
+	vdVarSetStr(vdView, "BODY_ROLL_ANGLE", tmp_str);
+	sprintf(tmp_str, "%f", ModelData.pitch);
+	vdVarSetStr(vdView, "BODY_PITCH_ANGLE", tmp_str);
+	sprintf(tmp_str, "%f", ModelData.yaw);
+	vdVarSetStr(vdView, "BODY_HEADING_ANGLE", tmp_str);
+	sprintf(tmp_str, "%f", ModelData.p_alt);
+	vdVarSetStr(vdView, "BARO_CORRECTED_ALTITUDE", tmp_str);
+	sprintf(tmp_str, "%f", ModelData.speed);
+	vdVarSetStr(vdView, "INDICATED_AIRSPEED", tmp_str);
+	sprintf(tmp_str, "%f", ModelData.p_lat);
+	vdVarSetStr(vdView, "POS_LAT", tmp_str);
+	sprintf(tmp_str, "%f", ModelData.p_long);
+	vdVarSetStr(vdView, "POS_LON", tmp_str);
+
+	int w = (int)vdViewWidth(vdView);
+	int h = (int)vdViewHeight(vdView);
+	glMatrixMode( GL_PROJECTION );
+	glPushMatrix();
+	glLoadIdentity();
+	glMatrixMode( GL_MODELVIEW );
+	glLoadIdentity();
+
+	if (ratio == 1) {
+		glPushMatrix();
+		glScalef(2.0 / w, 2.0 / h, 1.0);
+		glTranslatef(-(float)w / 2.0, -(float)h / 2.0, z);
+	} else {
+		float scale = 2.0 / w;
+		if (scale > 2.0 / h) {
+			scale = 2.0 / h;
+		}
+		glPushMatrix();
+		glScalef(scale, scale, 1.0);
+		glTranslatef(-(float)w / 2.0, -(float)h / 2.0, z);
+	}
+	vdViewDrawWindow(vdView);
+	glPopMatrix();
+	glMatrixMode( GL_PROJECTION );
+	glPopMatrix();
+	glEnable(GL_BLEND);
+
+	glDisable( GL_DEPTH_TEST );
+	draw_text_button(esContext, "tVIEW1", setup.view_mode, "VIEW1", FONT_WHITE, -0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, vista2d_cmd, 0.0);
+	draw_text_button(esContext, "tVIEW2", setup.view_mode, "VIEW2", FONT_WHITE, -0.4, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, vista2d_cmd, 0.0);
+	draw_text_button(esContext, "tVIEW3", setup.view_mode, "VIEW3", FONT_WHITE, -0.2, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, vista2d_cmd, 0.0);
+	draw_text_button(esContext, "tVIEW4", setup.view_mode, "VIEW4", FONT_WHITE, -0.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, vista2d_cmd, 0.0);
+	draw_text_button(esContext, "tVIEW5", setup.view_mode, "VIEW5", FONT_WHITE, 0.2, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, vista2d_cmd, 0.0);
+	draw_text_button(esContext, "tRATIO", setup.view_mode, "RATIO", FONT_WHITE, 0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, vista2d_cmd, 0.0);
+	draw_text_button(esContext, "tINTERNAL", setup.view_mode, "INTERNAL", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, vista2d_cmd, 0.0);
+	glEnable( GL_DEPTH_TEST );
+}
+
+#endif
 
 uint8_t hud_goto_screen (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	setup.view_mode = (int)data;
@@ -718,7 +834,7 @@ void draw_circleText_f3 (ESContext *esContext, float x1, float y1, float z1, flo
 	draw_text_f3(esContext, x1 - strlen(text) * size * 0.6 / 2.0 - 0.015, y1 - size / 2.0, z1, size, size, FONT_WHITE, text);
 }
 
-void screen_hud (ESContext *esContext) {
+void screen_hud_internal (ESContext *esContext) {
 	ESMatrix modelview;
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
@@ -1552,3 +1668,15 @@ void screen_hud (ESContext *esContext) {
 	glEnable(GL_DEPTH_TEST);
 }
 
+void screen_hud (ESContext *esContext) {
+#ifdef USE_VISTA2D
+	if (hud_use_vista2d == 1) {
+		screen_hud_vista2d(esContext);
+	} else {
+		screen_hud_internal(esContext);
+		draw_text_button(esContext, "tINTERNAL", setup.view_mode, "Vista2D", FONT_GREEN, 1.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, vista2d_cmd, 0.0);
+	}
+#else
+	screen_hud_internal(esContext);
+#endif
+}

@@ -12,6 +12,12 @@ PointOfInterest POIs[MAX_POIS];
 GeoMap *mapdata = NULL;
 
 
+#ifdef USE_FMAP
+#include <mp.h>
+extern int fdMap;
+#endif
+
+
 int long2tilex(float lon, int z) {
 	return (int)(floor((lon + 180.0) / 360.0 * pow(2.0, z))); 
 }
@@ -51,7 +57,16 @@ float x2long (int x, float lon, float zoom) {
 	return mouse_long;
 }
 
+
 int lat2y (float mark_lat, float lat, float zoom) {
+#ifdef USE_FMAP
+	if (strcmp(mapnames[map_type][MAP_TYPE], "FMAP") == 0) {
+		float vx;
+		float vy;
+		mpCoordLatLong2Viewport(fdMap, mark_lat, lon, &vx, &vy);
+		return setup.screen_h - (int)vy;
+	}
+#endif
 	int tile_y = lat2tiley(lat, zoom);
 	int mark_tile_y = lat2tiley(mark_lat, zoom) - tile_y;
 	float m_lat = tiley2lat(tile_y + mark_tile_y, zoom);
@@ -64,6 +79,14 @@ int lat2y (float mark_lat, float lat, float zoom) {
 }
 
 int long2x (float mark_long, float lon, float zoom) {
+#ifdef USE_FMAP
+	if (strcmp(mapnames[map_type][MAP_TYPE], "FMAP") == 0) {
+		float vx;
+		float vy;
+		mpCoordLatLong2Viewport(fdMap, lat, mark_long, &vx, &vy);
+		return (int)vx;
+	}
+#endif
 	int tile_x = long2tilex(lon, zoom);
 	int mark_tile_x = long2tilex(mark_long, zoom) - tile_x;
 	float m_long = tilex2long(tile_x + mark_tile_x, zoom);
@@ -315,8 +338,10 @@ void download_map_range (float from_lat, float from_lon, float to_lat, float to_
 								char quadKey[100];
 								sprintf(tile_url, mapnames[map_type][MAP_URL], BingtileXYZToQuadKey(quadKey, tile_x + x_n, tile_y + y_n, zoom));
 							}
-							SDL_Log("map: %s -> %s\n", tile_url, tile_name);
-							file_download(tile_name, tile_url);
+							if (strcmp(mapnames[map_type][MAP_TYPE], "FMAP") != 0) {
+								SDL_Log("map: %s -> %s\n", tile_url, tile_name);
+								file_download(tile_name, tile_url);
+							}
 						}
 					}
 				}
@@ -428,8 +453,10 @@ void get_maps (uint8_t mode, GeoMap *mapdata) {
 									char quadKey[100];
 									sprintf(tile_url, url_string, BingtileXYZToQuadKey(quadKey, tile_x + x_n, tile_y + y_n, mapdata->zoom));
 								}
-								SDL_Log("map: %s -> %s\n", tile_url, tile_name);
-								file_download(tile_name, tile_url);
+								if (strcmp(mapnames[map_type][MAP_TYPE], "FMAP") != 0) {
+									SDL_Log("map: %s -> %s\n", tile_url, tile_name);
+									file_download(tile_name, tile_url);
+								}
 							}
 						}
 					}
@@ -451,13 +478,25 @@ void get_maps (uint8_t mode, GeoMap *mapdata) {
 }
 
 void get_srtm (GeoMap *mapdata) {
+	char LON[128];
+	char LAT[128];
 	char file[1024];
 	char file2[1024];
 	char source[1024];
 	char target[1024];
 	int8_t lat_m = (int)mapdata->lat;
 	int8_t lon_m = (int)mapdata->lon;
-	sprintf(file, "N%02iE%03i.hgt", lat_m, lon_m);
+	if (lat_m < 0) {
+		sprintf(LAT, "S%02i", lat_m * -1);
+	} else {
+		sprintf(LAT, "N%02i", lat_m);
+	}
+	if (lon_m < 0) {
+		sprintf(LON, "W%03i", lon_m * -1);
+	} else {
+		sprintf(LON, "E%03i", lon_m);
+	}
+	sprintf(file, "%s%s.hgt", LAT, LON);
 	sprintf(file2, "%s/MAPS/%s", get_datadirectory(), file);
 	if (file_exists(file2) == 0) {
 		SDL_Log("map: getting srtm-data: %s\n", file);
@@ -888,15 +927,22 @@ void mark_poi (ESContext *esContext, float mark_lat, float mark_long, char *text
 	draw_text_f3(esContext, x1, y1, z2, 0.04, 0.04, FONT_GREEN, text);
 }
 
-float get_distance (float from_lat, float from_lon, float to_lat, float to_lon) {
-	float distance1 = acos( 
+float get_distance (float from_lat, float from_lon, float to_lat, float to_lon, float alt) {
+	// 6378.137 == Radius of earth in Km (add UAV-Altitude to calc ???)
+	float distance = acos( 
 		cos(toRad(from_lat))
 		* cos(toRad(to_lat))
 		* cos(toRad(from_lon) - toRad(to_lon))
 		+ sin(toRad(from_lat)) 
 		* sin(toRad(to_lat))
-	) * 6378.137 * 1000.0;
-	return distance1;
+	) * 6378.137 * 1000.0 + alt;
+	return distance;
+}
+
+float get_m_per_pixel (float lat, int zoomlevel) {
+	float m = 0.0;
+	m = (6372798.2 * 2 * M_PI) * cos(toRad(lat)) / pow(2, (zoomlevel + 8));
+	return m;
 }
 
 

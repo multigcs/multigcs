@@ -760,6 +760,17 @@ void next_point_ll (ESContext *esContext, float mark_long, float mark_lat, float
 	*ny1 = y2lat(new_y, lat, zoom);
 }
 
+int calc_fov (float film_width, float film_height, float sensor_mult, float lense, float dist, float *w, float *h) {
+	float sensor_width = film_width / sensor_mult;
+	float sensor_height = film_height / sensor_mult;
+	float dist_mm = dist * 1000;
+	float half_fov_w = (atan(sensor_width / (2 * lense)));
+	float half_fov_h = (atan(sensor_height / (2 * lense)));
+	*w = 2 * (dist_mm * tan(half_fov_w)) / 1000.0;
+	*h = 2 * (dist_mm * tan(half_fov_h)) / 1000.0;
+	return 0;
+}
+
 uint8_t key_pressed = 0;
 void check_events (ESContext *esContext, SDL_Event event) {
 	static uint8_t mousemode = 0;
@@ -1877,7 +1888,10 @@ int main ( int argc, char *argv[] ) {
 	char tmp_name[201];
 	ESContext esContext;
 	GlobalesContext = &esContext;
-
+#ifdef USE_VISTA2D
+	glutInit (&argc, argv);
+	glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STENCIL | GLUT_ACCUM);
+#endif
 #ifdef WINDOWS
 	sprintf(dir, "%s", get_datadirectory());
 	mkdir(dir);

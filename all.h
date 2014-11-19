@@ -105,6 +105,15 @@
 #endif
 #endif
 
+#ifdef USE_VISTA2D
+#include <GL/glut.h>
+#include <vd.h>
+#endif
+#ifdef USE_FMAP
+#include <GL/glut.h>
+#include <mp.h>
+#endif
+
 #include <model.h>
 #include <serial.h>
 #include <geomag70.h>

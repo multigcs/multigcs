@@ -252,6 +252,14 @@
 		<type>ZXY</type>
 		<copyright>OEPNV</copyright>
 	</service>
+	<service>
+		<name>FMAP</name>
+		<comment>FMAP</comment>
+		<url></url>
+		<file></file>
+		<type>FMAP</type>
+		<copyright>Wetzel</copyright>
+	</service>
 
 
 </map>

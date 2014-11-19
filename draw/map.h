@@ -57,8 +57,9 @@ void mark_route (ESContext *esContext, float last_lat, float last_long, float la
 void mark_tunnel (ESContext *esContext, float last_lat, float last_long, float last_alt, float mark_lat, float mark_long, float mark_alt, uint8_t type, float lat, float lon, uint8_t zoom);
 void mark_point (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, char *text, char *command, uint8_t type, float radius, float orbit, float lat, float lon, uint8_t zoom);
 void mark_poi (ESContext *esContext, float mark_lat, float mark_long, char *text, uint8_t type, float lat, float lon, uint8_t zoom);
-float get_distance (float from_lat, float from_lon, float to_lat, float to_lon);
-
+float get_distance (float from_lat, float from_lon, float to_lat, float to_lon, float alt);
+float get_m_per_pixel (float lat, int zoomlevel);
+int calc_fov (float film_width, float film_height, float sensor_mult, float lense, float dist, float *w, float *h);
 
 GeoMap *GeoMap_init (void);
 void GeoMap_draw (GeoMap *mapdata);
