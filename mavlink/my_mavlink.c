@@ -77,7 +77,7 @@ void mavlink_exit (void) {
 		thread_udp = NULL;
 	}
 	if (serial_fd_mavlink >= 0) {
-		close(serial_fd_mavlink);
+		serial_close(serial_fd_mavlink);
 		serial_fd_mavlink = -1;
 	}
 }

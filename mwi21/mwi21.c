@@ -56,7 +56,7 @@ void mwi21_init (char *port, uint32_t baud) {
 
 void mwi21_exit (void) {
 	if (mwi21_serial_fd >= 0) {
-		close(mwi21_serial_fd);
+		serial_close(mwi21_serial_fd);
 		mwi21_serial_fd = -1;
 	}
 }

@@ -1,6 +1,14 @@
 
 #include <all.h>
 
+typedef struct {
+	char name[1024];
+	int fd;
+} LockFile;
+
+LockFile locks[100];
+
+
 #ifdef ANDROID
 extern ssize_t bt_read(int fd, void *data, size_t len);
 #endif
@@ -46,7 +54,17 @@ ssize_t serial_read(int fd, void *data, size_t len) {
 
 int serial_close (int fd) {
 #ifndef WINDOWS
+	SDL_Log("closing serial fd (%i)\n", fd);
 	if (fd >= 0) {
+		int n = 0;
+		for (n = 0; n < 100; n++) {
+			if (locks[n].name[0] != 0 && locks[n].fd == fd) {
+				SDL_Log("	removing Lockfile: %s\n", locks[n].name);
+				remove(locks[n].name);
+				locks[n].name[0] = 0;
+				locks[n].fd = -1;
+			}
+		}
 		close(fd);
 		fd = -1;
 	}
@@ -60,7 +78,10 @@ int serial_close (int fd) {
 	return 0;
 }
 
+
 int serial_open (char *mdevice, uint32_t baud) {
+	char mdevice_name[1024];
+	FILE *lock_fd = NULL;
 	int fd = -1;
 #ifdef ANDROID
 	return 1;
@@ -120,7 +141,27 @@ int serial_open (char *mdevice, uint32_t baud) {
                    break;
 	}
 	SDL_Log("	Try to open Serial-Port: %s (%i)...", mdevice, baud);
+	sprintf(mdevice_name, "/var/lock/LCK..%s", basename(mdevice));
+	if (file_exists(mdevice_name) != 0) {
+		SDL_Log("..Failed (Lockfile allready exist: %s)\n", mdevice_name);
+		return -1;
+	}
+	if ((lock_fd = fopen(mdevice_name, "w")) == NULL) {
+		SDL_Log("..Failed (can not create Lockfile: %s)\n", mdevice_name);
+		return -1;
+	} else {
+		fprintf(lock_fd, "%i\n", getpid());
+		fclose(lock_fd);
+	}
 	if ((fd = open(mdevice, O_RDWR | O_NOCTTY )) >= 0) {
+		int n = 0;
+		for (n = 0; n < 100; n++) {
+			if (locks[n].name[0] == 0) {
+				strcpy(locks[n].name, mdevice_name);
+				locks[n].fd = fd;
+				break;
+			}
+		}
 		tcgetattr(fd, &newtio);
 		memset(&newtio, 0, sizeof(newtio));  /* clear the new struct */
 		newtio.c_cflag = baudr | CS8 | CLOCAL | CREAD;
@@ -130,6 +171,11 @@ int serial_open (char *mdevice, uint32_t baud) {
 		newtio.c_cc[VMIN] = 0;      /* block untill n bytes are received */
 		newtio.c_cc[VTIME] = 0;     /* block untill a timer expires (n * 100 mSec.) */
 		tcsetattr(fd, TCSANOW, &newtio);
+		SDL_Log("..Ok (%i / %s)\n", fd, mdevice_name);
+		return fd;
+	}
+	remove(mdevice_name);
+	SDL_Log("..Failed\n");
 #else
 	SDL_Log("	Try to open Serial-Port: %s (%i)...", mdevice, baud);
 	if ((fd = open(mdevice, O_RDWR | O_NOCTTY | O_NONBLOCK )) >= 0) {
@@ -142,11 +188,11 @@ int serial_open (char *mdevice, uint32_t baud) {
 		theTermios.c_cc[VTIME] = 0;
 		ioctl(fd, TIOCEXCL);
 		ioctl(fd, TIOCSETA, &theTermios);
-#endif
 		SDL_Log("..Ok\n");
 		return fd;
 	}
 	SDL_Log("..Failed\n");
+#endif
 
 #else
 
