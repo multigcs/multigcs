@@ -1523,9 +1523,6 @@ void glut_display (void) {
 #endif
 
 int glInit ( ESContext *esContext ) {
-	int rgb_size[3];
-	Uint32 video_flags;
-
 #ifdef GLUTINIT
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STENCIL | GLUT_ACCUM);
 	glutInitWindowPosition(0, 0);
@@ -1538,6 +1535,8 @@ int glInit ( ESContext *esContext ) {
 	glutDisplayFunc(glut_display);
 	glutReshapeWindow((int)setup.screen_w, (int)setup.screen_h);
 #else
+	int rgb_size[3];
+	Uint32 video_flags;
 #ifdef SDL2
 	if( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0 ) {
 #else
