@@ -154,13 +154,27 @@ void screen_telemetry (ESContext *esContext) {
 		draw_value_barmeter(esContext, -0.2, -0.8, 0.1, 0.0, "VOLTS", "V", 0, 8.0, 14.0, 11.0, 10.0, ModelData.voltage);
 	}
 	draw_value_barmeter(esContext, 0.3, -0.8, 0.6, 0.0, "AMPS", "A", 0, 0.0, 100.0, 75.0, 50.0, ModelData.ampere);
-	draw_value_barmeter(esContext, 0.8, -0.8, 1.1, 0.0, "VOLTS(RX)", "V", 0, 8.0, 14.0, 11.0, 10.0, ModelData.voltage_rx);
+
+	if (ModelData.voltage_rx == 0 && ModelData.fc_voltage1 > 0) {
+		draw_value_barmeter(esContext, 0.8, -0.8, 1.1, 0.0, "VOLTS(FC1)", "V", 0, 3.0, 6.0, 4.8, 4.2, ModelData.fc_voltage1);
+	} else if (ModelData.voltage_rx == 0 && ModelData.fc_voltage2 > 0) {
+		draw_value_barmeter(esContext, 0.8, -0.8, 1.1, 0.0, "VOLTS(FC2)", "V", 0, 3.0, 6.0, 4.8, 4.2, ModelData.fc_voltage2);
+	} else {
+		draw_value_barmeter(esContext, 0.8, -0.8, 1.1, 0.0, "VOLTS(RX)", "V", 0, 8.0, 14.0, 11.0, 10.0, ModelData.voltage_rx);
+	}
 
 	draw_value_barmeter(esContext, -1.2, 0.0, -0.9, 0.8, "RSSI(TX)", "", 0, 0.0, 100.0, 40.0, 20.0, ModelData.rssi_tx);
 	draw_value_barmeter(esContext, -0.7, 0.0, -0.4, 0.8, "RSSI(RX)", "", 0, 0.0, 100.0, 40.0, 20.0, ModelData.rssi_rx);
 
-
+if (ModelData.chancount > 8) {
 	draw_value_barchannels(esContext, -0.2, 0.1, "Channels", 0, 100, 8, ModelData.radio);
+	if (ModelData.chancount > 16) {
+		ModelData.chancount = 16;
+	}
+	draw_value_barchannels(esContext, -0.2, 0.5, "", 0, 100, ModelData.chancount - 8, ModelData.radio + 8);
+} else {
+	draw_value_barchannels(esContext, -0.2, 0.1, "Channels", 0, 100, 8, ModelData.radio);
+}
 
 	draw_value_barmeter(esContext, 0.3, 0.0, 0.6, 0.8, "SATS", "", 0, 0.0, 10.0, 4.0, 3.0, ModelData.numSat);
 	draw_value_barmeter(esContext, 0.8, 0.0, 1.1, 0.8, "HEART", "", 0, 0.0, 100.0, 40.0, 20.0, ModelData.heartbeat);
