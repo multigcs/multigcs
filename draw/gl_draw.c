@@ -1435,6 +1435,7 @@ void glExit (ESContext *esContext) {
 }
 
 void glResize (ESContext *esContext, int w, int h) {
+#ifndef GLUTINIT
 #ifndef SDL2
 	const SDL_PixelFormat fmt = *(WinScreen->format);
 	Uint32 video_flags;
@@ -1449,6 +1450,7 @@ void glResize (ESContext *esContext, int w, int h) {
 		exit(1);
 	}
 #endif
+#endif
 	if (setup.keep_ratio == 0.0) {
 		aspect = (GLfloat)w / (GLfloat)h;
 	} else {
@@ -1460,15 +1462,82 @@ void glResize (ESContext *esContext, int w, int h) {
 	esContext->width = setup.screen_w;
 	esContext->height = setup.screen_h;
 
+#ifdef GLUTINIT
+	glutReshapeWindow((int)setup.screen_w, (int)setup.screen_h);
+#endif
+
 	char tmp_str[100];
 	sprintf(tmp_str, "Resize: %ix%i", setup.screen_w, setup.screen_h);
 	sys_message(tmp_str);
 }
 
+#ifdef GLUTINIT
+void glut_reshape (int w, int h) {
+	if (setup.keep_ratio == 0.0) {
+		aspect = (GLfloat)w / (GLfloat)h;
+	} else {
+		aspect = setup.keep_ratio;
+	}
+	gl_init(w, h);
+	setup.screen_w = w;
+	setup.screen_h = h;
+	glutReshapeWindow((int)setup.screen_w, (int)setup.screen_h);
+	char tmp_str[100];
+	sprintf(tmp_str, "Resize: %ix%i", setup.screen_w, setup.screen_h);
+	sys_message(tmp_str);
+	GlobalesContext->width = setup.screen_w;
+	GlobalesContext->height = setup.screen_h;
+	printf("Resize: %ix%i\n", setup.screen_w, setup.screen_h);
+}
+
+int glut_button_last = 0;
+void glut_event (int button, int state, int x, int y) {
+	SDL_Event user_event;
+	if (state == GLUT_UP) {
+		user_event.type = SDL_MOUSEBUTTONUP;
+//		printf("event up: %i %i -- %i %i\n", x, y, button, state);
+		glut_button_last = -1;
+	} else {
+		user_event.type = SDL_MOUSEBUTTONDOWN;
+//		printf("event down: %i %i -- %i %i\n", x, y, button, state);
+		glut_button_last = button;
+	}
+	user_event.button.x = x;
+	user_event.button.y = y;
+	user_event.button.button = button + 1;
+	check_events(GlobalesContext, user_event);
+}
+
+void glut_motion (int x, int y) {
+	SDL_Event user_event;
+	user_event.type = SDL_MOUSEMOTION;
+	user_event.button.x = x;
+	user_event.button.y = y;
+	user_event.button.button = 0;
+	check_events(GlobalesContext, user_event);
+}
+
+void glut_display (void) {
+}
+
+#endif
+
 int glInit ( ESContext *esContext ) {
 	int rgb_size[3];
 	Uint32 video_flags;
 
+#ifdef GLUTINIT
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STENCIL | GLUT_ACCUM);
+	glutInitWindowPosition(0, 0);
+	glutInitWindowSize((int)setup.screen_w, (int)setup.screen_h);
+	glutCreateWindow("MultiGCS");
+	glutReshapeFunc(glut_reshape);
+	glutMouseFunc(glut_event);
+	glutMotionFunc(glut_motion);
+	glutPassiveMotionFunc(glut_motion);
+	glutDisplayFunc(glut_display);
+	glutReshapeWindow((int)setup.screen_w, (int)setup.screen_h);
+#else
 #ifdef SDL2
 	if( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0 ) {
 #else
@@ -1544,9 +1613,8 @@ int glInit ( ESContext *esContext ) {
 	SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, rgb_size[2] );
 	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
 	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-
 	SDL_Log("* GL-Screen BPP: %d\n", WinScreen->format->BitsPerPixel);
-
+#endif
 	if (setup.keep_ratio == 0.0) {
 		aspect = (GLfloat)setup.screen_w / (GLfloat)setup.screen_h;
 	} else {
@@ -1637,10 +1705,14 @@ void draw_buffer_to_screen (float x1, float y1, float x2, float y2, float z, flo
 
 
 void draw_update (ESContext *esContext) {
+#ifdef GLUTINIT
+	glutSwapBuffers();
+#else
 #ifdef SDL2
 	SDL_GL_SwapWindow(MainWindow);
 #else
 	SDL_GL_SwapBuffers();
+#endif
 #endif
 	glMatrixMode(GL_MODELVIEW);
 	glClearColor(0.0, 0.0, 0.0, 1.0);
