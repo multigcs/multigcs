@@ -78,6 +78,19 @@ typedef struct {
 	uint8_t type;
 } WayPoint;
 
+typedef struct {
+	float p_lat;
+	float p_long;
+	float p_alt;
+	float yaw;
+	float radius;
+	float wait;
+	float orbit;
+	char name[128];
+	char command[128];
+	uint8_t type;
+} PolyPoint;
+
 enum {
 	BUTTON_RELEASE,
 	BUTTON_PRESS,
@@ -118,9 +131,8 @@ typedef struct {
 	uint32_t frsky_baud;
 	char tracker_port[1024];
 	uint32_t tracker_baud;
-
 	int8_t waypoint_active;
-
+	int8_t polypoint_active;
 	uint8_t fullscreen;
 	uint8_t borderless;
 	uint8_t view_mode;
@@ -162,11 +174,13 @@ typedef struct {
 
 extern Button Buttons[MAX_BUTTONS + 1];
 extern WayPoint WayPoints[MAX_WAYPOINTS + 1];
+extern PolyPoint PolyPoints[MAX_WAYPOINTS + 1];
 extern GcsSetup setup;
 
 extern volatile uint8_t gui_running;
 extern uint8_t redraw_flag;
 extern int8_t waypoint_active;
+extern int8_t polypoint_active;
 extern uint8_t view_mode_next;
 extern char keyboard_key[100];
 extern uint8_t keyboard_shift;

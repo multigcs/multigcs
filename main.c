@@ -52,7 +52,9 @@ uint16_t mouse_y = 0;
 uint8_t message = 0;
 char message_txt[1024];
 WayPoint WayPoints[MAX_WAYPOINTS + 1];
+PolyPoint PolyPoints[MAX_WAYPOINTS + 1];
 int8_t waypoint_active = 0;
+int8_t polypoint_active = 0;
 uint8_t view_mode_last = 255;
 uint8_t view_mode_next = 0;
 float trans_count = 0.0;
@@ -336,6 +338,19 @@ void set_telemetry (char *device, uint32_t baud) {
 void setup_waypoints (void) {
 	int n = 0;
 	for (n = 0; n < MAX_WAYPOINTS; n++) {
+		PolyPoints[n].p_lat = 0.0;
+		PolyPoints[n].p_long = 0.0;
+		PolyPoints[n].p_alt = 0.0;
+		PolyPoints[n].yaw = 0.0;
+		PolyPoints[n].radius = 2.0;
+		PolyPoints[n].wait = 500.0;
+		PolyPoints[n].orbit = 0.0;
+		PolyPoints[n].name[0] = 0;
+		PolyPoints[n].command[0] = 0;
+		PolyPoints[n].type = 0;
+	}
+
+	for (n = 0; n < MAX_WAYPOINTS; n++) {
 		WayPoints[n].p_lat = 0.0;
 		WayPoints[n].p_long = 0.0;
 		WayPoints[n].p_alt = 0.0;
@@ -347,6 +362,7 @@ void setup_waypoints (void) {
 		WayPoints[n].command[0] = 0;
 		WayPoints[n].type = 0;
 	}
+
 	WayPoints[0].p_lat = 50.29197;
 	WayPoints[0].p_long = 9.12764;
 	WayPoints[0].p_alt = 125.0;
@@ -495,6 +511,23 @@ void setup_save (void) {
 	                        fprintf(fr, "\n");
 	                }
 	        }
+	        fprintf(fr, "\n");
+	        fprintf(fr, "[polypoints]\n");
+	        for (n = 0; n < MAX_WAYPOINTS; n++) {
+	                if (PolyPoints[n].p_lat != 0.0) {
+	                        fprintf(fr, "name	%s\n", PolyPoints[n].name);
+	                        fprintf(fr, "command	%s\n", PolyPoints[n].command);
+	                        fprintf(fr, "lat	%0.8f\n", PolyPoints[n].p_lat);
+	                        fprintf(fr, "lon	%0.8f\n", PolyPoints[n].p_long);
+	                        fprintf(fr, "alt	%f\n", PolyPoints[n].p_alt);
+	                        fprintf(fr, "yaw	%f\n", PolyPoints[n].yaw);
+	                        fprintf(fr, "wait	%f\n", PolyPoints[n].wait);
+	                        fprintf(fr, "radius	%f\n", PolyPoints[n].radius);
+	                        fprintf(fr, "orbit	%f\n", PolyPoints[n].orbit);
+	                        fprintf(fr, "type	%i\n", PolyPoints[n].type);
+	                        fprintf(fr, "\n");
+	                }
+	        }
 	        fclose(fr);
 	} else {
 		SDL_Log("Can not save setup-file: %s\n", filename);
@@ -508,6 +541,7 @@ void setup_load (void) {
         char val[1024];
         int mode = 0;
         int wp_num = 0;
+        int pp_num = 1;
 #ifdef RPI_NO_X
 	strncpy(setup.gcs_gps_port, "/dev/ttyAMA0", 1023);
 	setup.gcs_gps_baud = 9600;
@@ -686,6 +720,8 @@ void setup_load (void) {
 	                                ModelData.p_alt = atof(val);
 	                        } else if (strcmp(var, "[waypoints]") == 0) {
 	                                mode = 1;
+	                        } else if (strcmp(var, "[polypoints]") == 0) {
+	                                mode = 2;
 	                        }
 	                } else if (mode == 1) {
 	                        if (var[0] == 0) {
@@ -719,6 +755,41 @@ void setup_load (void) {
 	                                WayPoints[wp_num].orbit = atof(val);
 	                        } else if (strcmp(var, "type") == 0) {
 	                                WayPoints[wp_num].type = atoi(val);
+	                        } else if (strcmp(var, "[polypoints]") == 0) {
+	                                mode = 2;
+	                        }
+	                } else if (mode == 2) {
+	                        if (var[0] == 0) {
+	                                if (PolyPoints[pp_num].p_lat != 0.0) {
+	                                        pp_num++;
+	                                        PolyPoints[pp_num].p_lat = 0.0;
+	                                        PolyPoints[pp_num].p_long = 0.0;
+	                                        PolyPoints[pp_num].p_alt = 0.0;
+	                                        PolyPoints[pp_num].yaw = 0.0;
+	                                        PolyPoints[pp_num].name[0] = 0;
+	                                        PolyPoints[pp_num].command[0] = 0;
+	                                        PolyPoints[pp_num].type = 0;
+	                                }
+	                        } else if (strcmp(var, "name") == 0) {
+	                                strncpy(PolyPoints[pp_num].name, val, 127);
+	                        } else if (strcmp(var, "command") == 0) {
+	                                strncpy(PolyPoints[pp_num].command, val, 127);
+	                        } else if (strcmp(var, "lat") == 0) {
+	                                PolyPoints[pp_num].p_lat = atof(val);
+	                        } else if (strcmp(var, "lon") == 0) {
+	                                PolyPoints[pp_num].p_long = atof(val);
+	                        } else if (strcmp(var, "alt") == 0) {
+	                                PolyPoints[pp_num].p_alt = atof(val);
+	                        } else if (strcmp(var, "yaw") == 0) {
+	                                PolyPoints[pp_num].yaw = atof(val);
+	                        } else if (strcmp(var, "wait") == 0) {
+	                                PolyPoints[pp_num].wait = atof(val);
+	                        } else if (strcmp(var, "radius") == 0) {
+	                                PolyPoints[pp_num].radius = atof(val);
+	                        } else if (strcmp(var, "orbit") == 0) {
+	                                PolyPoints[pp_num].orbit = atof(val);
+	                        } else if (strcmp(var, "type") == 0) {
+	                                PolyPoints[pp_num].type = atoi(val);
 	                        }
 	                }
 	        }
@@ -969,6 +1040,18 @@ void check_events (ESContext *esContext, SDL_Event event) {
 				}
 				WayPoints[waypoint_active].p_lat = mouse_lat;
 				WayPoints[waypoint_active].p_long = mouse_long;
+/*			} else if (polypoint_active >= 0) {
+				if (polypoint_active == 0) {
+					PolyPoints[polypoint_active].p_alt = get_altitude(mouse_lat, mouse_long);
+				} else {
+					int16_t zz = get_altitude(mouse_lat, mouse_long);
+					if (PolyPoints[polypoint_active].p_alt < zz) {
+						PolyPoints[polypoint_active].p_alt = zz;
+					}
+				}
+				PolyPoints[polypoint_active].p_lat = mouse_lat;
+				PolyPoints[polypoint_active].p_long = mouse_long;
+*/
 			} else {
 				mapdata->offset_x1 -= x1 - mousestart_x;
 				mapdata->offset_y1 -= y1 - mousestart_y;
@@ -1076,7 +1159,6 @@ void check_events (ESContext *esContext, SDL_Event event) {
 	} else if (event.type == SDL_MOUSEBUTTONDOWN) {
 #endif
 #endif
-
 		float bx = (float)event.button.x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 		float by = (float)event.button.y / (float)esContext->height * 2.0 - 1.0;
 #ifdef SDL2
@@ -1086,7 +1168,9 @@ void check_events (ESContext *esContext, SDL_Event event) {
 			}
 //		}
 #else
+//		printf("EVENT: %f %f \n", bx, by);
 		if (check_button(setup.view_mode, bx, by, event.button.button, BUTTON_PRESS) != -1) {
+//			printf("BUTTON_CLICKED: %f %f \n", bx, by);
 			return;
 		}
 #endif
@@ -1151,6 +1235,28 @@ void check_events (ESContext *esContext, SDL_Event event) {
 						}
 					}
 					map_addmode = 0;
+				} else if (map_poly_addmode == 1) {
+					uint16_t n = 0;
+					int16_t nz = get_altitude(mouse_lat, mouse_long);
+					if (ModelData.p_alt > nz) {
+						nz = ModelData.p_alt;
+					}
+					if (PolyPoints[0].p_alt > nz) {
+						nz = PolyPoints[0].p_alt;
+					}
+					for (n = 1; n < MAX_WAYPOINTS; n++) {
+						if (PolyPoints[n].p_lat == 0.0) {
+							PolyPoints[n].p_lat = mouse_lat;
+							PolyPoints[n].p_long = mouse_long;
+							PolyPoints[n].p_alt = nz;
+							PolyPoints[n].yaw = 0.0;
+							PolyPoints[n].orbit = 0.0;
+							sprintf(PolyPoints[n].name, "POINT%i", n);
+							strncpy(PolyPoints[n].command, "", 127);
+							break;
+						}
+					}
+					map_poly_addmode = 0;
 				} else {
 					waypoint_active = -1;
 					mousestart_x = x1;
@@ -1163,8 +1269,22 @@ void check_events (ESContext *esContext, SDL_Event event) {
 							int16_t mark_y = lat2y(WayPoints[n].p_lat, lat, zoom);
 							if (bx + 20 > mark_x && bx - 20 < mark_x) {
 								if (by + 20 > mark_y && by - 20 < mark_y) {
-									SDL_Log("POINT: %i\n", n);
+									SDL_Log("WAYPOINT: %i\n", n);
 									waypoint_active = n;
+									mousemode = 1;
+									break;
+								}
+							}
+						}
+					}
+					for (n = 0; n < MAX_WAYPOINTS; n++) {
+						if (PolyPoints[n].p_lat != 0.0) {
+							int16_t mark_x = long2x(PolyPoints[n].p_long, lon, zoom);
+							int16_t mark_y = lat2y(PolyPoints[n].p_lat, lat, zoom);
+							if (bx + 20 > mark_x && bx - 20 < mark_x) {
+								if (by + 20 > mark_y && by - 20 < mark_y) {
+									SDL_Log("POLYPOINT: %i\n", n);
+									polypoint_active = n;
 									mousemode = 1;
 									break;
 								}
@@ -1262,7 +1382,7 @@ int telemetry_thread (void *data) {
 		} else {
 			mavlink_update();
 		}
-		SDL_Delay(2);
+		SDL_Delay(1);
 	}
 	SDL_Log("telemetry: exit thread\n");
 	return(0);
@@ -1883,6 +2003,14 @@ int dpf_thread (void *data) {
 }
 #endif
 
+#ifdef USE_VISTA2D
+void glut_timer (int t) {
+	Draw(GlobalesContext);
+	glutTimerFunc(10, glut_timer, 0);
+}
+#endif
+
+
 int main ( int argc, char *argv[] ) {
 	char dir[1024];
 	char tmp_name[201];
@@ -1890,7 +2018,6 @@ int main ( int argc, char *argv[] ) {
 	GlobalesContext = &esContext;
 #ifdef USE_VISTA2D
 	glutInit (&argc, argv);
-	glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STENCIL | GLUT_ACCUM);
 #endif
 #ifdef WINDOWS
 	sprintf(dir, "%s", get_datadirectory());
@@ -2026,12 +2153,18 @@ int main ( int argc, char *argv[] ) {
 #ifdef CONSOLE_ONLY
 	SDL_Log("main: now you can connect via Browser or Google-Earth to port :%i\n", setup.webport);
 #endif
+
+#ifdef USE_VISTA2D
+	glutTimerFunc(30, glut_timer, 0);
+	glutMainLoop();
+#else
 #ifndef SDLGL
 	esMainLoop(&esContext);
 #else
 	while (gui_running == 1) {
 		Draw(&esContext);
 	}
+#endif
 #endif
 	ShutDown(&esContext);
 	return 0;

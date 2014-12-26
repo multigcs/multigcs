@@ -20,11 +20,13 @@ uint8_t map_view = 0;
 uint8_t map_color = 0;
 uint8_t map_startup = 0;
 uint8_t map_addmode = 0;
+uint8_t map_poly_addmode = 0;
 float roty = 0.0;
 uint8_t uav_active_waypoint = 0;
 uint8_t center_map = 1;
 uint8_t nav_map = 0;
 uint8_t map_show_wp = 0;
+uint8_t map_show_poly = 0;
 uint8_t map_show_notam = 0;
 uint8_t map_show_poi = 0;
 uint8_t map_rotate = 0;
@@ -38,8 +40,12 @@ float cam_film_width = 36.0;  // 35 mm standard film
 float cam_film_height = 24.0; // 35 mm standard film
 float cam_sensor_mult = 1.62; // Formatfaktor / APS-C-Sensor (Canon)
 float cam_lense = 20.0; // Brennweite in mm
+float img_overlap = 1.2;
+float img_alt = 30.0;
+uint8_t img_alt_abs = 0;
 uint8_t map_show_fov = 0;
 uint8_t map_show_cam_setup = 0;
+uint8_t map_show_poly_setup = 0;
 uint8_t map_show_profile = 0;
 
 
@@ -108,6 +114,74 @@ uint8_t map_null (char *name, float x, float y, int8_t button, float data, uint8
 #endif
 	return 0;
 }
+
+
+
+
+
+int point_in_poly (float testx, float testy) {
+	int result = 0;
+	int num = 0;
+	float pmark_x = 0.0;
+	float pmark_y = 0.0;
+	float last_x = 0.0;
+	float last_y = 0.0;
+	for (num = 1; num < MAX_WAYPOINTS; num++) {
+		if (PolyPoints[num].p_lat != 0.0) {
+			pmark_x = long2x(PolyPoints[num].p_long, lon, zoom);
+			pmark_y = lat2y(PolyPoints[num].p_lat, lat, zoom);
+			last_x = pmark_x;
+			last_y = pmark_y;
+		}
+	}
+	for (num = 1; num < MAX_WAYPOINTS; num++) {
+		if (PolyPoints[num].p_lat != 0.0) {
+			pmark_x = long2x(PolyPoints[num].p_long, lon, zoom);
+			pmark_y = lat2y(PolyPoints[num].p_lat, lat, zoom);
+			float x1 = last_x;
+			float y1 = last_y;
+			float x2 = pmark_x;
+			float y2 = pmark_y;
+			if (y2 == testy) {
+				if ((x2 == testx) || (y1 == testy && ((x2 > testx) == (x1 < testx)))) {
+//					fprintf(stderr, "Point on line\n");
+					return 1;
+				}
+			}
+			if ((y1 < testy) != (y2 < testy)) {
+				if (x1 >= testx) {
+					if (x2 > testx) {
+						result = 1 - result;
+					} else {
+						float d = (float)(x1 - testx) * (y2 - testy) - (float)(x2 - testx) * (y1 - testy);
+						if (!d) {
+							return 1;
+						}
+						if ((d > 0) == (y2 > y1)) {
+							result = 1 - result;
+						}
+					}
+				} else {
+					if (x2 > testx) {
+						float d = (float)(x1 - testx) * (y2 - testy) - (float)(x2 - testx) * (y1 - testy);
+						if (!d) {
+							return 1;
+						}
+						if ((d > 0) == (y2 > y1)) {
+							result = 1 - result;
+						}
+					}
+				}
+			}
+		}
+		last_x = pmark_x;
+		last_y = pmark_y;
+	}
+	return result;
+}
+
+
+
 
 uint8_t map_overlay_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	map_overlay_set = 1 - map_overlay_set;
@@ -308,6 +382,32 @@ uint8_t map_del (char *name, float x, float y, int8_t button, float data, uint8_
 	waypoint_active--;
 	return 0;
 }
+
+
+uint8_t map_polypoint_add (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	map_poly_addmode = 1 - map_poly_addmode;
+	map_show_poly = 1;
+	return 0;
+}
+
+uint8_t map_polypoint_del (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	uint16_t n = 0;
+	uint16_t n2 = polypoint_active + 1;
+	for (n = polypoint_active; n < MAX_WAYPOINTS; n++) {
+		if (PolyPoints[n].p_lat != 0.0) {
+			PolyPoints[n].p_lat = PolyPoints[n2].p_lat;
+			PolyPoints[n].p_long = PolyPoints[n2].p_long;
+			PolyPoints[n].p_alt = PolyPoints[n2].p_alt;
+			PolyPoints[n].yaw = PolyPoints[n2].yaw;
+			strncpy(PolyPoints[n].name, PolyPoints[n2].name, 127);
+			strncpy(PolyPoints[n].command, PolyPoints[n2].command, 127);
+			n2++;
+		}
+	}
+	polypoint_active--;
+	return 0;
+}
+
 
 void draw_xy (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, float lat, float lon, uint8_t zoom, float *x1, float *y1) {
 	int mark_x = long2x(mark_long, lon, zoom);
@@ -710,14 +810,193 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 		if (button == 5) {
 			cam_sensor_mult -= 0.01;
 		}
+	} else if (strcmp(name, "img_overlap") == 0) {
+		if (button == 4) {
+			img_overlap += 0.01;
+		}
+		if (button == 5) {
+			img_overlap -= 0.01;
+		}
+	} else if (strcmp(name, "img_alt") == 0) {
+		if (button == 4) {
+			img_alt += 1.0;
+		}
+		if (button == 5) {
+			img_alt -= 1.0;
+		}
+	} else if (strcmp(name, "img_alt_abs") == 0) {
+		img_alt_abs = 1 - img_alt_abs;
 	} else if (strncmp(name, "cam_sensor_", 11) == 0) {
 		cam_film_width = 36.0;
 		cam_film_height = 24.0;
 		cam_sensor_mult = atof(name + 11);
 	} else if (strcmp(name, "cam_setup") == 0) {
 		map_show_cam_setup = 1 - map_show_cam_setup;
+		map_show_poly = 1;
 	} else if (strcmp(name, "cam_setup_done") == 0) {
 		map_show_cam_setup = 1 - map_show_cam_setup;
+	} else if (strcmp(name, "cam_setup_write") == 0) {
+		map_show_cam_setup = 1 - map_show_cam_setup;
+
+
+		int n = 0;
+		// clear Waypoints
+		for (n = 1; n < MAX_WAYPOINTS; n++) {
+			WayPoints[n].p_lat = 0.0;
+		}
+
+		// add Waypoints
+
+		int pmark_x = long2x(PolyPoints[1].p_long, lon, zoom);
+		int pmark_y = lat2y(PolyPoints[1].p_lat, lat, zoom);
+		float min_x = pmark_x;
+		float min_y = pmark_y;
+		float max_x = pmark_x;
+		float max_y = pmark_y;
+
+		// check box
+		for (n = 1; n < MAX_WAYPOINTS; n++) {
+			if (PolyPoints[n].p_lat != 0.0) {
+				pmark_x = long2x(PolyPoints[n].p_long, lon, zoom);
+				pmark_y = lat2y(PolyPoints[n].p_lat, lat, zoom);
+				if (min_x > pmark_x) {
+					min_x = pmark_x;
+				}
+				if (min_y > pmark_y) {
+					min_y = pmark_y;
+				}
+				if (max_x < pmark_x) {
+					max_x = pmark_x;
+				}
+				if (max_y < pmark_y) {
+					max_y = pmark_y;
+				}
+			}
+		}
+
+		float h = 0.0;
+		float w = 0.0;
+		float mpp = get_m_per_pixel(lat, zoom);
+		float pos_alt = get_altitude(ModelData.p_lat, ModelData.p_long);
+		float dist = ModelData.p_alt - pos_alt; // Abstand in Metern
+		dist = img_alt;
+		calc_fov(cam_film_width, cam_film_height, cam_sensor_mult, cam_lense, dist, &w, &h);
+		float rast_x = w / mpp / img_overlap;
+		float rast_y = h / mpp / img_overlap;
+		float n_x = 0.0;
+		float n_y = 0.0;
+		float lastn_x = 0.0;
+		float lastn_y = 0.0;
+		float lastn_alt = 0.0;
+		n = 1;
+		for (n_y = min_y; n_y <= max_y + rast_y; n_y += rast_y) {
+			for (n_x = min_x; n_x <= max_x + rast_x; n_x += rast_x) {
+				if (point_in_poly(n_x, n_y) == 0) {
+					continue;
+				}
+				float np_long = x2long(n_x, lon, mapdata->zoom);
+				float np_lat = y2lat(n_y, lat, mapdata->zoom);
+				float pos_alt = get_altitude(np_lat, np_long);
+				float alt = img_alt + pos_alt;
+				if (img_alt_abs == 1) {
+					if (img_alt < pos_alt) {
+						img_alt = pos_alt;
+					}
+					alt = img_alt;
+					WayPoints[n].p_lat = np_lat;
+					WayPoints[n].p_long = np_long;
+					WayPoints[n].p_alt = img_alt - pos_alt;
+					WayPoints[n].yaw = 0.0;
+					sprintf(WayPoints[n].name, "PIC%i", n);
+					strcpy(WayPoints[n].command, "WAYPOINT");
+					n++;
+					WayPoints[n].p_lat = np_lat;
+					WayPoints[n].p_long = np_long;
+					WayPoints[n].p_alt = pos_alt;
+					WayPoints[n].yaw = 0.0;
+					sprintf(WayPoints[n].name, "ROI%i", n);
+					strcpy(WayPoints[n].command, "SET_ROI");
+					n++;
+				} else {
+					WayPoints[n].p_lat = np_lat;
+					WayPoints[n].p_long = np_long;
+					WayPoints[n].p_alt = alt;
+					WayPoints[n].yaw = 0.0;
+					sprintf(WayPoints[n].name, "PIC%i", n);
+					strcpy(WayPoints[n].command, "WAYPOINT");
+					n++;
+					WayPoints[n].p_lat = np_lat;
+					WayPoints[n].p_long = np_long;
+					WayPoints[n].p_alt = pos_alt;
+					WayPoints[n].yaw = 0.0;
+					sprintf(WayPoints[n].name, "ROI%i", n);
+					strcpy(WayPoints[n].command, "SET_ROI");
+					n++;
+				}
+				lastn_x = n_x;
+				lastn_y = n_y;
+				lastn_alt = alt;
+			}
+			n_y += rast_y;
+			for (; n_x >= min_x - rast_x; n_x -= rast_x) {
+				if (point_in_poly(n_x, n_y) == 0) {
+					continue;
+				}
+				float np_long = x2long(n_x, lon, mapdata->zoom);
+				float np_lat = y2lat(n_y, lat, mapdata->zoom);
+				float pos_alt = get_altitude(np_lat, np_long);
+				float alt = img_alt + pos_alt;
+				if (img_alt_abs == 1) {
+					if (img_alt < pos_alt) {
+						img_alt = pos_alt;
+					}
+					alt = img_alt;
+					WayPoints[n].p_lat = np_lat;
+					WayPoints[n].p_long = np_long;
+					WayPoints[n].p_alt = img_alt - pos_alt;
+					WayPoints[n].yaw = 0.0;
+					sprintf(WayPoints[n].name, "PIC%i", n);
+					strcpy(WayPoints[n].command, "WAYPOINT");
+					n++;
+					WayPoints[n].p_lat = np_lat;
+					WayPoints[n].p_long = np_long;
+					WayPoints[n].p_alt = pos_alt;
+					WayPoints[n].yaw = 0.0;
+					sprintf(WayPoints[n].name, "ROI%i", n);
+					strcpy(WayPoints[n].command, "SET_ROI");
+					n++;
+				} else {
+					WayPoints[n].p_lat = np_lat;
+					WayPoints[n].p_long = np_long;
+					WayPoints[n].p_alt = alt;
+					WayPoints[n].yaw = 0.0;
+					sprintf(WayPoints[n].name, "PIC%i", n);
+					strcpy(WayPoints[n].command, "WAYPOINT");
+					n++;
+					WayPoints[n].p_lat = np_lat;
+					WayPoints[n].p_long = np_long;
+					WayPoints[n].p_alt = pos_alt;
+					WayPoints[n].yaw = 0.0;
+					sprintf(WayPoints[n].name, "ROI%i", n);
+					strcpy(WayPoints[n].command, "SET_ROI");
+					n++;
+				}
+				lastn_x = n_x;
+				lastn_y = n_y;
+				lastn_alt = alt;
+			}
+		}
+		map_show_poly = 0;
+		map_show_wp = 1;
+	}
+	return 0;
+}
+
+uint8_t map_poly_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (strcmp(name, "poly_setup") == 0) {
+		map_show_poly_setup = 1 - map_show_poly_setup;
+	} else if (strcmp(name, "poly_setup_done") == 0) {
+		map_show_poly_setup = 1 - map_show_poly_setup;
 	}
 	return 0;
 }
@@ -727,14 +1006,14 @@ void map_draw_cam_setup (ESContext *esContext) {
 	float px1 = -0.8;
 	float py1 = -0.9;
 	float px2 = 0.8;
-	float py2 = -0.4;
+	float py2 = -0.2;
 	draw_box_f3(esContext, px1, py1, 0.002, px2, py2, 0.002, 0, 0, 0, 127);
 	draw_box_f3(esContext, px1, py1, 0.005, px2, py1 + 0.05, 0.005, 255, 255, 255, 127);
 	draw_rect_f3(esContext, px1, py1, 0.005, px2, py1 + 0.05, 0.005, 255, 255, 255, 255);
 	draw_text_button(esContext, "cam_setup_title", setup.view_mode, "Cam-Setup", FONT_GREEN, px1, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 	int ny = 1;
 	// Lense
-	draw_text_button(esContext, "cam_lense", setup.view_mode, "Lense:", FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+	draw_text_button(esContext, "cam_lense", setup.view_mode, "Lense:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 	draw_text_button(esContext, "cam_lense_20", setup.view_mode, "[20mm]", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
 	draw_text_button(esContext, "cam_lense_50", setup.view_mode, "[50mm]", FONT_GREEN, px1 + 1.1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
 	draw_text_button(esContext, "cam_lense_70", setup.view_mode, "[70mm]", FONT_GREEN, px1 + 1.4, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
@@ -743,7 +1022,7 @@ void map_draw_cam_setup (ESContext *esContext) {
 	draw_text_button(esContext, "cam_lense", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 	ny++;
 	// Sensor
-	draw_text_button(esContext, "cam_sensor", setup.view_mode, "Sensor:", FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+	draw_text_button(esContext, "cam_sensor", setup.view_mode, "Sensor:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 	draw_text_button(esContext, "cam_sensor_1.0", setup.view_mode, "[Full]", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
 	draw_text_button(esContext, "cam_sensor_1.4", setup.view_mode, "[APS-E]", FONT_GREEN, px1 + 1.1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
 	draw_text_button(esContext, "cam_sensor_1.6", setup.view_mode, "[APS-C]", FONT_GREEN, px1 + 1.4, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
@@ -756,8 +1035,24 @@ void map_draw_cam_setup (ESContext *esContext) {
 	ny++;
 	sprintf(tmp_str, "  Sensor-Mult.: %0.2fx", cam_sensor_mult);
 	draw_text_button(esContext, "cam_sensor_mult", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+	draw_text_button(esContext, "cam_setup_write", setup.view_mode, "[WRITE]", FONT_GREEN, px2 - 0.25, py2 - 0.075, 0.005, 0.07, ALIGN_RIGHT, ALIGN_TOP, map_cam_set, 0.0);
 	draw_text_button(esContext, "cam_setup_done", setup.view_mode, "[DONE]", FONT_GREEN, px2 - 0.02, py2 - 0.075, 0.005, 0.07, ALIGN_RIGHT, ALIGN_TOP, map_cam_set, 0.0);
 	draw_rect_f3(esContext, px1, py1, 0.005, px2, py2, 0.005, 255, 255, 255, 255);
+	ny++;
+	// Overlap/Alt
+	draw_text_button(esContext, "img_overlap", setup.view_mode, "Overlap/Alt:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+	ny++;
+	sprintf(tmp_str, "  Overlap: %0.2f", img_overlap);
+	draw_text_button(esContext, "img_overlap", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+	ny++;
+	sprintf(tmp_str, "  Alt: %0.2f", img_alt);
+	draw_text_button(esContext, "img_alt", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+	if (img_alt_abs == 1) {
+		draw_text_button(esContext, "img_alt_abs", setup.view_mode, "ABS", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+	} else {
+		draw_text_button(esContext, "img_alt_abs", setup.view_mode, "REL", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+	}
+	ny++;
 }
 
 void map_draw_alt_profile (ESContext *esContext) {
@@ -993,6 +1288,19 @@ void map_draw_buttons (ESContext *esContext) {
 		draw_button(esContext, "map_add", setup.view_mode, "ADD", FONT_GREEN, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_add, 0.0);
 	}
 	ny++;
+
+
+	draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
+	draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
+	if (map_poly_addmode == 0) {
+		draw_button(esContext, "map_polypoint_add", setup.view_mode, "PADD", FONT_WHITE, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_polypoint_add, 0.0);
+	} else {
+		draw_button(esContext, "map_polypoint_add", setup.view_mode, "PADD", FONT_GREEN, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_polypoint_add, 0.0);
+	}
+	ny++;
+
+
+
 	if (map_show_wp == 1) {
 		draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 		draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
@@ -1027,9 +1335,16 @@ void map_draw_buttons (ESContext *esContext) {
 	ny++;
 	draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 	draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
+	if (map_show_poly_setup == 1) {
+		draw_button(esContext, "poly_setup", setup.view_mode, "POLY", FONT_GREEN, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_poly_set, 0.0);
+	} else {
+		draw_button(esContext, "poly_setup", setup.view_mode, "POLY", FONT_WHITE, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_poly_set, 0.0);
+	}
+	ny++;
+	draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
+	draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
 	if (map_overlay_set == 1) {
 		draw_button(esContext, "map_overlay_set", setup.view_mode, "OVL", FONT_GREEN, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_overlay_change, 0.0);
-
 		ny2 = ny - 1;
 		draw_box_f3(esContext, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
 		draw_rect_f3(esContext, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
@@ -1039,7 +1354,6 @@ void map_draw_buttons (ESContext *esContext) {
 			draw_button(esContext, "map_show_notam", setup.view_mode, "NOTAM", FONT_WHITE, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_notam, 0.0);
 		}
 		ny2++;
-
 		draw_box_f3(esContext, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
 		draw_rect_f3(esContext, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
 		if (map_show_poi == 1) {
@@ -1048,8 +1362,6 @@ void map_draw_buttons (ESContext *esContext) {
 			draw_button(esContext, "map_show_poi", setup.view_mode, "POI", FONT_WHITE, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_poi, 0.0);
 		}
 		ny2++;
-
-
 		draw_box_f3(esContext, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
 		draw_rect_f3(esContext, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
 		if (map_show_profile == 1) {
@@ -1058,8 +1370,16 @@ void map_draw_buttons (ESContext *esContext) {
 			draw_button(esContext, "map_show_profile", setup.view_mode, "PROF", FONT_WHITE, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_profile, 0.0);
 		}
 		ny2++;
-
-
+#ifndef RPI_NO_X
+		draw_box_f3(esContext, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
+		draw_rect_f3(esContext, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
+		if (nav_map == 1) {
+			draw_button(esContext, "map_nav", setup.view_mode, "NAV", FONT_GREEN, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_nav, 0.0);
+		} else {
+			draw_button(esContext, "map_nav", setup.view_mode, "NAV", FONT_WHITE, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_nav, 0.0);
+		}
+		ny2++;
+#endif
 	} else {
 		draw_button(esContext, "map_overlay_set", setup.view_mode, "OVL", FONT_WHITE, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_overlay_change, 0.0);
 	}
@@ -1072,19 +1392,6 @@ void map_draw_buttons (ESContext *esContext) {
 		draw_button(esContext, "cam_setup", setup.view_mode, "CAM", FONT_WHITE, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_cam_set, 0.0);
 	}
 	ny++;
-
-#ifndef RPI_NO_X
-	draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
-	draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
-	if (nav_map == 1) {
-		draw_button(esContext, "map_nav", setup.view_mode, "NAV", FONT_GREEN, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_nav, 0.0);
-	} else {
-		draw_button(esContext, "map_nav", setup.view_mode, "NAV", FONT_WHITE, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_nav, 0.0);
-	}
-	ny++;
-#else
-	ny++;
-#endif
 	glEnable( GL_DEPTH_TEST );
 }
 
@@ -1228,12 +1535,14 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		glTranslatef(0.0, 0.0015, -0.0068);
 
 		if (setup.hud_view_stab == 1) {
-			glRotatef(0.0, 1.0, 0.0, 0.0);
+			glRotatef(0.0, 1.0, 1.0, 1.0);
 		} else if (setup.hud_view_stab == 2) {
-			glRotatef(45.0, 1.0, 0.0, 0.0);
+			glRotatef(-ModelData.mnt_pitch, 1.0, 0.0, 0.0);
+			glRotatef(-ModelData.mnt_roll, 0.0, 1.0, 0.0);
+			glRotatef(-ModelData.mnt_yaw, 0.0, 0.0, 1.0);
 		} else {
-			glRotatef(-ModelData.roll, 0.0, 1.0, 0.0);
 			glRotatef(-ModelData.pitch, 1.0, 0.0, 0.0);
+			glRotatef(-ModelData.roll, 0.0, 1.0, 0.0);
 		}
 		glRotatef(ModelData.yaw, 0.0, 0.0, 1.0);
 		glTranslatef(0.0, 0.0, 2.0 - 0.00 - (ModelData.p_alt - ModelData.alt_offset) / alt_zoom);
@@ -1393,10 +1702,13 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			}
 		}
 	}
+
 	// Mark Tracker-Position
 	draw_tracker(esContext, tracker_lat, tracker_long, tracker_alt, tracker_pitch_dir, tracker_pan_dir, mapdata->lat, mapdata->lon, mapdata->zoom);
+
 	// drawing Logfile
 	map_log_show();
+
 	// drawing Waypoint-Route
 	float last_lat = ModelData.p_lat;
 	float last_lon = ModelData.p_long;
@@ -1426,13 +1738,19 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		mark_point(esContext, WayPoints[0].p_lat, WayPoints[0].p_long, WayPoints[0].p_alt, WayPoints[0].name, "", 0, 0.0, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
 			if (WayPoints[n].p_lat != 0.0) {
-				if (flag != 0) {
-					mark_route(esContext, last_lat, last_lon, last_alt, WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].p_alt, 0, mapdata->lat, mapdata->lon, mapdata->zoom);
+				if (strcmp(WayPoints[n].command, "SET_ROI") == 0) {
+					if (flag != 0) {
+						mark_route(esContext, last_lat, last_lon, last_alt, WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].p_alt, 1, mapdata->lat, mapdata->lon, mapdata->zoom);
+					}
+				} else {
+					if (flag != 0) {
+						mark_route(esContext, last_lat, last_lon, last_alt, WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].p_alt, 0, mapdata->lat, mapdata->lon, mapdata->zoom);
+					}
+					flag = 1;
+					last_lat = WayPoints[n].p_lat;
+					last_lon = WayPoints[n].p_long;
+					last_alt = WayPoints[n].p_alt;
 				}
-				flag = 1;
-				last_lat = WayPoints[n].p_lat;
-				last_lon = WayPoints[n].p_long;
-				last_alt = WayPoints[n].p_alt;
 			}
 		}
 		mark_route(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset), WayPoints[uav_active_waypoint + 1].p_lat, WayPoints[uav_active_waypoint + 1].p_long, WayPoints[uav_active_waypoint + 1].p_alt, 1, mapdata->lat, mapdata->lon, mapdata->zoom);
@@ -1448,6 +1766,212 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	}
 
 
+
+
+	// drawing Polygon-Points
+	flag = 0;
+	if (map_show_poly == 1) {
+		for (n = 1; n < MAX_WAYPOINTS; n++) {
+			if (PolyPoints[n].p_lat != 0.0) {
+				float pos_alt = get_altitude(PolyPoints[n].p_lat, PolyPoints[n].p_long);
+				float alt = img_alt + pos_alt;
+				if (img_alt_abs == 1) {
+					if (img_alt < pos_alt) {
+						img_alt = pos_alt;
+					}
+					alt = img_alt;
+				}
+				if (n == polypoint_active) {
+					mark_point(esContext, PolyPoints[n].p_lat, PolyPoints[n].p_long, alt, PolyPoints[n].name, PolyPoints[n].command, 1, PolyPoints[n].radius, PolyPoints[n].orbit, mapdata->lat, mapdata->lon, mapdata->zoom);
+				} else {
+					mark_point(esContext, PolyPoints[n].p_lat, PolyPoints[n].p_long, alt, PolyPoints[n].name, PolyPoints[n].command, 0, PolyPoints[n].radius, PolyPoints[n].orbit, mapdata->lat, mapdata->lon, mapdata->zoom);
+				}
+			}
+		}
+
+		for (n = 1; n < MAX_WAYPOINTS; n++) {
+			if (PolyPoints[n].p_lat != 0.0) {
+				float pos_alt = get_altitude(PolyPoints[n].p_lat, PolyPoints[n].p_long);
+				float alt = img_alt + pos_alt;
+				if (img_alt_abs == 1) {
+					if (img_alt < pos_alt) {
+						img_alt = pos_alt;
+					}
+					alt = img_alt;
+				}
+				last_lat = PolyPoints[n].p_lat;
+				last_lon = PolyPoints[n].p_long;
+				last_alt = alt;
+			}
+		}
+		for (n = 1; n < MAX_WAYPOINTS; n++) {
+			if (PolyPoints[n].p_lat != 0.0) {
+				float pos_alt = get_altitude(PolyPoints[n].p_lat, PolyPoints[n].p_long);
+				float alt = img_alt + pos_alt;
+				if (img_alt_abs == 1) {
+					if (img_alt < pos_alt) {
+						img_alt = pos_alt;
+					}
+					alt = img_alt;
+				}
+				mark_route(esContext, last_lat, last_lon, last_alt, PolyPoints[n].p_lat, PolyPoints[n].p_long, alt, 0, mapdata->lat, mapdata->lon, mapdata->zoom);
+				last_lat = PolyPoints[n].p_lat;
+				last_lon = PolyPoints[n].p_long;
+				last_alt = alt;
+			}
+		}
+
+
+#ifdef SDLGL
+
+		int pmark_x = long2x(PolyPoints[1].p_long, lon, zoom);
+		int pmark_y = lat2y(PolyPoints[1].p_lat, lat, zoom);
+		float px1 = 0.0;
+		float py1 = 0.0;
+		float min_x = pmark_x;
+		float min_y = pmark_y;
+		float max_x = pmark_x;
+		float max_y = pmark_y;
+
+		// drawing Polygon
+		glColor4f(0.0, 0.0, 1.0, 0.2);
+		glBegin(GL_POLYGON);
+		for (n = 1; n < MAX_WAYPOINTS; n++) {
+			if (PolyPoints[n].p_lat != 0.0) {
+				pmark_x = long2x(PolyPoints[n].p_long, lon, zoom);
+				pmark_y = lat2y(PolyPoints[n].p_lat, lat, zoom);
+				if (min_x > pmark_x) {
+					min_x = pmark_x;
+				}
+				if (min_y > pmark_y) {
+					min_y = pmark_y;
+				}
+				if (max_x < pmark_x) {
+					max_x = pmark_x;
+				}
+				if (max_y < pmark_y) {
+					max_y = pmark_y;
+				}
+				float pos_alt = get_altitude(PolyPoints[n].p_lat, PolyPoints[n].p_long);
+				float alt = img_alt + pos_alt;
+				if (img_alt_abs == 1) {
+					if (img_alt < pos_alt) {
+						img_alt = pos_alt;
+					}
+					alt = img_alt;
+				}
+				px1 = (float)pmark_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
+				py1 = (float)pmark_y / (float)esContext->height * 2.0 - 1.0;
+				glVertex3f(px1, -py1, -2.0 + (alt / alt_zoom));
+			}
+		}
+		glEnd();
+
+		// drawing Grid
+		float h = 0.0;
+		float w = 0.0;
+		float mpp = get_m_per_pixel(lat, zoom);
+		float pos_alt = get_altitude(ModelData.p_lat, ModelData.p_long);
+		float dist = ModelData.p_alt - pos_alt; // Abstand in Metern
+
+		dist = img_alt;
+
+
+		calc_fov(cam_film_width, cam_film_height, cam_sensor_mult, cam_lense, dist, &w, &h);
+		float rast_x = w / mpp / img_overlap;
+		float rast_y = h / mpp / img_overlap;
+
+		float n_x = 0.0;
+		float n_y = 0.0;
+		float lastn_x = 0.0;
+		float lastn_y = 0.0;
+		float lastn_alt = 0.0;
+		for (n_y = min_y; n_y <= max_y + rast_y; n_y += rast_y) {
+			for (n_x = min_x; n_x <= max_x + rast_x; n_x += rast_x) {
+				if (point_in_poly(n_x, n_y) == 0) {
+					continue;
+				}
+				float np_long = x2long(n_x, lon, mapdata->zoom);
+				float np_lat = y2lat(n_y, lat, mapdata->zoom);
+				float pos_alt = get_altitude(np_lat, np_long);
+				float alt = img_alt + pos_alt;
+				if (img_alt_abs == 1) {
+					if (img_alt < pos_alt) {
+						img_alt = pos_alt;
+					}
+					alt = img_alt;
+					draw_fov(esContext, np_lat, np_long, img_alt - pos_alt);
+				} else {
+					draw_fov(esContext, np_lat, np_long, alt);
+				}
+
+				glColor4f(1.0, 1.0, 0.0, 1.0);
+				glBegin(GL_LINES);
+				px1 = (float)n_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
+				py1 = (float)n_y / (float)esContext->height * 2.0 - 1.0;
+				glVertex3f(px1 - 0.01, -py1 - 0.01, -2.0 + (alt / alt_zoom));
+				glVertex3f(px1 + 0.01, -py1 + 0.01, -2.0 + (alt / alt_zoom));
+				glVertex3f(px1 - 0.01, -py1 + 0.01, -2.0 + (alt / alt_zoom));
+				glVertex3f(px1 + 0.01, -py1 - 0.01, -2.0 + (alt / alt_zoom));
+				if (lastn_x != 0.0 && lastn_y != 0.0) {
+					glVertex3f(px1, -py1, -2.0 + (alt / alt_zoom));
+					px1 = (float)lastn_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
+					py1 = (float)lastn_y / (float)esContext->height * 2.0 - 1.0;
+					glVertex3f(px1, -py1, -2.0 + (lastn_alt / alt_zoom));
+				}
+
+				glEnd();
+				lastn_x = n_x;
+				lastn_y = n_y;
+				lastn_alt = alt;
+			}
+
+			n_y += rast_y;
+			for (; n_x >= min_x - rast_x; n_x -= rast_x) {
+				if (point_in_poly(n_x, n_y) == 0) {
+					continue;
+				}
+				float np_long = x2long(n_x, lon, mapdata->zoom);
+				float np_lat = y2lat(n_y, lat, mapdata->zoom);
+				float pos_alt = get_altitude(np_lat, np_long);
+				float alt = img_alt + pos_alt;
+				if (img_alt_abs == 1) {
+					if (img_alt < pos_alt) {
+						img_alt = pos_alt;
+					}
+					alt = img_alt;
+					draw_fov(esContext, np_lat, np_long, img_alt - pos_alt);
+				} else {
+					draw_fov(esContext, np_lat, np_long, alt);
+				}
+
+				glColor4f(1.0, 1.0, 0.0, 1.0);
+				glBegin(GL_LINES);
+				px1 = (float)n_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
+				py1 = (float)n_y / (float)esContext->height * 2.0 - 1.0;
+				glVertex3f(px1 - 0.01, -py1 - 0.01, -2.0 + (alt / alt_zoom));
+				glVertex3f(px1 + 0.01, -py1 + 0.01, -2.0 + (alt / alt_zoom));
+				glVertex3f(px1 - 0.01, -py1 + 0.01, -2.0 + (alt / alt_zoom));
+				glVertex3f(px1 + 0.01, -py1 - 0.01, -2.0 + (alt / alt_zoom));
+				if (lastn_x != 0.0 && lastn_y != 0.0) {
+					glVertex3f(px1, -py1, -2.0 + (alt / alt_zoom));
+					px1 = (float)lastn_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
+					py1 = (float)lastn_y / (float)esContext->height * 2.0 - 1.0;
+					glVertex3f(px1, -py1, -2.0 + (lastn_alt / alt_zoom));
+				}
+
+				glEnd();
+				lastn_x = n_x;
+				lastn_y = n_y;
+				lastn_alt = alt;
+			}
+		}
+
+
+#endif
+	}
+
+	// drawing Cam-FOV
 	if (map_show_fov == 1 || map_show_cam_setup == 1) {
 		draw_fov(esContext, ModelData.p_lat, ModelData.p_long, ModelData.p_alt);
 	}
@@ -1494,7 +2018,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 					WayPoints[n].p_alt = mark_alt;
 					WayPoints[n].yaw = ModelData.yaw;
 					sprintf(WayPoints[n].name, "MARK%i", n);
-					strcpy(WayPoints[n].command, "POI");
+					strcpy(WayPoints[n].command, "WAYPOINT");
 					break;
 				}
 			}

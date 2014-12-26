@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map>
 	<info>http://www.neongeo.com/wiki/doku.php?id=map_servers</info>
+
+	<service>
+		<name>MyMAPS</name>
+		<comment></comment>
+		<url>file://tmp/geotiles/%i/%i/%i.png</url>
+		<file></file>
+		<type>TMS</type>
+		<copyright>NONE</copyright>
+	</service>
+
 	<service>
 		<name>OSM</name>
 		<comment>OpenStreetMap</comment>
@@ -134,6 +144,15 @@
 		<file></file>
 		<type></type>
 		<copyright></copyright>
+	</overlay_service>
+
+	<overlay_service>
+		<name>MyMAPS</name>
+		<comment></comment>
+		<url>/tmp/geotiles/%i/%i/%i.png</url>
+		<file></file>
+		<type>ZXY</type>
+		<copyright>NONE</copyright>
 	</overlay_service>
 
 	<overlay_service>
