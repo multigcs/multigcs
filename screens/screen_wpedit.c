@@ -72,6 +72,8 @@ uint8_t wpedit_waypoint_type_select (char *name, float x, float y, int8_t button
 		strcpy(WayPoints[waypoint_active].command, "TAKEOFF");
 	} else if (strcmp(WayPoints[waypoint_active].command, "TAKEOFF") == 0) {
 		strcpy(WayPoints[waypoint_active].command, "LAND");
+	} else if (strcmp(WayPoints[waypoint_active].command, "LAND") == 0) {
+		strcpy(WayPoints[waypoint_active].command, "SET_ROI");
 	} else {
 		strcpy(WayPoints[waypoint_active].command, "WAYPOINT");
 	}
