@@ -9,7 +9,7 @@ void draw_texture_f3 (ESContext *esContext, float x1, float y1, float x2, float 
 static int vdView;
 static uint8_t ratio = 1;
 static float z = 0.0;
-static uint8_t hud_use_vista2d = 1;
+static uint8_t hud_use_vista2d = 0;
 
 #endif
 
@@ -1631,7 +1631,6 @@ void screen_hud_internal (ESContext *esContext) {
 //			draw_text_button(esContext, "view_map_tunnel", VIEW_MODE_HUD, "TUNNEL", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_tunnel, 0);
 //		}
 		setup.hud_view_tunnel = 0;
-
 		if (setup.hud_view_stab == 1) {
 			draw_text_button(esContext, "view_hud_stab", VIEW_MODE_HUD, "STAB", FONT_GREEN, -1.0, 0.8, 0.002, 0.06, 0, 0, view_hud_stab, 0);
 		} else if (setup.hud_view_stab == 2) {
@@ -1639,7 +1638,6 @@ void screen_hud_internal (ESContext *esContext) {
 		} else {
 			draw_text_button(esContext, "view_hud_stab", VIEW_MODE_HUD, "STAB", FONT_WHITE, -1.0, 0.8, 0.002, 0.06, 0, 0, view_hud_stab, 0);
 		}
-
 	} else {
 		draw_text_button(esContext, "view_hud_map", VIEW_MODE_HUD, "MAP", FONT_WHITE, -1.15, 0.9, 0.002, 0.06, 0, 0, view_hud_map, 0);
 		draw_text_button(esContext, "view_map_bw", VIEW_MODE_HUD, "BW", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_bw, 0);
