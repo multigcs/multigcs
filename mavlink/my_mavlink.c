@@ -954,7 +954,7 @@ uint8_t autocontinue; ///< autocontinue to next wp
 		case MAVLINK_MSG_ID_TERRAIN_REQUEST: {
 			mavlink_terrain_request_t packet;
 			mavlink_msg_terrain_request_decode(msg, &packet);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REQUEST mask %i ##\n", packet.mask); //UINT64_T
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REQUEST mask %llu ##\n", packet.mask); //UINT64_T
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REQUEST lat %i ##\n", packet.lat); //INT32_T
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REQUEST lon %i ##\n", packet.lon); //INT32_T
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REQUEST grid_spacing %i ##\n", packet.grid_spacing); //UINT16_T
@@ -970,7 +970,6 @@ uint8_t autocontinue; ///< autocontinue to next wp
 void mavlink_send_terrain_data (int32_t lat, int32_t lon, uint16_t grid_spacing, uint8_t gridbit, int16_t data[16]) {
 	SDL_Log("mavlink: sending terrain_data\n");
 	mavlink_message_t msg;
-	mavlink_terrain_data_t packet;
 	mavlink_msg_terrain_data_pack(127, 0, &msg, lat, lon, grid_spacing, gridbit, data);
 	mavlink_send_message(&msg);
 }
