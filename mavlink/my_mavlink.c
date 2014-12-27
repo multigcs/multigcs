@@ -362,7 +362,7 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 			ModelData.radio[5] = (int)packet.chan6_raw / 5 - 300;
 			ModelData.radio[6] = (int)packet.chan7_raw / 5 - 300;
 			ModelData.radio[7] = (int)packet.chan8_raw / 5 - 300;
-//			ModelData.rssi_rx = (int)packet.rssi;
+			ModelData.rssi_rc_rx = (int)packet.rssi * 100 / 255;
 //			redraw_flag = 1;
 /*
 			SDL_Log("RC_CHANNELS_RAW\n");
@@ -766,7 +766,7 @@ uint8_t autocontinue; ///< autocontinue to next wp
 					ModelData.radio[n] = -100;
 				}
 			}
-//			ModelData.rssi_rx = (int)packet.rssi;
+			ModelData.rssi_rc_rx = (int)packet.rssi * 100 / 255;
 			ModelData.chancount = (uint8_t)packet.chancount;
 //			redraw_flag = 1;
 /*
@@ -853,6 +853,8 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			}
 			if (packet.flags & MAV_POWER_STATUS_USB_CONNECTED) {
 				SDL_Log("	mavlink: ## POWER_STATUS: USB power is connected ##\n");
+				ModelData.rssi_rx = 100;
+				ModelData.rssi_tx = 100;
 			}
 			if (packet.flags & MAV_POWER_STATUS_PERIPH_OVERCURRENT) {
 				SDL_Log("	mavlink: ## POWER_STATUS: peripheral supply is in over-current state ##\n");

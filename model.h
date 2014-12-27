@@ -83,6 +83,8 @@ typedef struct {
 	float mnt_yaw;
 	uint8_t rssi_rx;
 	uint8_t rssi_tx;
+	uint8_t rssi_rc_rx;
+	uint8_t rssi_rc_tx;
 	float voltage_rx;
 	float voltage_zell[6];
 	int16_t temperature[2];

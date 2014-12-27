@@ -69,8 +69,8 @@ int thread_serial_frsky (void *unused) {
 //						SDL_Log("	Strom        %0.1f A\n", ((float)buffer[1] - 129.0) * 100.0 / 126.0);
 //						SDL_Log("	LQI-UpLink   %i %%\n", (buffer[2] - 40) * 100 / 70);
 //						SDL_Log("	LQI-DownLink %i %%\n", buffer[3] / 2);
-						ModelData.rssi_rx = (buffer[2] - 40) * 100 / 70;
-						ModelData.rssi_tx = buffer[3] / 2;
+						ModelData.rssi_rc_rx = (buffer[2] - 40) * 100 / 70;
+						ModelData.rssi_rc_tx = buffer[3] / 2;
 						ModelData.voltage_rx = (float)buffer[0] * 3.3 / 255.0 * 4.0;
 						ModelData.ampere = ((float)buffer[1] - 129.0) * 100.0 / 126.0;
 						redraw_flag = 1;
