@@ -499,20 +499,20 @@ Data: http://www.daec.de/fileadmin/user_upload/files/2012/fachbereiche/luftraum/
 void draw_notam (ESContext *esContext, float lat, float lon, uint8_t zoom) {
 	FILE *fr;
 	char line[201];
-	int dp_lat_g;
-	int dp_lat_m;
-	int dp_lat_s;
+	int dp_lat_g = 0;
+	int dp_lat_m = 0;
+	int dp_lat_s = 0;
 //	char dp_lat_d;
-	int dp_lon_g;
-	int dp_lon_m;
-	int dp_lon_s;
+	int dp_lon_g = 0;
+	int dp_lon_m = 0;
+	int dp_lon_s = 0;
 //	char dp_lon_d;
-	int vx_lat_g;
-	int vx_lat_m;
-	int vx_lat_s;
-	int vx_lon_g;
-	int vx_lon_m;
-	int vx_lon_s;
+	int vx_lat_g = 0;
+	int vx_lat_m = 0;
+	int vx_lat_s = 0;
+	int vx_lon_g = 0;
+	int vx_lon_m = 0;
+	int vx_lon_s = 0;
 	uint8_t flag1 = 0;
 	float mark_lat = 0.0;
 	float mark_long = 0.0;
@@ -885,9 +885,6 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 		float rast_y = h / mpp / img_overlap;
 		float n_x = 0.0;
 		float n_y = 0.0;
-		float lastn_x = 0.0;
-		float lastn_y = 0.0;
-		float lastn_alt = 0.0;
 		n = 1;
 		for (n_y = min_y; n_y <= max_y + rast_y; n_y += rast_y) {
 			for (n_x = min_x; n_x <= max_x + rast_x; n_x += rast_x) {
@@ -933,9 +930,6 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 					strcpy(WayPoints[n].command, "SET_ROI");
 					n++;
 				}
-				lastn_x = n_x;
-				lastn_y = n_y;
-				lastn_alt = alt;
 			}
 			n_y += rast_y;
 			for (; n_x >= min_x - rast_x; n_x -= rast_x) {
@@ -981,9 +975,6 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 					strcpy(WayPoints[n].command, "SET_ROI");
 					n++;
 				}
-				lastn_x = n_x;
-				lastn_y = n_y;
-				lastn_alt = alt;
 			}
 		}
 		map_show_poly = 0;
@@ -1067,9 +1058,6 @@ void map_draw_alt_profile (ESContext *esContext) {
 	float ny2 = 0.0;
 	float nf = 0.0;
 	float mark_alt = 0.0;
-	float DEG2RAD = 3.14159 / 180.0;
-	float distance = 0.0;
-	float nalt = 0.0;
 	float last_px = 0.0;
 	float last_py = 0.0;
 	float max_py = -99999.0;
@@ -1084,8 +1072,6 @@ void map_draw_alt_profile (ESContext *esContext) {
 	for (nf = 1.0; nf < alt_profile_scale_w; nf += 2.0) {
 		next_point_ll(esContext, ModelData.p_long, ModelData.p_lat, ModelData.yaw * -1.0 - 90.0, nf, &nx2, &ny2);
 		mark_alt = get_altitude(ny2, nx2);
-		distance = get_distance(ModelData.p_lat, ModelData.p_long, ny2, nx2, mark_alt);
-		nalt = (ModelData.p_alt - ModelData.alt_offset) + distance * tan(ModelData.pitch * DEG2RAD * 0.7);
 		float px = nf * pw / alt_profile_scale_w;
 		float py = (mark_alt - ModelData.p_alt) * ph / alt_profile_scale_h;
 		if (max_alt < mark_alt) {

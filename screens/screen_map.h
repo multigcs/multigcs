@@ -64,7 +64,7 @@ void show_dir(ESContext *esContext, uint16_t px, uint16_t py, float lat_from, fl
 void winkel_line (ESContext *esContext, float x_origin, float y_origin, float winkel, float r1, uint8_t r, uint8_t g, uint8_t b, uint8_t a, float *nx1, float *ny1);
 void show_dir_f(ESContext *esContext, float x1, float y1, float zoom, float lat_from, float lon_from, float alt_from, float lat_to, float lon_to, float alt_to, uint8_t r, uint8_t g, uint8_t b, uint8_t a, float *nx1, float *ny1, float *dist);
 void show_dir_ll(ESContext *esContext, float lat_from, float lon_from, float alt_from, float lat_to, float lon_to, float alt_to);
-void mark_route (ESContext *esContext, float last_lat, float last_long, float last_alt, float mark_lat, float mark_long, float mark_alt, uint8_t type, float lat, float lon, uint8_t zoom);
+void mark_route (ESContext *esContext, float last_lat, float last_long, float last_alt, float mark_lat, float mark_long, float mark_alt, int8_t type, float lat, float lon, uint8_t zoom);
 void mark_point (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, char *text, char *command, uint8_t type, float radius, float orbit, float lat, float lon, uint8_t zoom);
 void screen_map (ESContext *esContext, float lat, float lon, uint8_t zoom);
 void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint8_t map_view, uint8_t draw_tiles, float alpha0, float alpha1, float alpha2, float grid);

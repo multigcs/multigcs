@@ -739,7 +739,7 @@ void winkel_line (ESContext *esContext, float x_origin, float y_origin, float wi
 	*ny1 = y_origin + y1;
 }
 
-void mark_route (ESContext *esContext, float last_lat, float last_long, float last_alt, float mark_lat, float mark_long, float mark_alt, uint8_t type, float lat, float lon, uint8_t zoom) {
+void mark_route (ESContext *esContext, float last_lat, float last_long, float last_alt, float mark_lat, float mark_long, float mark_alt, int8_t type, float lat, float lon, uint8_t zoom) {
 	int mark_x = long2x(last_long, lon, zoom);
 	int mark_y = lat2y(last_lat, lat, zoom);
 	float x1 = (float)mark_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;

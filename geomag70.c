@@ -346,8 +346,8 @@ int       gh;
   char  inbuff[MAXINBUFF];
   char irat[9];
   int ii,m,n,mm,nn;
-  int ios;
-  int line_num;
+  int ios = 0;
+  int line_num = 0;
   double g,hh;
   double trash;
   FILE *stream = NULL;                /* Pointer to specified model data file */

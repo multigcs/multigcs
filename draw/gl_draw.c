@@ -1048,8 +1048,10 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 			}
 		}
 	}
-	if (TexCache[tex_num].texture != 0) {
-		TexCache[tex_num].atime = time(0);
+	if (tex_num != -1) {
+		if (TexCache[tex_num].texture != 0) {
+			TexCache[tex_num].atime = time(0);
+		}
 	}
 	if (file == NULL || TexCache[tex_num].texture != 0) {
 		float z1 = z;

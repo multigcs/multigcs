@@ -2211,6 +2211,18 @@
       <Values>0:Do Nothing, 2:Flip, 3:Simple Mode, 4:RTL, 5:Save Trim, 7:Save WP, 8:Multi Mode, 9:Camera Trigger, 10:Sonar, 11:Fence, 12:ResetToArmedYaw, 13:Super Simple Mode, 14:Acro Trainer, 16:Auto, 17:AutoTune, 18:Land, 19:EPM</Values>
       <User>Standard</User>
     </CH10_OPT>
+    <CH11_OPT>
+      <DisplayName>Channel 11 option</DisplayName>
+      <Description>Select which function if performed when CH11 is above 1800 pwm</Description>
+      <Values>0:Do Nothing, 2:Flip, 3:Simple Mode, 4:RTL, 5:Save Trim, 7:Save WP, 8:Multi Mode, 9:Camera Trigger, 10:Sonar, 11:Fence, 12:ResetToArmedYaw, 13:Super Simple Mode, 14:Acro Trainer, 16:Auto, 17:AutoTune, 18:Land, 19:EPM</Values>
+      <User>Standard</User>
+    </CH11_OPT>
+    <CH12_OPT>
+      <DisplayName>Channel 12 option</DisplayName>
+      <Description>Select which function if performed when CH12 is above 1800 pwm</Description>
+      <Values>0:Do Nothing, 2:Flip, 3:Simple Mode, 4:RTL, 5:Save Trim, 7:Save WP, 8:Multi Mode, 9:Camera Trigger, 10:Sonar, 11:Fence, 12:ResetToArmedYaw, 13:Super Simple Mode, 14:Acro Trainer, 16:Auto, 17:AutoTune, 18:Land, 19:EPM</Values>
+      <User>Standard</User>
+    </CH12_OPT>
     <ARMING_CHECK>
       <DisplayName>Arming check</DisplayName>
       <Description>Allows enabling or disabling of pre-arming checks of receiver, accelerometer, barometer, compass and GPS</Description>

@@ -1838,12 +1838,12 @@ extern int ZEXPORT unzReadCurrentFile  (unzFile file, voidp buf, unsigned len)
         else
         {
             ZPOS64_T uTotalOutBefore,uTotalOutAfter;
-            const Bytef *bufBefore;
+//            const Bytef *bufBefore;
             ZPOS64_T uOutThis;
             int flush=Z_SYNC_FLUSH;
 
             uTotalOutBefore = pfile_in_zip_read_info->stream.total_out;
-            bufBefore = pfile_in_zip_read_info->stream.next_out;
+//            bufBefore = pfile_in_zip_read_info->stream.next_out;
 
             /*
             if ((pfile_in_zip_read_info->rest_read_uncompressed ==

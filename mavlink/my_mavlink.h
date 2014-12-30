@@ -92,7 +92,7 @@ void mavlink_send_waypoints (void);
 void mavlink_param_xml_meta_load (void);
 void mavlink_stop_feeds (void);
 void mavlink_send_value (char *name, float val, int8_t type);
-void mavlink_set_value (char *name, float val, int8_t type, uint16_t id);
+void mavlink_set_value (char *name, float val, int8_t type, int16_t id);
 void mavlink_handleMessage(mavlink_message_t* msg);
 void mavlink_save_to_flash (void);
 void mavlink_load_from_flash (void);

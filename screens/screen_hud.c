@@ -1565,10 +1565,10 @@ void screen_hud_internal (ESContext *esContext) {
 
 			// Temperature
 			draw_circleMeter_f3(esContext, 1.07, 0.025, 0.001, 0.06, 20.0, 50.0, 50.0, 160.0, ((float)ModelData.temperature[0] + 30) * 100 / 280, "", "", 3);
-			sprintf(tmp_str, "%i°C", ModelData.temperature[0]);
+			sprintf(tmp_str, "%iÂ°C", ModelData.temperature[0]);
 			draw_text_button(esContext, "temp1", VIEW_MODE_HUD, tmp_str, FONT_WHITE, 1.07, 0.025, 0.003, 0.035, 1, 0, hud_null, 0);
 			draw_circleMeter_f3(esContext, 1.23, 0.025, 0.001, 0.06, 20.0, 50.0, 50.0, 160.0, 50.0, "", "", 3);
-			sprintf(tmp_str, "%i°C", ModelData.temperature[1]);
+			sprintf(tmp_str, "%iÂ°C", ModelData.temperature[1]);
 			draw_text_button(esContext, "temp2", VIEW_MODE_HUD, tmp_str, FONT_WHITE, 1.23, 0.025, 0.003, 0.035, 1, 0, hud_null, 0);
 
 			// Test-Graph

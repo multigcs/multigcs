@@ -5,7 +5,7 @@
 #define MAX_PER_PAGE 12
 
 static int8_t page = 0;
-static uint8_t mode = 0;
+static int8_t mode = 0;
 
 uint8_t openpilot_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 0;

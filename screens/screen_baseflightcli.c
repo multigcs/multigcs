@@ -100,7 +100,7 @@ void baseflightcli_update (void) {
 	static uint8_t new = 0;
 	static uint8_t read_buffer[501];
 	static uint8_t read_num = 0;
-	static uint8_t read_x = 0;
+	static uint16_t read_x = 0;
 	static uint8_t n2 = 0;
 	if (baseflightcli_fd < 0) {
 		return;
@@ -661,7 +661,7 @@ void screen_baseflightcli (ESContext *esContext) {
 	uint8_t cmix_flag = 0;
 	if (baseflightcli_group != -1) {
 		nn2 = 0;
-		for (nn = 0; nn < 1000; nn++) {
+		for (nn = 0; nn < 400; nn++) {
 			if (bf_set_value[nn].group[0] != 0 && bf_set_value[nn].name[0] != 0 && strcmp(bf_set_value[nn].group, groupnames[baseflightcli_group]) == 0) {
 				if (strncmp(bf_set_value[nn].name, "aux_", 4) == 0) {
 					if (aux_flag == 0) {

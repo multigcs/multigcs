@@ -105,13 +105,13 @@ void mavlink_send_value (char *name, float val, int8_t type) {
 	}
 }
 
-void mavlink_set_value (char *name, float value, int8_t type, uint16_t id) {
+void mavlink_set_value (char *name, float value, int8_t type, int16_t id) {
 	uint16_t n = 0;
 	uint8_t flag = 0;
 	float min = 999999.0;
 	float max = 999999.0;
 	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
-		if (strcmp(MavLinkVars[n].name, name) == 0 && (MavLinkVars[n].id == id || MavLinkVars[n].id == -1 || id > 65000 || id == -1)) {
+		if (strcmp(MavLinkVars[n].name, name) == 0 && (MavLinkVars[n].id == id || MavLinkVars[n].id == -1 || id > MAVLINK_PARAMETER_MAX || id == -1)) {
 			MavLinkVars[n].value = value;
 			MavLinkVars[n].id = id;
 			if (type != -1) {
