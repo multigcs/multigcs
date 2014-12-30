@@ -808,6 +808,7 @@ void openpilot_update (void) {
 										ModelData.radio[2] = (int16_t)(data->Yaw * 100);
 										ModelData.radio[3] = (int16_t)(data->Throttle * 100);
 										ModelData.radio[4] = (int16_t)(data->Collective * 100);
+										ModelData.chancount = 8;
 										redraw_flag = 1;
 										break;
 									}

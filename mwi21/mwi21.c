@@ -348,6 +348,7 @@ void mwi21_update (void) {
 					ModelData.radio[5] = (mwi21_read16() - 1500) / 5;
 					ModelData.radio[6] = (mwi21_read16() - 1500) / 5;
 					ModelData.radio[7] = (mwi21_read16() - 1500) / 5;
+					ModelData.chancount = 8;
 					redraw_flag = 1;
 				break;
 				case MSP_BAT:

@@ -1458,7 +1458,7 @@ void screen_hud_internal (ESContext *esContext) {
 	//SDL_Log("hud#9f\n");
 
 		// RC-Values
-		for (n = 0; n < 8; n++) {
+		for (n = 0; n < ModelData.chancount && n < 16; n++) {
 			float x1 = -1.3;
 			float y1 = -0.55 + (float)n * 0.1;
 			float val = (float)ModelData.radio[n] / 2.0 + 50.0;
@@ -1466,6 +1466,9 @@ void screen_hud_internal (ESContext *esContext) {
 				val = 100.0;
 			} else if (val < -100.0) {
 				val = -100.0;
+			}
+			if (ModelData.chancount > 8) {
+				y1 -= 0.2;
 			}
 			if (n >= 4) {
 				draw_circleMeter_f3(esContext, x1, y1, 0.001, 0.06, 20.0, 33.0, 66.0, 160.0, val, "", "", 1);
@@ -1489,6 +1492,9 @@ void screen_hud_internal (ESContext *esContext) {
 					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX3", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 7) {
 					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX4", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+				} else  {
+					sprintf(tmp_str, "CH %i", n);
+					draw_text_button(esContext, tmp_str, VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				}
 			} else if (ModelData.teletype == TELETYPE_AUTOQUAD) {
 				if (n == 0) {
@@ -1507,6 +1513,9 @@ void screen_hud_internal (ESContext *esContext) {
 					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "RTL/SH", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 7) {
 					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX3", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+				} else  {
+					sprintf(tmp_str, "CH %i", n);
+					draw_text_button(esContext, tmp_str, VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				}
 			} else if (ModelData.teletype == TELETYPE_ARDUPILOT || ModelData.teletype == TELETYPE_MEGAPIRATE_NG) {
 				if (n == 0) {
@@ -1518,13 +1527,16 @@ void screen_hud_internal (ESContext *esContext) {
 				} else if (n == 3) {
 					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "YAW", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 4) {
-					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX1", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "MODE", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 5) {
-					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX2", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "CH7", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 6) {
-					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX3", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "CH8", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 7) {
-					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX4", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+					draw_text_button(esContext, "hud_rd_2", VIEW_MODE_HUD, "AUX", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
+				} else  {
+					sprintf(tmp_str, "CH %i", n);
+					draw_text_button(esContext, tmp_str, VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				}
 			} else {
 				sprintf(tmp_str, "CH %i", n);

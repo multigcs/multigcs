@@ -114,9 +114,10 @@ void mavlink_set_value (char *name, float value, int8_t type, int16_t id) {
 		if (strcmp(MavLinkVars[n].name, name) == 0 && (MavLinkVars[n].id == id || MavLinkVars[n].id == -1 || id > MAVLINK_PARAMETER_MAX || id == -1)) {
 			MavLinkVars[n].value = value;
 			MavLinkVars[n].id = id;
-			if (type != -1) {
-				MavLinkVars[n].type = type;
+			if (type == -1 || type > 6) {
+				type = MAV_VAR_FLOAT;
 			}
+			MavLinkVars[n].type = type;
 			flag = 1;
 			break;
 		}
@@ -148,6 +149,7 @@ void mavlink_set_value (char *name, float value, int8_t type, int16_t id) {
 				} else {
 					min = -999999.0;
 					max = 999999.0;
+					type = MAV_VAR_FLOAT;
 				}
 				if (strstr(name, "baud") > 0) {
 					min = 1200.0;
@@ -157,9 +159,12 @@ void mavlink_set_value (char *name, float value, int8_t type, int16_t id) {
 				MavLinkVars[n].value = value;
 				MavLinkVars[n].onload = value;
 				MavLinkVars[n].id = id;
+
 				if (type == -1) {
 					type = MAV_VAR_FLOAT;
 				}
+printf("###### %s ## %i ###\n", name, type);
+
 				MavLinkVars[n].type = type;
 				MavLinkVars[n].min = min;
 				MavLinkVars[n].max = max;

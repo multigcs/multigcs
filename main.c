@@ -595,6 +595,10 @@ void setup_load (void) {
 	setup.opencv_features = 0;
 	setup.videocapture_width = 640;
 	setup.videocapture_height = 480;
+
+	strcpy(ModelData.name, "Unset");
+	ModelData.chancount = 8;
+
 	char filename[1024];
 	sprintf(filename, "%s/setup.cfg", get_datadirectory());
         fr = fopen (filename, "r");

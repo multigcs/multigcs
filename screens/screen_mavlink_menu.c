@@ -1,6 +1,8 @@
 
 #include <all.h>
 
+#define DEG_TO_RAD   ( PI / 180.0 )
+#define RAD_TO_DEG   ( 180.0 / PI )
 
 float sel = 0.0;
 float set_sel = 0.0;
@@ -267,6 +269,7 @@ uint8_t mavlink_slider2_move (char *name, float x, float y, int8_t button, float
 	return 0;
 }
 
+
 uint8_t mavlink_set_magdecl (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	int n = 0;
 	int selected = -1;
@@ -283,8 +286,13 @@ uint8_t mavlink_set_magdecl (char *name, float x, float y, int8_t button, float 
 	int ret_dd = 0;
 	int ret_dm = 0;
 	get_declination(ModelData.p_lat, ModelData.p_long, ModelData.p_alt, &ret_dd, &ret_dm);
-	sprintf(tmp_str, "%i%2.0i", ret_dd, ret_dm);
-	MavLinkVars[selected].value = atof(tmp_str);
+	if (strcmp(name + 1, "COMPASS_DEC") == 0) {
+		sprintf(tmp_str, "%i.%2.0i", ret_dd, ret_dm * 100 / 60);
+		MavLinkVars[selected].value = atof(tmp_str) * DEG_TO_RAD;
+	} else {
+		sprintf(tmp_str, "%i%2.0i", ret_dd, ret_dm);
+		MavLinkVars[selected].value = atof(tmp_str);
+	}
 	mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
 	return 0;
 }
@@ -649,7 +657,14 @@ void screen_mavlink_menu (ESContext *esContext) {
 		if (MavLinkVars[param_menu].type != MAV_VAR_FLOAT) {
 			sprintf(tmp_str2, "%i", (int)MavLinkVars[param_menu].value);
 		} else {
-			sprintf(tmp_str2, "%0.4f", MavLinkVars[param_menu].value);
+			if (strcmp(MavLinkVars[param_menu].name, "COMPASS_DEC") == 0) {
+				float w = MavLinkVars[param_menu].value * RAD_TO_DEG;
+				int d = (int)w;
+				int m = (int)((w - (float)d) * 100.0) * 60 / 100;
+				sprintf(tmp_str2, "%0.2f/%i.%i", MavLinkVars[param_menu].value, d, m);
+			} else {
+				sprintf(tmp_str2, "%0.4f", MavLinkVars[param_menu].value);
+			}
 		}
 		draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, 0.0, -0.19, 0.002, 0.2, 1, 0, mavlink_param_diff, 0.0);
 
@@ -674,8 +689,7 @@ void screen_mavlink_menu (ESContext *esContext) {
 
 		sprintf(tmp_str, "S%s", MavLinkVars[param_menu].name);
 		set_button(tmp_str, setup.view_mode, SLIDER2_START, 0.0, SLIDER2_START + SLIDER2_LEN, 0.2, mavlink_slider2_move, (float)param_menu, 1);
-
-		if (strcmp(MavLinkVars[param_menu].name, "mag_declination") == 0) {
+		if (strcmp(MavLinkVars[param_menu].name, "mag_declination") == 0 || strcmp(MavLinkVars[param_menu].name, "COMPASS_DEC") == 0) {
 			int ret_dd = 0;
 			int ret_dm = 0;
 			get_declination(ModelData.p_lat, ModelData.p_long, ModelData.p_alt, &ret_dd, &ret_dm);
