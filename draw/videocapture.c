@@ -24,6 +24,8 @@
 
 #include <all.h>
 
+#if defined USE_V4L
+
 #if !defined WINDOWS && !defined OSX
 
 #include <SDL.h>
@@ -519,6 +521,8 @@ static void init_device(void) {
     if (pixeltype == 0) {
         pixeltype = 1;
         fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
+        fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_UYVY;
+
         if (-1 == xioctl(fd, VIDIOC_S_FMT, &fmt)) {
             pixeltype = 2;
             fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_MJPEG;
@@ -631,4 +635,5 @@ SDL_Surface *videodev_loop (void) {
 	return NULL;
 }
 
+#endif
 #endif

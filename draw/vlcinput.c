@@ -1,6 +1,8 @@
 
 #include <all.h>
 
+#if defined USE_VLC
+
 #define WIDTH 640
 #define HEIGHT 480
 #define VIDEOWIDTH WIDTH
@@ -51,6 +53,7 @@ void on_end_vlc(const libvlc_event_t *event, void *data) {
 
 void vlc_init (char *url) {
 	playing = 1;
+	char location[1024];
 	char const *vlc_argv[] = {
 		"--no-xlib",
 		"--no-osd",
@@ -61,7 +64,8 @@ void vlc_init (char *url) {
 	ctx.mutex = SDL_CreateMutex();
 	int vlc_argc = sizeof(vlc_argv) / sizeof(*vlc_argv);
 	libvlc = libvlc_new(vlc_argc, vlc_argv);
-	m = libvlc_media_new_path(libvlc, url);
+	sprintf(location, "v4l2://%s", url);
+	m = libvlc_media_new_location(libvlc, location);
 	mp = libvlc_media_player_new_from_media(m);
 	evtman = libvlc_media_player_event_manager(mp);
 	libvlc_event_attach(evtman, libvlc_MediaPlayerEndReached, on_end_vlc, NULL);
@@ -93,3 +97,5 @@ SDL_Surface *vlc_update (void) {
 uint8_t vlc_is_playing (void) {
 	return playing;
 }
+
+#endif

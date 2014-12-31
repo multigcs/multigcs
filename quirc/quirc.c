@@ -14,6 +14,8 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#if defined USE_OPENCV
+
 #include <stdlib.h>
 #include <string.h>
 #include "quirc_internal.h"
@@ -80,3 +82,6 @@ const char *quirc_strerror(quirc_decode_error_t err)
 
 	return "Unknown error";
 }
+
+#endif
+

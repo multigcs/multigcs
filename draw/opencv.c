@@ -1,6 +1,8 @@
 
 #include <all.h>
 
+#if defined USE_OPENCV
+
 #ifdef ANDROID
 #define POWER_OF_TWO
 #endif
@@ -230,4 +232,5 @@ SDL_Surface *openvc_get (void) {
 	return NULL;
 }
 
+#endif
 

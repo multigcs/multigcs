@@ -3062,8 +3062,10 @@ void webserv_child (int fd) {
 #ifndef OSX
 #ifdef SDLGL
 		} else if (strncmp(buffer + 4,"/video.png", 10) == 0) {
+#if defined USE_V4L
 			SDL_SavePNG(videodev_loop(), "/tmp/video.png");
 			webserv_child_dump_file(fd, "/tmp/video.png", "image/png");
+#endif
 /*
 			char PngBuffer[502249];
 			SDL_RWops *rwop = SDL_RWFromMem(PngBuffer, 502249);

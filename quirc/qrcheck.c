@@ -1,6 +1,9 @@
 
 #include <all.h>
 
+#if defined USE_OPENCV
+#if defined USE_QUIRC
+
 static void rgb32_to_luma (const uint8_t *src, int src_pitch, int w, int h, uint8_t *dst, int dst_pitch) {
 	int i = 0;
 	int y = 0;
@@ -47,4 +50,5 @@ void qrcode_check (SDL_Surface *screen, char *payload) {
 	quirc_destroy(qr);
 }
 
-
+#endif
+#endif

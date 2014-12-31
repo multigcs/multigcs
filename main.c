@@ -1964,7 +1964,9 @@ void ShutDown ( ESContext *esContext ) {
 
 #ifndef OSX
 #ifdef SDLGL
+#if defined USE_V4L
 	videodev_stop();
+#endif
 #endif
 #endif
 #ifndef OSX
@@ -2095,7 +2097,9 @@ int main ( int argc, char *argv[] ) {
 	printf( "* Version    : %s\n", glGetString( GL_VERSION ) );
 #ifndef OSX
 #ifdef SDLGL
+#if defined USE_V4L
 	videodev_start(setup.videocapture_device, setup.videocapture_width, setup.videocapture_height);
+#endif
 #endif
 #endif
 #endif
@@ -2103,7 +2107,7 @@ int main ( int argc, char *argv[] ) {
 #if defined USE_OPENCV
 	openvc_init(setup.opencv_device, setup.opencv_features);
 #elif defined USE_VLC
-	vlc_init("dshow://");
+	vlc_init(setup.videocapture_device);
 #endif
 
 #ifdef RPI_NO_X

@@ -521,7 +521,7 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 #if defined USE_VLC
 	if (vlc_is_playing() == 0) {
 		vlc_exit();
-		vlc_init("dshow://");
+		vlc_init(setup.videocapture_device);
 	}
 	draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, vlc_update());
 #elif defined USE_OPENCV
@@ -537,7 +537,9 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 	}
 #else
 #ifndef OSX
+#if defined USE_V4L
 	draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, videodev_loop());
+#endif
 #endif
 #endif
 	}
