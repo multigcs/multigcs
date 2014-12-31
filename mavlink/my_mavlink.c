@@ -967,6 +967,16 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REQUEST grid_spacing %i ##\n", packet.grid_spacing); //UINT16_T
 			break;
 		}
+		case MAVLINK_MSG_ID_WIND: {
+			mavlink_wind_t packet;
+			mavlink_msg_wind_decode(msg, &packet);
+/*
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_WIND direction %f ##\n", packet.direction); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_WIND speed %f ##\n", packet.speed); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_WIND speed_z %f ##\n", packet.speed_z); //FLOAT
+*/
+			break;
+		}
 		default: {
 			SDL_Log("mavlink: ## UNSUPPORTED MSG_ID == %i (mavlink/get_case_by_file.sh %i) ##\n", msg->msgid, msg->msgid);
 			break;
