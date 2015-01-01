@@ -235,18 +235,42 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 			ModelData.dronetype = packet.type;
 			ModelData.pilottype = packet.autopilot;
 
-			if (ModelData.dronetype == MAV_TYPE_TRICOPTER) {
-				SDL_Log("## DRONE_TYPE: TRICOPTER ##\n");
+			if (ModelData.dronetype == MAV_TYPE_GENERIC) {
+				SDL_Log("## DRONE_TYPE: Generic micro air vehicle ##\n");
+			} else if (ModelData.dronetype == MAV_TYPE_FIXED_WING) {
+				SDL_Log("## DRONE_TYPE: Fixed wing aircraft ##\n");
 			} else if (ModelData.dronetype == MAV_TYPE_QUADROTOR) {
-				SDL_Log("## DRONE_TYPE: QUADROTOR ##\n");
-			} else if (ModelData.dronetype == MAV_TYPE_HEXAROTOR) {
-				SDL_Log("## DRONE_TYPE: HEXAROTOR ##\n");
-			} else if (ModelData.dronetype == MAV_TYPE_OCTOROTOR) {
-				SDL_Log("## DRONE_TYPE: OCTOROTOR ##\n");
+				SDL_Log("## DRONE_TYPE: Quadrotor ##\n");
+			} else if (ModelData.dronetype == MAV_TYPE_COAXIAL) {
+				SDL_Log("## DRONE_TYPE: Coaxial helicopter ##\n");
 			} else if (ModelData.dronetype == MAV_TYPE_HELICOPTER) {
-				SDL_Log("## DRONE_TYPE: HELICOPTER ##\n");
+				SDL_Log("## DRONE_TYPE: Normal helicopter with tail rotor ##\n");
+			} else if (ModelData.dronetype == MAV_TYPE_ANTENNA_TRACKER) {
+				SDL_Log("## DRONE_TYPE: Ground installation ##\n");
+			} else if (ModelData.dronetype == MAV_TYPE_GCS) {
+				SDL_Log("## DRONE_TYPE: Operator control unit / ground control station ##\n");
+			} else if (ModelData.dronetype == MAV_TYPE_AIRSHIP) {
+				SDL_Log("## DRONE_TYPE: Airship, controlled ##\n");
+			} else if (ModelData.dronetype == MAV_TYPE_FREE_BALLOON) {
+				SDL_Log("## DRONE_TYPE: Free balloon, uncontrolled ##\n");
 			} else if (ModelData.dronetype == MAV_TYPE_ROCKET) {
-				SDL_Log("## DRONE_TYPE: ROCKET ##\n");
+				SDL_Log("## DRONE_TYPE: Rocket ##\n");
+			} else if (ModelData.dronetype == MAV_TYPE_GROUND_ROVER) {
+				SDL_Log("## DRONE_TYPE: Ground rover ##\n");
+			} else if (ModelData.dronetype == MAV_TYPE_SURFACE_BOAT) {
+				SDL_Log("## DRONE_TYPE: Surface vessel, boat, ship ##\n");
+			} else if (ModelData.dronetype == MAV_TYPE_SUBMARINE) {
+				SDL_Log("## DRONE_TYPE: Submarine ##\n");
+			} else if (ModelData.dronetype == MAV_TYPE_HEXAROTOR) {
+				SDL_Log("## DRONE_TYPE: Hexarotor ##\n");
+			} else if (ModelData.dronetype == MAV_TYPE_OCTOROTOR) {
+				SDL_Log("## DRONE_TYPE: Octorotor ##\n");
+			} else if (ModelData.dronetype == MAV_TYPE_TRICOPTER) {
+				SDL_Log("## DRONE_TYPE: Tricopter ##\n");
+			} else if (ModelData.dronetype == MAV_TYPE_FLAPPING_WING) {
+				SDL_Log("## DRONE_TYPE: Flapping wing ##\n");
+			} else if (ModelData.dronetype == MAV_TYPE_KITE) {
+				SDL_Log("## DRONE_TYPE: Flapping wing ##\n");
 			} else {
 				SDL_Log("## DRONE_TYPE: UNKNOWN(%i) ##\n", ModelData.dronetype);
 			}
