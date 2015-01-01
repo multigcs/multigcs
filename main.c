@@ -2071,7 +2071,7 @@ int main ( int argc, char *argv[] ) {
 	struct tm strukt;
 	time(&liczba_sekund);
 	localtime_r(&liczba_sekund, &strukt); 
-	sprintf(tmp_name, "%s/WMM2010.COF", BASE_DIR);
+	sprintf(tmp_name, "%s/WMM.COF", BASE_DIR);
 	init_declination(tmp_name, strukt.tm_year + 1900, strukt.tm_mon + 1, strukt.tm_mday);
 #endif
 
