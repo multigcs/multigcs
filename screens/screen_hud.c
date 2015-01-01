@@ -1631,7 +1631,7 @@ void screen_hud_internal (ESContext *esContext) {
 	}
 #ifdef SDLGL
 	if (setup.hud_view_map != 0) {
-			draw_text_button(esContext, "view_hud_mark", VIEW_MODE_HUD, "MARK", FONT_GREEN, -1.35, 0.8, 0.002, 0.06, 0, 0, view_hud_mark, 0);
+		draw_text_button(esContext, "view_hud_mark", VIEW_MODE_HUD, "MARK", FONT_GREEN, -1.35, 0.8, 0.002, 0.06, 0, 0, view_hud_mark, 0);
 		if (setup.hud_view_map == 1) {
 			draw_text_button(esContext, "view_hud_map", VIEW_MODE_HUD, "MAP", FONT_GREEN, -1.15, 0.9, 0.002, 0.06, 0, 0, view_hud_map, 0);
 		} else if (setup.hud_view_map == 2) {
@@ -1664,6 +1664,47 @@ void screen_hud_internal (ESContext *esContext) {
 #else
 	draw_text_button(esContext, "view_map_bw", VIEW_MODE_HUD, "BW", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_bw, 0);
 #endif
+	if (ModelData.dronetype == MAV_TYPE_GENERIC) {
+		strcpy(tmp_str, "Generic air vehicle");
+	} else if (ModelData.dronetype == MAV_TYPE_FIXED_WING) {
+		strcpy(tmp_str, "Fixed wing aircraft");
+	} else if (ModelData.dronetype == MAV_TYPE_QUADROTOR) {
+		strcpy(tmp_str, "Quadrotor");
+	} else if (ModelData.dronetype == MAV_TYPE_COAXIAL) {
+		strcpy(tmp_str, "Coaxial helicopter");
+	} else if (ModelData.dronetype == MAV_TYPE_HELICOPTER) {
+		strcpy(tmp_str, "Helicopter");
+	} else if (ModelData.dronetype == MAV_TYPE_ANTENNA_TRACKER) {
+		strcpy(tmp_str, "Antenna-Tracker");
+	} else if (ModelData.dronetype == MAV_TYPE_GCS) {
+		strcpy(tmp_str, "ground control station");
+	} else if (ModelData.dronetype == MAV_TYPE_AIRSHIP) {
+		strcpy(tmp_str, "Airship, controlled");
+	} else if (ModelData.dronetype == MAV_TYPE_FREE_BALLOON) {
+		strcpy(tmp_str, "Free balloon, uncontrolled");
+	} else if (ModelData.dronetype == MAV_TYPE_ROCKET) {
+		strcpy(tmp_str, "Rocket");
+	} else if (ModelData.dronetype == MAV_TYPE_GROUND_ROVER) {
+		strcpy(tmp_str, "Ground rover");
+	} else if (ModelData.dronetype == MAV_TYPE_SURFACE_BOAT) {
+		strcpy(tmp_str, "Boat");
+	} else if (ModelData.dronetype == MAV_TYPE_SUBMARINE) {
+		strcpy(tmp_str, "Submarine");
+	} else if (ModelData.dronetype == MAV_TYPE_HEXAROTOR) {
+		strcpy(tmp_str, "Hexarotor");
+	} else if (ModelData.dronetype == MAV_TYPE_OCTOROTOR) {
+		strcpy(tmp_str, "Octorotor");
+	} else if (ModelData.dronetype == MAV_TYPE_TRICOPTER) {
+		strcpy(tmp_str, "Tricopter");
+	} else if (ModelData.dronetype == MAV_TYPE_FLAPPING_WING) {
+		strcpy(tmp_str, "Flapping wing");
+	} else if (ModelData.dronetype == MAV_TYPE_KITE) {
+		strcpy(tmp_str, "Flapping wing");
+	} else {
+		sprintf(tmp_str, "UNKNOWN(%i)", ModelData.dronetype);
+	}
+	draw_text_button(esContext, "view_hud_map", VIEW_MODE_HUD, tmp_str, FONT_GREEN, 0.0, -0.99, 0.002, 0.06, 1, 0, hud_null, 0);
+
 #ifdef SDLGL
 #ifndef WINDOWS
 	if (setup.hud_view_screen != 2 && draw_target() == 0) {
