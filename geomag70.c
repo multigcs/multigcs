@@ -155,17 +155,18 @@ int init_declination (char *mdfile, int year, int month, int day) {
 
       stream = fopen(mdfile, "rt");
       if (stream == NULL) {
-	return 0;
+        SDL_Log("geomag: file not found: %s\n", mdfile);
+		return 0;
       }
       fileline = 0;                            /* First line will be 1 */
       modelI = -1;                             /* First model will be 0 */
       while (fgets(inbuff,MAXREAD,stream)) {
               fileline++;                           /* On new line */
-              if (strlen(inbuff) != RECL) {
-                  SDL_Log("Corrupt record in file %s on line %d.\n", mdfile, fileline);
-                  fclose(stream);
-                  exit(5);
-              }
+//              if (strlen(inbuff) != RECL + 1) {
+//                  SDL_Log("Corrupt record in file %s on line %d.\n", mdfile, fileline);
+//                  fclose(stream);
+//                  exit(5);
+//              }
               if (!strncmp(inbuff,"   ",3)) {
                   modelI++;                           /* New model */
                   if (modelI > MAXMOD) {
@@ -189,7 +190,6 @@ int init_declination (char *mdfile, int year, int month, int day) {
                }
       }
       fclose(stream);
-
       sdate = julday(month, day, year);
       if ((sdate>maxyr)&&(sdate<maxyr+1)) {
               SDL_Log("\nWarning: The date %4.2f is out of range,\n", sdate);

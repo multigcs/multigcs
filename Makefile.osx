@@ -38,7 +38,7 @@ app: gcs
 	mkdir -p multigcs.app/Contents/Resources
 	cp -a utils/gcs.sh multigcs.app/Contents/MacOS/bin/gcs.sh
 	mkdir -p multigcs.app/Contents/MacOS/share
-	cp -a data/WMM2010.COF multigcs.app/Contents/MacOS/share/
+	cp -a data/WMM.COF multigcs.app/Contents/MacOS/share/
 	cp -a data/map-services.xml multigcs.app/Contents/MacOS/share/
 	cp -a utils/clean-badmaps.sh multigcs.app/Contents/MacOS/share/clean-badmaps.sh
 	cp -a README multigcs.app/Contents/MacOS/share/README

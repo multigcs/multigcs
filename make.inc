@@ -39,7 +39,7 @@ install:
 	test -e .git && git log | gzip -9 > /usr/share/doc/multigcs/changelog.gz
 	test -e .git && git log | gzip -9 > /usr/share/doc/multigcs/changelog.Debian.gz 
 	mkdir -p $(BASE_DIR)
-	cp -a data/WMM2010.COF $(BASE_DIR)/
+	cp -a data/WMM.COF $(BASE_DIR)/
 	cp -a data/map-services.xml $(BASE_DIR)/
 	cp -a utils/clean-badmaps.sh $(BASE_DIR)/clean-badmaps.sh
 	mkdir -p $(BASE_DIR)/obj3d
@@ -85,7 +85,7 @@ deb: gcs
 	git log | gzip -9 > package/usr/share/doc/multigcs/changelog.gz
 	git log | gzip -9 > package/usr/share/doc/multigcs/changelog.Debian.gz 
 	mkdir -p package$(BASE_DIR)
-	cp -a data/WMM2010.COF package$(BASE_DIR)/
+	cp -a data/WMM.COF package$(BASE_DIR)/
 	cp -a data/map-services.xml package$(BASE_DIR)/
 	cp -a utils/clean-badmaps.sh package$(BASE_DIR)/clean-badmaps.sh
 	mkdir -p package$(BASE_DIR)/obj3d

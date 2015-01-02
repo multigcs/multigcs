@@ -10,7 +10,7 @@ all:
 	(cd android/jni/src ; ln -s ../../../* ./)
 	rm -rf android/assets
 	mkdir -p android/assets
-	cp -a data/WMM2010.COF android/assets/
+	cp -a data/WMM.COF android/assets/
 	cp -a data/map-services.xml android/assets/
 	cp -a utils/clean-badmaps.sh android/assets/clean-badmaps.sh
 	mkdir -p android/assets/obj3d

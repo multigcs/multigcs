@@ -72,7 +72,7 @@ pack:
 	mkdir -p Windows/MultiGCS
 	cp -a gcs.exe Windows/MultiGCS/MultiGCS.exe
 	mkdir -p Windows/MultiGCS/$(BASE_DIR)
-	cp -a data/WMM2010.COF Windows/MultiGCS/$(BASE_DIR)/
+	cp -a data/WMM.COF Windows/MultiGCS/$(BASE_DIR)/
 	cp -a data/map-services.xml Windows/MultiGCS/$(BASE_DIR)/
 	cp -a utils/clean-badmaps.sh Windows/MultiGCS/$(BASE_DIR)/clean-badmaps.sh
 	mkdir -p Windows/MultiGCS/$(BASE_DIR)/obj3d
