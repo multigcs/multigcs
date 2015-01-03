@@ -43,11 +43,11 @@ static void display(void *data, void *id) {
 }
 
 void on_error_vlc(const libvlc_event_t *event, void *data) {
-	printf("## error ##\n");
+	SDL_Log("vlc: error\n");
 }
 
 void on_end_vlc(const libvlc_event_t *event, void *data) {
-	printf("## end of stream ##\n");
+	SDL_Log("vlc: end of stream\n");
 	playing = 0;
 }
 
