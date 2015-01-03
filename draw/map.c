@@ -437,7 +437,7 @@ void get_maps (uint8_t mode, GeoMap *mapdata) {
 							sprintf(tmp_str, "convert -crop 256x256+0+50 %s %s", tile_name, tmp_str2);
 							system(tmp_str);
 						}
-					} else {
+					} else if (mapnames[map_type][MAP_FILE][0] != 0) {
 						if (mapdata->zoom <= 18) {
 							sprintf(tile_name, mapnames[map_type][MAP_FILE], get_datadirectory(), mapdata->zoom, tile_x + x_n, tile_y + y_n);
 							if (file_exists(tile_name) == 0) {
@@ -456,6 +456,10 @@ void get_maps (uint8_t mode, GeoMap *mapdata) {
 									sprintf(tile_url, url_string, tile_x + x_n, tile_y + y_n, mapdata->zoom);
 								} else if (strcmp(mapnames[map_type][MAP_TYPE], "ZMS") == 0) {
 									sprintf(tile_url, url_string, mapdata->zoom, tile_x + x_n, tile_y + y_n);
+								} else if (strcmp(mapnames[map_type][MAP_TYPE], "TMS") == 0) {
+									int ymax = (1<<mapdata->zoom);
+									int y = ymax - (tile_y + y_n) - 1;
+									sprintf(tile_url, url_string, mapdata->zoom, tile_x + x_n, y);
 								} else if (strcmp(mapnames[map_type][MAP_TYPE], "BING") == 0) {
 									char quadKey[100];
 									sprintf(tile_url, url_string, BingtileXYZToQuadKey(quadKey, tile_x + x_n, tile_y + y_n, mapdata->zoom));
@@ -467,17 +471,46 @@ void get_maps (uint8_t mode, GeoMap *mapdata) {
 							}
 						}
 					}
-					if (strncmp(omapnames[map_type][MAP_URL], "file:/", 6) == 0) {
-					} else if (omapnames[omap_type][MAP_FILE][0] != 0) {
-						sprintf(tile_name, omapnames[omap_type][MAP_FILE], get_datadirectory(), mapdata->zoom, tile_x + x_n, tile_y + y_n);
-						if (file_exists(tile_name) == 0) {
-							sprintf(tmp_str2, "%s_org.png", tile_name);
-							sprintf(tile_url, omapnames[omap_type][MAP_URL], mapdata->zoom, tile_x + x_n, tile_y + y_n);
-							SDL_Log("map: %s -> %s\n", tile_url, tile_name);
-							file_download(tile_name, tile_url);
 
+
+
+					if (strncmp(omapnames[omap_type][MAP_URL], "file:/", 6) == 0) {
+					} else if (omapnames[omap_type][MAP_FILE][0] != 0) {
+						if (mapdata->zoom <= 18) {
+							sprintf(tile_name, omapnames[omap_type][MAP_FILE], get_datadirectory(), mapdata->zoom, tile_x + x_n, tile_y + y_n);
+							if (file_exists(tile_name) == 0) {
+								sprintf(status_txt, "getting omap-tile: %s", tile_name);
+								sys_message(status_txt);
+								if (start == 1 && omapnames[omap_type][MAP_URL2][0] != 0) {
+									strcpy(url_string, omapnames[omap_type][MAP_URL2]);
+								} else {
+									strcpy(url_string, omapnames[omap_type][MAP_URL]);
+								}
+								if (strcmp(omapnames[omap_type][MAP_TYPE], "ZYX") == 0) {
+									sprintf(tile_url, url_string, mapdata->zoom, tile_y + y_n, tile_x + x_n);
+								} else if (strcmp(omapnames[omap_type][MAP_TYPE], "ZXY") == 0) {
+									sprintf(tile_url, url_string, mapdata->zoom, tile_x + x_n, tile_y + y_n);
+								} else if (strcmp(omapnames[omap_type][MAP_TYPE], "XYZ") == 0) {
+									sprintf(tile_url, url_string, tile_x + x_n, tile_y + y_n, mapdata->zoom);
+								} else if (strcmp(omapnames[omap_type][MAP_TYPE], "ZMS") == 0) {
+									sprintf(tile_url, url_string, mapdata->zoom, tile_x + x_n, tile_y + y_n);
+								} else if (strcmp(omapnames[omap_type][MAP_TYPE], "TMS") == 0) {
+									int ymax = (1<<mapdata->zoom);
+									int y = ymax - (tile_y + y_n) - 1;
+									sprintf(tile_url, url_string, mapdata->zoom, tile_x + x_n, y);
+								} else if (strcmp(omapnames[omap_type][MAP_TYPE], "BING") == 0) {
+									char quadKey[100];
+									sprintf(tile_url, url_string, BingtileXYZToQuadKey(quadKey, tile_x + x_n, tile_y + y_n, mapdata->zoom));
+								}
+								if (strcmp(omapnames[omap_type][MAP_TYPE], "FMAP") != 0) {
+									SDL_Log("omap: %s -> %s\n", tile_url, tile_name);
+									file_download(tile_name, tile_url);
+								}
+							}
 						}
 					}
+
+
 					tiles_num++;
 				}
 			}
@@ -1133,7 +1166,6 @@ void GeoMap_draw (GeoMap *mapdata) {
 					} else {
 						sprintf(tile_name, omapnames[omap_type][MAP_FILE], get_datadirectory(), mapdata->zoom, tile_x + x_n, tile_y + y_n);
 					}
-
 					if (file_exists(tile_name) != 0) {
 						if (mapdata->map_view == 1) {
 							draw_image_srtm(mapdata->esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, mapdata->zoom), tilex2long(tile_x + x_n, mapdata->zoom), tiley2lat(tile_y + y_n + 1, mapdata->zoom), tilex2long(tile_x + x_n + 1, mapdata->zoom), 0.5, 0.0, 0.0, 0.0);
