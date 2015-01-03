@@ -491,10 +491,10 @@ void setup_save (void) {
 	        fprintf(fr, "videocapture_width	%i\n", setup.videocapture_width);
 	        fprintf(fr, "videocapture_height	%i\n", setup.videocapture_height);
 #if defined USE_APRS
-	        fprintf(fr, "aprs_server			%s\n", setup.aprs_server);
-	        fprintf(fr, "aprs_port				%i\n", setup.aprs_port);
-	        fprintf(fr, "aprs_filter			%s\n", setup.aprs_filter);
-	        fprintf(fr, "aprs_enable				%i\n", setup.aprs_enable);
+	        fprintf(fr, "aprs_server		%s\n", setup.aprs_server);
+	        fprintf(fr, "aprs_port		%i\n", setup.aprs_port);
+	        fprintf(fr, "aprs_filter	%s\n", setup.aprs_filter);
+	        fprintf(fr, "aprs_enable		%i\n", setup.aprs_enable);
 #endif
 	        fprintf(fr, "waypoint_active		%i\n", waypoint_active);
 	        fprintf(fr, "\n");
@@ -596,6 +596,7 @@ void setup_load (void) {
 	setup.qrcheck = 0;
 #if defined USE_APRS
 	setup.aprs_server[0] = 0;
+	strcpy(setup.aprs_server, "146.229.162.182");
 	setup.aprs_port = 10153;
 	setup.aprs_filter[0] = 0;
 	setup.aprs_enable = 0;
