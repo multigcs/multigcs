@@ -1162,10 +1162,10 @@ void map_draw_buttons (ESContext *esContext) {
 		ny2 = ny;
 		nn = 0;
 		for (nn = 0; nn < omaplen; nn++) {
-			draw_box_f3(esContext, -1.15, -0.8 + ny2 * 0.12 - 0.055, 0.002, -0.85, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
-			draw_rect_f3(esContext, -1.15, -0.8 + ny2 * 0.12 - 0.055, 0.002, -0.85, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
+			draw_box_f3(esContext, -1.15, -0.99 + ny2 * 0.12 - 0.055, 0.002, -0.85, -0.99 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
+			draw_rect_f3(esContext, -1.15, -0.99 + ny2 * 0.12 - 0.055, 0.002, -0.85, -0.99 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
 			sprintf(tmp_str, "change_omaptype%i", nn);
-			draw_button(esContext, tmp_str, setup.view_mode, omapnames[nn][MAP_NAME], FONT_WHITE, -1.15, -0.8 + ny2 * 0.12 - 0.055, 0.002, -0.85, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, change_omaptype, nn);
+			draw_button(esContext, tmp_str, setup.view_mode, omapnames[nn][MAP_NAME], FONT_WHITE, -1.15, -0.99 + ny2 * 0.12 - 0.055, 0.002, -0.85, -0.99 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, change_omaptype, nn);
 			ny2++;
 		}
 	}
@@ -1423,7 +1423,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	if (_map_view == 1) {
 		glMatrixMode( GL_PROJECTION );
 		glLoadIdentity();
-		gluPerspective(53.0, aspect, 0.001, 5.0);
+		gluPerspective(53.0, aspect, 0.01, 5.0);
 		glMatrixMode( GL_MODELVIEW );
 	} else if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
 		glMatrixMode( GL_PROJECTION );
@@ -1681,6 +1681,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	if (map_show_poi == 1) {
 		draw_waypoints_cup(esContext, mapdata->lat, mapdata->lon, mapdata->zoom);
 	}
+
 	if (map_show_wp == 0) {
 		for (n = 0; n < MAX_POIS; n++) {
 			if (POIs[n].p_lat != 0.0) {

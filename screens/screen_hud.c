@@ -3,6 +3,7 @@
 
 extern GLuint RB_texture;
 void draw_texture_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, GLuint texture);
+float mapcamscale = 1.8;
 
 #ifdef USE_VISTA2D
 
@@ -175,6 +176,14 @@ uint8_t view_hud_tunnel (char *name, float x, float y, int8_t button, float data
 }
 
 uint8_t view_hud_map (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (button == 4) {
+		mapcamscale += 0.01;
+		return 0;
+	}
+	if (button == 5) {
+		mapcamscale -= 0.01;
+		return 0;
+	}
 	if (setup.hud_view_map == 0) {
 		setup.hud_view_map = 1;
 	} else if (setup.hud_view_map == 1) {
@@ -545,18 +554,24 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 	}
 #endif
 #ifdef SDLGL
-	if (setup.hud_view_map == 1) {
-		if (setup.hud_view_video == 1) {
-			display_map(esContext, lat, lon, zoom, 3, 1, 0.5, 0.05, 0.05, 0.5);
-		} else {
-			display_map(esContext, lat, lon, zoom, 3, 1, 1.0, 0.1, 0.1, 0.3);
+
+	if (setup.hud_view_map != 0) {
+		glPushMatrix();
+		glScalef(mapcamscale, mapcamscale, 1.0);
+		if (setup.hud_view_map == 1) {
+			if (setup.hud_view_video == 1) {
+				display_map(esContext, lat, lon, zoom, 3, 1, 0.5, 0.05, 0.05, 0.5);
+			} else {
+				display_map(esContext, lat, lon, zoom, 3, 1, 1.0, 0.1, 0.1, 0.3);
+			}
+		} else if (setup.hud_view_map == 2) {
+			if (setup.hud_view_video == 1) {
+				display_map(esContext, lat, lon, zoom, 3, 0, 0.0, 0.35, 0.35, 0.3);
+			} else {
+				display_map(esContext, lat, lon, zoom, 3, 0, 0.0, 0.7, 0.7, 0.7);
+			}
 		}
-	} else if (setup.hud_view_map == 2) {
-		if (setup.hud_view_video == 1) {
-			display_map(esContext, lat, lon, zoom, 3, 0, 0.0, 0.35, 0.35, 0.3);
-		} else {
-			display_map(esContext, lat, lon, zoom, 3, 0, 0.0, 0.7, 0.7, 0.7);
-		}
+		glPopMatrix();
 	}
 #endif
 	// Background
@@ -1703,7 +1718,7 @@ void screen_hud_internal (ESContext *esContext) {
 	} else {
 		sprintf(tmp_str, "UNKNOWN(%i)", ModelData.dronetype);
 	}
-	draw_text_button(esContext, "view_hud_map", VIEW_MODE_HUD, tmp_str, FONT_GREEN, 0.0, -0.99, 0.002, 0.06, 1, 0, hud_null, 0);
+	draw_text_button(esContext, "view_hud_v", VIEW_MODE_HUD, tmp_str, FONT_GREEN, 0.0, -0.99, 0.002, 0.06, 1, 0, hud_null, 0);
 
 #ifdef SDLGL
 #ifndef WINDOWS
