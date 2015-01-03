@@ -1378,7 +1378,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
 #endif
-	char tmp_str[100];
+	char tmp_str[1024];
 	// calculate Altitude-Zoom
 	uint32_t zz = (1<<zoom);
 	alt_zoom = 25500000 / (float)zz;
@@ -1386,6 +1386,12 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 
 	if (map_startup == 0) {
 		map_startup = 1;
+
+		int n = 0;
+		for (n = 0; n < 20; n++) {
+			mapnames[n][MAP_COPYRIGHT][0] = 0;
+			omapnames[n][MAP_COPYRIGHT][0] = 0;
+		}
 		mapdata = GeoMap_init();
 	}
 
@@ -2077,8 +2083,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		map_type = 0;
 	}
 
-//#ifndef OSX
-#ifdef OSX___
+#ifndef OSX
 	uint16_t cn = 0;
 	uint16_t xn = 0;
 	uint16_t mn = 0;
@@ -2120,16 +2125,27 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			tmp_str3[an] = 0;
 		} else {
 			if (tmode == 1) {
-				draw_text_button(esContext, tmp_str3, setup.view_mode, tmp_str2, FONT_PINK, -1.3 + xn * 0.035, 0.92, 0.0002, 0.06, ALIGN_LEFT, ALIGN_TOP, map_link_open, 0.0);
+				draw_text_button(esContext, tmp_str3, setup.view_mode, tmp_str2, FONT_PINK, -1.3 + xn * 0.03, 0.92, 0.0002, 0.05, ALIGN_LEFT, ALIGN_TOP, map_link_open, 0.0);
 				xn += strlen(tmp_str2);
 			} else if (tmode == 2) {
-				draw_text_f3(esContext, -1.3 + xn * 0.035, 0.92, 0.0002, 0.06, 0.06, FONT_BLACK_BG, tmp_str2);
+				draw_text_f3(esContext, -1.3 + xn * 0.03, 0.92, 0.0002, 0.05, 0.05, FONT_BLACK_BG, tmp_str2);
 				xn += strlen(tmp_str2);
 			}
 			tmode = 0;
 			mn = 0;
 		}
 		lastc = tmp_str[cn];
+	}
+	if (omap_type != 0) {
+		sprintf(tmp_str, "%s", omapnames[omap_type][MAP_COPYRIGHT]);
+		draw_text_f3(esContext, -1.3, 0.96, 0.0002, 0.05, 0.05, FONT_BLACK_BG, tmp_str);
+	}
+#else
+	sprintf(tmp_str, "%s", mapnames[map_type][MAP_COPYRIGHT]);
+	draw_text_f3(esContext, -1.3, 0.92, 0.0002, 0.05, 0.05, FONT_BLACK_BG, tmp_str);
+	if (omap_type != 0) {
+		sprintf(tmp_str, "%s", omapnames[omap_type][MAP_COPYRIGHT]);
+		draw_text_f3(esContext, -1.3, 0.96, 0.0002, 0.05, 0.05, FONT_BLACK_BG, tmp_str);
 	}
 #endif
 	if (_map_view != 3 && _map_view != 4 && _map_view != 5 && setup.view_mode == VIEW_MODE_MAP) {

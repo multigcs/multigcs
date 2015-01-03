@@ -5,8 +5,8 @@
 
 uint8_t maplen = 0;
 uint8_t omaplen = 0;
-char mapnames[20][7][512];
-char omapnames[20][7][512];
+char mapnames[20][7][1024];
+char omapnames[20][7][1024];
 PointOfInterest POIs[MAX_POIS];
 
 GeoMap *mapdata = NULL;
@@ -209,6 +209,14 @@ static void map_parseOverlayMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t o
 				strncpy(omapnames[omap_service][MAP_URL], (char *)key, 199);
 			} else {
 				omapnames[omap_service][MAP_URL][0] = 0;
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"copyright"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if (key != NULL) {
+				strncpy(omapnames[omap_service][MAP_COPYRIGHT], (char *)key, 511);
+			} else {
+				omapnames[omap_service][MAP_COPYRIGHT][0] = 0;
 			}
 			xmlFree(key);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"file"))) {

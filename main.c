@@ -453,6 +453,7 @@ void setup_save (void) {
 	        fprintf(fr, "lon			%0.8f\n", lon);
 	        fprintf(fr, "zoom			%i\n", zoom);
 	        fprintf(fr, "map_type		%i\n", map_type);
+	        fprintf(fr, "omap_type		%i\n", omap_type);
 	        fprintf(fr, "center_map		%i\n", center_map);
 	        fprintf(fr, "gcs_gps_port		%s\n", setup.gcs_gps_port);
 	        fprintf(fr, "gcs_gps_baud		%i\n", setup.gcs_gps_baud);
@@ -686,6 +687,8 @@ void setup_load (void) {
 	                                setup.tracker_baud = atoi(val);
 	                        } else if (strcmp(var, "map_type") == 0) {
 	                                map_type = atoi(val);
+	                        } else if (strcmp(var, "omap_type") == 0) {
+	                                omap_type = atoi(val);
 	                        } else if (strcmp(var, "center_map") == 0) {
 	                                center_map = atoi(val);
 	                        } else if (strcmp(var, "touchscreen_device") == 0) {

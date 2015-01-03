@@ -30,8 +30,8 @@ typedef struct {
 extern GeoMap *mapdata;
 extern uint8_t maplen;
 extern uint8_t omaplen;
-extern char mapnames[20][7][512];
-extern char omapnames[20][7][512];
+extern char mapnames[20][7][1024];
+extern char omapnames[20][7][1024];
 extern PointOfInterest POIs[MAX_POIS];
 
 
