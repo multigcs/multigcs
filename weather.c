@@ -110,13 +110,13 @@ int weather_thread (void *data) {
 		sprintf(cmd, "wget -q -O/tmp/weather.xml.tmp \"%s\"", url);
 		system(cmd);
 		weather_parseDoc("/tmp/weather.xml.tmp");
-		SDL_Log("weather: temperature %f\n", weather.temperature);
-		SDL_Log("weather: humidity %f\n", weather.humidity);
-		SDL_Log("weather: pressure %f\n", weather.pressure);
-		SDL_Log("weather: wind_speed %f\n", weather.wind_speed);
-		SDL_Log("weather: wind_direction %f\n", weather.wind_direction);
-		SDL_Log("weather: sun_rise %s\n", weather.sun_rise);
-		SDL_Log("weather: sun_set %s\n", weather.sun_set);
+//		SDL_Log("weather: temperature %f\n", weather.temperature);
+//		SDL_Log("weather: humidity %f\n", weather.humidity);
+//		SDL_Log("weather: pressure %f\n", weather.pressure);
+//		SDL_Log("weather: wind_speed %f\n", weather.wind_speed);
+//		SDL_Log("weather: wind_direction %f\n", weather.wind_direction);
+//		SDL_Log("weather: sun_rise %s\n", weather.sun_rise);
+//		SDL_Log("weather: sun_set %s\n", weather.sun_set);
 		for (n = 0; n < 60 && gui_running == 1; n++) {
 			SDL_Delay(1000);
 		}
