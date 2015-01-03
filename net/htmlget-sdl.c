@@ -10,17 +10,14 @@ int htmlget (char *url, char *file) {
 	TCPsocket sd;		/* Socket descriptor */
 	int len;
 	char buffer[100000];
-
 	char host[1024];
 	char page[1024];
-
 	sscanf(url, "http://%[a-zA-Z0-9-_.]/%s", host, page);
 
-
-	if (SDLNet_Init() < 0) {
-		fprintf(stderr, "SDLNet_Init: %s\n", SDLNet_GetError());
-		return -1;
-	}
+//	if (SDLNet_Init() < 0) {
+//		fprintf(stderr, "SDLNet_Init: %s\n", SDLNet_GetError());
+//		return -1;
+//	}
 	if (SDLNet_ResolveHost(&ip, host, 80) < 0) {
 		fprintf(stderr, "SDLNet_ResolveHost: %s\n", SDLNet_GetError());
 		return -1;
