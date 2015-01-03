@@ -149,11 +149,11 @@
 
 	<overlay_service>
 		<name>AIP</name>
-		<comment>Y UNKNOWN-FORMAT: FFM: http://2.tile.maps.openaip.net/geowebcache/service/tms/1.0.0/openaip_basemap@png/10/537/676.png</comment>
+		<comment>openAIP has the goal to deliver free, current and precise navigational data to anyone</comment>
 		<url>http://2.tile.maps.openaip.net/geowebcache/service/tms/1.0.0/openaip_basemap@png/%i/%i/%i.png</url>
 		<file>%s/MAPS/openaip_%i_%i_%i.png</file>
 		<type>TMS</type>
-		<copyright>Karte von &lt;a href='http://openstreetmap.org/'&gt;OpenStreetMap&lt;/a&gt; und Mitwirkenden unter &lt;a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'&gt;CC-BY-SA&lt;/a&gt;-Lizenz</copyright>
+		<copyright>Karte von &lt;a href='http://www.openaip.net/'&gt;openaip.net</copyright>
 	</overlay_service>
 
 	<service>
