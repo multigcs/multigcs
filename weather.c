@@ -126,6 +126,7 @@ int weather_thread (void *data) {
 }
 
 int weather_init (void) {
+	SDL_Log("weather: Weather-Data copyright by http://www.openweathermap.org\n");
 #ifdef SDL2
 	thread_weather = SDL_CreateThread(weather_thread, NULL, NULL);
 #else

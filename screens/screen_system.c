@@ -730,6 +730,7 @@ void screen_system (ESContext *esContext) {
 #endif
 */
 
+	draw_text_button(esContext, "copyright", VIEW_MODE_SYSTEM, "Weather-Data copyright by http://www.openweathermap.org", FONT_PINK, 0.0, 0.88, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, system_null, 0.0);
 	draw_text_button(esContext, "copyright", VIEW_MODE_SYSTEM, "Copyright by Oliver Dippel (oliver@multixmedia.org)", FONT_PINK, 0.0, 0.93, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, system_null, 0.0);
 
 	screen_device(esContext);
