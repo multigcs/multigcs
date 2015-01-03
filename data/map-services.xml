@@ -149,7 +149,7 @@
 
 	<overlay_service>
 		<name>AIP</name>
-		<comment>Y UNKNOWN-FORMAT: FFM: http://2.tile.maps.openaip.net/geowebcache/service/tms/1.0.0/openaip_basemap@png/10/537/676.png</comment>
+		<comment>Map is in TSM Format. y begins from south to north instead from north to south.You have to invert tile y origin from top to bottom of map. var z = tile.levelOfDetail; var ymax = 1 << z; var y = ymax - tile.y - 1; |Y UNKNOWN-FORMAT: FFM: http://2.tile.maps.openaip.net/geowebcache/service/tms/1.0.0/openaip_basemap@png/10/537/676.png</comment>
 		<url>http://2.tile.maps.openaip.net/geowebcache/service/tms/1.0.0/openaip_basemap@png/%i/%i/%i.png</url>
 		<file>%s/MAPS/openaip_%i_%i_%i.png</file>
 		<type>TMS</type>
