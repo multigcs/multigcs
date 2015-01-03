@@ -866,6 +866,21 @@ void mark_tunnel (ESContext *esContext, float last_lat, float last_long, float l
 	}
 }
 
+void mark_plane (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, char *text, float lat, float lon, uint8_t zoom) {
+	int mark_x = long2x(mark_long, lon, zoom);
+	int mark_y = lat2y(mark_lat, lat, zoom);
+	float x1 = (float)mark_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
+	float y1 = (float)mark_y / (float)esContext->height * 2.0 - 1.0;
+	float z = 0.0;
+	float z2 = 0.0;
+	if (map_view == 1) {
+		z = mark_alt / alt_zoom;
+		z2 = (float)get_altitude(mark_lat, mark_long) / alt_zoom;
+	}
+	draw_text_f3(esContext, x1, y1, z, 0.03, 0.03, FONT_GREEN, text);
+	draw_circleFilled_f3(esContext, x1, y1, z, 0.01, 255, 255, 0, 255);
+}
+
 void mark_point (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, char *text, char *command, uint8_t type, float radius, float orbit, float lat, float lon, uint8_t zoom) {
 	char tmp_str[1024];
 	int mark_x = long2x(mark_long, lon, zoom);

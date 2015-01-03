@@ -23,6 +23,8 @@ INCDIR += $(shell pkg-config --cflags libvlc)
 LIBS += $(shell pkg-config --libs libvlc)
 EXTRA_OBJECTS += draw/vlcinput.o
 
+CFLAGS += -DUSE_APRS
+EXTRA_OBJECTS += aprs.o
 
 INCDIR += $(shell pkg-config --cflags sdl) $(shell pkg-config --cflags SDL_image) $(shell pkg-config --cflags SDL_net) $(shell pkg-config --cflags gl) $(shell pkg-config --cflags glu) $(shell pkg-config --cflags opencv) \
 -I/usr/local/include -Iquirc

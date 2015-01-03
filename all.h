@@ -182,3 +182,6 @@
 #include <quirc.h>
 #include <qrcheck.h>
 #endif
+#if defined USE_APRS
+#include <aprs.h>
+#endif

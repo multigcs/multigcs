@@ -489,10 +489,12 @@ void setup_save (void) {
 	        fprintf(fr, "videocapture_device	%s\n", setup.videocapture_device);
 	        fprintf(fr, "videocapture_width	%i\n", setup.videocapture_width);
 	        fprintf(fr, "videocapture_height	%i\n", setup.videocapture_height);
+#if defined USE_APRS
 	        fprintf(fr, "aprs_server			%s\n", setup.aprs_server);
 	        fprintf(fr, "aprs_port				%i\n", setup.aprs_port);
 	        fprintf(fr, "aprs_filter			%s\n", setup.aprs_filter);
 	        fprintf(fr, "aprs_enable				%i\n", setup.aprs_enable);
+#endif
 	        fprintf(fr, "waypoint_active		%i\n", waypoint_active);
 	        fprintf(fr, "\n");
 	        fprintf(fr, "Model_lat		%f\n", ModelData.p_lat);
@@ -591,11 +593,12 @@ void setup_load (void) {
 	setup.contrast = 0;
 	strcpy(setup.videocapture_device, "/dev/video0");
 	setup.qrcheck = 0;
+#if defined USE_APRS
 	setup.aprs_server[0] = 0;
 	setup.aprs_port = 10153;
 	setup.aprs_filter[0] = 0;
 	setup.aprs_enable = 0;
-
+#endif
 #ifdef ANDROID
 	setup.opencv_device = 0;
 #else
@@ -731,6 +734,7 @@ void setup_load (void) {
 	                                ModelData.p_long = atof(val);
 	                        } else if (strcmp(var, "Model_alt") == 0) {
 	                                ModelData.p_alt = atof(val);
+#if defined USE_APRS
 	                        } else if (strcmp(var, "aprs_server") == 0) {
 	                                strncpy(setup.aprs_server, val, 128);
 	                        } else if (strcmp(var, "aprs_port") == 0) {
@@ -739,6 +743,7 @@ void setup_load (void) {
 	                                strncpy(setup.aprs_filter, val, 128);
 	                        } else if (strcmp(var, "aprs_enable") == 0) {
 	                                setup.aprs_enable = atoi(val);
+#endif
 	                        } else if (strcmp(var, "[waypoints]") == 0) {
 	                                mode = 1;
 	                        } else if (strcmp(var, "[polypoints]") == 0) {
@@ -2105,6 +2110,11 @@ int main ( int argc, char *argv[] ) {
 	setup_waypoints();
 	setup_load();
 
+#if defined USE_APRS
+	if (setup.aprs_enable == 1) {
+		aprs_init(setup.aprs_server, setup.aprs_port);
+	}
+#endif
 #ifndef CONSOLE_ONLY
 	SDL_Log("init GL\n");
 	draw_init(&esContext);

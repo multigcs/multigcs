@@ -115,10 +115,6 @@ uint8_t map_null (char *name, float x, float y, int8_t button, float data, uint8
 	return 0;
 }
 
-
-
-
-
 int point_in_poly (float testx, float testy) {
 	int result = 0;
 	int num = 0;
@@ -179,9 +175,6 @@ int point_in_poly (float testx, float testy) {
 	}
 	return result;
 }
-
-
-
 
 uint8_t map_overlay_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	map_overlay_set = 1 - map_overlay_set;
@@ -383,7 +376,6 @@ uint8_t map_del (char *name, float x, float y, int8_t button, float data, uint8_
 	return 0;
 }
 
-
 uint8_t map_polypoint_add (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	map_poly_addmode = 1 - map_poly_addmode;
 	map_show_poly = 1;
@@ -407,7 +399,6 @@ uint8_t map_polypoint_del (char *name, float x, float y, int8_t button, float da
 	polypoint_active--;
 	return 0;
 }
-
 
 void draw_xy (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, float lat, float lon, uint8_t zoom, float *x1, float *y1) {
 	int mark_x = long2x(mark_long, lon, zoom);
@@ -1695,6 +1686,17 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 
 	// drawing Logfile
 	map_log_show();
+
+#if defined USE_APRS
+	if (setup.aprs_enable == 1) {
+		int n = 0;
+		for (n = 0; n < APRS_MAX; n++) {
+			if (aprs_pos[n].id[0] != 0) {
+				mark_plane(esContext, aprs_pos[n].lat, aprs_pos[n].lon, 1000.0, aprs_pos[n].id, mapdata->lat, mapdata->lon, mapdata->zoom);
+			}
+		}
+	}
+#endif
 
 	// drawing Waypoint-Route
 	float last_lat = ModelData.p_lat;

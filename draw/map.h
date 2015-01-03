@@ -56,6 +56,7 @@ void winkel_line (ESContext *esContext, float x_origin, float y_origin, float wi
 void mark_route (ESContext *esContext, float last_lat, float last_long, float last_alt, float mark_lat, float mark_long, float mark_alt, int8_t type, float lat, float lon, uint8_t zoom);
 void mark_tunnel (ESContext *esContext, float last_lat, float last_long, float last_alt, float mark_lat, float mark_long, float mark_alt, uint8_t type, float lat, float lon, uint8_t zoom);
 void mark_point (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, char *text, char *command, uint8_t type, float radius, float orbit, float lat, float lon, uint8_t zoom);
+void mark_plane (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, char *text, float lat, float lon, uint8_t zoom);
 void mark_poi (ESContext *esContext, float mark_lat, float mark_long, char *text, uint8_t type, float lat, float lon, uint8_t zoom);
 float get_distance (float from_lat, float from_lon, float to_lat, float to_lon, float alt);
 float get_m_per_pixel (float lat, int zoomlevel);

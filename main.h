@@ -33,18 +33,17 @@
 #define TEXTURE_PLAYER_OPEN BASE_DIR"/textures/player_open.png"
 #define TEXTURE_PLAYER_KML BASE_DIR"/textures/player_kml.png"
 
-
 #define ALIGN_LEFT	0
 #define ALIGN_TOP	0
 #define ALIGN_CENTER	1
 #define ALIGN_RIGHT	2
 #define ALIGN_BOTTOM	2
 
-
 #define BUTTON_PRESSED	0
 #define BUTTON_MOVED	1
 #define BUTTON_RELEASED	2
 
+#define APRS_MAX	5000
 
 enum {
 	VIEW_MODE_HUD,
@@ -171,12 +170,12 @@ typedef struct {
 	uint16_t webport;
 	float gearth_interval;
 
-
+#if defined USE_APRS
 	char aprs_server[128];
 	int aprs_port;
 	char aprs_filter[128];
 	int aprs_enable;
-
+#endif
 } GcsSetup;
 
 extern Button Buttons[MAX_BUTTONS + 1];
