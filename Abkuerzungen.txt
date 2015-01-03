@@ -1,0 +1,52 @@
+Navaid:
+	Navigationshilfe
+
+VOR:
+	Drehfunkfeuer
+	ist ein Funkfeuer für die Luftfahrtnavigation.
+	Es sendet ein spezielles Funksignal aus,
+	dem ein Empfänger im Flugzeug die Richtung zum Funkfeuer entnehmen kann.
+	Das Flugzeug benötigt keine Peilanlage dafür,
+	da die Richtungsinformation vom Sender in das Signal kodiert wird.
+
+APRS:
+	Automatic Packet Reporting System
+	APRS ermöglicht die automatisierte Verbreitung von Daten (z. B. GPS-Position, Wetterdaten, kurze Textnachrichten)
+	über beliebige Entfernungen im Packet-Radio-Netz.
+	Diese Daten werden auf einheitlichen Simplex-Frequenzen im 2-Meter-Band bei einer Bitrate von 1200Bit/s
+	und teilweise auch 70-Zentimeter-Band (dort auch mit einer Bitrate von 9600  Bit/s) übertragen.
+
+FLARM:
+	ist ein in Kleinflugzeugen eingesetztes Kollisionswarngerät (engl. Portable Collision Avoidance System)
+	Dabei erfolgt die Datenübertragung auf einer konfigurierbaren Frequenz (in Europa 868.2 und 868.4 MHz).
+
+ADS-B:
+	Automatic Dependent Surveillance - Broadcast
+	zu Deutsch etwa Automatische bordabhängige Überwachung, ist ein System der Flugsicherung zur Anzeige der Flugbewegungen im Luftraum.
+	1090 MHz
+
+NOTAM:
+	(Notice(s) to Airmen) sind Anordnungen und Informationen über temporäre
+	oder auch permanente Änderungen der Aeronautical Information Publication (AIP),
+	die für einen geordneten, sicheren und flüssigen Flugverkehr wichtig sind
+
+AIP:
+	Das Luftfahrthandbuch (englisch Aeronautical Information Publication, in der Fliegersprache meist nur kurz AIP)
+	ist ein standardisiertes Nachschlagewerk mit Luftfahrt-relevanten Informationen und Vorschriften.
+	In der Regel gilt ein Luftfahrthandbuch für einen einzelnen Staat, es ist jedoch grundsätzlich möglich,
+	dass mehrere Länder eine gemeinsame AIP herausgeben.
+
+NFZ:
+	Eine Flugverbotszone (englisch no-fly zone, kurz NFZ) ist ein Luftraum,
+	in dem aus militärischen Gründen sämtliche Flugbewegungen von Luftfahrzeugen verboten sind.
+	Ausnahmen können dabei beispielsweise zur Durchsetzung des Flugverbots und für humanitäre Zwecke vorgesehen werden.
+
+CTR:
+	Eine Kontrollzone (englisch control zone,
+	international als CTR abgekürzt) ist der bis zum Erdboden reichende Luftraum
+	in der unmittelbaren Umgebung eines Flugplatzes, dessen Flugverkehr von einem Fluglotsen geleitet wird.
+
+
+
+
+
