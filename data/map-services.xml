@@ -153,7 +153,7 @@
 		<url>http://2.tile.maps.openaip.net/geowebcache/service/tms/1.0.0/openaip_basemap@png/%i/%i/%i.png</url>
 		<file>%s/MAPS/openaip_%i_%i_%i.png</file>
 		<type>TMS</type>
-		<copyright>Karte von &lt;a href='http://www.openaip.net/'&gt;openaip.net</copyright>
+		<copyright>Data used comes from openAIP. Visit openAIP.net and contribute to better aviation data, free for everyone to use and share.</copyright>
 	</overlay_service>
 
 	<service>
