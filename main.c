@@ -492,6 +492,7 @@ void setup_save (void) {
 	        fprintf(fr, "aprs_server			%s\n", setup.aprs_server);
 	        fprintf(fr, "aprs_port				%i\n", setup.aprs_port);
 	        fprintf(fr, "aprs_filter			%s\n", setup.aprs_filter);
+	        fprintf(fr, "aprs_enable				%i\n", setup.aprs_enable);
 	        fprintf(fr, "waypoint_active		%i\n", waypoint_active);
 	        fprintf(fr, "\n");
 	        fprintf(fr, "Model_lat		%f\n", ModelData.p_lat);
@@ -593,6 +594,7 @@ void setup_load (void) {
 	setup.aprs_server[0] = 0;
 	setup.aprs_port = 10153;
 	setup.aprs_filter[0] = 0;
+	setup.aprs_enable = 0;
 
 #ifdef ANDROID
 	setup.opencv_device = 0;
@@ -732,9 +734,11 @@ void setup_load (void) {
 	                        } else if (strcmp(var, "aprs_server") == 0) {
 	                                strncpy(setup.aprs_server, val, 128);
 	                        } else if (strcmp(var, "aprs_port") == 0) {
-	                                setup.aprs_port = atof(val);
+	                                setup.aprs_port = atoi(val);
 	                        } else if (strcmp(var, "aprs_filter") == 0) {
 	                                strncpy(setup.aprs_filter, val, 128);
+	                        } else if (strcmp(var, "aprs_enable") == 0) {
+	                                setup.aprs_enable = atoi(val);
 	                        } else if (strcmp(var, "[waypoints]") == 0) {
 	                                mode = 1;
 	                        } else if (strcmp(var, "[polypoints]") == 0) {

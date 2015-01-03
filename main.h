@@ -175,6 +175,7 @@ typedef struct {
 	char aprs_server[128];
 	int aprs_port;
 	char aprs_filter[128];
+	int aprs_enable;
 
 } GcsSetup;
 
