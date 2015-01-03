@@ -699,7 +699,7 @@ void draw_waypoints_cup (ESContext *esContext, float lat, float lon, uint8_t zoo
 	char wp_name2[50];
 	float wp_lat = 0.0;
 	float wp_lon = 0.0;
-//	float wp_alt = 0.0;
+	float wp_alt = 0.0;
 	int max_lat = y2lat(0, lat, zoom);
 	int min_lon = x2long(0, lon, zoom);
 	int min_lat = y2lat(esContext->height, lat, zoom);
@@ -712,8 +712,8 @@ void draw_waypoints_cup (ESContext *esContext, float lat, float lon, uint8_t zoo
 		SDL_Log("map: %s\n", status_txt);
 		file_download(tmp_str, "http://download.xcsoar.org/waypoints/Germany.cup");
 	}
-        if ((fr = fopen(tmp_str, "rb")) > 0) {
-	        while(fgets(line, 500, fr) != NULL) {
+	if ((fr = fopen(tmp_str, "rb")) > 0) {
+		while(fgets(line, 500, fr) != NULL) {
 			int n = 0;
 			int last_p = -1;
 			int pn = 0;
@@ -721,6 +721,7 @@ void draw_waypoints_cup (ESContext *esContext, float lat, float lon, uint8_t zoo
 				if (line[n] == ',' || line[n] == '\n' || line[n] == '\r') {
 					strncpy(tmp_str, line + last_p + 1, n - last_p - 1);
 					tmp_str[n - last_p - 1] = 0;
+					// Format: 0 name, 1 code, 2 country, 3 lat, 4 lon, 5 elev, 6 style, 7 rwdir, 8 rwlen, 9 freq, 10 desc
 					if (pn == 0) {
 						strncpy(wp_name, tmp_str, 49);
 					} else if (pn == 3) {
@@ -731,12 +732,86 @@ void draw_waypoints_cup (ESContext *esContext, float lat, float lon, uint8_t zoo
 						float min = atof(tmp_str + 3);
 						tmp_str[3] = 0;
 						wp_lon = atof(tmp_str) + min / 60.0;
-//					} else if (pn == 5) {
-//						wp_alt = atof(tmp_str);
+					} else if (pn == 5) {
+						wp_alt = atof(tmp_str);
 					} else if (pn == 10) {
 						if ((int)wp_lat >= min_lat && (int)wp_lat <= max_lat && (int)wp_lon >= min_lon && (int)wp_lon <= max_lon) {
 							strncpy(wp_name2, tmp_str, 49);
 							mark_poi(esContext, wp_lat, wp_lon, wp_name, 0, lat, lon, zoom);
+						}
+					}
+					last_p = n;
+					pn++;
+				}
+			}
+		}
+		fclose(fr);
+	}
+	return;
+}
+
+void list_waypoints_cup (ESContext *esContext, char *search) {
+	FILE *fr;
+	char line[501];
+	char tmp_str[128];
+	char wp_name[50];
+	float wp_lat = 0.0;
+	float wp_lon = 0.0;
+	float wp_alt = 0.0;
+	int max_lat = y2lat(0, lat, zoom);
+	int min_lon = x2long(0, lon, zoom);
+	int min_lat = y2lat(esContext->height, lat, zoom);
+	int max_lon = x2long(esContext->width, lon, zoom);
+	sprintf(tmp_str, "%s/MAPS/Waypoints_Germany.cup", get_datadirectory());
+	if (file_exists(tmp_str) == 0) {
+		char status_txt[2024];
+		sprintf(status_txt, "getting Airspace-Data: %s", tmp_str);
+		sys_message(status_txt);
+		SDL_Log("map: %s\n", status_txt);
+		file_download(tmp_str, "http://download.xcsoar.org/waypoints/Germany.cup");
+	}
+	if ((fr = fopen(tmp_str, "rb")) > 0) {
+		while(fgets(line, 500, fr) != NULL) {
+			int n = 0;
+			int last_p = -1;
+			int pn = 0;
+			for (n = 0; n < strlen(line); n++) {
+				if (line[n] == ',' || line[n] == '\n' || line[n] == '\r') {
+					strncpy(tmp_str, line + last_p + 1, n - last_p - 1);
+					tmp_str[n - last_p - 1] = 0;
+					// Format: 0 name, 1 code, 2 country, 3 lat, 4 lon, 5 elev, 6 style, 7 rwdir, 8 rwlen, 9 freq, 10 desc
+					if (pn == 0) {
+						if (tmp_str[0] == '"') {
+							strncpy(wp_name, tmp_str + 1, 49);
+							wp_name[strlen(wp_name) - 1] = 0;
+						} else {
+							strncpy(wp_name, tmp_str, 49);
+						}
+						if (strncmp(search, wp_name, strlen(search)) != 0) {
+							break;
+						}
+					} else if (pn == 3) {
+						float min = atof(tmp_str + 2);
+						tmp_str[2] = 0;
+						wp_lat = atof(tmp_str) + min / 60.0;
+					} else if (pn == 4) {
+						float min = atof(tmp_str + 3);
+						tmp_str[3] = 0;
+						wp_lon = atof(tmp_str) + min / 60.0;
+					} else if (pn == 5) {
+						wp_alt = atof(tmp_str);
+					} else if (pn == 10) {
+						if ((int)wp_lat >= min_lat && (int)wp_lat <= max_lat && (int)wp_lon >= min_lon && (int)wp_lon <= max_lon) {
+
+
+							float wp_dist = get_distance(ModelData.p_lat, ModelData.p_long, wp_lat, wp_lon, wp_alt);
+
+							if (wp_dist > 1200.0) {
+								printf("## %s %f %f %f %0.1fkm ##\n", wp_name, wp_lat, wp_lon, wp_alt, wp_dist / 1000.0);
+							} else {
+								printf("## %s %f %f %f %0.1fm ##\n", wp_name, wp_lat, wp_lon, wp_alt, wp_dist);
+							}
+
 						}
 					}
 					last_p = n;
@@ -1039,10 +1114,10 @@ void map_draw_cam_setup (ESContext *esContext) {
 
 void map_draw_alt_profile (ESContext *esContext) {
 	char tmp_str[128];
-	float px1 = -0.8;
-	float py1 = 0.7;
-	float px2 = 0.8;
-	float py2 = 0.99;
+	float px1 = -1.1;
+	float py1 = 0.4;
+	float px2 = 0.85;
+	float py2 = 0.90;
 	float pw = px2 - px1;
 	float ph = py2 - py1;
 	float nx2 = 0.0;
@@ -1057,9 +1132,7 @@ void map_draw_alt_profile (ESContext *esContext) {
 	next_point_ll(esContext, ModelData.p_long, ModelData.p_lat, ModelData.yaw * -1.0 - 90.0, alt_profile_scale_w, &nx2, &ny2);
 	mark_alt = get_altitude(ny2, nx2);
 	float distance_max = get_distance(ModelData.p_lat, ModelData.p_long, ny2, nx2, mark_alt);
-
-	draw_box_f3(esContext, px1, py1, 0.002, px2, py2, 0.002, 0, 0, 0, 127);
-
+	draw_box_f3c2(esContext, px1, py1, 0.002, px2, py2, 0.002, 0, 0, 255, 200, 255, 255, 255, 200);
 	for (nf = 1.0; nf < alt_profile_scale_w; nf += 2.0) {
 		next_point_ll(esContext, ModelData.p_long, ModelData.p_lat, ModelData.yaw * -1.0 - 90.0, nf, &nx2, &ny2);
 		mark_alt = get_altitude(ny2, nx2);
@@ -1076,27 +1149,31 @@ void map_draw_alt_profile (ESContext *esContext) {
 			if (py > (ph / 2.0)) {
 				py = (ph / 2.0);
 			}
-			draw_line_f3(esContext, px1 + last_px, py1 + (ph / 2.0) - last_py, 0.004, px1 + px, py1 + (ph / 2.0) - py, 0.004, 255, 255, 255, 255);
+			draw_line_f3(esContext, px1 + last_px, py1 + (ph / 2.0) - last_py, 0.004, px1 + px, py1 + (ph / 2.0) - py, 0.004, 0, 0, 0, 255);
 			if (ModelData.p_alt > mark_alt) {
-				draw_line_f3(esContext, px1 + px, py1 + (ph / 2.0) - py, 0.004, px1 + px, py2, 0.004, 255, 255, 255, 128);
+				draw_line_f3(esContext, px1 + px, py1 + (ph / 2.0) - py, 0.004, px1 + px, py2, 0.004, 100, 255, 100, 200);
 			} else {
-				draw_line_f3(esContext, px1 + px, py1 + (ph / 2.0) - py, 0.004, px1 + px, py1 + (ph / 2.0), 0.004, 255, 0, 0, 128);
-				draw_line_f3(esContext, px1 + px, py1 + (ph / 2.0), 0.004, px1 + px, py2, 0.004, 255, 255, 255, 128);
+				draw_line_f3(esContext, px1 + px, py1 + (ph / 2.0) - py, 0.004, px1 + px, py1 + (ph / 2.0), 0.004, 255, 0, 0, 200);
+				draw_line_f3(esContext, px1 + px, py1 + (ph / 2.0), 0.004, px1 + px, py2, 0.004, 100, 255, 100, 200);
 			}
 		}
 		last_px = px;
 		last_py = py;
 	}
-	draw_line_f3(esContext, px1, py1 + (ph / 2.0), 0.004, px2, py1 + (ph / 2.0), 0.004, 255, 255, 255, 255);
+	draw_line_f3(esContext, px1, py1 + (ph / 2.0), 0.004, px2, py1 + (ph / 2.0), 0.004, 255, 255, 255, 128);
 	if (max_py <= (ph / 2.0)) {
-		draw_line_f3(esContext, px1, py1 + (ph / 2.0) - max_py, 0.004, px2, py1 + (ph / 2.0) - max_py, 0.004, 255, 255, 255, 255);
+		draw_line_f3(esContext, px1, py1 + (ph / 2.0) - max_py, 0.004, px2, py1 + (ph / 2.0) - max_py, 0.004, 255, 255, 255, 128);
 		sprintf(tmp_str, "%0.0fm", max_alt);
 		draw_text_button(esContext, "alt_profile_max", setup.view_mode, tmp_str, FONT_GREEN, px2, py1 + (ph / 2.0) - max_py, 0.005, 0.04, ALIGN_RIGHT, ALIGN_TOP, map_null, 0.0);
 	} else {
 		sprintf(tmp_str, "%0.0fm", max_alt);
 		draw_text_button(esContext, "alt_profile_max", setup.view_mode, tmp_str, FONT_GREEN, px2, py1, 0.005, 0.04, ALIGN_RIGHT, ALIGN_TOP, map_null, 0.0);
 	}
-	sprintf(tmp_str, "%0.0fm", distance_max);
+	if (distance_max > 1200.9) {
+		sprintf(tmp_str, "%0.2fkm", distance_max / 1000.9);
+	} else {
+		sprintf(tmp_str, "%0.0fm", distance_max);
+	}
 	draw_text_button(esContext, "alt_profile_scale_w", setup.view_mode, tmp_str, FONT_GREEN, px1 + (pw / 2.0), py1, 0.003, 0.04, ALIGN_CENTER, ALIGN_TOP, map_profile, 0.0);
 	sprintf(tmp_str, "%0.0fm", min_alt);
 	draw_text_button(esContext, "alt_profile_max", setup.view_mode, tmp_str, FONT_GREEN, px2, py2 - 0.04, 0.005, 0.04, ALIGN_RIGHT, ALIGN_TOP, map_null, 0.0);
@@ -1113,14 +1190,14 @@ void map_draw_buttons (ESContext *esContext) {
 #ifdef SDLGL
 #ifndef WINDOWS
 	if (draw_target() == 0) {
-		draw_buffer_to_screen(0.9, 0.4, 1.4, 0.85, 0.0, 1.0);
-		draw_rect_f3(esContext, 0.9, 0.4, 0.002, 1.4, 0.85, 0.002, 0, 0, 0, 255);
-		draw_rect_f3(esContext, 0.9 - 0.005, 0.4 - 0.005, 0.002, 1.4 + 0.005, 0.85 + 0.005, 0.002, 255, 255, 255, 255);
-		set_button("goto_hud", setup.view_mode, 0.9, 0.4, 1.4, 0.85, map_goto_screen, (float)VIEW_MODE_HUD, 0);
+		draw_buffer_to_screen(0.9, 0.45, 1.4, 0.9, 0.0, 1.0);
+		draw_rect_f3(esContext, 0.9, 0.45, 0.002, 1.4, 0.9, 0.002, 0, 0, 0, 255);
+		draw_rect_f3(esContext, 0.9 - 0.005, 0.45 - 0.005, 0.002, 1.4 + 0.005, 0.9 + 0.005, 0.002, 255, 255, 255, 255);
+		set_button("goto_hud", setup.view_mode, 0.9, 0.45, 1.4, 0.9, map_goto_screen, (float)VIEW_MODE_HUD, 0);
 		sprintf(tmp_str, "Alt: %0.0f", ModelData.p_alt);
-		draw_text_button(esContext, "map_alt", setup.view_mode, tmp_str, FONT_GREEN, 0.92, 0.75, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
+		draw_text_button(esContext, "map_alt", setup.view_mode, tmp_str, FONT_GREEN, 0.92, 0.8, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
 		sprintf(tmp_str, "Speed: %0.0f", ModelData.speed);
-		draw_text_button(esContext, "map_speed", setup.view_mode, tmp_str, FONT_GREEN, 0.92, 0.8, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
+		draw_text_button(esContext, "map_speed", setup.view_mode, tmp_str, FONT_GREEN, 0.92, 0.85, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
 	}
 #endif
 #endif
@@ -1326,9 +1403,9 @@ void map_draw_buttons (ESContext *esContext) {
 		draw_box_f3(esContext, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
 		draw_rect_f3(esContext, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
 		if (map_show_notam == 1) {
-			draw_button(esContext, "map_show_notam", setup.view_mode, "NOTAM", FONT_GREEN, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_notam, 0.0);
+			draw_button(esContext, "map_show_notam", setup.view_mode, "Airsp", FONT_GREEN, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_notam, 0.0);
 		} else {
-			draw_button(esContext, "map_show_notam", setup.view_mode, "NOTAM", FONT_WHITE, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_notam, 0.0);
+			draw_button(esContext, "map_show_notam", setup.view_mode, "Airsp", FONT_WHITE, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_notam, 0.0);
 		}
 		ny2++;
 		draw_box_f3(esContext, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);

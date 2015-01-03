@@ -194,6 +194,7 @@ extern uint8_t keyboard_altgr;
 extern float gcs_roll;
 extern float gcs_pitch;
 extern float gcs_yaw;
+extern uint8_t map_show_profile;
 
 //#define HTML_DRAWING
 

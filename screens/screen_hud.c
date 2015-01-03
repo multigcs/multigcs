@@ -1723,10 +1723,10 @@ void screen_hud_internal (ESContext *esContext) {
 #ifdef SDLGL
 #ifndef WINDOWS
 	if (setup.hud_view_screen != 2 && draw_target() == 0) {
-		draw_buffer_to_screen(0.9, 0.4, 1.4, 0.85, 0.0, 1.0);
-		draw_rect_f3(esContext, 0.9, 0.4, 0.002, 1.4, 0.85, 0.002, 0, 0, 0, 255);
-		draw_rect_f3(esContext, 0.9 - 0.005, 0.4 - 0.005, 0.002, 1.4 + 0.005, 0.85 + 0.005, 0.002, 255, 255, 255, 255);
-		set_button("goto_map", setup.view_mode, 0.9, 0.4, 1.4, 0.85, hud_goto_screen, (float)VIEW_MODE_MAP, 0);
+		draw_buffer_to_screen(0.9, 0.45, 1.4, 0.9, 0.0, 1.0);
+		draw_rect_f3(esContext, 0.9, 0.45, 0.002, 1.4, 0.9, 0.002, 0, 0, 0, 255);
+		draw_rect_f3(esContext, 0.9 - 0.005, 0.45 - 0.005, 0.002, 1.4 + 0.005, 0.9 + 0.005, 0.002, 255, 255, 255, 255);
+		set_button("goto_map", setup.view_mode, 0.9, 0.45, 1.4, 0.9, hud_goto_screen, (float)VIEW_MODE_MAP, 0);
 	}
 #endif
 #endif

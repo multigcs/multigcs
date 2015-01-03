@@ -475,6 +475,7 @@ void setup_save (void) {
 	        fprintf(fr, "hud_view_map		%i\n", setup.hud_view_map);
 	        fprintf(fr, "hud_view_tunnel		%i\n", setup.hud_view_tunnel);
 	        fprintf(fr, "map_view		%i\n", map_view);
+	        fprintf(fr, "map_show_profile	%i\n", map_show_profile);
 	        fprintf(fr, "webport			%i\n", setup.webport);
 	        fprintf(fr, "gearth_interval		%f\n", setup.gearth_interval);
 	        fprintf(fr, "touchscreen_device	%s\n", setup.touchscreen_device);
@@ -716,6 +717,8 @@ void setup_load (void) {
 	                                setup.hud_view_tunnel = atoi(val);
 	                        } else if (strcmp(var, "map_view") == 0) {
 	                                map_view = atoi(val);
+	                        } else if (strcmp(var, "map_show_profile") == 0) {
+	                                map_show_profile = atoi(val);
 	                        } else if (strcmp(var, "webport") == 0) {
 	                                setup.webport = atoi(val);
 	                        } else if (strcmp(var, "gearth_interval") == 0) {
