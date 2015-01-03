@@ -110,15 +110,6 @@
 		<copyright>Karte von &lt;a href='http://openstreetmap.org/'&gt;OpenStreetMap&lt;/a&gt; und Mitwirkenden unter &lt;a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'&gt;CC-BY-SA&lt;/a&gt;-Lizenz</copyright>
 	</service>
 	<service>
-		<name>WACOL</name>
-		<comment>OSM Watercolor</comment>
-		<url>http://a.tile.stamen.com/watercolor/%i/%i/%i.png</url>
-		<url2>http://b.tile.stamen.com/watercolor/%i/%i/%i.png</url2>
-		<file>%s/MAPS/osm_art_wc_%i_%i_%i.png</file>
-		<type>ZXY</type>
-		<copyright>Karte von &lt;a href='http://openstreetmap.org/'&gt;OpenStreetMap&lt;/a&gt; und Mitwirkenden unter &lt;a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'&gt;CC-BY-SA&lt;/a&gt;-Lizenz</copyright>
-	</service>
-	<service>
 		<name>TONER</name>
 		<comment>OSM TONER</comment>
 		<url>http://a.tile.stamen.com/toner/%i/%i/%i.png</url>
@@ -127,16 +118,6 @@
 		<type>ZXY</type>
 		<copyright>Karte von &lt;a href='http://openstreetmap.org/'&gt;OpenStreetMap&lt;/a&gt; und Mitwirkenden unter &lt;a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'&gt;CC-BY-SA&lt;/a&gt;-Lizenz</copyright>
 	</service>
-	<service>
-		<name>BW</name>
-		<comment>OSM Black/White</comment>
-		<url>http://a.www.toolserver.org/tiles/bw-noicons/%i/%i/%i.png</url>
-		<url2>http://b.www.toolserver.org/tiles/bw-noicons/%i/%i/%i.png</url2>
-		<file>%s/MAPS/osm_bw-noicons_%i_%i_%i.png</file>
-		<type>ZXY</type>
-		<copyright>Karte von &lt;a href='http://openstreetmap.org/'&gt;OpenStreetMap&lt;/a&gt; und Mitwirkenden unter &lt;a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'&gt;CC-BY-SA&lt;/a&gt;-Lizenz</copyright>
-	</service>
-
 	<overlay_service>
 		<name>NONE</name>
 		<comment></comment>
@@ -155,87 +136,6 @@
 		<copyright>NONE</copyright>
 	</overlay_service>
 
-	<overlay_service>
-		<name>AIR</name>
-		<comment></comment>
-		<url>http://www.prosoar.de/airspace/%i/%i/%i.png</url>
-		<file>%s/MAPS/omap_airspace_%i_%i_%i.png</file>
-		<type>ZXY</type>
-		<copyright>Karte von &lt;a href='http://openstreetmap.org/'&gt;OpenStreetMap&lt;/a&gt; und Mitwirkenden unter &lt;a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'&gt;CC-BY-SA&lt;/a&gt;-Lizenz</copyright>
-	</overlay_service>
-	<overlay_service>
-		<name>HILLS</name>
-		<comment></comment>
-		<url>http://toolserver.org/~cmarqu/hill/%i/%i/%i.png</url>
-		<file>%s/MAPS/omap_hill_%i_%i_%i.png</file>
-		<type>ZXY</type>
-		<copyright>Karte von &lt;a href='http://openstreetmap.org/'&gt;OpenStreetMap&lt;/a&gt; und Mitwirkenden unter &lt;a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'&gt;CC-BY-SA&lt;/a&gt;-Lizenz</copyright>
-	</overlay_service>
-	<overlay_service>
-		<name>PREC</name>
-		<comment></comment>
-		<url>http://undefined.tile.openweathermap.org/map/precipitation/%i/%i/%i.png</url>
-		<file>%s/MAPS/omap_precipitation_%i_%i_%i.png</file>
-		<type>ZXY</type>
-		<copyright>Karte von &lt;a href='http://openstreetmap.org/'&gt;OpenStreetMap&lt;/a&gt; und Mitwirkenden unter &lt;a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'&gt;CC-BY-SA&lt;/a&gt;-Lizenz</copyright>
-	</overlay_service>
-	<overlay_service>
-		<name>CLOUDS</name>
-		<comment></comment>
-		<url>http://undefined.tile.openweathermap.org/map/clouds/%i/%i/%i.png</url>
-		<file>%s/MAPS/omap_clouds_%i_%i_%i.png</file>
-		<type>ZXY</type>
-		<copyright>Karte von &lt;a href='http://openstreetmap.org/'&gt;OpenStreetMap&lt;/a&gt; und Mitwirkenden unter &lt;a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'&gt;CC-BY-SA&lt;/a&gt;-Lizenz</copyright>
-	</overlay_service>
-	<overlay_service>
-		<name>WIND</name>
-		<comment></comment>
-		<url>http://undefined.tile.openweathermap.org/map/wind/%i/%i/%i.png</url>
-		<file>%s/MAPS/omap_wind_%i_%i_%i.png</file>
-		<type>ZXY</type>
-		<copyright>Karte von &lt;a href='http://openstreetmap.org/'&gt;OpenStreetMap&lt;/a&gt; und Mitwirkenden unter &lt;a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'&gt;CC-BY-SA&lt;/a&gt;-Lizenz</copyright>
-	</overlay_service>
-	<overlay_service>
-		<name>TEMP</name>
-		<comment></comment>
-		<url>http://undefined.tile.openweathermap.org/map/temp/%i/%i/%i.png</url>
-		<file>%s/MAPS/omap_temp_%i_%i_%i.png</file>
-		<type>ZXY</type>
-		<copyright>Karte von &lt;a href='http://openstreetmap.org/'&gt;OpenStreetMap&lt;/a&gt; und Mitwirkenden unter &lt;a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'&gt;CC-BY-SA&lt;/a&gt;-Lizenz</copyright>
-	</overlay_service>
-	<overlay_service>
-		<name>PRESS</name>
-		<comment></comment>
-		<url>http://undefined.tile.openweathermap.org/map/pressure/%i/%i/%i.png</url>
-		<file>%s/MAPS/omap_pressure_%i_%i_%i.png</file>
-		<type>ZXY</type>
-		<copyright>Karte von &lt;a href='http://openstreetmap.org/'&gt;OpenStreetMap&lt;/a&gt; und Mitwirkenden unter &lt;a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'&gt;CC-BY-SA&lt;/a&gt;-Lizenz</copyright>
-	</overlay_service>
-	<overlay_service>
-		<name>PREC</name>
-		<comment></comment>
-		<url>http://undefined.tile.openweathermap.org/map/pressure_cntr/%i/%i/%i.png</url>
-		<file>%s/MAPS/omap_pressure_cntr_%i_%i_%i.png</file>
-		<type>ZXY</type>
-		<copyright>Karte von &lt;a href='http://openstreetmap.org/'&gt;OpenStreetMap&lt;/a&gt; und Mitwirkenden unter &lt;a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'&gt;CC-BY-SA&lt;/a&gt;-Lizenz</copyright>
-	</overlay_service>
-	<overlay_service>
-		<name>RAIN</name>
-		<comment></comment>
-		<url>http://undefined.tile.openweathermap.org/map/rain/%i/%i/%i.png</url>
-		<file>%s/MAPS/omap_rain_%i_%i_%i.png</file>
-		<type>ZXY</type>
-		<copyright>Karte von &lt;a href='http://openstreetmap.org/'&gt;OpenStreetMap&lt;/a&gt; und Mitwirkenden unter &lt;a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'&gt;CC-BY-SA&lt;/a&gt;-Lizenz</copyright>
-	</overlay_service>
-	<overlay_service>
-		<name>HILL</name>
-		<comment></comment>
-		<url>http://toolserver.org/~cmarqu/hill/%i/%i/%i.png</url>
-		<file>%s/MAPS/omap_hill_%i_%i_%i.png</file>
-		<type>ZXY</type>
-		<copyright>Karte von &lt;a href='http://openstreetmap.org/'&gt;OpenStreetMap&lt;/a&gt; und Mitwirkenden unter &lt;a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'&gt;CC-BY-SA&lt;/a&gt;-Lizenz</copyright>
-	</overlay_service>
-
 
 	<overlay_service>
 		<name>Hiking</name>
@@ -246,23 +146,16 @@
 		<copyright>Karte von &lt;a href='http://openstreetmap.org/'&gt;OpenStreetMap&lt;/a&gt; und Mitwirkenden unter &lt;a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'&gt;CC-BY-SA&lt;/a&gt;-Lizenz</copyright>
 	</overlay_service>
 
-	<overlay_service>
-		<name>LABELS</name>
-		<comment>osm-labels-en</comment>
-		<url>http://a.www.toolserver.org/tiles/osm-labels-en/%i/%i/%i.png</url>
-		<file>%s/MAPS/omap_labels-en_%i_%i_%i.png</file>
-		<type>ZXY</type>
-		<copyright>Karte von &lt;a href='http://openstreetmap.org/'&gt;OpenStreetMap&lt;/a&gt; und Mitwirkenden unter &lt;a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'&gt;CC-BY-SA&lt;/a&gt;-Lizenz</copyright>
-	</overlay_service>
 
-	<_overlay_service>
+	<overlay_service>
 		<name>AIP</name>
 		<comment>Y UNKNOWN-FORMAT: FFM: http://2.tile.maps.openaip.net/geowebcache/service/tms/1.0.0/openaip_basemap@png/10/537/676.png</comment>
 		<url>http://2.tile.maps.openaip.net/geowebcache/service/tms/1.0.0/openaip_basemap@png/%i/%i/%i.png</url>
-		<file>%s/MAPS/omap_precipitation_%i_%i_%i.png</file>
-		<type>ZXY</type>
+		<file>%s/MAPS/openaip_%i_%i_%i.png</file>
+		<type>TMS</type>
 		<copyright>Karte von &lt;a href='http://openstreetmap.org/'&gt;OpenStreetMap&lt;/a&gt; und Mitwirkenden unter &lt;a href='http://creativecommons.org/licenses/by-sa/2.0/deed.de'&gt;CC-BY-SA&lt;/a&gt;-Lizenz</copyright>
-	</_overlay_service>
+	</overlay_service>
+
 	<service>
 		<name>OEPNV</name>
 		<comment>OEPNV</comment>
