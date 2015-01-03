@@ -870,7 +870,6 @@ void screen_hud_internal (ESContext *esContext) {
 
 
 #ifdef CAR_MODE
-
 	static int pointer_pm = 0;
 	static float pointer_val = 0.0;
 	if (pointer_pm == 0) {
@@ -888,9 +887,7 @@ void screen_hud_internal (ESContext *esContext) {
 	}
 	float upm = (pointer_val + 54.0) * 8000.0 / 288;
 
-
 	if (setup.hud_view_screen != 2 && draw_target() == 0) {
-
 		if (upm < 800.0) {
 			draw_image_f3(esContext, 0.0 - 0.2, 0.0 - 0.3, 0.0 + 0.2, 0.0 + 0.1, 0.012, "car-door.png");
 		} else if (upm < 1600.0) {
@@ -898,19 +895,16 @@ void screen_hud_internal (ESContext *esContext) {
 		} else {
 			draw_buffer_to_screen(0.0 - 0.6, -0.1 - 0.4, 0.0 + 0.6, -0.1 + 0.4, 0.0, 1.0);
 		}
-
 		glLineWidth(7);
 		draw_line_f3 (esContext, 0.0 - 0.6, -0.1 - 0.4, 0.001, 0.0 + 0.6, -0.1 - 0.4, 0.001, 75, 75, 75, 255);
 		draw_line_f3 (esContext, 0.0 - 0.6, -0.1 + 0.4, 0.001, 0.0 + 0.6, -0.1 + 0.4, 0.001, 75, 75, 75, 255);
 		glLineWidth(3);
 		draw_line_f3 (esContext, 0.0 - 0.6, -0.1 - 0.4, 0.001, 0.0 + 0.6, -0.1 - 0.4, 0.001, 200, 200, 200, 255);
 		draw_line_f3 (esContext, 0.0 - 0.6, -0.1 + 0.4, 0.001, 0.0 + 0.6, -0.1 + 0.4, 0.001, 200, 200, 200, 255);
-
 	}
 
 	float i1x = -0.8;
 	float i2x = 0.8;
-
 
 //	draw_image_f3(esContext, -1.2, -0.62, -0.19, 0.42, 0.012, "tacho.png");
 //	draw_image_f3(esContext, 0.21, -0.62, 1.21, 0.42, 0.012, "tacho2.png");
@@ -947,7 +941,6 @@ void screen_hud_internal (ESContext *esContext) {
 		nt += 1;
 	}
 
-
 	glLineWidth(3);
 	for (a = -54.0; a <= 234.0; a += 9.0) {
 		draw_circleMarker_f3(esContext, i2x, -0.1, 0.0002, 0.5, 0.45, a, 255, 255, 255, 255);
@@ -964,8 +957,6 @@ void screen_hud_internal (ESContext *esContext) {
 			nt += 20;
 		}
 	}
-
-
 
 //	draw_box_f3(esContext, i1x - 0.15, -0.1 + 0.3 - 0.09, 0.001, i1x + 0.15, -0.1 + 0.3 + 0.09, 0.001, 0, 0, 0, 255);
 //	draw_text_f(esContext, i1x - 0.12, -0.1 + 0.33 - 0.1, 0.07, 0.07, FONT_GREEN, "09:47");
@@ -1001,8 +992,6 @@ void screen_hud_internal (ESContext *esContext) {
 	}
 	draw_circleFilled_f3_part(esContext, i2x, -0.1, 0.0005, 0.3, 0.3, 0.0, 360.0, 60, 60, 160, 255);
 
-
-
 	sprintf(tmp_str3, "%0.0fupm", upm);
 	if (upm > 6000.0) {
 		draw_text_f(esContext, i1x - strlen(tmp_str3) * 0.07 * 0.6 / 2.0 - 0.015, -0.1 - 0.05 - 0.035, 0.07, 0.07, FONT_PINK, tmp_str3);
@@ -1017,15 +1006,12 @@ void screen_hud_internal (ESContext *esContext) {
 	sprintf(tmp_str3, "10.6l/100km");
 	draw_text_f(esContext, i2x - strlen(tmp_str3) * 0.05 * 0.6 / 2.0 - 0.015, -0.1 - 0.05 - 0.035 + 0.1, 0.05, 0.05, FONT_GREEN, tmp_str3);
 
-
-
 	glLineWidth(7);
 	draw_circle_f3(esContext, i1x, -0.1, 0.001, 0.5, 75, 75, 75, 255);
 	draw_circle_f3(esContext, i2x, -0.1, 0.001, 0.5, 75, 75, 75, 255);
 
 	draw_circle_f3(esContext, i1x, -0.1, 0.001, 0.3, 75, 75, 75, 255);
 	draw_circle_f3(esContext, i2x, -0.1, 0.001, 0.3, 75, 75, 75, 255);
-
 
 	glLineWidth(3);
 	draw_circle_f3(esContext, i1x, -0.1, 0.001, 0.5, 255, 255, 255, 255);
@@ -1036,9 +1022,7 @@ void screen_hud_internal (ESContext *esContext) {
 
 	glLineWidth(1);
 
-
 	draw_image_f3(esContext, i1x - 0.1, 0.3 - 0.05, i1x + 0.1, 0.3 + 0.05, 0.012, "s6-logo.png");
-
 
 	char icons[20][50];
 	strcpy(icons[0], "textures/tacho-abs.png");
@@ -1063,8 +1047,6 @@ void screen_hud_internal (ESContext *esContext) {
 	}
 
 
-
-
 #ifdef SDLGL
 #ifndef WINDOWS
 	if (setup.hud_view_screen != 2 && draw_target() == 0) {
@@ -1079,14 +1061,8 @@ void screen_hud_internal (ESContext *esContext) {
 	glPopMatrix();
 #endif
 	glEnable(GL_DEPTH_TEST);
-
-
 	return;
 #endif
-
-
-
-
 
 	char tmp_str[400];
 	char tmp_str2[400];
@@ -1444,14 +1420,14 @@ void screen_hud_internal (ESContext *esContext) {
 		}
 
 		sprintf(tmp_str, "%0.0fkm/h", ModelData.speed);
-		draw_circleMeter_f3(esContext, -1.05, -0.5, 0.001, 0.14, 0.0, 25.0, 50.0, 180.0, (ModelData.speed * 100.0 / 250.0), "Speed", tmp_str, 0);
+		draw_circleMeter_f3(esContext, -1.05, -0.6, 0.001, 0.14, 0.0, 25.0, 50.0, 180.0, (ModelData.speed * 100.0 / 250.0), "Speed", tmp_str, 0);
 
 		if (ModelData.found_rc == 1) {
 			sprintf(tmp_str, "%0.1fV", ModelData.voltage_rx);
-			draw_circleMeter_f3(esContext, -1.05, -0.2, 0.001, 0.14, 0.0, 25.0, 50.0, 180.0, percent, "Volt-RX", tmp_str, 0);
+			draw_circleMeter_f3(esContext, -1.05, -0.3, 0.001, 0.14, 0.0, 25.0, 50.0, 180.0, percent, "Volt-RX", tmp_str, 0);
 		} else {
 			sprintf(tmp_str, "%0.1fV", ModelData.voltage);
-			draw_circleMeter_f3(esContext, -1.05, -0.2, 0.001, 0.14, 0.0, 25.0, 50.0, 180.0, percent, "Volt", tmp_str, 0);
+			draw_circleMeter_f3(esContext, -1.05, -0.3, 0.001, 0.14, 0.0, 25.0, 50.0, 180.0, percent, "Volt", tmp_str, 0);
 		}
 
 		if (voltage_max != 0.0) {
@@ -1468,8 +1444,8 @@ void screen_hud_internal (ESContext *esContext) {
 
 		if (ModelData.teletype != TELETYPE_MULTIWII_21 && ModelData.teletype != TELETYPE_BASEFLIGHT) {
 			sprintf(tmp_str, "CPU %0.0f%%", ModelData.load);
-			draw_circleMeter_f3(esContext, -1.05, 0.025, 0.001, 0.06, 20.0, 33.0, 66.0, 160.0, 50, "", "", 3);
-			draw_text_button(esContext, "hud_load", VIEW_MODE_HUD, tmp_str, FONT_WHITE, -1.05, 0.025, 0.003, 0.035, 1, 0, hud_null, 0);
+			draw_circleMeter_f3(esContext, -1.05, -0.1, 0.001, 0.06, 20.0, 33.0, 66.0, 160.0, 50, "", "", 3);
+			draw_text_button(esContext, "hud_load", VIEW_MODE_HUD, tmp_str, FONT_WHITE, -1.05, -0.1, 0.003, 0.035, 1, 0, hud_null, 0);
 		}
 
 	//SDL_Log("hud#9f\n");
@@ -1563,6 +1539,8 @@ void screen_hud_internal (ESContext *esContext) {
 		static float min_g = 1.0;
 		static float max_g = 0.0;
 
+		weather_draw(esContext, 1.0, -0.15);
+
 	//SDL_Log("hud#9g\n");
 
 		float all_g = ModelData.acc_z * -1;
@@ -1577,8 +1555,8 @@ void screen_hud_internal (ESContext *esContext) {
 		}
 		sprintf(tmp_str, "Accel: %0.1fg", all_g);
 		sprintf(tmp_str2, "%0.1fg %0.1fg", min_g, max_g);
-		draw_circleMeter_f3(esContext, 1.15, -0.5, 0.001, 0.14, 0.0, 0.0, 50.0, 180.0, 50.0, tmp_str, tmp_str2, 0);
-		draw_circleMeter_f3(esContext, 1.15, -0.2, 0.001, 0.14, 0.0, 50.0, 50.0, 180.0, 50.0, "Vario", "-1.2m/s", 0);
+		draw_circleMeter_f3(esContext, 1.15, -0.6, 0.001, 0.14, 0.0, 0.0, 50.0, 180.0, 50.0, tmp_str, tmp_str2, 0);
+		draw_circleMeter_f3(esContext, 1.15, -0.3, 0.001, 0.14, 0.0, 50.0, 50.0, 180.0, 50.0, "Vario", "-1.2m/s", 0);
 
 
 		if (ModelData.found_rc == 1) {

@@ -2178,6 +2178,7 @@ int main ( int argc, char *argv[] ) {
 	gcs_gps_init(setup.gcs_gps_port, setup.gcs_gps_baud);
 	rcflow_init(setup.rcflow_port, setup.rcflow_baud);
 	tracker_init(setup.tracker_port, setup.tracker_baud);
+	weather_init();
 
 	SDL_Log("telemetry: init thread\n");
 	reset_telemetry();
@@ -2208,6 +2209,10 @@ int main ( int argc, char *argv[] ) {
 	}
 #endif
 #endif
+#if defined USE_APRS
+	aprs_exit();
+#endif
+	weather_exit();
 	ShutDown(&esContext);
 	return 0;
 }

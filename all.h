@@ -185,3 +185,4 @@
 #if defined USE_APRS
 #include <aprs.h>
 #endif
+#include <weather.h>
