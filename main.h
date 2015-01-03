@@ -170,6 +170,12 @@ typedef struct {
 
 	uint16_t webport;
 	float gearth_interval;
+
+
+	char aprs_server[128];
+	int aprs_port;
+	char aprs_filter[128];
+
 } GcsSetup;
 
 extern Button Buttons[MAX_BUTTONS + 1];
