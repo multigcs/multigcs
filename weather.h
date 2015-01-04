@@ -14,5 +14,5 @@ extern Weather weather;
 int weather_init (void);
 int weather_exit (void);
 void weather_draw (ESContext *esContext, float x1, float y1);
-void weather_draw_wind (ESContext *esContext, float x1, float y1);
+void weather_draw_wind (ESContext *esContext, float x1, float y1, uint8_t mode);
 

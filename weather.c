@@ -163,16 +163,16 @@ void weather_draw (ESContext *esContext, float x1, float y1) {
 //	draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
 }
 
-void weather_draw_wind (ESContext *esContext, float x1, float y1) {
+void weather_draw_wind (ESContext *esContext, float x1, float y1, uint8_t mode) {
 	char tmp_str[128];
 	int yn = 0;
-	float arrow_w = 7.0;
+	float arrow_w = 20.0;
 	float arrow_l = 0.02;
 	float c_radius = 0.045;
 	float radius = 0.04;
 	float i = weather.wind_direction - 90.0;
 	float i2 = weather.wind_direction - 90.0;
-	if (map_dir == 1) {
+	if (mode == 1) {
 		i -= ModelData.yaw;
 	}
 	sprintf(tmp_str, "%0.1fkm/h", weather.wind_speed);

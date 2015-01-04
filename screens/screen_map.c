@@ -2230,7 +2230,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		if (setup.weather_enable == 1) {
 			draw_box_f3(esContext, -1.45, -0.8 - 0.055, 0.002, -1.05, -0.8 + 0.055, 0.002, 0, 0, 0, 127);
 			draw_rect_f3(esContext, -1.45, -0.8 - 0.055, 0.002, -1.05, -0.8 + 0.055, 0.002, 255, 255, 255, 127);
-			weather_draw_wind(esContext, -1.45, -0.8);
+			weather_draw_wind(esContext, -1.45, -0.8, map_dir);
 		}
 
 		map_draw_buttons(esContext);

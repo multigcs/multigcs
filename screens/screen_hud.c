@@ -1069,14 +1069,15 @@ void screen_hud_internal (ESContext *esContext) {
 	int n = 0;
 	uint8_t i = 0;
 	float angle = 0.0;
+	float angle_wp = 0.0;
 	float dist1 = 0.0;
 	float angle_up = 0.0;
 	float dist2 = 0.0;
 	float angle2 = 0.0;
 	float angle_home = 0.0;
 
-	get_dir(ModelData.p_lat, ModelData.p_long, ModelData.p_alt, WayPoints[waypoint_active].p_lat, WayPoints[waypoint_active].p_long, WayPoints[waypoint_active].p_alt, &angle, &dist1, &angle_up, &dist2);
-	angle2 = angle - ModelData.yaw;
+	get_dir(ModelData.p_lat, ModelData.p_long, ModelData.p_alt, WayPoints[waypoint_active].p_lat, WayPoints[waypoint_active].p_long, WayPoints[waypoint_active].p_alt, &angle_wp, &dist1, &angle_up, &dist2);
+	angle2 = angle_wp - ModelData.yaw;
 	if (angle2 > 180.0) {
 		angle2 = angle2 - 360.0;
 	}
@@ -1250,7 +1251,80 @@ void screen_hud_internal (ESContext *esContext) {
 #endif
 	}
 
-	//SDL_Log("hud#8\n");
+	if (setup.weather_enable == 1) {
+		double C = angle_wp - weather.wind_direction; // Wind/Plane-Angle-Diff
+		if (C > 180.0) {
+			C -= 360.0;
+		}
+		if (C < -180.0) {
+			C += 360.0;
+		}
+		double a = weather.wind_speed; // Wind-Speed
+		double b = ModelData.speed; // Plane-Speed
+		if (b < 1.0) {
+			b = 1.0;
+		}
+		double c = sqrt((a * a) + (b * b) - (2.0 * a * b * cos(C * 3.14159 / 180.0)));
+		double A = acos((a * a - b * b - c * c) / (-2 * b * c)) * 180.0 / 3.14159; // Correction-Angle
+		if (C > 0.0) {
+			A *= -1.0;
+		}
+		double NewDir = angle_wp - A;
+
+		weather_draw_wind(esContext, -0.26, 0.76, 1);
+
+	// Waypoint-Dir (Wind-Correction)
+#ifdef SDLGL
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+#else
+		esMatrixLoadIdentity(&modelview);
+#endif
+		esTranslate(&modelview, 0.0, -compas_y, -3.0);
+		esRotate(&modelview, NewDir - ModelData.yaw, 0.0, 0.0, 1.0);
+		esTranslate(&modelview, 0.0, compas_y, 3.0);
+#ifndef SDLGL
+		esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
+		esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
+#endif
+		// Next-Waypoint-Arrow (Wind-Correction)
+		draw_line_f(esContext, -0.05, compas_y - compas_r - 0.05, 0.0, compas_y - compas_r, 255, 0, 0, 255);
+		draw_line_f(esContext, 0.05, compas_y - compas_r - 0.05, 0.0, compas_y - compas_r, 255, 0, 0, 255);
+		draw_line_f(esContext, -0.05, compas_y - compas_r - 0.05, 0.05, compas_y - compas_r - 0.05, 255, 0, 0, 255);
+
+		draw_line_f(esContext, -0.05, compas_y - compas_r + 0.05, 0.0, compas_y - compas_r + 0.05 - 0.05, 255, 0, 0, 255);
+		draw_line_f(esContext, 0.05, compas_y - compas_r + 0.05, 0.0, compas_y - compas_r + 0.05 - 0.05, 255, 0, 0, 255);
+		draw_line_f(esContext, -0.05, compas_y - compas_r + 0.05, 0.05, compas_y - compas_r + 0.05, 255, 0, 0, 255);
+#ifdef SDLGL
+		glPopMatrix();
+#endif
+	// Route-Dir Arrow (Waypoint) (Wind-Correction)
+#ifndef SDLGL
+		esMatrixLoadIdentity(&modelview);
+		esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
+		esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
+#endif
+		float diff_wpw = NewDir - ModelData.yaw;
+		if (diff_wpw > 180.0) {
+			diff_wpw -= 360.0;
+		}
+		if (diff_wpw < -180.0) {
+			diff_wpw += 360.0;
+		}
+		sprintf(tmp_str, "%0.1f", diff_wpw);
+		if (diff_wpw > 0.0) {
+			draw_line_f(esContext, 0.0, 0.88, 0.1, 0.88, 255, 0, 0, 255);
+			draw_line_f(esContext, 0.05, 0.88 - 0.01, 0.1, 0.88, 255, 0, 0, 255);
+			draw_line_f(esContext, 0.05, 0.88 + 0.01, 0.1, 0.88, 255, 0, 0, 255);
+			draw_text_f3(esContext, 0.11, 0.88 - 0.02, 0.002, 0.04, 0.04, FONT_GREEN, tmp_str);
+		} else {
+			draw_line_f(esContext, 0.0, 0.88, -0.1, 0.88, 255, 0, 0, 255);
+			draw_line_f(esContext, -0.05, 0.88 - 0.01, -0.1, 0.88, 255, 0, 0, 255);
+			draw_line_f(esContext, -0.05, 0.88 + 0.01, -0.1, 0.88, 255, 0, 0, 255);
+			draw_text_f3(esContext, -0.11 - strlen(tmp_str) * 0.04 * 0.6 - 0.01, 0.88 - 0.02, 0.002, 0.04, 0.04, FONT_GREEN, tmp_str);
+		}
+	}
+
 
 	// Home & Waypoint-Dir
 #ifdef SDLGL
@@ -1294,8 +1368,15 @@ void screen_hud_internal (ESContext *esContext) {
 	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
-	sprintf(tmp_str, "%0.1f", (angle2));
-	if (angle2 > 0.0) {
+	float diff_wp = angle2;
+	if (diff_wp > 180.0) {
+		diff_wp -= 360.0;
+	}
+	if (diff_wp < -180.0) {
+		diff_wp += 360.0;
+	}
+	sprintf(tmp_str, "%0.1f", diff_wp);
+	if (diff_wp > 0.0) {
 		if (setup.contrast == 1) {
 			draw_line_f(esContext, 0.0, 0.85, 0.1, 0.85, 255, 255, 255, 255);
 			draw_line_f(esContext, 0.05, 0.85 - 0.01, 0.1, 0.85, 255, 255, 255, 255);
@@ -1359,23 +1440,23 @@ void screen_hud_internal (ESContext *esContext) {
 #endif
 	if (angle_home > 0.0) {
 		if (setup.contrast == 1) {
-			draw_line_f(esContext, 0.0, 0.9, 0.05, 0.9, 255, 255, 255, 255);
-			draw_line_f(esContext, 0.025, 0.9 - 0.01, 0.05, 0.9, 255, 255, 255, 255);
-			draw_line_f(esContext, 0.025, 0.9 + 0.01, 0.05, 0.9, 255, 255, 255, 255);
+			draw_line_f(esContext, 0.0, 0.95, 0.05, 0.95, 255, 255, 255, 255);
+			draw_line_f(esContext, 0.025, 0.95 - 0.01, 0.05, 0.95, 255, 255, 255, 255);
+			draw_line_f(esContext, 0.025, 0.95 + 0.01, 0.05, 0.95, 255, 255, 255, 255);
 		} else {
-			draw_line_f(esContext, 0.0, 0.9, 0.05, 0.9, 0xff, 0x33, 0xfc, 255);
-			draw_line_f(esContext, 0.025, 0.9 - 0.01, 0.05, 0.9, 0xff, 0x33, 0xfc, 255);
-			draw_line_f(esContext, 0.025, 0.9 + 0.01, 0.05, 0.9, 0xff, 0x33, 0xfc, 255);
+			draw_line_f(esContext, 0.0, 0.95, 0.05, 0.95, 0xff, 0x33, 0xfc, 255);
+			draw_line_f(esContext, 0.025, 0.95 - 0.01, 0.05, 0.95, 0xff, 0x33, 0xfc, 255);
+			draw_line_f(esContext, 0.025, 0.95 + 0.01, 0.05, 0.95, 0xff, 0x33, 0xfc, 255);
 		}
 	} else {
 		if (setup.contrast == 1) {
-			draw_line_f(esContext, 0.0, 0.9, -0.05, 0.9, 255, 255, 255, 255);
-			draw_line_f(esContext, -0.025, 0.9 - 0.01, -0.05, 0.9, 255, 255, 255, 255);
-			draw_line_f(esContext, -0.025, 0.9 + 0.01, -0.05, 0.9, 255, 255, 255, 255);
+			draw_line_f(esContext, 0.0, 0.95, -0.05, 0.95, 255, 255, 255, 255);
+			draw_line_f(esContext, -0.025, 0.95 - 0.01, -0.05, 0.95, 255, 255, 255, 255);
+			draw_line_f(esContext, -0.025, 0.95 + 0.01, -0.05, 0.95, 255, 255, 255, 255);
 		} else {
-			draw_line_f(esContext, 0.0, 0.9, -0.05, 0.9, 0xff, 0x33, 0xfc, 255);
-			draw_line_f(esContext, -0.025, 0.9 - 0.01, -0.05, 0.9, 0xff, 0x33, 0xfc, 255);
-			draw_line_f(esContext, -0.025, 0.9 + 0.01, -0.05, 0.9, 0xff, 0x33, 0xfc, 255);
+			draw_line_f(esContext, 0.0, 0.95, -0.05, 0.95, 0xff, 0x33, 0xfc, 255);
+			draw_line_f(esContext, -0.025, 0.95 - 0.01, -0.05, 0.95, 0xff, 0x33, 0xfc, 255);
+			draw_line_f(esContext, -0.025, 0.95 + 0.01, -0.05, 0.95, 0xff, 0x33, 0xfc, 255);
 		}
 	}
 
@@ -1542,6 +1623,7 @@ void screen_hud_internal (ESContext *esContext) {
 		if (setup.weather_enable == 1) {
 			weather_draw(esContext, 1.0, -0.15);
 		}
+
 
 	//SDL_Log("hud#9g\n");
 
