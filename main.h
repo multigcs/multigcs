@@ -197,6 +197,7 @@ extern float gcs_roll;
 extern float gcs_pitch;
 extern float gcs_yaw;
 extern uint8_t map_show_profile;
+extern uint8_t map_dir;
 
 //#define HTML_DRAWING
 

@@ -145,21 +145,49 @@ uint8_t weather_null (char *name, float x, float y, int8_t button, float data, u
 }
 
 void weather_draw (ESContext *esContext, float x1, float y1) {
-		char tmp_str[128];
-		int yn = 0;
-		sprintf(tmp_str, "temp %0.1f^C", weather.temperature);
-		draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
-		sprintf(tmp_str, "humidity %0.1f%%", weather.humidity);
-		draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
-		sprintf(tmp_str, "pressure %0.1f", weather.pressure);
-		draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
-		sprintf(tmp_str, "w-speed %0.1fm/s", weather.wind_speed);
-		draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
-		sprintf(tmp_str, "w-dir %0.1f^", weather.wind_direction);
-		draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
-//		sprintf(tmp_str, "sun_rise %s", weather.sun_rise);
-//		draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
-//		sprintf(tmp_str, "sun_set %s", weather.sun_set);
-//		draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
+	char tmp_str[128];
+	int yn = 0;
+	sprintf(tmp_str, "temp %0.1f^C", weather.temperature);
+	draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
+	sprintf(tmp_str, "humidity %0.1f%%", weather.humidity);
+	draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
+	sprintf(tmp_str, "pressure %0.1f", weather.pressure);
+	draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
+	sprintf(tmp_str, "w-speed %0.1fkm/h", weather.wind_speed);
+	draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
+	sprintf(tmp_str, "w-dir %0.1f^", weather.wind_direction);
+	draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
+//	sprintf(tmp_str, "sun_rise %s", weather.sun_rise);
+//	draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
+//	sprintf(tmp_str, "sun_set %s", weather.sun_set);
+//	draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
 }
+
+void weather_draw_wind (ESContext *esContext, float x1, float y1) {
+	char tmp_str[128];
+	int yn = 0;
+	float arrow_w = 7.0;
+	float arrow_l = 0.02;
+	float c_radius = 0.045;
+	float radius = 0.04;
+	float i = weather.wind_direction - 90.0;
+	float i2 = weather.wind_direction - 90.0;
+	if (map_dir == 1) {
+		i -= ModelData.yaw;
+	}
+	sprintf(tmp_str, "%0.1fkm/h", weather.wind_speed);
+	draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1 + 0.04, y1 - 0.04 + yn++ * 0.05, 0.003, 0.045, 0, 0, weather_null, 0);
+	sprintf(tmp_str, "%0.1f^", weather.wind_direction);
+	draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1 + 0.04, y1 - 0.05 + yn++ * 0.05, 0.003, 0.045, 0, 0, weather_null, 0);
+	x1 += 0.34;
+	draw_circleFilled_f3(esContext, x1, y1, 0.002, c_radius, 255, 255, 255, 128);
+	draw_circle_f3(esContext, x1, y1, 0.002, c_radius, 255, 255, 255, 255);
+	draw_line_f3(esContext, x1 - cos(i2 * DEG2RAD) * radius, y1 - sin(i2 * DEG2RAD) * radius, 0.002, x1 + cos(i2 * DEG2RAD) * radius, y1 + sin(i2 * DEG2RAD) * radius, 0.002, 128, 128, 128, 255);
+	draw_line_f3(esContext, x1 + cos(i2 * DEG2RAD) * radius, y1 + sin(i2 * DEG2RAD) * radius, 0.002, x1 + cos((i2 + arrow_w) * DEG2RAD) * (radius - arrow_l), y1 + sin((i2 + arrow_w) * DEG2RAD) * (radius - arrow_l), 0.002, 128, 128, 128, 255);
+	draw_line_f3(esContext, x1 + cos(i2 * DEG2RAD) * radius, y1 + sin(i2 * DEG2RAD) * radius, 0.002, x1 + cos((i2 - arrow_w) * DEG2RAD) * (radius - arrow_l), y1 + sin((i2 - arrow_w) * DEG2RAD) * (radius - arrow_l), 0.002, 128, 128, 128, 255);
+	draw_line_f3(esContext, x1 - cos(i * DEG2RAD) * radius, y1 - sin(i * DEG2RAD) * radius, 0.002, x1 + cos(i * DEG2RAD) * radius, y1 + sin(i * DEG2RAD) * radius, 0.002, 255, 0, 0, 255);
+	draw_line_f3(esContext, x1 + cos(i * DEG2RAD) * radius, y1 + sin(i * DEG2RAD) * radius, 0.002, x1 + cos((i + arrow_w) * DEG2RAD) * (radius - arrow_l), y1 + sin((i + arrow_w) * DEG2RAD) * (radius - arrow_l), 0.002, 255, 0, 0, 255);
+	draw_line_f3(esContext, x1 + cos(i * DEG2RAD) * radius, y1 + sin(i * DEG2RAD) * radius, 0.002, x1 + cos((i - arrow_w) * DEG2RAD) * (radius - arrow_l), y1 + sin((i - arrow_w) * DEG2RAD) * (radius - arrow_l), 0.002, 255, 0, 0, 255);
+}
+
 
