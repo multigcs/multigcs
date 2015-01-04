@@ -374,43 +374,6 @@ void setup_waypoints (void) {
 	strncpy(WayPoints[0].name, "HOME", 127);
 	strncpy(WayPoints[0].command, "", 127);
 
-	WayPoints[1].p_lat = 50.29057;
-	WayPoints[1].p_long = 9.12704;
-	WayPoints[1].p_alt = 577.0;
-	WayPoints[1].yaw = 0.0;
-	WayPoints[1].radius = 0.0;
-	WayPoints[1].wait = 0.0;
-	WayPoints[1].orbit = 0.0;
-	WayPoints[1].type = 2;
-	strncpy(WayPoints[1].name, "WP0", 127);
-	strncpy(WayPoints[1].command, "", 127);
-
-	WayPoints[2].p_lat = 50.28745;
-	WayPoints[2].p_long = 9.12207;
-	WayPoints[2].p_alt = 25.0;
-	WayPoints[2].yaw = 0.0;
-	WayPoints[2].radius = 0.0;
-	WayPoints[2].wait = 0.0;
-	WayPoints[2].orbit = 0.0;
-	WayPoints[2].type = 2;
-	strncpy(WayPoints[2].name, "WP1", 127);
-	strncpy(WayPoints[2].command, "WAYPOINT", 127);
-
-	WayPoints[3].p_lat = 50.28745;
-	WayPoints[3].p_long = 9.12754;
-	WayPoints[3].p_alt = 550.0;
-	WayPoints[3].yaw = 0.0;
-	WayPoints[3].radius = 2.0;
-	WayPoints[3].wait = 5000.0;
-	WayPoints[3].orbit = 10.0;
-	strncpy(WayPoints[3].name, "WP2-Orbit", 127);
-	strncpy(WayPoints[3].command, "WAYPOINT", 127);
-
-	strncpy(WayPoints[0].name, "UAV", 127);
-	ModelData.p_lat = WayPoints[0].p_lat;
-	ModelData.p_long = WayPoints[0].p_long;
-	ModelData.p_alt = WayPoints[0].p_alt;
-	ModelData.yaw = WayPoints[0].yaw;
 
 	ModelData.sysid = 250;
 	ModelData.compid = 0;
@@ -596,7 +559,7 @@ void setup_load (void) {
 	setup.contrast = 0;
 	strcpy(setup.videocapture_device, "/dev/video0");
 	setup.qrcheck = 0;
-	setup.weather_enable = 0;
+	setup.weather_enable = 1;
 #if defined USE_APRS
 	setup.aprs_server[0] = 0;
 	strcpy(setup.aprs_server, "146.229.162.182");
