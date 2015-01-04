@@ -1271,10 +1271,6 @@ void screen_hud_internal (ESContext *esContext) {
 		}
 		double NewDir = angle_wp - A;
 
-
-printf("## %f ##\n", asin(120 / 120) * 180.0 / 3.14159);
-
-
 		weather_draw_wind(esContext, -0.26, 0.76, 1);
 
 	// Waypoint-Dir (Wind-Correction)
