@@ -46,7 +46,8 @@ CTR:
 	international als CTR abgekürzt) ist der bis zum Erdboden reichende Luftraum
 	in der unmittelbaren Umgebung eines Flugplatzes, dessen Flugverkehr von einem Fluglotsen geleitet wird.
 
-
+WCA:
+	Wind Correction Angle (Wind Korrektur Winkel)
 
 
 
