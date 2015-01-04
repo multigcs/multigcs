@@ -170,6 +170,8 @@ typedef struct {
 	uint16_t webport;
 	float gearth_interval;
 
+	uint8_t weather_enable;
+
 #if defined USE_APRS
 	char aprs_server[128];
 	int aprs_port;

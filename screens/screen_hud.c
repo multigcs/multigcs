@@ -1539,7 +1539,9 @@ void screen_hud_internal (ESContext *esContext) {
 		static float min_g = 1.0;
 		static float max_g = 0.0;
 
-		weather_draw(esContext, 1.0, -0.15);
+		if (setup.weather_enable == 1) {
+			weather_draw(esContext, 1.0, -0.15);
+		}
 
 	//SDL_Log("hud#9g\n");
 
