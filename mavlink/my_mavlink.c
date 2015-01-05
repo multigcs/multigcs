@@ -334,6 +334,8 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 				ModelData.speed = (float)packet.vel / 100.0;
 				ModelData.numSat = packet.satellites_visible;
 				ModelData.gpsfix = packet.fix_type;
+				ModelData.hdop = (float)packet.eph / 100.0;
+				ModelData.vdop = (float)packet.epv / 100.0;
 				redraw_flag = 1;
 			}
 			break;

@@ -1321,17 +1321,21 @@ void map_draw_buttons (ESContext *esContext) {
 	}
 	draw_box_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 	draw_rect_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
-	if (ModelData.gpsfix > 0) {
+	if (ModelData.gpsfix > 1) {
 		sprintf(tmp_str, "Fix: %iD", ModelData.gpsfix);
-		draw_text_button(esContext, "map_fix", setup.view_mode, tmp_str, FONT_GREEN, -1.3, -0.8 + ny * 0.12 - 0.02, 0.003, 0.04, ALIGN_CENTER, ALIGN_CENTER, map_null, 0.0);
+		draw_text_button(esContext, "map_fix", setup.view_mode, tmp_str, FONT_GREEN, -1.4, -0.8 + ny * 0.12 - 0.03, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
 		sprintf(tmp_str, "Sat: %i", ModelData.numSat);
-		draw_text_button(esContext, "map_sats", setup.view_mode, tmp_str, FONT_GREEN, -1.3, -0.8 + ny * 0.12 + 0.03, 0.003, 0.04, ALIGN_CENTER, ALIGN_CENTER, map_null, 0.0);
+		draw_text_button(esContext, "map_sats", setup.view_mode, tmp_str, FONT_GREEN, -1.4, -0.8 + ny * 0.12 + 0.0, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
 	} else {
-		strcpy(tmp_str, "No Fix");
-		draw_text_button(esContext, "map_fix", setup.view_mode, tmp_str, FONT_WHITE, -1.3, -0.8 + ny * 0.12 - 0.02, 0.003, 0.04, ALIGN_CENTER, ALIGN_CENTER, map_null, 0.0);
+		strcpy(tmp_str, "No GPS");
+		draw_text_button(esContext, "map_fix", setup.view_mode, tmp_str, FONT_WHITE, -1.4, -0.8 + ny * 0.12 - 0.03, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
 		sprintf(tmp_str, "Sat: %i", ModelData.numSat);
-		draw_text_button(esContext, "map_sats", setup.view_mode, tmp_str, FONT_WHITE, -1.3, -0.8 + ny * 0.12 + 0.03, 0.003, 0.04, ALIGN_CENTER, ALIGN_CENTER, map_null, 0.0);
+		draw_text_button(esContext, "map_sats", setup.view_mode, tmp_str, FONT_WHITE, -1.4, -0.8 + ny * 0.12 + 0.0, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
 	}
+
+		sprintf(tmp_str, "HDOP: %0.1f", ModelData.hdop);
+		draw_text_button(esContext, "map_hdop", setup.view_mode, tmp_str, FONT_GREEN, -1.4, -0.8 + ny * 0.12 + 0.03, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
+
 	ny = 0;
 	ny++;
 	draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
