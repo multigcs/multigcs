@@ -1010,6 +1010,25 @@ uint8_t autocontinue; ///< autocontinue to next wp
 */
 			break;
 		}
+		case MAVLINK_MSG_ID_COMMAND_ACK: {
+			mavlink_command_ack_t packet;
+			mavlink_msg_command_ack_decode(msg, &packet);
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_COMMAND_ACK command %i ##\n", packet.command); //UINT16_T
+			if (packet.result == MAV_RESULT_ACCEPTED) {
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_COMMAND_ACK result %i: ACCEPTED ##\n", packet.result); //UINT8_T
+			} else if (packet.result == MAV_RESULT_TEMPORARILY_REJECTED) {
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_COMMAND_ACK result %i: TEMPORARILY_REJECTED ##\n", packet.result); //UINT8_T
+			} else if (packet.result == MAV_RESULT_DENIED) {
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_COMMAND_ACK result %i: DENIED ##\n", packet.result); //UINT8_T
+			} else if (packet.result == MAV_RESULT_UNSUPPORTED) {
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_COMMAND_ACK result %i: UNSUPPORTED ##\n", packet.result); //UINT8_T
+			} else if (packet.result == MAV_RESULT_FAILED) {
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_COMMAND_ACK result %i: FAILED ##\n", packet.result); //UINT8_T
+			} else {
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_COMMAND_ACK result %i: UNKNOWN ##\n", packet.result); //UINT8_T
+			}
+			break;
+		}
 		default: {
 			SDL_Log("mavlink: ## UNSUPPORTED MSG_ID == %i (mavlink/get_case_by_file.sh %i) ##\n", msg->msgid, msg->msgid);
 			break;
