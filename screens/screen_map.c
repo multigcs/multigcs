@@ -366,7 +366,12 @@ uint8_t map_del (char *name, float x, float y, int8_t button, float data, uint8_
 			WayPoints[n].p_lat = WayPoints[n2].p_lat;
 			WayPoints[n].p_long = WayPoints[n2].p_long;
 			WayPoints[n].p_alt = WayPoints[n2].p_alt;
-			WayPoints[n].yaw = WayPoints[n2].yaw;
+			WayPoints[n].param1 = WayPoints[n2].param1;
+			WayPoints[n].param2 = WayPoints[n2].param2;
+			WayPoints[n].param3 = WayPoints[n2].param3;
+			WayPoints[n].param4 = WayPoints[n2].param4;
+			WayPoints[n].type = WayPoints[n2].type;
+			WayPoints[n].frametype = WayPoints[n2].frametype;
 			strncpy(WayPoints[n].name, WayPoints[n2].name, 127);
 			strncpy(WayPoints[n].command, WayPoints[n2].command, 127);
 			n2++;
@@ -390,7 +395,11 @@ uint8_t map_polypoint_del (char *name, float x, float y, int8_t button, float da
 			PolyPoints[n].p_lat = PolyPoints[n2].p_lat;
 			PolyPoints[n].p_long = PolyPoints[n2].p_long;
 			PolyPoints[n].p_alt = PolyPoints[n2].p_alt;
-			PolyPoints[n].yaw = PolyPoints[n2].yaw;
+			PolyPoints[n].param1 = PolyPoints[n2].param1;
+			PolyPoints[n].param2 = PolyPoints[n2].param2;
+			PolyPoints[n].param3 = PolyPoints[n2].param3;
+			PolyPoints[n].param4 = PolyPoints[n2].param4;
+			PolyPoints[n].type = PolyPoints[n2].type;
 			strncpy(PolyPoints[n].name, PolyPoints[n2].name, 127);
 			strncpy(PolyPoints[n].command, PolyPoints[n2].command, 127);
 			n2++;
@@ -903,23 +912,18 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 		map_show_cam_setup = 1 - map_show_cam_setup;
 	} else if (strcmp(name, "cam_setup_write") == 0) {
 		map_show_cam_setup = 1 - map_show_cam_setup;
-
-
 		int n = 0;
 		// clear Waypoints
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
 			WayPoints[n].p_lat = 0.0;
 		}
-
 		// add Waypoints
-
 		int pmark_x = long2x(PolyPoints[1].p_long, lon, zoom);
 		int pmark_y = lat2y(PolyPoints[1].p_lat, lat, zoom);
 		float min_x = pmark_x;
 		float min_y = pmark_y;
 		float max_x = pmark_x;
 		float max_y = pmark_y;
-
 		// check box
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
 			if (PolyPoints[n].p_lat != 0.0) {
@@ -939,7 +943,6 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 				}
 			}
 		}
-
 		float h = 0.0;
 		float w = 0.0;
 		float mpp = get_m_per_pixel(lat, zoom);
@@ -969,32 +972,56 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 					WayPoints[n].p_lat = np_lat;
 					WayPoints[n].p_long = np_long;
 					WayPoints[n].p_alt = img_alt - pos_alt;
-					WayPoints[n].yaw = 0.0;
+					WayPoints[n].param1 = 0.0;
+					WayPoints[n].param2 = 0.0;
+					WayPoints[n].param3 = 0.0;
+					WayPoints[n].param4 = 0.0;
+					WayPoints[n].type = 0;
+					WayPoints[n].frametype = 0;
 					sprintf(WayPoints[n].name, "PIC%i", n);
 					strcpy(WayPoints[n].command, "WAYPOINT");
 					n++;
+/*
 					WayPoints[n].p_lat = np_lat;
 					WayPoints[n].p_long = np_long;
 					WayPoints[n].p_alt = pos_alt;
-					WayPoints[n].yaw = 0.0;
+					WayPoints[n].param1 = 0.0;
+					WayPoints[n].param2 = 0.0;
+					WayPoints[n].param3 = 0.0;
+					WayPoints[n].param4 = 0.0;
+					WayPoints[n].type = 0;
+					WayPoints[n].frametype = 0;
 					sprintf(WayPoints[n].name, "ROI%i", n);
 					strcpy(WayPoints[n].command, "SET_ROI");
 					n++;
+*/
 				} else {
 					WayPoints[n].p_lat = np_lat;
 					WayPoints[n].p_long = np_long;
 					WayPoints[n].p_alt = alt;
-					WayPoints[n].yaw = 0.0;
+					WayPoints[n].param1 = 0.0;
+					WayPoints[n].param2 = 0.0;
+					WayPoints[n].param3 = 0.0;
+					WayPoints[n].param4 = 0.0;
+					WayPoints[n].type = 0;
+					WayPoints[n].frametype = 0;
 					sprintf(WayPoints[n].name, "PIC%i", n);
 					strcpy(WayPoints[n].command, "WAYPOINT");
 					n++;
+/*
 					WayPoints[n].p_lat = np_lat;
 					WayPoints[n].p_long = np_long;
 					WayPoints[n].p_alt = pos_alt;
-					WayPoints[n].yaw = 0.0;
+					WayPoints[n].param1 = 0.0;
+					WayPoints[n].param2 = 0.0;
+					WayPoints[n].param3 = 0.0;
+					WayPoints[n].param4 = 0.0;
+					WayPoints[n].type = 0;
+					WayPoints[n].frametype = 0;
 					sprintf(WayPoints[n].name, "ROI%i", n);
 					strcpy(WayPoints[n].command, "SET_ROI");
 					n++;
+*/
 				}
 			}
 			n_y += rast_y;
@@ -1014,32 +1041,56 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 					WayPoints[n].p_lat = np_lat;
 					WayPoints[n].p_long = np_long;
 					WayPoints[n].p_alt = img_alt - pos_alt;
-					WayPoints[n].yaw = 0.0;
+					WayPoints[n].param1 = 0.0;
+					WayPoints[n].param2 = 0.0;
+					WayPoints[n].param3 = 0.0;
+					WayPoints[n].param4 = 0.0;
+					WayPoints[n].type = 0;
+					WayPoints[n].frametype = 0;
 					sprintf(WayPoints[n].name, "PIC%i", n);
 					strcpy(WayPoints[n].command, "WAYPOINT");
 					n++;
+/*
 					WayPoints[n].p_lat = np_lat;
 					WayPoints[n].p_long = np_long;
 					WayPoints[n].p_alt = pos_alt;
-					WayPoints[n].yaw = 0.0;
+					WayPoints[n].param1 = 0.0;
+					WayPoints[n].param2 = 0.0;
+					WayPoints[n].param3 = 0.0;
+					WayPoints[n].param4 = 0.0;
+					WayPoints[n].type = 0;
+					WayPoints[n].frametype = 0;
 					sprintf(WayPoints[n].name, "ROI%i", n);
 					strcpy(WayPoints[n].command, "SET_ROI");
 					n++;
+*/
 				} else {
 					WayPoints[n].p_lat = np_lat;
 					WayPoints[n].p_long = np_long;
 					WayPoints[n].p_alt = alt;
-					WayPoints[n].yaw = 0.0;
+					WayPoints[n].param1 = 0.0;
+					WayPoints[n].param2 = 0.0;
+					WayPoints[n].param3 = 0.0;
+					WayPoints[n].param4 = 0.0;
+					WayPoints[n].type = 0;
+					WayPoints[n].frametype = 0;
 					sprintf(WayPoints[n].name, "PIC%i", n);
 					strcpy(WayPoints[n].command, "WAYPOINT");
 					n++;
+/*
 					WayPoints[n].p_lat = np_lat;
 					WayPoints[n].p_long = np_long;
 					WayPoints[n].p_alt = pos_alt;
-					WayPoints[n].yaw = 0.0;
+					WayPoints[n].param1 = 0.0;
+					WayPoints[n].param2 = 0.0;
+					WayPoints[n].param3 = 0.0;
+					WayPoints[n].param4 = 0.0;
+					WayPoints[n].type = 0;
+					WayPoints[n].frametype = 0;
 					sprintf(WayPoints[n].name, "ROI%i", n);
 					strcpy(WayPoints[n].command, "SET_ROI");
 					n++;
+*/
 				}
 			}
 		}
@@ -1794,13 +1845,13 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
 			if (WayPoints[n].p_lat != 0.0) {
 				if (n == uav_active_waypoint + 1 && n == waypoint_active) {
-					mark_point(esContext, WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].p_alt, WayPoints[n].name, WayPoints[n].command, 3, WayPoints[n].radius, WayPoints[n].orbit, mapdata->lat, mapdata->lon, mapdata->zoom);
+					mark_point(esContext, WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].p_alt, WayPoints[n].name, WayPoints[n].command, 3, WayPoints[n].param1, WayPoints[n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
 				} else if (n == uav_active_waypoint + 1) {
-					mark_point(esContext, WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].p_alt, WayPoints[n].name, WayPoints[n].command, 2, WayPoints[n].radius, WayPoints[n].orbit, mapdata->lat, mapdata->lon, mapdata->zoom);
+					mark_point(esContext, WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].p_alt, WayPoints[n].name, WayPoints[n].command, 2, WayPoints[n].param1, WayPoints[n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
 				} else if (n == waypoint_active) {
-					mark_point(esContext, WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].p_alt, WayPoints[n].name, WayPoints[n].command, 1, WayPoints[n].radius, WayPoints[n].orbit, mapdata->lat, mapdata->lon, mapdata->zoom);
+					mark_point(esContext, WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].p_alt, WayPoints[n].name, WayPoints[n].command, 1, WayPoints[n].param1, WayPoints[n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
 				} else {
-					mark_point(esContext, WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].p_alt, WayPoints[n].name, WayPoints[n].command, 0, WayPoints[n].radius, WayPoints[n].orbit, mapdata->lat, mapdata->lon, mapdata->zoom);
+					mark_point(esContext, WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].p_alt, WayPoints[n].name, WayPoints[n].command, 0, WayPoints[n].param1, WayPoints[n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
 				}
 			}
 		}
@@ -1858,9 +1909,9 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 					alt = img_alt;
 				}
 				if (n == polypoint_active) {
-					mark_point(esContext, PolyPoints[n].p_lat, PolyPoints[n].p_long, alt, PolyPoints[n].name, PolyPoints[n].command, 1, PolyPoints[n].radius, PolyPoints[n].orbit, mapdata->lat, mapdata->lon, mapdata->zoom);
+					mark_point(esContext, PolyPoints[n].p_lat, PolyPoints[n].p_long, alt, PolyPoints[n].name, PolyPoints[n].command, 1, PolyPoints[n].param1, PolyPoints[n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
 				} else {
-					mark_point(esContext, PolyPoints[n].p_lat, PolyPoints[n].p_long, alt, PolyPoints[n].name, PolyPoints[n].command, 0, PolyPoints[n].radius, PolyPoints[n].orbit, mapdata->lat, mapdata->lon, mapdata->zoom);
+					mark_point(esContext, PolyPoints[n].p_lat, PolyPoints[n].p_long, alt, PolyPoints[n].name, PolyPoints[n].command, 0, PolyPoints[n].param1, PolyPoints[n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
 				}
 			}
 		}
@@ -2092,7 +2143,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 					WayPoints[n].p_lat = ny2;
 					WayPoints[n].p_long = nx2;
 					WayPoints[n].p_alt = mark_alt;
-					WayPoints[n].yaw = ModelData.yaw;
+					WayPoints[n].param4 = ModelData.yaw;
 					sprintf(WayPoints[n].name, "MARK%i", n);
 					strcpy(WayPoints[n].command, "WAYPOINT");
 					break;

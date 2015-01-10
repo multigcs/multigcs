@@ -68,23 +68,24 @@ typedef struct {
 	float p_lat;
 	float p_long;
 	float p_alt;
-	float yaw;
-	float radius;
-	float wait;
-	float orbit;
+	float param1; // radius
+	float param2; // wait
+	float param3; // orbit
+	float param4; // yaw
 	char name[128];
 	char command[128];
 	uint8_t type;
+	uint8_t frametype;
 } WayPoint;
 
 typedef struct {
 	float p_lat;
 	float p_long;
 	float p_alt;
-	float yaw;
-	float radius;
-	float wait;
-	float orbit;
+	float param1; // radius
+	float param2; // wait
+	float param3; // orbit
+	float param4; // yaw
 	char name[128];
 	char command[128];
 	uint8_t type;

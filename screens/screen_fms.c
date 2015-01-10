@@ -21,7 +21,12 @@ uint8_t fms_del (char *name, float x, float y, int8_t button, float data, uint8_
 			WayPoints[n].p_lat = WayPoints[n2].p_lat;
 			WayPoints[n].p_long = WayPoints[n2].p_long;
 			WayPoints[n].p_alt = WayPoints[n2].p_alt;
-			WayPoints[n].yaw = WayPoints[n2].yaw;
+			WayPoints[n].param1 = WayPoints[n2].param1;
+			WayPoints[n].param2 = WayPoints[n2].param2;
+			WayPoints[n].param3 = WayPoints[n2].param3;
+			WayPoints[n].param4 = WayPoints[n2].param4;
+			WayPoints[n].type = WayPoints[n2].type;
+			WayPoints[n].frametype = WayPoints[n2].frametype;
 			strncpy(WayPoints[n].name, WayPoints[n2].name, 127);
 			strncpy(WayPoints[n].command, WayPoints[n2].command, 127);
 			n2++;
@@ -72,13 +77,15 @@ void screen_fms (ESContext *esContext) {
 
 	draw_title(esContext, "Waypoints");
 
+	float step_y = 0.22;
+
 	for (n = fms_pos * 7; n < MAX_WAYPOINTS && n2 < 7; n++) {
 		if (n == 0) {
-			draw_box_f(esContext, -1.2, -0.55 + ((n2 - 1) * 0.22), 1.3, -0.55 + (n2 * 0.22), 127, 127, 127, 64);
+			draw_box_f(esContext, -1.2, -0.55 + ((n2 - 1) * step_y), 1.3, -0.55 + (n2 * step_y), 127, 127, 127, 64);
 		} else if (n == waypoint_active) {
-			draw_box_f(esContext, -1.2, -0.55 + ((n2 - 1) * 0.22), 1.3, -0.55 + (n2 * 0.22), 255, 255, 255, 64);
-			draw_line_f(esContext, ss - 0.01, -0.53 + ((n2 - 1) * 0.22), ss, -0.51 + ((n2 - 1) * 0.22), 0, 255, 0, 255);
-			draw_line_f(esContext, ss + 0.01, -0.53 + ((n2 - 1) * 0.22), ss, -0.51 + ((n2 - 1) * 0.22), 0, 255, 0, 255);
+			draw_box_f(esContext, -1.2, -0.55 + ((n2 - 1) * step_y), 1.3, -0.55 + (n2 * step_y), 255, 255, 255, 64);
+			draw_line_f(esContext, ss - 0.01, -0.53 + ((n2 - 1) * step_y), ss, -0.51 + ((n2 - 1) * step_y), 0, 255, 0, 255);
+			draw_line_f(esContext, ss + 0.01, -0.53 + ((n2 - 1) * step_y), ss, -0.51 + ((n2 - 1) * step_y), 0, 255, 0, 255);
 		}
 		if (WayPoints[n].p_lat != 0.0) {
 			float distance1 = 0.0;
@@ -98,48 +105,51 @@ void screen_fms (ESContext *esContext) {
 				distance2 = sqrt(((distance1) * (distance1)) + (alt * alt));
 				/* Steigung */
 				winkel_up = (asin(alt / distance2)) * 180 / PI;
-				draw_line_f(esContext, ss, -0.62 + ((n2 - 1) * 0.22), ss, -0.62 + (n2 * 0.22), 0, 255, 0, 255);
-				draw_circleFilled_f(esContext, ss, -0.62 + ((n2 - 1) * 0.22), 0.01, 0, 255, 0, 128);
-				draw_circleFilled_f(esContext, ss, -0.62 + (n2 * 0.22), 0.01, 0, 255, 0, 128);
+				draw_line_f(esContext, ss, -0.62 + ((n2 - 1) * step_y), ss, -0.62 + (n2 * step_y), 0, 255, 0, 255);
+				draw_circleFilled_f(esContext, ss, -0.62 + ((n2 - 1) * step_y), 0.01, 0, 255, 0, 128);
+				draw_circleFilled_f(esContext, ss, -0.62 + (n2 * step_y), 0.01, 0, 255, 0, 128);
 				sprintf(tmp_str, "%0.1fm (%0.1fm / %0.1fGrad)", distance1, distance2, winkel_up);
-				draw_text_f3(esContext, ss + 0.01, -0.62 + (n2 * 0.22) - 0.125, 0.002, 0.05, 0.05, FONT_GREEN, tmp_str);
+				draw_text_f3(esContext, ss + 0.01, -0.62 + (n2 * step_y) - 0.125, 0.002, 0.05, 0.05, FONT_GREEN, tmp_str);
 			}
 			last_lat = WayPoints[n].p_lat;
 			last_lon = WayPoints[n].p_long;
 			last_alt = WayPoints[n].p_alt;
 			sprintf(tmp_str, "%s", WayPoints[n].name);
-			draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, -1.2, -0.7 + (n2 * 0.22), 0.002, 0.1, 0, 0, fms_select, (float)n);
+			draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, -1.2, -0.7 + (n2 * step_y), 0.002, 0.1, 0, 0, fms_select, (float)n);
 
 			if (WayPoints[n].command[0] == 0) {
 				strcpy(tmp_str, "---");
 			} else {
 				sprintf(tmp_str, "%s", WayPoints[n].command);
 			}
-			draw_text_f3(esContext, -1.2 + 0.01, -0.7 + (n2 * 0.22) - 0.04, 0.002, 0.05, 0.05, FONT_GREEN, tmp_str);
+			draw_text_f3(esContext, -1.2 + 0.01, -0.7 + (n2 * step_y) - 0.04, 0.002, 0.05, 0.05, FONT_GREEN, tmp_str);
 			if (WayPoints[n].p_lat == 0.0) {
 				strcpy(tmp_str, "---");
 			} else {
 				sprintf(tmp_str, "%0.6f", WayPoints[n].p_lat);
 			}
-			draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.7 + (n2 * 0.22), 0.002, 0.1, 0, 0, fms_select, (float)n);
+			draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.7 + (n2 * step_y), 0.002, 0.1, 0, 0, fms_select, (float)n);
 
 			if (WayPoints[n].p_long == 0.0) {
 				strcpy(tmp_str, "---");
 			} else {
 				sprintf(tmp_str, "%0.6f", WayPoints[n].p_long);
 			}
-			draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, 0.1, -0.7 + (n2 * 0.22), 0.002, 0.1, 0, 0, fms_select, (float)n);
+			draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, 0.1, -0.7 + (n2 * step_y), 0.002, 0.1, 0, 0, fms_select, (float)n);
 
 			if (WayPoints[n].p_alt == 0.0) {
 				strcpy(tmp_str, "---");
 			} else {
-				sprintf(tmp_str, "%0.1fm", WayPoints[n].p_alt);
+				if (WayPoints[n].frametype == MAV_FRAME_GLOBAL) {
+					sprintf(tmp_str, "%0.1fm abs", WayPoints[n].p_alt);
+				} else if (WayPoints[n].frametype == MAV_FRAME_GLOBAL_RELATIVE_ALT) {
+					sprintf(tmp_str, "%0.1fm rel", WayPoints[n].p_alt);
+				}
 			}
-			draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, 1.0, -0.7 + (n2 * 0.22), 0.002, 0.1, 2, 0, fms_select, (float)n);
-
+			draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, 1.3, -0.7 + (n2 * step_y), 0.002, 0.1, 2, 0, fms_select, (float)n);
 
 			sprintf(tmp_str2, "%s-%i-d", WayPoints[n].name, n);
-			set_button(tmp_str2, VIEW_MODE_FMS, -1.2, -0.55 + ((n2 - 1) * 0.22), 1.3, -0.55 + (n2 * 0.22), fms_select, (float)n, 0);
+			set_button(tmp_str2, VIEW_MODE_FMS, -1.2, -0.55 + ((n2 - 1) * step_y), 1.3, -0.55 + (n2 * step_y), fms_select, (float)n, 0);
 
 			n2++;
 		}

@@ -163,7 +163,7 @@ void mavlink_set_value (char *name, float value, int8_t type, int16_t id) {
 				if (type == -1) {
 					type = MAV_VAR_FLOAT;
 				}
-printf("###### %s ## %i ###\n", name, type);
+				//printf("###### %s ## %i ###\n", name, type);
 
 				MavLinkVars[n].type = type;
 				MavLinkVars[n].min = min;
@@ -183,8 +183,34 @@ printf("###### %s ## %i ###\n", name, type);
 					strncpy(MavLinkVars[n].group, "FlightMode", 17);
 				} else if (strncmp(MavLinkVars[n].name, "COMPASS", 7) == 0) {
 					strncpy(MavLinkVars[n].group, "Compass", 17);
+				} else if (strncmp(MavLinkVars[n].name, "MAG", 3) == 0) {
+					strncpy(MavLinkVars[n].group, "Compass", 17);
 				} else if (strncmp(MavLinkVars[n].name, "SR", 2) == 0) {
-					strncpy(MavLinkVars[n].group, "SR", 17);
+					strncpy(MavLinkVars[n].group, "Serial", 17);
+				} else if (strncmp(MavLinkVars[n].name, "TELEM", 5) == 0) {
+					strncpy(MavLinkVars[n].group, "Serial", 17);
+				} else if (strncmp(MavLinkVars[n].name, "SERIAL", 6) == 0) {
+					strncpy(MavLinkVars[n].group, "Serial", 17);
+				} else if (strncmp(MavLinkVars[n].name, "GPS", 3) == 0) {
+					strncpy(MavLinkVars[n].group, "GPS", 17);
+				} else if (strncmp(MavLinkVars[n].name, "MNT", 3) == 0) {
+					strncpy(MavLinkVars[n].group, "Gimbal", 17);
+				} else if (strncmp(MavLinkVars[n].name, "CAM", 3) == 0) {
+					strncpy(MavLinkVars[n].group, "Gimbal", 17);
+				} else if (strncmp(MavLinkVars[n].name, "BARO", 4) == 0) {
+					strncpy(MavLinkVars[n].group, "Baro", 17);
+				} else if (strncmp(MavLinkVars[n].name, "THR_", 4) == 0) {
+					strncpy(MavLinkVars[n].group, "Throttle", 17);
+				} else if (strncmp(MavLinkVars[n].name, "SUPER_SIMPLE", 12) == 0) {
+					strncpy(MavLinkVars[n].group, "Simple", 17);
+				} else if (strncmp(MavLinkVars[n].name, "SIMPLE", 6) == 0) {
+					strncpy(MavLinkVars[n].group, "Simple", 17);
+				} else if (strncmp(MavLinkVars[n].name, "INAV", 4) == 0) {
+					strncpy(MavLinkVars[n].group, "Navigation", 17);
+				} else if (strncmp(MavLinkVars[n].name, "WPNAV", 5) == 0) {
+					strncpy(MavLinkVars[n].group, "Navigation", 17);
+				} else if (strncmp(MavLinkVars[n].name, "WP_", 3) == 0) {
+					strncpy(MavLinkVars[n].group, "Navigation", 17);
 				}
 				break;
 			}
@@ -490,7 +516,21 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 			SDL_Log("mavlink: %s\n", sysmsg_str);
 
 
-			mavlink_msg_mission_item_pack(127, 0, &msg2, ModelData.sysid, ModelData.compid, id, 0, type, 0.0, 0.0, WayPoints[1 + id2].radius, WayPoints[1 + id2].wait, WayPoints[1 + id2].orbit, WayPoints[1 + id2].yaw, WayPoints[1 + id2].p_lat, WayPoints[1 + id2].p_long, WayPoints[1 + id2].p_alt);
+//	MAV_FRAME_GLOBAL=0, /* Global coordinate frame, WGS84 coordinate system. First value / x: latitude, second value / y: longitude, third value / z: positive altitude over mean sea level (MSL) | */
+//	MAV_FRAME_LOCAL_NED=1, /* Local coordinate frame, Z-up (x: north, y: east, z: down). | */
+//	MAV_FRAME_MISSION=2, /* NOT a coordinate frame, indicates a mission command. | */
+//	MAV_FRAME_GLOBAL_RELATIVE_ALT=3, /* Global coordinate frame, WGS84 coordinate system, relative altitude over ground with respect to the home position. First value / x: latitude, second value / y: longitude, third value / z: positive altitude with 0 being at the altitude of the home location. | */
+//	MAV_FRAME_LOCAL_ENU=4, /* Local coordinate frame, Z-down (x: east, y: north, z: up) | */
+//	MAV_FRAME_GLOBAL_INT=5, /* Global coordinate frame, WGS84 coordinate system. First value / x: latitude in degrees*1.0e-7, second value / y: longitude in degrees*1.0e-7, third value / z: positive altitude over mean sea level (MSL) | */
+//	MAV_FRAME_GLOBAL_RELATIVE_ALT_INT=6, /* Global coordinate frame, WGS84 coordinate system, relative altitude over ground with respect to the home position. First value / x: latitude in degrees*10e-7, second value / y: longitude in degrees*10e-7, third value / z: positive altitude with 0 being at the altitude of the home location. | */
+//	MAV_FRAME_LOCAL_OFFSET_NED=7, /* Offset to the current local frame. Anything expressed in this frame should be added to the current local frame position. | */
+//	MAV_FRAME_BODY_NED=8, /* Setpoint in body NED frame. This makes sense if all position control is externalized - e.g. useful to command 2 m/s^2 acceleration to the right. | */
+//	MAV_FRAME_BODY_OFFSET_NED=9, /* Offset in body NED frame. This makes sense if adding setpoints to the current flight path, to avoid an obstacle - e.g. useful to command 2 m/s^2 acceleration to the east. | */
+//	MAV_FRAME_GLOBAL_TERRAIN_ALT=10, /* Global coordinate frame with above terrain level altitude. WGS84 coordinate system, relative altitude over terrain with respect to the waypoint coordinate. First value / x: latitude in degrees, second value / y: longitude in degrees, third value / z: positive altitude in meters with 0 being at ground level in terrain model. | */
+//	MAV_FRAME_GLOBAL_TERRAIN_ALT_INT=11, /* Global coordinate frame with above terrain level altitude. WGS84 coordinate system, relative altitude over terrain with respect to the waypoint coordinate. First value / x: latitude in degrees*10e-7, second value / y: longitude in degrees*10e-7, third value / z: positive altitude in meters with 0 being at ground level in terrain model. | */
+
+
+			mavlink_msg_mission_item_pack(127, 0, &msg2, ModelData.sysid, ModelData.compid, id, WayPoints[1 + id2].frametype, type, 0.0, 0.0, WayPoints[1 + id2].param1, WayPoints[1 + id2].param2, WayPoints[1 + id2].param3, WayPoints[1 + id2].param4, WayPoints[1 + id2].p_lat, WayPoints[1 + id2].p_long, WayPoints[1 + id2].p_alt);
 			mavlink_send_message(&msg2);
 /*
 mavlink_msg_mission_item_pack(system_id, component_id, &msg , packet1.target_system , packet1.target_component , packet1.seq , packet1.frame , packet1.command , packet1.current , packet1.autocontinue , packet1.param1 , packet1.param2 , packet1.param3 , packet1.param4 , packet1.x , packet1.y , packet1.z );
@@ -591,14 +631,22 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			WayPoints[1 + packet.seq].p_lat = packet.x;
 			WayPoints[1 + packet.seq].p_long = packet.y;
 			WayPoints[1 + packet.seq].p_alt = packet.z;
-			WayPoints[1 + packet.seq].yaw = packet.param4;
+			WayPoints[1 + packet.seq].param1 = packet.param1;
+			WayPoints[1 + packet.seq].param2 = packet.param2;
+			WayPoints[1 + packet.seq].param3 = packet.param3;
+			WayPoints[1 + packet.seq].param4 = packet.param4;
+			WayPoints[1 + packet.seq].frametype = packet.frame;
 			sprintf(WayPoints[1 + packet.seq].name, "WP%i", packet.seq + 1);
 
 			WayPoints[1 + packet.seq + 1].p_lat = 0.0;
 			WayPoints[1 + packet.seq + 1].p_long = 0.0;
 			WayPoints[1 + packet.seq + 1].p_alt = 0.0;
-			WayPoints[1 + packet.seq + 1].yaw = 0.0;
+			WayPoints[1 + packet.seq + 1].param1 = 0.0;
+			WayPoints[1 + packet.seq + 1].param2 = 0.0;
+			WayPoints[1 + packet.seq + 1].param3 = 0.0;
+			WayPoints[1 + packet.seq + 1].param4 = 0.0;
 			WayPoints[1 + packet.seq + 1].name[0] = 0;
+			WayPoints[1 + packet.seq + 1].frametype = 0;
 			WayPoints[1 + packet.seq + 1].command[0] = 0;
 
 //			redraw_flag = 1;

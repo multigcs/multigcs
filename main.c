@@ -341,10 +341,10 @@ void setup_waypoints (void) {
 		PolyPoints[n].p_lat = 0.0;
 		PolyPoints[n].p_long = 0.0;
 		PolyPoints[n].p_alt = 0.0;
-		PolyPoints[n].yaw = 0.0;
-		PolyPoints[n].radius = 2.0;
-		PolyPoints[n].wait = 500.0;
-		PolyPoints[n].orbit = 0.0;
+		PolyPoints[n].param1 = 0.0;
+		PolyPoints[n].param2 = 2.0;
+		PolyPoints[n].param3 = 0.0;
+		PolyPoints[n].param4 = 0.0;
 		PolyPoints[n].name[0] = 0;
 		PolyPoints[n].command[0] = 0;
 		PolyPoints[n].type = 0;
@@ -354,10 +354,11 @@ void setup_waypoints (void) {
 		WayPoints[n].p_lat = 0.0;
 		WayPoints[n].p_long = 0.0;
 		WayPoints[n].p_alt = 0.0;
-		WayPoints[n].yaw = 0.0;
-		WayPoints[n].radius = 2.0;
-		WayPoints[n].wait = 500.0;
-		WayPoints[n].orbit = 0.0;
+		WayPoints[n].param1 = 0.0;
+		WayPoints[n].param2 = 2.0;
+		WayPoints[n].param3 = 0.0;
+		WayPoints[n].param4 = 0.0;
+		WayPoints[n].frametype = 0;
 		WayPoints[n].name[0] = 0;
 		WayPoints[n].command[0] = 0;
 		WayPoints[n].type = 0;
@@ -366,10 +367,11 @@ void setup_waypoints (void) {
 	WayPoints[0].p_lat = 50.29197;
 	WayPoints[0].p_long = 9.12764;
 	WayPoints[0].p_alt = 125.0;
-	WayPoints[0].yaw = 0.0;
-	WayPoints[0].radius = 0.0;
-	WayPoints[0].wait = 0.0;
-	WayPoints[0].orbit = 0.0;
+	WayPoints[0].param1 = 0.0;
+	WayPoints[0].param2 = 2.0;
+	WayPoints[0].param3 = 0.0;
+	WayPoints[0].param4 = 0.0;
+	WayPoints[0].frametype = 0;
 	WayPoints[0].type = 1;
 	strncpy(WayPoints[0].name, "HOME", 127);
 	strncpy(WayPoints[0].command, "", 127);
@@ -475,11 +477,12 @@ void setup_save (void) {
 	                        fprintf(fr, "lat	%0.8f\n", WayPoints[n].p_lat);
 	                        fprintf(fr, "lon	%0.8f\n", WayPoints[n].p_long);
 	                        fprintf(fr, "alt	%f\n", WayPoints[n].p_alt);
-	                        fprintf(fr, "yaw	%f\n", WayPoints[n].yaw);
-	                        fprintf(fr, "wait	%f\n", WayPoints[n].wait);
-	                        fprintf(fr, "radius	%f\n", WayPoints[n].radius);
-	                        fprintf(fr, "orbit	%f\n", WayPoints[n].orbit);
+	                        fprintf(fr, "param1	%f\n", WayPoints[n].param1);
+	                        fprintf(fr, "param2	%f\n", WayPoints[n].param2);
+	                        fprintf(fr, "param3	%f\n", WayPoints[n].param3);
+	                        fprintf(fr, "param4	%f\n", WayPoints[n].param4);
 	                        fprintf(fr, "type	%i\n", WayPoints[n].type);
+	                        fprintf(fr, "frametype %i\n", WayPoints[n].frametype);
 	                        fprintf(fr, "\n");
 	                }
 	        }
@@ -492,10 +495,10 @@ void setup_save (void) {
 	                        fprintf(fr, "lat	%0.8f\n", PolyPoints[n].p_lat);
 	                        fprintf(fr, "lon	%0.8f\n", PolyPoints[n].p_long);
 	                        fprintf(fr, "alt	%f\n", PolyPoints[n].p_alt);
-	                        fprintf(fr, "yaw	%f\n", PolyPoints[n].yaw);
-	                        fprintf(fr, "wait	%f\n", PolyPoints[n].wait);
-	                        fprintf(fr, "radius	%f\n", PolyPoints[n].radius);
-	                        fprintf(fr, "orbit	%f\n", PolyPoints[n].orbit);
+	                        fprintf(fr, "param1	%f\n", PolyPoints[n].param1);
+	                        fprintf(fr, "param2	%f\n", PolyPoints[n].param2);
+	                        fprintf(fr, "param3	%f\n", PolyPoints[n].param3);
+	                        fprintf(fr, "param4	%f\n", PolyPoints[n].param4);
 	                        fprintf(fr, "type	%i\n", PolyPoints[n].type);
 	                        fprintf(fr, "\n");
 	                }
@@ -730,10 +733,14 @@ void setup_load (void) {
 	                                        WayPoints[wp_num].p_lat = 0.0;
 	                                        WayPoints[wp_num].p_long = 0.0;
 	                                        WayPoints[wp_num].p_alt = 0.0;
-	                                        WayPoints[wp_num].yaw = 0.0;
+	                                        WayPoints[wp_num].param1 = 0.0;
+	                                        WayPoints[wp_num].param2 = 0.0;
+	                                        WayPoints[wp_num].param3 = 0.0;
+	                                        WayPoints[wp_num].param4 = 0.0;
 	                                        WayPoints[wp_num].name[0] = 0;
 	                                        WayPoints[wp_num].command[0] = 0;
 	                                        WayPoints[wp_num].type = 0;
+	                                        WayPoints[wp_num].frametype = 0;
 	                                }
 	                        } else if (strcmp(var, "name") == 0) {
 	                                strncpy(WayPoints[wp_num].name, val, 127);
@@ -745,16 +752,18 @@ void setup_load (void) {
 	                                WayPoints[wp_num].p_long = atof(val);
 	                        } else if (strcmp(var, "alt") == 0) {
 	                                WayPoints[wp_num].p_alt = atof(val);
-	                        } else if (strcmp(var, "yaw") == 0) {
-	                                WayPoints[wp_num].yaw = atof(val);
-	                        } else if (strcmp(var, "wait") == 0) {
-	                                WayPoints[wp_num].wait = atof(val);
-	                        } else if (strcmp(var, "radius") == 0) {
-	                                WayPoints[wp_num].radius = atof(val);
-	                        } else if (strcmp(var, "orbit") == 0) {
-	                                WayPoints[wp_num].orbit = atof(val);
+	                        } else if (strcmp(var, "param1") == 0) {
+	                                WayPoints[wp_num].param1 = atof(val);
+	                        } else if (strcmp(var, "param2") == 0) {
+	                                WayPoints[wp_num].param2 = atof(val);
+	                        } else if (strcmp(var, "param3") == 0) {
+	                                WayPoints[wp_num].param3 = atof(val);
+	                        } else if (strcmp(var, "param4") == 0) {
+	                                WayPoints[wp_num].param4 = atof(val);
 	                        } else if (strcmp(var, "type") == 0) {
 	                                WayPoints[wp_num].type = atoi(val);
+	                        } else if (strcmp(var, "frametype") == 0) {
+	                                WayPoints[wp_num].frametype = atoi(val);
 	                        } else if (strcmp(var, "[polypoints]") == 0) {
 	                                mode = 2;
 	                        }
@@ -765,7 +774,10 @@ void setup_load (void) {
 	                                        PolyPoints[pp_num].p_lat = 0.0;
 	                                        PolyPoints[pp_num].p_long = 0.0;
 	                                        PolyPoints[pp_num].p_alt = 0.0;
-	                                        PolyPoints[pp_num].yaw = 0.0;
+	                                        PolyPoints[pp_num].param1 = 0.0;
+	                                        PolyPoints[pp_num].param2 = 0.0;
+	                                        PolyPoints[pp_num].param3 = 0.0;
+	                                        PolyPoints[pp_num].param4 = 0.0;
 	                                        PolyPoints[pp_num].name[0] = 0;
 	                                        PolyPoints[pp_num].command[0] = 0;
 	                                        PolyPoints[pp_num].type = 0;
@@ -780,14 +792,14 @@ void setup_load (void) {
 	                                PolyPoints[pp_num].p_long = atof(val);
 	                        } else if (strcmp(var, "alt") == 0) {
 	                                PolyPoints[pp_num].p_alt = atof(val);
-	                        } else if (strcmp(var, "yaw") == 0) {
-	                                PolyPoints[pp_num].yaw = atof(val);
-	                        } else if (strcmp(var, "wait") == 0) {
-	                                PolyPoints[pp_num].wait = atof(val);
-	                        } else if (strcmp(var, "radius") == 0) {
-	                                PolyPoints[pp_num].radius = atof(val);
-	                        } else if (strcmp(var, "orbit") == 0) {
-	                                PolyPoints[pp_num].orbit = atof(val);
+	                        } else if (strcmp(var, "param1") == 0) {
+	                                PolyPoints[wp_num].param1 = atof(val);
+	                        } else if (strcmp(var, "param2") == 0) {
+	                                PolyPoints[wp_num].param2 = atof(val);
+	                        } else if (strcmp(var, "param3") == 0) {
+	                                PolyPoints[wp_num].param3 = atof(val);
+	                        } else if (strcmp(var, "param4") == 0) {
+	                                PolyPoints[wp_num].param4 = atof(val);
 	                        } else if (strcmp(var, "type") == 0) {
 	                                PolyPoints[pp_num].type = atoi(val);
 	                        }
@@ -806,7 +818,6 @@ void setup_load (void) {
 		ModelData.p_long = WayPoints[0].p_long;
 		ModelData.p_alt = WayPoints[0].p_alt;
 	}
-	ModelData.yaw = WayPoints[0].yaw;
 	strncpy(ModelData.teledevice, setup.telemetry_port, 199);
 	ModelData.telebaud = setup.telemetry_baud;
 }
@@ -1227,8 +1238,12 @@ void check_events (ESContext *esContext, SDL_Event event) {
 							WayPoints[n].p_lat = mouse_lat;
 							WayPoints[n].p_long = mouse_long;
 							WayPoints[n].p_alt = nz;
-							WayPoints[n].yaw = 0.0;
-							WayPoints[n].orbit = 0.0;
+							WayPoints[n].param1 = 0.0;
+							WayPoints[n].param2 = 0.0;
+							WayPoints[n].param3 = 0.0;
+							WayPoints[n].param4 = 0.0;
+							WayPoints[n].type = 0;
+							WayPoints[n].frametype = 0;
 							sprintf(WayPoints[n].name, "WP%i", n);
 							strncpy(WayPoints[n].command, "WAYPOINT", 127);
 							break;
@@ -1249,8 +1264,10 @@ void check_events (ESContext *esContext, SDL_Event event) {
 							PolyPoints[n].p_lat = mouse_lat;
 							PolyPoints[n].p_long = mouse_long;
 							PolyPoints[n].p_alt = nz;
-							PolyPoints[n].yaw = 0.0;
-							PolyPoints[n].orbit = 0.0;
+							PolyPoints[n].param1 = 0.0;
+							PolyPoints[n].param2 = 0.0;
+							PolyPoints[n].param3 = 0.0;
+							PolyPoints[n].param4 = 0.0;
 							sprintf(PolyPoints[n].name, "POINT%i", n);
 							strncpy(PolyPoints[n].command, "", 127);
 							break;
@@ -1306,8 +1323,12 @@ void check_events (ESContext *esContext, SDL_Event event) {
 						WayPoints[n].p_lat = mouse_lat;
 						WayPoints[n].p_long = mouse_long;
 						WayPoints[n].p_alt = nz;
-						WayPoints[n].yaw = 0.0;
-						WayPoints[n].orbit = 0.0;
+						WayPoints[n].param1 = 0.0;
+						WayPoints[n].param2 = 0.0;
+						WayPoints[n].param3 = 0.0;
+						WayPoints[n].param4 = 0.0;
+						WayPoints[n].type = 0;
+						WayPoints[n].frametype = 0;
 						sprintf(WayPoints[n].name, "WP%i", n);
 						strncpy(WayPoints[n].command, "WAYPOINT", 127);
 //						SDL_Log("GPS;%i;%f;%f;%0.1f;%0.1f\n", time(0), mouse_lat, mouse_long, 25.0, 10.0);
