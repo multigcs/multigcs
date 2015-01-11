@@ -66,7 +66,7 @@ void weather_parseDoc (char *docname) {
 			while (wcur != NULL) {
 				if ((!xmlStrcasecmp(wcur->name, (const xmlChar *)"speed"))) {
 					if ((key = xmlGetProp(wcur, (const xmlChar *)"value")) != NULL) {
-						weather.wind_speed = atof((char *)key);
+						weather.wind_speed = atof((char *)key); // m/s
 						xmlFree(key);
 					}
 				} else if ((!xmlStrcasecmp(wcur->name, (const xmlChar *)"direction"))) {
@@ -153,7 +153,7 @@ void weather_draw (ESContext *esContext, float x1, float y1) {
 	draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
 	sprintf(tmp_str, "pressure %0.1f", weather.pressure);
 	draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
-	sprintf(tmp_str, "w-speed %0.1fkm/h", weather.wind_speed);
+	sprintf(tmp_str, "w-speed %0.1fm/s", weather.wind_speed);
 	draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
 	sprintf(tmp_str, "w-dir %0.1f^", weather.wind_direction);
 	draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
@@ -170,12 +170,16 @@ void weather_draw_wind (ESContext *esContext, float x1, float y1, uint8_t mode) 
 	float arrow_l = 0.02;
 	float c_radius = 0.045;
 	float radius = 0.04;
-	float i = weather.wind_direction - 90.0;
-	float i2 = weather.wind_direction - 90.0;
+	float direction = weather.wind_direction + 180.0;
+	if (direction > 360.0) {
+		direction -= 360.0;
+	}
+	float i = direction - 90.0;
+	float i2 = direction - 90.0;
 	if (mode == 1) {
 		i -= ModelData.yaw;
 	}
-	sprintf(tmp_str, "%0.1fkm/h", weather.wind_speed);
+	sprintf(tmp_str, "%0.1fm/s", weather.wind_speed);
 	draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1 + 0.04, y1 - 0.04 + yn++ * 0.05, 0.003, 0.045, 0, 0, weather_null, 0);
 	sprintf(tmp_str, "%0.1f^", weather.wind_direction);
 	draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1 + 0.04, y1 - 0.05 + yn++ * 0.05, 0.003, 0.045, 0, 0, weather_null, 0);

@@ -1259,7 +1259,7 @@ void screen_hud_internal (ESContext *esContext) {
 		if (C < -180.0) {
 			C += 360.0;
 		}
-		double a = weather.wind_speed; // Wind-Speed
+		double a = weather.wind_speed * 3.6; // Wind-Speed
 		double b = ModelData.speed; // Plane-Speed
 		if (b < 1.0) {
 			b = 1.0;
