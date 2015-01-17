@@ -294,7 +294,7 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 		case MAVLINK_MSG_ID_RC_CHANNELS_SCALED: {
 			mavlink_rc_channels_scaled_t packet;
 			mavlink_msg_rc_channels_scaled_decode(msg, &packet);
-			SDL_Log("Radio: %i,%i,%i\n", packet.chan1_scaled, packet.chan2_scaled, packet.chan3_scaled);
+//			SDL_Log("Radio: %i,%i,%i\n", packet.chan1_scaled, packet.chan2_scaled, packet.chan3_scaled);
 
 /*			if ((int)packet.chan6_scaled > 1000) {
 				mode = MODE_MISSION;
