@@ -106,7 +106,8 @@ int weather_thread (void *data) {
 		char url[1024];
 		char cmd[1024];
 		sprintf(url, "http://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&mode=xml", ModelData.p_lat, ModelData.p_long);
-//		file_download("/tmp/weather.xml.tmp", url);
+printf("## %s ##\n", url);
+		file_download("/tmp/weather.xml.tmp", url);
 		sprintf(cmd, "wget -q -O/tmp/weather.xml.tmp \"%s\"", url);
 		system(cmd);
 		weather_parseDoc("/tmp/weather.xml.tmp");
