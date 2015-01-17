@@ -36,6 +36,9 @@ uint8_t map_overlay_set = 0;
 float alt_profile_scale_h = 512.0;
 float alt_profile_scale_w = 1024.0;
 
+uint8_t cam_mode = 0; // 0 = cam, 1 = fixed distance
+float cam_rast_x = 30.0; // abstand in metern
+float cam_rast_y = 30.0; // abstand in metern
 float cam_film_width = 36.0;  // 35 mm standard film
 float cam_film_height = 24.0; // 35 mm standard film
 float cam_sensor_mult = 1.62; // Formatfaktor / APS-C-Sensor (Canon)
@@ -45,7 +48,6 @@ float img_alt = 30.0;
 uint8_t img_alt_abs = 0;
 uint8_t map_show_fov = 0;
 uint8_t map_show_cam_setup = 0;
-uint8_t map_show_poly_setup = 0;
 uint8_t map_show_profile = 0;
 
 
@@ -854,9 +856,290 @@ void draw_fov (ESContext *esContext, float p_lat, float p_long, float p_alt) {
 	draw_box_f3(esContext, mx1, my1, z2, mx2, my2, z2, 255, 0, 0, 64);
 }
 
+uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+		int n = 0;
+		int pmark_x = long2x(PolyPoints[1].p_long, lon, zoom);
+		int pmark_y = lat2y(PolyPoints[1].p_lat, lat, zoom);
+		float min_x = pmark_x;
+		float min_y = pmark_y;
+		float max_x = pmark_x;
+		float max_y = pmark_y;
+
+		FILE *kmlout = fopen("/tmp/test.kml", "w");
+		fprintf(kmlout, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+		fprintf(kmlout, "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
+		fprintf(kmlout, "  <Document>\n");
+		fprintf(kmlout, "    <name>Mission</name>\n");
+		fprintf(kmlout, "    <description>MultiGCS - Mission\n");
+		if (cam_mode == 1) {
+			fprintf(kmlout, "    rast_x: %0.0f m\n", cam_rast_x);
+			fprintf(kmlout, "    rast_y: %0.0f m\n", cam_rast_y);
+		} else {
+			fprintf(kmlout, "    focal length: %0.0f mm\n", cam_lense);
+			fprintf(kmlout, "    Film-Width: %0.0f mm\n", cam_film_width);
+			fprintf(kmlout, "    Film-Height: %0.0f mm\n", cam_film_height);
+			fprintf(kmlout, "    Sensor-Mult.: %0.2fx\n", cam_sensor_mult);
+			fprintf(kmlout, "    Overlap: %0.2f\n", img_overlap);
+			if (img_alt_abs == 1) {
+				fprintf(kmlout, "    Alt: %0.2fm ABS\n", img_alt);
+			} else {
+				fprintf(kmlout, "    Alt: %0.2fm REL\n", img_alt);
+			}
+		}
+		fprintf(kmlout, "    </description>\n");
+		fprintf(kmlout, "    <Style id=\"yellowLineGreenPoly\">\n");
+		fprintf(kmlout, "      <LineStyle>\n");
+		fprintf(kmlout, "        <color>7f00ffff</color>\n");
+		fprintf(kmlout, "        <width>4</width>\n");
+		fprintf(kmlout, "      </LineStyle>\n");
+		fprintf(kmlout, "      <PolyStyle>\n");
+		fprintf(kmlout, "        <color>7f00ff00</color>\n");
+		fprintf(kmlout, "      </PolyStyle>\n");
+		fprintf(kmlout, "    </Style>\n");
+
+		fprintf(kmlout, "    <Style id=\"redLineGreenPoly\">\n");
+		fprintf(kmlout, "      <LineStyle>\n");
+		fprintf(kmlout, "        <color>7f0000ff</color>\n");
+		fprintf(kmlout, "        <width>2</width>\n");
+		fprintf(kmlout, "      </LineStyle>\n");
+		fprintf(kmlout, "      <PolyStyle>\n");
+		fprintf(kmlout, "        <color>7f00ff00</color>\n");
+		fprintf(kmlout, "      </PolyStyle>\n");
+		fprintf(kmlout, "    </Style>\n");
+
+		fprintf(kmlout, "    <Placemark>\n");
+		fprintf(kmlout, "      <name>Outline</name>\n");
+		fprintf(kmlout, "        <description>Polygon\n");
+		if (cam_mode == 1) {
+			fprintf(kmlout, "    rast_x: %0.0f m\n", cam_rast_x);
+			fprintf(kmlout, "    rast_y: %0.0f m\n", cam_rast_y);
+		} else {
+			fprintf(kmlout, "    focal length: %0.0f mm\n", cam_lense);
+			fprintf(kmlout, "    Film-Width: %0.0f mm\n", cam_film_width);
+			fprintf(kmlout, "    Film-Height: %0.0f mm\n", cam_film_height);
+			fprintf(kmlout, "    Sensor-Mult.: %0.2fx\n", cam_sensor_mult);
+			fprintf(kmlout, "    Overlap: %0.2f\n", img_overlap);
+			if (img_alt_abs == 1) {
+				fprintf(kmlout, "    Alt: %0.2fm ABS\n", img_alt);
+			} else {
+				fprintf(kmlout, "    Alt: %0.2fm REL\n", img_alt);
+			}
+		}
+		fprintf(kmlout, "      </description>\n");
+		fprintf(kmlout, "      <styleUrl>#redLineGreenPoly</styleUrl>\n");
+		fprintf(kmlout, "      <LineString>\n");
+		fprintf(kmlout, "        <extrude>0</extrude>\n");
+		fprintf(kmlout, "        <tessellate>1</tessellate>\n");
+		fprintf(kmlout, "        <coordinates>\n");
+
+		for (n = 1; n < MAX_WAYPOINTS; n++) {
+			if (PolyPoints[n].p_lat != 0.0) {
+				pmark_x = long2x(PolyPoints[n].p_long, lon, zoom);
+				pmark_y = lat2y(PolyPoints[n].p_lat, lat, zoom);
+				if (min_x > pmark_x) {
+					min_x = pmark_x;
+				}
+				if (min_y > pmark_y) {
+					min_y = pmark_y;
+				}
+				if (max_x < pmark_x) {
+					max_x = pmark_x;
+				}
+				if (max_y < pmark_y) {
+					max_y = pmark_y;
+				}
+				fprintf(kmlout, "          %f,%f\n", PolyPoints[n].p_long, PolyPoints[n].p_lat);
+			}
+		}
+		fprintf(kmlout, "          %f,%f\n", PolyPoints[1].p_long, PolyPoints[1].p_lat);
+		fprintf(kmlout, "        </coordinates>\n");
+		fprintf(kmlout, "      </LineString>\n");
+		fprintf(kmlout, "    </Placemark>\n");
+
+		// drawing Grid
+		float h = 0.0;
+		float w = 0.0;
+		float mpp = get_m_per_pixel(lat, zoom);
+		float pos_alt = get_altitude(ModelData.p_lat, ModelData.p_long);
+		float dist = ModelData.p_alt - pos_alt; // Abstand in Metern
+		float rast_x = 0.0;
+		float rast_y = 0.0;
+		dist = img_alt;
+		if (cam_mode == 1) {
+			rast_x = cam_rast_x / mpp;
+			rast_y = cam_rast_y / mpp;
+		} else {
+			calc_fov(cam_film_width, cam_film_height, cam_sensor_mult, cam_lense, dist, &w, &h);
+			rast_x = w / mpp / img_overlap;
+			rast_y = h / mpp / img_overlap;
+		}
+
+		fprintf(kmlout, "    <Placemark>\n");
+		fprintf(kmlout, "      <name>Route</name>\n");
+		fprintf(kmlout, "        <description>Route\n");
+		if (cam_mode == 1) {
+			fprintf(kmlout, "    rast_x: %0.0f m\n", cam_rast_x);
+			fprintf(kmlout, "    rast_y: %0.0f m\n", cam_rast_y);
+		} else {
+			fprintf(kmlout, "    focal length: %0.0f mm\n", cam_lense);
+			fprintf(kmlout, "    Film-Width: %0.0f mm\n", cam_film_width);
+			fprintf(kmlout, "    Film-Height: %0.0f mm\n", cam_film_height);
+			fprintf(kmlout, "    Sensor-Mult.: %0.2fx\n", cam_sensor_mult);
+			fprintf(kmlout, "    Overlap: %0.2f\n", img_overlap);
+			if (img_alt_abs == 1) {
+				fprintf(kmlout, "    Alt: %0.2fm ABS\n", img_alt);
+			} else {
+				fprintf(kmlout, "    Alt: %0.2fm REL\n", img_alt);
+			}
+		}
+		fprintf(kmlout, "      </description>\n");
+		fprintf(kmlout, "      <styleUrl>#yellowLineGreenPoly</styleUrl>\n");
+		fprintf(kmlout, "      <LineString>\n");
+		fprintf(kmlout, "        <extrude>1</extrude>\n");
+		fprintf(kmlout, "        <tessellate>1</tessellate>\n");
+		fprintf(kmlout, "        <altitudeMode>absolute</altitudeMode>\n");
+		fprintf(kmlout, "        <coordinates>\n");
+
+		float n_x = 0.0;
+		float n_y = 0.0;
+		float lastn_x = 0.0;
+		float lastn_y = 0.0;
+		float lastn_alt = 0.0;
+		for (n_y = min_y; n_y <= max_y + rast_y; n_y += rast_y) {
+			for (n_x = min_x; n_x <= max_x + rast_x; n_x += rast_x) {
+				if (point_in_poly(n_x, n_y) == 0) {
+					continue;
+				}
+				float np_long = x2long(n_x, lon, mapdata->zoom);
+				float np_lat = y2lat(n_y, lat, mapdata->zoom);
+				float pos_alt = get_altitude(np_lat, np_long);
+				float alt = img_alt + pos_alt;
+				if (img_alt_abs == 1) {
+					if (img_alt < pos_alt) {
+						img_alt = pos_alt;
+					}
+					alt = img_alt;
+				}
+				fprintf(kmlout, "          %f,%f,%f\n", np_long, np_lat, alt);
+				lastn_x = n_x;
+				lastn_y = n_y;
+				lastn_alt = alt;
+			}
+			n_y += rast_y;
+			for (; n_x >= min_x - rast_x; n_x -= rast_x) {
+				if (point_in_poly(n_x, n_y) == 0) {
+					continue;
+				}
+				float np_long = x2long(n_x, lon, mapdata->zoom);
+				float np_lat = y2lat(n_y, lat, mapdata->zoom);
+				float pos_alt = get_altitude(np_lat, np_long);
+				float alt = img_alt + pos_alt;
+				if (img_alt_abs == 1) {
+					if (img_alt < pos_alt) {
+						img_alt = pos_alt;
+					}
+					alt = img_alt;
+				}
+				fprintf(kmlout, "          %f,%f,%f\n", np_long, np_lat, alt);
+				lastn_x = n_x;
+				lastn_y = n_y;
+				lastn_alt = alt;
+			}
+		}
+		fprintf(kmlout, "        </coordinates>\n");
+		fprintf(kmlout, "      </LineString>\n");
+		fprintf(kmlout, "    </Placemark>\n");
+
+		int mark_n = 0;
+		n_x = 0.0;
+		n_y = 0.0;
+		lastn_x = 0.0;
+		lastn_y = 0.0;
+		lastn_alt = 0.0;
+		for (n_y = min_y; n_y <= max_y + rast_y; n_y += rast_y) {
+			for (n_x = min_x; n_x <= max_x + rast_x; n_x += rast_x) {
+				if (point_in_poly(n_x, n_y) == 0) {
+					continue;
+				}
+				float np_long = x2long(n_x, lon, mapdata->zoom);
+				float np_lat = y2lat(n_y, lat, mapdata->zoom);
+				float pos_alt = get_altitude(np_lat, np_long);
+				float alt = img_alt + pos_alt;
+				if (img_alt_abs == 1) {
+					if (img_alt < pos_alt) {
+						img_alt = pos_alt;
+					}
+					alt = img_alt;
+				}
+				fprintf(kmlout, "    <Placemark>\n");
+				fprintf(kmlout, "      <name>WP: %i</name>\n", mark_n);
+				fprintf(kmlout, "      <description>WP: %i, ALT: %fm</description>\n", mark_n++, alt);
+				fprintf(kmlout, "      <Point>\n");
+				fprintf(kmlout, "        <coordinates>%f,%f,%f</coordinates>\n", np_long, np_lat, alt);
+				fprintf(kmlout, "      </Point>\n");
+				fprintf(kmlout, "    </Placemark>\n");
+				lastn_x = n_x;
+				lastn_y = n_y;
+				lastn_alt = alt;
+			}
+
+			n_y += rast_y;
+			for (; n_x >= min_x - rast_x; n_x -= rast_x) {
+				if (point_in_poly(n_x, n_y) == 0) {
+					continue;
+				}
+				float np_long = x2long(n_x, lon, mapdata->zoom);
+				float np_lat = y2lat(n_y, lat, mapdata->zoom);
+				float pos_alt = get_altitude(np_lat, np_long);
+				float alt = img_alt + pos_alt;
+				if (img_alt_abs == 1) {
+					if (img_alt < pos_alt) {
+						img_alt = pos_alt;
+					}
+					alt = img_alt;
+				}
+				fprintf(kmlout, "    <Placemark>\n");
+				fprintf(kmlout, "      <name>WP: %i</name>\n", mark_n);
+				fprintf(kmlout, "      <description>WP: %i, ALT: %fm</description>\n", mark_n++, alt);
+				fprintf(kmlout, "      <Point>\n");
+				fprintf(kmlout, "        <coordinates>%f,%f,%f</coordinates>\n", np_long, np_lat, alt);
+				fprintf(kmlout, "      </Point>\n");
+				fprintf(kmlout, "    </Placemark>\n");
+				lastn_x = n_x;
+				lastn_y = n_y;
+				lastn_alt = alt;
+			}
+		}
+		fprintf(kmlout, "  </Document>\n");
+		fprintf(kmlout, "</kml>\n");
+		fclose(kmlout);
+}
+
 uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (strncmp(name, "cam_lense_", 10) == 0) {
 		cam_lense = atof(name + 10);
+	} else if (strcmp(name, "cam_mode") == 0) {
+		cam_mode = 1 - cam_mode;
+	} else if (strcmp(name, "cam_rast_x") == 0) {
+		if (button == 4) {
+			cam_rast_x += 1.0;
+		}
+		if (button == 5) {
+			cam_rast_x -= 1.0;
+		}
+		if (cam_rast_x < 1.0) {
+			cam_rast_x = 1.0;
+		}
+	} else if (strcmp(name, "cam_rast_y") == 0) {
+		if (button == 4) {
+			cam_rast_y += 1.0;
+		}
+		if (button == 5) {
+			cam_rast_y -= 1.0;
+		}
+		if (cam_rast_y < 1.0) {
+			cam_rast_y = 1.0;
+		}
 	} else if (strcmp(name, "cam_lense") == 0) {
 		if (button == 4) {
 			cam_lense += 1.0;
@@ -1102,65 +1385,80 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 
 uint8_t map_poly_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (strcmp(name, "poly_setup") == 0) {
-		map_show_poly_setup = 1 - map_show_poly_setup;
+		map_show_poly = 1 - map_show_poly;
 	} else if (strcmp(name, "poly_setup_done") == 0) {
-		map_show_poly_setup = 1 - map_show_poly_setup;
+		map_show_poly = 1 - map_show_poly;
 	}
 	return 0;
 }
 
 void map_draw_cam_setup (ESContext *esContext) {
+	int ny = 1;
 	char tmp_str[128];
 	float px1 = -0.8;
 	float py1 = -0.9;
 	float px2 = 0.8;
 	float py2 = -0.2;
 	draw_box_f3(esContext, px1, py1, 0.002, px2, py2, 0.002, 0, 0, 0, 127);
-	draw_box_f3(esContext, px1, py1, 0.005, px2, py1 + 0.05, 0.005, 255, 255, 255, 127);
-	draw_rect_f3(esContext, px1, py1, 0.005, px2, py1 + 0.05, 0.005, 255, 255, 255, 255);
+	draw_box_f3(esContext, px1, py1, 0.005, px2, py1 + 0.06, 0.005, 255, 255, 255, 127);
+	draw_rect_f3(esContext, px1, py1, 0.005, px2, py1 + 0.06, 0.005, 255, 255, 255, 255);
 	draw_text_button(esContext, "cam_setup_title", setup.view_mode, "Cam-Setup", FONT_GREEN, px1, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
-	int ny = 1;
-	// Lense
-	draw_text_button(esContext, "cam_lense", setup.view_mode, "Lense:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
-	draw_text_button(esContext, "cam_lense_20", setup.view_mode, "[20mm]", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
-	draw_text_button(esContext, "cam_lense_50", setup.view_mode, "[50mm]", FONT_GREEN, px1 + 1.1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
-	draw_text_button(esContext, "cam_lense_70", setup.view_mode, "[70mm]", FONT_GREEN, px1 + 1.4, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
-	ny++;
-	sprintf(tmp_str, "  focal length: %0.0fmm", cam_lense);
-	draw_text_button(esContext, "cam_lense", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
-	ny++;
-	// Sensor
-	draw_text_button(esContext, "cam_sensor", setup.view_mode, "Sensor:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
-	draw_text_button(esContext, "cam_sensor_1.0", setup.view_mode, "[Full]", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
-	draw_text_button(esContext, "cam_sensor_1.4", setup.view_mode, "[APS-E]", FONT_GREEN, px1 + 1.1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
-	draw_text_button(esContext, "cam_sensor_1.6", setup.view_mode, "[APS-C]", FONT_GREEN, px1 + 1.4, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
-	ny++;
-	sprintf(tmp_str, "  Film-Width: %0.0fmm", cam_film_width);
-	draw_text_button(esContext, "cam_film_width", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
-	ny++;
-	sprintf(tmp_str, "  Film-Height: %0.0fmm", cam_film_height);
-	draw_text_button(esContext, "cam_film_height", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
-	ny++;
-	sprintf(tmp_str, "  Sensor-Mult.: %0.2fx", cam_sensor_mult);
-	draw_text_button(esContext, "cam_sensor_mult", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+	draw_text_button(esContext, "cam_mode", setup.view_mode, "[MODE]", FONT_GREEN, px1 + 0.5, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+	if (cam_mode == 1) {
+		// fixed raster
+		draw_text_button(esContext, "cam_rast", setup.view_mode, "Raster:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		ny++;
+		sprintf(tmp_str, "  rast_x: %0.0fm", cam_rast_x);
+		draw_text_button(esContext, "cam_rast_x", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		ny++;
+		sprintf(tmp_str, "  rast_y: %0.0fm", cam_rast_y);
+		draw_text_button(esContext, "cam_rast_y", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		ny++;
+	} else {
+		// Lense
+		draw_text_button(esContext, "cam_lense", setup.view_mode, "Lense:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		draw_text_button(esContext, "cam_lense_20", setup.view_mode, "[20mm]", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
+		draw_text_button(esContext, "cam_lense_50", setup.view_mode, "[50mm]", FONT_GREEN, px1 + 1.1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
+		draw_text_button(esContext, "cam_lense_70", setup.view_mode, "[70mm]", FONT_GREEN, px1 + 1.4, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
+		ny++;
+		sprintf(tmp_str, "  focal length: %0.0fmm", cam_lense);
+		draw_text_button(esContext, "cam_lense", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		ny++;
+		// Sensor
+		draw_text_button(esContext, "cam_sensor", setup.view_mode, "Sensor:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		draw_text_button(esContext, "cam_sensor_1.0", setup.view_mode, "[Full]", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
+		draw_text_button(esContext, "cam_sensor_1.4", setup.view_mode, "[APS-E]", FONT_GREEN, px1 + 1.1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
+		draw_text_button(esContext, "cam_sensor_1.6", setup.view_mode, "[APS-C]", FONT_GREEN, px1 + 1.4, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
+		ny++;
+		sprintf(tmp_str, "  Film-Width: %0.0fmm", cam_film_width);
+		draw_text_button(esContext, "cam_film_width", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		ny++;
+		sprintf(tmp_str, "  Film-Height: %0.0fmm", cam_film_height);
+		draw_text_button(esContext, "cam_film_height", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		ny++;
+		sprintf(tmp_str, "  Sensor-Mult.: %0.2fx", cam_sensor_mult);
+		draw_text_button(esContext, "cam_sensor_mult", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		ny++;
+		// Overlap/Alt
+		draw_text_button(esContext, "img_overlap", setup.view_mode, "Overlap/Alt:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		ny++;
+		sprintf(tmp_str, "  Overlap: %0.2f", img_overlap);
+		draw_text_button(esContext, "img_overlap", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		ny++;
+		sprintf(tmp_str, "  Alt: %0.2f", img_alt);
+		draw_text_button(esContext, "img_alt", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		if (img_alt_abs == 1) {
+			draw_text_button(esContext, "img_alt_abs", setup.view_mode, "ABS", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		} else {
+			draw_text_button(esContext, "img_alt_abs", setup.view_mode, "REL", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		}
+		ny++;
+	}
+
+	draw_text_button(esContext, "cam_export_kml", setup.view_mode, "[KML]", FONT_GREEN, px2 - 0.55, py2 - 0.075, 0.005, 0.07, ALIGN_RIGHT, ALIGN_TOP, map_cam_export_kml, 0.0);
 	draw_text_button(esContext, "cam_setup_write", setup.view_mode, "[WRITE]", FONT_GREEN, px2 - 0.25, py2 - 0.075, 0.005, 0.07, ALIGN_RIGHT, ALIGN_TOP, map_cam_set, 0.0);
 	draw_text_button(esContext, "cam_setup_done", setup.view_mode, "[DONE]", FONT_GREEN, px2 - 0.02, py2 - 0.075, 0.005, 0.07, ALIGN_RIGHT, ALIGN_TOP, map_cam_set, 0.0);
 	draw_rect_f3(esContext, px1, py1, 0.005, px2, py2, 0.005, 255, 255, 255, 255);
-	ny++;
-	// Overlap/Alt
-	draw_text_button(esContext, "img_overlap", setup.view_mode, "Overlap/Alt:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
-	ny++;
-	sprintf(tmp_str, "  Overlap: %0.2f", img_overlap);
-	draw_text_button(esContext, "img_overlap", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
-	ny++;
-	sprintf(tmp_str, "  Alt: %0.2f", img_alt);
-	draw_text_button(esContext, "img_alt", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
-	if (img_alt_abs == 1) {
-		draw_text_button(esContext, "img_alt_abs", setup.view_mode, "ABS", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
-	} else {
-		draw_text_button(esContext, "img_alt_abs", setup.view_mode, "REL", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
-	}
-	ny++;
 }
 
 void map_draw_alt_profile (ESContext *esContext) {
@@ -1444,7 +1742,7 @@ void map_draw_buttons (ESContext *esContext) {
 	ny++;
 	draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 	draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
-	if (map_show_poly_setup == 1) {
+	if (map_show_poly == 1) {
 		draw_button(esContext, "poly_setup", setup.view_mode, "POLY", FONT_GREEN, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_poly_set, 0.0);
 	} else {
 		draw_button(esContext, "poly_setup", setup.view_mode, "POLY", FONT_WHITE, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_poly_set, 0.0);
@@ -1892,9 +2190,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 	}
 
-
-
-
 	// drawing Polygon-Points
 	flag = 0;
 	if (map_show_poly == 1) {
@@ -1915,7 +2210,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				}
 			}
 		}
-
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
 			if (PolyPoints[n].p_lat != 0.0) {
 				float pos_alt = get_altitude(PolyPoints[n].p_lat, PolyPoints[n].p_long);
@@ -2000,14 +2294,17 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		float mpp = get_m_per_pixel(lat, zoom);
 		float pos_alt = get_altitude(ModelData.p_lat, ModelData.p_long);
 		float dist = ModelData.p_alt - pos_alt; // Abstand in Metern
-
+		float rast_x = 0.0;
+		float rast_y = 0.0;
 		dist = img_alt;
-
-
-		calc_fov(cam_film_width, cam_film_height, cam_sensor_mult, cam_lense, dist, &w, &h);
-		float rast_x = w / mpp / img_overlap;
-		float rast_y = h / mpp / img_overlap;
-
+		if (cam_mode == 1) {
+			rast_x = cam_rast_x / mpp;
+			rast_y = cam_rast_y / mpp;
+		} else {
+			calc_fov(cam_film_width, cam_film_height, cam_sensor_mult, cam_lense, dist, &w, &h);
+			rast_x = w / mpp / img_overlap;
+			rast_y = h / mpp / img_overlap;
+		}
 		float n_x = 0.0;
 		float n_y = 0.0;
 		float lastn_x = 0.0;
@@ -2027,9 +2324,13 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 						img_alt = pos_alt;
 					}
 					alt = img_alt;
-					draw_fov(esContext, np_lat, np_long, img_alt - pos_alt);
+					if (cam_mode == 0) {
+						draw_fov(esContext, np_lat, np_long, img_alt - pos_alt);
+					}
 				} else {
-					draw_fov(esContext, np_lat, np_long, alt);
+					if (cam_mode == 0) {
+						draw_fov(esContext, np_lat, np_long, alt);
+					}
 				}
 
 				glColor4f(1.0, 1.0, 0.0, 1.0);
@@ -2046,7 +2347,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 					py1 = (float)lastn_y / (float)esContext->height * 2.0 - 1.0;
 					glVertex3f(px1, -py1, -2.0 + (lastn_alt / alt_zoom));
 				}
-
 				glEnd();
 				lastn_x = n_x;
 				lastn_y = n_y;
@@ -2067,9 +2367,13 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 						img_alt = pos_alt;
 					}
 					alt = img_alt;
-					draw_fov(esContext, np_lat, np_long, img_alt - pos_alt);
+					if (cam_mode == 0) {
+						draw_fov(esContext, np_lat, np_long, img_alt - pos_alt);
+					}
 				} else {
-					draw_fov(esContext, np_lat, np_long, alt);
+					if (cam_mode == 0) {
+						draw_fov(esContext, np_lat, np_long, alt);
+					}
 				}
 
 				glColor4f(1.0, 1.0, 0.0, 1.0);
@@ -2086,15 +2390,12 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 					py1 = (float)lastn_y / (float)esContext->height * 2.0 - 1.0;
 					glVertex3f(px1, -py1, -2.0 + (lastn_alt / alt_zoom));
 				}
-
 				glEnd();
 				lastn_x = n_x;
 				lastn_y = n_y;
 				lastn_alt = alt;
 			}
 		}
-
-
 #endif
 	}
 
