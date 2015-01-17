@@ -37,8 +37,8 @@ float alt_profile_scale_h = 512.0;
 float alt_profile_scale_w = 1024.0;
 
 uint8_t cam_mode = 0; // 0 = cam, 1 = fixed distance
-float cam_rast_x = 30.0; // abstand in metern
-float cam_rast_y = 30.0; // abstand in metern
+float cam_grid_x = 30.0; // abstand in metern
+float cam_grid_y = 30.0; // abstand in metern
 float cam_film_width = 36.0;  // 35 mm standard film
 float cam_film_height = 24.0; // 35 mm standard film
 float cam_sensor_mult = 1.62; // Formatfaktor / APS-C-Sensor (Canon)
@@ -864,6 +864,7 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 		float min_y = pmark_y;
 		float max_x = pmark_x;
 		float max_y = pmark_y;
+		float pos_alt_max = -999999.0;
 
 		FILE *kmlout = fopen("/tmp/test.kml", "w");
 		fprintf(kmlout, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
@@ -872,8 +873,8 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 		fprintf(kmlout, "    <name>Mission</name>\n");
 		fprintf(kmlout, "    <description>MultiGCS - Mission\n");
 		if (cam_mode == 1) {
-			fprintf(kmlout, "    rast_x: %0.0f m\n", cam_rast_x);
-			fprintf(kmlout, "    rast_y: %0.0f m\n", cam_rast_y);
+			fprintf(kmlout, "    grid_x: %0.0f m\n", cam_grid_x);
+			fprintf(kmlout, "    grid_y: %0.0f m\n", cam_grid_y);
 			if (img_alt_abs == 1) {
 				fprintf(kmlout, "    Alt: %0.2fm ABS\n", img_alt);
 			} else {
@@ -917,8 +918,8 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 /*
 		fprintf(kmlout, "        <description>Polygon\n");
 		if (cam_mode == 1) {
-			fprintf(kmlout, "    rast_x: %0.0f m\n", cam_rast_x);
-			fprintf(kmlout, "    rast_y: %0.0f m\n", cam_rast_y);
+			fprintf(kmlout, "    grid_x: %0.0f m\n", cam_grid_x);
+			fprintf(kmlout, "    grid_y: %0.0f m\n", cam_grid_y);
 			if (img_alt_abs == 1) {
 				fprintf(kmlout, "    Alt: %0.2fm ABS\n", img_alt);
 			} else {
@@ -940,8 +941,8 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 */
 		fprintf(kmlout, "    <ExtendedData>\n");
 		if (cam_mode == 1) {
-			fprintf(kmlout, "    <Data name=\"rast_x\"><value>%0.0f m</value></Data>\n", cam_rast_x);
-			fprintf(kmlout, "    <Data name=\"rast_y\"><value>%0.0f m</value></Data>\n", cam_rast_y);
+			fprintf(kmlout, "    <Data name=\"grid_x\"><value>%0.0f m</value></Data>\n", cam_grid_x);
+			fprintf(kmlout, "    <Data name=\"grid_y\"><value>%0.0f m</value></Data>\n", cam_grid_y);
 			if (img_alt_abs == 1) {
 				fprintf(kmlout, "    <Data name=\"Alt\"><value>%0.2fm ABS</value></Data>\n", img_alt);
 			} else {
@@ -983,6 +984,10 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 				if (max_y < pmark_y) {
 					max_y = pmark_y;
 				}
+				float pos_alt = get_altitude(PolyPoints[n].p_lat, PolyPoints[n].p_long);
+				if (pos_alt_max < pos_alt) {
+					pos_alt_max = pos_alt;
+				}
 				fprintf(kmlout, "          %f,%f\n", PolyPoints[n].p_long, PolyPoints[n].p_lat);
 			}
 		}
@@ -995,12 +1000,11 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 		float h = 0.0;
 		float w = 0.0;
 		float mpp = get_m_per_pixel(lat, zoom);
-		float pos_alt = get_altitude(PolyPoints[1].p_lat, PolyPoints[1].p_long);
 		float dist = 0.0;
-		float rast_x = 0.0;
-		float rast_y = 0.0;
+		float grid_x = 0.0;
+		float grid_y = 0.0;
 		if (img_alt_abs == 1) {
-			dist = img_alt - pos_alt;
+			dist = img_alt - pos_alt_max;
 		} else {
 			dist = img_alt;
 		}
@@ -1008,12 +1012,12 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 			dist = 1.0;
 		}
 		if (cam_mode == 1) {
-			rast_x = cam_rast_x / mpp;
-			rast_y = cam_rast_y / mpp;
+			grid_x = cam_grid_x / mpp;
+			grid_y = cam_grid_y / mpp;
 		} else {
 			calc_fov(cam_film_width, cam_film_height, cam_sensor_mult, cam_lense, dist, &w, &h);
-			rast_x = w / mpp / img_overlap;
-			rast_y = h / mpp / img_overlap;
+			grid_x = w / mpp / img_overlap;
+			grid_y = h / mpp / img_overlap;
 		}
 
 		fprintf(kmlout, "    <Placemark>\n");
@@ -1021,8 +1025,8 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 /*
 		fprintf(kmlout, "        <description>Route\n");
 		if (cam_mode == 1) {
-			fprintf(kmlout, "    rast_x: %0.0f m\n", cam_rast_x);
-			fprintf(kmlout, "    rast_y: %0.0f m\n", cam_rast_y);
+			fprintf(kmlout, "    grid_x: %0.0f m\n", cam_grid_x);
+			fprintf(kmlout, "    grid_y: %0.0f m\n", cam_grid_y);
 			if (img_alt_abs == 1) {
 				fprintf(kmlout, "    Alt: %0.2fm ABS\n", img_alt);
 			} else {
@@ -1044,8 +1048,8 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 */
 		fprintf(kmlout, "    <ExtendedData>\n");
 		if (cam_mode == 1) {
-			fprintf(kmlout, "    <Data name=\"rast_x\"><value>%0.0f m</value></Data>\n", cam_rast_x);
-			fprintf(kmlout, "    <Data name=\"rast_y\"><value>%0.0f m</value></Data>\n", cam_rast_y);
+			fprintf(kmlout, "    <Data name=\"grid_x\"><value>%0.0f m</value></Data>\n", cam_grid_x);
+			fprintf(kmlout, "    <Data name=\"grid_y\"><value>%0.0f m</value></Data>\n", cam_grid_y);
 			if (img_alt_abs == 1) {
 				fprintf(kmlout, "    <Data name=\"Alt\"><value>%0.2fm ABS</value></Data>\n", img_alt);
 			} else {
@@ -1077,8 +1081,8 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 		float lastn_x = 0.0;
 		float lastn_y = 0.0;
 		float lastn_alt = 0.0;
-		for (n_y = min_y; n_y <= max_y + rast_y; n_y += rast_y) {
-			for (n_x = min_x; n_x <= max_x + rast_x; n_x += rast_x) {
+		for (n_y = min_y; n_y <= max_y + grid_y; n_y += grid_y) {
+			for (n_x = min_x; n_x <= max_x + grid_x; n_x += grid_x) {
 				if (point_in_poly(n_x, n_y) == 0) {
 					continue;
 				}
@@ -1097,8 +1101,8 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 				lastn_y = n_y;
 				lastn_alt = alt;
 			}
-			n_y += rast_y;
-			for (; n_x >= min_x - rast_x; n_x -= rast_x) {
+			n_y += grid_y;
+			for (; n_x >= min_x - grid_x; n_x -= grid_x) {
 				if (point_in_poly(n_x, n_y) == 0) {
 					continue;
 				}
@@ -1128,8 +1132,8 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 		lastn_x = 0.0;
 		lastn_y = 0.0;
 		lastn_alt = 0.0;
-		for (n_y = min_y; n_y <= max_y + rast_y; n_y += rast_y) {
-			for (n_x = min_x; n_x <= max_x + rast_x; n_x += rast_x) {
+		for (n_y = min_y; n_y <= max_y + grid_y; n_y += grid_y) {
+			for (n_x = min_x; n_x <= max_x + grid_x; n_x += grid_x) {
 				if (point_in_poly(n_x, n_y) == 0) {
 					continue;
 				}
@@ -1155,8 +1159,8 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 				lastn_alt = alt;
 			}
 
-			n_y += rast_y;
-			for (; n_x >= min_x - rast_x; n_x -= rast_x) {
+			n_y += grid_y;
+			for (; n_x >= min_x - grid_x; n_x -= grid_x) {
 				if (point_in_poly(n_x, n_y) == 0) {
 					continue;
 				}
@@ -1198,25 +1202,25 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 		}
 	} else if (strcmp(name, "cam_mode") == 0) {
 		cam_mode = 1 - cam_mode;
-	} else if (strcmp(name, "cam_rast_x") == 0) {
+	} else if (strcmp(name, "cam_grid_x") == 0) {
 		if (button == 4) {
-			cam_rast_x += 1.0;
+			cam_grid_x += 1.0;
 		}
 		if (button == 5) {
-			cam_rast_x -= 1.0;
+			cam_grid_x -= 1.0;
 		}
-		if (cam_rast_x < 1.0) {
-			cam_rast_x = 1.0;
+		if (cam_grid_x < 1.0) {
+			cam_grid_x = 1.0;
 		}
-	} else if (strcmp(name, "cam_rast_y") == 0) {
+	} else if (strcmp(name, "cam_grid_y") == 0) {
 		if (button == 4) {
-			cam_rast_y += 1.0;
+			cam_grid_y += 1.0;
 		}
 		if (button == 5) {
-			cam_rast_y -= 1.0;
+			cam_grid_y -= 1.0;
 		}
-		if (cam_rast_y < 1.0) {
-			cam_rast_y = 1.0;
+		if (cam_grid_y < 1.0) {
+			cam_grid_y = 1.0;
 		}
 	} else if (strcmp(name, "cam_lense") == 0) {
 		if (button == 4) {
@@ -1266,12 +1270,21 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 			}
 		}
 	} else if (strcmp(name, "img_alt_abs") == 0) {
+		float pos_alt_max = -999999.0;
+		int n = 0;
+		for (n = 1; n < MAX_WAYPOINTS; n++) {
+			if (PolyPoints[n].p_lat != 0.0) {
+				float pos_alt = get_altitude(PolyPoints[n].p_lat, PolyPoints[n].p_long);
+				if (pos_alt_max < pos_alt) {
+					pos_alt_max = pos_alt;
+				}
+			}
+		}
 		img_alt_abs = 1 - img_alt_abs;
-		float pos_alt = get_altitude(PolyPoints[1].p_lat, PolyPoints[1].p_long);
 		if (img_alt_abs == 1) {
-			img_alt += pos_alt;
+			img_alt += pos_alt_max;
 		} else {
-			img_alt -= pos_alt;
+			img_alt -= pos_alt_max;
 		}
 	} else if (strncmp(name, "cam_sensor_", 11) == 0) {
 		cam_film_width = 36.0;
@@ -1296,6 +1309,7 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 		float min_y = pmark_y;
 		float max_x = pmark_x;
 		float max_y = pmark_y;
+		float pos_alt_max = -999999.0;
 		// check box
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
 			if (PolyPoints[n].p_lat != 0.0) {
@@ -1313,17 +1327,20 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 				if (max_y < pmark_y) {
 					max_y = pmark_y;
 				}
+				float pos_alt = get_altitude(PolyPoints[n].p_lat, PolyPoints[n].p_long);
+				if (pos_alt_max < pos_alt) {
+					pos_alt_max = pos_alt;
+				}
 			}
 		}
 		float h = 0.0;
 		float w = 0.0;
 		float mpp = get_m_per_pixel(lat, zoom);
-		float pos_alt = get_altitude(PolyPoints[1].p_lat, PolyPoints[1].p_long);
 		float dist = 0.0;
-		float rast_x = 0.0;
-		float rast_y = 0.0;
+		float grid_x = 0.0;
+		float grid_y = 0.0;
 		if (img_alt_abs == 1) {
-			dist = img_alt - pos_alt;
+			dist = img_alt - pos_alt_max;
 		} else {
 			dist = img_alt;
 		}
@@ -1331,24 +1348,24 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 			dist = 1.0;
 		}
 		if (cam_mode == 1) {
-			rast_x = cam_rast_x / mpp;
-			rast_y = cam_rast_y / mpp;
+			grid_x = cam_grid_x / mpp;
+			grid_y = cam_grid_y / mpp;
 		} else {
 			calc_fov(cam_film_width, cam_film_height, cam_sensor_mult, cam_lense, dist, &w, &h);
-			rast_x = w / mpp / img_overlap;
-			rast_y = h / mpp / img_overlap;
+			grid_x = w / mpp / img_overlap;
+			grid_y = h / mpp / img_overlap;
 		}
 		float n_x = 0.0;
 		float n_y = 0.0;
 		n = 1;
-		for (n_y = min_y; n_y <= max_y + rast_y; n_y += rast_y) {
-			for (n_x = min_x; n_x <= max_x + rast_x; n_x += rast_x) {
+		for (n_y = min_y; n_y <= max_y + grid_y; n_y += grid_y) {
+			for (n_x = min_x; n_x <= max_x + grid_x; n_x += grid_x) {
 				if (point_in_poly(n_x, n_y) == 0) {
 					continue;
 				}
 				float np_long = x2long(n_x, lon, mapdata->zoom);
 				float np_lat = y2lat(n_y, lat, mapdata->zoom);
-				float pos_alt = get_altitude(PolyPoints[1].p_lat, PolyPoints[1].p_long);
+				float pos_alt = get_altitude(np_lat, np_long);
 				float alt = img_alt + pos_alt;
 				if (img_alt_abs == 1) {
 					if (img_alt < pos_alt + 1.0) {
@@ -1410,14 +1427,14 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 */
 				}
 			}
-			n_y += rast_y;
-			for (; n_x >= min_x - rast_x; n_x -= rast_x) {
+			n_y += grid_y;
+			for (; n_x >= min_x - grid_x; n_x -= grid_x) {
 				if (point_in_poly(n_x, n_y) == 0) {
 					continue;
 				}
 				float np_long = x2long(n_x, lon, mapdata->zoom);
 				float np_lat = y2lat(n_y, lat, mapdata->zoom);
-				float pos_alt = get_altitude(PolyPoints[1].p_lat, PolyPoints[1].p_long);
+				float pos_alt = get_altitude(np_lat, np_long);
 				float alt = img_alt + pos_alt;
 				if (img_alt_abs == 1) {
 					if (img_alt < pos_alt + 1.0) {
@@ -1508,14 +1525,16 @@ void map_draw_cam_setup (ESContext *esContext) {
 	draw_text_button(esContext, "cam_setup_title", setup.view_mode, "Cam-Setup", FONT_GREEN, px1, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 	draw_text_button(esContext, "cam_mode", setup.view_mode, "[MODE]", FONT_GREEN, px1 + 0.5, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 	if (cam_mode == 1) {
-		// fixed raster
-		draw_text_button(esContext, "cam_rast", setup.view_mode, "Raster:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		// fixed grid
+		draw_text_button(esContext, "cam_grid", setup.view_mode, "Grid:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		ny++;
-		sprintf(tmp_str, "  rast_x: %0.0fm", cam_rast_x);
-		draw_text_button(esContext, "cam_rast_x", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		sprintf(tmp_str, "  grid_x: %0.0fm", cam_grid_x);
+		draw_text_button(esContext, "cam_grid_x", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		ny++;
-		sprintf(tmp_str, "  rast_y: %0.0fm", cam_rast_y);
-		draw_text_button(esContext, "cam_rast_y", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		sprintf(tmp_str, "  grid_y: %0.0fm", cam_grid_y);
+		draw_text_button(esContext, "cam_grid_y", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		ny++;
+		draw_text_button(esContext, "cam_alt", setup.view_mode, "Alt:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		ny++;
 		sprintf(tmp_str, "  Alt: %0.2f", img_alt);
 		draw_text_button(esContext, "img_alt", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
@@ -2290,8 +2309,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				}
 			}
 		}
-		mark_route(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset), WayPoints[uav_active_waypoint + 1].p_lat, WayPoints[uav_active_waypoint + 1].p_long, WayPoints[uav_active_waypoint + 1].p_alt, 1, mapdata->lat, mapdata->lon, mapdata->zoom);
-	//	mark_route(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset), WayPoints[waypoint_active].p_lat, WayPoints[waypoint_active].p_long, WayPoints[waypoint_active].p_alt, 1, mapdata->lat, mapdata->lon, mapdata->zoom);
+//		mark_route(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset), WayPoints[uav_active_waypoint + 1].p_lat, WayPoints[uav_active_waypoint + 1].p_long, WayPoints[uav_active_waypoint + 1].p_alt, 1, mapdata->lat, mapdata->lon, mapdata->zoom);
 	} else {
 		if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
 			if (setup.hud_view_tunnel == 1) {
@@ -2365,6 +2383,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		float min_y = pmark_y;
 		float max_x = pmark_x;
 		float max_y = pmark_y;
+		float pos_alt_max = -999999.0;
 
 		// drawing Polygon
 		glColor4f(0.0, 0.0, 1.0, 0.2);
@@ -2386,6 +2405,9 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 					max_y = pmark_y;
 				}
 				float pos_alt = get_altitude(PolyPoints[n].p_lat, PolyPoints[n].p_long);
+				if (pos_alt_max < pos_alt) {
+					pos_alt_max = pos_alt;
+				}
 				float alt = img_alt + pos_alt;
 				if (img_alt_abs == 1) {
 					if (img_alt < pos_alt + 1.0) {
@@ -2404,12 +2426,11 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		float h = 0.0;
 		float w = 0.0;
 		float mpp = get_m_per_pixel(lat, zoom);
-		float pos_alt = get_altitude(PolyPoints[1].p_lat, PolyPoints[1].p_long);
 		float dist = 0.0;
-		float rast_x = 0.0;
-		float rast_y = 0.0;
+		float grid_x = 0.0;
+		float grid_y = 0.0;
 		if (img_alt_abs == 1) {
-			dist = img_alt - pos_alt;
+			dist = img_alt - pos_alt_max;
 		} else {
 			dist = img_alt;
 		}
@@ -2417,20 +2438,20 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			dist = 1.0;
 		}
 		if (cam_mode == 1) {
-			rast_x = cam_rast_x / mpp;
-			rast_y = cam_rast_y / mpp;
+			grid_x = cam_grid_x / mpp;
+			grid_y = cam_grid_y / mpp;
 		} else {
 			calc_fov(cam_film_width, cam_film_height, cam_sensor_mult, cam_lense, dist, &w, &h);
-			rast_x = w / mpp / img_overlap;
-			rast_y = h / mpp / img_overlap;
+			grid_x = w / mpp / img_overlap;
+			grid_y = h / mpp / img_overlap;
 		}
 		float n_x = 0.0;
 		float n_y = 0.0;
 		float lastn_x = 0.0;
 		float lastn_y = 0.0;
 		float lastn_alt = 0.0;
-		for (n_y = min_y; n_y <= max_y + rast_y; n_y += rast_y) {
-			for (n_x = min_x; n_x <= max_x + rast_x; n_x += rast_x) {
+		for (n_y = min_y; n_y <= max_y + grid_y; n_y += grid_y) {
+			for (n_x = min_x; n_x <= max_x + grid_x; n_x += grid_x) {
 				if (point_in_poly(n_x, n_y) == 0) {
 					continue;
 				}
@@ -2451,11 +2472,21 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 						draw_fov(esContext, np_lat, np_long, alt);
 					}
 				}
-
-				glColor4f(1.0, 1.0, 0.0, 1.0);
-				glBegin(GL_LINES);
 				px1 = (float)n_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 				py1 = (float)n_y / (float)esContext->height * 2.0 - 1.0;
+				if (map_view == 1) {
+					glColor4f(1.0, 0.0, 1.0, 1.0);
+					glBegin(GL_LINES);
+					glVertex3f(px1 - 0.01, -py1 - 0.01, -2.0 + (pos_alt / alt_zoom));
+					glVertex3f(px1 + 0.01, -py1 + 0.01, -2.0 + (pos_alt / alt_zoom));
+					glVertex3f(px1 - 0.01, -py1 + 0.01, -2.0 + (pos_alt / alt_zoom));
+					glVertex3f(px1 + 0.01, -py1 - 0.01, -2.0 + (pos_alt / alt_zoom));
+					glVertex3f(px1, -py1, -2.0 + (pos_alt / alt_zoom));
+					glVertex3f(px1, -py1, -2.0 + (alt / alt_zoom));
+					glEnd();
+				}
+				glColor4f(1.0, 1.0, 0.0, 1.0);
+				glBegin(GL_LINES);
 				glVertex3f(px1 - 0.01, -py1 - 0.01, -2.0 + (alt / alt_zoom));
 				glVertex3f(px1 + 0.01, -py1 + 0.01, -2.0 + (alt / alt_zoom));
 				glVertex3f(px1 - 0.01, -py1 + 0.01, -2.0 + (alt / alt_zoom));
@@ -2472,8 +2503,8 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				lastn_alt = alt;
 			}
 
-			n_y += rast_y;
-			for (; n_x >= min_x - rast_x; n_x -= rast_x) {
+			n_y += grid_y;
+			for (; n_x >= min_x - grid_x; n_x -= grid_x) {
 				if (point_in_poly(n_x, n_y) == 0) {
 					continue;
 				}
@@ -2494,11 +2525,21 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 						draw_fov(esContext, np_lat, np_long, alt);
 					}
 				}
-
-				glColor4f(1.0, 1.0, 0.0, 1.0);
-				glBegin(GL_LINES);
 				px1 = (float)n_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 				py1 = (float)n_y / (float)esContext->height * 2.0 - 1.0;
+				if (map_view == 1) {
+					glColor4f(1.0, 0.0, 1.0, 1.0);
+					glBegin(GL_LINES);
+					glVertex3f(px1 - 0.01, -py1 - 0.01, -2.0 + (pos_alt / alt_zoom));
+					glVertex3f(px1 + 0.01, -py1 + 0.01, -2.0 + (pos_alt / alt_zoom));
+					glVertex3f(px1 - 0.01, -py1 + 0.01, -2.0 + (pos_alt / alt_zoom));
+					glVertex3f(px1 + 0.01, -py1 - 0.01, -2.0 + (pos_alt / alt_zoom));
+					glVertex3f(px1, -py1, -2.0 + (pos_alt / alt_zoom));
+					glVertex3f(px1, -py1, -2.0 + (alt / alt_zoom));
+					glEnd();
+				}
+				glColor4f(1.0, 1.0, 0.0, 1.0);
+				glBegin(GL_LINES);
 				glVertex3f(px1 - 0.01, -py1 - 0.01, -2.0 + (alt / alt_zoom));
 				glVertex3f(px1 + 0.01, -py1 + 0.01, -2.0 + (alt / alt_zoom));
 				glVertex3f(px1 - 0.01, -py1 + 0.01, -2.0 + (alt / alt_zoom));
