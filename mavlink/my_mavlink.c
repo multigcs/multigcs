@@ -1034,6 +1034,7 @@ uint8_t autocontinue; ///< autocontinue to next wp
 		case MAVLINK_MSG_ID_SIMSTATE: {
 			mavlink_simstate_t packet;
 			mavlink_msg_simstate_decode(msg, &packet);
+/*
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE roll %f ##\n", packet.roll); //FLOAT
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE pitch %f ##\n", packet.pitch); //FLOAT
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE yaw %f ##\n", packet.yaw); //FLOAT
@@ -1045,6 +1046,7 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE zgyro %f ##\n", packet.zgyro); //FLOAT
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE lat %i ##\n", packet.lat); //INT32_T
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE lng %i ##\n", packet.lng); //INT32_T
+* */
 			break;
 		}
 
