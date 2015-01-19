@@ -1051,7 +1051,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 				}
 				WayPoints[waypoint_active].p_lat = mouse_lat;
 				WayPoints[waypoint_active].p_long = mouse_long;
-/*			} else if (polypoint_active >= 0) {
+			} else if (polypoint_active >= 0) {
 				if (polypoint_active == 0) {
 					PolyPoints[polypoint_active].p_alt = get_altitude(mouse_lat, mouse_long);
 				} else {
@@ -1062,7 +1062,6 @@ void check_events (ESContext *esContext, SDL_Event event) {
 				}
 				PolyPoints[polypoint_active].p_lat = mouse_lat;
 				PolyPoints[polypoint_active].p_long = mouse_long;
-*/
 			} else {
 				mapdata->offset_x1 -= x1 - mousestart_x;
 				mapdata->offset_y1 -= y1 - mousestart_y;
@@ -1276,6 +1275,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 					map_poly_addmode = 0;
 				} else {
 					waypoint_active = -1;
+					polypoint_active = -1;
 					mousestart_x = x1;
 					mousestart_y = y1;
 					mousemode = 1;
