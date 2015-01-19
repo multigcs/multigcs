@@ -366,7 +366,7 @@ void setup_waypoints (void) {
 
 	WayPoints[0].p_lat = 50.29197;
 	WayPoints[0].p_long = 9.12764;
-	WayPoints[0].p_alt = 125.0;
+	WayPoints[0].p_alt = 150.0;
 	WayPoints[0].param1 = 0.0;
 	WayPoints[0].param2 = 2.0;
 	WayPoints[0].param3 = 0.0;
@@ -457,6 +457,9 @@ void setup_save (void) {
 	        fprintf(fr, "videocapture_width	%i\n", setup.videocapture_width);
 	        fprintf(fr, "videocapture_height	%i\n", setup.videocapture_height);
 	        fprintf(fr, "weather_enable	%i\n", setup.weather_enable);
+	        fprintf(fr, "mavlink_tcp_server		%s\n", setup.mavlink_tcp_server);
+	        fprintf(fr, "mavlink_tcp_port		%i\n", setup.mavlink_tcp_port);
+	        fprintf(fr, "mavlink_udp_port		%i\n", setup.mavlink_udp_port);
 #if defined USE_APRS
 	        fprintf(fr, "aprs_server		%s\n", setup.aprs_server);
 	        fprintf(fr, "aprs_port		%i\n", setup.aprs_port);
@@ -563,6 +566,9 @@ void setup_load (void) {
 	strcpy(setup.videocapture_device, "/dev/video0");
 	setup.qrcheck = 0;
 	setup.weather_enable = 1;
+	strcpy(setup.mavlink_tcp_server, "127.0.0.1");
+	setup.mavlink_tcp_port = 5760;
+	setup.mavlink_udp_port = 14550;
 #if defined USE_APRS
 	setup.aprs_server[0] = 0;
 	strcpy(setup.aprs_server, "146.229.162.182");
@@ -711,6 +717,12 @@ void setup_load (void) {
 	                                ModelData.p_alt = atof(val);
 	                        } else if (strcmp(var, "weather_enable") == 0) {
 	                                setup.weather_enable = atoi(val);
+	                        } else if (strcmp(var, "mavlink_tcp_server") == 0) {
+	                                strncpy(setup.mavlink_tcp_server, val, 128);
+	                        } else if (strcmp(var, "mavlink_tcp_port") == 0) {
+	                                setup.mavlink_tcp_port = atoi(val);
+	                        } else if (strcmp(var, "mavlink_udp_port") == 0) {
+	                                setup.mavlink_udp_port = atoi(val);
 #if defined USE_APRS
 	                        } else if (strcmp(var, "aprs_server") == 0) {
 	                                strncpy(setup.aprs_server, val, 128);

@@ -173,6 +173,10 @@ typedef struct {
 
 	uint8_t weather_enable;
 
+	char mavlink_tcp_server[128];
+	int mavlink_tcp_port;
+	int mavlink_udp_port;
+
 #if defined USE_APRS
 	char aprs_server[128];
 	int aprs_port;

@@ -1,11 +1,14 @@
 
 #include <all.h>
 
+#define TCP_BUFLEN 2000
 #define UDP_BUFLEN 2042
 #define UDP_PORT 14550
 
 static struct sockaddr_in si_me, si_other;
 static int s, slen = sizeof(si_other) , recv_len;
+
+int mavlink_tcp_send (uint8_t *buf, uint16_t len);
 
 static uint8_t udp_running = 0;
 int16_t mission_max = -1;
@@ -20,8 +23,11 @@ uint16_t mavlink_timeout = 0;
 uint16_t mavlink_maxparam = 0;
 uint16_t mavlink_foundparam = 0;
 uint8_t mavlink_udp_active = 0;
+uint8_t mavlink_tcp_active = 0;
 SDL_Thread *thread_udp = NULL;
+SDL_Thread *thread_tcp = NULL;
 int mavlink_udp (void *data);
+int mavlink_tcp (void *data);
 int param_timeout = 0;
 int param_complete = 0;
 int ahrs2_found = 0;
@@ -64,8 +70,17 @@ uint8_t mavlink_init (char *port, uint32_t baud) {
 #endif
 	if ( thread_udp == NULL ) {
 		fprintf(stderr, "mavlink: Thread konnte nicht gestartet werden (mavlink_udp): %s\n", SDL_GetError());
-		return 0;
 	}
+
+#ifdef SDL2
+	thread_tcp = SDL_CreateThread(mavlink_tcp, NULL, NULL);
+#else
+	thread_tcp = SDL_CreateThread(mavlink_tcp, NULL);
+#endif
+	if ( thread_tcp == NULL ) {
+		fprintf(stderr, "mavlink: Thread konnte nicht gestartet werden (mavlink_tcp): %s\n", SDL_GetError());
+	}
+
 	return 0;
 }
 
@@ -75,6 +90,11 @@ void mavlink_exit (void) {
 		SDL_Log("mavlink: wait udp thread\n");
 		SDL_WaitThread(thread_udp, NULL);
 		thread_udp = NULL;
+	}
+	if (thread_tcp != NULL) {
+		SDL_Log("mavlink: wait tcp thread\n");
+		SDL_WaitThread(thread_tcp, NULL);
+		thread_tcp = NULL;
 	}
 	if (serial_fd_mavlink >= 0) {
 		serial_close(serial_fd_mavlink);
@@ -1010,6 +1030,24 @@ uint8_t autocontinue; ///< autocontinue to next wp
 */
 			break;
 		}
+
+		case MAVLINK_MSG_ID_SIMSTATE: {
+			mavlink_simstate_t packet;
+			mavlink_msg_simstate_decode(msg, &packet);
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE roll %f ##\n", packet.roll); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE pitch %f ##\n", packet.pitch); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE yaw %f ##\n", packet.yaw); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE xacc %f ##\n", packet.xacc); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE yacc %f ##\n", packet.yacc); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE zacc %f ##\n", packet.zacc); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE xgyro %f ##\n", packet.xgyro); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE ygyro %f ##\n", packet.ygyro); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE zgyro %f ##\n", packet.zgyro); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE lat %i ##\n", packet.lat); //INT32_T
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE lng %i ##\n", packet.lng); //INT32_T
+			break;
+		}
+
 		case MAVLINK_MSG_ID_COMMAND_ACK: {
 			mavlink_command_ack_t packet;
 			mavlink_msg_command_ack_decode(msg, &packet);
@@ -1099,6 +1137,9 @@ void mavlink_send_message (mavlink_message_t* msg) {
 			SDL_Log("mavlink: error: sendto udp()\n");
 		}
 	}
+	if (mavlink_tcp_active == 1) {
+		mavlink_tcp_send(buf, len);
+	}
 #endif
 }
 
@@ -1182,53 +1223,6 @@ void mavlink_start_feeds (void) {
 		SDL_Delay(30);
 	}
 }
-
-#ifndef WINDOWS
-int mavlink_udp (void *data) {
-	SDL_Log("mavlink: init udp thread\n");
-	mavlink_message_t msg;
-	mavlink_status_t status;
-	char buf[UDP_BUFLEN];
-
-	if ((s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
-		SDL_Log("mavlink: socket error\n");
-		return 0;
-	}
-
-	int flags = fcntl(s, F_GETFL);
-	flags |= O_NONBLOCK;
-	fcntl(s, F_SETFL, flags);
-
-	memset((char *) &si_me, 0, sizeof(si_me));
-	si_me.sin_family = AF_INET;
-	si_me.sin_port = htons(UDP_PORT);
-	si_me.sin_addr.s_addr = htonl(INADDR_ANY);
-	if( bind(s , (struct sockaddr*)&si_me, sizeof(si_me) ) == -1) {
-		SDL_Log("mavlink: bind error\n");
-		return 0;
-	}
-	while (udp_running == 1) {
-		fflush(stdout);
-		while ((recv_len = recvfrom(s, buf, UDP_BUFLEN, 0, (struct sockaddr *)&si_other, (socklen_t *)&slen)) != -1) {
-			int n = 0;
-			for (n = 0; n < recv_len; n++) {
-				if(mavlink_parse_char(1, buf[n], &msg, &status)) {
-					mavlink_handleMessage(&msg);
-					mavlink_udp_active = 1;
-				}
-			}
-		}
-		SDL_Delay(1);
-	}
-	close(s);
-	SDL_Log("mavlink: exit udp thread\n");
-	return 0;
-}
-#else
-int mavlink_udp (void *data) {
-	return 0;
-}
-#endif
 
 void mavlink_parseParams1 (xmlDocPtr doc, xmlNodePtr cur, char *name) { 
 	int n = 0;
@@ -1765,3 +1759,117 @@ void mavlink_web_get (char *url, char *content, char *type) {
 	}
 }
 
+#ifndef WINDOWS
+
+static int tcp_sock = -1;
+
+int mavlink_tcp_send (uint8_t *buf, uint16_t len) {
+	send(tcp_sock, buf, len, 0);
+	return 0;
+}
+
+int mavlink_tcp (void *data) {
+    struct sockaddr_in server;
+	mavlink_message_t msg;
+	mavlink_status_t status;
+	SDL_Log("mavlink: init tcp thread\n");
+    tcp_sock = socket(AF_INET , SOCK_STREAM , 0);
+    if (tcp_sock == -1) {
+        perror("mavlink_tcp: Could not create socket");
+        return -1;
+    }
+    server.sin_addr.s_addr = inet_addr(setup.mavlink_tcp_server);
+    server.sin_family = AF_INET;
+    server.sin_port = htons(setup.mavlink_tcp_port);
+    if (connect(tcp_sock , (struct sockaddr *)&server , sizeof(server)) < 0) {
+        SDL_Log("mavlink_tcp: connection failed (%s:%i)", setup.mavlink_tcp_server, setup.mavlink_tcp_port);
+        return -1;
+    }
+	while (gui_running == 1) {
+		char buf[TCP_BUFLEN + 1];
+		fd_set fds;
+		struct timeval ts;
+		ts.tv_sec = 1;
+		ts.tv_usec = 0;
+		FD_ZERO(&fds);
+		if (tcp_sock != 0) {
+			FD_SET(tcp_sock, &fds);
+		}
+		FD_SET(0, &fds);
+		int nready = select(tcp_sock + 1, &fds, (fd_set *)0, (fd_set *)0, &ts);
+		if (nready < 0) {
+			SDL_Log("mavlink_tcp: error");
+			break;
+		} else if (nready == 0) {
+			ts.tv_sec = 1;
+			ts.tv_usec = 0;
+		} else if (tcp_sock != 0 && FD_ISSET(tcp_sock, &fds)) {
+			int rv;
+			if ((rv = recv(tcp_sock , buf , TCP_BUFLEN , 0)) < 0) {
+				return 1;
+			} else if (rv == 0) {
+				SDL_Log("mavlink_tcp: connection closed by the remote end\n");
+				return 0;
+			}
+
+			int n = 0;
+			for (n = 0; n < rv; n++) {
+				if(mavlink_parse_char(1, buf[n], &msg, &status)) {
+					mavlink_handleMessage(&msg);
+					mavlink_tcp_active = 1;
+				}
+			}
+			fflush(0);
+		}
+		SDL_Delay(1);
+	}
+	SDL_Log("mavlink: exit tcp thread\n");
+	return 0;
+}
+
+int mavlink_udp (void *data) {
+	mavlink_message_t msg;
+	mavlink_status_t status;
+	char buf[UDP_BUFLEN];
+	SDL_Log("mavlink: init udp thread\n");
+	if ((s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
+		SDL_Log("mavlink: socket error\n");
+		return 0;
+	}
+	int flags = fcntl(s, F_GETFL);
+	flags |= O_NONBLOCK;
+	fcntl(s, F_SETFL, flags);
+	memset((char *) &si_me, 0, sizeof(si_me));
+	si_me.sin_family = AF_INET;
+	si_me.sin_port = htons(setup.mavlink_udp_port);
+	si_me.sin_addr.s_addr = htonl(INADDR_ANY);
+	if( bind(s , (struct sockaddr*)&si_me, sizeof(si_me) ) == -1) {
+		SDL_Log("mavlink: bind error\n");
+		return 0;
+	}
+	while (udp_running == 1) {
+		fflush(stdout);
+		while ((recv_len = recvfrom(s, buf, UDP_BUFLEN, 0, (struct sockaddr *)&si_other, (socklen_t *)&slen)) != -1) {
+			int n = 0;
+			for (n = 0; n < recv_len; n++) {
+				if(mavlink_parse_char(1, buf[n], &msg, &status)) {
+					mavlink_handleMessage(&msg);
+					mavlink_udp_active = 1;
+				}
+			}
+		}
+		SDL_Delay(1);
+	}
+	close(s);
+	SDL_Log("mavlink: exit udp thread\n");
+	return 0;
+}
+#else
+int mavlink_udp (void *data) {
+	return 0;
+}
+
+int mavlink_tcp (void *data) {
+	return 0;
+}
+#endif
