@@ -2287,7 +2287,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			}
 		}
 
-#ifdef SDLGL
 		int pmark_x = long2x(PolyPoints[1].p_long, lon, zoom);
 		int pmark_y = lat2y(PolyPoints[1].p_lat, lat, zoom);
 		float px1 = 0.0;
@@ -2299,8 +2298,8 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		float pos_alt_max = -999999.0;
 
 		// drawing Polygon
-		glColor4f(0.0, 0.0, 1.0, 0.2);
-		glBegin(GL_POLYGON);
+//		glColor4f(0.0, 0.0, 1.0, 0.2);
+//		glBegin(GL_POLYGON);
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
 			if (PolyPoints[n].p_lat != 0.0) {
 				pmark_x = long2x(PolyPoints[n].p_long, lon, zoom);
@@ -2328,12 +2327,13 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 					}
 					alt = img_alt;
 				}
-				px1 = (float)pmark_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
-				py1 = (float)pmark_y / (float)esContext->height * 2.0 - 1.0;
-				glVertex3f(px1, -py1, -2.0 + (alt / alt_zoom));
+//				px1 = (float)pmark_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
+//				py1 = (float)pmark_y / (float)esContext->height * 2.0 - 1.0;
+//				glVertex3f(px1, -py1, -2.0 + (alt / alt_zoom));
 			}
 		}
-		glEnd();
+//		glEnd();
+
 
 		// drawing Grid
 		float h = 0.0;
@@ -2395,26 +2395,13 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				if (cam_mode == 0) {
 					draw_fov(esContext, np_lat, np_long, alt, cam_angle + 90.0);
 				}
-				glColor4f(0.0, 1.0, 1.0, 1.0);
-				glBegin(GL_LINES);
-				glVertex3f(px1 + 0.01, -py1 + 0.01, -2.0 + (alt / alt_zoom));
-				glVertex3f(px1 - 0.01, -py1 - 0.01, -2.0 + (alt / alt_zoom));
-				glVertex3f(px1 - 0.01, -py1 + 0.01, -2.0 + (alt / alt_zoom));
-				glVertex3f(px1 + 0.01, -py1 - 0.01, -2.0 + (alt / alt_zoom));
-				glColor4f(0.0, 1.0, 1.0, 0.5);
-				glVertex3f(px1 + 0.005, -py1 + 0.005, -2.0 + (pos_alt / alt_zoom));
-				glVertex3f(px1 - 0.005, -py1 - 0.005, -2.0 + (pos_alt / alt_zoom));
-				glVertex3f(px1 - 0.005, -py1 + 0.005, -2.0 + (pos_alt / alt_zoom));
-				glVertex3f(px1 + 0.005, -py1 - 0.005, -2.0 + (pos_alt / alt_zoom));
-				glVertex3f(px1, -py1, -2.0 + (alt / alt_zoom));
-				glVertex3f(px1, -py1, -2.0 + (pos_alt / alt_zoom));
-				glEnd();
+				draw_line_f3(esContext, px1 + 0.01, py1 + 0.01, (alt / alt_zoom), px1 - 0.01, py1 - 0.01, (alt / alt_zoom), 0, 255, 255, 255);
+				draw_line_f3(esContext, px1 + 0.01, py1 - 0.01, (alt / alt_zoom), px1 - 0.01, py1 + 0.01, (alt / alt_zoom), 0, 255, 255, 255);
+				draw_line_f3(esContext, px1 + 0.01, py1 + 0.01, (pos_alt / alt_zoom), px1 - 0.01, py1 - 0.01, (pos_alt / alt_zoom), 0, 255, 255, 255);
+				draw_line_f3(esContext, px1 + 0.01, py1 - 0.01, (pos_alt / alt_zoom), px1 - 0.01, py1 + 0.01, (pos_alt / alt_zoom), 0, 255, 255, 255);
+				draw_line_f3(esContext, px1, py1, (alt / alt_zoom), px1, py1, (pos_alt / alt_zoom), 0, 255, 255, 127);
 				if (lastn_x != 0.0 || lastn_y != 0.0) {
-					glColor4f(1.0, 1.0, 1.0, 1.0);
-					glBegin(GL_LINES);
-					glVertex3f(lastn_x, -lastn_y, -2.0 + (lastn_alt / alt_zoom));
-					glVertex3f(px1, -py1, -2.0 + (alt / alt_zoom));
-					glEnd();
+					draw_line_f3(esContext, lastn_x, lastn_y, (lastn_alt / alt_zoom), px1, py1, (alt / alt_zoom), 255, 255, 255, 255);
 				}
 				lastn_x = px1;
 				lastn_y = py1;
@@ -2444,33 +2431,19 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				if (cam_mode == 0) {
 					draw_fov(esContext, np_lat, np_long, alt, cam_angle + 90.0);
 				}
-				glColor4f(0.0, 1.0, 1.0, 1.0);
-				glBegin(GL_LINES);
-				glVertex3f(px1 + 0.01, -py1 + 0.01, -2.0 + (alt / alt_zoom));
-				glVertex3f(px1 - 0.01, -py1 - 0.01, -2.0 + (alt / alt_zoom));
-				glVertex3f(px1 - 0.01, -py1 + 0.01, -2.0 + (alt / alt_zoom));
-				glVertex3f(px1 + 0.01, -py1 - 0.01, -2.0 + (alt / alt_zoom));
-				glColor4f(0.0, 1.0, 1.0, 0.5);
-				glVertex3f(px1 + 0.005, -py1 + 0.005, -2.0 + (pos_alt / alt_zoom));
-				glVertex3f(px1 - 0.005, -py1 - 0.005, -2.0 + (pos_alt / alt_zoom));
-				glVertex3f(px1 - 0.005, -py1 + 0.005, -2.0 + (pos_alt / alt_zoom));
-				glVertex3f(px1 + 0.005, -py1 - 0.005, -2.0 + (pos_alt / alt_zoom));
-				glVertex3f(px1, -py1, -2.0 + (alt / alt_zoom));
-				glVertex3f(px1, -py1, -2.0 + (pos_alt / alt_zoom));
-				glEnd();
+				draw_line_f3(esContext, px1 + 0.01, py1 + 0.01, (alt / alt_zoom), px1 - 0.01, py1 - 0.01, (alt / alt_zoom), 0, 255, 255, 255);
+				draw_line_f3(esContext, px1 + 0.01, py1 - 0.01, (alt / alt_zoom), px1 - 0.01, py1 + 0.01, (alt / alt_zoom), 0, 255, 255, 255);
+				draw_line_f3(esContext, px1 + 0.01, py1 + 0.01, (pos_alt / alt_zoom), px1 - 0.01, py1 - 0.01, (pos_alt / alt_zoom), 0, 255, 255, 255);
+				draw_line_f3(esContext, px1 + 0.01, py1 - 0.01, (pos_alt / alt_zoom), px1 - 0.01, py1 + 0.01, (pos_alt / alt_zoom), 0, 255, 255, 255);
+				draw_line_f3(esContext, px1, py1, (alt / alt_zoom), px1, py1, (pos_alt / alt_zoom), 0, 255, 255, 127);
 				if (lastn_x != 0.0 || lastn_y != 0.0) {
-					glColor4f(1.0, 1.0, 1.0, 1.0);
-					glBegin(GL_LINES);
-					glVertex3f(lastn_x, -lastn_y, -2.0 + (lastn_alt / alt_zoom));
-					glVertex3f(px1, -py1, -2.0 + (alt / alt_zoom));
-					glEnd();
+					draw_line_f3(esContext, lastn_x, lastn_y, (lastn_alt / alt_zoom), px1, py1, (alt / alt_zoom), 255, 255, 255, 255);
 				}
 				lastn_x = px1;
 				lastn_y = py1;
 				lastn_alt = alt;
 			}
 		}
-#endif
 	}
 
 	// drawing Cam-FOV
