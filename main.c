@@ -1235,6 +1235,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 					lon = tilex2long(tile_x, zoom);
 				} else
 */
+
 				if (map_addmode == 1) {
 					uint16_t n = 0;
 					int16_t nz = get_altitude(mouse_lat, mouse_long);
@@ -1285,6 +1286,14 @@ void check_events (ESContext *esContext, SDL_Event event) {
 						}
 					}
 					map_poly_addmode = 0;
+				} else if (map_setpos == 1) {
+					uint16_t n = 0;
+					int16_t nz = get_altitude(mouse_lat, mouse_long);
+					if (ModelData.p_alt > nz) {
+						nz = ModelData.p_alt;
+					}
+					mavlink_send_cmd_follow(mouse_lat, mouse_long, nz);
+					map_setpos = 0;
 				} else {
 					waypoint_active = -1;
 					polypoint_active = -1;

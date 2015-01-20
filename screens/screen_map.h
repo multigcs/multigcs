@@ -53,6 +53,7 @@ extern float offset_x1;
 extern float offset_y1;
 extern uint8_t map_addmode;
 extern uint8_t map_poly_addmode;
+extern uint8_t map_setpos;
 extern uint8_t center_map;
 extern uint8_t maplen;
 extern uint8_t omaplen;

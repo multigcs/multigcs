@@ -234,11 +234,11 @@ void mwi21_update (void) {
 	if (mwi21_serial_fd < 0) {
 		return;
 	}
-	if (tout++ > 300) {
+	if (tout++ > 20) {
 		tout = 0;
 		mwi21_serial_n = 0;
 		mwi21_get_new();
-		SDL_Log("mwi21: timeout\n");
+//		SDL_Log("mwi21: timeout\n");
 	}
 	while ((res = serial_read(mwi21_serial_fd, serial_buffer, 1023)) > 0) {
 	    int i = 0;
@@ -263,7 +263,9 @@ void mwi21_update (void) {
 //			SDL_Log("frame_parse: %i - %i\n", mwi21_serial_n - mwi21_frame_start, mwi21_frame_len);
 		}
 		if (mwi21_serial_buf[2] == '!' && mwi21_serial_n - mwi21_frame_start > 5) {
-			SDL_Log("## MWI CMD_Error: %i\n", mwi21_serial_buf[4]);
+			if (mwi21_serial_buf[4] != 106) {
+				SDL_Log("## MWI CMD_Error: %i\n", mwi21_serial_buf[4]);
+			}
 			mwi21_serial_buf[0] = 0;
 			mwi21_serial_buf[1] = 0;
 			mwi21_serial_buf[2] = 0;

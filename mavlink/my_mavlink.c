@@ -1107,6 +1107,20 @@ void mavlink_send_cmd_rtl (void) {
 	mavlink_send_message(&msg);
 }
 
+void mavlink_send_cmd_land (void) {
+	SDL_Log("mavlink: send cmd: RTL\n");
+	mavlink_message_t msg;
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_CMD_NAV_LAND, 0, 0.0, 0.0, 0.0, 0.0, ModelData.p_lat, ModelData.p_long, ModelData.p_alt);
+	mavlink_send_message(&msg);
+}
+
+void mavlink_send_cmd_takeoff (void) {
+	SDL_Log("mavlink: send cmd: RTL\n");
+	mavlink_message_t msg;
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_CMD_NAV_TAKEOFF, 0, 0.0, 0.0, 0.0, 0.0, ModelData.p_lat, ModelData.p_long, ModelData.p_alt);
+	mavlink_send_message(&msg);
+}
+
 void mavlink_send_cmd_mission (void) {
 	SDL_Log("mavlink: send cmd: MISSION\n");
 	mavlink_message_t msg;
@@ -1117,9 +1131,38 @@ void mavlink_send_cmd_mission (void) {
 void mavlink_send_cmd_arm (uint8_t mode) {
 	SDL_Log("mavlink: send cmd: ARM: %i\n", mode);
 	mavlink_message_t msg;
-	mavlink_msg_command_long_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_CMD_COMPONENT_ARM_DISARM, mode, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_CMD_COMPONENT_ARM_DISARM, 0, (float)mode, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	mavlink_send_message(&msg);
 }
+
+void mavlink_send_cmd_mode (uint8_t mode) {
+	SDL_Log("mavlink: send cmd: MODE: %i\n", mode);
+	mavlink_message_t msg;
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_CMD_DO_SET_MODE, 0, (float)mode, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	mavlink_send_message(&msg);
+}
+
+void mavlink_send_cmd_guided (void) {
+	SDL_Log("mavlink: send cmd: GUIDED\n");
+	mavlink_message_t msg;
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_CMD_DO_SET_MODE, 0, MAV_MODE_GUIDED_ARMED, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	mavlink_send_message(&msg);
+}
+
+void mavlink_send_cmd_loiter (void) {
+	SDL_Log("mavlink: send cmd: LOITER\n");
+	mavlink_message_t msg;
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_CMD_NAV_LOITER_UNLIM, 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	mavlink_send_message(&msg);
+}
+
+void mavlink_send_cmd_follow (float p_lat, float p_long, float p_alt) {
+	SDL_Log("mavlink: send cmd: FOLLOW\n");
+	mavlink_message_t msg;
+	mavlink_msg_mission_item_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, 0, MAV_FRAME_GLOBAL, MAV_CMD_NAV_WAYPOINT, 2, 0, 0.0, 5.0, 0.0, 0.0, p_lat, p_long, p_alt);
+	mavlink_send_message(&msg);
+}
+
 
 
 void mavlink_send_waypoints (void) {

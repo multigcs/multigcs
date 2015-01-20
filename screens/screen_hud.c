@@ -1148,6 +1148,7 @@ void screen_hud_internal (ESContext *esContext) {
 	static uint8_t last_armed = MODEL_ARMED;
 	static uint8_t last_mode = MODEL_MODE_MANUAL;
 
+
 	if (ModelData.armed == MODEL_ARMED) {
 		if (last_armed != ModelData.armed) {
 			system("#espeak -v en \"armed\" > /dev/null 2> /dev/null &");

@@ -105,4 +105,11 @@ int mavlink_udp (void *data);
 void mavlink_send_cmd_rtl (void);
 void mavlink_send_cmd_mission (void);
 void mavlink_send_cmd_arm (uint8_t mode);
+void mavlink_send_cmd_land (void);
+void mavlink_send_cmd_takeoff (void);
+void mavlink_send_cmd_mode (uint8_t mode);
+void mavlink_send_cmd_loiter (void);
+void mavlink_send_cmd_guided (void);
+void mavlink_send_cmd_follow (float p_lat, float p_long, float p_alt);
+
 
