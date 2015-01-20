@@ -1110,39 +1110,44 @@ void screen_hud_internal (ESContext *esContext) {
 	// Status
 	draw_text_f3(esContext, -1.0 - strlen("ARMED") * 0.07 * 0.6 / 2.0, -0.92, 0.002, 0.07, 0.07, FONT_TRANS, "ARMED");
 	draw_line_f3(esContext, -0.8, -0.94, 0.002, -0.8, -0.83, 0.002, 255, 255, 255, 255);
-	draw_text_f3(esContext, -0.6 - strlen("MANUAL") * 0.07 * 0.6 / 2.0, -0.92, 0.002, 0.07, 0.07, FONT_TRANS, "MANUAL");
+
+	if (ModelData.mode == 0) {
+		sprintf(tmp_str, "MANUAL");
+	} else if (ModelData.mode == 1) {
+		sprintf(tmp_str, "ACRO");
+	} else if (ModelData.mode == 2) {
+		sprintf(tmp_str, "ALT_HOLD");
+	} else if (ModelData.mode == 3) {
+		sprintf(tmp_str, "AUTO");
+	} else if (ModelData.mode == 4) {
+		sprintf(tmp_str, "GUIDED");
+	} else if (ModelData.mode == 5) {
+		sprintf(tmp_str, "LOITER");
+	} else if (ModelData.mode == 6) {
+		sprintf(tmp_str, "RTL");
+	} else if (ModelData.mode == 7) {
+		sprintf(tmp_str, "CIRCLE");
+	} else if (ModelData.mode == 8) {
+		sprintf(tmp_str, "POSITION");
+	} else if (ModelData.mode == 9) {
+		sprintf(tmp_str, "LAND");
+	} else if (ModelData.mode == 10) {
+		sprintf(tmp_str, "OF_LOITER");
+	} else if (ModelData.mode == 11) {
+		sprintf(tmp_str, "DRIFT");
+	} else if (ModelData.mode == 13) {
+		sprintf(tmp_str, "SPORT");
+	} else if (ModelData.mode == 16) {
+		sprintf(tmp_str, "POSH");
+	} else {
+		sprintf(tmp_str, "UNKNOWN%i", ModelData.mode);
+	}
+	draw_text_f3(esContext, -0.6 - strlen(tmp_str) * 0.07 * 0.6 / 2.0, -0.92, 0.002, 0.07, 0.07, FONT_GREEN, tmp_str);
 	draw_line_f3(esContext, -0.4, -0.94, 0.002, -0.4, -0.83, 0.002, 255, 255, 255, 255);
-	draw_text_f3(esContext, -0.2 - strlen("RTL") * 0.07 * 0.6 / 2.0, -0.92, 0.002, 0.07, 0.07, FONT_TRANS, "RTL");
-	draw_line_f3(esContext, 0.0, -0.94, 0.002, 0.0, -0.83, 0.002, 255, 255, 255, 255);
-	draw_text_f3(esContext, 0.2 - strlen("POS_HOLD") * 0.07 * 0.6 / 2.0, -0.92, 0.002, 0.07, 0.07, FONT_TRANS, "POS_HOLD");
-	draw_line_f3(esContext, 0.4, -0.94, 0.002, 0.4, -0.83, 0.002, 255, 255, 255, 255);
-	draw_text_f3(esContext, 0.6 - strlen("MISSION") * 0.07 * 0.6 / 2.0, -0.92, 0.002, 0.07, 0.07, FONT_TRANS, "MISSION");
-	draw_line_f3(esContext, 0.8, -0.94, 0.002, 0.8, -0.83, 0.002, 255, 255, 255, 255);
-	draw_text_f3(esContext, 1.0 - strlen("FAILSAVE") * 0.07 * 0.6 / 2.0, -0.92, 0.002, 0.07, 0.07, FONT_TRANS, "FAILSAVE");
 
 	static uint8_t last_armed = MODEL_ARMED;
 	static uint8_t last_mode = MODEL_MODE_MANUAL;
-	if (ModelData.mode == MODEL_MODE_MANUAL) {
-		if (last_mode != ModelData.mode) {
-			system("#espeak -v en \"manual\" > /dev/null 2> /dev/null &");
-		}
-		draw_text_f(esContext, -0.6 - strlen("MANUAL") * 0.07 * 0.6 / 2.0, -0.92, 0.07, 0.07, FONT_GREEN, "MANUAL");
-	} else if (ModelData.mode == MODEL_MODE_RTL) {
-		if (last_mode != ModelData.mode) {
-			system("#espeak -v en \"rtl\" > /dev/null 2> /dev/null &");
-		}
-		draw_text_f(esContext, -0.2 - strlen("RTL") * 0.07 * 0.6 / 2.0, -0.92, 0.07, 0.07, FONT_GREEN, "RTL");
-	} else if (ModelData.mode == MODEL_MODE_POSHOLD) {
-		if (last_mode != ModelData.mode) {
-			system("#espeak -v en \"Position hold\" > /dev/null 2> /dev/null &");
-		}
-		draw_text_f(esContext, 0.2 - strlen("POS_HOLD") * 0.07 * 0.6 / 2.0, -0.92, 0.07, 0.07, FONT_GREEN, "POS_HOLD");
-	} else if (ModelData.mode == MODEL_MODE_MISSION) {
-		if (last_mode != ModelData.mode) {
-			system("#espeak -v en \"mission\" > /dev/null 2> /dev/null &");
-		}
-		draw_text_f(esContext, 0.6 - strlen("MISSION") * 0.07 * 0.6 / 2.0, -0.92, 0.07, 0.07, FONT_GREEN, "MISSION");
-	}
+
 	if (ModelData.armed == MODEL_ARMED) {
 		if (last_armed != ModelData.armed) {
 			system("#espeak -v en \"armed\" > /dev/null 2> /dev/null &");

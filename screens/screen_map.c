@@ -33,6 +33,8 @@ uint8_t map_rotate = 0;
 uint8_t map_side = 1;
 uint8_t map_dir = 0;
 uint8_t map_overlay_set = 0;
+uint8_t map_cmd_set = 0;
+
 float alt_profile_scale_h = 512.0;
 float alt_profile_scale_w = 1024.0;
 
@@ -181,6 +183,19 @@ int point_in_poly (float testx, float testy) {
 
 uint8_t map_overlay_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	map_overlay_set = 1 - map_overlay_set;
+	return 0;
+}
+
+uint8_t map_cmd_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (strcmp(name, "map_cmd_rtl") == 0) {
+		mavlink_send_cmd_rtl();
+		map_cmd_set = 0;
+	} else if (strcmp(name, "map_cmd_mission") == 0) {
+		mavlink_send_cmd_mission();
+		map_cmd_set = 0;
+	} else {
+		map_cmd_set = 1 - map_cmd_set;
+	}
 	return 0;
 }
 
@@ -1735,6 +1750,54 @@ void map_draw_buttons (ESContext *esContext) {
 	draw_text_button(esContext, "map_hdop", setup.view_mode, tmp_str, FONT_GREEN, -1.4, -0.8 + ny * 0.12 + 0.03, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
 
 	ny = 0;
+	if (ModelData.mode == 0) {
+		sprintf(tmp_str, "MANUAL");
+	} else if (ModelData.mode == 1) {
+		sprintf(tmp_str, "ACRO");
+	} else if (ModelData.mode == 2) {
+		sprintf(tmp_str, "ALT_HOLD");
+	} else if (ModelData.mode == 3) {
+		sprintf(tmp_str, "AUTO");
+	} else if (ModelData.mode == 4) {
+		sprintf(tmp_str, "GUIDED");
+	} else if (ModelData.mode == 5) {
+		sprintf(tmp_str, "LOITER");
+	} else if (ModelData.mode == 6) {
+		sprintf(tmp_str, "RTL");
+	} else if (ModelData.mode == 7) {
+		sprintf(tmp_str, "CIRCLE");
+	} else if (ModelData.mode == 8) {
+		sprintf(tmp_str, "POSITION");
+	} else if (ModelData.mode == 9) {
+		sprintf(tmp_str, "LAND");
+	} else if (ModelData.mode == 10) {
+		sprintf(tmp_str, "OF_LOITER");
+	} else if (ModelData.mode == 11) {
+		sprintf(tmp_str, "DRIFT");
+	} else if (ModelData.mode == 13) {
+		sprintf(tmp_str, "SPORT");
+	} else if (ModelData.mode == 16) {
+		sprintf(tmp_str, "POSH");
+	} else {
+		sprintf(tmp_str, "UNKNOWN%i", ModelData.mode);
+	}
+	draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
+	draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
+	if (map_cmd_set == 1) {
+		draw_button(esContext, "map_cmd", setup.view_mode, tmp_str, FONT_GREEN, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_cmd_change, 0.0);
+		ny2 = ny;
+		draw_box_f3(esContext, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
+		draw_rect_f3(esContext, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
+		draw_button(esContext, "map_cmd_rtl", setup.view_mode, "RTL", FONT_WHITE, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_cmd_change, 0.0);
+		ny2++;
+		draw_box_f3(esContext, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
+		draw_rect_f3(esContext, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
+		draw_button(esContext, "map_cmd_mission", setup.view_mode, "MISSION", FONT_WHITE, 0.85, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.15, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_cmd_change, 0.0);
+		ny2++;
+	} else {
+		draw_button(esContext, "map_cmd", setup.view_mode, tmp_str, FONT_WHITE, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_cmd_change, 0.0);
+	}
+
 	ny++;
 	draw_box_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 	draw_rect_f3(esContext, 1.15, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
@@ -2188,9 +2251,9 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	if (map_show_wp == 1) {
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
 			if (WayPoints[n].p_lat != 0.0) {
-				if (n == uav_active_waypoint + 1 && n == waypoint_active) {
+				if (n == uav_active_waypoint && n == waypoint_active) {
 					mark_point(esContext, WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].p_alt, WayPoints[n].name, WayPoints[n].command, 3, WayPoints[n].param1, WayPoints[n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
-				} else if (n == uav_active_waypoint + 1) {
+				} else if (n == uav_active_waypoint) {
 					mark_point(esContext, WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].p_alt, WayPoints[n].name, WayPoints[n].command, 2, WayPoints[n].param1, WayPoints[n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
 				} else if (n == waypoint_active) {
 					mark_point(esContext, WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].p_alt, WayPoints[n].name, WayPoints[n].command, 1, WayPoints[n].param1, WayPoints[n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);

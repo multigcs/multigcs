@@ -12,6 +12,16 @@ uint8_t fms_add (char *name, float x, float y, int8_t button, float data, uint8_
 	return 0;
 }
 
+uint8_t fms_rtl (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	mavlink_send_cmd_rtl();
+	return 0;
+}
+
+uint8_t fms_start_mission (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	mavlink_send_cmd_mission();
+	return 0;
+}
+
 uint8_t fms_del (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	reset_buttons();
 	uint16_t n = 0;
@@ -142,8 +152,10 @@ void screen_fms (ESContext *esContext) {
 			} else {
 				if (WayPoints[n].frametype == MAV_FRAME_GLOBAL) {
 					sprintf(tmp_str, "%0.1fm abs", WayPoints[n].p_alt);
-				} else if (WayPoints[n].frametype == MAV_FRAME_GLOBAL_RELATIVE_ALT) {
+				} else if (WayPoints[n].frametype == MAV_FRAME_GLOBAL_RELATIVE_ALT || WayPoints[n].frametype == MAV_FRAME_GLOBAL_RELATIVE_ALT_INT) {
 					sprintf(tmp_str, "%0.1fm rel", WayPoints[n].p_alt);
+				} else {
+					sprintf(tmp_str, "%0.1fm ???", WayPoints[n].p_alt);
 				}
 			}
 			draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, 1.3, -0.7 + (n2 * step_y), 0.002, 0.1, 2, 0, fms_select, (float)n);
@@ -172,6 +184,7 @@ void screen_fms (ESContext *esContext) {
 
 
 
+	draw_text_button(esContext, "fms_mission", VIEW_MODE_FMS, "START", FONT_GREEN_BG, -1.0, 0.9, 0.002, 0.06, 1, 0, fms_start_mission, 0.0);
 	draw_text_button(esContext, "fms_edit", VIEW_MODE_FMS, "EDIT", FONT_GREEN_BG, -0.7, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, wpedit_waypoint_edit, (float)VIEW_MODE_FMS);
 	draw_text_button(esContext, "fms_add", VIEW_MODE_FMS, "ADD", FONT_GREEN_BG, -0.5, 0.9, 0.002, 0.06, 1, 0, fms_add, 0.0);
 	draw_text_button(esContext, "fms_del", VIEW_MODE_FMS, "DEL", FONT_GREEN_BG, 0.5, 0.9, 0.002, 0.06, 1, 0, fms_del, 0.0);

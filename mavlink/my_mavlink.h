@@ -101,3 +101,8 @@ void mavlink_send_message (mavlink_message_t* msg);
 void mavlink_param_get_id (uint16_t id);
 void mavlink_start_feeds (void);
 int mavlink_udp (void *data);
+
+void mavlink_send_cmd_rtl (void);
+void mavlink_send_cmd_mission (void);
+void mavlink_send_cmd_arm (uint8_t mode);
+

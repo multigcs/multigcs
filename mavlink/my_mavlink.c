@@ -280,15 +280,10 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 			mavlink_msg_heartbeat_decode(msg, &packet);
 			ModelData.dronetype = packet.type;
 			ModelData.pilottype = packet.autopilot;
-			if (packet.base_mode == MAV_MODE_MANUAL_ARMED) {
-				ModelData.mode = MODEL_MODE_MANUAL;
-			} else if (packet.base_mode == 128 + 64 + 16) {
-				ModelData.mode = MODEL_MODE_RTL;
-			} else if (packet.base_mode == 128 + 16) {
-				ModelData.mode = MODEL_MODE_POSHOLD;
-			} else if (packet.base_mode == 128 + 4) {
-				ModelData.mode = MODEL_MODE_MISSION;
-			}
+//			ModelData.mode = (packet.base_mode & 0x80)>7;
+
+			ModelData.mode = packet.custom_mode;
+
 			if (packet.system_status == MAV_STATE_ACTIVE) {
 				ModelData.armed = MODEL_ARMED;
 			} else {
@@ -548,7 +543,6 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 //	MAV_FRAME_BODY_OFFSET_NED=9, /* Offset in body NED frame. This makes sense if adding setpoints to the current flight path, to avoid an obstacle - e.g. useful to command 2 m/s^2 acceleration to the east. | */
 //	MAV_FRAME_GLOBAL_TERRAIN_ALT=10, /* Global coordinate frame with above terrain level altitude. WGS84 coordinate system, relative altitude over terrain with respect to the waypoint coordinate. First value / x: latitude in degrees, second value / y: longitude in degrees, third value / z: positive altitude in meters with 0 being at ground level in terrain model. | */
 //	MAV_FRAME_GLOBAL_TERRAIN_ALT_INT=11, /* Global coordinate frame with above terrain level altitude. WGS84 coordinate system, relative altitude over terrain with respect to the waypoint coordinate. First value / x: latitude in degrees*10e-7, second value / y: longitude in degrees*10e-7, third value / z: positive altitude in meters with 0 being at ground level in terrain model. | */
-
 
 			mavlink_msg_mission_item_pack(127, 0, &msg2, ModelData.sysid, ModelData.compid, id, WayPoints[1 + id2].frametype, type, 0.0, 0.0, WayPoints[1 + id2].param1, WayPoints[1 + id2].param2, WayPoints[1 + id2].param3, WayPoints[1 + id2].param4, WayPoints[1 + id2].p_lat, WayPoints[1 + id2].p_long, WayPoints[1 + id2].p_alt);
 			mavlink_send_message(&msg2);
@@ -1014,10 +1008,12 @@ uint8_t autocontinue; ///< autocontinue to next wp
 		case MAVLINK_MSG_ID_TERRAIN_REQUEST: {
 			mavlink_terrain_request_t packet;
 			mavlink_msg_terrain_request_decode(msg, &packet);
+/*
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REQUEST mask %llu ##\n", packet.mask); //UINT64_T
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REQUEST lat %i ##\n", packet.lat); //INT32_T
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REQUEST lon %i ##\n", packet.lon); //INT32_T
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REQUEST grid_spacing %i ##\n", packet.grid_spacing); //UINT16_T
+*/
 			break;
 		}
 		case MAVLINK_MSG_ID_WIND: {
@@ -1046,7 +1042,7 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE zgyro %f ##\n", packet.zgyro); //FLOAT
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE lat %i ##\n", packet.lat); //INT32_T
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE lng %i ##\n", packet.lng); //INT32_T
-* */
+*/
 			break;
 		}
 
@@ -1104,6 +1100,28 @@ void mavlink_load_from_flash (void) {
 	mavlink_send_message(&msg);
 }
 
+void mavlink_send_cmd_rtl (void) {
+	SDL_Log("mavlink: send cmd: RTL\n");
+	mavlink_message_t msg;
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_CMD_NAV_RETURN_TO_LAUNCH, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	mavlink_send_message(&msg);
+}
+
+void mavlink_send_cmd_mission (void) {
+	SDL_Log("mavlink: send cmd: MISSION\n");
+	mavlink_message_t msg;
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_CMD_MISSION_START, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	mavlink_send_message(&msg);
+}
+
+void mavlink_send_cmd_arm (uint8_t mode) {
+	SDL_Log("mavlink: send cmd: ARM: %i\n", mode);
+	mavlink_message_t msg;
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_CMD_COMPONENT_ARM_DISARM, mode, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	mavlink_send_message(&msg);
+}
+
+
 void mavlink_send_waypoints (void) {
 	mavlink_message_t msg;
 	mavlink_msg_mission_clear_all_pack(127, 0, &msg, ModelData.sysid, ModelData.compid);
@@ -1126,7 +1144,7 @@ void mavlink_send_waypoints (void) {
 
 void mavlink_send_message (mavlink_message_t* msg) {
 	uint8_t buf[MAVLINK_MAX_PACKET_LEN];
-	SDL_Log("mavlink: send_msg...\n");
+//	SDL_Log("mavlink: send_msg...\n");
 	uint16_t len = mavlink_msg_to_send_buffer(buf, msg);
 	uint16_t i = 0;
 	for(i = 0; i < len; i++) {
@@ -1189,7 +1207,6 @@ void mavlink_start_feeds (void) {
 	mavlink_msg_param_request_list_pack(127, 0, &msg, ModelData.sysid, ModelData.compid);
 	mavlink_send_message(&msg);
 	SDL_Delay(30);
-
 
 	mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_DATA_STREAM_RAW_SENSORS, MAV_DATA_STREAM_RAW_SENSORS_RATE, MAV_DATA_STREAM_RAW_SENSORS_ACTIVE);
 	mavlink_send_message(&msg);
