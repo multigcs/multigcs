@@ -1179,10 +1179,10 @@ void mavlink_send_cmd_loiter (void) {
 	mavlink_send_message(&msg);
 }
 
-void mavlink_send_cmd_follow (float p_lat, float p_long, float p_alt) {
-	SDL_Log("mavlink: send cmd: FOLLOW\n");
+void mavlink_send_cmd_follow (float p_lat, float p_long, float p_alt, float radius) {
+//	SDL_Log("mavlink: send cmd: FOLLOW\n");
 	mavlink_message_t msg;
-	mavlink_msg_mission_item_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, 0, MAV_FRAME_GLOBAL, MAV_CMD_NAV_WAYPOINT, 2, 0, 0.0, 5.0, 0.0, 0.0, p_lat, p_long, p_alt);
+	mavlink_msg_mission_item_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, 0, MAV_FRAME_GLOBAL_RELATIVE_ALT, MAV_CMD_NAV_WAYPOINT, 2, 0, 0.0, radius, 0.0, 0.0, p_lat, p_long, p_alt);
 	mavlink_send_message(&msg);
 }
 
@@ -1867,7 +1867,7 @@ int mavlink_tcp (void *data) {
     server.sin_family = AF_INET;
     server.sin_port = htons(setup.mavlink_tcp_port);
     if (connect(tcp_sock , (struct sockaddr *)&server , sizeof(server)) < 0) {
-        SDL_Log("mavlink_tcp: connection failed (%s:%i)", setup.mavlink_tcp_server, setup.mavlink_tcp_port);
+        SDL_Log("mavlink_tcp: connection failed (%s:%i)\n", setup.mavlink_tcp_server, setup.mavlink_tcp_port);
         return -1;
     }
 	while (gui_running == 1) {

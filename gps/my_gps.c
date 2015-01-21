@@ -181,11 +181,20 @@ int gcs_thread_serial_gps (void *unused) {
 					float hlon = atof(tmp_str + 3) / 60.0;
 					tmp_str[3] = 0;
 					hlon += atof(tmp_str);
-
-					if (hlat != 0.0 && hlon != 0.0) {
-						WayPoints[0].p_lat = hlat;
-						WayPoints[0].p_long = hlon;
-						WayPoints[0].p_alt = alt2;
+					if (hlat != 0.0 || hlon != 0.0) {
+						int16_t nz = get_altitude(hlat, hlon);
+						if ((int16_t)alt2 > nz) {
+							nz = (int16_t)alt2;
+						}
+//						SDL_Log("%f %f (%i) %i\n", hlat, hlon, nz, (int16_t)alt2);
+						GroundData.p_lat = hlat;
+						GroundData.p_long = hlon;
+						GroundData.p_alt = (float)nz;
+						GroundData.dir = 0.0;
+						if (GroundData.active == 0) {
+							SDL_Log("ground: found gps (%f %f %i)\n", hlat, hlon, (int16_t)alt2);
+						}
+						GroundData.active = 1;
 						redraw_flag = 1;
 					}
 /*

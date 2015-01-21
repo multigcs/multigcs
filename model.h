@@ -101,7 +101,17 @@ typedef struct {
 	uint32_t mavlink_update;
 } Model;
 
+typedef struct {
+	float p_lat;
+	float p_long;
+	float p_alt;
+	float dir;
+	uint8_t active;
+	uint8_t followme;
+} Ground;
+
 extern Model ModelData;
+extern Ground GroundData;
 extern char teletypes[16][16];
 extern char modeltypes[5][15];
 

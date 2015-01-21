@@ -193,6 +193,11 @@ uint8_t map_overlay_change (char *name, float x, float y, int8_t button, float d
 	return 0;
 }
 
+uint8_t map_followme_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	GroundData.followme = 1 - GroundData.followme;
+	return 0;
+}
+
 uint8_t map_cmd_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (strcmp(name, "map_cmd_rtl") == 0) {
 		mavlink_send_cmd_rtl();
@@ -1890,7 +1895,7 @@ void map_draw_buttons (ESContext *esContext) {
 	} else {
 		draw_button(esContext, "map_cmd", setup.view_mode, tmp_str, FONT_WHITE, 1.05, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_cmd_change, 0.0);
 	}
-	draw_text_button(esContext, "map_cmd_", setup.view_mode, "flightmode", FONT_WHITE, 1.27, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_overlay_change, 0.0);
+	draw_text_button(esContext, "map_cmd_", setup.view_mode, "flightmode", FONT_WHITE, 1.26, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_overlay_change, 0.0);
 	ny++;
 
 	draw_box_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
@@ -2001,11 +2006,21 @@ void map_draw_buttons (ESContext *esContext) {
 	draw_box_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 	draw_rect_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
 	if (map_setpos == 0) {
-		draw_button(esContext, "map_setpos", setup.view_mode, "SPOS", FONT_WHITE, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_setpos_change, 0.0);
+		draw_button(esContext, "map_setpos", setup.view_mode, "GOTO", FONT_WHITE, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_setpos_change, 0.0);
 	} else {
-		draw_button(esContext, "map_setpos", setup.view_mode, "SPOS", FONT_GREEN, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_setpos_change, 0.0);
+		draw_button(esContext, "map_setpos", setup.view_mode, "GOTO", FONT_GREEN, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_setpos_change, 0.0);
 	}
 	draw_text_button(esContext, "map_setpos_", setup.view_mode, "fly to point", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_setpos_change, 0.0);
+	ny++;
+
+	draw_box_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
+	draw_rect_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
+	if (GroundData.followme == 0) {
+		draw_button(esContext, "map_fallowme", setup.view_mode, "FOLLOW", FONT_WHITE, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_followme_change, 0.0);
+	} else {
+		draw_button(esContext, "map_fallowme", setup.view_mode, "FOLLOW", FONT_GREEN, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_followme_change, 0.0);
+	}
+	draw_text_button(esContext, "map_fallowme_", setup.view_mode, "follow me", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_followme_change, 0.0);
 	ny++;
 
 	draw_box_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
@@ -2291,7 +2306,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 #endif
 	}
 
-
 #ifdef SDLGL
 	if (nav_map == 1) {
 		glMatrixMode(GL_MODELVIEW);
@@ -2391,6 +2405,28 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	}
 #endif
 
+	// drawing Groundstation
+	if (GroundData.active == 1) {
+		if (GroundData.followme == 1) {
+			static uint8_t blink = 0;
+			if (blink > 30) {
+				mark_point(esContext, GroundData.p_lat, GroundData.p_long, GroundData.p_alt, "GCS", "", 1, 0.0, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
+			} else {
+				mark_point(esContext, GroundData.p_lat, GroundData.p_long, GroundData.p_alt, "GCS", "", 0, 0.0, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
+			}
+			if (blink < 60) {
+				blink++;
+			} else {
+				blink = 0;
+			}
+		} else {
+			mark_point(esContext, GroundData.p_lat, GroundData.p_long, GroundData.p_alt, "GCS", "", 0, 0.0, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
+		}
+	}
+
+	// drawing Home(Launchpoint)
+	mark_point(esContext, WayPoints[0].p_lat, WayPoints[0].p_long, WayPoints[0].p_alt, WayPoints[0].name, "", 0, 0.0, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
+
 	// drawing Waypoint-Route
 	float last_lat = ModelData.p_lat;
 	float last_lon = ModelData.p_long;
@@ -2417,7 +2453,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		} else {
 			draw_quad(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset), ModelData.roll, ModelData.pitch, ModelData.yaw, mapdata->lat, mapdata->lon, mapdata->zoom);
 		}
-		mark_point(esContext, WayPoints[0].p_lat, WayPoints[0].p_long, WayPoints[0].p_alt, WayPoints[0].name, "", 0, 0.0, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
 			if (WayPoints[n].p_lat != 0.0) {
 				if (strcmp(WayPoints[n].command, "SET_ROI") == 0) {

@@ -2,6 +2,7 @@
 #include <all.h>
 
 Model ModelData;
+Ground GroundData;
 char teletypes[16][16] = {
 	"MULTIWII_21",
 	"AUTOQUAD",
@@ -373,9 +374,16 @@ void setup_waypoints (void) {
 	WayPoints[0].param4 = 0.0;
 	WayPoints[0].frametype = 0;
 	WayPoints[0].type = 1;
+
+	GroundData.p_lat = WayPoints[0].p_lat;
+	GroundData.p_long = WayPoints[0].p_long;
+	GroundData.p_alt = WayPoints[0].p_alt;
+	GroundData.dir = 0.0;
+	GroundData.active = 0;
+	GroundData.followme = 0;
+
 	strncpy(WayPoints[0].name, "HOME", 127);
 	strncpy(WayPoints[0].command, "", 127);
-
 
 	ModelData.sysid = 250;
 	ModelData.compid = 0;
@@ -471,6 +479,11 @@ void setup_save (void) {
 	        fprintf(fr, "Model_lat		%f\n", ModelData.p_lat);
 	        fprintf(fr, "Model_long		%f\n", ModelData.p_long);
 	        fprintf(fr, "Model_alt		%f\n", ModelData.p_alt);
+	        fprintf(fr, "\n");
+	        fprintf(fr, "Ground_lat		%f\n", GroundData.p_lat);
+	        fprintf(fr, "Ground_long		%f\n", GroundData.p_long);
+	        fprintf(fr, "Ground_alt		%f\n", GroundData.p_alt);
+	        fprintf(fr, "Ground_dir		%f\n", GroundData.dir);
 	        fprintf(fr, "\n");
 	        fprintf(fr, "[waypoints]\n");
 	        for (n = 0; n < MAX_WAYPOINTS; n++) {
@@ -715,6 +728,14 @@ void setup_load (void) {
 	                                ModelData.p_long = atof(val);
 	                        } else if (strcmp(var, "Model_alt") == 0) {
 	                                ModelData.p_alt = atof(val);
+	                        } else if (strcmp(var, "Ground_lat") == 0) {
+	                                GroundData.p_lat = atof(val);
+	                        } else if (strcmp(var, "Ground_long") == 0) {
+	                                GroundData.p_long = atof(val);
+	                        } else if (strcmp(var, "Ground_alt") == 0) {
+	                                GroundData.p_alt = atof(val);
+	                        } else if (strcmp(var, "Ground_dir") == 0) {
+	                                GroundData.dir = atof(val);
 	                        } else if (strcmp(var, "weather_enable") == 0) {
 	                                setup.weather_enable = atoi(val);
 	                        } else if (strcmp(var, "mavlink_tcp_server") == 0) {
@@ -1285,21 +1306,24 @@ void check_events (ESContext *esContext, SDL_Event event) {
 						}
 					}
 				} else if (map_sethome == 1) {
-					uint16_t n = 0;
 					int16_t nz = get_altitude(mouse_lat, mouse_long);
 					WayPoints[0].p_lat = mouse_lat;
 					WayPoints[0].p_long = mouse_long;
 					WayPoints[0].p_alt = nz;
+					if (GroundData.active == 0) {
+						GroundData.p_lat = WayPoints[0].p_lat;
+						GroundData.p_long = WayPoints[0].p_long;
+						GroundData.p_alt = WayPoints[0].p_alt;
+					}
 					map_sethome = 0;
 				} else if (map_setpos == 1) {
-					uint16_t n = 0;
-					int16_t nz = get_altitude(mouse_lat, mouse_long);
+/*					int16_t nz = get_altitude(mouse_lat, mouse_long);
 					if (ModelData.p_alt > nz) {
 						nz = ModelData.p_alt;
 					}
-					mavlink_send_cmd_follow(mouse_lat, mouse_long, nz);
-					map_setpos = 0;
-
+*/
+					GroundData.followme = 0;
+					mavlink_send_cmd_follow(mouse_lat, mouse_long, 15.0, 2.0);
 				} else {
 					waypoint_active = -1;
 					polypoint_active = -1;
@@ -1429,6 +1453,11 @@ int telemetry_thread (void *data) {
 			cli_update();
 		} else {
 			mavlink_update();
+		}
+		static uint16_t utimier = 0;
+		if (utimier++ >= 300 && GroundData.active == 1 && GroundData.followme == 1) {
+			mavlink_send_cmd_follow(GroundData.p_lat, GroundData.p_long, 15.0, 6.0);
+			utimier = 0;
 		}
 		SDL_Delay(1);
 	}

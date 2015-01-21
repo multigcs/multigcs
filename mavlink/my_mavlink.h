@@ -110,6 +110,6 @@ void mavlink_send_cmd_takeoff (void);
 void mavlink_send_cmd_mode (uint8_t mode);
 void mavlink_send_cmd_loiter (void);
 void mavlink_send_cmd_guided (void);
-void mavlink_send_cmd_follow (float p_lat, float p_long, float p_alt);
+void mavlink_send_cmd_follow (float p_lat, float p_long, float p_alt, float radius);
 
 

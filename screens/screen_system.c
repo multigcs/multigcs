@@ -58,28 +58,28 @@ uint8_t overview_set (char *name, float x, float y, int8_t button, float data, u
 
 uint8_t system_baud_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	SDL_Log("BAUD: %s_baud = %s\n", baud_selected, name);
-        if (strcmp(baud_selected, "gcs_gps") == 0) {
-                setup.gcs_gps_baud = atoi(name);
+	if (strcmp(baud_selected, "gcs_gps") == 0) {
+		setup.gcs_gps_baud = atoi(name);
 		gcs_gps_exit();
 		gcs_gps_init(setup.gcs_gps_port, setup.gcs_gps_baud);
-        } else if (strcmp(baud_selected, "rcflow") == 0) {
-                setup.rcflow_baud = atoi(name);
+	} else if (strcmp(baud_selected, "rcflow") == 0) {
+		setup.rcflow_baud = atoi(name);
 		rcflow_exit();
 		rcflow_init(setup.rcflow_port, setup.rcflow_baud);
-        } else if (strcmp(baud_selected, "jeti") == 0) {
-                setup.jeti_baud = atoi(name);
+	} else if (strcmp(baud_selected, "jeti") == 0) {
+		setup.jeti_baud = atoi(name);
 		jeti_exit();
 		jeti_init(setup.jeti_port, setup.jeti_baud);
-        } else if (strcmp(baud_selected, "frsky") == 0) {
-                setup.frsky_baud = atoi(name);
+	} else if (strcmp(baud_selected, "frsky") == 0) {
+		setup.frsky_baud = atoi(name);
 		frsky_exit();
 		frsky_init(setup.frsky_port, setup.frsky_baud);
-        } else if (strcmp(baud_selected, "tracker") == 0) {
-                setup.tracker_baud = atoi(name);
+	} else if (strcmp(baud_selected, "tracker") == 0) {
+		setup.tracker_baud = atoi(name);
 		tracker_exit();
 		tracker_init(setup.tracker_port, setup.tracker_baud);
 	}
-	return 0;
+return 0;
 }
 
 uint8_t system_baud_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
@@ -91,16 +91,16 @@ uint8_t system_baud_change (char *name, float x, float y, int8_t button, float d
 
 uint8_t system_device_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	SDL_Log("DEVICE: %s_port = %s\n", port_selected, name);
-        if (strcmp(port_selected, "gcs_gps") == 0) {
-                strncpy(setup.gcs_gps_port, name, 1023);
-        } else if (strcmp(port_selected, "rcflow") == 0) {
-                strncpy(setup.rcflow_port, name, 1023);
-        } else if (strcmp(port_selected, "jeti") == 0) {
-                strncpy(setup.jeti_port, name, 1023);
-        } else if (strcmp(port_selected, "frsky") == 0) {
-                strncpy(setup.frsky_port, name, 1023);
-        } else if (strcmp(port_selected, "tracker") == 0) {
-                strncpy(setup.tracker_port, name, 1023);
+	if (strcmp(port_selected, "gcs_gps") == 0) {
+		strncpy(setup.gcs_gps_port, name, 1023);
+	} else if (strcmp(port_selected, "rcflow") == 0) {
+		strncpy(setup.rcflow_port, name, 1023);
+	} else if (strcmp(port_selected, "jeti") == 0) {
+		strncpy(setup.jeti_port, name, 1023);
+	} else if (strcmp(port_selected, "frsky") == 0) {
+		strncpy(setup.frsky_port, name, 1023);
+	} else if (strcmp(port_selected, "tracker") == 0) {
+		strncpy(setup.tracker_port, name, 1023);
 	}
 	if (strcmp(name, "UNSET") != 0) {
 		system_baud_change(port_selected, x, y, button, data, 0);
