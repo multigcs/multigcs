@@ -1994,15 +1994,6 @@ void map_draw_buttons (ESContext *esContext) {
 		ny2++;
 		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
 		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
-		if (map_sethome == 0) {
-			draw_button(esContext, "map_home", setup.view_mode, "HOME", FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_sethome_change, 0.0);
-		} else {
-			draw_button(esContext, "map_home", setup.view_mode, "HOME", FONT_GREEN, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_sethome_change, 0.0);
-		}
-		draw_text_button(esContext, "map_home_", setup.view_mode, "set home", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_sethome_change, 0.0);
-		ny2++;
-		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
-		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
 		draw_button(esContext, "map_wp_del", setup.view_mode, "DEL", FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_del, 0.0);
 		draw_text_button(esContext, "map_wp_del_", setup.view_mode, "delete selected", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_del, 0.0);
 		ny2++;
@@ -2020,6 +2011,15 @@ void map_draw_buttons (ESContext *esContext) {
 		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
 		draw_button(esContext, "map_write_wp", setup.view_mode, "WRITE", FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, write_wp, 0.0);
 		draw_text_button(esContext, "map_write_wp_", setup.view_mode, "write to fc", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, write_wp, 0.0);
+		ny2++;
+		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
+		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
+		if (map_sethome == 0) {
+			draw_button(esContext, "map_home", setup.view_mode, "HOME", FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_sethome_change, 0.0);
+		} else {
+			draw_button(esContext, "map_home", setup.view_mode, "HOME", FONT_GREEN, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_sethome_change, 0.0);
+		}
+		draw_text_button(esContext, "map_home_", setup.view_mode, "set home", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_sethome_change, 0.0);
 		ny2++;
 	}
 	draw_text_button(esContext, "map_wp_mopen_", setup.view_mode, "waypoints", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_wp_mopen_change, 0.0);
@@ -2102,12 +2102,16 @@ void map_draw_buttons (ESContext *esContext) {
 		draw_text_button(esContext, "map_sp_radius_change_", setup.view_mode, "radius", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_sp_radius_change, 0.0);
 		ny2++;
 	}
-	draw_text_button(esContext, "map_sp_", setup.view_mode, "fly to point", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_sp_change, 0.0);
+	if (ModelData.mode != 4) {
+		draw_text_button(esContext, "map_sp_", setup.view_mode, "guided not active", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_fm_change, 0.0);
+	} else {
+		draw_text_button(esContext, "map_sp_", setup.view_mode, "fly to point", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_sp_change, 0.0);
+	}
 	ny++;
 
 	draw_box_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 	draw_rect_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
-	if (map_fm == 0) {
+	if (map_fm == 0 || GroundData.active == 0) {
 		draw_button(esContext, "map_fm", setup.view_mode, "FOLLOW", FONT_WHITE, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_fm_change, 0.0);
 		GroundData.followme = 0;
 	} else {
@@ -2137,7 +2141,16 @@ void map_draw_buttons (ESContext *esContext) {
 		draw_text_button(esContext, "map_fm_radius_change_", setup.view_mode, "radius", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_fm_radius_change, 0.0);
 		ny2++;
 	}
-	draw_text_button(esContext, "map_fallowme_", setup.view_mode, "follow me", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_fm_change, 0.0);
+	if (GroundData.active == 0) {
+		draw_text_button(esContext, "map_fallowme_", setup.view_mode, "no ground gps", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_fm_change, 0.0);
+	} else if (ModelData.mode != 4) {
+		draw_text_button(esContext, "map_fallowme_", setup.view_mode, "guided not active", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_fm_change, 0.0);
+	} else {
+		draw_text_button(esContext, "map_fallowme_", setup.view_mode, "follow me", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_fm_change, 0.0);
+	}
+	ny++;
+	ny++;
+	ny++;
 	ny++;
 	ny++;
 

@@ -4,6 +4,7 @@
 SDL_Thread *gcs_sdl_thread_serial_gps = NULL;
 int gcs_serial_fd_gps = -1;
 int serial_fd_gps = -1;
+uint8_t gcs_gps_running = 0;
 static uint32_t last_connection = 1;
 static uint32_t gcs_last_connection = 1;
 
@@ -148,8 +149,8 @@ int gcs_thread_serial_gps (void *unused) {
 	int res;
 	char serial_buf[2];
 	char line[1024];
-	while (gui_running == 1) {
-		while ((res = serial_read(gcs_serial_fd_gps, serial_buf, 1)) > 0 && gui_running == 1) {
+	while (gcs_gps_running == 1) {
+		while ((res = serial_read(gcs_serial_fd_gps, serial_buf, 1)) > 0 && gcs_gps_running == 1) {
 			gcs_last_connection = time(0);
 			if (serial_buf[0] == '\r') {
 			} else if (serial_buf[0] != '\n') {
@@ -225,6 +226,7 @@ int gcs_thread_serial_gps (void *unused) {
 uint8_t gcs_gps_init (char *port, uint32_t baud) {
 	SDL_Log("gcs-gps: init serial port...\n");
 	gcs_serial_fd_gps = serial_open(port, baud);
+	gcs_gps_running = 1;
 	if (gcs_serial_fd_gps != -1) {
 #ifdef SDL2
 		gcs_sdl_thread_serial_gps = SDL_CreateThread(gcs_thread_serial_gps, NULL, NULL);
@@ -246,6 +248,7 @@ uint8_t gps_init (char *port, uint32_t baud) {
 }
 
 void gcs_gps_exit (void) {
+	gcs_gps_running = 0;
 	if ( gcs_sdl_thread_serial_gps != NULL ) {
 		SDL_Log("gcs-gps: wait thread\n");
 		SDL_WaitThread(gcs_sdl_thread_serial_gps, NULL);
