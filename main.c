@@ -381,6 +381,10 @@ void setup_waypoints (void) {
 	GroundData.dir = 0.0;
 	GroundData.active = 0;
 	GroundData.followme = 0;
+	GroundData.fm_alt = 15.0;
+	GroundData.fm_radius = 6.0;
+	GroundData.sp_alt = 15.0;
+	GroundData.sp_radius = 2.0;
 
 	strncpy(WayPoints[0].name, "HOME", 127);
 	strncpy(WayPoints[0].command, "", 127);
@@ -484,6 +488,10 @@ void setup_save (void) {
 	        fprintf(fr, "Ground_long		%f\n", GroundData.p_long);
 	        fprintf(fr, "Ground_alt		%f\n", GroundData.p_alt);
 	        fprintf(fr, "Ground_dir		%f\n", GroundData.dir);
+	        fprintf(fr, "Ground_fm_alt	%f\n", GroundData.fm_alt);
+	        fprintf(fr, "Ground_fm_radius	%f\n", GroundData.fm_radius);
+	        fprintf(fr, "Ground_sp_alt	%f\n", GroundData.sp_alt);
+	        fprintf(fr, "Ground_sp_radius	%f\n", GroundData.sp_radius);
 	        fprintf(fr, "\n");
 	        fprintf(fr, "[waypoints]\n");
 	        for (n = 0; n < MAX_WAYPOINTS; n++) {
@@ -736,6 +744,14 @@ void setup_load (void) {
 	                                GroundData.p_alt = atof(val);
 	                        } else if (strcmp(var, "Ground_dir") == 0) {
 	                                GroundData.dir = atof(val);
+	                        } else if (strcmp(var, "Ground_fm_alt") == 0) {
+	                                GroundData.fm_alt = atof(val);
+	                        } else if (strcmp(var, "Ground_fm_radius") == 0) {
+	                                GroundData.fm_radius = atof(val);
+	                        } else if (strcmp(var, "Ground_sp_alt") == 0) {
+	                                GroundData.sp_alt = atof(val);
+	                        } else if (strcmp(var, "Ground_sp_radius") == 0) {
+	                                GroundData.sp_radius = atof(val);
 	                        } else if (strcmp(var, "weather_enable") == 0) {
 	                                setup.weather_enable = atoi(val);
 	                        } else if (strcmp(var, "mavlink_tcp_server") == 0) {
@@ -1317,13 +1333,8 @@ void check_events (ESContext *esContext, SDL_Event event) {
 					}
 					map_sethome = 0;
 				} else if (map_setpos == 1) {
-/*					int16_t nz = get_altitude(mouse_lat, mouse_long);
-					if (ModelData.p_alt > nz) {
-						nz = ModelData.p_alt;
-					}
-*/
 					GroundData.followme = 0;
-					mavlink_send_cmd_follow(mouse_lat, mouse_long, 15.0, 2.0);
+					mavlink_send_cmd_follow(mouse_lat, mouse_long, GroundData.sp_alt, GroundData.sp_radius);
 				} else {
 					waypoint_active = -1;
 					polypoint_active = -1;
@@ -1456,7 +1467,7 @@ int telemetry_thread (void *data) {
 		}
 		static uint16_t utimier = 0;
 		if (utimier++ >= 300 && GroundData.active == 1 && GroundData.followme == 1) {
-			mavlink_send_cmd_follow(GroundData.p_lat, GroundData.p_long, 15.0, 6.0);
+			mavlink_send_cmd_follow(GroundData.p_lat, GroundData.p_long, GroundData.fm_alt, GroundData.fm_radius);
 			utimier = 0;
 		}
 		SDL_Delay(1);

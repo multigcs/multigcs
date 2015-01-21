@@ -19,7 +19,7 @@ uint8_t omap_type_select = 0;
 uint8_t map_view = 0;
 uint8_t map_color = 0;
 uint8_t map_startup = 0;
-
+uint8_t map_fm = 0;
 uint8_t map_add = 0;
 uint8_t map_addmode = 0;
 uint8_t map_poly_addmode = 0;
@@ -28,6 +28,7 @@ uint8_t map_wp_mopen = 0;
 uint8_t map_poly_mopen = 0;
 uint8_t map_sethome = 0;
 uint8_t map_setpos = 0;
+uint8_t map_sp = 0;
 float roty = 0.0;
 uint8_t uav_active_waypoint = 0;
 uint8_t center_map = 1;
@@ -195,6 +196,15 @@ uint8_t map_overlay_change (char *name, float x, float y, int8_t button, float d
 
 uint8_t map_followme_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	GroundData.followme = 1 - GroundData.followme;
+	map_sp = 0;
+	map_setpos = 0;
+	return 0;
+}
+
+uint8_t map_fm_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	map_fm = 1 - map_fm;
+	map_sp = 0;
+	map_setpos = 0;
 	return 0;
 }
 
@@ -465,6 +475,63 @@ uint8_t map_polypoint_add (char *name, float x, float y, int8_t button, float da
 
 uint8_t map_setpos_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	map_setpos = 1 - map_setpos;
+	GroundData.followme = 0;
+	map_fm = 0;
+	return 0;
+}
+
+uint8_t map_sp_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	map_sp = 1 - map_sp;
+	GroundData.followme = 0;
+	map_fm = 0;
+	return 0;
+}
+
+uint8_t map_fm_alt_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (button == 4) {
+		GroundData.fm_alt += 1.0;
+	} else if (button == 5) {
+		GroundData.fm_alt -= 1.0;
+	}
+	if (GroundData.fm_alt < 2.0) {
+		GroundData.fm_alt = 2.0;
+	}
+	return 0;
+}
+
+uint8_t map_fm_radius_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (button == 4) {
+		GroundData.fm_radius += 1.0;
+	} else if (button == 5) {
+		GroundData.fm_radius -= 1.0;
+	}
+	if (GroundData.fm_radius < 1.0) {
+		GroundData.fm_radius = 1.0;
+	}
+	return 0;
+}
+
+uint8_t map_sp_alt_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (button == 4) {
+		GroundData.sp_alt += 1.0;
+	} else if (button == 5) {
+		GroundData.sp_alt -= 1.0;
+	}
+	if (GroundData.sp_alt < 2.0) {
+		GroundData.sp_alt = 2.0;
+	}
+	return 0;
+}
+
+uint8_t map_sp_radius_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (button == 4) {
+		GroundData.sp_radius += 1.0;
+	} else if (button == 5) {
+		GroundData.sp_radius -= 1.0;
+	}
+	if (GroundData.sp_radius < 1.0) {
+		GroundData.sp_radius = 1.0;
+	}
 	return 0;
 }
 
@@ -2005,22 +2072,73 @@ void map_draw_buttons (ESContext *esContext) {
 
 	draw_box_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 	draw_rect_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
-	if (map_setpos == 0) {
-		draw_button(esContext, "map_setpos", setup.view_mode, "GOTO", FONT_WHITE, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_setpos_change, 0.0);
+	if (map_sp == 0) {
+		draw_button(esContext, "map_sp", setup.view_mode, "GOTO", FONT_WHITE, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_sp_change, 0.0);
+		map_setpos = 0;
 	} else {
-		draw_button(esContext, "map_setpos", setup.view_mode, "GOTO", FONT_GREEN, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_setpos_change, 0.0);
+		GroundData.followme = 0;
+		map_fm = 0;
+		draw_button(esContext, "map_sp", setup.view_mode, "GOTO", FONT_GREEN, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_sp_change, 0.0);
+		ny2 = ny;
+		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
+		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
+		if (map_setpos == 0) {
+			draw_button(esContext, "map_setpos_change", setup.view_mode, "SET", FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_setpos_change, 0.0);
+		} else {
+			draw_button(esContext, "map_setpos_change", setup.view_mode, "SET", FONT_GREEN, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_setpos_change, 0.0);
+		}
+		draw_text_button(esContext, "map_setpos_change_", setup.view_mode, "position", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_setpos_change, 0.0);
+		ny2++;
+		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
+		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
+		sprintf(tmp_str, "%0.0fm", GroundData.sp_alt);
+		draw_button(esContext, "map_sp_alt_change", setup.view_mode, tmp_str, FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_sp_alt_change, 0.0);
+		draw_text_button(esContext, "map_sp_alt_change_", setup.view_mode, "altitude", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_sp_alt_change, 0.0);
+		ny2++;
+		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
+		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
+		sprintf(tmp_str, "%0.0fm", GroundData.sp_radius);
+		draw_button(esContext, "map_sp_radius_change", setup.view_mode, tmp_str, FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_sp_radius_change, 0.0);
+		draw_text_button(esContext, "map_sp_radius_change_", setup.view_mode, "radius", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_sp_radius_change, 0.0);
+		ny2++;
 	}
-	draw_text_button(esContext, "map_setpos_", setup.view_mode, "fly to point", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_setpos_change, 0.0);
+	draw_text_button(esContext, "map_sp_", setup.view_mode, "fly to point", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_sp_change, 0.0);
 	ny++;
 
 	draw_box_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 	draw_rect_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
-	if (GroundData.followme == 0) {
-		draw_button(esContext, "map_fallowme", setup.view_mode, "FOLLOW", FONT_WHITE, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_followme_change, 0.0);
+	if (map_fm == 0) {
+		draw_button(esContext, "map_fm", setup.view_mode, "FOLLOW", FONT_WHITE, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_fm_change, 0.0);
+		GroundData.followme = 0;
 	} else {
-		draw_button(esContext, "map_fallowme", setup.view_mode, "FOLLOW", FONT_GREEN, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_followme_change, 0.0);
+		map_sp = 0;
+		map_setpos = 0;
+		draw_button(esContext, "map_fm", setup.view_mode, "FOLLOW", FONT_GREEN, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_fm_change, 0.0);
+		ny2 = ny;
+		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
+		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
+		if (GroundData.followme == 0) {
+			draw_button(esContext, "map_fallowme", setup.view_mode, "ACTIVE", FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_followme_change, 0.0);
+		} else {
+			draw_button(esContext, "map_fallowme", setup.view_mode, "ACTIVE", FONT_GREEN, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_followme_change, 0.0);
+		}
+		draw_text_button(esContext, "map_fallowme_", setup.view_mode, "activate", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_followme_change, 0.0);
+		ny2++;
+		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
+		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
+		sprintf(tmp_str, "%0.0fm", GroundData.fm_alt);
+		draw_button(esContext, "map_fm_alt_change", setup.view_mode, tmp_str, FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_fm_alt_change, 0.0);
+		draw_text_button(esContext, "map_fm_alt_change_", setup.view_mode, "altitude", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_fm_alt_change, 0.0);
+		ny2++;
+		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
+		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
+		sprintf(tmp_str, "%0.0fm", GroundData.fm_radius);
+		draw_button(esContext, "map_fm_radius_change", setup.view_mode, tmp_str, FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_fm_radius_change, 0.0);
+		draw_text_button(esContext, "map_fm_radius_change_", setup.view_mode, "radius", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_fm_radius_change, 0.0);
+		ny2++;
 	}
-	draw_text_button(esContext, "map_fallowme_", setup.view_mode, "follow me", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_followme_change, 0.0);
+	draw_text_button(esContext, "map_fallowme_", setup.view_mode, "follow me", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_fm_change, 0.0);
+	ny++;
 	ny++;
 
 	draw_box_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);

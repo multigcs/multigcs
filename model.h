@@ -108,6 +108,10 @@ typedef struct {
 	float dir;
 	uint8_t active;
 	uint8_t followme;
+	float fm_alt;
+	float fm_radius;
+	float sp_alt;
+	float sp_radius;
 } Ground;
 
 extern Model ModelData;
