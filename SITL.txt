@@ -1,0 +1,36 @@
+##################################
+## start joystick-bridge
+##################################
+
+cd mavlink/sitl-transmitter
+
+gcc -o joystick joystick.c -lSDL -Wall
+./joystick
+
+##################################
+## start sitl-apm
+##################################
+
+/tmp/ArduCopter.build/ArduCopter.elf -H 141
+
+##################################
+## start copter sim
+##################################
+
+cd ardupilot/Tools/autotest
+python pysim/sim_multicopter.py --frame=x --rate=400 --home=50.29197,9.12764,141,0 --wind=0,0,0.0
+
+##################################
+## start multigcs
+##################################
+
+multigcs
+
+##################################
+## start mavproxy
+##################################
+
+mavproxy.py --master tcp:127.0.0.1:5762 --out 127.0.0.1:14550
+
+
+
