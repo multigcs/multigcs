@@ -500,34 +500,33 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 			if (ModelData.teletype == TELETYPE_MEGAPIRATE_NG || ModelData.teletype == TELETYPE_ARDUPILOT) {
 				if (id2 > 0) {
 					id2 = id2 - 1;
-				} else {
-					SDL_Log("mavlink: WORKAROUND: first WP == HOME ?\n");
 				}
 			}
 
-			sprintf(sysmsg_str, "sending Waypoint (%i): %s\n", id, WayPoints[1 + id2].name);
+			sprintf(sysmsg_str, "sending Waypoint (%i): %s\n", id, WayPoints[id2 + 1].name);
 			sys_message(sysmsg_str);
-			if (strcmp(WayPoints[1 + id2].command, "WAYPOINT") == 0) {
+			if (strcmp(WayPoints[id2 + 1].command, "WAYPOINT") == 0) {
 				SDL_Log("mavlink: Type: MAV_CMD_NAV_WAYPOINT\n");
 				type = MAV_CMD_NAV_WAYPOINT;
-			} else if (strcmp(WayPoints[1 + id2].command, "RTL") == 0) {
+			} else if (strcmp(WayPoints[id2 + 1].command, "RTL") == 0) {
 				SDL_Log("mavlink: Type: MAV_CMD_NAV_RETURN_TO_LAUNCH\n");
 				type = MAV_CMD_NAV_RETURN_TO_LAUNCH;
-			} else if (strcmp(WayPoints[1 + id2].command, "LAND") == 0) {
+			} else if (strcmp(WayPoints[id2 + 1].command, "LAND") == 0) {
 				SDL_Log("mavlink: Type: MAV_CMD_NAV_LAND\n");
 				type = MAV_CMD_NAV_LAND;
-			} else if (strcmp(WayPoints[1 + id2].command, "TAKEOFF") == 0) {
+			} else if (strcmp(WayPoints[id2 + 1].command, "TAKEOFF") == 0) {
 				SDL_Log("mavlink: Type: MAV_CMD_NAV_TAKEOFF\n");
 				type = MAV_CMD_NAV_TAKEOFF;
-			} else if (strcmp(WayPoints[1 + id2].command, "SET_ROI") == 0) {
+			} else if (strcmp(WayPoints[id2 + 1].command, "SET_ROI") == 0) {
 				SDL_Log("mavlink: Type: MAV_CMD_NAV_ROI\n");
 				type = MAV_CMD_NAV_ROI;
+				type = 201;
 			} else {
 				SDL_Log("mavlink: Type: UNKNOWN\n");
 				type = MAV_CMD_NAV_WAYPOINT;
 			}
 
-			sprintf(sysmsg_str, "SENDING MISSION_ITEM: %i: %f, %f, %f\n", id, WayPoints[1 + id2].p_lat, WayPoints[1 + id2].p_long, WayPoints[1 + id2].p_alt);
+			sprintf(sysmsg_str, "SENDING MISSION_ITEM: %i: %f, %f, %f\n", id, WayPoints[id2 + 1].p_lat, WayPoints[id2 + 1].p_long, WayPoints[id2 + 1].p_alt);
 			SDL_Log("mavlink: %s\n", sysmsg_str);
 
 
@@ -544,8 +543,15 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 //	MAV_FRAME_GLOBAL_TERRAIN_ALT=10, /* Global coordinate frame with above terrain level altitude. WGS84 coordinate system, relative altitude over terrain with respect to the waypoint coordinate. First value / x: latitude in degrees, second value / y: longitude in degrees, third value / z: positive altitude in meters with 0 being at ground level in terrain model. | */
 //	MAV_FRAME_GLOBAL_TERRAIN_ALT_INT=11, /* Global coordinate frame with above terrain level altitude. WGS84 coordinate system, relative altitude over terrain with respect to the waypoint coordinate. First value / x: latitude in degrees*10e-7, second value / y: longitude in degrees*10e-7, third value / z: positive altitude in meters with 0 being at ground level in terrain model. | */
 
-			mavlink_msg_mission_item_pack(127, 0, &msg2, ModelData.sysid, ModelData.compid, id, WayPoints[1 + id2].frametype, type, 0.0, 0.0, WayPoints[1 + id2].param1, WayPoints[1 + id2].param2, WayPoints[1 + id2].param3, WayPoints[1 + id2].param4, WayPoints[1 + id2].p_lat, WayPoints[1 + id2].p_long, WayPoints[1 + id2].p_alt);
+
+			if (ModelData.dronetype != MAV_TYPE_FIXED_WING && WayPoints[id2 + 1].frametype == MAV_FRAME_GLOBAL) {
+				SDL_Log("mavlink: copter absolut alt workaround");
+				mavlink_msg_mission_item_pack(127, 0, &msg2, ModelData.sysid, ModelData.compid, id, WayPoints[id2 + 1].frametype, type, 0, 1, WayPoints[id2 + 1].param1, WayPoints[id2 + 1].param2, WayPoints[id2 + 1].param3, WayPoints[id2 + 1].param4, WayPoints[id2 + 1].p_lat, WayPoints[id2 + 1].p_long, WayPoints[id2 + 1].p_alt - WayPoints[0].p_alt);
+			} else {
+				mavlink_msg_mission_item_pack(127, 0, &msg2, ModelData.sysid, ModelData.compid, id, WayPoints[id2 + 1].frametype, type, 0, 1, WayPoints[id2 + 1].param1, WayPoints[id2 + 1].param2, WayPoints[id2 + 1].param3, WayPoints[id2 + 1].param4, WayPoints[id2 + 1].p_lat, WayPoints[id2 + 1].p_long, WayPoints[id2 + 1].p_alt);
+			}
 			mavlink_send_message(&msg2);
+
 /*
 mavlink_msg_mission_item_pack(system_id, component_id, &msg , packet1.target_system , packet1.target_component , packet1.seq , packet1.frame , packet1.command , packet1.current , packet1.autocontinue , packet1.param1 , packet1.param2 , packet1.param3 , packet1.param4 , packet1.x , packet1.y , packet1.z );
 float param1; ///< PARAM1 / For NAV command MISSIONs: Radius in which the MISSION is accepted as reached, in meters
@@ -571,9 +577,15 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			mavlink_mission_item_t packet;
 			mavlink_msg_mission_item_decode(msg, &packet);
 
-			sprintf(sysmsg_str, "RECEIVED MISSION_ITEM: %i/%i: %f, %f, %f (%i)\n", packet.seq, mission_max, packet.x, packet.y, packet.z, packet.frame);
+			sprintf(sysmsg_str, "RECEIVED MISSION_ITEM: %i/%i: %f, %f, %f (%i)", packet.seq, mission_max, packet.x, packet.y, packet.z, packet.frame);
 			SDL_Log("mavlink: %s\n", sysmsg_str);
 			sys_message(sysmsg_str);
+			sprintf(sysmsg_str, "	->: %f, %f, %f, %f", packet.param1, packet.param2, packet.param3, packet.param4);
+			SDL_Log("mavlink: %s\n", sysmsg_str);
+			sprintf(sysmsg_str, "	->: %i, %i, %i", packet.command, packet.current, packet.autocontinue);
+			SDL_Log("mavlink: %s\n", sysmsg_str);
+
+
 
 			if (packet.seq < mission_max - 1) {
 				mavlink_msg_mission_request_pack(127, 0, &msg2, ModelData.sysid, ModelData.compid, packet.seq + 1);
@@ -587,7 +599,6 @@ uint8_t autocontinue; ///< autocontinue to next wp
 				if (packet.seq > 0) {
 					packet.seq = packet.seq - 1;
 				} else {
-					SDL_Log("mavlink: WORKAROUND: ignore first WP\n");
 					break;
 				}
 			}
@@ -627,6 +638,10 @@ uint8_t autocontinue; ///< autocontinue to next wp
 					strcpy(WayPoints[1 + packet.seq].command, "SET_ROI");
 					break;
 				}
+				case 201: {
+					strcpy(WayPoints[1 + packet.seq].command, "SET_ROI");
+					break;
+				}
 				default: {
 					sprintf(WayPoints[1 + packet.seq].command, "CMD:%i", packet.command);
 					break;
@@ -642,6 +657,14 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			if (packet.z == 0.0) {
 				packet.z = 0.00001;
 			}
+
+
+			if (ModelData.dronetype != MAV_TYPE_FIXED_WING && WayPoints[1 + packet.seq].frametype == MAV_FRAME_GLOBAL) {
+				SDL_Log("mavlink: copter absolut alt workaround");
+				packet.z += WayPoints[0].p_alt;
+			}
+
+
 			WayPoints[1 + packet.seq].p_lat = packet.x;
 			WayPoints[1 + packet.seq].p_long = packet.y;
 			WayPoints[1 + packet.seq].p_alt = packet.z;

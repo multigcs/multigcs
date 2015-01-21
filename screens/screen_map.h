@@ -30,13 +30,14 @@ extern uint8_t map_type;
 extern uint8_t map_type_select;
 extern uint8_t omap_type;
 extern uint8_t omap_type_select;
+extern uint8_t map_sethome;
 
 extern size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream);
 extern uint8_t map_3d (char *name, float x, float y, int8_t button, float data, uint8_t action);
 extern uint8_t change_maptype (char *name, float x, float y, int8_t button, float data, uint8_t action);
 extern uint8_t map_zoom (char *name, float x, float y, int8_t button, float data, uint8_t action);
 extern uint8_t map_goto (char *name, float x, float y, int8_t button, float data, uint8_t action);
-extern uint8_t map_add (char *name, float x, float y, int8_t button, float data, uint8_t action);
+extern uint8_t map_addmode_change (char *name, float x, float y, int8_t button, float data, uint8_t action);
 extern uint8_t map_del (char *name, float x, float y, int8_t button, float data, uint8_t action);
 extern uint8_t show_wp (char *name, float x, float y, int8_t button, float data, uint8_t action);
 extern int file_download (char *fileName, char *url);

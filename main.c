@@ -1261,7 +1261,6 @@ void check_events (ESContext *esContext, SDL_Event event) {
 							break;
 						}
 					}
-					map_addmode = 0;
 				} else if (map_poly_addmode == 1) {
 					uint16_t n = 0;
 					int16_t nz = get_altitude(mouse_lat, mouse_long);
@@ -1285,7 +1284,13 @@ void check_events (ESContext *esContext, SDL_Event event) {
 							break;
 						}
 					}
-					map_poly_addmode = 0;
+				} else if (map_sethome == 1) {
+					uint16_t n = 0;
+					int16_t nz = get_altitude(mouse_lat, mouse_long);
+					WayPoints[0].p_lat = mouse_lat;
+					WayPoints[0].p_long = mouse_long;
+					WayPoints[0].p_alt = nz;
+					map_sethome = 0;
 				} else if (map_setpos == 1) {
 					uint16_t n = 0;
 					int16_t nz = get_altitude(mouse_lat, mouse_long);
@@ -1294,6 +1299,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 					}
 					mavlink_send_cmd_follow(mouse_lat, mouse_long, nz);
 					map_setpos = 0;
+
 				} else {
 					waypoint_active = -1;
 					polypoint_active = -1;
