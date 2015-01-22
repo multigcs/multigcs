@@ -48,6 +48,9 @@
 #define MSP_EEPROM_WRITE         250   //in message          no param
 #define MSP_DEBUG                254   //out message         debug1,debug2,debug3,debug4
 
+#define MSP_GPSSVINFO            164    //out message         get Signal Strength (only U-Blox)
+
+
 void mwi21_init (char *port, uint32_t baud);
 void mwi21_exit (void);
 void mwi21_update (void);

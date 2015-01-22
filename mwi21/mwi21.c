@@ -107,6 +107,72 @@ void mwi21_get_req8 (uint8_t id, int8_t data) {
 	}
 }
 
+uint8_t write32 (uint32_t a, uint8_t *send_buffer, uint8_t pos, uint8_t csum) {
+    uint8_t t;
+    t = a;
+    send_buffer[pos] = t;
+    csum ^= t;
+	pos++;
+    t = a >> 8;
+    send_buffer[pos] = t;
+    csum ^= t;
+	pos++;
+    t = a >> 16;
+    send_buffer[pos] = t;
+    csum ^= t;
+	pos++;
+    t = a >> 24;
+    send_buffer[pos] = t;
+    csum ^= t;
+	pos++;
+	return csum;
+}
+
+uint8_t write16 (uint16_t a, uint8_t *send_buffer, uint8_t pos, uint8_t csum) {
+    uint8_t t;
+    t = a;
+    send_buffer[pos] = t;
+    csum ^= t;
+	pos++;
+    t = a >> 8;
+    send_buffer[pos] = t;
+    csum ^= t;
+	pos++;
+	return csum;
+}
+
+void mwi21_send_wp (uint8_t wpnum, float p_lat, float p_long, float p_alt) {
+	uint8_t send_buffer[50];
+	uint32_t mwi_wp_lat = (uint32_t)(p_lat * 10000000.0);
+	uint32_t mwi_wp_lon = (uint32_t)(p_long * 10000000.0);
+	uint32_t mwi_wp_alt = (uint32_t)(p_alt);
+	int len = 18;
+	send_buffer[0] = '$';
+	send_buffer[1] = 'M';
+	send_buffer[2] = '<';
+	send_buffer[3] = len;
+	send_buffer[4] = MSP_WP_SET;
+	send_buffer[5 + len] = len ^ MSP_WP_SET;
+	send_buffer[5] = wpnum; // wp num
+	send_buffer[5 + len] ^= wpnum;
+	send_buffer[5 + len] = write32(mwi_wp_lat, send_buffer, 6, send_buffer[5 + len]);
+	send_buffer[5 + len] = write32(mwi_wp_lon, send_buffer, 10, send_buffer[5 + len]);
+	send_buffer[5 + len] = write32(mwi_wp_alt, send_buffer, 14, send_buffer[5 + len]);
+	send_buffer[18] = 0; // 16bit
+	send_buffer[5 + len] ^= 0;
+	send_buffer[19] = 0;
+	send_buffer[5 + len] ^= 0;
+	send_buffer[20] = 0; // 16bit
+	send_buffer[5 + len] ^= 0;
+	send_buffer[21] = 0;
+	send_buffer[5 + len] ^= 0;
+	send_buffer[22] = 0; // 8bit
+	send_buffer[5 + len] ^= 0;
+	if (mwi21_serial_fd >= 0) {
+		serial_write(mwi21_serial_fd, send_buffer, 6 + 32);
+	}
+}
+
 void mwi21_send_box (void) {
 	uint8_t send_buffer[50];
 	send_buffer[0] = '$';
@@ -176,12 +242,16 @@ void mwi21_get_new (void) {
 	if (flag == 0) {
 		if (mwi_get_pid_flag != 0) {
 			mwi21_get_req(MSP_PID);
+			mwi_get_pid_flag = 0;
 		} else if (mwi_get_box_flag != 0) {
 			mwi21_get_req8(MSP_BOX, 1);
+			mwi_get_box_flag = 0;
 		} else if (mwi_get_boxnames_flag != 0) {
 			mwi21_get_req(MSP_BOXNAMES);
+			mwi_get_boxnames_flag = 0;
 		} else if (mwi_get_pidnames_flag != 0) {
 			mwi21_get_req(MSP_PIDNAMES);
+			mwi_get_pidnames_flag = 0;
 		} else if (mwi_set_pid_flag == 1) {
 			mwi21_send_pid();
 			mwi_set_pid_flag = 0;
@@ -213,10 +283,19 @@ void mwi21_get_new (void) {
 		mwi21_rn++;
 	} else if (mwi21_rn == 6) {
 		mwi21_get_req(MSP_RAW_IMU);
-//		mwi21_rn++;
-//	} else if (mwi21_rn == 7) {
-//		mwi21_get_req8(MSP_WP, 1);
-		mwi21_rn = 1;
+		mwi21_rn++;
+	} else if (mwi21_rn == 7) {
+		mwi21_get_req8(MSP_WP, 0); // Home
+		mwi21_rn++;
+	} else if (mwi21_rn == 8) {
+		mwi21_get_req8(MSP_WP, 16); // Hold
+		mwi21_rn++;
+	} else if (mwi21_rn == 9) {
+		mwi21_send_wp(0, WayPoints[0].p_lat, WayPoints[0].p_long, WayPoints[0].p_alt);
+		mwi21_rn++;
+	} else if (mwi21_rn == 10) {
+		mwi21_send_wp(16, WayPoints[1].p_lat, WayPoints[1].p_long, WayPoints[1].p_alt);
+		mwi21_rn++;
 	} else {
 		mwi21_rn = 1;
 	}
@@ -264,7 +343,7 @@ void mwi21_update (void) {
 		}
 		if (mwi21_serial_buf[2] == '!' && mwi21_serial_n - mwi21_frame_start > 5) {
 			if (mwi21_serial_buf[4] != 106) {
-				SDL_Log("## MWI CMD_Error: %i\n", mwi21_serial_buf[4]);
+//				SDL_Log("## MWI CMD_Error: %i\n", mwi21_serial_buf[4]);
 			}
 			mwi21_serial_buf[0] = 0;
 			mwi21_serial_buf[1] = 0;
@@ -313,6 +392,7 @@ void mwi21_update (void) {
 					}
 					redraw_flag = 1;
 					mwi_get_boxnames_flag = 0;
+					mwi_get_pidnames_flag = 1;
 				break;
 				case MSP_PIDNAMES:
 					mwi21_cn = 5 + mwi21_frame_start;
@@ -360,9 +440,13 @@ void mwi21_update (void) {
 				break;
 				case MSP_ALTITUDE:
 					mwi21_cn = 5 + mwi21_frame_start;
-					ModelData.baro = (float)mwi21_read32() / 100;
+					ModelData.baro = (float)mwi21_read32() / 100.0;
+					ModelData.heartbeat = 100;
 					if (GPS_found == 0) {
-						ModelData.p_alt = (float)mwi21_read32() / 100;
+						ModelData.p_alt = (float)mwi21_read32() / 100.0;
+						if (ModelData.p_alt > 8000.0) {
+							ModelData.p_alt = ModelData.baro;
+						}
 					}
 					redraw_flag = 1;
 				break;
@@ -377,6 +461,7 @@ void mwi21_update (void) {
 						mwi_pid[nn1][2] = mwi21_read8();
 					}
 					mwi_get_pid_flag = 0;
+					mwi_get_box_flag = 1;
 				break;
 				case MSP_STATUS:
 					mwi21_cn = 5 + mwi21_frame_start;
@@ -407,6 +492,7 @@ void mwi21_update (void) {
 						mwi_set_box[nn] = mwi21_read16();
 					}
 					mwi_get_box_flag = 0;
+					mwi_get_boxnames_flag = 1;
 				break;
 				case MSP_RAW_IMU:
 					mwi21_cn = 5 + mwi21_frame_start;
@@ -435,11 +521,9 @@ void mwi21_update (void) {
 					new_lon = (float)mwi21_read32() / 10000000.0;
 					new_alt = (float)mwi21_read16();
 					GPS_speed = (float)mwi21_read16();
-
 					ModelData.speed = GPS_speed;
 					ModelData.gpsfix = GPS_fix;
 					ModelData.numSat = GPS_numSat;
-
 					if (new_lat > 0.0 && new_lon > 0.0) {
 						ModelData.p_lat = new_lat;
 						ModelData.p_long = new_lon;
@@ -455,7 +539,30 @@ void mwi21_update (void) {
 					float mwi_wp_lon = (float)mwi21_read32() / 10000000.0;
 					int16_t mwi_wp_alt = mwi21_read16();
 					int8_t mwi_wp_flag = mwi21_read8();
-					SDL_Log("### %i %f %f %i %i ###\n", mwi_wp_num, mwi_wp_lat, mwi_wp_lon, mwi_wp_alt, mwi_wp_flag);
+					if (mwi_wp_num == 0) {
+						SDL_Log("# home # %i %f %f %i %i ###\n", mwi_wp_num, mwi_wp_lat, mwi_wp_lon, mwi_wp_alt, mwi_wp_flag);
+						if (mwi_wp_lat != 0.0 || mwi_wp_lon != 0.0) {
+							WayPoints[0].p_lat = mwi_wp_lat;
+							WayPoints[0].p_long = mwi_wp_lon;
+							WayPoints[0].p_alt = mwi_wp_alt;
+							WayPoints[0].frametype = MAV_FRAME_GLOBAL;
+						}
+					} else {
+						SDL_Log("# hold # %i %f %f %i %i ###\n", mwi_wp_num, mwi_wp_lat, mwi_wp_lon, mwi_wp_alt, mwi_wp_flag);
+						if (mwi_wp_lat != 0.0 || mwi_wp_lon != 0.0) {
+							strcpy(WayPoints[1].name, "HOLD");
+							strcpy(WayPoints[1].command, "WAYPOINT");
+							WayPoints[1].p_lat = mwi_wp_lat;
+							WayPoints[1].p_long = mwi_wp_lon;
+							WayPoints[1].p_alt = mwi_wp_alt;
+							WayPoints[1].frametype = MAV_FRAME_GLOBAL;
+							WayPoints[2].name[0] = 0;
+							WayPoints[2].p_lat = 0.0;
+							WayPoints[2].p_long = 0.0;
+							WayPoints[2].p_alt = 0.0;
+							WayPoints[2].frametype = MAV_FRAME_GLOBAL;
+						}
+					}
 				break;
 			}
 			mwi21_serial_n = 0;
