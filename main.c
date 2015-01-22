@@ -406,15 +406,15 @@ void setup_save (void) {
 	if (clientmode == 1) {
 		return;
 	}
-        FILE *fr;
-        int n = 0;
+	FILE *fr;
+	int n = 0;
 	if (setup.calibration_mode > 0) {
 		setup.calibration_mode = 1;
 	}
 //	SDL_Log("** saving file\n");
 	char filename[1024];
 	sprintf(filename, "%s/setup.cfg", get_datadirectory());
-        fr = fopen(filename, "wb");
+	fr = fopen(filename, "wb");
 	if (fr != 0) {
 	        fprintf(fr, "model_name		%s\n", ModelData.name);
 	        fprintf(fr, "view_mode		%i\n", setup.view_mode);
@@ -611,7 +611,7 @@ void setup_load (void) {
 
 	char filename[1024];
 	sprintf(filename, "%s/setup.cfg", get_datadirectory());
-        fr = fopen (filename, "r");
+	fr = fopen (filename, "r");
 	if (fr != 0) {
 	        while(fgets(line, 100, fr) != NULL) {
 	                var[0] = 0;
