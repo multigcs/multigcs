@@ -87,7 +87,7 @@ int openpilot_hidraw_find (void) {
 		if (!dev) {
 			return -1;
 		}
-		if (strcmp("CopterControl", udev_device_get_sysattr_value(dev,"product")) == 0) {
+		if (strcmp("CopterControl", udev_device_get_sysattr_value(dev,"product")) == 0 || strcmp("TauLabs.org", udev_device_get_sysattr_value(dev,"manufacturer")) == 0) {
 			SDL_Log("uavtalk: VID/PID: %s %s\n", udev_device_get_sysattr_value(dev,"idVendor"), udev_device_get_sysattr_value(dev, "idProduct"));
 			SDL_Log("uavtalk: %s\n", udev_device_get_sysattr_value(dev,"manufacturer"));
 			SDL_Log("uavtalk: %s\n", udev_device_get_sysattr_value(dev,"product"));
@@ -122,6 +122,58 @@ void openpilot_write (uint8_t *data, int len) {
 	if (hidraw_fd_openpilot >= 0) {
 		openpilot_hidraw_write(hidraw_fd_openpilot, data, len);
 	}
+}
+
+void uavtalk_send (uint8_t *buf, uint32_t obj_id, uint8_t command, uint16_t len) {
+	uint8_t openpilot_write_buf[256];
+	uint8_t crc = 0;
+	uint8_t n = 0;
+	uint8_t oid4 = ((obj_id) & 0x000000FF);
+	uint8_t oid3 = ((obj_id>>8) & 0x000000FF);
+	uint8_t oid2 = ((obj_id>>16) & 0x000000FF);
+	uint8_t oid1 = ((obj_id>>24) & 0x000000FF);
+	len += 8;
+	uint8_t len2 = ((len) & 0x000000FF);
+	uint8_t len1 = ((len>>8) & 0x000000FF);
+	openpilot_write_buf[0] = 0x3c;	// Start
+	openpilot_write_buf[1] = command;
+	openpilot_write_buf[2] = len2;
+	openpilot_write_buf[3] = len1;
+	openpilot_write_buf[4] = oid4;
+	openpilot_write_buf[5] = oid3;
+	openpilot_write_buf[6] = oid2;
+	openpilot_write_buf[7] = oid1;
+	memcpy(&openpilot_write_buf[8], buf, len);
+	for (n = 0; n < len; n++) {
+		crc = PIOS_CRC_updateByte(crc, openpilot_write_buf[n]);
+	}
+	openpilot_write_buf[len] = crc;
+	openpilot_write(openpilot_write_buf, len + 1);
+}
+
+uint16_t openpilot_add_4byte (uint8_t *buf, uint16_t pos, uint32_t value) {
+	uint8_t value4 = ((value) & 0x000000FF);
+	uint8_t value3 = ((value>>8) & 0x000000FF);
+	uint8_t value2 = ((value>>16) & 0x000000FF);
+	uint8_t value1 = ((value>>24) & 0x000000FF);
+	buf[pos++] = value4;
+	buf[pos++] = value3;
+	buf[pos++] = value2;
+	buf[pos++] = value1;
+	return pos;
+}
+
+uint16_t openpilot_add_2byte (uint8_t *buf, uint16_t pos, uint16_t value) {
+	uint8_t value2 = ((value) & 0x000000FF);
+	uint8_t value1 = ((value>>8) & 0x000000FF);
+	buf[pos++] = value2;
+	buf[pos++] = value1;
+	return pos;
+}
+
+uint16_t openpilot_add_1byte (uint8_t *buf, uint16_t pos, uint8_t value) {
+	buf[pos++] = value;
+	return pos;
 }
 
 void openpilot_send_ack (void) {
@@ -185,7 +237,7 @@ void openpilot_save_to_flash (void) {
 
 }
 
-void openpilot_send_req (uint8_t status) {
+void openpilot_send_req_ (uint8_t status) {
 	uint8_t openpilot_write_buf[256];
 	uint8_t crc = 0;
 	uint8_t n = 0;
@@ -219,6 +271,29 @@ void openpilot_send_req (uint8_t status) {
 	openpilot_write_buf[len] = crc; 	//Checksum
 	openpilot_write(openpilot_write_buf, len + 1);
 }
+
+void openpilot_send_req (uint8_t status) {
+	uint8_t openpilot_write_buf[256];
+	uint8_t len = 0;
+
+	GcsTelemetryStatsData data;
+	data.TxDataRate = 1.0;
+	data.RxDataRate = 2.0;
+	data.TxFailures = 3;
+	data.RxFailures = 4;
+	data.TxRetries = 5;
+	data.TeleStatus = status;
+
+	len = openpilot_add_4byte(openpilot_write_buf, len, data.TxDataRate);
+	len = openpilot_add_4byte(openpilot_write_buf, len, data.RxDataRate);
+	len = openpilot_add_4byte(openpilot_write_buf, len, data.TxFailures);
+	len = openpilot_add_4byte(openpilot_write_buf, len, data.RxFailures);
+	len = openpilot_add_4byte(openpilot_write_buf, len, data.TxRetries);
+	len = openpilot_add_1byte(openpilot_write_buf, len, data.TeleStatus);
+
+	uavtalk_send(openpilot_write_buf, GCSTELEMETRYSTATS_OBJID, 0x22, len);
+}
+
 
 void openpilot_send_setting_req (void) {
 	uint8_t openpilot_write_buf[256];

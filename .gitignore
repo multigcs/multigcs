@@ -32,3 +32,4 @@ android/jni/libxml2
 3d-models
 External
 mavlink/sitl-transmitter/joystick
+openpilot/generate_objid
