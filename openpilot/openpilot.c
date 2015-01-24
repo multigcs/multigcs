@@ -6,6 +6,12 @@
 #include <linux/hidraw.h>
 #include <libudev.h>
 
+UAVT_HwSettingsData OpenpilotHwSettings;
+UAVT_SystemSettingsData OpenpilotSystemSettings;
+UAVT_StabilizationSettingsData OpenpilotStabilizationSettings;
+
+
+
 /* http://wiki.openpilot.org/display/Doc/UAVTalk */
 
 //#define DEBUG
@@ -20,10 +26,6 @@ uint8_t msg_obj_id3 = 0;
 uint8_t msg_obj_id4 = 0;
 int serial_fd_openpilot = -1;
 int hidraw_fd_openpilot = -1;
-
-StabilizationSettingsData OpenpilotStabilizationSettings;
-HwSettingsData OpenpilotHwSettings;
-SystemSettingsData OpenpilotSystemSettings;
 
 static const uint8_t crc_table[256] = {
 	0x00, 0x07, 0x0e, 0x09, 0x1c, 0x1b, 0x12, 0x15, 0x38, 0x3f, 0x36, 0x31, 0x24, 0x23, 0x2a, 0x2d,
@@ -176,6 +178,23 @@ uint16_t openpilot_add_1byte (uint8_t *buf, uint16_t pos, uint8_t value) {
 	return pos;
 }
 
+
+void uavtalk_request (uint32_t obj_id) {
+	uint8_t openpilot_write_buf[256];
+#ifdef DEBUG
+	SDL_Log("uavtalk: >> SEND_REQ\n");
+#endif
+	uavtalk_send(openpilot_write_buf, obj_id, 0x21, 0);
+}
+
+void uavtalk_send_ack (uint32_t obj_id) {
+	uint8_t openpilot_write_buf[256];
+#ifdef DEBUG
+	SDL_Log("uavtalk: >> SEND_ACK\n");
+#endif
+	uavtalk_send(openpilot_write_buf, obj_id, 0x3c, 0);
+}
+
 void openpilot_send_ack (void) {
 #ifdef DEBUG
 	SDL_Log("uavtalk: >> SEND_ACK\n");
@@ -209,7 +228,7 @@ void openpilot_save_to_flash (void) {
 	uint8_t n = 0;
 	uint8_t n2 = 0;
 	uint8_t len = 0;
-	ObjectPersistenceData data;
+	UAVT_ObjectPersistenceData data;
 
 	data.ObjectID = STABILIZATIONSETTINGS_OBJID;
 	data.InstanceID = 0;
@@ -226,7 +245,7 @@ void openpilot_save_to_flash (void) {
 	openpilot_write_buf[n++] = 0xC6;	// ObjID2
 	openpilot_write_buf[n++] = 0x99;	// ObjID1
 
-	memcpy(&openpilot_write_buf[8], &data, sizeof(ObjectPersistenceData));
+	memcpy(&openpilot_write_buf[8], &data, sizeof(UAVT_ObjectPersistenceData));
 
 	crc = 0;
 	for (n2 = 0; n2 < len; n2++) {
@@ -235,61 +254,26 @@ void openpilot_save_to_flash (void) {
 	openpilot_write_buf[len] = crc; 	//Checksum
 	openpilot_write(openpilot_write_buf, len + 1);
 
-}
-
-void openpilot_send_req_ (uint8_t status) {
-	uint8_t openpilot_write_buf[256];
-	uint8_t crc = 0;
-	uint8_t n = 0;
-	uint8_t n2 = 0;
-	uint8_t len = 0;
-#ifdef DEBUG
-	SDL_Log("uavtalk: >> SEND_REQ_GCSTELEMETRYSTATS: %i (0x%x)\n", status, status);
-#endif
-	GcsTelemetryStatsData data;
-	data.TxDataRate = 0.0;
-	data.RxDataRate = 0.0;
-	data.TxFailures = 0;
-	data.TxFailures = 0;
-	data.TxRetries = 0;
-	data.TeleStatus = status;
-	len = 29;
-	openpilot_write_buf[n++] = 0x3c;	// Start
-	openpilot_write_buf[n++] = 0x22;	// Command
-	openpilot_write_buf[n++] = len;		// Len1
-	openpilot_write_buf[n++] = 0x00;	// Len2
-	openpilot_write_buf[n++] = 0x44;	// ObjID1
-	openpilot_write_buf[n++] = 0x27;	// ObjID2
-	openpilot_write_buf[n++] = 0xC7;	// ObjID3
-	openpilot_write_buf[n++] = 0xAB;	// ObjID4
-	memcpy(&openpilot_write_buf[8], &data, sizeof(GcsTelemetryStatsData));
-	crc = 0;
-	for (n2 = 0; n2 < len; n2++) {
-		crc = PIOS_CRC_updateByte(crc, openpilot_write_buf[n2]);
-//		SDL_Log("uavtalk: %i: %x (%x)\n", n2, openpilot_write_buf[n2], crc);
-	}
-	openpilot_write_buf[len] = crc; 	//Checksum
-	openpilot_write(openpilot_write_buf, len + 1);
 }
 
 void openpilot_send_req (uint8_t status) {
 	uint8_t openpilot_write_buf[256];
 	uint8_t len = 0;
 
-	GcsTelemetryStatsData data;
+	UAVT_GCSTelemetryStatsData data;
 	data.TxDataRate = 1.0;
 	data.RxDataRate = 2.0;
 	data.TxFailures = 3;
 	data.RxFailures = 4;
 	data.TxRetries = 5;
-	data.TeleStatus = status;
+	data.Status = status;
 
 	len = openpilot_add_4byte(openpilot_write_buf, len, data.TxDataRate);
 	len = openpilot_add_4byte(openpilot_write_buf, len, data.RxDataRate);
 	len = openpilot_add_4byte(openpilot_write_buf, len, data.TxFailures);
 	len = openpilot_add_4byte(openpilot_write_buf, len, data.RxFailures);
 	len = openpilot_add_4byte(openpilot_write_buf, len, data.TxRetries);
-	len = openpilot_add_1byte(openpilot_write_buf, len, data.TeleStatus);
+	len = openpilot_add_1byte(openpilot_write_buf, len, data.Status);
 
 	uavtalk_send(openpilot_write_buf, GCSTELEMETRYSTATS_OBJID, 0x22, len);
 }
@@ -304,7 +288,7 @@ void openpilot_send_setting_req (void) {
 #ifdef DEBUG
 	SDL_Log("uavtalk: >> SEND_REQ_OBJECTPERSISTENCE\n");
 #endif
-	ObjectPersistenceData data;
+	UAVT_ObjectPersistenceData data;
 	data.ObjectID = 0x3d03de86;
 	data.InstanceID = 0;
 	data.Operation = 1;
@@ -319,7 +303,7 @@ void openpilot_send_setting_req (void) {
 	openpilot_write_buf[n++] = 0x32;	// ObjID3
 	openpilot_write_buf[n++] = 0xC6;	// ObjID2
 	openpilot_write_buf[n++] = 0x99;	// ObjID1
-	memcpy(&openpilot_write_buf[8], &data, sizeof(ObjectPersistenceData));
+	memcpy(&openpilot_write_buf[8], &data, sizeof(UAVT_ObjectPersistenceData));
 
 	crc = 0;
 	for (n2 = 0; n2 < len; n2++) {
@@ -355,61 +339,10 @@ void openpilot_request_StabilizationSettings (void) {
 
 }
 
-void openpilot_defaults_StabilizationSettings (StabilizationSettingsData *data) {
-	data->ManualRate[0] = 150;
-	data->ManualRate[1] = 150;
-	data->ManualRate[2] = 150;
-	data->MaximumRate[0] = 300;
-	data->MaximumRate[1] = 300;
-	data->MaximumRate[2] = 300;
-	data->RollRatePID[0] = 0.002;
-	data->RollRatePID[1] = 0;
-	data->RollRatePID[2] = 0;
-	data->RollRatePID[3] = 0.3;
-	data->PitchRatePID[0] = 0.002;
-	data->PitchRatePID[1] = 0;
-	data->PitchRatePID[2] = 0;
-	data->PitchRatePID[3] = 0.3;
-	data->YawRatePID[0] = 0.0035;
-	data->YawRatePID[1] = 0.0035;
-	data->YawRatePID[2] = 0;
-	data->YawRatePID[3] = 0.3;
-	data->RollPI[0] = 2;
-	data->RollPI[1] = 0;
-	data->RollPI[2] = 50;
-	data->PitchPI[0] = 2;
-	data->PitchPI[1] = 0;
-	data->PitchPI[2] = 50;
-	data->YawPI[0] = 2;
-	data->YawPI[1] = 0;
-	data->YawPI[2] = 50;
-	data->VbarSensitivity[0] = 0.5;
-	data->VbarSensitivity[1] = 0.5;
-	data->VbarSensitivity[2] = 0.5;
-	data->VbarRollPI[0] = 0.005;
-	data->VbarRollPI[1] = 0.002;
-	data->VbarPitchPI[0] = 0.005;
-	data->VbarPitchPI[1] = 0.002;
-	data->VbarYawPI[0] = 0.005;
-	data->VbarYawPI[1] = 0.002;
-	data->VbarTau = 0.5;
-	data->GyroTau = 0.005;
-	data->DerivativeGamma = 1;
-	data->WeakLevelingKp = 0.1;
-	data->RollMax = 55;
-	data->PitchMax = 55;
-	data->YawMax = 35;
-	data->VbarGyroSuppress = 30;
-	data->VbarMaxAngle = 10;
-	data->DerivativeCutoff = 20;
-	data->MaxAxisLock = 15;
-	data->MaxAxisLockRate = 2;
-	data->MaxWeakLevelingRate = 5;
-	data->VbarPiroComp = 0;
-	data->LowThrottleZeroIntegral = 1;
+void openpilot_defaults_StabilizationSettings (UAVT_StabilizationSettingsData *data) {
 }
 
-void openpilot_send_StabilizationSettings (StabilizationSettingsData *data) {
+void openpilot_send_StabilizationSettings (UAVT_StabilizationSettingsData *data) {
 	uint8_t openpilot_write_buf[256];
 	uint8_t crc = 0;
 	uint8_t n = 0;
@@ -424,7 +357,7 @@ void openpilot_send_StabilizationSettings (StabilizationSettingsData *data) {
 	openpilot_write_buf[n++] = 0xDE;	// ObjID3
 	openpilot_write_buf[n++] = 0x03;	// ObjID2
 	openpilot_write_buf[n++] = 0x3D;	// ObjID1
-	memcpy(&openpilot_write_buf[8], data, sizeof(StabilizationSettingsData));
+	memcpy(&openpilot_write_buf[8], data, sizeof(UAVT_StabilizationSettingsData));
 	crc = 0;
 	for (n2 = 0; n2 < len; n2++) {
 		crc = PIOS_CRC_updateByte(crc, openpilot_write_buf[n2]);
@@ -434,7 +367,7 @@ void openpilot_send_StabilizationSettings (StabilizationSettingsData *data) {
 
 }
 
-void openpilot_defaults_HwSettings (HwSettingsData *data) {
+void openpilot_defaults_HwSettings (UAVT_HwSettingsData *data) {
 	data->DSMxBind = 0;
 	data->CC_RcvrPort = 1; // PWM
 	data->CC_MainPort = 1; // Telemetry
@@ -450,16 +383,16 @@ void openpilot_defaults_HwSettings (HwSettingsData *data) {
 	data->ComUsbBridgeSpeed = 5; // 57600
 	data->USB_HIDPort = 0; // USBTelemetry
 	data->USB_VCPPort = 2; // Disabled
-	data->OptionalModules[0] = 0; // Disabled
-	data->OptionalModules[1] = 0; // Disabled
-	data->OptionalModules[2] = 0; // Disabled
-	data->OptionalModules[3] = 0; // Disabled
-	data->OptionalModules[4] = 0; // Disabled
-	data->OptionalModules[5] = 0; // Disabled
-	data->OptionalModules[6] = 0; // Disabled
+	data->OptionalModules.CameraStab = 0; // Disabled
+	data->OptionalModules.GPS = 0; // Disabled
+	data->OptionalModules.ComUsbBridge = 0; // Disabled
+	data->OptionalModules.Fault = 0; // Disabled
+	data->OptionalModules.Altitude = 0; // Disabled
+	data->OptionalModules.TxPID = 0; // Disabled
+	data->OptionalModules.Autotune = 0; // Disabled
 }
 
-void openpilot_send_HwSettings (HwSettingsData *data) {
+void openpilot_send_HwSettings (UAVT_HwSettingsData *data) {
 	uint8_t openpilot_write_buf[256];
 	uint8_t crc = 0;
 	uint8_t n = 0;
@@ -475,7 +408,7 @@ void openpilot_send_HwSettings (HwSettingsData *data) {
 	openpilot_write_buf[n++] = 0xA9;	// ObjID2
 	openpilot_write_buf[n++] = 0xA1;	// ObjID1
 
-	memcpy(&openpilot_write_buf[8], &data, sizeof(HwSettingsData));
+	memcpy(&openpilot_write_buf[8], &data, sizeof(UAVT_HwSettingsData));
 
 	crc = 0;
 	for (n2 = 0; n2 < len; n2++) {
@@ -510,12 +443,15 @@ void openpilot_request_HwSettings (void) {
 
 }
 
-void openpilot_defaults_SystemSettings (SystemSettingsData *data) {
-	data->GUIConfigData = 0;
+void openpilot_defaults_SystemSettings (UAVT_SystemSettingsData *data) {
+	data->GUIConfigData[0] = 0;
+	data->GUIConfigData[1] = 0;
+	data->GUIConfigData[2] = 0;
+	data->GUIConfigData[3] = 0;
 	data->AirframeType = 5; // QuadX
 }
 
-void openpilot_send_SystemSettings (SystemSettingsData *data) {
+void openpilot_send_SystemSettings (UAVT_SystemSettingsData *data) {
 	uint8_t openpilot_write_buf[256];
 	uint8_t crc = 0;
 	uint8_t n = 0;
@@ -531,7 +467,7 @@ void openpilot_send_SystemSettings (SystemSettingsData *data) {
 	openpilot_write_buf[n++] = 0x2A;	// ObjID2
 	openpilot_write_buf[n++] = 0xC7;	// ObjID1
 
-	memcpy(&openpilot_write_buf[8], &data, sizeof(SystemSettingsData));
+	memcpy(&openpilot_write_buf[8], &data, sizeof(UAVT_SystemSettingsData));
 
 	crc = 0;
 	for (n2 = 0; n2 < len; n2++) {
@@ -662,391 +598,85 @@ void openpilot_decode (char c) {
 						if (msg_type == 0x22) {
 							openpilot_send_ack();
 						}
-						switch (obj_id) {
-							case SYSTEMSETTINGS_OBJID: {
-								SystemSettingsData *data = (SystemSettingsData *)&openpilot_read_buf[8];
-								SDL_Log("uavtalk: << SYSTEMSETTINGS:\n");
-								SDL_Log("uavtalk: 	GUIConfigData: %i\n", data->GUIConfigData);
-								SDL_Log("uavtalk: 	AirframeType: %i\n", data->AirframeType);
-								break;
-							}
-							case OBJECTPERSISTENCE_OBJID: {
-								ObjectPersistenceData *data = (ObjectPersistenceData *)&openpilot_read_buf[8];
-								SDL_Log("uavtalk: << OBJECTPERSISTENCE: (len=%i; type:0x%x)\n", msg_len, msg_type);
-								SDL_Log("uavtalk: 	ObjectID: %i (0x%x)\n", data->ObjectID, data->ObjectID);
-								SDL_Log("uavtalk: 	InstanceID: %i\n", data->InstanceID);
-								SDL_Log("uavtalk: 	Operation: %i\n", data->Operation);
-								SDL_Log("uavtalk: 	Selection: %i\n", data->Selection);
-								break;
-							}
-							case HWSETTINGS_OBJID: {
-								HwSettingsData *data = (HwSettingsData *)&openpilot_read_buf[8];
-								memcpy(&OpenpilotHwSettings, data, sizeof(HwSettingsData));
-								SDL_Log("uavtalk: << HWSETTINGS:\n");
-								SDL_Log("uavtalk: 	DSMxBind: %i\n", data->DSMxBind);
-								SDL_Log("uavtalk: 	CC_RcvrPort: %i\n", data->CC_RcvrPort);
-								SDL_Log("uavtalk: 	CC_MainPort: %i\n", data->CC_MainPort);
-								SDL_Log("uavtalk: 	CC_FlexiPort: %i\n", data->CC_FlexiPort);
-								SDL_Log("uavtalk: 	RV_RcvrPort: %i\n", data->RV_RcvrPort);
-								SDL_Log("uavtalk: 	RV_AuxPort: %i\n", data->RV_AuxPort);
-								SDL_Log("uavtalk: 	RV_AuxSBusPort: %i\n", data->RV_AuxSBusPort);
-								SDL_Log("uavtalk: 	RV_FlexiPort: %i\n", data->RV_FlexiPort);
-								SDL_Log("uavtalk: 	RV_TelemetryPort: %i\n", data->RV_TelemetryPort);
-								SDL_Log("uavtalk: 	RV_GPSPort: %i\n", data->RV_GPSPort);
-								SDL_Log("uavtalk: 	TelemetrySpeed: %i\n", data->TelemetrySpeed);
-								SDL_Log("uavtalk: 	GPSSpeed: %i\n", data->GPSSpeed);
-								SDL_Log("uavtalk: 	ComUsbBridgeSpeed: %i\n", data->ComUsbBridgeSpeed);
-								SDL_Log("uavtalk: 	USB_HIDPort: %i\n", data->USB_HIDPort);
-								SDL_Log("uavtalk: 	USB_VCPPort: %i\n", data->USB_VCPPort);
-								SDL_Log("uavtalk: 	OptionalModules(CameraStab): %i\n", data->OptionalModules[0]);
-								SDL_Log("uavtalk: 	OptionalModules(GPS): %i\n", data->OptionalModules[1]);
-								SDL_Log("uavtalk: 	OptionalModules(ComUsbBridge): %i\n", data->OptionalModules[2]);
-								SDL_Log("uavtalk: 	OptionalModules(Fault): %i\n", data->OptionalModules[3]);
-								SDL_Log("uavtalk: 	OptionalModules(Altitude): %i\n", data->OptionalModules[4]);
-								SDL_Log("uavtalk: 	OptionalModules(TxPID): %i\n", data->OptionalModules[5]);
-								SDL_Log("uavtalk: 	OptionalModules(Autotune): %i\n", data->OptionalModules[6]);
-								break;
-							}
-							case STABILIZATIONSETTINGS_OBJID: {
-								StabilizationSettingsData *data = (StabilizationSettingsData *)&openpilot_read_buf[8];
-								memcpy(&OpenpilotStabilizationSettings, data, sizeof(StabilizationSettingsData));
-								SDL_Log("uavtalk: << STABILIZATIONSETTINGS: (len=%i %i; type:0x%x)\n", msg_len, msg_len2, msg_type);
-								SDL_Log("uavtalk: 	ManualRate(Roll): %f\n", data->ManualRate[0]);
-								SDL_Log("uavtalk: 	ManualRate(Pitch): %f\n", data->ManualRate[1]);
-								SDL_Log("uavtalk: 	ManualRate(Yaw): %f\n", data->ManualRate[2]);
-								SDL_Log("uavtalk: 	MaximumRate(Roll): %f\n", data->MaximumRate[0]);
-								SDL_Log("uavtalk: 	MaximumRate(Pitch): %f\n", data->MaximumRate[1]);
-								SDL_Log("uavtalk: 	MaximumRate(Yaw): %f\n", data->MaximumRate[2]);
-								SDL_Log("uavtalk: 	RollRatePID(Kp): %f\n", data->RollRatePID[0]);
-								SDL_Log("uavtalk: 	RollRatePID(Ki): %f\n", data->RollRatePID[1]);
-								SDL_Log("uavtalk: 	RollRatePID(Kd): %f\n", data->RollRatePID[2]);
-								SDL_Log("uavtalk: 	RollRatePID(ILimit): %f\n", data->RollRatePID[3]);
-								SDL_Log("uavtalk: 	PitchRatePID(Kp): %f\n", data->PitchRatePID[0]);
-								SDL_Log("uavtalk: 	PitchRatePID(Ki): %f\n", data->PitchRatePID[1]);
-								SDL_Log("uavtalk: 	PitchRatePID(Kd): %f\n", data->PitchRatePID[2]);
-								SDL_Log("uavtalk: 	PitchRatePID(ILimit): %f\n", data->PitchRatePID[3]);
-								SDL_Log("uavtalk: 	YawRatePID(Kp): %f\n", data->YawRatePID[0]);
-								SDL_Log("uavtalk: 	YawRatePID(Ki): %f\n", data->YawRatePID[1]);
-								SDL_Log("uavtalk: 	YawRatePID(Kd): %f\n", data->YawRatePID[2]);
-								SDL_Log("uavtalk: 	YawRatePID(ILimit): %f\n", data->YawRatePID[3]);
-								SDL_Log("uavtalk: 	RollPI(Kp): %f\n", data->RollPI[0]);
-								SDL_Log("uavtalk: 	RollPI(Ki): %f\n", data->RollPI[1]);
-								SDL_Log("uavtalk: 	RollPI(ILimit): %f\n", data->RollPI[2]);
-								SDL_Log("uavtalk: 	PitchPI(Kp): %f\n", data->PitchPI[0]);
-								SDL_Log("uavtalk: 	PitchPI(Ki): %f\n", data->PitchPI[1]);
-								SDL_Log("uavtalk: 	PitchPI(ILimit): %f\n", data->PitchPI[2]);
-								SDL_Log("uavtalk: 	YawPI(Kp): %f\n", data->YawPI[0]);
-								SDL_Log("uavtalk: 	YawPI(Ki): %f\n", data->YawPI[1]);
-								SDL_Log("uavtalk: 	YawPI(ILimit): %f\n", data->YawPI[2]);
-								SDL_Log("uavtalk: 	VbarSensitivity(Roll): %f\n", data->VbarSensitivity[0]);
-								SDL_Log("uavtalk: 	VbarSensitivity(Pitch): %f\n", data->VbarSensitivity[1]);
-								SDL_Log("uavtalk: 	VbarSensitivity(Yaw): %f\n", data->VbarSensitivity[2]);
-								SDL_Log("uavtalk: 	VbarRollPI(Kp): %f\n", data->VbarRollPI[0]);
-								SDL_Log("uavtalk: 	VbarRollPI(Ki): %f\n", data->VbarRollPI[1]);
-								SDL_Log("uavtalk: 	VbarPitchPI(Kp): %f\n", data->VbarPitchPI[0]);
-								SDL_Log("uavtalk: 	VbarPitchPI(Ki): %f\n", data->VbarPitchPI[1]);
-								SDL_Log("uavtalk: 	VbarYawPI(Kp): %f\n", data->VbarYawPI[0]);
-								SDL_Log("uavtalk: 	VbarYawPI(Ki): %f\n", data->VbarYawPI[1]);
-								SDL_Log("uavtalk: 	VbarTau: %f\n", data->VbarTau);
-								SDL_Log("uavtalk: 	GyroTau: %f\n", data->GyroTau);
-								SDL_Log("uavtalk: 	DerivativeGamma: %f\n", data->DerivativeGamma);
-								SDL_Log("uavtalk: 	WeakLevelingKp: %f\n", data->WeakLevelingKp);
-								SDL_Log("uavtalk: 	RollMax: %i\n", data->RollMax);
-								SDL_Log("uavtalk: 	PitchMax: %i\n", data->PitchMax);
-								SDL_Log("uavtalk: 	YawMax: %i\n", data->YawMax);
-								SDL_Log("uavtalk: 	VbarGyroSuppress: %i\n", data->VbarGyroSuppress);
-								SDL_Log("uavtalk: 	VbarMaxAngle: %i\n", data->VbarMaxAngle);
-								SDL_Log("uavtalk: 	DerivativeCutoff: %i\n", data->DerivativeCutoff);
-								SDL_Log("uavtalk: 	MaxAxisLock: %i\n", data->MaxAxisLock);
-								SDL_Log("uavtalk: 	MaxAxisLockRate: %i\n", data->MaxAxisLockRate);
-								SDL_Log("uavtalk: 	MaxWeakLevelingRate: %i\n", data->MaxWeakLevelingRate);
-								SDL_Log("uavtalk: 	VbarPiroComp: %i\n", data->VbarPiroComp);
-								SDL_Log("uavtalk: 	LowThrottleZeroIntegral: %i\n", data->LowThrottleZeroIntegral);
-								break;
-							}
-							case ATTITUDEACTUAL_OBJID: {
-								AttitudeActualData *data = (AttitudeActualData *)&openpilot_read_buf[8];
-#ifdef DEBUG
-								SDL_Log("uavtalk: << Attitude: %f %f %f\n", data->Roll, data->Pitch, data->Yaw);
-#endif
-								ModelData.roll = data->Roll;
-								ModelData.pitch = data->Pitch;
-								ModelData.yaw = data->Yaw;
-								redraw_flag = 1;
-								break;
-							}
-							case ACCELS_OBJID: {
-								AccelsData *data = (AccelsData *)&openpilot_read_buf[8];
-#ifdef DEBUG
-								SDL_Log("uavtalk: << Accel: %f %f %f  %f\n", data->x, data->y, data->z, data->temperature);
-#endif
-								ModelData.acc_x = data->x / 10.0;
-								ModelData.acc_y = data->y / 10.0;
-								ModelData.acc_z = data->z / 10.0;
-								redraw_flag = 1;
-								break;
-							}
-							case GYROS_OBJID: {
-								GyrosData *data = (GyrosData *)&openpilot_read_buf[8];
-#ifdef DEBUG
-								SDL_Log("uavtalk: << Gyro: %f %f %f\n", data->x, data->y, data->z, data->temperature);
-#endif
-								ModelData.gyro_x = data->x;
-								ModelData.gyro_y = data->y;
-								ModelData.gyro_z = data->z;
-								redraw_flag = 1;
-								break;
-							}
-							case STABILIZATIONDESIRED_OBJID: {
-//								StabilizationDesiredData *data = (StabilizationDesiredData *)&openpilot_read_buf[8];
-//								SDL_Log("uavtalk: << StabilizationDesired: %f %f %f %f\n", data->Roll, data->Pitch, data->Yaw, data->Throttle);
-//								char names[3][30];
-//								char msg[8][30];
-//								strcpy(names[0], "ROLL");
-//								strcpy(names[1], "PITCH");
-//								strcpy(names[2], "YAW");
-//								strcpy(msg[0], "NONE");
-//								strcpy(msg[1], "RATE");
-//								strcpy(msg[2], "ATTITUDE");
-//								strcpy(msg[3], "AXISLOCK");
-//								strcpy(msg[4], "WEAKLEVELING");
-//								strcpy(msg[5], "VIRTUALBAR");
-//								strcpy(msg[6], "RELAYRATE");
-//								strcpy(msg[7], "RELAYATTITUDE");
-//								for (n2 = 0; n2 < 3; n2++) {
-//									SDL_Log("uavtalk: 	%s: %s\n", names[n2], msg[data->StabilizationMode[n2]]);
-//								}
-								break;
-							}
-							case SYSTEMSTATS_OBJID: {
-								SystemStatsData *data = (SystemStatsData *)&openpilot_read_buf[8];
-#ifdef DEBUG
-								SDL_Log("uavtalk: << System: %i %i %i\n", data->CPULoad, data->CPUTemp, data->FlightTime);
-#endif
-								ModelData.load = data->CPULoad;
-								ModelData.heartbeat = 100;
 
-								if (openpilot_get == 1) {
-									openpilot_request_StabilizationSettings();
-									openpilot_get = 2;
-								} else if (openpilot_get == 2) {
-									openpilot_request_HwSettings();
-									openpilot_get = 0;
-								} else if (openpilot_set == 1) {
-									openpilot_send_StabilizationSettings(&OpenpilotStabilizationSettings);
-									openpilot_set = 2;
-								} else if (openpilot_set == 2) {
-									openpilot_send_HwSettings(&OpenpilotHwSettings);
-									openpilot_set = 0;
-								} else if (openpilot_save == 1) {
-									openpilot_save_to_flash();
-									openpilot_save = 0;
-								}
-								redraw_flag = 1;
-								break;
-							}
-							case SYSTEMALARMS_OBJID: {
-								SystemAlarmsData *data = (SystemAlarmsData *)&openpilot_read_buf[8];
-								SDL_Log("uavtalk: << Alarm: \n");
-								char names[16][30];
-								char msg[5][30];
-								strcpy(names[0], "OUTOFMEMORY");
-								strcpy(names[1], "STACKOVERFLOW");
-								strcpy(names[2], "CPUOVERLOAD");
-								strcpy(names[3], "EVENTSYSTEM");
-								strcpy(names[4], "TELEMETRY");
-								strcpy(names[5], "MANUALCONTROL");
-								strcpy(names[6], "ACTUATOR");
-								strcpy(names[7], "ATTITUDE");
-								strcpy(names[8], "SENSORS");
-								strcpy(names[9], "STABILIZATION");
-								strcpy(names[10], "GUIDANC");
-								strcpy(names[11], "BATTERY");
-								strcpy(names[12], "FLIGHTTIME");
-								strcpy(names[13], "I2C");
-								strcpy(names[14], "GPS");
-								strcpy(names[15], "BOOTFAULT");
-								strcpy(msg[0], "UNINITIALISED");
-								strcpy(msg[1], "OK");
-								strcpy(msg[2], "WARNING");
-								strcpy(msg[3], "ERROR");
-								strcpy(msg[4], "CRITICAL");
-								for (n2 = 0; n2 < 16; n2++) {
-									if (data->Alarm[n2] != 0 && data->Alarm[n2] != 1) {
-										SDL_Log("uavtalk: 	%s: %s\n", names[n2], msg[data->Alarm[n2]]);
-									}
-								}
-								break;
-							}
-							case RELAYTUNING_OBJID: {
-//								RelayTuningData *data = (RelayTuningData *)&openpilot_read_buf[8];
-//								SDL_Log("uavtalk: << RELAYTUNING:\n");
-//								char names[16][30];
-//								strcpy(names[0], "ROLL");
-//								strcpy(names[1], "PITCH");
-//								strcpy(names[2], "YAW");
-//								for (n2 = 0; n2 < 3; n2++) {
-//									SDL_Log("uavtalk: 	Period: %s: %f\n", names[n2], data->Period[n2]);
-//								}
-//								for (n2 = 0; n2 < 3; n2++) {
-//									SDL_Log("uavtalk: 	Gain: %s: %f\n", names[n2], data->Gain[n2]);
-//								}
-								break;
-							}
-							case RECEIVERACTIVITYDATA_OBJID: {
-//								ReceiverActivityData *data = (ReceiverActivityData *)&openpilot_read_buf[8];
-/*
-								SDL_Log("uavtalk: << RECEIVERACTIVITYDATA:\n");
-								char names[8][30];
-								strcpy(names[0], "PWM");
-								strcpy(names[1], "PPM");
-								strcpy(names[2], "DSM-MAINPORT");
-								strcpy(names[3], "DSM-FLEXIPORT");
-								strcpy(names[4], "SBUS");
-								strcpy(names[5], "GCS");
-								strcpy(names[6], "NONE");
-								SDL_Log("uavtalk: 	Active (%s): %i\n", names[data->ActiveGroup], data->ActiveChannel);
-*/
-								break;
-							}
-							case ACTUATORDESIRED_OBJID: {
-//								ActuatorDesiredData *data = (ActuatorDesiredData *)&openpilot_read_buf[8];
-//								SDL_Log("uavtalk: << ACTUATORDESIRED\n");
-//								SDL_Log("uavtalk: 	Roll: %f\n", data->Roll);
-//								SDL_Log("uavtalk: 	Pitch: %f\n", data->Pitch);
-//								SDL_Log("uavtalk: 	Yaw: %f\n", data->Yaw);
-//								SDL_Log("uavtalk: 	Throttle: %f\n", data->Throttle);
-//								ModelData.radio[0] = (int16_t)(data->Roll * 100);
-//								ModelData.radio[1] = (int16_t)(data->Pitch * 100);
-//								ModelData.radio[2] = (int16_t)(data->Yaw * 100);
-//								ModelData.radio[3] = (int16_t)(data->Throttle * 100);
-								//data->UpdateTime;
-								//data->NumLongUpdates;
-								redraw_flag = 1;
-								break;
-							}
-							case ACCESSORYDESIRED_OBJID: {
-//								AccessoryDesiredData *data = (AccessoryDesiredData *)&openpilot_read_buf[8];
-//								SDL_Log("uavtalk: << ACCESSORYDESIRED:\n");
-//								SDL_Log("uavtalk: 	AccessoryVal: %f\n", data->AccessoryVal);
-								break;
-							}
-							case MANUALCONTROLCOMMAND_OBJID: {
-								ManualControlCommandData *data = (ManualControlCommandData *)&openpilot_read_buf[8];
-//								SDL_Log("uavtalk: << MANUALCONTROLCOMMAND:\n");
-//								SDL_Log("uavtalk: 	Connected: %i\n", data->Connected);
-//								SDL_Log("uavtalk: 	Roll: %f\n", data->Roll);
-//								SDL_Log("uavtalk: 	Pitch: %f\n", data->Pitch);
-//								SDL_Log("uavtalk: 	Yaw: %f\n", data->Yaw);
-//								SDL_Log("uavtalk: 	Throttle: %f\n", data->Throttle);
-//								SDL_Log("uavtalk: 	Collective: %f\n", data->Collective);
-								for (n2 = 0; n2 < 8; n2++) {
-//									SDL_Log("uavtalk: 	Channel: %i: %i %i\n", n2, data->Channel[n2], ((int16_t)data->Channel[n2] - 1500) / 5);
-									ModelData.radio[n2] = (int16_t)(data->Channel[n2] - 1500) / 5;
-								}
-								ModelData.radio[0] = (int16_t)(data->Roll * 100);
-								ModelData.radio[1] = (int16_t)(data->Pitch * 100);
-								ModelData.radio[2] = (int16_t)(data->Yaw * 100);
-								ModelData.radio[3] = (int16_t)(data->Throttle * 100);
-								ModelData.radio[4] = (int16_t)(data->Collective * 100);
-								ModelData.chancount = 8;
-								redraw_flag = 1;
-								break;
-							}
-							case ACTUATORCOMMAND_OBJID: {
-//								ActuatorCommandData *data = (ActuatorCommandData *)&openpilot_read_buf[8];
-//								SDL_Log("uavtalk: << ACTUATORCOMMAND:\n");
-//								for (n2 = 0; n2 < 8; n2++) {
-//									SDL_Log("uavtalk: 	Channel: %i: %i\n", n2, data->Channel[n2]);
-//								}
-								//MaxUpdateTime
-								//UpdateTime
-								//NumFailedUpdates
-								break;
-							}
-							case GCSTELEMETRYSTATS_OBJID: {
-								break;
-							}
+						// update modeldata
+						uavtalk_decode(obj_id, &openpilot_read_buf[8]);
+						ModelData.roll = uavtalk_AttitudeActualData.Roll;
+						ModelData.pitch = uavtalk_AttitudeActualData.Pitch;
+						ModelData.yaw = uavtalk_AttitudeActualData.Yaw;
+						ModelData.acc_x = uavtalk_AccelsData.x / 10.0;
+						ModelData.acc_y = uavtalk_AccelsData.y / 10.0;
+						ModelData.acc_z = uavtalk_AccelsData.z / 10.0;
+						ModelData.gyro_x = uavtalk_GyrosData.x;
+						ModelData.gyro_y = uavtalk_GyrosData.y;
+						ModelData.gyro_z = uavtalk_GyrosData.z;
+						ModelData.load = uavtalk_SystemStatsData.CPULoad;
+						for (n2 = 0; n2 < 8; n2++) {
+							ModelData.radio[n2] = (int16_t)(uavtalk_ManualControlCommandData.Channel[n2] - 1500) / 5;
+						}
+						ModelData.radio[0] = (int16_t)(uavtalk_ManualControlCommandData.Roll * 100);
+						ModelData.radio[1] = (int16_t)(uavtalk_ManualControlCommandData.Pitch * 100);
+						ModelData.radio[2] = (int16_t)(uavtalk_ManualControlCommandData.Yaw * 100);
+						ModelData.radio[3] = (int16_t)(uavtalk_ManualControlCommandData.Throttle * 100);
+						ModelData.radio[4] = (int16_t)(uavtalk_ManualControlCommandData.Collective * 100);
+						ModelData.chancount = 8;
+						if (uavtalk_GPSPositionData.Latitude != 0.0) {
+							ModelData.p_lat = (float)uavtalk_GPSPositionData.Latitude / 10000000.0;
+							ModelData.p_long = (float)uavtalk_GPSPositionData.Longitude / 10000000.0;
+							ModelData.p_alt = uavtalk_GPSPositionData.Altitude;
+							ModelData.speed = uavtalk_GPSPositionData.Groundspeed;
+							ModelData.numSat = uavtalk_GPSPositionData.Satellites;
+							ModelData.gpsfix = uavtalk_GPSPositionData.Status;
+							ModelData.hdop = uavtalk_GPSPositionData.HDOP;
+							ModelData.vdop = uavtalk_GPSPositionData.VDOP;
+						}
+						if (uavtalk_FlightStatusData.Armed == 0) {
+							ModelData.armed = MODEL_DISARMED;
+						} else if (uavtalk_FlightStatusData.Armed == 1) {
+							ModelData.armed = MODEL_ARMING;
+						} else {
+							ModelData.armed = MODEL_ARMED;
+						}
+						if (uavtalk_FlightStatusData.FlightMode == 0) {
+							ModelData.mode = MODEL_MODE_MANUAL;
+						} else {
+							ModelData.mode = MODEL_MODE_POSHOLD;
+						}
+						ModelData.heartbeat = 100;
+						if (openpilot_get == 1) {
+							uavtalk_request(STABILIZATIONSETTINGS_OBJID);
+							openpilot_get = 2;
+						} else if (openpilot_get == 2) {
+							uavtalk_request(HWSETTINGS_OBJID);
+							openpilot_get = 0;
+						} else if (openpilot_set == 1) {
+							openpilot_send_StabilizationSettings(&OpenpilotStabilizationSettings);
+							openpilot_set = 2;
+						} else if (openpilot_set == 2) {
+							openpilot_send_HwSettings(&OpenpilotHwSettings);
+							openpilot_set = 0;
+						} else if (openpilot_save == 1) {
+							openpilot_save_to_flash();
+							openpilot_save = 0;
+						}
+
+						// connection handshake
+						switch (obj_id) {
 							case FLIGHTTELEMETRYSTATS_OBJID: {
-								FlightTelemetryStatsData *data = (FlightTelemetryStatsData *)&openpilot_read_buf[8];
-								if (data->TeleStatus == 0) { // -> FLIGHTTELEMETRYSTATS_STATUS_DISCONNECTED
+								UAVT_FlightTelemetryStatsData *data = (UAVT_FlightTelemetryStatsData *)&openpilot_read_buf[8];
+								if (data->Status == 0) { // -> FLIGHTTELEMETRYSTATS_STATUS_DISCONNECTED
 									SDL_Log("uavtalk: << FlightTelemetryStats: DISCONNECTED\n");
 									openpilot_send_req(1); // <- GCSTELEMETRYSTATS_STATUS_HANDSHAKEREQ
-								} else if (data->TeleStatus == 2) { // -> FLIGHTTELEMETRYSTATS_STATUS_HANDSHAKEACK
+								} else if (data->Status == 2) { // -> FLIGHTTELEMETRYSTATS_STATUS_HANDSHAKEACK
 									SDL_Log("uavtalk: << FlightTelemetryStats: HANDSHAKEACK\n");
-									ModelData.armed = MODEL_DISARMED;
-									ModelData.mode = MODEL_MODE_MANUAL;
 									openpilot_send_req(3); // <- GCSTELEMETRYSTATS_STATUS_CONNECTED
-									openpilot_get = 1;
 									redraw_flag = 1;
-								} else if (data->TeleStatus == 3) {
+								} else if (data->Status == 3) {
 									SDL_Log("uavtalk: << FlightTelemetryStats: CONNECTED\n");
-									SDL_Log("uavtalk: 	TxDataRate: %f\n", data->TxDataRate);
-									SDL_Log("uavtalk: 	RxDataRate: %f\n", data->RxDataRate);
-									SDL_Log("uavtalk: 	TxFailures: %i\n", data->TxFailures);
-									SDL_Log("uavtalk: 	RxFailures: %i\n", data->RxFailures);
-									SDL_Log("uavtalk: 	TxRetries: %i\n", data->TxRetries);
+									openpilot_get = 1;
 								} else {
-									SDL_Log("uavtalk: << FlightTelemetryStats: %i\n", data->TeleStatus);
+									SDL_Log("uavtalk: << FlightTelemetryStats: %i\n", data->Status);
 								}
-								break;
-							}
-							case FLIGHTSTATUSDATA_OBJID: {
-								FlightStatusData *data = (FlightStatusData *)&openpilot_read_buf[8];
-								char names[8][30];
-								SDL_Log("uavtalk: << FLIGHTSTATUSDATA\n");
-								strcpy(names[0], "DISARMED");
-								strcpy(names[1], "ARMING");
-								strcpy(names[2], "ARMED");
-								SDL_Log("uavtalk: 	Armed: %s\n", names[data->Armed]);
-								if (data->Armed == 0) {
-									ModelData.armed = MODEL_DISARMED;
-								} else if (data->Armed == 1) {
-									ModelData.armed = MODEL_ARMING;
-								} else {
-									ModelData.armed = MODEL_ARMED;
-								}
-								strcpy(names[0], "MANUAL");
-								strcpy(names[1], "STABILIZED");
-								strcpy(names[2], "STABILIZED2");
-								strcpy(names[3], "STABILIZED3");
-								strcpy(names[4], "AUTOTUNE");
-								strcpy(names[5], "ALTITUDEHOLD");
-								strcpy(names[6], "VELOCITYCONTROL");
-								strcpy(names[7], "POSITIONHOLD");
-								SDL_Log("uavtalk: 	FlightMode: %s\n", names[data->FlightMode]);
-								if (data->FlightMode == 0) {
-									ModelData.mode = MODEL_MODE_MANUAL;
-								} else {
-									ModelData.mode = MODEL_MODE_POSHOLD;
-								}
-								redraw_flag = 1;
-								break;
-							}
-							case GPSVELOCITYDATA_OBJID: {
-//								GPSVelocityData *data = (GPSVelocityData *)&openpilot_read_buf[8];
-//								SDL_Log("uavtalk: << GPSVELOCITYDATA:\n");
-//								SDL_Log("uavtalk: 	North: %f\n", data->North);
-//								SDL_Log("uavtalk: 	East: %f\n", data->East);
-//								SDL_Log("uavtalk: 	Down: %f\n", data->Down);
-								break;
-							}
-							case GPSPOSITION_OBJID: {
-								GPSPositionData *data = (GPSPositionData *)&openpilot_read_buf[8];
-								if (data->Latitude != 0.0) {
-									ModelData.p_lat = (float)data->Latitude / 10000000.0;
-									ModelData.p_long = (float)data->Longitude / 10000000.0;
-									ModelData.p_alt = data->Altitude;
-									ModelData.speed = data->Groundspeed;
-									ModelData.numSat = data->Satellites;
-									ModelData.gpsfix = data->GpsStatus;
-									redraw_flag = 1;
-								}
-								break;
-							}
-							default: {
-								SDL_Log("uavtalk: << Unkown: %x\n", obj_id);
-								openpilot_send_ack();
 								break;
 							}
 						}

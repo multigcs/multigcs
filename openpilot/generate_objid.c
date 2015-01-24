@@ -125,13 +125,13 @@ int main (int argc, char *argv[]) {
 	}
 	doc = xmlCtxtReadFile(ctxt, argv[1], NULL, XML_PARSE_DTDVALID);
 	if (doc == NULL) {
-		printf("mavlink: Document parsing failed: %s\n", argv[1]);
+		printf("Document parsing failed: %s\n", argv[1]);
 		return;
 	}
 	cur = xmlDocGetRootElement(doc);
 	if (cur == NULL) {
 		xmlFreeDoc(doc);
-		printf("mavlink: Document is Empty!!!\n");
+		printf("Document is Empty!!!\n");
 		return;
 	}
 	cur = cur->xmlChildrenNode;
@@ -173,6 +173,10 @@ int main (int argc, char *argv[]) {
 			sprintf(f_examples_name, "openpilot/uavobject_examples.h");
 			FILE *f_examples = fopen(f_examples_name, "w");
 
+			char f_save_name[1024];
+			sprintf(f_save_name, "openpilot/uavobject_save.h");
+			FILE *f_save = fopen(f_save_name, "w");
+
 			char f_examplessend_name[1024];
 			sprintf(f_examplessend_name, "openpilot/uavobject_examplessend.h");
 			FILE *f_examplessend = fopen(f_examplessend_name, "w");
@@ -180,16 +184,6 @@ int main (int argc, char *argv[]) {
 
 			fprintf(f_comment, " Object: %s\n", object_name);
 			fprintf(f_struct, "typedef struct {\n");
-
-			fprintf(f_examplessend, "\n");
-			fprintf(f_examplessend, "void UAVT_%s_Send (UAVT_%sData *data) {\n", object_name, object_name);
-			fprintf(f_examplessend, "	uint8_t buf[256];\n");
-			fprintf(f_examplessend, "	uint8_t len = 0;\n");
-
-			fprintf(f_examples, "case %s_OBJID: {\n", object_name_uc);
-			fprintf(f_examples, "	UAVT_%sData *data = (UAVT_%sData *)buf;\n", object_name, object_name);
-//			fprintf(f_examples, "	memcpy(&Openpilot%s, data, sizeof(UAVT_%sData));\n", object_name, object_name);
-			fprintf(f_examples, "	SDL_Log(\"uavtalk: <-%s\\n\");\n", object_name);
 
 			parseParamsGetAttr(doc, cur, "settings", attrValue);
 			if (strcmp(attrValue, "true") == 0) {
@@ -203,7 +197,10 @@ int main (int argc, char *argv[]) {
 			} else {
 				hash = updateHash_int(0, hash);
 			}
-
+			uint8_t mread = 1;
+			uint8_t mwrite = 1;
+			uint8_t ack = 0;
+			uint8_t updatemode = 0;
 			cur2 = cur->xmlChildrenNode;
 			while (cur2 != NULL) {
 				if ((xmlStrcasecmp(cur2->name, (const xmlChar *)"description")) == 0) {
@@ -213,10 +210,49 @@ int main (int argc, char *argv[]) {
 						fprintf(f_comment, " Comment: %s\n", (char *)key);
 						xmlFree(key);
 					}
+				} else if ((xmlStrcasecmp(cur2->name, (const xmlChar *)"telemetrygcs")) == 0) {
+					parseParamsGetAttr(doc, cur2, "acked", attrValue);
+					if (strcmp(attrValue, "true") == 0) {
+						ack = 1;
+					}
+					parseParamsGetAttr(doc, cur2, "updatemode", attrValue);
+					if (strcmp(attrValue, "manual") == 0) {
+						updatemode = 1;
+					}
+				} else if ((xmlStrcasecmp(cur2->name, (const xmlChar *)"access")) == 0) {
+					parseParamsGetAttr(doc, cur2, "gcs", attrValue);
+					if (strcmp(attrValue, "readwrite") == 0) {
+						mread = 1;
+						mwrite = 1;
+					} else if (strcmp(attrValue, "readonly") == 0) {
+						mread = 1;
+						mwrite = 0;
+					} else if (strcmp(attrValue, "writeonly") == 0) {
+						mread = 0;
+						mwrite = 1;
+					}
 				}
 				cur2 = cur2->next;
 			}
+			if (mwrite == 1) {
+				fprintf(f_examplessend, "\n");
+				fprintf(f_examplessend, "void UAVT_%s_Send (UAVT_%sData *data) {\n", object_name, object_name);
+				fprintf(f_examplessend, "	uint8_t buf[256];\n");
+				fprintf(f_examplessend, "	uint8_t len = 0;\n");
+			} else {
+				printf("## skip send: %s ##\n", object_name);
+			}
+			if (mread == 1) {
+				fprintf(f_save, "extern UAVT_%sData uavtalk_%sData;\n", object_name, object_name);
+				fprintf(f_save, "UAVT_%sData uavtalk_%sData;\n", object_name, object_name);
 
+				fprintf(f_examples, "case %s_OBJID: {\n", object_name_uc);
+				fprintf(f_examples, "	UAVT_%sData *data = (UAVT_%sData *)buf;\n", object_name, object_name);
+				fprintf(f_examples, "	//memcpy(&uavtalk_%sData, data, sizeof(UAVT_%sData));\n", object_name, object_name);
+				fprintf(f_examples, "	SDL_Log(\"uavtalk: <-%s\\n\");\n", object_name);
+			} else {
+				printf("## skip receive: %s ##\n", object_name);
+			}
 			int size_n = 0;
 			for (size_n = 8; size_n > 0; size_n--) {
 				cur2 = cur->xmlChildrenNode;
@@ -250,28 +286,41 @@ int main (int argc, char *argv[]) {
 									if (strcmp(typename, "enum") == 0) {
 										fprintf(f_struct, "	%s %s[%i];\t// %s\n", fieldtype_tnames[type_n], fieldname, elements, fieldtype_names[type_n]);
 										for (nn = 0; nn < elements; nn++) {
+if (mread == 1) {
 											fprintf(f_examples, "	SDL_Log(\"uavtalk: 	%s[%i]: %%%s (%%s)\\n\", data->%s[%i], UAVT_%s%sOption[data->%s[%i]]);\n", fieldname, nn, fieldtype_ptypes[type_n], fieldname, nn, object_name, fieldname, fieldname, nn);
-//fprintf(f_examplessend, "	// data->%s[%i] = 0;\n", fieldname, nn);
-fprintf(f_examplessend, "	len = openpilot_add_%ibyte(buf, len, data->%s[%i]);\n", size_n, fieldname, nn);
+}
+if (mwrite == 1) {
+	//fprintf(f_examplessend, "	// data->%s[%i] = 0;\n", fieldname, nn);
+	fprintf(f_examplessend, "	len = openpilot_add_%ibyte(buf, len, data->%s[%i]);\n", size_n, fieldname, nn);
+}
 										}
 									} else {
 										fprintf(f_struct, "	%s %s[%i];\n", fieldtype_tnames[type_n], fieldname, elements);
 										for (nn = 0; nn < elements; nn++) {
+if (mread == 1) {
 											fprintf(f_examples, "	SDL_Log(\"uavtalk: 	%s[%i]: %%%s\\n\", data->%s[%i]);\n", fieldname, nn, fieldtype_ptypes[type_n], fieldname, nn);
-//fprintf(f_examplessend, "	// data->%s[%i] = 0;\n", fieldname, nn);
-fprintf(f_examplessend, "	len = openpilot_add_%ibyte(buf, len, data->%s[%i]);\n", size_n, fieldname, nn);
-										}
+}
+if (mwrite == 1) {
+	//fprintf(f_examplessend, "	// data->%s[%i] = 0;\n", fieldname, nn);
+	fprintf(f_examplessend, "	len = openpilot_add_%ibyte(buf, len, data->%s[%i]);\n", size_n, fieldname, nn);
+}										}
 									}
 								} else {
 									if (strcmp(typename, "enum") == 0) {
 										fprintf(f_struct, "	%s %s;\t// %s\n", fieldtype_tnames[type_n], fieldname, fieldtype_names[type_n]);
+if (mread == 1) {
 										fprintf(f_examples, "	SDL_Log(\"uavtalk: 	%s: %%%s (%%s)\\n\", data->%s, UAVT_%s%sOption[data->%s]);\n", fieldname, fieldtype_ptypes[type_n], fieldname, object_name, fieldname, fieldname);
+}
 									} else {
 										fprintf(f_struct, "	%s %s;\n", fieldtype_tnames[type_n], fieldname);
+if (mread == 1) {
 										fprintf(f_examples, "	SDL_Log(\"uavtalk: 	%s: %%%s\\n\", data->%s);\n", fieldname, fieldtype_ptypes[type_n], fieldname);
+}
 									}
-//fprintf(f_examplessend, "	// data->%s = 0;\n", fieldname);
-fprintf(f_examplessend, "	len = openpilot_add_%ibyte(buf, len, data->%s);\n", size_n, fieldname);
+if (mwrite == 1) {
+	//fprintf(f_examplessend, "	// data->%s = 0;\n", fieldname);
+	fprintf(f_examplessend, "	len = openpilot_add_%ibyte(buf, len, data->%s);\n", size_n, fieldname);
+}
 								}
 							} else {
 								elements = 0;
@@ -285,15 +334,29 @@ fprintf(f_examplessend, "	len = openpilot_add_%ibyte(buf, len, data->%s);\n", si
 											type_start = 1;
 										}
 										trim(element_name);
-										fprintf(f_otypes, "	%s %s;\n", fieldtype_tnames[type_n], element_name);
-										if (strcmp(typename, "enum") == 0) {
-											fprintf(f_examples, "	SDL_Log(\"uavtalk: 	%s.%s: %%%s (%%s)\\n\", data->%s.%s, UAVT_%s%sOption[data->%s]);\n", fieldname, element_name, fieldtype_ptypes[type_n], fieldtype_ptypes[type_n], fieldname, element_name, fieldname);
-										} else {
-											fprintf(f_examples, "	SDL_Log(\"uavtalk: 	%s.%s: %%%s\\n\", data->%s.%s);\n", fieldname, element_name, fieldtype_ptypes[type_n], fieldname, element_name);
+										if (element_name[0] >= '0' && element_name[0] <= '9') {
+											for (nn = 1; nn < strlen(element_name); nn++) {
+												element_name[nn] = element_name[nn - 1];
+												element_name[nn + 1] = 0;
+											}
+											element_name[0] = 'n';
 										}
 
-//fprintf(f_examplessend, "	// data->%s.%s);\n", fieldname, element_name);
-fprintf(f_examplessend, "	len = openpilot_add_%ibyte(buf, len, data->%s.%s);\n", size_n, fieldname, element_name);
+										fprintf(f_otypes, "	%s %s;\n", fieldtype_tnames[type_n], element_name);
+										if (strcmp(typename, "enum") == 0) {
+if (mread == 1) {
+											fprintf(f_examples, "	SDL_Log(\"uavtalk: 	%s.%s: %%%s\\n\", data->%s.%s);\n", fieldname, element_name, fieldtype_ptypes[type_n], fieldname, element_name);
+}
+										} else {
+if (mread == 1) {
+											fprintf(f_examples, "	SDL_Log(\"uavtalk: 	%s.%s: %%%s\\n\", data->%s.%s);\n", fieldname, element_name, fieldtype_ptypes[type_n], fieldname, element_name);
+}
+										}
+
+if (mwrite == 1) {
+	//fprintf(f_examplessend, "	// data->%s.%s);\n", fieldname, element_name);
+	fprintf(f_examplessend, "	len = openpilot_add_%ibyte(buf, len, data->%s.%s);\n", size_n, fieldname, element_name);
+}
 
 										elements++;
 										on = 0;
@@ -309,16 +372,30 @@ fprintf(f_examplessend, "	len = openpilot_add_%ibyte(buf, len, data->%s.%s);\n",
 										type_start = 1;
 									}
 									trim(element_name);
+									if (element_name[0] >= '0' && element_name[0] <= '9') {
+										for (nn = 1; nn < strlen(element_name); nn++) {
+											element_name[nn] = element_name[nn - 1];
+											element_name[nn + 1] = 0;
+										}
+										element_name[0] = 'n';
+									}
+
 									fprintf(f_otypes, "	%s %s;\n", fieldtype_tnames[type_n], element_name);
 									if (strcmp(typename, "enum") == 0) {
-										fprintf(f_examples, "	SDL_Log(\"uavtalk: 	%s.%s: %%%s (%%s)\\n\", data->%s.%s, UAVT_%s%sOption[data->%s]);\n", fieldname, element_name, fieldtype_ptypes[type_n], fieldtype_ptypes[type_n], fieldname, element_name, fieldname);
-									} else {
+if (mread == 1) {
 										fprintf(f_examples, "	SDL_Log(\"uavtalk: 	%s.%s: %%%s\\n\", data->%s.%s);\n", fieldname, element_name, fieldtype_ptypes[type_n], fieldname, element_name);
+}
+									} else {
+if (mread == 1) {
+										fprintf(f_examples, "	SDL_Log(\"uavtalk: 	%s.%s: %%%s\\n\", data->%s.%s);\n", fieldname, element_name, fieldtype_ptypes[type_n], fieldname, element_name);
+}
 									}
 
 
-//fprintf(f_examplessend, "	// data->%s.%s);\n", fieldname, element_name);
-fprintf(f_examplessend, "	len = openpilot_add_%ibyte(buf, len, data->%s.%s);\n", size_n, fieldname, element_name);
+if (mwrite == 1) {
+	//fprintf(f_examplessend, "	// data->%s.%s);\n", fieldname, element_name);
+	fprintf(f_examplessend, "	len = openpilot_add_%ibyte(buf, len, data->%s.%s);\n", size_n, fieldname, element_name);
+}
 
 									elements++;
 								}
@@ -329,10 +406,14 @@ fprintf(f_examplessend, "	len = openpilot_add_%ibyte(buf, len, data->%s.%s);\n",
 								if (elements == 1) {
 									if (strcmp(typename, "enum") == 0) {
 										fprintf(f_struct, "	%s %s;\t// %s\n", fieldtype_tnames[type_n], fieldname, fieldtype_names[type_n]);
+if (mread == 1) {
 										fprintf(f_examples, "	SDL_Log(\"uavtalk: 	%s: %%%s (%%s)\\n\", data->%s, UAVT_%s%sOption[data->%s]);\n", fieldname, fieldtype_ptypes[type_n], fieldname, object_name, fieldname, fieldname);
+}
 									} else {
 										fprintf(f_struct, "	%s %s;\n", fieldtype_tnames[type_n], fieldname);
+if (mread == 1) {
 										fprintf(f_examples, "	SDL_Log(\"uavtalk: 	%s: %%%s\\n\", data->%s);\n", fieldname, fieldtype_ptypes[type_n], fieldname);
+}
 									}
 								} else {
 									fprintf(f_struct, "	UAVT_%s%sType %s;\t// %s[%i]\n", object_name, fieldname, fieldname, fieldtype_names[type_n], elements);
@@ -340,7 +421,8 @@ fprintf(f_examplessend, "	len = openpilot_add_%ibyte(buf, len, data->%s.%s);\n",
 							}
 							hash = updateHash_int(type_n, hash);
 							if (strcmp(typename, "enum") == 0) {
-								fprintf(f_options, "char UAVT_%s%sOption[][32] = {\n", object_name, fieldname);
+								fprintf(f_options, "extern char UAVT_%s%sOption[][42];\n", object_name, fieldname);
+								fprintf(f_options, "char UAVT_%s%sOption[][42] = {\n", object_name, fieldname);
 								parseParamsGetAttr(doc, cur2, "options", attrValue);
 								char option_name[128];
 								char option_name_uc[128];
@@ -351,8 +433,12 @@ fprintf(f_examplessend, "	len = openpilot_add_%ibyte(buf, len, data->%s.%s);\n",
 										trim(option_name);
 										fprintf(f_options, "	\"%s\",\n", option_name);
 										hash = updateHash_str(option_name, hash);
-										for (nn = 0; nn < strlen(object_name); nn++) {
-											option_name_uc[nn] = toupper(option_name[nn]);
+										for (nn = 0; nn < strlen(option_name); nn++) {
+											if ((option_name[nn] >= 'a' && option_name[nn] <= 'z') || (option_name[nn] >= 'A' && option_name[nn] <= 'Z') || (option_name[nn] >= '0' && option_name[nn] <= '9')) {
+												option_name_uc[nn] = toupper(option_name[nn]);
+											} else {
+												option_name_uc[nn] = '_';
+											}
 											option_name_uc[nn + 1] = 0;
 										}
 										if (enum_start == 0) {
@@ -372,8 +458,12 @@ fprintf(f_examplessend, "	len = openpilot_add_%ibyte(buf, len, data->%s.%s);\n",
 									trim(option_name);
 									fprintf(f_options, "	\"%s\",\n", option_name);
 									hash = updateHash_str(option_name, hash);
-									for (nn = 0; nn < strlen(object_name); nn++) {
-										option_name_uc[nn] = toupper(option_name[nn]);
+									for (nn = 0; nn < strlen(option_name); nn++) {
+										if ((option_name[nn] >= 'a' && option_name[nn] <= 'z') || (option_name[nn] >= 'A' && option_name[nn] <= 'Z') || (option_name[nn] >= '0' && option_name[nn] <= '9')) {
+											option_name_uc[nn] = toupper(option_name[nn]);
+										} else {
+											option_name_uc[nn] = '_';
+										}
 										option_name_uc[nn + 1] = 0;
 									}
 									if (enum_start == 0) {
@@ -393,7 +483,7 @@ fprintf(f_examplessend, "	len = openpilot_add_%ibyte(buf, len, data->%s.%s);\n",
 												xmlChar *key;
 												key = xmlNodeListGetString(doc, cur4->xmlChildrenNode, 1);
 												if (key != NULL) {
-													fprintf(f_options, "	{\"%s\"},\n", (char *)key);
+													fprintf(f_options, "	\"%s\",\n", (char *)key);
 													hash = updateHash_str((char *)key, hash);
 													fprintf(f_struct, "		// %s\n", (char *)key);
 													xmlFree(key);
@@ -407,8 +497,8 @@ fprintf(f_examplessend, "	len = openpilot_add_%ibyte(buf, len, data->%s.%s);\n",
 								fprintf(f_options, "};\n");
 								fprintf(f_options, "\n");
 								if (enum_start == 1) {
-									fprintf(f_defs, "	%s_%s_LASTITEM = %i,\n", object_name_uc, fieldname_uc, option_n);
-									fprintf(f_defs, "}\n");
+									fprintf(f_defs, "	%s_%s_LASTITEM = %i\n", object_name_uc, fieldname_uc, option_n);
+									fprintf(f_defs, "};\n");
 									fprintf(f_defs, "\n");
 								}
 							}
@@ -423,14 +513,18 @@ fprintf(f_examplessend, "	len = openpilot_add_%ibyte(buf, len, data->%s.%s);\n",
 			}
 			fprintf(f_struct, "} UAVT_%sData;\n", object_name);
 			fprintf(f_ids, "#define %s_OBJID 0x%x \n", object_name_uc, hash & 0xFFFFFFFE);
-
-			fprintf(f_examplessend, "	openpilot_send(buf, %s_OBJID, 0x22, len);\n", object_name_uc, hash & 0xFFFFFFFE);
-			fprintf(f_examplessend, "}\n");
-			fprintf(f_examplessend, "\n");
-
-			fprintf(f_examples, "	break;\n");
-			fprintf(f_examples, "}\n");
-
+			if (mwrite == 1) {
+				fprintf(f_examplessend, "	uavtalk_send(buf, %s_OBJID, 0x22, len);\n", object_name_uc, hash & 0xFFFFFFFE);
+				fprintf(f_examplessend, "}\n");
+				fprintf(f_examplessend, "\n");
+			}
+			if (mread == 1) {
+				if (ack == 1) {
+					fprintf(f_examples, "	SDL_Log(\"uavtalk: ->send_ack\\n\");\n");
+				}
+				fprintf(f_examples, "	break;\n");
+				fprintf(f_examples, "}\n");
+			}
 			fclose(f_comment);
 			fclose(f_ids);
 			fclose(f_defs);
@@ -438,7 +532,7 @@ fprintf(f_examplessend, "	len = openpilot_add_%ibyte(buf, len, data->%s.%s);\n",
 			fclose(f_otypes);
 			fclose(f_struct);
 			fclose(f_examples);
-
+			fclose(f_save);
 		}
 		cur = cur->next;
 	}

@@ -124,6 +124,7 @@
 #include <mwi21.h>
 #include <simplebgc.h>
 #include <brugi.h>
+#include <uavobjects.h>
 #include <openpilot.h>
 #include <jeti.h>
 #include <frsky.h>
