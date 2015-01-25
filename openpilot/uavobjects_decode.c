@@ -3,6 +3,15 @@
 
 void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 	switch (obj_id) {
+		case ACCELDESIRED_OBJID: {
+			UAVT_AccelDesiredData *data = (UAVT_AccelDesiredData *)buf;
+			memcpy(&uavtalk_AccelDesiredData, data, sizeof(UAVT_AccelDesiredData));
+			SDL_Log("uavtalk: <-AccelDesired\n");
+			SDL_Log("uavtalk: 	North: %f\n", data->North);
+			SDL_Log("uavtalk: 	East: %f\n", data->East);
+			SDL_Log("uavtalk: 	Down: %f\n", data->Down);
+			break;
+		}
 		case ACCELS_OBJID: {
 			UAVT_AccelsData *data = (UAVT_AccelsData *)buf;
 			memcpy(&uavtalk_AccelsData, data, sizeof(UAVT_AccelsData));
@@ -59,6 +68,8 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	ChannelUpdateFreq[1]: %i\n", data->ChannelUpdateFreq[1]);
 			SDL_Log("uavtalk: 	ChannelUpdateFreq[2]: %i\n", data->ChannelUpdateFreq[2]);
 			SDL_Log("uavtalk: 	ChannelUpdateFreq[3]: %i\n", data->ChannelUpdateFreq[3]);
+			SDL_Log("uavtalk: 	ChannelUpdateFreq[4]: %i\n", data->ChannelUpdateFreq[4]);
+			SDL_Log("uavtalk: 	ChannelUpdateFreq[5]: %i\n", data->ChannelUpdateFreq[5]);
 			SDL_Log("uavtalk: 	ChannelMax[0]: %i\n", data->ChannelMax[0]);
 			SDL_Log("uavtalk: 	ChannelMax[1]: %i\n", data->ChannelMax[1]);
 			SDL_Log("uavtalk: 	ChannelMax[2]: %i\n", data->ChannelMax[2]);
@@ -113,13 +124,26 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: ->send_ack\n");
 			break;
 		}
-		case ALTHOLDSMOOTHED_OBJID: {
-			UAVT_AltHoldSmoothedData *data = (UAVT_AltHoldSmoothedData *)buf;
-			memcpy(&uavtalk_AltHoldSmoothedData, data, sizeof(UAVT_AltHoldSmoothedData));
-			SDL_Log("uavtalk: <-AltHoldSmoothed\n");
-			SDL_Log("uavtalk: 	Altitude: %f\n", data->Altitude);
-			SDL_Log("uavtalk: 	Velocity: %f\n", data->Velocity);
-			SDL_Log("uavtalk: 	Accel: %f\n", data->Accel);
+		case AIRSPEEDACTUAL_OBJID: {
+			UAVT_AirspeedActualData *data = (UAVT_AirspeedActualData *)buf;
+			memcpy(&uavtalk_AirspeedActualData, data, sizeof(UAVT_AirspeedActualData));
+			SDL_Log("uavtalk: <-AirspeedActual\n");
+			SDL_Log("uavtalk: 	TrueAirspeed: %f\n", data->TrueAirspeed);
+			SDL_Log("uavtalk: 	CalibratedAirspeed: %f\n", data->CalibratedAirspeed);
+			SDL_Log("uavtalk: 	alpha: %f\n", data->alpha);
+			SDL_Log("uavtalk: 	beta: %f\n", data->beta);
+			break;
+		}
+		case AIRSPEEDSETTINGS_OBJID: {
+			UAVT_AirspeedSettingsData *data = (UAVT_AirspeedSettingsData *)buf;
+			memcpy(&uavtalk_AirspeedSettingsData, data, sizeof(UAVT_AirspeedSettingsData));
+			SDL_Log("uavtalk: <-AirspeedSettings\n");
+			SDL_Log("uavtalk: 	Scale: %f\n", data->Scale);
+			SDL_Log("uavtalk: 	ZeroPoint: %i\n", data->ZeroPoint);
+			SDL_Log("uavtalk: 	GPSSamplePeriod_ms: %i\n", data->GPSSamplePeriod_ms);
+			SDL_Log("uavtalk: 	AirspeedSensorType: %i (%s)\n", data->AirspeedSensorType, UAVT_AirspeedSettingsAirspeedSensorTypeOption[data->AirspeedSensorType]);
+			SDL_Log("uavtalk: 	AnalogPin: %i (%s)\n", data->AnalogPin, UAVT_AirspeedSettingsAnalogPinOption[data->AnalogPin]);
+			SDL_Log("uavtalk: ->send_ack\n");
 			break;
 		}
 		case ALTITUDEHOLDDESIRED_OBJID: {
@@ -127,22 +151,24 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			memcpy(&uavtalk_AltitudeHoldDesiredData, data, sizeof(UAVT_AltitudeHoldDesiredData));
 			SDL_Log("uavtalk: <-AltitudeHoldDesired\n");
 			SDL_Log("uavtalk: 	Altitude: %f\n", data->Altitude);
+			SDL_Log("uavtalk: 	ClimbRate: %f\n", data->ClimbRate);
 			SDL_Log("uavtalk: 	Roll: %f\n", data->Roll);
 			SDL_Log("uavtalk: 	Pitch: %f\n", data->Pitch);
 			SDL_Log("uavtalk: 	Yaw: %f\n", data->Yaw);
+			SDL_Log("uavtalk: 	Land: %i (%s)\n", data->Land, UAVT_AltitudeHoldDesiredLandOption[data->Land]);
 			break;
 		}
 		case ALTITUDEHOLDSETTINGS_OBJID: {
 			UAVT_AltitudeHoldSettingsData *data = (UAVT_AltitudeHoldSettingsData *)buf;
 			memcpy(&uavtalk_AltitudeHoldSettingsData, data, sizeof(UAVT_AltitudeHoldSettingsData));
 			SDL_Log("uavtalk: <-AltitudeHoldSettings\n");
-			SDL_Log("uavtalk: 	Kp: %f\n", data->Kp);
-			SDL_Log("uavtalk: 	Ki: %f\n", data->Ki);
-			SDL_Log("uavtalk: 	Kd: %f\n", data->Kd);
-			SDL_Log("uavtalk: 	Ka: %f\n", data->Ka);
-			SDL_Log("uavtalk: 	PressureNoise: %f\n", data->PressureNoise);
-			SDL_Log("uavtalk: 	AccelNoise: %f\n", data->AccelNoise);
-			SDL_Log("uavtalk: 	AccelDrift: %f\n", data->AccelDrift);
+			SDL_Log("uavtalk: 	PositionKp: %f\n", data->PositionKp);
+			SDL_Log("uavtalk: 	VelocityKp: %f\n", data->VelocityKp);
+			SDL_Log("uavtalk: 	VelocityKi: %f\n", data->VelocityKi);
+			SDL_Log("uavtalk: 	AttitudeComp: %i\n", data->AttitudeComp);
+			SDL_Log("uavtalk: 	MaxRate: %i\n", data->MaxRate);
+			SDL_Log("uavtalk: 	Expo: %i\n", data->Expo);
+			SDL_Log("uavtalk: 	Deadband: %i\n", data->Deadband);
 			SDL_Log("uavtalk: ->send_ack\n");
 			break;
 		}
@@ -163,24 +189,51 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			UAVT_AttitudeSettingsData *data = (UAVT_AttitudeSettingsData *)buf;
 			memcpy(&uavtalk_AttitudeSettingsData, data, sizeof(UAVT_AttitudeSettingsData));
 			SDL_Log("uavtalk: <-AttitudeSettings\n");
-			SDL_Log("uavtalk: 	GyroGain: %f\n", data->GyroGain);
+			SDL_Log("uavtalk: 	MagKp: %f\n", data->MagKp);
+			SDL_Log("uavtalk: 	MagKi: %f\n", data->MagKi);
 			SDL_Log("uavtalk: 	AccelKp: %f\n", data->AccelKp);
 			SDL_Log("uavtalk: 	AccelKi: %f\n", data->AccelKi);
 			SDL_Log("uavtalk: 	AccelTau: %f\n", data->AccelTau);
+			SDL_Log("uavtalk: 	VertPositionTau: %f\n", data->VertPositionTau);
 			SDL_Log("uavtalk: 	YawBiasRate: %f\n", data->YawBiasRate);
-			SDL_Log("uavtalk: 	AccelBias.X: %i\n", data->AccelBias.X);
-			SDL_Log("uavtalk: 	AccelBias.Y: %i\n", data->AccelBias.Y);
-			SDL_Log("uavtalk: 	AccelBias.Z: %i\n", data->AccelBias.Z);
-			SDL_Log("uavtalk: 	GyroBias.X: %i\n", data->GyroBias.X);
-			SDL_Log("uavtalk: 	GyroBias.Y: %i\n", data->GyroBias.Y);
-			SDL_Log("uavtalk: 	GyroBias.Z: %i\n", data->GyroBias.Z);
 			SDL_Log("uavtalk: 	BoardRotation.Roll: %i\n", data->BoardRotation.Roll);
 			SDL_Log("uavtalk: 	BoardRotation.Pitch: %i\n", data->BoardRotation.Pitch);
 			SDL_Log("uavtalk: 	BoardRotation.Yaw: %i\n", data->BoardRotation.Yaw);
 			SDL_Log("uavtalk: 	ZeroDuringArming: %i (%s)\n", data->ZeroDuringArming, UAVT_AttitudeSettingsZeroDuringArmingOption[data->ZeroDuringArming]);
 			SDL_Log("uavtalk: 	BiasCorrectGyro: %i (%s)\n", data->BiasCorrectGyro, UAVT_AttitudeSettingsBiasCorrectGyroOption[data->BiasCorrectGyro]);
+			SDL_Log("uavtalk: 	FilterChoice: %i (%s)\n", data->FilterChoice, UAVT_AttitudeSettingsFilterChoiceOption[data->FilterChoice]);
 			SDL_Log("uavtalk: 	TrimFlight: %i (%s)\n", data->TrimFlight, UAVT_AttitudeSettingsTrimFlightOption[data->TrimFlight]);
 			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case ATTITUDESIMULATED_OBJID: {
+			UAVT_AttitudeSimulatedData *data = (UAVT_AttitudeSimulatedData *)buf;
+			memcpy(&uavtalk_AttitudeSimulatedData, data, sizeof(UAVT_AttitudeSimulatedData));
+			SDL_Log("uavtalk: <-AttitudeSimulated\n");
+			SDL_Log("uavtalk: 	q1: %f\n", data->q1);
+			SDL_Log("uavtalk: 	q2: %f\n", data->q2);
+			SDL_Log("uavtalk: 	q3: %f\n", data->q3);
+			SDL_Log("uavtalk: 	q4: %f\n", data->q4);
+			SDL_Log("uavtalk: 	Roll: %f\n", data->Roll);
+			SDL_Log("uavtalk: 	Pitch: %f\n", data->Pitch);
+			SDL_Log("uavtalk: 	Yaw: %f\n", data->Yaw);
+			SDL_Log("uavtalk: 	Velocity.North: %f\n", data->Velocity.North);
+			SDL_Log("uavtalk: 	Velocity.East: %f\n", data->Velocity.East);
+			SDL_Log("uavtalk: 	Velocity.Down: %f\n", data->Velocity.Down);
+			SDL_Log("uavtalk: 	Position.North: %f\n", data->Position.North);
+			SDL_Log("uavtalk: 	Position.East: %f\n", data->Position.East);
+			SDL_Log("uavtalk: 	Position.Down: %f\n", data->Position.Down);
+			break;
+		}
+		case BAROAIRSPEED_OBJID: {
+			UAVT_BaroAirspeedData *data = (UAVT_BaroAirspeedData *)buf;
+			memcpy(&uavtalk_BaroAirspeedData, data, sizeof(UAVT_BaroAirspeedData));
+			SDL_Log("uavtalk: <-BaroAirspeed\n");
+			SDL_Log("uavtalk: 	CalibratedAirspeed: %f\n", data->CalibratedAirspeed);
+			SDL_Log("uavtalk: 	GPSAirspeed: %f\n", data->GPSAirspeed);
+			SDL_Log("uavtalk: 	TrueAirspeed: %f\n", data->TrueAirspeed);
+			SDL_Log("uavtalk: 	SensorValue: %i\n", data->SensorValue);
+			SDL_Log("uavtalk: 	BaroConnected: %i (%s)\n", data->BaroConnected, UAVT_BaroAirspeedBaroConnectedOption[data->BaroConnected]);
 			break;
 		}
 		case BAROALTITUDE_OBJID: {
@@ -192,6 +245,30 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	Pressure: %f\n", data->Pressure);
 			break;
 		}
+		case BRUSHLESSGIMBALSETTINGS_OBJID: {
+			UAVT_BrushlessGimbalSettingsData *data = (UAVT_BrushlessGimbalSettingsData *)buf;
+			memcpy(&uavtalk_BrushlessGimbalSettingsData, data, sizeof(UAVT_BrushlessGimbalSettingsData));
+			SDL_Log("uavtalk: <-BrushlessGimbalSettings\n");
+			SDL_Log("uavtalk: 	Damping.Roll: %f\n", data->Damping.Roll);
+			SDL_Log("uavtalk: 	Damping.Pitch: %f\n", data->Damping.Pitch);
+			SDL_Log("uavtalk: 	Damping.Yaw: %f\n", data->Damping.Yaw);
+			SDL_Log("uavtalk: 	MaxDPS.Roll: %i\n", data->MaxDPS.Roll);
+			SDL_Log("uavtalk: 	MaxDPS.Pitch: %i\n", data->MaxDPS.Pitch);
+			SDL_Log("uavtalk: 	MaxDPS.Yaw: %i\n", data->MaxDPS.Yaw);
+			SDL_Log("uavtalk: 	SlewLimit.Roll: %i\n", data->SlewLimit.Roll);
+			SDL_Log("uavtalk: 	SlewLimit.Pitch: %i\n", data->SlewLimit.Pitch);
+			SDL_Log("uavtalk: 	SlewLimit.Yaw: %i\n", data->SlewLimit.Yaw);
+			SDL_Log("uavtalk: 	PowerScale.Roll: %i\n", data->PowerScale.Roll);
+			SDL_Log("uavtalk: 	PowerScale.Pitch: %i\n", data->PowerScale.Pitch);
+			SDL_Log("uavtalk: 	PowerScale.Yaw: %i\n", data->PowerScale.Yaw);
+			SDL_Log("uavtalk: 	MaxAngle.Roll: %i\n", data->MaxAngle.Roll);
+			SDL_Log("uavtalk: 	MaxAngle.Pitch: %i\n", data->MaxAngle.Pitch);
+			SDL_Log("uavtalk: 	MaxAngle.Yaw: %i\n", data->MaxAngle.Yaw);
+			SDL_Log("uavtalk: 	RollFraction: %i\n", data->RollFraction);
+			SDL_Log("uavtalk: 	PowerupSequence: %i (%s)\n", data->PowerupSequence, UAVT_BrushlessGimbalSettingsPowerupSequenceOption[data->PowerupSequence]);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
 		case CAMERADESIRED_OBJID: {
 			UAVT_CameraDesiredData *data = (UAVT_CameraDesiredData *)buf;
 			memcpy(&uavtalk_CameraDesiredData, data, sizeof(UAVT_CameraDesiredData));
@@ -199,6 +276,8 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	Roll: %f\n", data->Roll);
 			SDL_Log("uavtalk: 	Pitch: %f\n", data->Pitch);
 			SDL_Log("uavtalk: 	Yaw: %f\n", data->Yaw);
+			SDL_Log("uavtalk: 	Bearing: %f\n", data->Bearing);
+			SDL_Log("uavtalk: 	Declination: %f\n", data->Declination);
 			break;
 		}
 		case CAMERASTABSETTINGS_OBJID: {
@@ -206,9 +285,7 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			memcpy(&uavtalk_CameraStabSettingsData, data, sizeof(UAVT_CameraStabSettingsData));
 			SDL_Log("uavtalk: <-CameraStabSettings\n");
 			SDL_Log("uavtalk: 	MaxAxisLockRate: %f\n", data->MaxAxisLockRate);
-			SDL_Log("uavtalk: 	ResponseTime.Roll: %i\n", data->ResponseTime.Roll);
-			SDL_Log("uavtalk: 	ResponseTime.Pitch: %i\n", data->ResponseTime.Pitch);
-			SDL_Log("uavtalk: 	ResponseTime.Yaw: %i\n", data->ResponseTime.Yaw);
+			SDL_Log("uavtalk: 	MaxAccel: %f\n", data->MaxAccel);
 			SDL_Log("uavtalk: 	Input.Roll: %i\n", data->Input.Roll);
 			SDL_Log("uavtalk: 	Input.Pitch: %i\n", data->Input.Pitch);
 			SDL_Log("uavtalk: 	Input.Yaw: %i\n", data->Input.Yaw);
@@ -218,12 +295,18 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	InputRate.Roll: %i\n", data->InputRate.Roll);
 			SDL_Log("uavtalk: 	InputRate.Pitch: %i\n", data->InputRate.Pitch);
 			SDL_Log("uavtalk: 	InputRate.Yaw: %i\n", data->InputRate.Yaw);
-			SDL_Log("uavtalk: 	StabilizationMode.Roll: %i\n", data->StabilizationMode.Roll);
-			SDL_Log("uavtalk: 	StabilizationMode.Pitch: %i\n", data->StabilizationMode.Pitch);
-			SDL_Log("uavtalk: 	StabilizationMode.Yaw: %i\n", data->StabilizationMode.Yaw);
 			SDL_Log("uavtalk: 	OutputRange.Roll: %i\n", data->OutputRange.Roll);
 			SDL_Log("uavtalk: 	OutputRange.Pitch: %i\n", data->OutputRange.Pitch);
 			SDL_Log("uavtalk: 	OutputRange.Yaw: %i\n", data->OutputRange.Yaw);
+			SDL_Log("uavtalk: 	FeedForward.Roll: %i\n", data->FeedForward.Roll);
+			SDL_Log("uavtalk: 	FeedForward.Pitch: %i\n", data->FeedForward.Pitch);
+			SDL_Log("uavtalk: 	FeedForward.Yaw: %i\n", data->FeedForward.Yaw);
+			SDL_Log("uavtalk: 	StabilizationMode.Roll: %i\n", data->StabilizationMode.Roll);
+			SDL_Log("uavtalk: 	StabilizationMode.Pitch: %i\n", data->StabilizationMode.Pitch);
+			SDL_Log("uavtalk: 	StabilizationMode.Yaw: %i\n", data->StabilizationMode.Yaw);
+			SDL_Log("uavtalk: 	AttitudeFilter: %i\n", data->AttitudeFilter);
+			SDL_Log("uavtalk: 	InputFilter: %i\n", data->InputFilter);
+			SDL_Log("uavtalk: 	FeedForwardTime: %i\n", data->FeedForwardTime);
 			SDL_Log("uavtalk: ->send_ack\n");
 			break;
 		}
@@ -359,6 +442,113 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: ->send_ack\n");
 			break;
 		}
+		case FIXEDWINGAIRSPEEDS_OBJID: {
+			UAVT_FixedWingAirspeedsData *data = (UAVT_FixedWingAirspeedsData *)buf;
+			memcpy(&uavtalk_FixedWingAirspeedsData, data, sizeof(UAVT_FixedWingAirspeedsData));
+			SDL_Log("uavtalk: <-FixedWingAirspeeds\n");
+			SDL_Log("uavtalk: 	AirSpeedMax: %f\n", data->AirSpeedMax);
+			SDL_Log("uavtalk: 	CruiseSpeed: %f\n", data->CruiseSpeed);
+			SDL_Log("uavtalk: 	BestClimbRateSpeed: %f\n", data->BestClimbRateSpeed);
+			SDL_Log("uavtalk: 	StallSpeedClean: %f\n", data->StallSpeedClean);
+			SDL_Log("uavtalk: 	StallSpeedDirty: %f\n", data->StallSpeedDirty);
+			SDL_Log("uavtalk: 	VerticalVelMax: %f\n", data->VerticalVelMax);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case FIXEDWINGPATHFOLLOWERSETTINGSCC_OBJID: {
+			UAVT_FixedWingPathFollowerSettingsCCData *data = (UAVT_FixedWingPathFollowerSettingsCCData *)buf;
+			memcpy(&uavtalk_FixedWingPathFollowerSettingsCCData, data, sizeof(UAVT_FixedWingPathFollowerSettingsCCData));
+			SDL_Log("uavtalk: <-FixedWingPathFollowerSettingsCC\n");
+			SDL_Log("uavtalk: 	VerticalVelMax: %f\n", data->VerticalVelMax);
+			SDL_Log("uavtalk: 	VectorFollowingGain: %f\n", data->VectorFollowingGain);
+			SDL_Log("uavtalk: 	OrbitFollowingGain: %f\n", data->OrbitFollowingGain);
+			SDL_Log("uavtalk: 	FollowerIntegralGain: %f\n", data->FollowerIntegralGain);
+			SDL_Log("uavtalk: 	VerticalPosP: %f\n", data->VerticalPosP);
+			SDL_Log("uavtalk: 	HeadingPI[0]: %f\n", data->HeadingPI[0]);
+			SDL_Log("uavtalk: 	HeadingPI[1]: %f\n", data->HeadingPI[1]);
+			SDL_Log("uavtalk: 	HeadingPI[2]: %f\n", data->HeadingPI[2]);
+			SDL_Log("uavtalk: 	AirspeedPI[0]: %f\n", data->AirspeedPI[0]);
+			SDL_Log("uavtalk: 	AirspeedPI[1]: %f\n", data->AirspeedPI[1]);
+			SDL_Log("uavtalk: 	AirspeedPI[2]: %f\n", data->AirspeedPI[2]);
+			SDL_Log("uavtalk: 	VerticalToPitchCrossFeed.Kp: %f\n", data->VerticalToPitchCrossFeed.Kp);
+			SDL_Log("uavtalk: 	VerticalToPitchCrossFeed.Max: %f\n", data->VerticalToPitchCrossFeed.Max);
+			SDL_Log("uavtalk: 	AirspeedToVerticalCrossFeed.Kp: %f\n", data->AirspeedToVerticalCrossFeed.Kp);
+			SDL_Log("uavtalk: 	AirspeedToVerticalCrossFeed.Max: %f\n", data->AirspeedToVerticalCrossFeed.Max);
+			SDL_Log("uavtalk: 	ThrottlePI[0]: %f\n", data->ThrottlePI[0]);
+			SDL_Log("uavtalk: 	ThrottlePI[1]: %f\n", data->ThrottlePI[1]);
+			SDL_Log("uavtalk: 	ThrottlePI[2]: %f\n", data->ThrottlePI[2]);
+			SDL_Log("uavtalk: 	RollLimit[0]: %f\n", data->RollLimit[0]);
+			SDL_Log("uavtalk: 	RollLimit[1]: %f\n", data->RollLimit[1]);
+			SDL_Log("uavtalk: 	RollLimit[2]: %f\n", data->RollLimit[2]);
+			SDL_Log("uavtalk: 	PitchLimit[0]: %f\n", data->PitchLimit[0]);
+			SDL_Log("uavtalk: 	PitchLimit[1]: %f\n", data->PitchLimit[1]);
+			SDL_Log("uavtalk: 	PitchLimit[2]: %f\n", data->PitchLimit[2]);
+			SDL_Log("uavtalk: 	ThrottleLimit[0]: %f\n", data->ThrottleLimit[0]);
+			SDL_Log("uavtalk: 	ThrottleLimit[1]: %f\n", data->ThrottleLimit[1]);
+			SDL_Log("uavtalk: 	ThrottleLimit[2]: %f\n", data->ThrottleLimit[2]);
+			SDL_Log("uavtalk: 	UpdatePeriod: %i\n", data->UpdatePeriod);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case FIXEDWINGPATHFOLLOWERSETTINGS_OBJID: {
+			UAVT_FixedWingPathFollowerSettingsData *data = (UAVT_FixedWingPathFollowerSettingsData *)buf;
+			memcpy(&uavtalk_FixedWingPathFollowerSettingsData, data, sizeof(UAVT_FixedWingPathFollowerSettingsData));
+			SDL_Log("uavtalk: <-FixedWingPathFollowerSettings\n");
+			SDL_Log("uavtalk: 	HorizontalPosP: %f\n", data->HorizontalPosP);
+			SDL_Log("uavtalk: 	VerticalPosP: %f\n", data->VerticalPosP);
+			SDL_Log("uavtalk: 	BearingPI[0]: %f\n", data->BearingPI[0]);
+			SDL_Log("uavtalk: 	BearingPI[1]: %f\n", data->BearingPI[1]);
+			SDL_Log("uavtalk: 	BearingPI[2]: %f\n", data->BearingPI[2]);
+			SDL_Log("uavtalk: 	PowerPI[0]: %f\n", data->PowerPI[0]);
+			SDL_Log("uavtalk: 	PowerPI[1]: %f\n", data->PowerPI[1]);
+			SDL_Log("uavtalk: 	PowerPI[2]: %f\n", data->PowerPI[2]);
+			SDL_Log("uavtalk: 	VerticalToPitchCrossFeed.Kp: %f\n", data->VerticalToPitchCrossFeed.Kp);
+			SDL_Log("uavtalk: 	VerticalToPitchCrossFeed.Max: %f\n", data->VerticalToPitchCrossFeed.Max);
+			SDL_Log("uavtalk: 	AirspeedToVerticalCrossFeed.Kp: %f\n", data->AirspeedToVerticalCrossFeed.Kp);
+			SDL_Log("uavtalk: 	AirspeedToVerticalCrossFeed.Max: %f\n", data->AirspeedToVerticalCrossFeed.Max);
+			SDL_Log("uavtalk: 	SpeedPI[0]: %f\n", data->SpeedPI[0]);
+			SDL_Log("uavtalk: 	SpeedPI[1]: %f\n", data->SpeedPI[1]);
+			SDL_Log("uavtalk: 	SpeedPI[2]: %f\n", data->SpeedPI[2]);
+			SDL_Log("uavtalk: 	RollLimit[0]: %f\n", data->RollLimit[0]);
+			SDL_Log("uavtalk: 	RollLimit[1]: %f\n", data->RollLimit[1]);
+			SDL_Log("uavtalk: 	RollLimit[2]: %f\n", data->RollLimit[2]);
+			SDL_Log("uavtalk: 	PitchLimit[0]: %f\n", data->PitchLimit[0]);
+			SDL_Log("uavtalk: 	PitchLimit[1]: %f\n", data->PitchLimit[1]);
+			SDL_Log("uavtalk: 	PitchLimit[2]: %f\n", data->PitchLimit[2]);
+			SDL_Log("uavtalk: 	ThrottleLimit[0]: %f\n", data->ThrottleLimit[0]);
+			SDL_Log("uavtalk: 	ThrottleLimit[1]: %f\n", data->ThrottleLimit[1]);
+			SDL_Log("uavtalk: 	ThrottleLimit[2]: %f\n", data->ThrottleLimit[2]);
+			SDL_Log("uavtalk: 	OrbitRadius: %f\n", data->OrbitRadius);
+			SDL_Log("uavtalk: 	UpdatePeriod: %i\n", data->UpdatePeriod);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case FIXEDWINGPATHFOLLOWERSTATUS_OBJID: {
+			UAVT_FixedWingPathFollowerStatusData *data = (UAVT_FixedWingPathFollowerStatusData *)buf;
+			memcpy(&uavtalk_FixedWingPathFollowerStatusData, data, sizeof(UAVT_FixedWingPathFollowerStatusData));
+			SDL_Log("uavtalk: <-FixedWingPathFollowerStatus\n");
+			SDL_Log("uavtalk: 	Error.Bearing: %f\n", data->Error.Bearing);
+			SDL_Log("uavtalk: 	Error.Speed: %f\n", data->Error.Speed);
+			SDL_Log("uavtalk: 	Error.Accel: %f\n", data->Error.Accel);
+			SDL_Log("uavtalk: 	Error.Power: %f\n", data->Error.Power);
+			SDL_Log("uavtalk: 	ErrorInt.Bearing: %f\n", data->ErrorInt.Bearing);
+			SDL_Log("uavtalk: 	ErrorInt.Speed: %f\n", data->ErrorInt.Speed);
+			SDL_Log("uavtalk: 	ErrorInt.Accel: %f\n", data->ErrorInt.Accel);
+			SDL_Log("uavtalk: 	ErrorInt.Power: %f\n", data->ErrorInt.Power);
+			SDL_Log("uavtalk: 	Command.Bearing: %f\n", data->Command.Bearing);
+			SDL_Log("uavtalk: 	Command.Speed: %f\n", data->Command.Speed);
+			SDL_Log("uavtalk: 	Command.Accel: %f\n", data->Command.Accel);
+			SDL_Log("uavtalk: 	Command.Power: %f\n", data->Command.Power);
+			SDL_Log("uavtalk: 	Errors.Wind: %i\n", data->Errors.Wind);
+			SDL_Log("uavtalk: 	Errors.Stallspeed: %i\n", data->Errors.Stallspeed);
+			SDL_Log("uavtalk: 	Errors.Lowspeed: %i\n", data->Errors.Lowspeed);
+			SDL_Log("uavtalk: 	Errors.Highspeed: %i\n", data->Errors.Highspeed);
+			SDL_Log("uavtalk: 	Errors.Overspeed: %i\n", data->Errors.Overspeed);
+			SDL_Log("uavtalk: 	Errors.Lowpower: %i\n", data->Errors.Lowpower);
+			SDL_Log("uavtalk: 	Errors.Highpower: %i\n", data->Errors.Highpower);
+			SDL_Log("uavtalk: 	Errors.Pitchcontrol: %i\n", data->Errors.Pitchcontrol);
+			break;
+		}
 		case FLIGHTBATTERYSETTINGS_OBJID: {
 			UAVT_FlightBatterySettingsData *data = (UAVT_FlightBatterySettingsData *)buf;
 			memcpy(&uavtalk_FlightBatterySettingsData, data, sizeof(UAVT_FlightBatterySettingsData));
@@ -366,11 +556,16 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	Capacity: %i\n", data->Capacity);
 			SDL_Log("uavtalk: 	VoltageThresholds.Warning: %f\n", data->VoltageThresholds.Warning);
 			SDL_Log("uavtalk: 	VoltageThresholds.Alarm: %f\n", data->VoltageThresholds.Alarm);
-			SDL_Log("uavtalk: 	SensorCalibrations.VoltageFactor: %f\n", data->SensorCalibrations.VoltageFactor);
-			SDL_Log("uavtalk: 	SensorCalibrations.CurrentFactor: %f\n", data->SensorCalibrations.CurrentFactor);
+			SDL_Log("uavtalk: 	SensorCalibrationFactor.Voltage: %f\n", data->SensorCalibrationFactor.Voltage);
+			SDL_Log("uavtalk: 	SensorCalibrationFactor.Current: %f\n", data->SensorCalibrationFactor.Current);
+			SDL_Log("uavtalk: 	SensorCalibrationOffset.Voltage: %f\n", data->SensorCalibrationOffset.Voltage);
+			SDL_Log("uavtalk: 	SensorCalibrationOffset.Current: %f\n", data->SensorCalibrationOffset.Current);
+			SDL_Log("uavtalk: 	CurrentPin: %i (%s)\n", data->CurrentPin, UAVT_FlightBatterySettingsCurrentPinOption[data->CurrentPin]);
+			SDL_Log("uavtalk: 	VoltagePin: %i (%s)\n", data->VoltagePin, UAVT_FlightBatterySettingsVoltagePinOption[data->VoltagePin]);
 			SDL_Log("uavtalk: 	Type: %i (%s)\n", data->Type, UAVT_FlightBatterySettingsTypeOption[data->Type]);
 			SDL_Log("uavtalk: 	NbCells: %i\n", data->NbCells);
-			SDL_Log("uavtalk: 	SensorType: %i (%s)\n", data->SensorType, UAVT_FlightBatterySettingsSensorTypeOption[data->SensorType]);
+			SDL_Log("uavtalk: 	SensorType.BatteryCurrent: %i\n", data->SensorType.BatteryCurrent);
+			SDL_Log("uavtalk: 	SensorType.BatteryVoltage: %i\n", data->SensorType.BatteryVoltage);
 			SDL_Log("uavtalk: ->send_ack\n");
 			break;
 		}
@@ -380,6 +575,7 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: <-FlightBatteryState\n");
 			SDL_Log("uavtalk: 	Voltage: %f\n", data->Voltage);
 			SDL_Log("uavtalk: 	Current: %f\n", data->Current);
+			SDL_Log("uavtalk: 	BoardSupplyVoltage: %f\n", data->BoardSupplyVoltage);
 			SDL_Log("uavtalk: 	PeakCurrent: %f\n", data->PeakCurrent);
 			SDL_Log("uavtalk: 	AvgCurrent: %f\n", data->AvgCurrent);
 			SDL_Log("uavtalk: 	ConsumedEnergy: %f\n", data->ConsumedEnergy);
@@ -420,6 +616,7 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: <-FlightStatus\n");
 			SDL_Log("uavtalk: 	Armed: %i (%s)\n", data->Armed, UAVT_FlightStatusArmedOption[data->Armed]);
 			SDL_Log("uavtalk: 	FlightMode: %i (%s)\n", data->FlightMode, UAVT_FlightStatusFlightModeOption[data->FlightMode]);
+			SDL_Log("uavtalk: 	ControlSource: %i (%s)\n", data->ControlSource, UAVT_FlightStatusControlSourceOption[data->ControlSource]);
 			break;
 		}
 		case FLIGHTTELEMETRYSTATS_OBJID: {
@@ -432,7 +629,6 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	RxFailures: %i\n", data->RxFailures);
 			SDL_Log("uavtalk: 	TxRetries: %i\n", data->TxRetries);
 			SDL_Log("uavtalk: 	Status: %i (%s)\n", data->Status, UAVT_FlightTelemetryStatsStatusOption[data->Status]);
-			SDL_Log("uavtalk: ->send_ack\n");
 			break;
 		}
 		case GCSRECEIVER_OBJID: {
@@ -459,6 +655,14 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	RxFailures: %i\n", data->RxFailures);
 			SDL_Log("uavtalk: 	TxRetries: %i\n", data->TxRetries);
 			SDL_Log("uavtalk: 	Status: %i (%s)\n", data->Status, UAVT_GCSTelemetryStatsStatusOption[data->Status]);
+			break;
+		}
+		case GEOFENCESETTINGS_OBJID: {
+			UAVT_GeoFenceSettingsData *data = (UAVT_GeoFenceSettingsData *)buf;
+			memcpy(&uavtalk_GeoFenceSettingsData, data, sizeof(UAVT_GeoFenceSettingsData));
+			SDL_Log("uavtalk: <-GeoFenceSettings\n");
+			SDL_Log("uavtalk: 	WarningRadius: %i\n", data->WarningRadius);
+			SDL_Log("uavtalk: 	ErrorRadius: %i\n", data->ErrorRadius);
 			SDL_Log("uavtalk: ->send_ack\n");
 			break;
 		}
@@ -550,14 +754,6 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	SNR[15]: %i\n", data->SNR[15]);
 			break;
 		}
-		case GPSSETTINGS_OBJID: {
-			UAVT_GPSSettingsData *data = (UAVT_GPSSettingsData *)buf;
-			memcpy(&uavtalk_GPSSettingsData, data, sizeof(UAVT_GPSSettingsData));
-			SDL_Log("uavtalk: <-GPSSettings\n");
-			SDL_Log("uavtalk: 	DataProtocol: %i (%s)\n", data->DataProtocol, UAVT_GPSSettingsDataProtocolOption[data->DataProtocol]);
-			SDL_Log("uavtalk: ->send_ack\n");
-			break;
-		}
 		case GPSTIME_OBJID: {
 			UAVT_GPSTimeData *data = (UAVT_GPSTimeData *)buf;
 			memcpy(&uavtalk_GPSTimeData, data, sizeof(UAVT_GPSTimeData));
@@ -579,10 +775,10 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	Down: %f\n", data->Down);
 			break;
 		}
-		case GUIDANCESETTINGS_OBJID: {
-			UAVT_GuidanceSettingsData *data = (UAVT_GuidanceSettingsData *)buf;
-			memcpy(&uavtalk_GuidanceSettingsData, data, sizeof(UAVT_GuidanceSettingsData));
-			SDL_Log("uavtalk: <-GuidanceSettings\n");
+		case GROUNDPATHFOLLOWERSETTINGS_OBJID: {
+			UAVT_GroundPathFollowerSettingsData *data = (UAVT_GroundPathFollowerSettingsData *)buf;
+			memcpy(&uavtalk_GroundPathFollowerSettingsData, data, sizeof(UAVT_GroundPathFollowerSettingsData));
+			SDL_Log("uavtalk: <-GroundPathFollowerSettings\n");
 			SDL_Log("uavtalk: 	HorizontalPosPI.Kp: %f\n", data->HorizontalPosPI.Kp);
 			SDL_Log("uavtalk: 	HorizontalPosPI.Ki: %f\n", data->HorizontalPosPI.Ki);
 			SDL_Log("uavtalk: 	HorizontalPosPI.ILimit: %f\n", data->HorizontalPosPI.ILimit);
@@ -590,20 +786,41 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	HorizontalVelPID.Ki: %f\n", data->HorizontalVelPID.Ki);
 			SDL_Log("uavtalk: 	HorizontalVelPID.Kd: %f\n", data->HorizontalVelPID.Kd);
 			SDL_Log("uavtalk: 	HorizontalVelPID.ILimit: %f\n", data->HorizontalVelPID.ILimit);
-			SDL_Log("uavtalk: 	VerticalPosPI.Kp: %f\n", data->VerticalPosPI.Kp);
-			SDL_Log("uavtalk: 	VerticalPosPI.Ki: %f\n", data->VerticalPosPI.Ki);
-			SDL_Log("uavtalk: 	VerticalPosPI.ILimit: %f\n", data->VerticalPosPI.ILimit);
-			SDL_Log("uavtalk: 	VerticalVelPID.Kp: %f\n", data->VerticalVelPID.Kp);
-			SDL_Log("uavtalk: 	VerticalVelPID.Ki: %f\n", data->VerticalVelPID.Ki);
-			SDL_Log("uavtalk: 	VerticalVelPID.Kd: %f\n", data->VerticalVelPID.Kd);
-			SDL_Log("uavtalk: 	VerticalVelPID.ILimit: %f\n", data->VerticalVelPID.ILimit);
-			SDL_Log("uavtalk: 	MaxRollPitch: %f\n", data->MaxRollPitch);
+			SDL_Log("uavtalk: 	VelocityFeedforward: %f\n", data->VelocityFeedforward);
+			SDL_Log("uavtalk: 	MaxThrottle: %f\n", data->MaxThrottle);
 			SDL_Log("uavtalk: 	UpdatePeriod: %i\n", data->UpdatePeriod);
 			SDL_Log("uavtalk: 	HorizontalVelMax: %i\n", data->HorizontalVelMax);
-			SDL_Log("uavtalk: 	VerticalVelMax: %i\n", data->VerticalVelMax);
-			SDL_Log("uavtalk: 	GuidanceMode: %i (%s)\n", data->GuidanceMode, UAVT_GuidanceSettingsGuidanceModeOption[data->GuidanceMode]);
-			SDL_Log("uavtalk: 	ThrottleControl: %i (%s)\n", data->ThrottleControl, UAVT_GuidanceSettingsThrottleControlOption[data->ThrottleControl]);
+			SDL_Log("uavtalk: 	ManualOverride: %i (%s)\n", data->ManualOverride, UAVT_GroundPathFollowerSettingsManualOverrideOption[data->ManualOverride]);
+			SDL_Log("uavtalk: 	ThrottleControl: %i (%s)\n", data->ThrottleControl, UAVT_GroundPathFollowerSettingsThrottleControlOption[data->ThrottleControl]);
+			SDL_Log("uavtalk: 	VelocitySource: %i (%s)\n", data->VelocitySource, UAVT_GroundPathFollowerSettingsVelocitySourceOption[data->VelocitySource]);
+			SDL_Log("uavtalk: 	PositionSource: %i (%s)\n", data->PositionSource, UAVT_GroundPathFollowerSettingsPositionSourceOption[data->PositionSource]);
+			SDL_Log("uavtalk: 	EndpointRadius: %i\n", data->EndpointRadius);
 			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case GROUNDTRUTH_OBJID: {
+			UAVT_GroundTruthData *data = (UAVT_GroundTruthData *)buf;
+			memcpy(&uavtalk_GroundTruthData, data, sizeof(UAVT_GroundTruthData));
+			SDL_Log("uavtalk: <-GroundTruth\n");
+			SDL_Log("uavtalk: 	AccelerationXYZ[0]: %f\n", data->AccelerationXYZ[0]);
+			SDL_Log("uavtalk: 	AccelerationXYZ[1]: %f\n", data->AccelerationXYZ[1]);
+			SDL_Log("uavtalk: 	AccelerationXYZ[2]: %f\n", data->AccelerationXYZ[2]);
+			SDL_Log("uavtalk: 	PositionNED[0]: %f\n", data->PositionNED[0]);
+			SDL_Log("uavtalk: 	PositionNED[1]: %f\n", data->PositionNED[1]);
+			SDL_Log("uavtalk: 	PositionNED[2]: %f\n", data->PositionNED[2]);
+			SDL_Log("uavtalk: 	VelocityNED[0]: %f\n", data->VelocityNED[0]);
+			SDL_Log("uavtalk: 	VelocityNED[1]: %f\n", data->VelocityNED[1]);
+			SDL_Log("uavtalk: 	VelocityNED[2]: %f\n", data->VelocityNED[2]);
+			SDL_Log("uavtalk: 	RPY[0]: %f\n", data->RPY[0]);
+			SDL_Log("uavtalk: 	RPY[1]: %f\n", data->RPY[1]);
+			SDL_Log("uavtalk: 	RPY[2]: %f\n", data->RPY[2]);
+			SDL_Log("uavtalk: 	AngularRates[0]: %f\n", data->AngularRates[0]);
+			SDL_Log("uavtalk: 	AngularRates[1]: %f\n", data->AngularRates[1]);
+			SDL_Log("uavtalk: 	AngularRates[2]: %f\n", data->AngularRates[2]);
+			SDL_Log("uavtalk: 	TrueAirspeed: %f\n", data->TrueAirspeed);
+			SDL_Log("uavtalk: 	CalibratedAirspeed: %f\n", data->CalibratedAirspeed);
+			SDL_Log("uavtalk: 	AngleOfAttack: %f\n", data->AngleOfAttack);
+			SDL_Log("uavtalk: 	AngleOfSlip: %f\n", data->AngleOfSlip);
 			break;
 		}
 		case GYROSBIAS_OBJID: {
@@ -632,85 +849,552 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	Latitude: %i\n", data->Latitude);
 			SDL_Log("uavtalk: 	Longitude: %i\n", data->Longitude);
 			SDL_Log("uavtalk: 	Altitude: %f\n", data->Altitude);
-			SDL_Log("uavtalk: 	ECEF[0]: %i\n", data->ECEF[0]);
-			SDL_Log("uavtalk: 	ECEF[1]: %i\n", data->ECEF[1]);
-			SDL_Log("uavtalk: 	ECEF[2]: %i\n", data->ECEF[2]);
-			SDL_Log("uavtalk: 	RNE[0]: %f\n", data->RNE[0]);
-			SDL_Log("uavtalk: 	RNE[1]: %f\n", data->RNE[1]);
-			SDL_Log("uavtalk: 	RNE[2]: %f\n", data->RNE[2]);
-			SDL_Log("uavtalk: 	RNE[3]: %f\n", data->RNE[3]);
-			SDL_Log("uavtalk: 	RNE[4]: %f\n", data->RNE[4]);
-			SDL_Log("uavtalk: 	RNE[5]: %f\n", data->RNE[5]);
-			SDL_Log("uavtalk: 	RNE[6]: %f\n", data->RNE[6]);
-			SDL_Log("uavtalk: 	RNE[7]: %f\n", data->RNE[7]);
-			SDL_Log("uavtalk: 	RNE[8]: %f\n", data->RNE[8]);
 			SDL_Log("uavtalk: 	Be[0]: %f\n", data->Be[0]);
 			SDL_Log("uavtalk: 	Be[1]: %f\n", data->Be[1]);
 			SDL_Log("uavtalk: 	Be[2]: %f\n", data->Be[2]);
-			SDL_Log("uavtalk: 	g_e: %f\n", data->g_e);
+			SDL_Log("uavtalk: 	GroundTemperature: %i\n", data->GroundTemperature);
+			SDL_Log("uavtalk: 	SeaLevelPressure: %i\n", data->SeaLevelPressure);
 			SDL_Log("uavtalk: 	Set: %i (%s)\n", data->Set, UAVT_HomeLocationSetOption[data->Set]);
 			SDL_Log("uavtalk: ->send_ack\n");
 			break;
 		}
-		case HWSETTINGS_OBJID: {
-			UAVT_HwSettingsData *data = (UAVT_HwSettingsData *)buf;
-			memcpy(&uavtalk_HwSettingsData, data, sizeof(UAVT_HwSettingsData));
-			SDL_Log("uavtalk: <-HwSettings\n");
-			SDL_Log("uavtalk: 	CC_RcvrPort: %i (%s)\n", data->CC_RcvrPort, UAVT_HwSettingsCC_RcvrPortOption[data->CC_RcvrPort]);
-			SDL_Log("uavtalk: 	CC_MainPort: %i (%s)\n", data->CC_MainPort, UAVT_HwSettingsCC_MainPortOption[data->CC_MainPort]);
-			SDL_Log("uavtalk: 	CC_FlexiPort: %i (%s)\n", data->CC_FlexiPort, UAVT_HwSettingsCC_FlexiPortOption[data->CC_FlexiPort]);
-			SDL_Log("uavtalk: 	RV_RcvrPort: %i (%s)\n", data->RV_RcvrPort, UAVT_HwSettingsRV_RcvrPortOption[data->RV_RcvrPort]);
-			SDL_Log("uavtalk: 	RV_AuxPort: %i (%s)\n", data->RV_AuxPort, UAVT_HwSettingsRV_AuxPortOption[data->RV_AuxPort]);
-			SDL_Log("uavtalk: 	RV_AuxSBusPort: %i (%s)\n", data->RV_AuxSBusPort, UAVT_HwSettingsRV_AuxSBusPortOption[data->RV_AuxSBusPort]);
-			SDL_Log("uavtalk: 	RV_FlexiPort: %i (%s)\n", data->RV_FlexiPort, UAVT_HwSettingsRV_FlexiPortOption[data->RV_FlexiPort]);
-			SDL_Log("uavtalk: 	RV_TelemetryPort: %i (%s)\n", data->RV_TelemetryPort, UAVT_HwSettingsRV_TelemetryPortOption[data->RV_TelemetryPort]);
-			SDL_Log("uavtalk: 	RV_GPSPort: %i (%s)\n", data->RV_GPSPort, UAVT_HwSettingsRV_GPSPortOption[data->RV_GPSPort]);
-			SDL_Log("uavtalk: 	TelemetrySpeed: %i (%s)\n", data->TelemetrySpeed, UAVT_HwSettingsTelemetrySpeedOption[data->TelemetrySpeed]);
-			SDL_Log("uavtalk: 	GPSSpeed: %i (%s)\n", data->GPSSpeed, UAVT_HwSettingsGPSSpeedOption[data->GPSSpeed]);
-			SDL_Log("uavtalk: 	ComUsbBridgeSpeed: %i (%s)\n", data->ComUsbBridgeSpeed, UAVT_HwSettingsComUsbBridgeSpeedOption[data->ComUsbBridgeSpeed]);
-			SDL_Log("uavtalk: 	USB_HIDPort: %i (%s)\n", data->USB_HIDPort, UAVT_HwSettingsUSB_HIDPortOption[data->USB_HIDPort]);
-			SDL_Log("uavtalk: 	USB_VCPPort: %i (%s)\n", data->USB_VCPPort, UAVT_HwSettingsUSB_VCPPortOption[data->USB_VCPPort]);
-			SDL_Log("uavtalk: 	OptionalModules.CameraStab: %i\n", data->OptionalModules.CameraStab);
-			SDL_Log("uavtalk: 	OptionalModules.GPS: %i\n", data->OptionalModules.GPS);
-			SDL_Log("uavtalk: 	OptionalModules.ComUsbBridge: %i\n", data->OptionalModules.ComUsbBridge);
-			SDL_Log("uavtalk: 	OptionalModules.Fault: %i\n", data->OptionalModules.Fault);
-			SDL_Log("uavtalk: 	OptionalModules.Altitude: %i\n", data->OptionalModules.Altitude);
-			SDL_Log("uavtalk: 	OptionalModules.TxPID: %i\n", data->OptionalModules.TxPID);
-			SDL_Log("uavtalk: 	OptionalModules.Autotune: %i\n", data->OptionalModules.Autotune);
-			SDL_Log("uavtalk: 	DSMxBind: %i\n", data->DSMxBind);
+		case HOTTSETTINGS_OBJID: {
+			UAVT_HoTTSettingsData *data = (UAVT_HoTTSettingsData *)buf;
+			memcpy(&uavtalk_HoTTSettingsData, data, sizeof(UAVT_HoTTSettingsData));
+			SDL_Log("uavtalk: <-HoTTSettings\n");
+			SDL_Log("uavtalk: 	Limit.MinSpeed: %f\n", data->Limit.MinSpeed);
+			SDL_Log("uavtalk: 	Limit.MaxSpeed: %f\n", data->Limit.MaxSpeed);
+			SDL_Log("uavtalk: 	Limit.NegDifference1: %f\n", data->Limit.NegDifference1);
+			SDL_Log("uavtalk: 	Limit.PosDifference1: %f\n", data->Limit.PosDifference1);
+			SDL_Log("uavtalk: 	Limit.NegDifference2: %f\n", data->Limit.NegDifference2);
+			SDL_Log("uavtalk: 	Limit.PosDifference2: %f\n", data->Limit.PosDifference2);
+			SDL_Log("uavtalk: 	Limit.MinHeight: %f\n", data->Limit.MinHeight);
+			SDL_Log("uavtalk: 	Limit.MaxHeight: %f\n", data->Limit.MaxHeight);
+			SDL_Log("uavtalk: 	Limit.MaxDistance: %f\n", data->Limit.MaxDistance);
+			SDL_Log("uavtalk: 	Limit.MinPowerVoltage: %f\n", data->Limit.MinPowerVoltage);
+			SDL_Log("uavtalk: 	Limit.MaxPowerVoltage: %f\n", data->Limit.MaxPowerVoltage);
+			SDL_Log("uavtalk: 	Limit.MinSensor1Voltage: %f\n", data->Limit.MinSensor1Voltage);
+			SDL_Log("uavtalk: 	Limit.MaxSensor1Voltage: %f\n", data->Limit.MaxSensor1Voltage);
+			SDL_Log("uavtalk: 	Limit.MinSensor2Voltage: %f\n", data->Limit.MinSensor2Voltage);
+			SDL_Log("uavtalk: 	Limit.MaxSensor2Voltage: %f\n", data->Limit.MaxSensor2Voltage);
+			SDL_Log("uavtalk: 	Limit.MinCellVoltage: %f\n", data->Limit.MinCellVoltage);
+			SDL_Log("uavtalk: 	Limit.MaxCurrent: %f\n", data->Limit.MaxCurrent);
+			SDL_Log("uavtalk: 	Limit.MaxUsedCapacity: %f\n", data->Limit.MaxUsedCapacity);
+			SDL_Log("uavtalk: 	Limit.MinSensor1Temp: %f\n", data->Limit.MinSensor1Temp);
+			SDL_Log("uavtalk: 	Limit.MaxSensor1Temp: %f\n", data->Limit.MaxSensor1Temp);
+			SDL_Log("uavtalk: 	Limit.MinSensor2Temp: %f\n", data->Limit.MinSensor2Temp);
+			SDL_Log("uavtalk: 	Limit.MaxSensor2Temp: %f\n", data->Limit.MaxSensor2Temp);
+			SDL_Log("uavtalk: 	Limit.MaxServoTemp: %f\n", data->Limit.MaxServoTemp);
+			SDL_Log("uavtalk: 	Limit.MinRPM: %f\n", data->Limit.MinRPM);
+			SDL_Log("uavtalk: 	Limit.MaxRPM: %f\n", data->Limit.MaxRPM);
+			SDL_Log("uavtalk: 	Limit.MinFuel: %f\n", data->Limit.MinFuel);
+			SDL_Log("uavtalk: 	Limit.MaxServoDifference: %f\n", data->Limit.MaxServoDifference);
+			SDL_Log("uavtalk: 	Sensor.VARIO: %i\n", data->Sensor.VARIO);
+			SDL_Log("uavtalk: 	Sensor.GPS: %i\n", data->Sensor.GPS);
+			SDL_Log("uavtalk: 	Sensor.EAM: %i\n", data->Sensor.EAM);
+			SDL_Log("uavtalk: 	Sensor.GAM: %i\n", data->Sensor.GAM);
+			SDL_Log("uavtalk: 	Sensor.ESC: %i\n", data->Sensor.ESC);
+			SDL_Log("uavtalk: 	Warning.AltitudeBeep: %i\n", data->Warning.AltitudeBeep);
+			SDL_Log("uavtalk: 	Warning.MinSpeed: %i\n", data->Warning.MinSpeed);
+			SDL_Log("uavtalk: 	Warning.MaxSpeed: %i\n", data->Warning.MaxSpeed);
+			SDL_Log("uavtalk: 	Warning.NegDifference1: %i\n", data->Warning.NegDifference1);
+			SDL_Log("uavtalk: 	Warning.PosDifference1: %i\n", data->Warning.PosDifference1);
+			SDL_Log("uavtalk: 	Warning.NegDifference2: %i\n", data->Warning.NegDifference2);
+			SDL_Log("uavtalk: 	Warning.PosDifference2: %i\n", data->Warning.PosDifference2);
+			SDL_Log("uavtalk: 	Warning.MinHeight: %i\n", data->Warning.MinHeight);
+			SDL_Log("uavtalk: 	Warning.MaxHeight: %i\n", data->Warning.MaxHeight);
+			SDL_Log("uavtalk: 	Warning.MaxDistance: %i\n", data->Warning.MaxDistance);
+			SDL_Log("uavtalk: 	Warning.MinPowerVoltage: %i\n", data->Warning.MinPowerVoltage);
+			SDL_Log("uavtalk: 	Warning.MaxPowerVoltage: %i\n", data->Warning.MaxPowerVoltage);
+			SDL_Log("uavtalk: 	Warning.MinSensor1Voltage: %i\n", data->Warning.MinSensor1Voltage);
+			SDL_Log("uavtalk: 	Warning.MaxSensor1Voltage: %i\n", data->Warning.MaxSensor1Voltage);
+			SDL_Log("uavtalk: 	Warning.MinSensor2Voltage: %i\n", data->Warning.MinSensor2Voltage);
+			SDL_Log("uavtalk: 	Warning.MaxSensor2Voltage: %i\n", data->Warning.MaxSensor2Voltage);
+			SDL_Log("uavtalk: 	Warning.MinCellVoltage: %i\n", data->Warning.MinCellVoltage);
+			SDL_Log("uavtalk: 	Warning.MaxCurrent: %i\n", data->Warning.MaxCurrent);
+			SDL_Log("uavtalk: 	Warning.MaxUsedCapacity: %i\n", data->Warning.MaxUsedCapacity);
+			SDL_Log("uavtalk: 	Warning.MinSensor1Temp: %i\n", data->Warning.MinSensor1Temp);
+			SDL_Log("uavtalk: 	Warning.MaxSensor1Temp: %i\n", data->Warning.MaxSensor1Temp);
+			SDL_Log("uavtalk: 	Warning.MinSensor2Temp: %i\n", data->Warning.MinSensor2Temp);
+			SDL_Log("uavtalk: 	Warning.MaxSensor2Temp: %i\n", data->Warning.MaxSensor2Temp);
+			SDL_Log("uavtalk: 	Warning.MaxServoTemp: %i\n", data->Warning.MaxServoTemp);
+			SDL_Log("uavtalk: 	Warning.MinRPM: %i\n", data->Warning.MinRPM);
+			SDL_Log("uavtalk: 	Warning.MaxRPM: %i\n", data->Warning.MaxRPM);
+			SDL_Log("uavtalk: 	Warning.MinFuel: %i\n", data->Warning.MinFuel);
+			SDL_Log("uavtalk: 	Warning.MaxServoDifference: %i\n", data->Warning.MaxServoDifference);
 			SDL_Log("uavtalk: ->send_ack\n");
 			break;
 		}
-		case I2CSTATS_OBJID: {
-			UAVT_I2CStatsData *data = (UAVT_I2CStatsData *)buf;
-			memcpy(&uavtalk_I2CStatsData, data, sizeof(UAVT_I2CStatsData));
-			SDL_Log("uavtalk: <-I2CStats\n");
-			SDL_Log("uavtalk: 	evirq_log[0]: %i\n", data->evirq_log[0]);
-			SDL_Log("uavtalk: 	evirq_log[1]: %i\n", data->evirq_log[1]);
-			SDL_Log("uavtalk: 	evirq_log[2]: %i\n", data->evirq_log[2]);
-			SDL_Log("uavtalk: 	evirq_log[3]: %i\n", data->evirq_log[3]);
-			SDL_Log("uavtalk: 	evirq_log[4]: %i\n", data->evirq_log[4]);
-			SDL_Log("uavtalk: 	erirq_log[0]: %i\n", data->erirq_log[0]);
-			SDL_Log("uavtalk: 	erirq_log[1]: %i\n", data->erirq_log[1]);
-			SDL_Log("uavtalk: 	erirq_log[2]: %i\n", data->erirq_log[2]);
-			SDL_Log("uavtalk: 	erirq_log[3]: %i\n", data->erirq_log[3]);
-			SDL_Log("uavtalk: 	erirq_log[4]: %i\n", data->erirq_log[4]);
-			SDL_Log("uavtalk: 	event_errors: %i\n", data->event_errors);
-			SDL_Log("uavtalk: 	fsm_errors: %i\n", data->fsm_errors);
-			SDL_Log("uavtalk: 	irq_errors: %i\n", data->irq_errors);
-			SDL_Log("uavtalk: 	nacks: %i\n", data->nacks);
-			SDL_Log("uavtalk: 	timeouts: %i\n", data->timeouts);
-			SDL_Log("uavtalk: 	last_error_type: %i (%s)\n", data->last_error_type, UAVT_I2CStatslast_error_typeOption[data->last_error_type]);
-			SDL_Log("uavtalk: 	event_log[0]: %i (%s)\n", data->event_log[0], UAVT_I2CStatsevent_logOption[data->event_log[0]]);
-			SDL_Log("uavtalk: 	event_log[1]: %i (%s)\n", data->event_log[1], UAVT_I2CStatsevent_logOption[data->event_log[1]]);
-			SDL_Log("uavtalk: 	event_log[2]: %i (%s)\n", data->event_log[2], UAVT_I2CStatsevent_logOption[data->event_log[2]]);
-			SDL_Log("uavtalk: 	event_log[3]: %i (%s)\n", data->event_log[3], UAVT_I2CStatsevent_logOption[data->event_log[3]]);
-			SDL_Log("uavtalk: 	event_log[4]: %i (%s)\n", data->event_log[4], UAVT_I2CStatsevent_logOption[data->event_log[4]]);
-			SDL_Log("uavtalk: 	state_log[0]: %i (%s)\n", data->state_log[0], UAVT_I2CStatsstate_logOption[data->state_log[0]]);
-			SDL_Log("uavtalk: 	state_log[1]: %i (%s)\n", data->state_log[1], UAVT_I2CStatsstate_logOption[data->state_log[1]]);
-			SDL_Log("uavtalk: 	state_log[2]: %i (%s)\n", data->state_log[2], UAVT_I2CStatsstate_logOption[data->state_log[2]]);
-			SDL_Log("uavtalk: 	state_log[3]: %i (%s)\n", data->state_log[3], UAVT_I2CStatsstate_logOption[data->state_log[3]]);
-			SDL_Log("uavtalk: 	state_log[4]: %i (%s)\n", data->state_log[4], UAVT_I2CStatsstate_logOption[data->state_log[4]]);
+		case HWCOLIBRI_OBJID: {
+			UAVT_HwColibriData *data = (UAVT_HwColibriData *)buf;
+			memcpy(&uavtalk_HwColibriData, data, sizeof(UAVT_HwColibriData));
+			SDL_Log("uavtalk: <-HwColibri\n");
+			SDL_Log("uavtalk: 	Frame: %i (%s)\n", data->Frame, UAVT_HwColibriFrameOption[data->Frame]);
+			SDL_Log("uavtalk: 	RcvrPort: %i (%s)\n", data->RcvrPort, UAVT_HwColibriRcvrPortOption[data->RcvrPort]);
+			SDL_Log("uavtalk: 	Uart1: %i (%s)\n", data->Uart1, UAVT_HwColibriUart1Option[data->Uart1]);
+			SDL_Log("uavtalk: 	Uart2: %i (%s)\n", data->Uart2, UAVT_HwColibriUart2Option[data->Uart2]);
+			SDL_Log("uavtalk: 	Uart3: %i (%s)\n", data->Uart3, UAVT_HwColibriUart3Option[data->Uart3]);
+			SDL_Log("uavtalk: 	Uart4: %i (%s)\n", data->Uart4, UAVT_HwColibriUart4Option[data->Uart4]);
+			SDL_Log("uavtalk: 	USB_HIDPort: %i (%s)\n", data->USB_HIDPort, UAVT_HwColibriUSB_HIDPortOption[data->USB_HIDPort]);
+			SDL_Log("uavtalk: 	USB_VCPPort: %i (%s)\n", data->USB_VCPPort, UAVT_HwColibriUSB_VCPPortOption[data->USB_VCPPort]);
+			SDL_Log("uavtalk: 	DSMxBind: %i\n", data->DSMxBind);
+			SDL_Log("uavtalk: 	GyroRange: %i (%s)\n", data->GyroRange, UAVT_HwColibriGyroRangeOption[data->GyroRange]);
+			SDL_Log("uavtalk: 	AccelRange: %i (%s)\n", data->AccelRange, UAVT_HwColibriAccelRangeOption[data->AccelRange]);
+			SDL_Log("uavtalk: 	MPU6000Rate: %i (%s)\n", data->MPU6000Rate, UAVT_HwColibriMPU6000RateOption[data->MPU6000Rate]);
+			SDL_Log("uavtalk: 	MPU6000DLPF: %i (%s)\n", data->MPU6000DLPF, UAVT_HwColibriMPU6000DLPFOption[data->MPU6000DLPF]);
+			SDL_Log("uavtalk: 	Magnetometer: %i (%s)\n", data->Magnetometer, UAVT_HwColibriMagnetometerOption[data->Magnetometer]);
+			SDL_Log("uavtalk: 	ExtMagOrientation: %i (%s)\n", data->ExtMagOrientation, UAVT_HwColibriExtMagOrientationOption[data->ExtMagOrientation]);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case HWCOPTERCONTROL_OBJID: {
+			UAVT_HwCopterControlData *data = (UAVT_HwCopterControlData *)buf;
+			memcpy(&uavtalk_HwCopterControlData, data, sizeof(UAVT_HwCopterControlData));
+			SDL_Log("uavtalk: <-HwCopterControl\n");
+			SDL_Log("uavtalk: 	RcvrPort: %i (%s)\n", data->RcvrPort, UAVT_HwCopterControlRcvrPortOption[data->RcvrPort]);
+			SDL_Log("uavtalk: 	MainPort: %i (%s)\n", data->MainPort, UAVT_HwCopterControlMainPortOption[data->MainPort]);
+			SDL_Log("uavtalk: 	FlexiPort: %i (%s)\n", data->FlexiPort, UAVT_HwCopterControlFlexiPortOption[data->FlexiPort]);
+			SDL_Log("uavtalk: 	USB_HIDPort: %i (%s)\n", data->USB_HIDPort, UAVT_HwCopterControlUSB_HIDPortOption[data->USB_HIDPort]);
+			SDL_Log("uavtalk: 	USB_VCPPort: %i (%s)\n", data->USB_VCPPort, UAVT_HwCopterControlUSB_VCPPortOption[data->USB_VCPPort]);
+			SDL_Log("uavtalk: 	DSMxBind: %i\n", data->DSMxBind);
+			SDL_Log("uavtalk: 	GyroRange: %i (%s)\n", data->GyroRange, UAVT_HwCopterControlGyroRangeOption[data->GyroRange]);
+			SDL_Log("uavtalk: 	AccelRange: %i (%s)\n", data->AccelRange, UAVT_HwCopterControlAccelRangeOption[data->AccelRange]);
+			SDL_Log("uavtalk: 	MPU6000Rate: %i (%s)\n", data->MPU6000Rate, UAVT_HwCopterControlMPU6000RateOption[data->MPU6000Rate]);
+			SDL_Log("uavtalk: 	MPU6000DLPF: %i (%s)\n", data->MPU6000DLPF, UAVT_HwCopterControlMPU6000DLPFOption[data->MPU6000DLPF]);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case HWDISCOVERYF4_OBJID: {
+			UAVT_HwDiscoveryF4Data *data = (UAVT_HwDiscoveryF4Data *)buf;
+			memcpy(&uavtalk_HwDiscoveryF4Data, data, sizeof(UAVT_HwDiscoveryF4Data));
+			SDL_Log("uavtalk: <-HwDiscoveryF4\n");
+			SDL_Log("uavtalk: 	MainPort: %i (%s)\n", data->MainPort, UAVT_HwDiscoveryF4MainPortOption[data->MainPort]);
+			SDL_Log("uavtalk: 	USB_HIDPort: %i (%s)\n", data->USB_HIDPort, UAVT_HwDiscoveryF4USB_HIDPortOption[data->USB_HIDPort]);
+			SDL_Log("uavtalk: 	USB_VCPPort: %i (%s)\n", data->USB_VCPPort, UAVT_HwDiscoveryF4USB_VCPPortOption[data->USB_VCPPort]);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case HWFLYINGF3_OBJID: {
+			UAVT_HwFlyingF3Data *data = (UAVT_HwFlyingF3Data *)buf;
+			memcpy(&uavtalk_HwFlyingF3Data, data, sizeof(UAVT_HwFlyingF3Data));
+			SDL_Log("uavtalk: <-HwFlyingF3\n");
+			SDL_Log("uavtalk: 	RcvrPort: %i (%s)\n", data->RcvrPort, UAVT_HwFlyingF3RcvrPortOption[data->RcvrPort]);
+			SDL_Log("uavtalk: 	Uart1: %i (%s)\n", data->Uart1, UAVT_HwFlyingF3Uart1Option[data->Uart1]);
+			SDL_Log("uavtalk: 	Uart2: %i (%s)\n", data->Uart2, UAVT_HwFlyingF3Uart2Option[data->Uart2]);
+			SDL_Log("uavtalk: 	Uart3: %i (%s)\n", data->Uart3, UAVT_HwFlyingF3Uart3Option[data->Uart3]);
+			SDL_Log("uavtalk: 	Uart4: %i (%s)\n", data->Uart4, UAVT_HwFlyingF3Uart4Option[data->Uart4]);
+			SDL_Log("uavtalk: 	Uart5: %i (%s)\n", data->Uart5, UAVT_HwFlyingF3Uart5Option[data->Uart5]);
+			SDL_Log("uavtalk: 	USB_HIDPort: %i (%s)\n", data->USB_HIDPort, UAVT_HwFlyingF3USB_HIDPortOption[data->USB_HIDPort]);
+			SDL_Log("uavtalk: 	USB_VCPPort: %i (%s)\n", data->USB_VCPPort, UAVT_HwFlyingF3USB_VCPPortOption[data->USB_VCPPort]);
+			SDL_Log("uavtalk: 	DSMxBind: %i\n", data->DSMxBind);
+			SDL_Log("uavtalk: 	GyroRange: %i (%s)\n", data->GyroRange, UAVT_HwFlyingF3GyroRangeOption[data->GyroRange]);
+			SDL_Log("uavtalk: 	L3GD20Rate: %i (%s)\n", data->L3GD20Rate, UAVT_HwFlyingF3L3GD20RateOption[data->L3GD20Rate]);
+			SDL_Log("uavtalk: 	AccelRange: %i (%s)\n", data->AccelRange, UAVT_HwFlyingF3AccelRangeOption[data->AccelRange]);
+			SDL_Log("uavtalk: 	Shield: %i (%s)\n", data->Shield, UAVT_HwFlyingF3ShieldOption[data->Shield]);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case HWFLYINGF4_OBJID: {
+			UAVT_HwFlyingF4Data *data = (UAVT_HwFlyingF4Data *)buf;
+			memcpy(&uavtalk_HwFlyingF4Data, data, sizeof(UAVT_HwFlyingF4Data));
+			SDL_Log("uavtalk: <-HwFlyingF4\n");
+			SDL_Log("uavtalk: 	RcvrPort: %i (%s)\n", data->RcvrPort, UAVT_HwFlyingF4RcvrPortOption[data->RcvrPort]);
+			SDL_Log("uavtalk: 	Uart1: %i (%s)\n", data->Uart1, UAVT_HwFlyingF4Uart1Option[data->Uart1]);
+			SDL_Log("uavtalk: 	Uart2: %i (%s)\n", data->Uart2, UAVT_HwFlyingF4Uart2Option[data->Uart2]);
+			SDL_Log("uavtalk: 	Uart3: %i (%s)\n", data->Uart3, UAVT_HwFlyingF4Uart3Option[data->Uart3]);
+			SDL_Log("uavtalk: 	USB_HIDPort: %i (%s)\n", data->USB_HIDPort, UAVT_HwFlyingF4USB_HIDPortOption[data->USB_HIDPort]);
+			SDL_Log("uavtalk: 	USB_VCPPort: %i (%s)\n", data->USB_VCPPort, UAVT_HwFlyingF4USB_VCPPortOption[data->USB_VCPPort]);
+			SDL_Log("uavtalk: 	DSMxBind: %i\n", data->DSMxBind);
+			SDL_Log("uavtalk: 	GyroRange: %i (%s)\n", data->GyroRange, UAVT_HwFlyingF4GyroRangeOption[data->GyroRange]);
+			SDL_Log("uavtalk: 	AccelRange: %i (%s)\n", data->AccelRange, UAVT_HwFlyingF4AccelRangeOption[data->AccelRange]);
+			SDL_Log("uavtalk: 	MPU6050Rate: %i (%s)\n", data->MPU6050Rate, UAVT_HwFlyingF4MPU6050RateOption[data->MPU6050Rate]);
+			SDL_Log("uavtalk: 	MPU6050DLPF: %i (%s)\n", data->MPU6050DLPF, UAVT_HwFlyingF4MPU6050DLPFOption[data->MPU6050DLPF]);
+			SDL_Log("uavtalk: 	Magnetometer: %i (%s)\n", data->Magnetometer, UAVT_HwFlyingF4MagnetometerOption[data->Magnetometer]);
+			SDL_Log("uavtalk: 	ExtMagOrientation: %i (%s)\n", data->ExtMagOrientation, UAVT_HwFlyingF4ExtMagOrientationOption[data->ExtMagOrientation]);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case HWFREEDOM_OBJID: {
+			UAVT_HwFreedomData *data = (UAVT_HwFreedomData *)buf;
+			memcpy(&uavtalk_HwFreedomData, data, sizeof(UAVT_HwFreedomData));
+			SDL_Log("uavtalk: <-HwFreedom\n");
+			SDL_Log("uavtalk: 	Output: %i (%s)\n", data->Output, UAVT_HwFreedomOutputOption[data->Output]);
+			SDL_Log("uavtalk: 	MainPort: %i (%s)\n", data->MainPort, UAVT_HwFreedomMainPortOption[data->MainPort]);
+			SDL_Log("uavtalk: 	FlexiPort: %i (%s)\n", data->FlexiPort, UAVT_HwFreedomFlexiPortOption[data->FlexiPort]);
+			SDL_Log("uavtalk: 	RcvrPort: %i (%s)\n", data->RcvrPort, UAVT_HwFreedomRcvrPortOption[data->RcvrPort]);
+			SDL_Log("uavtalk: 	RadioPort: %i (%s)\n", data->RadioPort, UAVT_HwFreedomRadioPortOption[data->RadioPort]);
+			SDL_Log("uavtalk: 	USB_HIDPort: %i (%s)\n", data->USB_HIDPort, UAVT_HwFreedomUSB_HIDPortOption[data->USB_HIDPort]);
+			SDL_Log("uavtalk: 	USB_VCPPort: %i (%s)\n", data->USB_VCPPort, UAVT_HwFreedomUSB_VCPPortOption[data->USB_VCPPort]);
+			SDL_Log("uavtalk: 	DSMxBind: %i\n", data->DSMxBind);
+			SDL_Log("uavtalk: 	GyroRange: %i (%s)\n", data->GyroRange, UAVT_HwFreedomGyroRangeOption[data->GyroRange]);
+			SDL_Log("uavtalk: 	AccelRange: %i (%s)\n", data->AccelRange, UAVT_HwFreedomAccelRangeOption[data->AccelRange]);
+			SDL_Log("uavtalk: 	MPU6000Rate: %i (%s)\n", data->MPU6000Rate, UAVT_HwFreedomMPU6000RateOption[data->MPU6000Rate]);
+			SDL_Log("uavtalk: 	MPU6000DLPF: %i (%s)\n", data->MPU6000DLPF, UAVT_HwFreedomMPU6000DLPFOption[data->MPU6000DLPF]);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case HWQUANTON_OBJID: {
+			UAVT_HwQuantonData *data = (UAVT_HwQuantonData *)buf;
+			memcpy(&uavtalk_HwQuantonData, data, sizeof(UAVT_HwQuantonData));
+			SDL_Log("uavtalk: <-HwQuanton\n");
+			SDL_Log("uavtalk: 	RcvrPort: %i (%s)\n", data->RcvrPort, UAVT_HwQuantonRcvrPortOption[data->RcvrPort]);
+			SDL_Log("uavtalk: 	Uart1: %i (%s)\n", data->Uart1, UAVT_HwQuantonUart1Option[data->Uart1]);
+			SDL_Log("uavtalk: 	Uart2: %i (%s)\n", data->Uart2, UAVT_HwQuantonUart2Option[data->Uart2]);
+			SDL_Log("uavtalk: 	Uart3: %i (%s)\n", data->Uart3, UAVT_HwQuantonUart3Option[data->Uart3]);
+			SDL_Log("uavtalk: 	Uart4: %i (%s)\n", data->Uart4, UAVT_HwQuantonUart4Option[data->Uart4]);
+			SDL_Log("uavtalk: 	Uart5: %i (%s)\n", data->Uart5, UAVT_HwQuantonUart5Option[data->Uart5]);
+			SDL_Log("uavtalk: 	USB_HIDPort: %i (%s)\n", data->USB_HIDPort, UAVT_HwQuantonUSB_HIDPortOption[data->USB_HIDPort]);
+			SDL_Log("uavtalk: 	USB_VCPPort: %i (%s)\n", data->USB_VCPPort, UAVT_HwQuantonUSB_VCPPortOption[data->USB_VCPPort]);
+			SDL_Log("uavtalk: 	DSMxBind: %i\n", data->DSMxBind);
+			SDL_Log("uavtalk: 	GyroRange: %i (%s)\n", data->GyroRange, UAVT_HwQuantonGyroRangeOption[data->GyroRange]);
+			SDL_Log("uavtalk: 	AccelRange: %i (%s)\n", data->AccelRange, UAVT_HwQuantonAccelRangeOption[data->AccelRange]);
+			SDL_Log("uavtalk: 	MPU6000Rate: %i (%s)\n", data->MPU6000Rate, UAVT_HwQuantonMPU6000RateOption[data->MPU6000Rate]);
+			SDL_Log("uavtalk: 	MPU6000DLPF: %i (%s)\n", data->MPU6000DLPF, UAVT_HwQuantonMPU6000DLPFOption[data->MPU6000DLPF]);
+			SDL_Log("uavtalk: 	Magnetometer: %i (%s)\n", data->Magnetometer, UAVT_HwQuantonMagnetometerOption[data->Magnetometer]);
+			SDL_Log("uavtalk: 	ExtMagOrientation: %i (%s)\n", data->ExtMagOrientation, UAVT_HwQuantonExtMagOrientationOption[data->ExtMagOrientation]);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case HWREVOLUTION_OBJID: {
+			UAVT_HwRevolutionData *data = (UAVT_HwRevolutionData *)buf;
+			memcpy(&uavtalk_HwRevolutionData, data, sizeof(UAVT_HwRevolutionData));
+			SDL_Log("uavtalk: <-HwRevolution\n");
+			SDL_Log("uavtalk: 	RcvrPort: %i (%s)\n", data->RcvrPort, UAVT_HwRevolutionRcvrPortOption[data->RcvrPort]);
+			SDL_Log("uavtalk: 	AuxPort: %i (%s)\n", data->AuxPort, UAVT_HwRevolutionAuxPortOption[data->AuxPort]);
+			SDL_Log("uavtalk: 	AuxSBusPort: %i (%s)\n", data->AuxSBusPort, UAVT_HwRevolutionAuxSBusPortOption[data->AuxSBusPort]);
+			SDL_Log("uavtalk: 	FlexiPort: %i (%s)\n", data->FlexiPort, UAVT_HwRevolutionFlexiPortOption[data->FlexiPort]);
+			SDL_Log("uavtalk: 	TelemetryPort: %i (%s)\n", data->TelemetryPort, UAVT_HwRevolutionTelemetryPortOption[data->TelemetryPort]);
+			SDL_Log("uavtalk: 	GPSPort: %i (%s)\n", data->GPSPort, UAVT_HwRevolutionGPSPortOption[data->GPSPort]);
+			SDL_Log("uavtalk: 	USB_HIDPort: %i (%s)\n", data->USB_HIDPort, UAVT_HwRevolutionUSB_HIDPortOption[data->USB_HIDPort]);
+			SDL_Log("uavtalk: 	USB_VCPPort: %i (%s)\n", data->USB_VCPPort, UAVT_HwRevolutionUSB_VCPPortOption[data->USB_VCPPort]);
+			SDL_Log("uavtalk: 	DSMxBind: %i\n", data->DSMxBind);
+			SDL_Log("uavtalk: 	GyroRange: %i (%s)\n", data->GyroRange, UAVT_HwRevolutionGyroRangeOption[data->GyroRange]);
+			SDL_Log("uavtalk: 	AccelRange: %i (%s)\n", data->AccelRange, UAVT_HwRevolutionAccelRangeOption[data->AccelRange]);
+			SDL_Log("uavtalk: 	MPU6000Rate: %i (%s)\n", data->MPU6000Rate, UAVT_HwRevolutionMPU6000RateOption[data->MPU6000Rate]);
+			SDL_Log("uavtalk: 	MPU6000DLPF: %i (%s)\n", data->MPU6000DLPF, UAVT_HwRevolutionMPU6000DLPFOption[data->MPU6000DLPF]);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case HWREVOMINI_OBJID: {
+			UAVT_HwRevoMiniData *data = (UAVT_HwRevoMiniData *)buf;
+			memcpy(&uavtalk_HwRevoMiniData, data, sizeof(UAVT_HwRevoMiniData));
+			SDL_Log("uavtalk: <-HwRevoMini\n");
+			SDL_Log("uavtalk: 	RcvrPort: %i (%s)\n", data->RcvrPort, UAVT_HwRevoMiniRcvrPortOption[data->RcvrPort]);
+			SDL_Log("uavtalk: 	MainPort: %i (%s)\n", data->MainPort, UAVT_HwRevoMiniMainPortOption[data->MainPort]);
+			SDL_Log("uavtalk: 	FlexiPort: %i (%s)\n", data->FlexiPort, UAVT_HwRevoMiniFlexiPortOption[data->FlexiPort]);
+			SDL_Log("uavtalk: 	RadioPort: %i (%s)\n", data->RadioPort, UAVT_HwRevoMiniRadioPortOption[data->RadioPort]);
+			SDL_Log("uavtalk: 	USB_HIDPort: %i (%s)\n", data->USB_HIDPort, UAVT_HwRevoMiniUSB_HIDPortOption[data->USB_HIDPort]);
+			SDL_Log("uavtalk: 	USB_VCPPort: %i (%s)\n", data->USB_VCPPort, UAVT_HwRevoMiniUSB_VCPPortOption[data->USB_VCPPort]);
+			SDL_Log("uavtalk: 	DSMxBind: %i\n", data->DSMxBind);
+			SDL_Log("uavtalk: 	GyroRange: %i (%s)\n", data->GyroRange, UAVT_HwRevoMiniGyroRangeOption[data->GyroRange]);
+			SDL_Log("uavtalk: 	AccelRange: %i (%s)\n", data->AccelRange, UAVT_HwRevoMiniAccelRangeOption[data->AccelRange]);
+			SDL_Log("uavtalk: 	MPU6000Rate: %i (%s)\n", data->MPU6000Rate, UAVT_HwRevoMiniMPU6000RateOption[data->MPU6000Rate]);
+			SDL_Log("uavtalk: 	MPU6000DLPF: %i (%s)\n", data->MPU6000DLPF, UAVT_HwRevoMiniMPU6000DLPFOption[data->MPU6000DLPF]);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case HWSPARKYBGC_OBJID: {
+			UAVT_HwSparkyBGCData *data = (UAVT_HwSparkyBGCData *)buf;
+			memcpy(&uavtalk_HwSparkyBGCData, data, sizeof(UAVT_HwSparkyBGCData));
+			SDL_Log("uavtalk: <-HwSparkyBGC\n");
+			SDL_Log("uavtalk: 	RcvrPort: %i (%s)\n", data->RcvrPort, UAVT_HwSparkyBGCRcvrPortOption[data->RcvrPort]);
+			SDL_Log("uavtalk: 	FlexiPort: %i (%s)\n", data->FlexiPort, UAVT_HwSparkyBGCFlexiPortOption[data->FlexiPort]);
+			SDL_Log("uavtalk: 	USB_HIDPort: %i (%s)\n", data->USB_HIDPort, UAVT_HwSparkyBGCUSB_HIDPortOption[data->USB_HIDPort]);
+			SDL_Log("uavtalk: 	USB_VCPPort: %i (%s)\n", data->USB_VCPPort, UAVT_HwSparkyBGCUSB_VCPPortOption[data->USB_VCPPort]);
+			SDL_Log("uavtalk: 	DSMxBind: %i\n", data->DSMxBind);
+			SDL_Log("uavtalk: 	GyroRange: %i (%s)\n", data->GyroRange, UAVT_HwSparkyBGCGyroRangeOption[data->GyroRange]);
+			SDL_Log("uavtalk: 	AccelRange: %i (%s)\n", data->AccelRange, UAVT_HwSparkyBGCAccelRangeOption[data->AccelRange]);
+			SDL_Log("uavtalk: 	MPU9150DLPF: %i (%s)\n", data->MPU9150DLPF, UAVT_HwSparkyBGCMPU9150DLPFOption[data->MPU9150DLPF]);
+			SDL_Log("uavtalk: 	MPU9150Rate: %i (%s)\n", data->MPU9150Rate, UAVT_HwSparkyBGCMPU9150RateOption[data->MPU9150Rate]);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case HWSPARKY_OBJID: {
+			UAVT_HwSparkyData *data = (UAVT_HwSparkyData *)buf;
+			memcpy(&uavtalk_HwSparkyData, data, sizeof(UAVT_HwSparkyData));
+			SDL_Log("uavtalk: <-HwSparky\n");
+			SDL_Log("uavtalk: 	RcvrPort: %i (%s)\n", data->RcvrPort, UAVT_HwSparkyRcvrPortOption[data->RcvrPort]);
+			SDL_Log("uavtalk: 	FlexiPort: %i (%s)\n", data->FlexiPort, UAVT_HwSparkyFlexiPortOption[data->FlexiPort]);
+			SDL_Log("uavtalk: 	MainPort: %i (%s)\n", data->MainPort, UAVT_HwSparkyMainPortOption[data->MainPort]);
+			SDL_Log("uavtalk: 	OutPort: %i (%s)\n", data->OutPort, UAVT_HwSparkyOutPortOption[data->OutPort]);
+			SDL_Log("uavtalk: 	USB_HIDPort: %i (%s)\n", data->USB_HIDPort, UAVT_HwSparkyUSB_HIDPortOption[data->USB_HIDPort]);
+			SDL_Log("uavtalk: 	USB_VCPPort: %i (%s)\n", data->USB_VCPPort, UAVT_HwSparkyUSB_VCPPortOption[data->USB_VCPPort]);
+			SDL_Log("uavtalk: 	DSMxBind: %i\n", data->DSMxBind);
+			SDL_Log("uavtalk: 	GyroRange: %i (%s)\n", data->GyroRange, UAVT_HwSparkyGyroRangeOption[data->GyroRange]);
+			SDL_Log("uavtalk: 	AccelRange: %i (%s)\n", data->AccelRange, UAVT_HwSparkyAccelRangeOption[data->AccelRange]);
+			SDL_Log("uavtalk: 	MPU9150DLPF: %i (%s)\n", data->MPU9150DLPF, UAVT_HwSparkyMPU9150DLPFOption[data->MPU9150DLPF]);
+			SDL_Log("uavtalk: 	MPU9150Rate: %i (%s)\n", data->MPU9150Rate, UAVT_HwSparkyMPU9150RateOption[data->MPU9150Rate]);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case I2CVMUSERPROGRAM_OBJID: {
+			UAVT_I2CVMUserProgramData *data = (UAVT_I2CVMUserProgramData *)buf;
+			memcpy(&uavtalk_I2CVMUserProgramData, data, sizeof(UAVT_I2CVMUserProgramData));
+			SDL_Log("uavtalk: <-I2CVMUserProgram\n");
+			SDL_Log("uavtalk: 	Program[0]: %i\n", data->Program[0]);
+			SDL_Log("uavtalk: 	Program[1]: %i\n", data->Program[1]);
+			SDL_Log("uavtalk: 	Program[2]: %i\n", data->Program[2]);
+			SDL_Log("uavtalk: 	Program[3]: %i\n", data->Program[3]);
+			SDL_Log("uavtalk: 	Program[4]: %i\n", data->Program[4]);
+			SDL_Log("uavtalk: 	Program[5]: %i\n", data->Program[5]);
+			SDL_Log("uavtalk: 	Program[6]: %i\n", data->Program[6]);
+			SDL_Log("uavtalk: 	Program[7]: %i\n", data->Program[7]);
+			SDL_Log("uavtalk: 	Program[8]: %i\n", data->Program[8]);
+			SDL_Log("uavtalk: 	Program[9]: %i\n", data->Program[9]);
+			SDL_Log("uavtalk: 	Program[10]: %i\n", data->Program[10]);
+			SDL_Log("uavtalk: 	Program[11]: %i\n", data->Program[11]);
+			SDL_Log("uavtalk: 	Program[12]: %i\n", data->Program[12]);
+			SDL_Log("uavtalk: 	Program[13]: %i\n", data->Program[13]);
+			SDL_Log("uavtalk: 	Program[14]: %i\n", data->Program[14]);
+			SDL_Log("uavtalk: 	Program[15]: %i\n", data->Program[15]);
+			SDL_Log("uavtalk: 	Program[16]: %i\n", data->Program[16]);
+			SDL_Log("uavtalk: 	Program[17]: %i\n", data->Program[17]);
+			SDL_Log("uavtalk: 	Program[18]: %i\n", data->Program[18]);
+			SDL_Log("uavtalk: 	Program[19]: %i\n", data->Program[19]);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case I2CVM_OBJID: {
+			UAVT_I2CVMData *data = (UAVT_I2CVMData *)buf;
+			memcpy(&uavtalk_I2CVMData, data, sizeof(UAVT_I2CVMData));
+			SDL_Log("uavtalk: <-I2CVM\n");
+			SDL_Log("uavtalk: 	r0: %i\n", data->r0);
+			SDL_Log("uavtalk: 	r1: %i\n", data->r1);
+			SDL_Log("uavtalk: 	r2: %i\n", data->r2);
+			SDL_Log("uavtalk: 	r3: %i\n", data->r3);
+			SDL_Log("uavtalk: 	r4: %i\n", data->r4);
+			SDL_Log("uavtalk: 	r5: %i\n", data->r5);
+			SDL_Log("uavtalk: 	r6: %i\n", data->r6);
+			SDL_Log("uavtalk: 	pc: %i\n", data->pc);
+			SDL_Log("uavtalk: 	ram[0]: %i\n", data->ram[0]);
+			SDL_Log("uavtalk: 	ram[1]: %i\n", data->ram[1]);
+			SDL_Log("uavtalk: 	ram[2]: %i\n", data->ram[2]);
+			SDL_Log("uavtalk: 	ram[3]: %i\n", data->ram[3]);
+			SDL_Log("uavtalk: 	ram[4]: %i\n", data->ram[4]);
+			SDL_Log("uavtalk: 	ram[5]: %i\n", data->ram[5]);
+			SDL_Log("uavtalk: 	ram[6]: %i\n", data->ram[6]);
+			SDL_Log("uavtalk: 	ram[7]: %i\n", data->ram[7]);
+			break;
+		}
+		case INSSETTINGS_OBJID: {
+			UAVT_INSSettingsData *data = (UAVT_INSSettingsData *)buf;
+			memcpy(&uavtalk_INSSettingsData, data, sizeof(UAVT_INSSettingsData));
+			SDL_Log("uavtalk: <-INSSettings\n");
+			SDL_Log("uavtalk: 	accel_var.X: %f\n", data->accel_var.X);
+			SDL_Log("uavtalk: 	accel_var.Y: %f\n", data->accel_var.Y);
+			SDL_Log("uavtalk: 	accel_var.Z: %f\n", data->accel_var.Z);
+			SDL_Log("uavtalk: 	gyro_var.X: %f\n", data->gyro_var.X);
+			SDL_Log("uavtalk: 	gyro_var.Y: %f\n", data->gyro_var.Y);
+			SDL_Log("uavtalk: 	gyro_var.Z: %f\n", data->gyro_var.Z);
+			SDL_Log("uavtalk: 	mag_var.X: %f\n", data->mag_var.X);
+			SDL_Log("uavtalk: 	mag_var.Y: %f\n", data->mag_var.Y);
+			SDL_Log("uavtalk: 	mag_var.Z: %f\n", data->mag_var.Z);
+			SDL_Log("uavtalk: 	gps_var.Pos: %f\n", data->gps_var.Pos);
+			SDL_Log("uavtalk: 	gps_var.Vel: %f\n", data->gps_var.Vel);
+			SDL_Log("uavtalk: 	gps_var.VertPos: %f\n", data->gps_var.VertPos);
+			SDL_Log("uavtalk: 	baro_var: %f\n", data->baro_var);
+			SDL_Log("uavtalk: 	MagBiasNullingRate: %f\n", data->MagBiasNullingRate);
+			SDL_Log("uavtalk: 	ComputeGyroBias: %i (%s)\n", data->ComputeGyroBias, UAVT_INSSettingsComputeGyroBiasOption[data->ComputeGyroBias]);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case INSSTATE_OBJID: {
+			UAVT_INSStateData *data = (UAVT_INSStateData *)buf;
+			memcpy(&uavtalk_INSStateData, data, sizeof(UAVT_INSStateData));
+			SDL_Log("uavtalk: <-INSState\n");
+			SDL_Log("uavtalk: 	State[0]: %f\n", data->State[0]);
+			SDL_Log("uavtalk: 	State[1]: %f\n", data->State[1]);
+			SDL_Log("uavtalk: 	State[2]: %f\n", data->State[2]);
+			SDL_Log("uavtalk: 	State[3]: %f\n", data->State[3]);
+			SDL_Log("uavtalk: 	State[4]: %f\n", data->State[4]);
+			SDL_Log("uavtalk: 	State[5]: %f\n", data->State[5]);
+			SDL_Log("uavtalk: 	State[6]: %f\n", data->State[6]);
+			SDL_Log("uavtalk: 	State[7]: %f\n", data->State[7]);
+			SDL_Log("uavtalk: 	State[8]: %f\n", data->State[8]);
+			SDL_Log("uavtalk: 	State[9]: %f\n", data->State[9]);
+			SDL_Log("uavtalk: 	State[10]: %f\n", data->State[10]);
+			SDL_Log("uavtalk: 	State[11]: %f\n", data->State[11]);
+			SDL_Log("uavtalk: 	State[12]: %f\n", data->State[12]);
+			SDL_Log("uavtalk: 	Var[0]: %f\n", data->Var[0]);
+			SDL_Log("uavtalk: 	Var[1]: %f\n", data->Var[1]);
+			SDL_Log("uavtalk: 	Var[2]: %f\n", data->Var[2]);
+			SDL_Log("uavtalk: 	Var[3]: %f\n", data->Var[3]);
+			SDL_Log("uavtalk: 	Var[4]: %f\n", data->Var[4]);
+			SDL_Log("uavtalk: 	Var[5]: %f\n", data->Var[5]);
+			SDL_Log("uavtalk: 	Var[6]: %f\n", data->Var[6]);
+			SDL_Log("uavtalk: 	Var[7]: %f\n", data->Var[7]);
+			SDL_Log("uavtalk: 	Var[8]: %f\n", data->Var[8]);
+			SDL_Log("uavtalk: 	Var[9]: %f\n", data->Var[9]);
+			SDL_Log("uavtalk: 	Var[10]: %f\n", data->Var[10]);
+			SDL_Log("uavtalk: 	Var[11]: %f\n", data->Var[11]);
+			SDL_Log("uavtalk: 	Var[12]: %f\n", data->Var[12]);
+			break;
+		}
+		case LOGGINGSETTINGS_OBJID: {
+			UAVT_LoggingSettingsData *data = (UAVT_LoggingSettingsData *)buf;
+			memcpy(&uavtalk_LoggingSettingsData, data, sizeof(UAVT_LoggingSettingsData));
+			SDL_Log("uavtalk: <-LoggingSettings\n");
+			SDL_Log("uavtalk: 	LogBehavior: %i (%s)\n", data->LogBehavior, UAVT_LoggingSettingsLogBehaviorOption[data->LogBehavior]);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case LOGGINGSTATS_OBJID: {
+			UAVT_LoggingStatsData *data = (UAVT_LoggingStatsData *)buf;
+			memcpy(&uavtalk_LoggingStatsData, data, sizeof(UAVT_LoggingStatsData));
+			SDL_Log("uavtalk: <-LoggingStats\n");
+			SDL_Log("uavtalk: 	BytesLogged: %i\n", data->BytesLogged);
+			SDL_Log("uavtalk: 	MinFileId: %i\n", data->MinFileId);
+			SDL_Log("uavtalk: 	MaxFileId: %i\n", data->MaxFileId);
+			SDL_Log("uavtalk: 	FileRequest: %i\n", data->FileRequest);
+			SDL_Log("uavtalk: 	FileSectorNum: %i\n", data->FileSectorNum);
+			SDL_Log("uavtalk: 	Operation: %i (%s)\n", data->Operation, UAVT_LoggingStatsOperationOption[data->Operation]);
+			SDL_Log("uavtalk: 	FileSector[0]: %i\n", data->FileSector[0]);
+			SDL_Log("uavtalk: 	FileSector[1]: %i\n", data->FileSector[1]);
+			SDL_Log("uavtalk: 	FileSector[2]: %i\n", data->FileSector[2]);
+			SDL_Log("uavtalk: 	FileSector[3]: %i\n", data->FileSector[3]);
+			SDL_Log("uavtalk: 	FileSector[4]: %i\n", data->FileSector[4]);
+			SDL_Log("uavtalk: 	FileSector[5]: %i\n", data->FileSector[5]);
+			SDL_Log("uavtalk: 	FileSector[6]: %i\n", data->FileSector[6]);
+			SDL_Log("uavtalk: 	FileSector[7]: %i\n", data->FileSector[7]);
+			SDL_Log("uavtalk: 	FileSector[8]: %i\n", data->FileSector[8]);
+			SDL_Log("uavtalk: 	FileSector[9]: %i\n", data->FileSector[9]);
+			SDL_Log("uavtalk: 	FileSector[10]: %i\n", data->FileSector[10]);
+			SDL_Log("uavtalk: 	FileSector[11]: %i\n", data->FileSector[11]);
+			SDL_Log("uavtalk: 	FileSector[12]: %i\n", data->FileSector[12]);
+			SDL_Log("uavtalk: 	FileSector[13]: %i\n", data->FileSector[13]);
+			SDL_Log("uavtalk: 	FileSector[14]: %i\n", data->FileSector[14]);
+			SDL_Log("uavtalk: 	FileSector[15]: %i\n", data->FileSector[15]);
+			SDL_Log("uavtalk: 	FileSector[16]: %i\n", data->FileSector[16]);
+			SDL_Log("uavtalk: 	FileSector[17]: %i\n", data->FileSector[17]);
+			SDL_Log("uavtalk: 	FileSector[18]: %i\n", data->FileSector[18]);
+			SDL_Log("uavtalk: 	FileSector[19]: %i\n", data->FileSector[19]);
+			SDL_Log("uavtalk: 	FileSector[20]: %i\n", data->FileSector[20]);
+			SDL_Log("uavtalk: 	FileSector[21]: %i\n", data->FileSector[21]);
+			SDL_Log("uavtalk: 	FileSector[22]: %i\n", data->FileSector[22]);
+			SDL_Log("uavtalk: 	FileSector[23]: %i\n", data->FileSector[23]);
+			SDL_Log("uavtalk: 	FileSector[24]: %i\n", data->FileSector[24]);
+			SDL_Log("uavtalk: 	FileSector[25]: %i\n", data->FileSector[25]);
+			SDL_Log("uavtalk: 	FileSector[26]: %i\n", data->FileSector[26]);
+			SDL_Log("uavtalk: 	FileSector[27]: %i\n", data->FileSector[27]);
+			SDL_Log("uavtalk: 	FileSector[28]: %i\n", data->FileSector[28]);
+			SDL_Log("uavtalk: 	FileSector[29]: %i\n", data->FileSector[29]);
+			SDL_Log("uavtalk: 	FileSector[30]: %i\n", data->FileSector[30]);
+			SDL_Log("uavtalk: 	FileSector[31]: %i\n", data->FileSector[31]);
+			SDL_Log("uavtalk: 	FileSector[32]: %i\n", data->FileSector[32]);
+			SDL_Log("uavtalk: 	FileSector[33]: %i\n", data->FileSector[33]);
+			SDL_Log("uavtalk: 	FileSector[34]: %i\n", data->FileSector[34]);
+			SDL_Log("uavtalk: 	FileSector[35]: %i\n", data->FileSector[35]);
+			SDL_Log("uavtalk: 	FileSector[36]: %i\n", data->FileSector[36]);
+			SDL_Log("uavtalk: 	FileSector[37]: %i\n", data->FileSector[37]);
+			SDL_Log("uavtalk: 	FileSector[38]: %i\n", data->FileSector[38]);
+			SDL_Log("uavtalk: 	FileSector[39]: %i\n", data->FileSector[39]);
+			SDL_Log("uavtalk: 	FileSector[40]: %i\n", data->FileSector[40]);
+			SDL_Log("uavtalk: 	FileSector[41]: %i\n", data->FileSector[41]);
+			SDL_Log("uavtalk: 	FileSector[42]: %i\n", data->FileSector[42]);
+			SDL_Log("uavtalk: 	FileSector[43]: %i\n", data->FileSector[43]);
+			SDL_Log("uavtalk: 	FileSector[44]: %i\n", data->FileSector[44]);
+			SDL_Log("uavtalk: 	FileSector[45]: %i\n", data->FileSector[45]);
+			SDL_Log("uavtalk: 	FileSector[46]: %i\n", data->FileSector[46]);
+			SDL_Log("uavtalk: 	FileSector[47]: %i\n", data->FileSector[47]);
+			SDL_Log("uavtalk: 	FileSector[48]: %i\n", data->FileSector[48]);
+			SDL_Log("uavtalk: 	FileSector[49]: %i\n", data->FileSector[49]);
+			SDL_Log("uavtalk: 	FileSector[50]: %i\n", data->FileSector[50]);
+			SDL_Log("uavtalk: 	FileSector[51]: %i\n", data->FileSector[51]);
+			SDL_Log("uavtalk: 	FileSector[52]: %i\n", data->FileSector[52]);
+			SDL_Log("uavtalk: 	FileSector[53]: %i\n", data->FileSector[53]);
+			SDL_Log("uavtalk: 	FileSector[54]: %i\n", data->FileSector[54]);
+			SDL_Log("uavtalk: 	FileSector[55]: %i\n", data->FileSector[55]);
+			SDL_Log("uavtalk: 	FileSector[56]: %i\n", data->FileSector[56]);
+			SDL_Log("uavtalk: 	FileSector[57]: %i\n", data->FileSector[57]);
+			SDL_Log("uavtalk: 	FileSector[58]: %i\n", data->FileSector[58]);
+			SDL_Log("uavtalk: 	FileSector[59]: %i\n", data->FileSector[59]);
+			SDL_Log("uavtalk: 	FileSector[60]: %i\n", data->FileSector[60]);
+			SDL_Log("uavtalk: 	FileSector[61]: %i\n", data->FileSector[61]);
+			SDL_Log("uavtalk: 	FileSector[62]: %i\n", data->FileSector[62]);
+			SDL_Log("uavtalk: 	FileSector[63]: %i\n", data->FileSector[63]);
+			SDL_Log("uavtalk: 	FileSector[64]: %i\n", data->FileSector[64]);
+			SDL_Log("uavtalk: 	FileSector[65]: %i\n", data->FileSector[65]);
+			SDL_Log("uavtalk: 	FileSector[66]: %i\n", data->FileSector[66]);
+			SDL_Log("uavtalk: 	FileSector[67]: %i\n", data->FileSector[67]);
+			SDL_Log("uavtalk: 	FileSector[68]: %i\n", data->FileSector[68]);
+			SDL_Log("uavtalk: 	FileSector[69]: %i\n", data->FileSector[69]);
+			SDL_Log("uavtalk: 	FileSector[70]: %i\n", data->FileSector[70]);
+			SDL_Log("uavtalk: 	FileSector[71]: %i\n", data->FileSector[71]);
+			SDL_Log("uavtalk: 	FileSector[72]: %i\n", data->FileSector[72]);
+			SDL_Log("uavtalk: 	FileSector[73]: %i\n", data->FileSector[73]);
+			SDL_Log("uavtalk: 	FileSector[74]: %i\n", data->FileSector[74]);
+			SDL_Log("uavtalk: 	FileSector[75]: %i\n", data->FileSector[75]);
+			SDL_Log("uavtalk: 	FileSector[76]: %i\n", data->FileSector[76]);
+			SDL_Log("uavtalk: 	FileSector[77]: %i\n", data->FileSector[77]);
+			SDL_Log("uavtalk: 	FileSector[78]: %i\n", data->FileSector[78]);
+			SDL_Log("uavtalk: 	FileSector[79]: %i\n", data->FileSector[79]);
+			SDL_Log("uavtalk: 	FileSector[80]: %i\n", data->FileSector[80]);
+			SDL_Log("uavtalk: 	FileSector[81]: %i\n", data->FileSector[81]);
+			SDL_Log("uavtalk: 	FileSector[82]: %i\n", data->FileSector[82]);
+			SDL_Log("uavtalk: 	FileSector[83]: %i\n", data->FileSector[83]);
+			SDL_Log("uavtalk: 	FileSector[84]: %i\n", data->FileSector[84]);
+			SDL_Log("uavtalk: 	FileSector[85]: %i\n", data->FileSector[85]);
+			SDL_Log("uavtalk: 	FileSector[86]: %i\n", data->FileSector[86]);
+			SDL_Log("uavtalk: 	FileSector[87]: %i\n", data->FileSector[87]);
+			SDL_Log("uavtalk: 	FileSector[88]: %i\n", data->FileSector[88]);
+			SDL_Log("uavtalk: 	FileSector[89]: %i\n", data->FileSector[89]);
+			SDL_Log("uavtalk: 	FileSector[90]: %i\n", data->FileSector[90]);
+			SDL_Log("uavtalk: 	FileSector[91]: %i\n", data->FileSector[91]);
+			SDL_Log("uavtalk: 	FileSector[92]: %i\n", data->FileSector[92]);
+			SDL_Log("uavtalk: 	FileSector[93]: %i\n", data->FileSector[93]);
+			SDL_Log("uavtalk: 	FileSector[94]: %i\n", data->FileSector[94]);
+			SDL_Log("uavtalk: 	FileSector[95]: %i\n", data->FileSector[95]);
+			SDL_Log("uavtalk: 	FileSector[96]: %i\n", data->FileSector[96]);
+			SDL_Log("uavtalk: 	FileSector[97]: %i\n", data->FileSector[97]);
+			SDL_Log("uavtalk: 	FileSector[98]: %i\n", data->FileSector[98]);
+			SDL_Log("uavtalk: 	FileSector[99]: %i\n", data->FileSector[99]);
+			SDL_Log("uavtalk: 	FileSector[100]: %i\n", data->FileSector[100]);
+			SDL_Log("uavtalk: 	FileSector[101]: %i\n", data->FileSector[101]);
+			SDL_Log("uavtalk: 	FileSector[102]: %i\n", data->FileSector[102]);
+			SDL_Log("uavtalk: 	FileSector[103]: %i\n", data->FileSector[103]);
+			SDL_Log("uavtalk: 	FileSector[104]: %i\n", data->FileSector[104]);
+			SDL_Log("uavtalk: 	FileSector[105]: %i\n", data->FileSector[105]);
+			SDL_Log("uavtalk: 	FileSector[106]: %i\n", data->FileSector[106]);
+			SDL_Log("uavtalk: 	FileSector[107]: %i\n", data->FileSector[107]);
+			SDL_Log("uavtalk: 	FileSector[108]: %i\n", data->FileSector[108]);
+			SDL_Log("uavtalk: 	FileSector[109]: %i\n", data->FileSector[109]);
+			SDL_Log("uavtalk: 	FileSector[110]: %i\n", data->FileSector[110]);
+			SDL_Log("uavtalk: 	FileSector[111]: %i\n", data->FileSector[111]);
+			SDL_Log("uavtalk: 	FileSector[112]: %i\n", data->FileSector[112]);
+			SDL_Log("uavtalk: 	FileSector[113]: %i\n", data->FileSector[113]);
+			SDL_Log("uavtalk: 	FileSector[114]: %i\n", data->FileSector[114]);
+			SDL_Log("uavtalk: 	FileSector[115]: %i\n", data->FileSector[115]);
+			SDL_Log("uavtalk: 	FileSector[116]: %i\n", data->FileSector[116]);
+			SDL_Log("uavtalk: 	FileSector[117]: %i\n", data->FileSector[117]);
+			SDL_Log("uavtalk: 	FileSector[118]: %i\n", data->FileSector[118]);
+			SDL_Log("uavtalk: 	FileSector[119]: %i\n", data->FileSector[119]);
+			SDL_Log("uavtalk: 	FileSector[120]: %i\n", data->FileSector[120]);
+			SDL_Log("uavtalk: 	FileSector[121]: %i\n", data->FileSector[121]);
+			SDL_Log("uavtalk: 	FileSector[122]: %i\n", data->FileSector[122]);
+			SDL_Log("uavtalk: 	FileSector[123]: %i\n", data->FileSector[123]);
+			SDL_Log("uavtalk: 	FileSector[124]: %i\n", data->FileSector[124]);
+			SDL_Log("uavtalk: 	FileSector[125]: %i\n", data->FileSector[125]);
+			SDL_Log("uavtalk: 	FileSector[126]: %i\n", data->FileSector[126]);
+			SDL_Log("uavtalk: 	FileSector[127]: %i\n", data->FileSector[127]);
+			break;
+		}
+		case LOITERCOMMAND_OBJID: {
+			UAVT_LoiterCommandData *data = (UAVT_LoiterCommandData *)buf;
+			memcpy(&uavtalk_LoiterCommandData, data, sizeof(UAVT_LoiterCommandData));
+			SDL_Log("uavtalk: <-LoiterCommand\n");
+			SDL_Log("uavtalk: 	Forward: %f\n", data->Forward);
+			SDL_Log("uavtalk: 	Right: %f\n", data->Right);
+			SDL_Log("uavtalk: 	Upwards: %f\n", data->Upwards);
+			SDL_Log("uavtalk: 	Frame: %i (%s)\n", data->Frame, UAVT_LoiterCommandFrameOption[data->Frame]);
+			break;
+		}
+		case MAGBIAS_OBJID: {
+			UAVT_MagBiasData *data = (UAVT_MagBiasData *)buf;
+			memcpy(&uavtalk_MagBiasData, data, sizeof(UAVT_MagBiasData));
+			SDL_Log("uavtalk: <-MagBias\n");
+			SDL_Log("uavtalk: 	x: %f\n", data->x);
+			SDL_Log("uavtalk: 	y: %f\n", data->y);
+			SDL_Log("uavtalk: 	z: %f\n", data->z);
 			break;
 		}
 		case MAGNETOMETER_OBJID: {
@@ -730,16 +1414,19 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	Roll: %f\n", data->Roll);
 			SDL_Log("uavtalk: 	Pitch: %f\n", data->Pitch);
 			SDL_Log("uavtalk: 	Yaw: %f\n", data->Yaw);
+			SDL_Log("uavtalk: 	RawRssi: %i\n", data->RawRssi);
 			SDL_Log("uavtalk: 	Collective: %f\n", data->Collective);
-			SDL_Log("uavtalk: 	Channel[0]: %i\n", data->Channel[0]);
-			SDL_Log("uavtalk: 	Channel[1]: %i\n", data->Channel[1]);
-			SDL_Log("uavtalk: 	Channel[2]: %i\n", data->Channel[2]);
-			SDL_Log("uavtalk: 	Channel[3]: %i\n", data->Channel[3]);
-			SDL_Log("uavtalk: 	Channel[4]: %i\n", data->Channel[4]);
-			SDL_Log("uavtalk: 	Channel[5]: %i\n", data->Channel[5]);
-			SDL_Log("uavtalk: 	Channel[6]: %i\n", data->Channel[6]);
-			SDL_Log("uavtalk: 	Channel[7]: %i\n", data->Channel[7]);
-			SDL_Log("uavtalk: 	Channel[8]: %i\n", data->Channel[8]);
+			SDL_Log("uavtalk: 	Rssi: %i\n", data->Rssi);
+			SDL_Log("uavtalk: 	Channel.Throttle: %i\n", data->Channel.Throttle);
+			SDL_Log("uavtalk: 	Channel.Roll: %i\n", data->Channel.Roll);
+			SDL_Log("uavtalk: 	Channel.Pitch: %i\n", data->Channel.Pitch);
+			SDL_Log("uavtalk: 	Channel.Yaw: %i\n", data->Channel.Yaw);
+			SDL_Log("uavtalk: 	Channel.FlightMode: %i\n", data->Channel.FlightMode);
+			SDL_Log("uavtalk: 	Channel.Collective: %i\n", data->Channel.Collective);
+			SDL_Log("uavtalk: 	Channel.Accessory0: %i\n", data->Channel.Accessory0);
+			SDL_Log("uavtalk: 	Channel.Accessory1: %i\n", data->Channel.Accessory1);
+			SDL_Log("uavtalk: 	Channel.Accessory2: %i\n", data->Channel.Accessory2);
+			SDL_Log("uavtalk: 	Channel.Arming: %i\n", data->Channel.Arming);
 			SDL_Log("uavtalk: 	Connected: %i (%s)\n", data->Connected, UAVT_ManualControlCommandConnectedOption[data->Connected]);
 			break;
 		}
@@ -748,6 +1435,9 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			memcpy(&uavtalk_ManualControlSettingsData, data, sizeof(UAVT_ManualControlSettingsData));
 			SDL_Log("uavtalk: <-ManualControlSettings\n");
 			SDL_Log("uavtalk: 	Deadband: %f\n", data->Deadband);
+			SDL_Log("uavtalk: 	RssiMax: %i\n", data->RssiMax);
+			SDL_Log("uavtalk: 	RssiMin: %i\n", data->RssiMin);
+			SDL_Log("uavtalk: 	RssiPwmPeriod: %i\n", data->RssiPwmPeriod);
 			SDL_Log("uavtalk: 	ChannelMin.Throttle: %i\n", data->ChannelMin.Throttle);
 			SDL_Log("uavtalk: 	ChannelMin.Roll: %i\n", data->ChannelMin.Roll);
 			SDL_Log("uavtalk: 	ChannelMin.Pitch: %i\n", data->ChannelMin.Pitch);
@@ -757,6 +1447,7 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	ChannelMin.Accessory0: %i\n", data->ChannelMin.Accessory0);
 			SDL_Log("uavtalk: 	ChannelMin.Accessory1: %i\n", data->ChannelMin.Accessory1);
 			SDL_Log("uavtalk: 	ChannelMin.Accessory2: %i\n", data->ChannelMin.Accessory2);
+			SDL_Log("uavtalk: 	ChannelMin.Arming: %i\n", data->ChannelMin.Arming);
 			SDL_Log("uavtalk: 	ChannelNeutral.Throttle: %i\n", data->ChannelNeutral.Throttle);
 			SDL_Log("uavtalk: 	ChannelNeutral.Roll: %i\n", data->ChannelNeutral.Roll);
 			SDL_Log("uavtalk: 	ChannelNeutral.Pitch: %i\n", data->ChannelNeutral.Pitch);
@@ -766,6 +1457,7 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	ChannelNeutral.Accessory0: %i\n", data->ChannelNeutral.Accessory0);
 			SDL_Log("uavtalk: 	ChannelNeutral.Accessory1: %i\n", data->ChannelNeutral.Accessory1);
 			SDL_Log("uavtalk: 	ChannelNeutral.Accessory2: %i\n", data->ChannelNeutral.Accessory2);
+			SDL_Log("uavtalk: 	ChannelNeutral.Arming: %i\n", data->ChannelNeutral.Arming);
 			SDL_Log("uavtalk: 	ChannelMax.Throttle: %i\n", data->ChannelMax.Throttle);
 			SDL_Log("uavtalk: 	ChannelMax.Roll: %i\n", data->ChannelMax.Roll);
 			SDL_Log("uavtalk: 	ChannelMax.Pitch: %i\n", data->ChannelMax.Pitch);
@@ -775,6 +1467,7 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	ChannelMax.Accessory0: %i\n", data->ChannelMax.Accessory0);
 			SDL_Log("uavtalk: 	ChannelMax.Accessory1: %i\n", data->ChannelMax.Accessory1);
 			SDL_Log("uavtalk: 	ChannelMax.Accessory2: %i\n", data->ChannelMax.Accessory2);
+			SDL_Log("uavtalk: 	ChannelMax.Arming: %i\n", data->ChannelMax.Arming);
 			SDL_Log("uavtalk: 	ArmedTimeout: %i\n", data->ArmedTimeout);
 			SDL_Log("uavtalk: 	ChannelGroups.Throttle: %i\n", data->ChannelGroups.Throttle);
 			SDL_Log("uavtalk: 	ChannelGroups.Roll: %i\n", data->ChannelGroups.Roll);
@@ -785,6 +1478,9 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	ChannelGroups.Accessory0: %i\n", data->ChannelGroups.Accessory0);
 			SDL_Log("uavtalk: 	ChannelGroups.Accessory1: %i\n", data->ChannelGroups.Accessory1);
 			SDL_Log("uavtalk: 	ChannelGroups.Accessory2: %i\n", data->ChannelGroups.Accessory2);
+			SDL_Log("uavtalk: 	ChannelGroups.Arming: %i\n", data->ChannelGroups.Arming);
+			SDL_Log("uavtalk: 	RssiType: %i (%s)\n", data->RssiType, UAVT_ManualControlSettingsRssiTypeOption[data->RssiType]);
+			SDL_Log("uavtalk: 	RssiChannelNumber: %i\n", data->RssiChannelNumber);
 			SDL_Log("uavtalk: 	ChannelNumber.Throttle: %i\n", data->ChannelNumber.Throttle);
 			SDL_Log("uavtalk: 	ChannelNumber.Roll: %i\n", data->ChannelNumber.Roll);
 			SDL_Log("uavtalk: 	ChannelNumber.Pitch: %i\n", data->ChannelNumber.Pitch);
@@ -794,6 +1490,7 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	ChannelNumber.Accessory0: %i\n", data->ChannelNumber.Accessory0);
 			SDL_Log("uavtalk: 	ChannelNumber.Accessory1: %i\n", data->ChannelNumber.Accessory1);
 			SDL_Log("uavtalk: 	ChannelNumber.Accessory2: %i\n", data->ChannelNumber.Accessory2);
+			SDL_Log("uavtalk: 	ChannelNumber.Arming: %i\n", data->ChannelNumber.Arming);
 			SDL_Log("uavtalk: 	Arming: %i (%s)\n", data->Arming, UAVT_ManualControlSettingsArmingOption[data->Arming]);
 			SDL_Log("uavtalk: 	Stabilization1Settings.Roll: %i\n", data->Stabilization1Settings.Roll);
 			SDL_Log("uavtalk: 	Stabilization1Settings.Pitch: %i\n", data->Stabilization1Settings.Pitch);
@@ -834,7 +1531,11 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	ThrottleCurve2.n1: %f\n", data->ThrottleCurve2.n1);
 			SDL_Log("uavtalk: 	Curve2Source: %i (%s)\n", data->Curve2Source, UAVT_MixerSettingsCurve2SourceOption[data->Curve2Source]);
 			SDL_Log("uavtalk: 	Mixer1Type: %i (%s)\n", data->Mixer1Type, UAVT_MixerSettingsMixer1TypeOption[data->Mixer1Type]);
-			SDL_Log("uavtalk: 	Mixer1Vector: %i\n", data->Mixer1Vector);
+			SDL_Log("uavtalk: 	Mixer1Vector.ThrottleCurve1: %i\n", data->Mixer1Vector.ThrottleCurve1);
+			SDL_Log("uavtalk: 	Mixer1Vector.ThrottleCurve2: %i\n", data->Mixer1Vector.ThrottleCurve2);
+			SDL_Log("uavtalk: 	Mixer1Vector.Roll: %i\n", data->Mixer1Vector.Roll);
+			SDL_Log("uavtalk: 	Mixer1Vector.Pitch: %i\n", data->Mixer1Vector.Pitch);
+			SDL_Log("uavtalk: 	Mixer1Vector.Yaw: %i\n", data->Mixer1Vector.Yaw);
 			SDL_Log("uavtalk: 	Mixer2Type: %i\n", data->Mixer2Type);
 			SDL_Log("uavtalk: 	Mixer2Vector: %i\n", data->Mixer2Vector);
 			SDL_Log("uavtalk: 	Mixer3Type: %i\n", data->Mixer3Type);
@@ -872,10 +1573,80 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	Mixer10: %f\n", data->Mixer10);
 			break;
 		}
+		case MODULESETTINGS_OBJID: {
+			UAVT_ModuleSettingsData *data = (UAVT_ModuleSettingsData *)buf;
+			memcpy(&uavtalk_ModuleSettingsData, data, sizeof(UAVT_ModuleSettingsData));
+			SDL_Log("uavtalk: <-ModuleSettings\n");
+			SDL_Log("uavtalk: 	AdminState.Airspeed: %i\n", data->AdminState.Airspeed);
+			SDL_Log("uavtalk: 	AdminState.AltitudeHold: %i\n", data->AdminState.AltitudeHold);
+			SDL_Log("uavtalk: 	AdminState.Autotune: %i\n", data->AdminState.Autotune);
+			SDL_Log("uavtalk: 	AdminState.Battery: %i\n", data->AdminState.Battery);
+			SDL_Log("uavtalk: 	AdminState.CameraStab: %i\n", data->AdminState.CameraStab);
+			SDL_Log("uavtalk: 	AdminState.ComUsbBridge: %i\n", data->AdminState.ComUsbBridge);
+			SDL_Log("uavtalk: 	AdminState.FixedWingPathFollower: %i\n", data->AdminState.FixedWingPathFollower);
+			SDL_Log("uavtalk: 	AdminState.Fault: %i\n", data->AdminState.Fault);
+			SDL_Log("uavtalk: 	AdminState.GPS: %i\n", data->AdminState.GPS);
+			SDL_Log("uavtalk: 	AdminState.OveroSync: %i\n", data->AdminState.OveroSync);
+			SDL_Log("uavtalk: 	AdminState.PathPlanner: %i\n", data->AdminState.PathPlanner);
+			SDL_Log("uavtalk: 	AdminState.TxPID: %i\n", data->AdminState.TxPID);
+			SDL_Log("uavtalk: 	AdminState.VtolPathFollower: %i\n", data->AdminState.VtolPathFollower);
+			SDL_Log("uavtalk: 	AdminState.GroundPathFollower: %i\n", data->AdminState.GroundPathFollower);
+			SDL_Log("uavtalk: 	AdminState.GenericI2CSensor: %i\n", data->AdminState.GenericI2CSensor);
+			SDL_Log("uavtalk: 	AdminState.UAVOMavlinkBridge: %i\n", data->AdminState.UAVOMavlinkBridge);
+			SDL_Log("uavtalk: 	AdminState.UAVOLighttelemetryBridge: %i\n", data->AdminState.UAVOLighttelemetryBridge);
+			SDL_Log("uavtalk: 	AdminState.VibrationAnalysis: %i\n", data->AdminState.VibrationAnalysis);
+			SDL_Log("uavtalk: 	AdminState.UAVOHoTTBridge: %i\n", data->AdminState.UAVOHoTTBridge);
+			SDL_Log("uavtalk: 	AdminState.UAVOFrSKYSensorHubBridge: %i\n", data->AdminState.UAVOFrSKYSensorHubBridge);
+			SDL_Log("uavtalk: 	AdminState.PicoC: %i\n", data->AdminState.PicoC);
+			SDL_Log("uavtalk: 	AdminState.UAVOFrSkySPortBridge: %i\n", data->AdminState.UAVOFrSkySPortBridge);
+			SDL_Log("uavtalk: 	AdminState.Geofence: %i\n", data->AdminState.Geofence);
+			SDL_Log("uavtalk: 	AdminState.Logging: %i\n", data->AdminState.Logging);
+			SDL_Log("uavtalk: 	TelemetrySpeed: %i (%s)\n", data->TelemetrySpeed, UAVT_ModuleSettingsTelemetrySpeedOption[data->TelemetrySpeed]);
+			SDL_Log("uavtalk: 	GPSSpeed: %i (%s)\n", data->GPSSpeed, UAVT_ModuleSettingsGPSSpeedOption[data->GPSSpeed]);
+			SDL_Log("uavtalk: 	GPSDataProtocol: %i (%s)\n", data->GPSDataProtocol, UAVT_ModuleSettingsGPSDataProtocolOption[data->GPSDataProtocol]);
+			SDL_Log("uavtalk: 	GPSAutoConfigure: %i (%s)\n", data->GPSAutoConfigure, UAVT_ModuleSettingsGPSAutoConfigureOption[data->GPSAutoConfigure]);
+			SDL_Log("uavtalk: 	ComUsbBridgeSpeed: %i (%s)\n", data->ComUsbBridgeSpeed, UAVT_ModuleSettingsComUsbBridgeSpeedOption[data->ComUsbBridgeSpeed]);
+			SDL_Log("uavtalk: 	I2CVMProgramSelect: %i (%s)\n", data->I2CVMProgramSelect, UAVT_ModuleSettingsI2CVMProgramSelectOption[data->I2CVMProgramSelect]);
+			SDL_Log("uavtalk: 	MavlinkSpeed: %i (%s)\n", data->MavlinkSpeed, UAVT_ModuleSettingsMavlinkSpeedOption[data->MavlinkSpeed]);
+			SDL_Log("uavtalk: 	LightTelemetrySpeed: %i (%s)\n", data->LightTelemetrySpeed, UAVT_ModuleSettingsLightTelemetrySpeedOption[data->LightTelemetrySpeed]);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case MWRATESETTINGS_OBJID: {
+			UAVT_MWRateSettingsData *data = (UAVT_MWRateSettingsData *)buf;
+			memcpy(&uavtalk_MWRateSettingsData, data, sizeof(UAVT_MWRateSettingsData));
+			SDL_Log("uavtalk: <-MWRateSettings\n");
+			SDL_Log("uavtalk: 	RollRatePID.Kp: %f\n", data->RollRatePID.Kp);
+			SDL_Log("uavtalk: 	RollRatePID.Ki: %f\n", data->RollRatePID.Ki);
+			SDL_Log("uavtalk: 	RollRatePID.Kd: %f\n", data->RollRatePID.Kd);
+			SDL_Log("uavtalk: 	RollRatePID.ILimit: %f\n", data->RollRatePID.ILimit);
+			SDL_Log("uavtalk: 	PitchRatePID.Kp: %f\n", data->PitchRatePID.Kp);
+			SDL_Log("uavtalk: 	PitchRatePID.Ki: %f\n", data->PitchRatePID.Ki);
+			SDL_Log("uavtalk: 	PitchRatePID.Kd: %f\n", data->PitchRatePID.Kd);
+			SDL_Log("uavtalk: 	PitchRatePID.ILimit: %f\n", data->PitchRatePID.ILimit);
+			SDL_Log("uavtalk: 	YawRatePID.Kp: %f\n", data->YawRatePID.Kp);
+			SDL_Log("uavtalk: 	YawRatePID.Ki: %f\n", data->YawRatePID.Ki);
+			SDL_Log("uavtalk: 	YawRatePID.Kd: %f\n", data->YawRatePID.Kd);
+			SDL_Log("uavtalk: 	YawRatePID.ILimit: %f\n", data->YawRatePID.ILimit);
+			SDL_Log("uavtalk: 	DerivativeGamma: %f\n", data->DerivativeGamma);
+			SDL_Log("uavtalk: 	RollPitchRate: %i\n", data->RollPitchRate);
+			SDL_Log("uavtalk: 	YawRate: %i\n", data->YawRate);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
 		case NEDACCEL_OBJID: {
 			UAVT_NedAccelData *data = (UAVT_NedAccelData *)buf;
 			memcpy(&uavtalk_NedAccelData, data, sizeof(UAVT_NedAccelData));
 			SDL_Log("uavtalk: <-NedAccel\n");
+			SDL_Log("uavtalk: 	North: %f\n", data->North);
+			SDL_Log("uavtalk: 	East: %f\n", data->East);
+			SDL_Log("uavtalk: 	Down: %f\n", data->Down);
+			break;
+		}
+		case NEDPOSITION_OBJID: {
+			UAVT_NEDPositionData *data = (UAVT_NEDPositionData *)buf;
+			memcpy(&uavtalk_NEDPositionData, data, sizeof(UAVT_NEDPositionData));
+			SDL_Log("uavtalk: <-NEDPosition\n");
 			SDL_Log("uavtalk: 	North: %f\n", data->North);
 			SDL_Log("uavtalk: 	East: %f\n", data->East);
 			SDL_Log("uavtalk: 	Down: %f\n", data->Down);
@@ -892,50 +1663,21 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: ->send_ack\n");
 			break;
 		}
-		case OVEROSYNCSTATS_OBJID: {
-			UAVT_OveroSyncStatsData *data = (UAVT_OveroSyncStatsData *)buf;
-			memcpy(&uavtalk_OveroSyncStatsData, data, sizeof(UAVT_OveroSyncStatsData));
-			SDL_Log("uavtalk: <-OveroSyncStats\n");
-			SDL_Log("uavtalk: 	Send: %i\n", data->Send);
-			SDL_Log("uavtalk: 	Received: %i\n", data->Received);
-			SDL_Log("uavtalk: 	DroppedUpdates: %i\n", data->DroppedUpdates);
-			SDL_Log("uavtalk: 	Connected: %i (%s)\n", data->Connected, UAVT_OveroSyncStatsConnectedOption[data->Connected]);
-			break;
-		}
-		case PATHACTION_OBJID: {
-			UAVT_PathActionData *data = (UAVT_PathActionData *)buf;
-			memcpy(&uavtalk_PathActionData, data, sizeof(UAVT_PathActionData));
-			SDL_Log("uavtalk: <-PathAction\n");
-			SDL_Log("uavtalk: 	ModeParameters[0]: %f\n", data->ModeParameters[0]);
-			SDL_Log("uavtalk: 	ModeParameters[1]: %f\n", data->ModeParameters[1]);
-			SDL_Log("uavtalk: 	ModeParameters[2]: %f\n", data->ModeParameters[2]);
-			SDL_Log("uavtalk: 	ModeParameters[3]: %f\n", data->ModeParameters[3]);
-			SDL_Log("uavtalk: 	ConditionParameters[0]: %f\n", data->ConditionParameters[0]);
-			SDL_Log("uavtalk: 	ConditionParameters[1]: %f\n", data->ConditionParameters[1]);
-			SDL_Log("uavtalk: 	ConditionParameters[2]: %f\n", data->ConditionParameters[2]);
-			SDL_Log("uavtalk: 	ConditionParameters[3]: %f\n", data->ConditionParameters[3]);
-			SDL_Log("uavtalk: 	Mode: %i (%s)\n", data->Mode, UAVT_PathActionModeOption[data->Mode]);
-			SDL_Log("uavtalk: 	EndCondition: %i (%s)\n", data->EndCondition, UAVT_PathActionEndConditionOption[data->EndCondition]);
-			SDL_Log("uavtalk: 	Command: %i (%s)\n", data->Command, UAVT_PathActionCommandOption[data->Command]);
-			SDL_Log("uavtalk: 	JumpDestination: %i\n", data->JumpDestination);
-			SDL_Log("uavtalk: 	ErrorDestination: %i\n", data->ErrorDestination);
-			break;
-		}
-		case PIPXSETTINGS_OBJID: {
-			UAVT_PipXSettingsData *data = (UAVT_PipXSettingsData *)buf;
-			memcpy(&uavtalk_PipXSettingsData, data, sizeof(UAVT_PipXSettingsData));
-			SDL_Log("uavtalk: <-PipXSettings\n");
+		case OPLINKSETTINGS_OBJID: {
+			UAVT_OPLinkSettingsData *data = (UAVT_OPLinkSettingsData *)buf;
+			memcpy(&uavtalk_OPLinkSettingsData, data, sizeof(UAVT_OPLinkSettingsData));
+			SDL_Log("uavtalk: <-OPLinkSettings\n");
 			SDL_Log("uavtalk: 	PairID: %i\n", data->PairID);
-			SDL_Log("uavtalk: 	Frequency: %i\n", data->Frequency);
+			SDL_Log("uavtalk: 	MinFrequency: %i\n", data->MinFrequency);
+			SDL_Log("uavtalk: 	MaxFrequency: %i\n", data->MaxFrequency);
 			SDL_Log("uavtalk: 	SendTimeout: %i\n", data->SendTimeout);
-			SDL_Log("uavtalk: 	TelemetryConfig: %i (%s)\n", data->TelemetryConfig, UAVT_PipXSettingsTelemetryConfigOption[data->TelemetryConfig]);
-			SDL_Log("uavtalk: 	TelemetrySpeed: %i (%s)\n", data->TelemetrySpeed, UAVT_PipXSettingsTelemetrySpeedOption[data->TelemetrySpeed]);
-			SDL_Log("uavtalk: 	FlexiConfig: %i (%s)\n", data->FlexiConfig, UAVT_PipXSettingsFlexiConfigOption[data->FlexiConfig]);
-			SDL_Log("uavtalk: 	FlexiSpeed: %i (%s)\n", data->FlexiSpeed, UAVT_PipXSettingsFlexiSpeedOption[data->FlexiSpeed]);
-			SDL_Log("uavtalk: 	VCPConfig: %i (%s)\n", data->VCPConfig, UAVT_PipXSettingsVCPConfigOption[data->VCPConfig]);
-			SDL_Log("uavtalk: 	VCPSpeed: %i (%s)\n", data->VCPSpeed, UAVT_PipXSettingsVCPSpeedOption[data->VCPSpeed]);
-			SDL_Log("uavtalk: 	RFSpeed: %i (%s)\n", data->RFSpeed, UAVT_PipXSettingsRFSpeedOption[data->RFSpeed]);
-			SDL_Log("uavtalk: 	MaxRFPower: %i (%s)\n", data->MaxRFPower, UAVT_PipXSettingsMaxRFPowerOption[data->MaxRFPower]);
+			SDL_Log("uavtalk: 	Coordinator: %i (%s)\n", data->Coordinator, UAVT_OPLinkSettingsCoordinatorOption[data->Coordinator]);
+			SDL_Log("uavtalk: 	PPM: %i (%s)\n", data->PPM, UAVT_OPLinkSettingsPPMOption[data->PPM]);
+			SDL_Log("uavtalk: 	UAVTalk: %i (%s)\n", data->UAVTalk, UAVT_OPLinkSettingsUAVTalkOption[data->UAVTalk]);
+			SDL_Log("uavtalk: 	InputConnection: %i (%s)\n", data->InputConnection, UAVT_OPLinkSettingsInputConnectionOption[data->InputConnection]);
+			SDL_Log("uavtalk: 	OutputConnection: %i (%s)\n", data->OutputConnection, UAVT_OPLinkSettingsOutputConnectionOption[data->OutputConnection]);
+			SDL_Log("uavtalk: 	ComSpeed: %i (%s)\n", data->ComSpeed, UAVT_OPLinkSettingsComSpeedOption[data->ComSpeed]);
+			SDL_Log("uavtalk: 	MaxRFPower: %i (%s)\n", data->MaxRFPower, UAVT_OPLinkSettingsMaxRFPowerOption[data->MaxRFPower]);
 			SDL_Log("uavtalk: 	MinPacketSize: %i\n", data->MinPacketSize);
 			SDL_Log("uavtalk: 	FrequencyCalibration: %i\n", data->FrequencyCalibration);
 			SDL_Log("uavtalk: 	AESKey[0]: %i\n", data->AESKey[0]);
@@ -973,27 +1715,21 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: ->send_ack\n");
 			break;
 		}
-		case PIPXSTATUS_OBJID: {
-			UAVT_PipXStatusData *data = (UAVT_PipXStatusData *)buf;
-			memcpy(&uavtalk_PipXStatusData, data, sizeof(UAVT_PipXStatusData));
-			SDL_Log("uavtalk: <-PipXStatus\n");
-			SDL_Log("uavtalk: 	MinFrequency: %i\n", data->MinFrequency);
-			SDL_Log("uavtalk: 	MaxFrequency: %i\n", data->MaxFrequency);
-			SDL_Log("uavtalk: 	FrequencyStepSize: %f\n", data->FrequencyStepSize);
+		case OPLINKSTATUS_OBJID: {
+			UAVT_OPLinkStatusData *data = (UAVT_OPLinkStatusData *)buf;
+			memcpy(&uavtalk_OPLinkStatusData, data, sizeof(UAVT_OPLinkStatusData));
+			SDL_Log("uavtalk: <-OPLinkStatus\n");
 			SDL_Log("uavtalk: 	DeviceID: %i\n", data->DeviceID);
-			SDL_Log("uavtalk: 	AFC: %i\n", data->AFC);
 			SDL_Log("uavtalk: 	PairIDs[0]: %i\n", data->PairIDs[0]);
 			SDL_Log("uavtalk: 	PairIDs[1]: %i\n", data->PairIDs[1]);
 			SDL_Log("uavtalk: 	PairIDs[2]: %i\n", data->PairIDs[2]);
 			SDL_Log("uavtalk: 	PairIDs[3]: %i\n", data->PairIDs[3]);
 			SDL_Log("uavtalk: 	BoardRevision: %i\n", data->BoardRevision);
-			SDL_Log("uavtalk: 	Retries: %i\n", data->Retries);
-			SDL_Log("uavtalk: 	Errors: %i\n", data->Errors);
 			SDL_Log("uavtalk: 	UAVTalkErrors: %i\n", data->UAVTalkErrors);
-			SDL_Log("uavtalk: 	Dropped: %i\n", data->Dropped);
-			SDL_Log("uavtalk: 	Resets: %i\n", data->Resets);
 			SDL_Log("uavtalk: 	TXRate: %i\n", data->TXRate);
 			SDL_Log("uavtalk: 	RXRate: %i\n", data->RXRate);
+			SDL_Log("uavtalk: 	TXSeq: %i\n", data->TXSeq);
+			SDL_Log("uavtalk: 	RXSeq: %i\n", data->RXSeq);
 			SDL_Log("uavtalk: 	Description[0]: %i\n", data->Description[0]);
 			SDL_Log("uavtalk: 	Description[1]: %i\n", data->Description[1]);
 			SDL_Log("uavtalk: 	Description[2]: %i\n", data->Description[2]);
@@ -1047,28 +1783,152 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	CPUSerial[10]: %i\n", data->CPUSerial[10]);
 			SDL_Log("uavtalk: 	CPUSerial[11]: %i\n", data->CPUSerial[11]);
 			SDL_Log("uavtalk: 	BoardType: %i\n", data->BoardType);
-			SDL_Log("uavtalk: 	FrequencyBand: %i\n", data->FrequencyBand);
+			SDL_Log("uavtalk: 	RxGood: %i\n", data->RxGood);
+			SDL_Log("uavtalk: 	RxCorrected: %i\n", data->RxCorrected);
+			SDL_Log("uavtalk: 	RxErrors: %i\n", data->RxErrors);
+			SDL_Log("uavtalk: 	RxMissed: %i\n", data->RxMissed);
+			SDL_Log("uavtalk: 	RxFailure: %i\n", data->RxFailure);
+			SDL_Log("uavtalk: 	TxResent: %i\n", data->TxResent);
+			SDL_Log("uavtalk: 	TxDropped: %i\n", data->TxDropped);
+			SDL_Log("uavtalk: 	TxFailure: %i\n", data->TxFailure);
+			SDL_Log("uavtalk: 	Resets: %i\n", data->Resets);
+			SDL_Log("uavtalk: 	Timeouts: %i\n", data->Timeouts);
 			SDL_Log("uavtalk: 	RSSI: %i\n", data->RSSI);
-			SDL_Log("uavtalk: 	LinkState: %i (%s)\n", data->LinkState, UAVT_PipXStatusLinkStateOption[data->LinkState]);
+			SDL_Log("uavtalk: 	AFCCorrection: %i\n", data->AFCCorrection);
+			SDL_Log("uavtalk: 	LinkQuality: %i\n", data->LinkQuality);
+			SDL_Log("uavtalk: 	LinkState: %i (%s)\n", data->LinkState, UAVT_OPLinkStatusLinkStateOption[data->LinkState]);
 			SDL_Log("uavtalk: 	PairSignalStrengths[0]: %i\n", data->PairSignalStrengths[0]);
 			SDL_Log("uavtalk: 	PairSignalStrengths[1]: %i\n", data->PairSignalStrengths[1]);
 			SDL_Log("uavtalk: 	PairSignalStrengths[2]: %i\n", data->PairSignalStrengths[2]);
 			SDL_Log("uavtalk: 	PairSignalStrengths[3]: %i\n", data->PairSignalStrengths[3]);
 			break;
 		}
-		case POSITIONACTUAL_OBJID: {
-			UAVT_PositionActualData *data = (UAVT_PositionActualData *)buf;
-			memcpy(&uavtalk_PositionActualData, data, sizeof(UAVT_PositionActualData));
-			SDL_Log("uavtalk: <-PositionActual\n");
+		case OVEROSYNCSETTINGS_OBJID: {
+			UAVT_OveroSyncSettingsData *data = (UAVT_OveroSyncSettingsData *)buf;
+			memcpy(&uavtalk_OveroSyncSettingsData, data, sizeof(UAVT_OveroSyncSettingsData));
+			SDL_Log("uavtalk: <-OveroSyncSettings\n");
+			SDL_Log("uavtalk: 	LogOn: %i (%s)\n", data->LogOn, UAVT_OveroSyncSettingsLogOnOption[data->LogOn]);
+			break;
+		}
+		case OVEROSYNCSTATS_OBJID: {
+			UAVT_OveroSyncStatsData *data = (UAVT_OveroSyncStatsData *)buf;
+			memcpy(&uavtalk_OveroSyncStatsData, data, sizeof(UAVT_OveroSyncStatsData));
+			SDL_Log("uavtalk: <-OveroSyncStats\n");
+			SDL_Log("uavtalk: 	Send: %i\n", data->Send);
+			SDL_Log("uavtalk: 	Received: %i\n", data->Received);
+			SDL_Log("uavtalk: 	FramesyncErrors: %i\n", data->FramesyncErrors);
+			SDL_Log("uavtalk: 	UnderrunErrors: %i\n", data->UnderrunErrors);
+			SDL_Log("uavtalk: 	DroppedUpdates: %i\n", data->DroppedUpdates);
+			SDL_Log("uavtalk: 	Packets: %i\n", data->Packets);
+			SDL_Log("uavtalk: 	Connected: %i (%s)\n", data->Connected, UAVT_OveroSyncStatsConnectedOption[data->Connected]);
+			break;
+		}
+		case PATHDESIRED_OBJID: {
+			UAVT_PathDesiredData *data = (UAVT_PathDesiredData *)buf;
+			memcpy(&uavtalk_PathDesiredData, data, sizeof(UAVT_PathDesiredData));
+			SDL_Log("uavtalk: <-PathDesired\n");
+			SDL_Log("uavtalk: 	Start.North: %f\n", data->Start.North);
+			SDL_Log("uavtalk: 	Start.East: %f\n", data->Start.East);
+			SDL_Log("uavtalk: 	Start.Down: %f\n", data->Start.Down);
+			SDL_Log("uavtalk: 	End.North: %f\n", data->End.North);
+			SDL_Log("uavtalk: 	End.East: %f\n", data->End.East);
+			SDL_Log("uavtalk: 	End.Down: %f\n", data->End.Down);
+			SDL_Log("uavtalk: 	StartingVelocity: %f\n", data->StartingVelocity);
+			SDL_Log("uavtalk: 	EndingVelocity: %f\n", data->EndingVelocity);
+			SDL_Log("uavtalk: 	ModeParameters: %f\n", data->ModeParameters);
+			SDL_Log("uavtalk: 	Mode: %i (%s)\n", data->Mode, UAVT_PathDesiredModeOption[data->Mode]);
+			break;
+		}
+		case PATHPLANNERSETTINGS_OBJID: {
+			UAVT_PathPlannerSettingsData *data = (UAVT_PathPlannerSettingsData *)buf;
+			memcpy(&uavtalk_PathPlannerSettingsData, data, sizeof(UAVT_PathPlannerSettingsData));
+			SDL_Log("uavtalk: <-PathPlannerSettings\n");
+			SDL_Log("uavtalk: 	PreprogrammedPath: %i (%s)\n", data->PreprogrammedPath, UAVT_PathPlannerSettingsPreprogrammedPathOption[data->PreprogrammedPath]);
+			SDL_Log("uavtalk: 	FlashOperation: %i (%s)\n", data->FlashOperation, UAVT_PathPlannerSettingsFlashOperationOption[data->FlashOperation]);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case PATHSTATUS_OBJID: {
+			UAVT_PathStatusData *data = (UAVT_PathStatusData *)buf;
+			memcpy(&uavtalk_PathStatusData, data, sizeof(UAVT_PathStatusData));
+			SDL_Log("uavtalk: <-PathStatus\n");
+			SDL_Log("uavtalk: 	fractional_progress: %f\n", data->fractional_progress);
+			SDL_Log("uavtalk: 	error: %f\n", data->error);
+			SDL_Log("uavtalk: 	Status: %i (%s)\n", data->Status, UAVT_PathStatusStatusOption[data->Status]);
+			break;
+		}
+		case PICOCSETTINGS_OBJID: {
+			UAVT_PicoCSettingsData *data = (UAVT_PicoCSettingsData *)buf;
+			memcpy(&uavtalk_PicoCSettingsData, data, sizeof(UAVT_PicoCSettingsData));
+			SDL_Log("uavtalk: <-PicoCSettings\n");
+			SDL_Log("uavtalk: 	MaxFileSize: %i\n", data->MaxFileSize);
+			SDL_Log("uavtalk: 	TaskStackSize: %i\n", data->TaskStackSize);
+			SDL_Log("uavtalk: 	PicoCStackSize: %i\n", data->PicoCStackSize);
+			SDL_Log("uavtalk: 	BootFileID: %i\n", data->BootFileID);
+			SDL_Log("uavtalk: 	Startup: %i (%s)\n", data->Startup, UAVT_PicoCSettingsStartupOption[data->Startup]);
+			SDL_Log("uavtalk: 	Source: %i (%s)\n", data->Source, UAVT_PicoCSettingsSourceOption[data->Source]);
+			SDL_Log("uavtalk: 	ComSpeed: %i (%s)\n", data->ComSpeed, UAVT_PicoCSettingsComSpeedOption[data->ComSpeed]);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case PICOCSTATUS_OBJID: {
+			UAVT_PicoCStatusData *data = (UAVT_PicoCStatusData *)buf;
+			memcpy(&uavtalk_PicoCStatusData, data, sizeof(UAVT_PicoCStatusData));
+			SDL_Log("uavtalk: <-PicoCStatus\n");
+			SDL_Log("uavtalk: 	ExitValue: %i\n", data->ExitValue);
+			SDL_Log("uavtalk: 	TestValue: %i\n", data->TestValue);
+			SDL_Log("uavtalk: 	SectorID: %i\n", data->SectorID);
+			SDL_Log("uavtalk: 	FileID: %i\n", data->FileID);
+			SDL_Log("uavtalk: 	Command: %i (%s)\n", data->Command, UAVT_PicoCStatusCommandOption[data->Command]);
+			SDL_Log("uavtalk: 	CommandError: %i\n", data->CommandError);
+			SDL_Log("uavtalk: 	Sector[0]: %i\n", data->Sector[0]);
+			SDL_Log("uavtalk: 	Sector[1]: %i\n", data->Sector[1]);
+			SDL_Log("uavtalk: 	Sector[2]: %i\n", data->Sector[2]);
+			SDL_Log("uavtalk: 	Sector[3]: %i\n", data->Sector[3]);
+			SDL_Log("uavtalk: 	Sector[4]: %i\n", data->Sector[4]);
+			SDL_Log("uavtalk: 	Sector[5]: %i\n", data->Sector[5]);
+			SDL_Log("uavtalk: 	Sector[6]: %i\n", data->Sector[6]);
+			SDL_Log("uavtalk: 	Sector[7]: %i\n", data->Sector[7]);
+			SDL_Log("uavtalk: 	Sector[8]: %i\n", data->Sector[8]);
+			SDL_Log("uavtalk: 	Sector[9]: %i\n", data->Sector[9]);
+			SDL_Log("uavtalk: 	Sector[10]: %i\n", data->Sector[10]);
+			SDL_Log("uavtalk: 	Sector[11]: %i\n", data->Sector[11]);
+			SDL_Log("uavtalk: 	Sector[12]: %i\n", data->Sector[12]);
+			SDL_Log("uavtalk: 	Sector[13]: %i\n", data->Sector[13]);
+			SDL_Log("uavtalk: 	Sector[14]: %i\n", data->Sector[14]);
+			SDL_Log("uavtalk: 	Sector[15]: %i\n", data->Sector[15]);
+			SDL_Log("uavtalk: 	Sector[16]: %i\n", data->Sector[16]);
+			SDL_Log("uavtalk: 	Sector[17]: %i\n", data->Sector[17]);
+			SDL_Log("uavtalk: 	Sector[18]: %i\n", data->Sector[18]);
+			SDL_Log("uavtalk: 	Sector[19]: %i\n", data->Sector[19]);
+			SDL_Log("uavtalk: 	Sector[20]: %i\n", data->Sector[20]);
+			SDL_Log("uavtalk: 	Sector[21]: %i\n", data->Sector[21]);
+			SDL_Log("uavtalk: 	Sector[22]: %i\n", data->Sector[22]);
+			SDL_Log("uavtalk: 	Sector[23]: %i\n", data->Sector[23]);
+			SDL_Log("uavtalk: 	Sector[24]: %i\n", data->Sector[24]);
+			SDL_Log("uavtalk: 	Sector[25]: %i\n", data->Sector[25]);
+			SDL_Log("uavtalk: 	Sector[26]: %i\n", data->Sector[26]);
+			SDL_Log("uavtalk: 	Sector[27]: %i\n", data->Sector[27]);
+			SDL_Log("uavtalk: 	Sector[28]: %i\n", data->Sector[28]);
+			SDL_Log("uavtalk: 	Sector[29]: %i\n", data->Sector[29]);
+			SDL_Log("uavtalk: 	Sector[30]: %i\n", data->Sector[30]);
+			SDL_Log("uavtalk: 	Sector[31]: %i\n", data->Sector[31]);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case POILOCATION_OBJID: {
+			UAVT_PoiLocationData *data = (UAVT_PoiLocationData *)buf;
+			memcpy(&uavtalk_PoiLocationData, data, sizeof(UAVT_PoiLocationData));
+			SDL_Log("uavtalk: <-PoiLocation\n");
 			SDL_Log("uavtalk: 	North: %f\n", data->North);
 			SDL_Log("uavtalk: 	East: %f\n", data->East);
 			SDL_Log("uavtalk: 	Down: %f\n", data->Down);
 			break;
 		}
-		case POSITIONDESIRED_OBJID: {
-			UAVT_PositionDesiredData *data = (UAVT_PositionDesiredData *)buf;
-			memcpy(&uavtalk_PositionDesiredData, data, sizeof(UAVT_PositionDesiredData));
-			SDL_Log("uavtalk: <-PositionDesired\n");
+		case POSITIONACTUAL_OBJID: {
+			UAVT_PositionActualData *data = (UAVT_PositionActualData *)buf;
+			memcpy(&uavtalk_PositionActualData, data, sizeof(UAVT_PositionActualData));
+			SDL_Log("uavtalk: <-PositionActual\n");
 			SDL_Log("uavtalk: 	North: %f\n", data->North);
 			SDL_Log("uavtalk: 	East: %f\n", data->East);
 			SDL_Log("uavtalk: 	Down: %f\n", data->Down);
@@ -1091,66 +1951,50 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	ActiveChannel: %i\n", data->ActiveChannel);
 			break;
 		}
-		case RELAYTUNINGSETTINGS_OBJID: {
-			UAVT_RelayTuningSettingsData *data = (UAVT_RelayTuningSettingsData *)buf;
-			memcpy(&uavtalk_RelayTuningSettingsData, data, sizeof(UAVT_RelayTuningSettingsData));
-			SDL_Log("uavtalk: <-RelayTuningSettings\n");
-			SDL_Log("uavtalk: 	RateGain: %f\n", data->RateGain);
-			SDL_Log("uavtalk: 	AttitudeGain: %f\n", data->AttitudeGain);
-			SDL_Log("uavtalk: 	Amplitude: %f\n", data->Amplitude);
-			SDL_Log("uavtalk: 	HysteresisThresh: %i\n", data->HysteresisThresh);
-			SDL_Log("uavtalk: 	Mode: %i (%s)\n", data->Mode, UAVT_RelayTuningSettingsModeOption[data->Mode]);
-			SDL_Log("uavtalk: 	Behavior: %i (%s)\n", data->Behavior, UAVT_RelayTuningSettingsBehaviorOption[data->Behavior]);
+		case SENSORSETTINGS_OBJID: {
+			UAVT_SensorSettingsData *data = (UAVT_SensorSettingsData *)buf;
+			memcpy(&uavtalk_SensorSettingsData, data, sizeof(UAVT_SensorSettingsData));
+			SDL_Log("uavtalk: <-SensorSettings\n");
+			SDL_Log("uavtalk: 	AccelBias.X: %f\n", data->AccelBias.X);
+			SDL_Log("uavtalk: 	AccelBias.Y: %f\n", data->AccelBias.Y);
+			SDL_Log("uavtalk: 	AccelBias.Z: %f\n", data->AccelBias.Z);
+			SDL_Log("uavtalk: 	AccelScale.X: %f\n", data->AccelScale.X);
+			SDL_Log("uavtalk: 	AccelScale.Y: %f\n", data->AccelScale.Y);
+			SDL_Log("uavtalk: 	AccelScale.Z: %f\n", data->AccelScale.Z);
+			SDL_Log("uavtalk: 	GyroScale.X: %f\n", data->GyroScale.X);
+			SDL_Log("uavtalk: 	GyroScale.Y: %f\n", data->GyroScale.Y);
+			SDL_Log("uavtalk: 	GyroScale.Z: %f\n", data->GyroScale.Z);
+			SDL_Log("uavtalk: 	XGyroTempCoeff.n: %f\n", data->XGyroTempCoeff.n);
+			SDL_Log("uavtalk: 	XGyroTempCoeff.T: %f\n", data->XGyroTempCoeff.T);
+			SDL_Log("uavtalk: 	XGyroTempCoeff.T2: %f\n", data->XGyroTempCoeff.T2);
+			SDL_Log("uavtalk: 	XGyroTempCoeff.T3: %f\n", data->XGyroTempCoeff.T3);
+			SDL_Log("uavtalk: 	YGyroTempCoeff.n: %f\n", data->YGyroTempCoeff.n);
+			SDL_Log("uavtalk: 	YGyroTempCoeff.T: %f\n", data->YGyroTempCoeff.T);
+			SDL_Log("uavtalk: 	YGyroTempCoeff.T2: %f\n", data->YGyroTempCoeff.T2);
+			SDL_Log("uavtalk: 	YGyroTempCoeff.T3: %f\n", data->YGyroTempCoeff.T3);
+			SDL_Log("uavtalk: 	ZGyroTempCoeff.n: %f\n", data->ZGyroTempCoeff.n);
+			SDL_Log("uavtalk: 	ZGyroTempCoeff.T: %f\n", data->ZGyroTempCoeff.T);
+			SDL_Log("uavtalk: 	ZGyroTempCoeff.T2: %f\n", data->ZGyroTempCoeff.T2);
+			SDL_Log("uavtalk: 	ZGyroTempCoeff.T3: %f\n", data->ZGyroTempCoeff.T3);
+			SDL_Log("uavtalk: 	MagBias.X: %f\n", data->MagBias.X);
+			SDL_Log("uavtalk: 	MagBias.Y: %f\n", data->MagBias.Y);
+			SDL_Log("uavtalk: 	MagBias.Z: %f\n", data->MagBias.Z);
+			SDL_Log("uavtalk: 	MagScale.X: %f\n", data->MagScale.X);
+			SDL_Log("uavtalk: 	MagScale.Y: %f\n", data->MagScale.Y);
+			SDL_Log("uavtalk: 	MagScale.Z: %f\n", data->MagScale.Z);
+			SDL_Log("uavtalk: 	ZAccelOffset: %f\n", data->ZAccelOffset);
 			SDL_Log("uavtalk: ->send_ack\n");
 			break;
 		}
-		case RELAYTUNING_OBJID: {
-			UAVT_RelayTuningData *data = (UAVT_RelayTuningData *)buf;
-			memcpy(&uavtalk_RelayTuningData, data, sizeof(UAVT_RelayTuningData));
-			SDL_Log("uavtalk: <-RelayTuning\n");
-			SDL_Log("uavtalk: 	Period.Roll: %f\n", data->Period.Roll);
-			SDL_Log("uavtalk: 	Period.Pitch: %f\n", data->Period.Pitch);
-			SDL_Log("uavtalk: 	Period.Yaw: %f\n", data->Period.Yaw);
-			SDL_Log("uavtalk: 	Gain.Roll: %f\n", data->Gain.Roll);
-			SDL_Log("uavtalk: 	Gain.Pitch: %f\n", data->Gain.Pitch);
-			SDL_Log("uavtalk: 	Gain.Yaw: %f\n", data->Gain.Yaw);
-			break;
-		}
-		case REVOCALIBRATION_OBJID: {
-			UAVT_RevoCalibrationData *data = (UAVT_RevoCalibrationData *)buf;
-			memcpy(&uavtalk_RevoCalibrationData, data, sizeof(UAVT_RevoCalibrationData));
-			SDL_Log("uavtalk: <-RevoCalibration\n");
-			SDL_Log("uavtalk: 	accel_bias.X: %f\n", data->accel_bias.X);
-			SDL_Log("uavtalk: 	accel_bias.Y: %f\n", data->accel_bias.Y);
-			SDL_Log("uavtalk: 	accel_bias.Z: %f\n", data->accel_bias.Z);
-			SDL_Log("uavtalk: 	accel_scale.X: %f\n", data->accel_scale.X);
-			SDL_Log("uavtalk: 	accel_scale.Y: %f\n", data->accel_scale.Y);
-			SDL_Log("uavtalk: 	accel_scale.Z: %f\n", data->accel_scale.Z);
-			SDL_Log("uavtalk: 	accel_var.X: %f\n", data->accel_var.X);
-			SDL_Log("uavtalk: 	accel_var.Y: %f\n", data->accel_var.Y);
-			SDL_Log("uavtalk: 	accel_var.Z: %f\n", data->accel_var.Z);
-			SDL_Log("uavtalk: 	gyro_bias.X: %f\n", data->gyro_bias.X);
-			SDL_Log("uavtalk: 	gyro_bias.Y: %f\n", data->gyro_bias.Y);
-			SDL_Log("uavtalk: 	gyro_bias.Z: %f\n", data->gyro_bias.Z);
-			SDL_Log("uavtalk: 	gyro_scale.X: %f\n", data->gyro_scale.X);
-			SDL_Log("uavtalk: 	gyro_scale.Y: %f\n", data->gyro_scale.Y);
-			SDL_Log("uavtalk: 	gyro_scale.Z: %f\n", data->gyro_scale.Z);
-			SDL_Log("uavtalk: 	gyro_var.X: %f\n", data->gyro_var.X);
-			SDL_Log("uavtalk: 	gyro_var.Y: %f\n", data->gyro_var.Y);
-			SDL_Log("uavtalk: 	gyro_var.Z: %f\n", data->gyro_var.Z);
-			SDL_Log("uavtalk: 	gyro_tempcoeff.X: %f\n", data->gyro_tempcoeff.X);
-			SDL_Log("uavtalk: 	gyro_tempcoeff.Y: %f\n", data->gyro_tempcoeff.Y);
-			SDL_Log("uavtalk: 	gyro_tempcoeff.Z: %f\n", data->gyro_tempcoeff.Z);
-			SDL_Log("uavtalk: 	mag_bias.X: %f\n", data->mag_bias.X);
-			SDL_Log("uavtalk: 	mag_bias.Y: %f\n", data->mag_bias.Y);
-			SDL_Log("uavtalk: 	mag_bias.Z: %f\n", data->mag_bias.Z);
-			SDL_Log("uavtalk: 	mag_scale.X: %f\n", data->mag_scale.X);
-			SDL_Log("uavtalk: 	mag_scale.Y: %f\n", data->mag_scale.Y);
-			SDL_Log("uavtalk: 	mag_scale.Z: %f\n", data->mag_scale.Z);
-			SDL_Log("uavtalk: 	mag_var.X: %f\n", data->mag_var.X);
-			SDL_Log("uavtalk: 	mag_var.Y: %f\n", data->mag_var.Y);
-			SDL_Log("uavtalk: 	mag_var.Z: %f\n", data->mag_var.Z);
-			SDL_Log("uavtalk: 	BiasCorrectedRaw: %i (%s)\n", data->BiasCorrectedRaw, UAVT_RevoCalibrationBiasCorrectedRawOption[data->BiasCorrectedRaw]);
+		case SESSIONMANAGING_OBJID: {
+			UAVT_SessionManagingData *data = (UAVT_SessionManagingData *)buf;
+			memcpy(&uavtalk_SessionManagingData, data, sizeof(UAVT_SessionManagingData));
+			SDL_Log("uavtalk: <-SessionManaging\n");
+			SDL_Log("uavtalk: 	ObjectID: %i\n", data->ObjectID);
+			SDL_Log("uavtalk: 	SessionID: %i\n", data->SessionID);
+			SDL_Log("uavtalk: 	ObjectInstances: %i\n", data->ObjectInstances);
+			SDL_Log("uavtalk: 	NumberOfObjects: %i\n", data->NumberOfObjects);
+			SDL_Log("uavtalk: 	ObjectOfInterestIndex: %i\n", data->ObjectOfInterestIndex);
 			SDL_Log("uavtalk: ->send_ack\n");
 			break;
 		}
@@ -1184,6 +2028,9 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	MaximumRate.Roll: %f\n", data->MaximumRate.Roll);
 			SDL_Log("uavtalk: 	MaximumRate.Pitch: %f\n", data->MaximumRate.Pitch);
 			SDL_Log("uavtalk: 	MaximumRate.Yaw: %f\n", data->MaximumRate.Yaw);
+			SDL_Log("uavtalk: 	PoiMaximumRate.Roll: %f\n", data->PoiMaximumRate.Roll);
+			SDL_Log("uavtalk: 	PoiMaximumRate.Pitch: %f\n", data->PoiMaximumRate.Pitch);
+			SDL_Log("uavtalk: 	PoiMaximumRate.Yaw: %f\n", data->PoiMaximumRate.Yaw);
 			SDL_Log("uavtalk: 	RollRatePID.Kp: %f\n", data->RollRatePID.Kp);
 			SDL_Log("uavtalk: 	RollRatePID.Ki: %f\n", data->RollRatePID.Ki);
 			SDL_Log("uavtalk: 	RollRatePID.Kd: %f\n", data->RollRatePID.Kd);
@@ -1208,19 +2055,34 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	VbarSensitivity.Roll: %f\n", data->VbarSensitivity.Roll);
 			SDL_Log("uavtalk: 	VbarSensitivity.Pitch: %f\n", data->VbarSensitivity.Pitch);
 			SDL_Log("uavtalk: 	VbarSensitivity.Yaw: %f\n", data->VbarSensitivity.Yaw);
-			SDL_Log("uavtalk: 	VbarRollPI.Kp: %f\n", data->VbarRollPI.Kp);
-			SDL_Log("uavtalk: 	VbarRollPI.Ki: %f\n", data->VbarRollPI.Ki);
-			SDL_Log("uavtalk: 	VbarPitchPI.Kp: %f\n", data->VbarPitchPI.Kp);
-			SDL_Log("uavtalk: 	VbarPitchPI.Ki: %f\n", data->VbarPitchPI.Ki);
-			SDL_Log("uavtalk: 	VbarYawPI.Kp: %f\n", data->VbarYawPI.Kp);
-			SDL_Log("uavtalk: 	VbarYawPI.Ki: %f\n", data->VbarYawPI.Ki);
+			SDL_Log("uavtalk: 	VbarRollPID.Kp: %f\n", data->VbarRollPID.Kp);
+			SDL_Log("uavtalk: 	VbarRollPID.Ki: %f\n", data->VbarRollPID.Ki);
+			SDL_Log("uavtalk: 	VbarRollPID.Kd: %f\n", data->VbarRollPID.Kd);
+			SDL_Log("uavtalk: 	VbarPitchPID.Kp: %f\n", data->VbarPitchPID.Kp);
+			SDL_Log("uavtalk: 	VbarPitchPID.Ki: %f\n", data->VbarPitchPID.Ki);
+			SDL_Log("uavtalk: 	VbarPitchPID.Kd: %f\n", data->VbarPitchPID.Kd);
+			SDL_Log("uavtalk: 	VbarYawPID.Kp: %f\n", data->VbarYawPID.Kp);
+			SDL_Log("uavtalk: 	VbarYawPID.Ki: %f\n", data->VbarYawPID.Ki);
+			SDL_Log("uavtalk: 	VbarYawPID.Kd: %f\n", data->VbarYawPID.Kd);
 			SDL_Log("uavtalk: 	VbarTau: %f\n", data->VbarTau);
 			SDL_Log("uavtalk: 	GyroTau: %f\n", data->GyroTau);
 			SDL_Log("uavtalk: 	DerivativeGamma: %f\n", data->DerivativeGamma);
 			SDL_Log("uavtalk: 	WeakLevelingKp: %f\n", data->WeakLevelingKp);
+			SDL_Log("uavtalk: 	CoordinatedFlightYawPI.Kp: %f\n", data->CoordinatedFlightYawPI.Kp);
+			SDL_Log("uavtalk: 	CoordinatedFlightYawPI.Ki: %f\n", data->CoordinatedFlightYawPI.Ki);
+			SDL_Log("uavtalk: 	CoordinatedFlightYawPI.ILimit: %f\n", data->CoordinatedFlightYawPI.ILimit);
 			SDL_Log("uavtalk: 	RollMax: %i\n", data->RollMax);
 			SDL_Log("uavtalk: 	PitchMax: %i\n", data->PitchMax);
 			SDL_Log("uavtalk: 	YawMax: %i\n", data->YawMax);
+			SDL_Log("uavtalk: 	RateExpo.Roll: %i\n", data->RateExpo.Roll);
+			SDL_Log("uavtalk: 	RateExpo.Pitch: %i\n", data->RateExpo.Pitch);
+			SDL_Log("uavtalk: 	RateExpo.Yaw: %i\n", data->RateExpo.Yaw);
+			SDL_Log("uavtalk: 	RollRateTPA.Threshold: %i\n", data->RollRateTPA.Threshold);
+			SDL_Log("uavtalk: 	RollRateTPA.Attenuation: %i\n", data->RollRateTPA.Attenuation);
+			SDL_Log("uavtalk: 	PitchRateTPA.Threshold: %i\n", data->PitchRateTPA.Threshold);
+			SDL_Log("uavtalk: 	PitchRateTPA.Attenuation: %i\n", data->PitchRateTPA.Attenuation);
+			SDL_Log("uavtalk: 	YawRateTPA.Threshold: %i\n", data->YawRateTPA.Threshold);
+			SDL_Log("uavtalk: 	YawRateTPA.Attenuation: %i\n", data->YawRateTPA.Attenuation);
 			SDL_Log("uavtalk: 	VbarGyroSuppress: %i\n", data->VbarGyroSuppress);
 			SDL_Log("uavtalk: 	VbarPiroComp: %i (%s)\n", data->VbarPiroComp, UAVT_StabilizationSettingsVbarPiroCompOption[data->VbarPiroComp]);
 			SDL_Log("uavtalk: 	VbarMaxAngle: %i\n", data->VbarMaxAngle);
@@ -1229,9 +2091,15 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	MaxAxisLockRate: %i\n", data->MaxAxisLockRate);
 			SDL_Log("uavtalk: 	MaxWeakLevelingRate: %i\n", data->MaxWeakLevelingRate);
 			SDL_Log("uavtalk: 	LowThrottleZeroIntegral: %i (%s)\n", data->LowThrottleZeroIntegral, UAVT_StabilizationSettingsLowThrottleZeroIntegralOption[data->LowThrottleZeroIntegral]);
-			SDL_Log("uavtalk: 	LowThrottleZeroAxis.Roll: %i\n", data->LowThrottleZeroAxis.Roll);
-			SDL_Log("uavtalk: 	LowThrottleZeroAxis.Pitch: %i\n", data->LowThrottleZeroAxis.Pitch);
-			SDL_Log("uavtalk: 	LowThrottleZeroAxis.Yaw: %i\n", data->LowThrottleZeroAxis.Yaw);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case STATEESTIMATION_OBJID: {
+			UAVT_StateEstimationData *data = (UAVT_StateEstimationData *)buf;
+			memcpy(&uavtalk_StateEstimationData, data, sizeof(UAVT_StateEstimationData));
+			SDL_Log("uavtalk: <-StateEstimation\n");
+			SDL_Log("uavtalk: 	AttitudeFilter: %i (%s)\n", data->AttitudeFilter, UAVT_StateEstimationAttitudeFilterOption[data->AttitudeFilter]);
+			SDL_Log("uavtalk: 	NavigationFilter: %i (%s)\n", data->NavigationFilter, UAVT_StateEstimationNavigationFilterOption[data->NavigationFilter]);
 			SDL_Log("uavtalk: ->send_ack\n");
 			break;
 		}
@@ -1240,8 +2108,9 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			memcpy(&uavtalk_SystemAlarmsData, data, sizeof(UAVT_SystemAlarmsData));
 			SDL_Log("uavtalk: <-SystemAlarms\n");
 			SDL_Log("uavtalk: 	Alarm.OutOfMemory: %i\n", data->Alarm.OutOfMemory);
-			SDL_Log("uavtalk: 	Alarm.StackOverflow: %i\n", data->Alarm.StackOverflow);
 			SDL_Log("uavtalk: 	Alarm.CPUOverload: %i\n", data->Alarm.CPUOverload);
+			SDL_Log("uavtalk: 	Alarm.StackOverflow: %i\n", data->Alarm.StackOverflow);
+			SDL_Log("uavtalk: 	Alarm.SystemConfiguration: %i\n", data->Alarm.SystemConfiguration);
 			SDL_Log("uavtalk: 	Alarm.EventSystem: %i\n", data->Alarm.EventSystem);
 			SDL_Log("uavtalk: 	Alarm.Telemetry: %i\n", data->Alarm.Telemetry);
 			SDL_Log("uavtalk: 	Alarm.ManualControl: %i\n", data->Alarm.ManualControl);
@@ -1249,23 +2118,46 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	Alarm.Attitude: %i\n", data->Alarm.Attitude);
 			SDL_Log("uavtalk: 	Alarm.Sensors: %i\n", data->Alarm.Sensors);
 			SDL_Log("uavtalk: 	Alarm.Stabilization: %i\n", data->Alarm.Stabilization);
-			SDL_Log("uavtalk: 	Alarm.Guidance: %i\n", data->Alarm.Guidance);
+			SDL_Log("uavtalk: 	Alarm.Geofence: %i\n", data->Alarm.Geofence);
+			SDL_Log("uavtalk: 	Alarm.PathFollower: %i\n", data->Alarm.PathFollower);
+			SDL_Log("uavtalk: 	Alarm.PathPlanner: %i\n", data->Alarm.PathPlanner);
 			SDL_Log("uavtalk: 	Alarm.Battery: %i\n", data->Alarm.Battery);
 			SDL_Log("uavtalk: 	Alarm.FlightTime: %i\n", data->Alarm.FlightTime);
 			SDL_Log("uavtalk: 	Alarm.I2C: %i\n", data->Alarm.I2C);
 			SDL_Log("uavtalk: 	Alarm.GPS: %i\n", data->Alarm.GPS);
+			SDL_Log("uavtalk: 	Alarm.AltitudeHold: %i\n", data->Alarm.AltitudeHold);
 			SDL_Log("uavtalk: 	Alarm.BootFault: %i\n", data->Alarm.BootFault);
+			SDL_Log("uavtalk: 	ConfigError: %i (%s)\n", data->ConfigError, UAVT_SystemAlarmsConfigErrorOption[data->ConfigError]);
+			SDL_Log("uavtalk: 	ManualControl: %i (%s)\n", data->ManualControl, UAVT_SystemAlarmsManualControlOption[data->ManualControl]);
+			SDL_Log("uavtalk: 	StateEstimation: %i (%s)\n", data->StateEstimation, UAVT_SystemAlarmsStateEstimationOption[data->StateEstimation]);
 			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case SYSTEMIDENT_OBJID: {
+			UAVT_SystemIdentData *data = (UAVT_SystemIdentData *)buf;
+			memcpy(&uavtalk_SystemIdentData, data, sizeof(UAVT_SystemIdentData));
+			SDL_Log("uavtalk: <-SystemIdent\n");
+			SDL_Log("uavtalk: 	Tau: %f\n", data->Tau);
+			SDL_Log("uavtalk: 	Beta.Roll: %f\n", data->Beta.Roll);
+			SDL_Log("uavtalk: 	Beta.Pitch: %f\n", data->Beta.Pitch);
+			SDL_Log("uavtalk: 	Beta.Yaw: %f\n", data->Beta.Yaw);
+			SDL_Log("uavtalk: 	Bias.Roll: %f\n", data->Bias.Roll);
+			SDL_Log("uavtalk: 	Bias.Pitch: %f\n", data->Bias.Pitch);
+			SDL_Log("uavtalk: 	Bias.Yaw: %f\n", data->Bias.Yaw);
+			SDL_Log("uavtalk: 	Noise.Roll: %f\n", data->Noise.Roll);
+			SDL_Log("uavtalk: 	Noise.Pitch: %f\n", data->Noise.Pitch);
+			SDL_Log("uavtalk: 	Noise.Yaw: %f\n", data->Noise.Yaw);
+			SDL_Log("uavtalk: 	Period: %f\n", data->Period);
 			break;
 		}
 		case SYSTEMSETTINGS_OBJID: {
 			UAVT_SystemSettingsData *data = (UAVT_SystemSettingsData *)buf;
 			memcpy(&uavtalk_SystemSettingsData, data, sizeof(UAVT_SystemSettingsData));
 			SDL_Log("uavtalk: <-SystemSettings\n");
-			SDL_Log("uavtalk: 	GUIConfigData[0]: %i\n", data->GUIConfigData[0]);
-			SDL_Log("uavtalk: 	GUIConfigData[1]: %i\n", data->GUIConfigData[1]);
-			SDL_Log("uavtalk: 	GUIConfigData[2]: %i\n", data->GUIConfigData[2]);
-			SDL_Log("uavtalk: 	GUIConfigData[3]: %i\n", data->GUIConfigData[3]);
+			SDL_Log("uavtalk: 	AirframeCategorySpecificConfiguration[0]: %i\n", data->AirframeCategorySpecificConfiguration[0]);
+			SDL_Log("uavtalk: 	AirframeCategorySpecificConfiguration[1]: %i\n", data->AirframeCategorySpecificConfiguration[1]);
+			SDL_Log("uavtalk: 	AirframeCategorySpecificConfiguration[2]: %i\n", data->AirframeCategorySpecificConfiguration[2]);
+			SDL_Log("uavtalk: 	AirframeCategorySpecificConfiguration[3]: %i\n", data->AirframeCategorySpecificConfiguration[3]);
 			SDL_Log("uavtalk: 	AirframeType: %i (%s)\n", data->AirframeType, UAVT_SystemSettingsAirframeTypeOption[data->AirframeType]);
 			SDL_Log("uavtalk: ->send_ack\n");
 			break;
@@ -1275,23 +2167,154 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			memcpy(&uavtalk_SystemStatsData, data, sizeof(UAVT_SystemStatsData));
 			SDL_Log("uavtalk: <-SystemStats\n");
 			SDL_Log("uavtalk: 	FlightTime: %i\n", data->FlightTime);
+			SDL_Log("uavtalk: 	HeapRemaining: %i\n", data->HeapRemaining);
 			SDL_Log("uavtalk: 	EventSystemWarningID: %i\n", data->EventSystemWarningID);
 			SDL_Log("uavtalk: 	ObjectManagerCallbackID: %i\n", data->ObjectManagerCallbackID);
 			SDL_Log("uavtalk: 	ObjectManagerQueueID: %i\n", data->ObjectManagerQueueID);
-			SDL_Log("uavtalk: 	HeapRemaining: %i\n", data->HeapRemaining);
 			SDL_Log("uavtalk: 	IRQStackRemaining: %i\n", data->IRQStackRemaining);
 			SDL_Log("uavtalk: 	CPULoad: %i\n", data->CPULoad);
 			SDL_Log("uavtalk: 	CPUTemp: %i\n", data->CPUTemp);
+			break;
+		}
+		case TABLETINFO_OBJID: {
+			UAVT_TabletInfoData *data = (UAVT_TabletInfoData *)buf;
+			memcpy(&uavtalk_TabletInfoData, data, sizeof(UAVT_TabletInfoData));
+			SDL_Log("uavtalk: <-TabletInfo\n");
+			SDL_Log("uavtalk: 	Latitude: %i\n", data->Latitude);
+			SDL_Log("uavtalk: 	Longitude: %i\n", data->Longitude);
+			SDL_Log("uavtalk: 	Altitude: %f\n", data->Altitude);
+			SDL_Log("uavtalk: 	Connected: %i (%s)\n", data->Connected, UAVT_TabletInfoConnectedOption[data->Connected]);
+			SDL_Log("uavtalk: 	TabletModeDesired: %i (%s)\n", data->TabletModeDesired, UAVT_TabletInfoTabletModeDesiredOption[data->TabletModeDesired]);
+			SDL_Log("uavtalk: 	POI: %i (%s)\n", data->POI, UAVT_TabletInfoPOIOption[data->POI]);
 			break;
 		}
 		case TASKINFO_OBJID: {
 			UAVT_TaskInfoData *data = (UAVT_TaskInfoData *)buf;
 			memcpy(&uavtalk_TaskInfoData, data, sizeof(UAVT_TaskInfoData));
 			SDL_Log("uavtalk: <-TaskInfo\n");
-			SDL_Log("uavtalk: 	StackRemaining: %i\n", data->StackRemaining);
-			SDL_Log("uavtalk: 	Running: %i (%s)\n", data->Running, UAVT_TaskInfoRunningOption[data->Running]);
-			SDL_Log("uavtalk: 	RunningTime: %i\n", data->RunningTime);
+			SDL_Log("uavtalk: 	StackRemaining.System: %i\n", data->StackRemaining.System);
+			SDL_Log("uavtalk: 	StackRemaining.Actuator: %i\n", data->StackRemaining.Actuator);
+			SDL_Log("uavtalk: 	StackRemaining.Attitude: %i\n", data->StackRemaining.Attitude);
+			SDL_Log("uavtalk: 	StackRemaining.Sensors: %i\n", data->StackRemaining.Sensors);
+			SDL_Log("uavtalk: 	StackRemaining.TelemetryTx: %i\n", data->StackRemaining.TelemetryTx);
+			SDL_Log("uavtalk: 	StackRemaining.TelemetryTxPri: %i\n", data->StackRemaining.TelemetryTxPri);
+			SDL_Log("uavtalk: 	StackRemaining.TelemetryRx: %i\n", data->StackRemaining.TelemetryRx);
+			SDL_Log("uavtalk: 	StackRemaining.GPS: %i\n", data->StackRemaining.GPS);
+			SDL_Log("uavtalk: 	StackRemaining.ManualControl: %i\n", data->StackRemaining.ManualControl);
+			SDL_Log("uavtalk: 	StackRemaining.Altitude: %i\n", data->StackRemaining.Altitude);
+			SDL_Log("uavtalk: 	StackRemaining.Airspeed: %i\n", data->StackRemaining.Airspeed);
+			SDL_Log("uavtalk: 	StackRemaining.Stabilization: %i\n", data->StackRemaining.Stabilization);
+			SDL_Log("uavtalk: 	StackRemaining.AltitudeHold: %i\n", data->StackRemaining.AltitudeHold);
+			SDL_Log("uavtalk: 	StackRemaining.PathPlanner: %i\n", data->StackRemaining.PathPlanner);
+			SDL_Log("uavtalk: 	StackRemaining.PathFollower: %i\n", data->StackRemaining.PathFollower);
+			SDL_Log("uavtalk: 	StackRemaining.FlightPlan: %i\n", data->StackRemaining.FlightPlan);
+			SDL_Log("uavtalk: 	StackRemaining.Com2UsbBridge: %i\n", data->StackRemaining.Com2UsbBridge);
+			SDL_Log("uavtalk: 	StackRemaining.Usb2ComBridge: %i\n", data->StackRemaining.Usb2ComBridge);
+			SDL_Log("uavtalk: 	StackRemaining.OveroSync: %i\n", data->StackRemaining.OveroSync);
+			SDL_Log("uavtalk: 	StackRemaining.ModemRx: %i\n", data->StackRemaining.ModemRx);
+			SDL_Log("uavtalk: 	StackRemaining.ModemTx: %i\n", data->StackRemaining.ModemTx);
+			SDL_Log("uavtalk: 	StackRemaining.ModemStat: %i\n", data->StackRemaining.ModemStat);
+			SDL_Log("uavtalk: 	StackRemaining.Autotune: %i\n", data->StackRemaining.Autotune);
+			SDL_Log("uavtalk: 	StackRemaining.EventDispatcher: %i\n", data->StackRemaining.EventDispatcher);
+			SDL_Log("uavtalk: 	StackRemaining.GenericI2CSensor: %i\n", data->StackRemaining.GenericI2CSensor);
+			SDL_Log("uavtalk: 	StackRemaining.UAVOMavlinkBridge: %i\n", data->StackRemaining.UAVOMavlinkBridge);
+			SDL_Log("uavtalk: 	StackRemaining.UAVOLighttelemetryBridge: %i\n", data->StackRemaining.UAVOLighttelemetryBridge);
+			SDL_Log("uavtalk: 	StackRemaining.UAVORelay: %i\n", data->StackRemaining.UAVORelay);
+			SDL_Log("uavtalk: 	StackRemaining.VibrationAnalysis: %i\n", data->StackRemaining.VibrationAnalysis);
+			SDL_Log("uavtalk: 	StackRemaining.Battery: %i\n", data->StackRemaining.Battery);
+			SDL_Log("uavtalk: 	StackRemaining.UAVOHoTTBridge: %i\n", data->StackRemaining.UAVOHoTTBridge);
+			SDL_Log("uavtalk: 	StackRemaining.UAVOFrSKYSensorHubBridge: %i\n", data->StackRemaining.UAVOFrSKYSensorHubBridge);
+			SDL_Log("uavtalk: 	StackRemaining.PicoC: %i\n", data->StackRemaining.PicoC);
+			SDL_Log("uavtalk: 	StackRemaining.Logging: %i\n", data->StackRemaining.Logging);
+			SDL_Log("uavtalk: 	StackRemaining.UAVOFrSkySPortBridge: %i\n", data->StackRemaining.UAVOFrSkySPortBridge);
+			SDL_Log("uavtalk: 	Running.System: %i\n", data->Running.System);
+			SDL_Log("uavtalk: 	Running.Actuator: %i\n", data->Running.Actuator);
+			SDL_Log("uavtalk: 	Running.Attitude: %i\n", data->Running.Attitude);
+			SDL_Log("uavtalk: 	Running.Sensors: %i\n", data->Running.Sensors);
+			SDL_Log("uavtalk: 	Running.TelemetryTx: %i\n", data->Running.TelemetryTx);
+			SDL_Log("uavtalk: 	Running.TelemetryTxPri: %i\n", data->Running.TelemetryTxPri);
+			SDL_Log("uavtalk: 	Running.TelemetryRx: %i\n", data->Running.TelemetryRx);
+			SDL_Log("uavtalk: 	Running.GPS: %i\n", data->Running.GPS);
+			SDL_Log("uavtalk: 	Running.ManualControl: %i\n", data->Running.ManualControl);
+			SDL_Log("uavtalk: 	Running.Altitude: %i\n", data->Running.Altitude);
+			SDL_Log("uavtalk: 	Running.Airspeed: %i\n", data->Running.Airspeed);
+			SDL_Log("uavtalk: 	Running.Stabilization: %i\n", data->Running.Stabilization);
+			SDL_Log("uavtalk: 	Running.AltitudeHold: %i\n", data->Running.AltitudeHold);
+			SDL_Log("uavtalk: 	Running.PathPlanner: %i\n", data->Running.PathPlanner);
+			SDL_Log("uavtalk: 	Running.PathFollower: %i\n", data->Running.PathFollower);
+			SDL_Log("uavtalk: 	Running.FlightPlan: %i\n", data->Running.FlightPlan);
+			SDL_Log("uavtalk: 	Running.Com2UsbBridge: %i\n", data->Running.Com2UsbBridge);
+			SDL_Log("uavtalk: 	Running.Usb2ComBridge: %i\n", data->Running.Usb2ComBridge);
+			SDL_Log("uavtalk: 	Running.OveroSync: %i\n", data->Running.OveroSync);
+			SDL_Log("uavtalk: 	Running.ModemRx: %i\n", data->Running.ModemRx);
+			SDL_Log("uavtalk: 	Running.ModemTx: %i\n", data->Running.ModemTx);
+			SDL_Log("uavtalk: 	Running.ModemStat: %i\n", data->Running.ModemStat);
+			SDL_Log("uavtalk: 	Running.Autotune: %i\n", data->Running.Autotune);
+			SDL_Log("uavtalk: 	Running.EventDispatcher: %i\n", data->Running.EventDispatcher);
+			SDL_Log("uavtalk: 	Running.GenericI2CSensor: %i\n", data->Running.GenericI2CSensor);
+			SDL_Log("uavtalk: 	Running.UAVOMavlinkBridge: %i\n", data->Running.UAVOMavlinkBridge);
+			SDL_Log("uavtalk: 	Running.UAVOLighttelemetryBridge: %i\n", data->Running.UAVOLighttelemetryBridge);
+			SDL_Log("uavtalk: 	Running.UAVORelay: %i\n", data->Running.UAVORelay);
+			SDL_Log("uavtalk: 	Running.VibrationAnalysis: %i\n", data->Running.VibrationAnalysis);
+			SDL_Log("uavtalk: 	Running.Battery: %i\n", data->Running.Battery);
+			SDL_Log("uavtalk: 	Running.UAVOHoTTBridge: %i\n", data->Running.UAVOHoTTBridge);
+			SDL_Log("uavtalk: 	Running.UAVOFrSKYSBridge: %i\n", data->Running.UAVOFrSKYSBridge);
+			SDL_Log("uavtalk: 	Running.PicoC: %i\n", data->Running.PicoC);
+			SDL_Log("uavtalk: 	Running.Logging: %i\n", data->Running.Logging);
+			SDL_Log("uavtalk: 	Running.UAVOFrSkySPortBridge: %i\n", data->Running.UAVOFrSkySPortBridge);
+			SDL_Log("uavtalk: 	RunningTime.System: %i\n", data->RunningTime.System);
+			SDL_Log("uavtalk: 	RunningTime.Actuator: %i\n", data->RunningTime.Actuator);
+			SDL_Log("uavtalk: 	RunningTime.Attitude: %i\n", data->RunningTime.Attitude);
+			SDL_Log("uavtalk: 	RunningTime.Sensors: %i\n", data->RunningTime.Sensors);
+			SDL_Log("uavtalk: 	RunningTime.TelemetryTx: %i\n", data->RunningTime.TelemetryTx);
+			SDL_Log("uavtalk: 	RunningTime.TelemetryTxPri: %i\n", data->RunningTime.TelemetryTxPri);
+			SDL_Log("uavtalk: 	RunningTime.TelemetryRx: %i\n", data->RunningTime.TelemetryRx);
+			SDL_Log("uavtalk: 	RunningTime.GPS: %i\n", data->RunningTime.GPS);
+			SDL_Log("uavtalk: 	RunningTime.ManualControl: %i\n", data->RunningTime.ManualControl);
+			SDL_Log("uavtalk: 	RunningTime.Altitude: %i\n", data->RunningTime.Altitude);
+			SDL_Log("uavtalk: 	RunningTime.Airspeed: %i\n", data->RunningTime.Airspeed);
+			SDL_Log("uavtalk: 	RunningTime.Stabilization: %i\n", data->RunningTime.Stabilization);
+			SDL_Log("uavtalk: 	RunningTime.AltitudeHold: %i\n", data->RunningTime.AltitudeHold);
+			SDL_Log("uavtalk: 	RunningTime.PathPlanner: %i\n", data->RunningTime.PathPlanner);
+			SDL_Log("uavtalk: 	RunningTime.PathFollower: %i\n", data->RunningTime.PathFollower);
+			SDL_Log("uavtalk: 	RunningTime.FlightPlan: %i\n", data->RunningTime.FlightPlan);
+			SDL_Log("uavtalk: 	RunningTime.Com2UsbBridge: %i\n", data->RunningTime.Com2UsbBridge);
+			SDL_Log("uavtalk: 	RunningTime.Usb2ComBridge: %i\n", data->RunningTime.Usb2ComBridge);
+			SDL_Log("uavtalk: 	RunningTime.OveroSync: %i\n", data->RunningTime.OveroSync);
+			SDL_Log("uavtalk: 	RunningTime.ModemRx: %i\n", data->RunningTime.ModemRx);
+			SDL_Log("uavtalk: 	RunningTime.ModemTx: %i\n", data->RunningTime.ModemTx);
+			SDL_Log("uavtalk: 	RunningTime.ModemStat: %i\n", data->RunningTime.ModemStat);
+			SDL_Log("uavtalk: 	RunningTime.Autotune: %i\n", data->RunningTime.Autotune);
+			SDL_Log("uavtalk: 	RunningTime.EventDispatcher: %i\n", data->RunningTime.EventDispatcher);
+			SDL_Log("uavtalk: 	RunningTime.GenericI2CSensor: %i\n", data->RunningTime.GenericI2CSensor);
+			SDL_Log("uavtalk: 	RunningTime.UAVOMavlinkBridge: %i\n", data->RunningTime.UAVOMavlinkBridge);
+			SDL_Log("uavtalk: 	RunningTime.UAVOLighttelemetryBridge: %i\n", data->RunningTime.UAVOLighttelemetryBridge);
+			SDL_Log("uavtalk: 	RunningTime.UAVORelay: %i\n", data->RunningTime.UAVORelay);
+			SDL_Log("uavtalk: 	RunningTime.VibrationAnalysis: %i\n", data->RunningTime.VibrationAnalysis);
+			SDL_Log("uavtalk: 	RunningTime.Battery: %i\n", data->RunningTime.Battery);
+			SDL_Log("uavtalk: 	RunningTime.UAVOHoTTBridge: %i\n", data->RunningTime.UAVOHoTTBridge);
+			SDL_Log("uavtalk: 	RunningTime.UAVOFrSKYSensorHubBridge: %i\n", data->RunningTime.UAVOFrSKYSensorHubBridge);
+			SDL_Log("uavtalk: 	RunningTime.PicoC: %i\n", data->RunningTime.PicoC);
+			SDL_Log("uavtalk: 	RunningTime.Logging: %i\n", data->RunningTime.Logging);
+			SDL_Log("uavtalk: 	RunningTime.UAVOFrSkySPortBridge: %i\n", data->RunningTime.UAVOFrSkySPortBridge);
 			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case TRIMANGLESSETTINGS_OBJID: {
+			UAVT_TrimAnglesSettingsData *data = (UAVT_TrimAnglesSettingsData *)buf;
+			memcpy(&uavtalk_TrimAnglesSettingsData, data, sizeof(UAVT_TrimAnglesSettingsData));
+			SDL_Log("uavtalk: <-TrimAnglesSettings\n");
+			SDL_Log("uavtalk: 	Roll: %f\n", data->Roll);
+			SDL_Log("uavtalk: 	Pitch: %f\n", data->Pitch);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case TRIMANGLES_OBJID: {
+			UAVT_TrimAnglesData *data = (UAVT_TrimAnglesData *)buf;
+			memcpy(&uavtalk_TrimAnglesData, data, sizeof(UAVT_TrimAnglesData));
+			SDL_Log("uavtalk: <-TrimAngles\n");
+			SDL_Log("uavtalk: 	Roll: %f\n", data->Roll);
+			SDL_Log("uavtalk: 	Pitch: %f\n", data->Pitch);
 			break;
 		}
 		case TXPIDSETTINGS_OBJID: {
@@ -1316,6 +2339,22 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: ->send_ack\n");
 			break;
 		}
+		case UBLOXINFO_OBJID: {
+			UAVT_UBloxInfoData *data = (UAVT_UBloxInfoData *)buf;
+			memcpy(&uavtalk_UBloxInfoData, data, sizeof(UAVT_UBloxInfoData));
+			SDL_Log("uavtalk: <-UBloxInfo\n");
+			SDL_Log("uavtalk: 	swVersion: %f\n", data->swVersion);
+			SDL_Log("uavtalk: 	ParseErrors: %i\n", data->ParseErrors);
+			SDL_Log("uavtalk: 	hwVersion[0]: %i\n", data->hwVersion[0]);
+			SDL_Log("uavtalk: 	hwVersion[1]: %i\n", data->hwVersion[1]);
+			SDL_Log("uavtalk: 	hwVersion[2]: %i\n", data->hwVersion[2]);
+			SDL_Log("uavtalk: 	hwVersion[3]: %i\n", data->hwVersion[3]);
+			SDL_Log("uavtalk: 	hwVersion[4]: %i\n", data->hwVersion[4]);
+			SDL_Log("uavtalk: 	hwVersion[5]: %i\n", data->hwVersion[5]);
+			SDL_Log("uavtalk: 	hwVersion[6]: %i\n", data->hwVersion[6]);
+			SDL_Log("uavtalk: 	hwVersion[7]: %i\n", data->hwVersion[7]);
+			break;
+		}
 		case VELOCITYACTUAL_OBJID: {
 			UAVT_VelocityActualData *data = (UAVT_VelocityActualData *)buf;
 			memcpy(&uavtalk_VelocityActualData, data, sizeof(UAVT_VelocityActualData));
@@ -1332,6 +2371,57 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	North: %f\n", data->North);
 			SDL_Log("uavtalk: 	East: %f\n", data->East);
 			SDL_Log("uavtalk: 	Down: %f\n", data->Down);
+			break;
+		}
+		case VIBRATIONANALYSISOUTPUT_OBJID: {
+			UAVT_VibrationAnalysisOutputData *data = (UAVT_VibrationAnalysisOutputData *)buf;
+			memcpy(&uavtalk_VibrationAnalysisOutputData, data, sizeof(UAVT_VibrationAnalysisOutputData));
+			SDL_Log("uavtalk: <-VibrationAnalysisOutput\n");
+			SDL_Log("uavtalk: 	x: %f\n", data->x);
+			SDL_Log("uavtalk: 	y: %f\n", data->y);
+			SDL_Log("uavtalk: 	z: %f\n", data->z);
+			break;
+		}
+		case VIBRATIONANALYSISSETTINGS_OBJID: {
+			UAVT_VibrationAnalysisSettingsData *data = (UAVT_VibrationAnalysisSettingsData *)buf;
+			memcpy(&uavtalk_VibrationAnalysisSettingsData, data, sizeof(UAVT_VibrationAnalysisSettingsData));
+			SDL_Log("uavtalk: <-VibrationAnalysisSettings\n");
+			SDL_Log("uavtalk: 	SampleRate: %i\n", data->SampleRate);
+			SDL_Log("uavtalk: 	FFTWindowSize: %i (%s)\n", data->FFTWindowSize, UAVT_VibrationAnalysisSettingsFFTWindowSizeOption[data->FFTWindowSize]);
+			SDL_Log("uavtalk: 	TestingStatus: %i (%s)\n", data->TestingStatus, UAVT_VibrationAnalysisSettingsTestingStatusOption[data->TestingStatus]);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case VTOLPATHFOLLOWERSETTINGS_OBJID: {
+			UAVT_VtolPathFollowerSettingsData *data = (UAVT_VtolPathFollowerSettingsData *)buf;
+			memcpy(&uavtalk_VtolPathFollowerSettingsData, data, sizeof(UAVT_VtolPathFollowerSettingsData));
+			SDL_Log("uavtalk: <-VtolPathFollowerSettings\n");
+			SDL_Log("uavtalk: 	HorizontalPosPI.Kp: %f\n", data->HorizontalPosPI.Kp);
+			SDL_Log("uavtalk: 	HorizontalPosPI.Ki: %f\n", data->HorizontalPosPI.Ki);
+			SDL_Log("uavtalk: 	HorizontalPosPI.ILimit: %f\n", data->HorizontalPosPI.ILimit);
+			SDL_Log("uavtalk: 	HorizontalVelPID.Kp: %f\n", data->HorizontalVelPID.Kp);
+			SDL_Log("uavtalk: 	HorizontalVelPID.Ki: %f\n", data->HorizontalVelPID.Ki);
+			SDL_Log("uavtalk: 	HorizontalVelPID.Kd: %f\n", data->HorizontalVelPID.Kd);
+			SDL_Log("uavtalk: 	HorizontalVelPID.ILimit: %f\n", data->HorizontalVelPID.ILimit);
+			SDL_Log("uavtalk: 	VelocityFeedforward: %f\n", data->VelocityFeedforward);
+			SDL_Log("uavtalk: 	MaxRollPitch: %f\n", data->MaxRollPitch);
+			SDL_Log("uavtalk: 	UpdatePeriod: %i\n", data->UpdatePeriod);
+			SDL_Log("uavtalk: 	LandingRate: %f\n", data->LandingRate);
+			SDL_Log("uavtalk: 	HorizontalVelMax: %i\n", data->HorizontalVelMax);
+			SDL_Log("uavtalk: 	VerticalVelMax: %i\n", data->VerticalVelMax);
+			SDL_Log("uavtalk: 	ThrottleControl: %i (%s)\n", data->ThrottleControl, UAVT_VtolPathFollowerSettingsThrottleControlOption[data->ThrottleControl]);
+			SDL_Log("uavtalk: 	VelocityChangePrediction: %i (%s)\n", data->VelocityChangePrediction, UAVT_VtolPathFollowerSettingsVelocityChangePredictionOption[data->VelocityChangePrediction]);
+			SDL_Log("uavtalk: 	EndpointRadius: %i\n", data->EndpointRadius);
+			SDL_Log("uavtalk: 	YawMode: %i (%s)\n", data->YawMode, UAVT_VtolPathFollowerSettingsYawModeOption[data->YawMode]);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case VTOLPATHFOLLOWERSTATUS_OBJID: {
+			UAVT_VtolPathFollowerStatusData *data = (UAVT_VtolPathFollowerStatusData *)buf;
+			memcpy(&uavtalk_VtolPathFollowerStatusData, data, sizeof(UAVT_VtolPathFollowerStatusData));
+			SDL_Log("uavtalk: <-VtolPathFollowerStatus\n");
+			SDL_Log("uavtalk: 	FSM_State: %i\n", data->FSM_State);
+			SDL_Log("uavtalk: ->send_ack\n");
 			break;
 		}
 		case WATCHDOGSTATUS_OBJID: {
@@ -1357,7 +2447,18 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	Position.East: %f\n", data->Position.East);
 			SDL_Log("uavtalk: 	Position.Down: %f\n", data->Position.Down);
 			SDL_Log("uavtalk: 	Velocity: %f\n", data->Velocity);
-			SDL_Log("uavtalk: 	Action: %i\n", data->Action);
+			SDL_Log("uavtalk: 	ModeParameters: %f\n", data->ModeParameters);
+			SDL_Log("uavtalk: 	Mode: %i (%s)\n", data->Mode, UAVT_WaypointModeOption[data->Mode]);
+			SDL_Log("uavtalk: ->send_ack\n");
+			break;
+		}
+		case WINDVELOCITYACTUAL_OBJID: {
+			UAVT_WindVelocityActualData *data = (UAVT_WindVelocityActualData *)buf;
+			memcpy(&uavtalk_WindVelocityActualData, data, sizeof(UAVT_WindVelocityActualData));
+			SDL_Log("uavtalk: <-WindVelocityActual\n");
+			SDL_Log("uavtalk: 	North: %f\n", data->North);
+			SDL_Log("uavtalk: 	East: %f\n", data->East);
+			SDL_Log("uavtalk: 	Down: %f\n", data->Down);
 			break;
 		}
 	}

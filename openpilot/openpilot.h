@@ -22,14 +22,14 @@ extern uint8_t openpilot_get;
 extern uint8_t openpilot_set;
 extern uint8_t openpilot_save;
 extern void openpilot_save_to_flash (void);
-extern void openpilot_defaults_StabilizationSettings (UAVT_StabilizationSettingsData *data);
-extern void openpilot_defaults_HwSettings (UAVT_HwSettingsData *data);
-extern void openpilot_defaults_SystemSettings (UAVT_SystemSettingsData *data);
+//extern void openpilot_defaults_StabilizationSettings (UAVT_StabilizationSettingsData *data);
+//extern void openpilot_defaults_HwSettings (UAVT_HwSettingsData *data);
+//extern void openpilot_defaults_SystemSettings (UAVT_SystemSettingsData *data);
 extern void openpilot_request_SystemSettings (void);
 
-extern UAVT_StabilizationSettingsData OpenpilotStabilizationSettings;
-extern UAVT_HwSettingsData OpenpilotHwSettings;
-extern UAVT_SystemSettingsData OpenpilotSystemSettings;
+//extern UAVT_StabilizationSettingsData OpenpilotStabilizationSettings;
+//extern UAVT_HwSettingsData OpenpilotHwSettings;
+//extern UAVT_SystemSettingsData OpenpilotSystemSettings;
 
 
 

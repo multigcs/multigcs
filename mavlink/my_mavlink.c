@@ -368,15 +368,17 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 			mavlink_gps_raw_int_t packet;
 			mavlink_msg_gps_raw_int_decode(msg, &packet);
 			if (packet.lat != 0 && packet.lon != 0) {
-				GPS_found = 1;
 				ModelData.p_lat = (float)packet.lat / 10000000.0;
 				ModelData.p_long = (float)packet.lon / 10000000.0;
-				ModelData.p_alt = (float)packet.alt / 1000.0;
 				ModelData.speed = (float)packet.vel / 100.0;
 				ModelData.numSat = packet.satellites_visible;
 				ModelData.gpsfix = packet.fix_type;
 				ModelData.hdop = (float)packet.eph / 100.0;
 				ModelData.vdop = (float)packet.epv / 100.0;
+				if (ModelData.gpsfix > 2) {
+					GPS_found = 1;
+					ModelData.p_alt = (float)packet.alt / 1000.0;
+				}
 				redraw_flag = 1;
 			}
 			break;
