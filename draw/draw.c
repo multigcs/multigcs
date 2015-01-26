@@ -30,17 +30,13 @@ void draw_scrollbar (ESContext *esContext, uint16_t page, uint16_t page_max, uin
 #endif
 	if (page_max > 0) {
 		draw_box_f3(esContext, 1.3, -0.77, 0.002, 1.35, 0.77, 0.002, 255, 255, 255, 128);
-		if (page > 0) {
-			set_button("down", setup.view_mode, 1.3, -0.77, 1.35, -0.67, callback, -1.0, 0);
-			set_button("down2", setup.view_mode, 1.3, -0.77, 1.35, 0.0, callback, -3.0, 0);
-		}
+		set_button("down", setup.view_mode, 1.3, -0.77, 1.35, -0.67, callback, -1.0, 0);
+		set_button("down2", setup.view_mode, 1.3, -0.77, 1.35, 0.0, callback, -1.0, 0);
 		draw_box_f3(esContext, 1.3, -0.77, 0.002, 1.35, -0.67, 0.002, 255, 255, 255, 128);
 		draw_box_f3(esContext, 1.3, -0.77, 0.002, 1.35, -0.67, 0.002, 255, 255, 255, 128);
 		draw_rect_f3(esContext, 1.3, -0.77, 0.002, 1.35, -0.67, 0.002, 255, 255, 255, 128);
-		if (page < page_max) {
-			set_button("up", setup.view_mode, 1.3, 0.67, 1.35, 0.77, callback, 1.0, 0);
-			set_button("up2", setup.view_mode, 1.3, 0.0, 1.35, 0.77, callback, 3.0, 0);
-		}
+		set_button("up", setup.view_mode, 1.3, 0.67, 1.35, 0.77, callback, 1.0, 0);
+		set_button("up2", setup.view_mode, 1.3, 0.0, 1.35, 0.77, callback, 1.0, 0);
 		if (page < 0) {
 			page = 0;
 		}
@@ -88,12 +84,8 @@ uint8_t draw_button (ESContext *esContext, char *name, uint8_t view_mode, char *
 	} else if (align_y == ALIGN_BOTTOM) {
 		ty = y2 - fh / 4 - fh;
 	}
-
-
 //	draw_text_f3(esContext, x1, y1 + (y2 - y1) / 2 - fh / 2, z1, fh, fh, font, text);
 	draw_text_f3(esContext, tx, ty, z1, fh, fh, font, text);
-
-
 	for (n = 0; n < MAX_BUTTONS; n++) {
 		if (strcmp(Buttons[n].name, name) == 0) {
 			Buttons[n].view_mode = setup.view_mode;

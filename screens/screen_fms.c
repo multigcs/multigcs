@@ -47,14 +47,18 @@ uint8_t fms_del (char *name, float x, float y, int8_t button, float data, uint8_
 }
 
 uint8_t fms_scroll (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	reset_buttons();
-	if ((int)data < 0) {
+	if (button == 5) {
+		fms_pos += (int)1;
+	} else if (button == 4) {
+		fms_pos -= (int)1;
+	} else if ((int)data < 0) {
 		if (fms_pos > 0) {
-			fms_pos += (int)data;
+			fms_pos -= (int)1;
 		}
 	} else {
-		fms_pos += (int)data;
+		fms_pos += (int)1;
 	}
+	reset_buttons();
 	return 0;
 }
 
@@ -69,26 +73,30 @@ void screen_fms (ESContext *esContext) {
 	ESMatrix modelview;
 	UserData *userData = esContext->userData;
 #endif
-	char tmp_str[100];
-	char tmp_str2[100];
-	int n = 0;
-	int n2 = 0;
-	float last_lat = 0.0;
-	float last_lon = 0.0;
-	float last_alt = 0.0;
-	float alt = 0.0;
-	float ss = -0.7;
-
 #ifndef SDLGL
 	esMatrixLoadIdentity(&modelview);
 	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
-
-	draw_title(esContext, "Waypoints");
-
+	char tmp_str[100];
+	char tmp_str2[100];
+	int n = 0;
+	int n2 = 0;
 	float step_y = 0.22;
-
+	float last_lat = 0.0;
+	float last_lon = 0.0;
+	float last_alt = 0.0;
+	float alt = 0.0;
+	float ss = -0.7;
+	uint16_t num_waypoints = 0;
+	for (n = 1; n < MAX_WAYPOINTS; n++) {
+		if (WayPoints[n].p_lat == 0.0) {
+			break;
+		}
+	}
+	num_waypoints = n - 1;
+	sprintf(tmp_str, "Waypoint-Editors (total:%i)", num_waypoints);
+	draw_title(esContext, tmp_str);
 	for (n = fms_pos * 7; n < MAX_WAYPOINTS && n2 < 7; n++) {
 		if (n == 0) {
 			draw_box_f(esContext, -1.2, -0.55 + ((n2 - 1) * step_y), 1.3, -0.55 + (n2 * step_y), 127, 127, 127, 64);
@@ -101,29 +109,33 @@ void screen_fms (ESContext *esContext) {
 			float distance1 = 0.0;
 			float distance2 = 0.0;
 			float winkel_up = 0.0;
-			if (last_lat != 0.0) {
-				/* Distance - Ground-Level */
-				distance1 = acos( 
-					cos(toRad(last_lat))
-					* cos(toRad(WayPoints[n].p_lat))
-					* cos(toRad(last_lon) - toRad(WayPoints[n].p_long))
-					+ sin(toRad(last_lat)) 
-					* sin(toRad(WayPoints[n].p_lat))
-				) * 6378.137 * 1000.0;
-				alt = WayPoints[n].p_alt - last_alt;
-				/* Distance - Sichtverbindung */
-				distance2 = sqrt(((distance1) * (distance1)) + (alt * alt));
-				/* Steigung */
-				winkel_up = (asin(alt / distance2)) * 180 / PI;
-				draw_line_f(esContext, ss, -0.62 + ((n2 - 1) * step_y), ss, -0.62 + (n2 * step_y), 0, 255, 0, 255);
-				draw_circleFilled_f(esContext, ss, -0.62 + ((n2 - 1) * step_y), 0.01, 0, 255, 0, 128);
-				draw_circleFilled_f(esContext, ss, -0.62 + (n2 * step_y), 0.01, 0, 255, 0, 128);
-				sprintf(tmp_str, "%0.1fm (%0.1fm / %0.1fGrad)", distance1, distance2, winkel_up);
-				draw_text_f3(esContext, ss + 0.01, -0.62 + (n2 * step_y) - 0.125, 0.002, 0.05, 0.05, FONT_GREEN, tmp_str);
+			if (strcmp(WayPoints[n].command, "WAYPOINT") == 0) {
+				if (last_lat != 0.0) {
+					/* Distance - Ground-Level */
+					distance1 = acos( 
+						cos(toRad(last_lat))
+						* cos(toRad(WayPoints[n].p_lat))
+						* cos(toRad(last_lon) - toRad(WayPoints[n].p_long))
+						+ sin(toRad(last_lat)) 
+						* sin(toRad(WayPoints[n].p_lat))
+					) * 6378.137 * 1000.0;
+					alt = WayPoints[n].p_alt - last_alt;
+					/* Distance - Sichtverbindung */
+					distance2 = sqrt(((distance1) * (distance1)) + (alt * alt));
+					/* Steigung */
+					winkel_up = (asin(alt / distance2)) * 180 / PI;
+					sprintf(tmp_str, "%0.1fm (%0.1fm / %0.1fGrad)", distance1, distance2, winkel_up);
+					draw_text_f3(esContext, ss + 0.01, -0.62 + (n2 * step_y) - 0.125, 0.002, 0.05, 0.05, FONT_GREEN, tmp_str);
+				}
+				last_lat = WayPoints[n].p_lat;
+				last_lon = WayPoints[n].p_long;
+				last_alt = WayPoints[n].p_alt;
 			}
-			last_lat = WayPoints[n].p_lat;
-			last_lon = WayPoints[n].p_long;
-			last_alt = WayPoints[n].p_alt;
+
+			draw_line_f(esContext, ss, -0.55 + ((n2 - 1) * step_y), ss, -0.55 + (n2 * step_y), 0, 255, 0, 255);
+			draw_circleFilled_f(esContext, ss, -0.55 + ((n2 - 1) * step_y), 0.01, 0, 255, 0, 128);
+			draw_circleFilled_f(esContext, ss, -0.55 + (n2 * step_y), 0.01, 0, 255, 0, 128);
+
 			sprintf(tmp_str, "%s", WayPoints[n].name);
 			draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, -1.2, -0.7 + (n2 * step_y), 0.002, 0.1, 0, 0, fms_select, (float)n);
 
@@ -133,32 +145,32 @@ void screen_fms (ESContext *esContext) {
 				sprintf(tmp_str, "%s", WayPoints[n].command);
 			}
 			draw_text_f3(esContext, -1.2 + 0.01, -0.7 + (n2 * step_y) - 0.04, 0.002, 0.05, 0.05, FONT_GREEN, tmp_str);
-			if (WayPoints[n].p_lat == 0.0) {
-				strcpy(tmp_str, "---");
-			} else {
-				sprintf(tmp_str, "%0.6f", WayPoints[n].p_lat);
-			}
-			draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.7 + (n2 * step_y), 0.002, 0.1, 0, 0, fms_select, (float)n);
-
-			if (WayPoints[n].p_long == 0.0) {
-				strcpy(tmp_str, "---");
-			} else {
-				sprintf(tmp_str, "%0.6f", WayPoints[n].p_long);
-			}
-			draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, 0.1, -0.7 + (n2 * step_y), 0.002, 0.1, 0, 0, fms_select, (float)n);
-
-			if (WayPoints[n].p_alt == 0.0) {
-				strcpy(tmp_str, "---");
-			} else {
-				if (WayPoints[n].frametype == MAV_FRAME_GLOBAL) {
-					sprintf(tmp_str, "%0.1fm abs", WayPoints[n].p_alt);
-				} else if (WayPoints[n].frametype == MAV_FRAME_GLOBAL_RELATIVE_ALT || WayPoints[n].frametype == MAV_FRAME_GLOBAL_RELATIVE_ALT_INT) {
-					sprintf(tmp_str, "%0.1fm rel", WayPoints[n].p_alt);
+			if (strcmp(WayPoints[n].command, "SHUTTER") != 0) {
+				if (WayPoints[n].p_lat == 0.0) {
+					strcpy(tmp_str, "---");
 				} else {
-					sprintf(tmp_str, "%0.1fm ???", WayPoints[n].p_alt);
+					sprintf(tmp_str, "%0.6f", WayPoints[n].p_lat);
 				}
+				draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.7 + (n2 * step_y), 0.002, 0.1, 0, 0, fms_select, (float)n);
+				if (WayPoints[n].p_long == 0.0) {
+					strcpy(tmp_str, "---");
+				} else {
+					sprintf(tmp_str, "%0.6f", WayPoints[n].p_long);
+				}
+				draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, 0.1, -0.7 + (n2 * step_y), 0.002, 0.1, 0, 0, fms_select, (float)n);
+				if (WayPoints[n].p_alt == 0.0) {
+					strcpy(tmp_str, "---");
+				} else {
+					if (WayPoints[n].frametype == MAV_FRAME_GLOBAL) {
+						sprintf(tmp_str, "%0.1fm abs", WayPoints[n].p_alt);
+					} else if (WayPoints[n].frametype == MAV_FRAME_GLOBAL_RELATIVE_ALT || WayPoints[n].frametype == MAV_FRAME_GLOBAL_RELATIVE_ALT_INT) {
+						sprintf(tmp_str, "%0.1fm rel", WayPoints[n].p_alt);
+					} else {
+						sprintf(tmp_str, "%0.1fm ???", WayPoints[n].p_alt);
+					}
+				}
+				draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, 1.3, -0.7 + (n2 * step_y), 0.002, 0.1, 2, 0, fms_select, (float)n);
 			}
-			draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, 1.3, -0.7 + (n2 * step_y), 0.002, 0.1, 2, 0, fms_select, (float)n);
 
 			sprintf(tmp_str2, "%s-%i-d", WayPoints[n].name, n);
 			set_button(tmp_str2, VIEW_MODE_FMS, -1.2, -0.55 + ((n2 - 1) * step_y), 1.3, -0.55 + (n2 * step_y), fms_select, (float)n, 0);
@@ -166,23 +178,14 @@ void screen_fms (ESContext *esContext) {
 			n2++;
 		}
 	}
-	n2 = 0;
-	for (n = 0; n < MAX_WAYPOINTS; n++) {
-		if (WayPoints[n].p_lat != 0.0) {
-			n2++;
-		}
-	}
-
-	if (n2 > 7) {
-		draw_scrollbar(esContext, fms_pos, n2 / 7, fms_scroll);
+	if ((num_waypoints + 1) > 7) {
+		draw_scrollbar(esContext, fms_pos, (num_waypoints + 1) / 7, fms_scroll);
 	}
 	if (fms_pos < 0) {
 		fms_pos = 0;
-	} else if (fms_pos > n2 / 7) {
-		fms_pos = n2 / 7;
+	} else if (fms_pos > (num_waypoints + 1) / 7) {
+		fms_pos = (num_waypoints + 1) / 7;
 	}
-
-
 
 	draw_text_button(esContext, "fms_mission", VIEW_MODE_FMS, "START", FONT_GREEN_BG, -1.0, 0.9, 0.002, 0.06, 1, 0, fms_start_mission, 0.0);
 	draw_text_button(esContext, "fms_edit", VIEW_MODE_FMS, "EDIT", FONT_GREEN_BG, -0.7, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, wpedit_waypoint_edit, (float)VIEW_MODE_FMS);

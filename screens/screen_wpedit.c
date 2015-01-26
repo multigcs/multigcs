@@ -108,18 +108,26 @@ void screen_wpedit (ESContext *esContext) {
 	ESMatrix modelview;
 	UserData *userData = esContext->userData;
 #endif
-	char tmp_str[100];
-
 #ifndef SDLGL
 	esMatrixLoadIdentity(&modelview);
 	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
-
-	draw_title(esContext, "Waypoint-Editor");
-
+	char tmp_str[100];
 	uint8_t n_y = 0;
 	float step_y = 0.16;
+	uint16_t n = 0;
+	uint16_t num_waypoints = 0;
+
+	for (n = 1; n < MAX_WAYPOINTS; n++) {
+		if (WayPoints[n].p_lat == 0.0) {
+			break;
+		}
+	}
+	num_waypoints = n - 1;
+	sprintf(tmp_str, "Waypoint-Editor (total:%i)", num_waypoints);
+	draw_title(esContext, tmp_str);
+
 
 	if (waypoint_active >= 0) {
 
