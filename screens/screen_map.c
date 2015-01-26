@@ -871,7 +871,6 @@ void draw_waypoints_cup (ESContext *esContext, float lat, float lon, uint8_t zoo
 	char wp_name2[50];
 	float wp_lat = 0.0;
 	float wp_lon = 0.0;
-	float wp_alt = 0.0;
 	int max_lat = y2lat(0, lat, zoom);
 	int min_lon = x2long(0, lon, zoom);
 	int min_lat = y2lat(esContext->height, lat, zoom);
@@ -905,7 +904,6 @@ void draw_waypoints_cup (ESContext *esContext, float lat, float lon, uint8_t zoo
 						tmp_str[3] = 0;
 						wp_lon = atof(tmp_str) + min / 60.0;
 					} else if (pn == 5) {
-						wp_alt = atof(tmp_str);
 					} else if (pn == 10) {
 						if ((int)wp_lat >= min_lat && (int)wp_lat <= max_lat && (int)wp_lon >= min_lon && (int)wp_lon <= max_lon) {
 							strncpy(wp_name2, tmp_str, 49);
@@ -2847,8 +2845,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		float pos_alt_max = -999999.0;
 
 		// drawing Polygon
-//		glColor4f(0.0, 0.0, 1.0, 0.2);
-//		glBegin(GL_POLYGON);
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
 			if (PolyPoints[n].p_lat != 0.0) {
 				pmark_x = long2x(PolyPoints[n].p_long, lon, zoom);
@@ -2869,19 +2865,13 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				if (pos_alt_max < pos_alt) {
 					pos_alt_max = pos_alt;
 				}
-				float alt = SurveySetup.alt + pos_alt;
 				if (SurveySetup.alt_abs == 1) {
 					if (SurveySetup.alt < pos_alt + 1.0) {
 						SurveySetup.alt = pos_alt + 1.0;
 					}
-					alt = SurveySetup.alt;
 				}
-//				px1 = (float)pmark_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
-//				py1 = (float)pmark_y / (float)esContext->height * 2.0 - 1.0;
-//				glVertex3f(px1, -py1, -2.0 + (alt / alt_zoom));
 			}
 		}
-//		glEnd();
 
 
 		// drawing Grid

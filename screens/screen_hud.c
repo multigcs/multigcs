@@ -1146,8 +1146,6 @@ void screen_hud_internal (ESContext *esContext) {
 	draw_line_f3(esContext, -0.4, -0.94, 0.002, -0.4, -0.83, 0.002, 255, 255, 255, 255);
 
 	static uint8_t last_armed = MODEL_ARMED;
-	static uint8_t last_mode = MODEL_MODE_MANUAL;
-
 
 	if (ModelData.armed == MODEL_ARMED) {
 		if (last_armed != ModelData.armed) {
@@ -1165,14 +1163,7 @@ void screen_hud_internal (ESContext *esContext) {
 			system("#espeak -v en \"disarmed\" > /dev/null 2> /dev/null &");
 		}
 	}
-//	if (ModelData.status == MAV_STATE_CRITICAL) {
-//		if (last_status != ModelData.status) {
-//			system("#espeak -v en \"failsave\" > /dev/null 2> /dev/null &");
-//		}
-//		draw_text_f(esContext, 1.0 - strlen("FAILSAVE") * 0.07 * 0.6 / 2.0, -0.92, 0.07, 0.07, FONT_GREEN, "FAILSAVE");
-//	}
 	last_armed = ModelData.armed;
-	last_mode = ModelData.mode;
 
 	// Yaw
 	float compas_r = 0.9;

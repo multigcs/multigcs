@@ -604,7 +604,7 @@ void UAVT_FlightPlanStatus_Send (UAVT_FlightPlanStatusData *data) {
 	len = openpilot_add_4byte(buf, len, data->ErrorLineNum);
 	len = openpilot_add_4byte(buf, len, data->Debug[0]);
 	len = openpilot_add_4byte(buf, len, data->Debug[1]);
-	len = openpilot_add_1byte(buf, len, data->Status);
+	len = openpilot_add_1byte(buf, len, data->State);
 	len = openpilot_add_1byte(buf, len, data->ErrorType);
 	uavtalk_send(buf, FLIGHTPLANSTATUS_OBJID, 0x22, len);
 }
@@ -628,7 +628,7 @@ void UAVT_FlightTelemetryStats_Send (UAVT_FlightTelemetryStatsData *data) {
 	len = openpilot_add_4byte(buf, len, data->TxFailures);
 	len = openpilot_add_4byte(buf, len, data->RxFailures);
 	len = openpilot_add_4byte(buf, len, data->TxRetries);
-	len = openpilot_add_1byte(buf, len, data->Status);
+	len = openpilot_add_1byte(buf, len, data->State);
 	uavtalk_send(buf, FLIGHTTELEMETRYSTATS_OBJID, 0x22, len);
 }
 
@@ -656,7 +656,7 @@ void UAVT_GCSTelemetryStats_Send (UAVT_GCSTelemetryStatsData *data) {
 	len = openpilot_add_4byte(buf, len, data->TxFailures);
 	len = openpilot_add_4byte(buf, len, data->RxFailures);
 	len = openpilot_add_4byte(buf, len, data->TxRetries);
-	len = openpilot_add_1byte(buf, len, data->Status);
+	len = openpilot_add_1byte(buf, len, data->State);
 	uavtalk_send(buf, GCSTELEMETRYSTATS_OBJID, 0x22, len);
 }
 
@@ -682,7 +682,7 @@ void UAVT_GPSPosition_Send (UAVT_GPSPositionData *data) {
 	len = openpilot_add_4byte(buf, len, data->PDOP);
 	len = openpilot_add_4byte(buf, len, data->HDOP);
 	len = openpilot_add_4byte(buf, len, data->VDOP);
-	len = openpilot_add_1byte(buf, len, data->Status);
+	len = openpilot_add_1byte(buf, len, data->State);
 	len = openpilot_add_1byte(buf, len, data->Satellites);
 	uavtalk_send(buf, GPSPOSITION_OBJID, 0x22, len);
 }
@@ -1748,7 +1748,7 @@ void UAVT_PathStatus_Send (UAVT_PathStatusData *data) {
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->fractional_progress);
 	len = openpilot_add_4byte(buf, len, data->error);
-	len = openpilot_add_1byte(buf, len, data->Status);
+	len = openpilot_add_1byte(buf, len, data->State);
 	uavtalk_send(buf, PATHSTATUS_OBJID, 0x22, len);
 }
 

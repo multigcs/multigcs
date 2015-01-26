@@ -606,7 +606,7 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	ErrorLineNum: %i\n", data->ErrorLineNum);
 			SDL_Log("uavtalk: 	Debug[0]: %f\n", data->Debug[0]);
 			SDL_Log("uavtalk: 	Debug[1]: %f\n", data->Debug[1]);
-			SDL_Log("uavtalk: 	Status: %i (%s)\n", data->Status, UAVT_FlightPlanStatusStatusOption[data->Status]);
+			SDL_Log("uavtalk: 	State: %i (%s)\n", data->State, UAVT_FlightPlanStatusStateOption[data->State]);
 			SDL_Log("uavtalk: 	ErrorType: %i (%s)\n", data->ErrorType, UAVT_FlightPlanStatusErrorTypeOption[data->ErrorType]);
 			break;
 		}
@@ -628,7 +628,7 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	TxFailures: %i\n", data->TxFailures);
 			SDL_Log("uavtalk: 	RxFailures: %i\n", data->RxFailures);
 			SDL_Log("uavtalk: 	TxRetries: %i\n", data->TxRetries);
-			SDL_Log("uavtalk: 	Status: %i (%s)\n", data->Status, UAVT_FlightTelemetryStatsStatusOption[data->Status]);
+			SDL_Log("uavtalk: 	State: %i (%s)\n", data->State, UAVT_FlightTelemetryStatsStateOption[data->State]);
 			break;
 		}
 		case GCSRECEIVER_OBJID: {
@@ -654,7 +654,7 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	TxFailures: %i\n", data->TxFailures);
 			SDL_Log("uavtalk: 	RxFailures: %i\n", data->RxFailures);
 			SDL_Log("uavtalk: 	TxRetries: %i\n", data->TxRetries);
-			SDL_Log("uavtalk: 	Status: %i (%s)\n", data->Status, UAVT_GCSTelemetryStatsStatusOption[data->Status]);
+			SDL_Log("uavtalk: 	State: %i (%s)\n", data->State, UAVT_GCSTelemetryStatsStateOption[data->State]);
 			break;
 		}
 		case GEOFENCESETTINGS_OBJID: {
@@ -679,7 +679,7 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: 	PDOP: %f\n", data->PDOP);
 			SDL_Log("uavtalk: 	HDOP: %f\n", data->HDOP);
 			SDL_Log("uavtalk: 	VDOP: %f\n", data->VDOP);
-			SDL_Log("uavtalk: 	Status: %i (%s)\n", data->Status, UAVT_GPSPositionStatusOption[data->Status]);
+			SDL_Log("uavtalk: 	State: %i (%s)\n", data->State, UAVT_GPSPositionStateOption[data->State]);
 			SDL_Log("uavtalk: 	Satellites: %i\n", data->Satellites);
 			break;
 		}
@@ -1854,7 +1854,7 @@ void uavtalk_decode (uint32_t obj_id, uint8_t *buf) {
 			SDL_Log("uavtalk: <-PathStatus\n");
 			SDL_Log("uavtalk: 	fractional_progress: %f\n", data->fractional_progress);
 			SDL_Log("uavtalk: 	error: %f\n", data->error);
-			SDL_Log("uavtalk: 	Status: %i (%s)\n", data->Status, UAVT_PathStatusStatusOption[data->Status]);
+			SDL_Log("uavtalk: 	State: %i (%s)\n", data->State, UAVT_PathStatusStateOption[data->State]);
 			break;
 		}
 		case PICOCSETTINGS_OBJID: {

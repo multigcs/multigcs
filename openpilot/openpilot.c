@@ -1,11 +1,12 @@
 
 #include <all.h>
 
+#ifndef WINDOWS
 #include <linux/types.h>
 #include <linux/input.h>
 #include <linux/hidraw.h>
 #include <libudev.h>
-
+#endif
 
 /* http://wiki.openpilot.org/display/Doc/UAVTalk */
 
@@ -63,6 +64,7 @@ uint8_t openpilot_connection_status (void) {
 	return last_connection;
 }
 
+#ifndef WINDOWS
 int openpilot_hidraw_find (void) {
 	char device[1024];
 	int fd = -1;
@@ -111,14 +113,17 @@ void openpilot_hidraw_write (int fd, uint8_t *data, int len) {
 		write(fd, buf, len + 2);
 	}
 }
+#endif
 
 void openpilot_write (uint8_t *data, int len) {
 	if (serial_fd_openpilot >= 0) {
 		serial_write(serial_fd_openpilot, data, len);
 	}
+#ifndef WINDOWS
 	if (hidraw_fd_openpilot >= 0) {
 		openpilot_hidraw_write(hidraw_fd_openpilot, data, len);
 	}
+#endif
 }
 
 void uavtalk_send (uint8_t *buf, uint32_t obj_id, uint8_t command, uint16_t len) {
@@ -261,14 +266,14 @@ void openpilot_send_req (uint8_t status) {
 	data.TxFailures = 3;
 	data.RxFailures = 4;
 	data.TxRetries = 5;
-	data.Status = status;
+	data.State = status;
 
 	len = openpilot_add_4byte(openpilot_write_buf, len, data.TxDataRate);
 	len = openpilot_add_4byte(openpilot_write_buf, len, data.RxDataRate);
 	len = openpilot_add_4byte(openpilot_write_buf, len, data.TxFailures);
 	len = openpilot_add_4byte(openpilot_write_buf, len, data.RxFailures);
 	len = openpilot_add_4byte(openpilot_write_buf, len, data.TxRetries);
-	len = openpilot_add_1byte(openpilot_write_buf, len, data.Status);
+	len = openpilot_add_1byte(openpilot_write_buf, len, data.State);
 
 	uavtalk_send(openpilot_write_buf, GCSTELEMETRYSTATS_OBJID, 0x22, len);
 }
@@ -467,7 +472,7 @@ if (obj_id == HWFLYINGF3_OBJID) {
 							ModelData.p_alt = uavtalk_GPSPositionData.Altitude;
 							ModelData.speed = uavtalk_GPSPositionData.Groundspeed;
 							ModelData.numSat = uavtalk_GPSPositionData.Satellites;
-							ModelData.gpsfix = uavtalk_GPSPositionData.Status;
+							ModelData.gpsfix = uavtalk_GPSPositionData.State;
 							ModelData.hdop = uavtalk_GPSPositionData.HDOP;
 							ModelData.vdop = uavtalk_GPSPositionData.VDOP;
 						}
@@ -511,14 +516,14 @@ if (obj_id == HWFLYINGF3_OBJID) {
 						switch (obj_id) {
 							case FLIGHTTELEMETRYSTATS_OBJID: {
 								UAVT_FlightTelemetryStatsData *data = (UAVT_FlightTelemetryStatsData *)&openpilot_read_buf[n + 8];
-								if (data->Status == 0) { // -> FLIGHTTELEMETRYSTATS_STATUS_DISCONNECTED
+								if (data->State == 0) { // -> FLIGHTTELEMETRYSTATS_STATUS_DISCONNECTED
 									SDL_Log("uavtalk: << FlightTelemetryStats: DISCONNECTED\n");
 									openpilot_send_req(1); // <- GCSTELEMETRYSTATS_STATUS_HANDSHAKEREQ
-								} else if (data->Status == 2) { // -> FLIGHTTELEMETRYSTATS_STATUS_HANDSHAKEACK
+								} else if (data->State == 2) { // -> FLIGHTTELEMETRYSTATS_STATUS_HANDSHAKEACK
 									SDL_Log("uavtalk: << FlightTelemetryStats: HANDSHAKEACK\n");
 									openpilot_send_req(3); // <- GCSTELEMETRYSTATS_STATUS_CONNECTED
 									redraw_flag = 1;
-								} else if (data->Status == 3) {
+								} else if (data->State == 3) {
 									SDL_Log("uavtalk: << FlightTelemetryStats: CONNECTED\n");
 
 uavtalk_request(HWFLYINGF3_OBJID);
@@ -527,7 +532,7 @@ uavtalk_request(HWFLYINGF3_OBJID);
 
 									openpilot_get = 1;
 								} else {
-									SDL_Log("uavtalk: << FlightTelemetryStats: %i\n", data->Status);
+									SDL_Log("uavtalk: << FlightTelemetryStats: %i\n", data->State);
 								}
 								break;
 							}
@@ -556,6 +561,7 @@ void openpilot_update (void) {
 			}
 		}
 	}
+#ifndef WINDOWS
 	if (hidraw_fd_openpilot >= 0) {
 		while ((res = read(hidraw_fd_openpilot, buf, 1000)) > 0) {
 			for (n = 0; n < res; n++) {
@@ -563,15 +569,18 @@ void openpilot_update (void) {
 			}
 		}
 	}
+#endif
 }
 
 uint8_t openpilot_init (char *port, uint32_t baud) {
 	openpilot_get = 1;
 	SDL_Log("uavtalk: init openpilot serial port...\n");
 	serial_fd_openpilot = serial_open(port, baud);
+#ifndef WINDOWS
 	if (serial_fd_openpilot < 0) {
 		hidraw_fd_openpilot = openpilot_hidraw_find();
 	}
+#endif
 	return 0;
 }
 
@@ -580,10 +589,12 @@ void openpilot_exit (void) {
 		serial_close(serial_fd_openpilot);
 		serial_fd_openpilot = -1;
 	}
+#ifndef WINDOWS
 	if (hidraw_fd_openpilot >= 0) {
 		close(hidraw_fd_openpilot);
 		hidraw_fd_openpilot = -1;
 	}
+#endif
 }
 
 void openpilot_xml_load (xmlDocPtr doc, xmlNodePtr cur) { 

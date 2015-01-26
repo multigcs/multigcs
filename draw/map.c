@@ -797,6 +797,7 @@ void mark_route (ESContext *esContext, float last_lat, float last_long, float la
 		last_z = 0.001;
 		mark_z = 0.001;
 	}
+	glLineWidth(3);
 	if (type == -1) {
 		draw_line_f3(esContext, x1, y1, last_z, x2, y2, mark_z, 255, 255, 255, 64);
 	} else if (type == 1) {
@@ -824,8 +825,9 @@ void mark_route (ESContext *esContext, float last_lat, float last_long, float la
 	} else if (type == 6) {
 		draw_line_f3(esContext, x1, y1, z1, x2, y2, z2, 255, 0, 0, 255);
 	} else {
-		draw_line_f3(esContext, x1, y1, z1, x2, y2, z2, 255, 255, 255, 255);
+		draw_line_f3(esContext, x1, y1, z1, x2, y2, z2, 255, 255, 0, 255);
 	}
+	glLineWidth(1);
 }
 
 void mark_tunnel (ESContext *esContext, float last_lat, float last_long, float last_alt, float mark_lat, float mark_long, float mark_alt, uint8_t type, float lat, float lon, uint8_t zoom) {
@@ -880,10 +882,8 @@ void mark_plane (ESContext *esContext, float mark_lat, float mark_long, float ma
 	float x1 = (float)mark_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 	float y1 = (float)mark_y / (float)esContext->height * 2.0 - 1.0;
 	float z = 0.0;
-	float z2 = 0.0;
 	if (map_view == 1) {
 		z = mark_alt / alt_zoom;
-		z2 = (float)get_altitude(mark_lat, mark_long) / alt_zoom;
 	}
 	draw_text_f3(esContext, x1, y1, z, 0.03, 0.03, FONT_GREEN, text);
 	draw_circleFilled_f3(esContext, x1, y1, z, 0.01, 255, 255, 0, 255);

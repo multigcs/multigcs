@@ -393,7 +393,9 @@ void screen_system (ESContext *esContext) {
 	ESMatrix modelview;
 	UserData *userData = esContext->userData;
 #endif
+#ifndef WINDOWS
 	FILE *cmd = NULL;
+#endif
 	char buffer[1025];
 	static char ip[30];
 	static char bcast[30];

@@ -5,10 +5,11 @@
 #define UDP_BUFLEN 2042
 #define UDP_PORT 14550
 
+#ifndef WINDOWS
 static struct sockaddr_in si_me, si_other;
 static int s, slen = sizeof(si_other) , recv_len;
-
 int mavlink_tcp_send (uint8_t *buf, uint16_t len);
+#endif
 
 static uint8_t udp_running = 0;
 int16_t mission_max = -1;

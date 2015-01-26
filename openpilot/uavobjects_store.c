@@ -170,7 +170,7 @@ char UAVT_FlightPlanControlCommandOption[][42] = {
 
 UAVT_FlightPlanControlData uavtalk_FlightPlanControlData;
 UAVT_FlightPlanSettingsData uavtalk_FlightPlanSettingsData;
-char UAVT_FlightPlanStatusStatusOption[][42] = {
+char UAVT_FlightPlanStatusStateOption[][42] = {
 	"Stopped",
 	"Running",
 	"Error",
@@ -230,7 +230,7 @@ char UAVT_FlightStatusControlSourceOption[][42] = {
 };
 
 UAVT_FlightStatusData uavtalk_FlightStatusData;
-char UAVT_FlightTelemetryStatsStatusOption[][42] = {
+char UAVT_FlightTelemetryStatsStateOption[][42] = {
 	"Disconnected",
 	"HandshakeReq",
 	"HandshakeAck",
@@ -239,7 +239,7 @@ char UAVT_FlightTelemetryStatsStatusOption[][42] = {
 
 UAVT_FlightTelemetryStatsData uavtalk_FlightTelemetryStatsData;
 UAVT_GCSReceiverData uavtalk_GCSReceiverData;
-char UAVT_GCSTelemetryStatsStatusOption[][42] = {
+char UAVT_GCSTelemetryStatsStateOption[][42] = {
 	"Disconnected",
 	"HandshakeReq",
 	"HandshakeAck",
@@ -248,7 +248,7 @@ char UAVT_GCSTelemetryStatsStatusOption[][42] = {
 
 UAVT_GCSTelemetryStatsData uavtalk_GCSTelemetryStatsData;
 UAVT_GeoFenceSettingsData uavtalk_GeoFenceSettingsData;
-char UAVT_GPSPositionStatusOption[][42] = {
+char UAVT_GPSPositionStateOption[][42] = {
 	"NoGPS",
 	"NoFix",
 	"Fix2D",
@@ -1867,7 +1867,7 @@ char UAVT_PathPlannerSettingsFlashOperationOption[][42] = {
 };
 
 UAVT_PathPlannerSettingsData uavtalk_PathPlannerSettingsData;
-char UAVT_PathStatusStatusOption[][42] = {
+char UAVT_PathStatusStateOption[][42] = {
 	"InProgress",
 	"Completed",
 	"Warning",

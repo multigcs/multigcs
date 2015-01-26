@@ -900,13 +900,13 @@ extern UAVT_FlightPlanSettingsData uavtalk_FlightPlanSettingsData;
  Comment: Status of the flight plan script
 *************************************************************************************************/
 
-#define FLIGHTPLANSTATUS_OBJID 0x2206ee46 
+#define FLIGHTPLANSTATUS_OBJID 0x3391ec96 
 
 enum {
-	FLIGHTPLANSTATUS_STATUS_STOPPED = 0,
-	FLIGHTPLANSTATUS_STATUS_RUNNING = 1,
-	FLIGHTPLANSTATUS_STATUS_ERROR = 2,
-	FLIGHTPLANSTATUS_STATUS_LASTITEM = 3
+	FLIGHTPLANSTATUS_STATE_STOPPED = 0,
+	FLIGHTPLANSTATUS_STATE_RUNNING = 1,
+	FLIGHTPLANSTATUS_STATE_ERROR = 2,
+	FLIGHTPLANSTATUS_STATE_LASTITEM = 3
 };
 
 enum {
@@ -932,13 +932,13 @@ enum {
 	FLIGHTPLANSTATUS_ERRORTYPE_LASTITEM = 19
 };
 
-extern char UAVT_FlightPlanStatusStatusOption[][42];
+extern char UAVT_FlightPlanStatusStateOption[][42];
 extern char UAVT_FlightPlanStatusErrorTypeOption[][42];
 typedef struct {
 	uint32_t ErrorFileID;
 	uint32_t ErrorLineNum;
 	float Debug[2];
-	uint8_t Status;	// enum
+	uint8_t State;	// enum
 	uint8_t ErrorType;	// enum
 } UAVT_FlightPlanStatusData;
 
@@ -1004,24 +1004,24 @@ extern UAVT_FlightStatusData uavtalk_FlightStatusData;
  Comment: Maintains the telemetry statistics from the OpenPilot flight computer.
 *************************************************************************************************/
 
-#define FLIGHTTELEMETRYSTATS_OBJID 0x2f7e2902 
+#define FLIGHTTELEMETRYSTATS_OBJID 0x9e5ba136 
 
 enum {
-	FLIGHTTELEMETRYSTATS_STATUS_DISCONNECTED = 0,
-	FLIGHTTELEMETRYSTATS_STATUS_HANDSHAKEREQ = 1,
-	FLIGHTTELEMETRYSTATS_STATUS_HANDSHAKEACK = 2,
-	FLIGHTTELEMETRYSTATS_STATUS_CONNECTED = 3,
-	FLIGHTTELEMETRYSTATS_STATUS_LASTITEM = 4
+	FLIGHTTELEMETRYSTATS_STATE_DISCONNECTED = 0,
+	FLIGHTTELEMETRYSTATS_STATE_HANDSHAKEREQ = 1,
+	FLIGHTTELEMETRYSTATS_STATE_HANDSHAKEACK = 2,
+	FLIGHTTELEMETRYSTATS_STATE_CONNECTED = 3,
+	FLIGHTTELEMETRYSTATS_STATE_LASTITEM = 4
 };
 
-extern char UAVT_FlightTelemetryStatsStatusOption[][42];
+extern char UAVT_FlightTelemetryStatsStateOption[][42];
 typedef struct {
 	float TxDataRate;
 	float RxDataRate;
 	uint32_t TxFailures;
 	uint32_t RxFailures;
 	uint32_t TxRetries;
-	uint8_t Status;	// enum
+	uint8_t State;	// enum
 } UAVT_FlightTelemetryStatsData;
 
 extern UAVT_FlightTelemetryStatsData uavtalk_FlightTelemetryStatsData;
@@ -1048,24 +1048,24 @@ extern UAVT_GCSReceiverData uavtalk_GCSReceiverData;
  Comment: The telemetry statistics from the ground computer
 *************************************************************************************************/
 
-#define GCSTELEMETRYSTATS_OBJID 0xabc72744 
+#define GCSTELEMETRYSTATS_OBJID 0x708d0a90 
 
 enum {
-	GCSTELEMETRYSTATS_STATUS_DISCONNECTED = 0,
-	GCSTELEMETRYSTATS_STATUS_HANDSHAKEREQ = 1,
-	GCSTELEMETRYSTATS_STATUS_HANDSHAKEACK = 2,
-	GCSTELEMETRYSTATS_STATUS_CONNECTED = 3,
-	GCSTELEMETRYSTATS_STATUS_LASTITEM = 4
+	GCSTELEMETRYSTATS_STATE_DISCONNECTED = 0,
+	GCSTELEMETRYSTATS_STATE_HANDSHAKEREQ = 1,
+	GCSTELEMETRYSTATS_STATE_HANDSHAKEACK = 2,
+	GCSTELEMETRYSTATS_STATE_CONNECTED = 3,
+	GCSTELEMETRYSTATS_STATE_LASTITEM = 4
 };
 
-extern char UAVT_GCSTelemetryStatsStatusOption[][42];
+extern char UAVT_GCSTelemetryStatsStateOption[][42];
 typedef struct {
 	float TxDataRate;
 	float RxDataRate;
 	uint32_t TxFailures;
 	uint32_t RxFailures;
 	uint32_t TxRetries;
-	uint8_t Status;	// enum
+	uint8_t State;	// enum
 } UAVT_GCSTelemetryStatsData;
 
 extern UAVT_GCSTelemetryStatsData uavtalk_GCSTelemetryStatsData;
@@ -1093,18 +1093,18 @@ extern UAVT_GeoFenceSettingsData uavtalk_GeoFenceSettingsData;
  Comment: Raw GPS data from @ref GPSModule.  Should only be used by @ref AHRSCommsModule.
 *************************************************************************************************/
 
-#define GPSPOSITION_OBJID 0x40bcc84e 
+#define GPSPOSITION_OBJID 0x628ba538 
 
 enum {
-	GPSPOSITION_STATUS_NOGPS = 0,
-	GPSPOSITION_STATUS_NOFIX = 1,
-	GPSPOSITION_STATUS_FIX2D = 2,
-	GPSPOSITION_STATUS_FIX3D = 3,
-	GPSPOSITION_STATUS_DIFF3D = 4,
-	GPSPOSITION_STATUS_LASTITEM = 5
+	GPSPOSITION_STATE_NOGPS = 0,
+	GPSPOSITION_STATE_NOFIX = 1,
+	GPSPOSITION_STATE_FIX2D = 2,
+	GPSPOSITION_STATE_FIX3D = 3,
+	GPSPOSITION_STATE_DIFF3D = 4,
+	GPSPOSITION_STATE_LASTITEM = 5
 };
 
-extern char UAVT_GPSPositionStatusOption[][42];
+extern char UAVT_GPSPositionStateOption[][42];
 typedef struct {
 	int32_t Latitude;
 	int32_t Longitude;
@@ -1115,7 +1115,7 @@ typedef struct {
 	float PDOP;
 	float HDOP;
 	float VDOP;
-	uint8_t Status;	// enum
+	uint8_t State;	// enum
 	int8_t Satellites;
 } UAVT_GPSPositionData;
 
@@ -4274,21 +4274,21 @@ extern UAVT_PathPlannerSettingsData uavtalk_PathPlannerSettingsData;
  Comment: Status of the current path mode  Can come from any @ref PathFollower module
 *************************************************************************************************/
 
-#define PATHSTATUS_OBJID 0xac5024 
+#define PATHSTATUS_OBJID 0x1cfb185a 
 
 enum {
-	PATHSTATUS_STATUS_INPROGRESS = 0,
-	PATHSTATUS_STATUS_COMPLETED = 1,
-	PATHSTATUS_STATUS_WARNING = 2,
-	PATHSTATUS_STATUS_CRITICAL = 3,
-	PATHSTATUS_STATUS_LASTITEM = 4
+	PATHSTATUS_STATE_INPROGRESS = 0,
+	PATHSTATUS_STATE_COMPLETED = 1,
+	PATHSTATUS_STATE_WARNING = 2,
+	PATHSTATUS_STATE_CRITICAL = 3,
+	PATHSTATUS_STATE_LASTITEM = 4
 };
 
-extern char UAVT_PathStatusStatusOption[][42];
+extern char UAVT_PathStatusStateOption[][42];
 typedef struct {
 	float fractional_progress;
 	float error;
-	uint8_t Status;	// enum
+	uint8_t State;	// enum
 } UAVT_PathStatusData;
 
 extern UAVT_PathStatusData uavtalk_PathStatusData;

@@ -306,6 +306,11 @@ int main (int argc, char *argv[]) {
 						}
 						if (fieldtype_size[type_n] == size_n) {
 							parseParamsGetAttr(doc, cur2, "name", fieldname);
+							// Workaround (libx11)
+							if (strcmp(fieldname, "Status") == 0) {
+								strcpy(fieldname, "State");
+							}
+
 							for (n = 0; n < strlen(fieldname); n++) {
 								fieldname_uc[n] = toupper(fieldname[n]);
 								fieldname_uc[n + 1] = 0;

@@ -107,10 +107,12 @@ void screen_filesystem (ESContext *esContext) {
 	char image_path[128];
 	DIR *dir = NULL;
 	struct dirent *dir_entry = NULL;
-	struct stat statbuf;
 	char directory[200];
 	char new_path[400];
+#ifndef WINDOWS
 	char tmp_str[400];
+	struct stat statbuf;
+#endif
 	int16_t n = 0;
 	int16_t n2 = 0;
 	sprintf(directory, "%s", filesystem_rootdir);

@@ -4,9 +4,9 @@
 typedef struct {
 	char name[1024];
 	int fd;
-} LockFile;
+} SerialLockFile;
 
-LockFile locks[100];
+SerialLockFile locks[100];
 
 
 #ifdef ANDROID
@@ -80,13 +80,13 @@ int serial_close (int fd) {
 
 
 int serial_open (char *mdevice, uint32_t baud) {
-	char mdevice_name[1024];
-	FILE *lock_fd = NULL;
-	int fd = -1;
 #ifdef ANDROID
 	return 1;
 #endif
 #ifndef WINDOWS
+	char mdevice_name[1024];
+	FILE *lock_fd = NULL;
+	int fd = -1;
 #ifndef OSX
 	int baudr = 9600;
 	switch(baud) {
@@ -214,7 +214,7 @@ int serial_open (char *mdevice, uint32_t baud) {
 
 	hSerial[free_port] = CreateFile(mdevice, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 	if (hSerial[free_port] == INVALID_HANDLE_VALUE) {
-		SDL_Log("..Failed (INVALID_HANDLE_VALUE: %i)\n", GetLastError());
+		SDL_Log("..Failed (INVALID_HANDLE_VALUE: %i)\n", (int)GetLastError());
 		return -1;
 	}
 	dcbSerialParams.DCBlength = sizeof(dcbSerialParams);

@@ -29,7 +29,6 @@ EXTRA_OBJECTS += aprs.o
 INCDIR += $(shell pkg-config --cflags sdl) $(shell pkg-config --cflags SDL_image) $(shell pkg-config --cflags SDL_net) $(shell pkg-config --cflags gl) $(shell pkg-config --cflags glu) $(shell pkg-config --cflags opencv) \
 -I/usr/local/include -Iquirc
 LIBS += $(shell pkg-config --libs sdl) $(shell pkg-config --libs SDL_image) $(shell pkg-config --libs SDL_net) $(shell pkg-config --libs gl) $(shell pkg-config --libs glu) $(shell pkg-config --libs glew) $(shell pkg-config --libs opencv)
-
 LIBS += -ludev
 
 ## ldd gcs  | grep -v /opt | awk '{print $1}' | xargs -r -l dpkg -S  | cut -d":" -f1 | sort -u | tr  "\n" "," ##
