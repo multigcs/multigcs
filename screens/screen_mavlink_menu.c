@@ -18,7 +18,7 @@ typedef struct {
 int16_t cal_min[8];
 int16_t cal_max[8];
 
-uint8_t mavlink_view_screen = 0;
+int8_t mavlink_view_screen = -1;
 uint8_t mavlink_view_rccal = 0;
 uint8_t acccal_step = 0;
 uint8_t mavlink_channel_select = 0;
@@ -519,14 +519,12 @@ uint8_t mavlink_view_rccal_save (char *name, float x, float y, int8_t button, fl
 }
 
 uint8_t mavlink_view_screen_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	if (data == -1.0) {
-		mavlink_view_screen = 0;
-	} else if (button == 4) {
+	if (button == 4) {
 		mavlink_view_screen++;
 	} else if (button == 5) {
 		mavlink_view_screen--;
 	} else {
-		mavlink_view_screen++;
+		mavlink_view_screen = (int8_t)data;
 	}
 	reset_buttons();
 	return 0;
@@ -996,7 +994,7 @@ void screen_mavlink_menu (ESContext *esContext) {
 	int8_t flag2 = 0;
 	static char main_groups[MAVLINK_PARAMETER_MAX][1024];
 
-	draw_text_button(esContext, "ml_screen", VIEW_MODE_FCMENU, "[SCREEN]", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, 1, 0, mavlink_view_screen_change, 0.0);
+	draw_text_button(esContext, "ml_screen", VIEW_MODE_FCMENU, "[MAIN]", FONT_WHITE, 0.0, 0.9, 0.002, 0.06, 1, 0, mavlink_view_screen_change, -1.0);
 
 	if (param_menu == -1 && bits_menu == -1 && option_menu == -1) {
 		if (mavlink_view_screen == 1) {
@@ -1025,6 +1023,29 @@ void screen_mavlink_menu (ESContext *esContext) {
 			return;
 		} else if (mavlink_view_screen == 9) {
 			screen_mavlink_camrelay(esContext);
+			return;
+		} else if (mavlink_view_screen == -1) {
+			draw_title(esContext, "Mavlink");
+			draw_text_button(esContext, "mlscreen1", VIEW_MODE_FCMENU, "Stabilize-P", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(1));
+			row++;
+			draw_text_button(esContext, "mlscreen2", VIEW_MODE_FCMENU, "Rate-PID", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(2));
+			row++;
+			draw_text_button(esContext, "mlscreen3", VIEW_MODE_FCMENU, "Loiter-PID", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(3));
+			row++;
+			draw_text_button(esContext, "mlscreen4", VIEW_MODE_FCMENU, "Trottle/Alt-PID", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(4));
+			row++;
+			draw_text_button(esContext, "mlscreen5", VIEW_MODE_FCMENU, "Flightmodes", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(5));
+			row++;
+			draw_text_button(esContext, "mlscreen6", VIEW_MODE_FCMENU, "RC-Calibration", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(6));
+			row++;
+			draw_text_button(esContext, "mlscreen7", VIEW_MODE_FCMENU, "Compass-Calibration", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(7));
+			row++;
+			draw_text_button(esContext, "mlscreen8", VIEW_MODE_FCMENU, "ACC-Calibration", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(8));
+			row++;
+			draw_text_button(esContext, "mlscreen9", VIEW_MODE_FCMENU, "Camera/Gimbal/Relay", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(9));
+			row++;
+			draw_text_button(esContext, "mlscreen0", VIEW_MODE_FCMENU, "All-Parameters", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(0));
+			row++;
 			return;
 		} else {
 			mavlink_view_screen = 0;
@@ -1071,9 +1092,6 @@ void screen_mavlink_menu (ESContext *esContext) {
 		for (n2 = (int)MavLinkVars[option_menu].min; n2 <= (int)MavLinkVars[option_menu].max; n2++) {
 			tmp_str2[0] = 0;
 			mavlink_meta_get_option(n2, MavLinkVars[option_menu].name, tmp_str2);
-//			if (tmp_str2[0] == 0) {
-//				sprintf(tmp_str2, "%i:???", n2);
-//			}
 			if (tmp_str2[0] != 0) {
 				sprintf(tmp_str, "%3.0i%s", n2, MavLinkVars[option_menu].name);
 				if (n3 > 12) {
@@ -1364,7 +1382,7 @@ void screen_mavlink_menu (ESContext *esContext) {
 
 	draw_text_button(esContext, "load", VIEW_MODE_FCMENU, "[LOAD FILE]", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 1, 0, mavlink_param_load, 1.0);
 	draw_text_button(esContext, "save", VIEW_MODE_FCMENU, "[SAVE FILE]", FONT_WHITE, -0.5, 0.9, 0.002, 0.06, 1, 0, mavlink_param_save, 1.0);
-	draw_text_button(esContext, "upload", VIEW_MODE_FCMENU, "[UPLOAD ALL]", FONT_WHITE, 0.0, 0.9, 0.002, 0.06, 1, 0, mavlink_param_upload_all, 1.0);
+	draw_text_button(esContext, "upload", VIEW_MODE_FCMENU, "[UPLOAD ALL]", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, 1, 0, mavlink_param_upload_all, 1.0);
 	if (ModelData.teletype != TELETYPE_ARDUPILOT && ModelData.teletype != TELETYPE_MEGAPIRATE_NG) {
 		draw_text_button(esContext, "flash_r", VIEW_MODE_FCMENU, "[LOAD FLASH]", FONT_WHITE, 0.5, 0.9, 0.002, 0.06, 1, 0, mavlink_flashload, 0.0);
 		draw_text_button(esContext, "flash_w", VIEW_MODE_FCMENU, "[WRITE FLASH]", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, 1, 0, mavlink_flash, 0.0);
