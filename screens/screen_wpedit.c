@@ -98,6 +98,8 @@ uint8_t wpedit_waypoint_type_select (char *name, float x, float y, int8_t button
 	} else if (strcmp(WayPoints[waypoint_active].command, "SET_ROI") == 0) {
 		strcpy(WayPoints[waypoint_active].command, "SHUTTER");
 	} else if (strcmp(WayPoints[waypoint_active].command, "SHUTTER") == 0) {
+		strcpy(WayPoints[waypoint_active].command, "SHUTTER_INT");
+	} else if (strcmp(WayPoints[waypoint_active].command, "SHUTTER_INT") == 0) {
 		strcpy(WayPoints[waypoint_active].command, "RELAY");
 	} else if (strcmp(WayPoints[waypoint_active].command, "RELAY") == 0) {
 		strcpy(WayPoints[waypoint_active].command, "RELAY_REP");
@@ -246,6 +248,18 @@ void screen_wpedit (ESContext *esContext) {
 			draw_text_button(esContext, "wpedit_pitch-", VIEW_MODE_WPEDIT, "[-]", FONT_GREEN, 0.8, -0.9 + (n_y * step_y), 0.002, 0.1, ALIGN_LEFT, ALIGN_TOP, wpedit_waypoint_param2_set, -1.0);
 			draw_text_button(esContext, "wpedit_pitch+", VIEW_MODE_WPEDIT, "[+]", FONT_GREEN, 1.2, -0.9 + (n_y * step_y), 0.002, 0.1, ALIGN_RIGHT, ALIGN_TOP, wpedit_waypoint_param2_set, 1.0);
 			n_y++;
+		} else if (strcmp(WayPoints[waypoint_active].command, "SHUTTER_INT") == 0) {
+			if (WayPoints[waypoint_active].param1 > 1000) {
+				WayPoints[waypoint_active].param1 = 1000;
+			}
+			if (WayPoints[waypoint_active].param1 < 1) {
+				WayPoints[waypoint_active].param1 = 1;
+			}
+			sprintf(tmp_str, "Dist : %0.0fm", WayPoints[waypoint_active].param1);
+			draw_text_f3(esContext, -1.1, -0.9 + (n_y * step_y), 0.0025, 0.1, 0.1, FONT_GREEN, tmp_str);
+			draw_text_button(esContext, "wpedit_pitch-", VIEW_MODE_WPEDIT, "[-]", FONT_GREEN, 0.8, -0.9 + (n_y * step_y), 0.002, 0.1, ALIGN_LEFT, ALIGN_TOP, wpedit_waypoint_param1_set, -1.0);
+			draw_text_button(esContext, "wpedit_pitch+", VIEW_MODE_WPEDIT, "[+]", FONT_GREEN, 1.2, -0.9 + (n_y * step_y), 0.002, 0.1, ALIGN_RIGHT, ALIGN_TOP, wpedit_waypoint_param1_set, 1.0);
+			n_y++;
 		} else if (strcmp(WayPoints[waypoint_active].command, "RELAY") == 0) {
 			if (WayPoints[waypoint_active].param1 > 1) {
 				WayPoints[waypoint_active].param1 = 1;
@@ -279,14 +293,14 @@ void screen_wpedit (ESContext *esContext) {
 			if (WayPoints[waypoint_active].param2 > 3600) {
 				WayPoints[waypoint_active].param2 = 3600;
 			}
-			if (WayPoints[waypoint_active].param2 < 1) {
-				WayPoints[waypoint_active].param2 = 1;
+			if (WayPoints[waypoint_active].param2 < 0) {
+				WayPoints[waypoint_active].param2 = 0;
 			}
 			if (WayPoints[waypoint_active].param3 > 60) {
 				WayPoints[waypoint_active].param3 = 60;
 			}
-			if (WayPoints[waypoint_active].param3 < 1) {
-				WayPoints[waypoint_active].param3 = 1;
+			if (WayPoints[waypoint_active].param3 < 0) {
+				WayPoints[waypoint_active].param3 = 0;
 			}
 			sprintf(tmp_str, "RELAY-Num : %0.0f", WayPoints[waypoint_active].param1);
 			draw_text_f3(esContext, -1.1, -0.9 + (n_y * step_y), 0.0025, 0.1, 0.1, FONT_GREEN, tmp_str);
@@ -342,14 +356,14 @@ void screen_wpedit (ESContext *esContext) {
 			if (WayPoints[waypoint_active].param3 > 60) {
 				WayPoints[waypoint_active].param3 = 60;
 			}
-			if (WayPoints[waypoint_active].param3 < 1) {
-				WayPoints[waypoint_active].param3 = 1;
+			if (WayPoints[waypoint_active].param3 < 0) {
+				WayPoints[waypoint_active].param3 = 0;
 			}
 			if (WayPoints[waypoint_active].param4 > 60) {
 				WayPoints[waypoint_active].param4 = 60;
 			}
-			if (WayPoints[waypoint_active].param4 < 1) {
-				WayPoints[waypoint_active].param4 = 1;
+			if (WayPoints[waypoint_active].param4 < 0) {
+				WayPoints[waypoint_active].param4 = 0;
 			}
 			sprintf(tmp_str, "Servo-Num : %0.0f", WayPoints[waypoint_active].param1);
 			draw_text_f3(esContext, -1.1, -0.9 + (n_y * step_y), 0.0025, 0.1, 0.1, FONT_GREEN, tmp_str);
