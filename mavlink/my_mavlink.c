@@ -532,6 +532,21 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 			} else if (strcmp(WayPoints[id2 + 1].command, "SHUTTER") == 0) {
 				SDL_Log("mavlink: Type: MAV_CMD_DO_DIGICAM_CONTROL\n");
 				type = MAV_CMD_DO_DIGICAM_CONTROL;
+			} else if (strcmp(WayPoints[id2 + 1].command, "SHUTTER_INT") == 0) {
+				SDL_Log("mavlink: Type: MAV_CMD_DO_SET_CAM_TRIGG_DIST\n");
+				type = MAV_CMD_DO_SET_CAM_TRIGG_DIST;
+			} else if (strcmp(WayPoints[id2 + 1].command, "RELAY") == 0) {
+				SDL_Log("mavlink: Type: MAV_CMD_DO_SET_RELAY\n");
+				type = MAV_CMD_DO_SET_RELAY;
+			} else if (strcmp(WayPoints[id2 + 1].command, "RELAY_REP") == 0) {
+				SDL_Log("mavlink: Type: MAV_CMD_DO_REPEAT_RELAY\n");
+				type = MAV_CMD_DO_REPEAT_RELAY;
+			} else if (strcmp(WayPoints[id2 + 1].command, "SERVO") == 0) {
+				SDL_Log("mavlink: Type: MAV_CMD_DO_SET_SERVO\n");
+				type = MAV_CMD_DO_SET_SERVO;
+			} else if (strcmp(WayPoints[id2 + 1].command, "SERVO_REP") == 0) {
+				SDL_Log("mavlink: Type: MAV_CMD_DO_REPEAT_SERVO\n");
+				type = MAV_CMD_DO_REPEAT_SERVO;
 			} else if (strcmp(WayPoints[id2 + 1].command, "SET_ROI") == 0) {
 				SDL_Log("mavlink: Type: MAV_CMD_NAV_ROI\n");
 				type = MAV_CMD_NAV_ROI;
@@ -649,8 +664,28 @@ uint8_t autocontinue; ///< autocontinue to next wp
 					strcpy(WayPoints[1 + packet.seq].command, "TAKEOFF");
 					break;
 				}
-				case MAVLINK_MSG_ID_DIGICAM_CONTROL: {
+				case MAV_CMD_DO_DIGICAM_CONTROL: {
 					strcpy(WayPoints[1 + packet.seq].command, "SHUTTER");
+					break;
+				}
+				case MAV_CMD_DO_SET_CAM_TRIGG_DIST: {
+					strcpy(WayPoints[1 + packet.seq].command, "SHUTTER_INT");
+					break;
+				}
+				case MAV_CMD_DO_SET_RELAY: {
+					strcpy(WayPoints[1 + packet.seq].command, "RELAY");
+					break;
+				}
+				case MAV_CMD_DO_REPEAT_RELAY: {
+					strcpy(WayPoints[1 + packet.seq].command, "RELAY_REP");
+					break;
+				}
+				case MAV_CMD_DO_SET_SERVO: {
+					strcpy(WayPoints[1 + packet.seq].command, "SERVO");
+					break;
+				}
+				case MAV_CMD_DO_REPEAT_SERVO: {
+					strcpy(WayPoints[1 + packet.seq].command, "SERVO_REP");
 					break;
 				}
 				case MAV_CMD_NAV_ROI: {

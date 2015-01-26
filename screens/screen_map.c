@@ -47,20 +47,10 @@ uint8_t map_cmd_set = 0;
 float alt_profile_scale_h = 512.0;
 float alt_profile_scale_w = 1024.0;
 
-uint8_t cam_mode = 1; // 0 = cam, 1 = fixed distance
-float cam_angle = 0.0;
-float cam_grid_x = 20.0; // abstand in metern
-float cam_grid_y = 20.0; // abstand in metern
-float cam_film_width = 36.0;  // 35 mm standard film
-float cam_film_height = 24.0; // 35 mm standard film
-float cam_sensor_mult = 1.62; // Formatfaktor / APS-C-Sensor (Canon)
-float cam_lense = 20.0; // Brennweite in mm
-float img_overlap = 1.2;
-float img_alt = 30.0;
-uint8_t img_alt_abs = 0;
 uint8_t map_show_fov = 0;
 uint8_t map_show_cam_setup = 0;
 uint8_t map_show_profile = 0;
+Survey SurveySetup;
 
 
 //#define HTTP_USE_WGET 1
@@ -1017,7 +1007,7 @@ void draw_fov (ESContext *esContext, float p_lat, float p_long, float p_alt, flo
 	float dist = p_alt - pos_alt; // Abstand in Metern
 	float h = 0.0;
 	float w = 0.0;
-	calc_fov(cam_film_width, cam_film_height, cam_sensor_mult, cam_lense, dist, &w, &h);
+	calc_fov(SurveySetup.film_width, SurveySetup.film_height, SurveySetup.sensor_mult, SurveySetup.lense, dist, &w, &h);
 	int mp_x = long2x(p_long, lon, zoom);
 	int mp_y = lat2y(p_lat, lat, zoom);
 	float mx = ((float)mp_x) / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
@@ -1050,27 +1040,27 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 	fprintf(kmlout, "  <Document>\n");
 	fprintf(kmlout, "    <name>Mission</name>\n");
 	fprintf(kmlout, "    <description>MultiGCS - Mission\n");
-	if (cam_mode == 1) {
-		fprintf(kmlout, "    grid_x: %0.0f m\n", cam_grid_x);
-		fprintf(kmlout, "    grid_y: %0.0f m\n", cam_grid_y);
-		if (img_alt_abs == 1) {
-			fprintf(kmlout, "    Alt: %0.2fm ABS\n", img_alt);
+	if (SurveySetup.mode == 1) {
+		fprintf(kmlout, "    grid_x: %0.0f m\n", SurveySetup.grid_x);
+		fprintf(kmlout, "    grid_y: %0.0f m\n", SurveySetup.grid_y);
+		if (SurveySetup.alt_abs == 1) {
+			fprintf(kmlout, "    Alt: %0.2fm ABS\n", SurveySetup.alt);
 		} else {
-			fprintf(kmlout, "    Alt: %0.2fm REL\n", img_alt);
+			fprintf(kmlout, "    Alt: %0.2fm REL\n", SurveySetup.alt);
 		}
 	} else {
-		fprintf(kmlout, "    focal length: %0.0f mm\n", cam_lense);
-		fprintf(kmlout, "    Film-Width: %0.0f mm\n", cam_film_width);
-		fprintf(kmlout, "    Film-Height: %0.0f mm\n", cam_film_height);
-		fprintf(kmlout, "    Sensor-Mult.: %0.2fx\n", cam_sensor_mult);
-		fprintf(kmlout, "    Overlap: %0.2f\n", img_overlap);
-		if (img_alt_abs == 1) {
-			fprintf(kmlout, "    Alt: %0.2fm ABS\n", img_alt);
+		fprintf(kmlout, "    focal length: %0.0f mm\n", SurveySetup.lense);
+		fprintf(kmlout, "    Film-Width: %0.0f mm\n", SurveySetup.film_width);
+		fprintf(kmlout, "    Film-Height: %0.0f mm\n", SurveySetup.film_height);
+		fprintf(kmlout, "    Sensor-Mult.: %0.2fx\n", SurveySetup.sensor_mult);
+		fprintf(kmlout, "    Overlap: %0.2f\n", SurveySetup.overlap);
+		if (SurveySetup.alt_abs == 1) {
+			fprintf(kmlout, "    Alt: %0.2fm ABS\n", SurveySetup.alt);
 		} else {
-			fprintf(kmlout, "    Alt: %0.2fm REL\n", img_alt);
+			fprintf(kmlout, "    Alt: %0.2fm REL\n", SurveySetup.alt);
 		}
 	}
-	fprintf(kmlout, "    Angle: %0.1f\n", cam_angle);
+	fprintf(kmlout, "    Angle: %0.1f\n", SurveySetup.angle);
 	fprintf(kmlout, "    </description>\n");
 	fprintf(kmlout, "    <Style id=\"yellowLineGreenPoly\">\n");
 	fprintf(kmlout, "      <LineStyle>\n");
@@ -1093,27 +1083,27 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 	fprintf(kmlout, "    <Placemark>\n");
 	fprintf(kmlout, "      <name>Outline</name>\n");
 	fprintf(kmlout, "    <ExtendedData>\n");
-	if (cam_mode == 1) {
-		fprintf(kmlout, "    <Data name=\"grid_x\"><value>%0.0f m</value></Data>\n", cam_grid_x);
-		fprintf(kmlout, "    <Data name=\"grid_y\"><value>%0.0f m</value></Data>\n", cam_grid_y);
-		if (img_alt_abs == 1) {
-			fprintf(kmlout, "    <Data name=\"Alt\"><value>%0.2fm ABS</value></Data>\n", img_alt);
+	if (SurveySetup.mode == 1) {
+		fprintf(kmlout, "    <Data name=\"grid_x\"><value>%0.0f m</value></Data>\n", SurveySetup.grid_x);
+		fprintf(kmlout, "    <Data name=\"grid_y\"><value>%0.0f m</value></Data>\n", SurveySetup.grid_y);
+		if (SurveySetup.alt_abs == 1) {
+			fprintf(kmlout, "    <Data name=\"Alt\"><value>%0.2fm ABS</value></Data>\n", SurveySetup.alt);
 		} else {
-			fprintf(kmlout, "    <Data name=\"Alt\"><value>%0.2fm REL</value></Data>\n", img_alt);
+			fprintf(kmlout, "    <Data name=\"Alt\"><value>%0.2fm REL</value></Data>\n", SurveySetup.alt);
 		}
 	} else {
-		fprintf(kmlout, "    <Data name=\"focal length\"><value>%0.0f mm</value></Data>\n", cam_lense);
-		fprintf(kmlout, "    <Data name=\"Film-Width\"><value>%0.0f mm</value></Data>\n", cam_film_width);
-		fprintf(kmlout, "    <Data name=\"Film-Height\"><value>%0.0f mm</value></Data>\n", cam_film_height);
-		fprintf(kmlout, "    <Data name=\"Sensor-Mult.\"><value>%0.2fx</value></Data>\n", cam_sensor_mult);
-		fprintf(kmlout, "    <Data name=\"Overlap\"><value>%0.2f</value></Data>\n", img_overlap);
-		if (img_alt_abs == 1) {
-			fprintf(kmlout, "    <Data name=\"Alt\"><value>%0.2fm ABS</value></Data>\n", img_alt);
+		fprintf(kmlout, "    <Data name=\"focal length\"><value>%0.0f mm</value></Data>\n", SurveySetup.lense);
+		fprintf(kmlout, "    <Data name=\"Film-Width\"><value>%0.0f mm</value></Data>\n", SurveySetup.film_width);
+		fprintf(kmlout, "    <Data name=\"Film-Height\"><value>%0.0f mm</value></Data>\n", SurveySetup.film_height);
+		fprintf(kmlout, "    <Data name=\"Sensor-Mult.\"><value>%0.2fx</value></Data>\n", SurveySetup.sensor_mult);
+		fprintf(kmlout, "    <Data name=\"Overlap\"><value>%0.2f</value></Data>\n", SurveySetup.overlap);
+		if (SurveySetup.alt_abs == 1) {
+			fprintf(kmlout, "    <Data name=\"Alt\"><value>%0.2fm ABS</value></Data>\n", SurveySetup.alt);
 		} else {
-			fprintf(kmlout, "    <Data name=\"Alt\"><value>%0.2fm REL</value></Data>\n", img_alt);
+			fprintf(kmlout, "    <Data name=\"Alt\"><value>%0.2fm REL</value></Data>\n", SurveySetup.alt);
 		}
 	}
-	fprintf(kmlout, "    <Data name=\"Angle\"><value>%0.1f</value></Data>\n", cam_angle);
+	fprintf(kmlout, "    <Data name=\"Angle\"><value>%0.1f</value></Data>\n", SurveySetup.angle);
 	fprintf(kmlout, "    </ExtendedData>\n");
 	fprintf(kmlout, "      <styleUrl>#redLineGreenPoly</styleUrl>\n");
 	fprintf(kmlout, "      <LineString>\n");
@@ -1156,47 +1146,47 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 	float dist = 0.0;
 	float grid_x = 0.0;
 	float grid_y = 0.0;
-	if (img_alt_abs == 1) {
-		dist = img_alt - pos_alt_max;
+	if (SurveySetup.alt_abs == 1) {
+		dist = SurveySetup.alt - pos_alt_max;
 	} else {
-		dist = img_alt;
+		dist = SurveySetup.alt;
 	}
 	if (dist < 1.0) {
 		dist = 1.0;
 	}
-	if (cam_mode == 1) {
-		grid_x = cam_grid_x / mpp;
-		grid_y = cam_grid_y / mpp;
+	if (SurveySetup.mode == 1) {
+		grid_x = SurveySetup.grid_x / mpp;
+		grid_y = SurveySetup.grid_y / mpp;
 	} else {
-		calc_fov(cam_film_width, cam_film_height, cam_sensor_mult, cam_lense, dist, &w, &h);
-		grid_x = w / mpp / img_overlap;
-		grid_y = h / mpp / img_overlap;
+		calc_fov(SurveySetup.film_width, SurveySetup.film_height, SurveySetup.sensor_mult, SurveySetup.lense, dist, &w, &h);
+		grid_x = w / mpp / SurveySetup.overlap;
+		grid_y = h / mpp / SurveySetup.overlap;
 	}
 
 	fprintf(kmlout, "    <Placemark>\n");
 	fprintf(kmlout, "      <name>Route</name>\n");
 	fprintf(kmlout, "    <ExtendedData>\n");
-	if (cam_mode == 1) {
-		fprintf(kmlout, "    <Data name=\"grid_x\"><value>%0.0f m</value></Data>\n", cam_grid_x);
-		fprintf(kmlout, "    <Data name=\"grid_y\"><value>%0.0f m</value></Data>\n", cam_grid_y);
-		if (img_alt_abs == 1) {
-			fprintf(kmlout, "    <Data name=\"Alt\"><value>%0.2fm ABS</value></Data>\n", img_alt);
+	if (SurveySetup.mode == 1) {
+		fprintf(kmlout, "    <Data name=\"grid_x\"><value>%0.0f m</value></Data>\n", SurveySetup.grid_x);
+		fprintf(kmlout, "    <Data name=\"grid_y\"><value>%0.0f m</value></Data>\n", SurveySetup.grid_y);
+		if (SurveySetup.alt_abs == 1) {
+			fprintf(kmlout, "    <Data name=\"Alt\"><value>%0.2fm ABS</value></Data>\n", SurveySetup.alt);
 		} else {
-			fprintf(kmlout, "    <Data name=\"Alt\"><value>%0.2fm REL</value></Data>\n", img_alt);
+			fprintf(kmlout, "    <Data name=\"Alt\"><value>%0.2fm REL</value></Data>\n", SurveySetup.alt);
 		}
 	} else {
-		fprintf(kmlout, "    <Data name=\"focal length\"><value>%0.0f mm</value></Data>\n", cam_lense);
-		fprintf(kmlout, "    <Data name=\"Film-Width\"><value>%0.0f mm</value></Data>\n", cam_film_width);
-		fprintf(kmlout, "    <Data name=\"Film-Height\"><value>%0.0f mm</value></Data>\n", cam_film_height);
-		fprintf(kmlout, "    <Data name=\"Sensor-Mult.\"><value>%0.2fx</value></Data>\n", cam_sensor_mult);
-		fprintf(kmlout, "    <Data name=\"Overlap\"><value>%0.2f</value></Data>\n", img_overlap);
-		if (img_alt_abs == 1) {
-			fprintf(kmlout, "    <Data name=\"Alt\"><value>%0.2fm ABS</value></Data>\n", img_alt);
+		fprintf(kmlout, "    <Data name=\"focal length\"><value>%0.0f mm</value></Data>\n", SurveySetup.lense);
+		fprintf(kmlout, "    <Data name=\"Film-Width\"><value>%0.0f mm</value></Data>\n", SurveySetup.film_width);
+		fprintf(kmlout, "    <Data name=\"Film-Height\"><value>%0.0f mm</value></Data>\n", SurveySetup.film_height);
+		fprintf(kmlout, "    <Data name=\"Sensor-Mult.\"><value>%0.2fx</value></Data>\n", SurveySetup.sensor_mult);
+		fprintf(kmlout, "    <Data name=\"Overlap\"><value>%0.2f</value></Data>\n", SurveySetup.overlap);
+		if (SurveySetup.alt_abs == 1) {
+			fprintf(kmlout, "    <Data name=\"Alt\"><value>%0.2fm ABS</value></Data>\n", SurveySetup.alt);
 		} else {
-			fprintf(kmlout, "    <Data name=\"Alt\"><value>%0.2fm REL</value></Data>\n", img_alt);
+			fprintf(kmlout, "    <Data name=\"Alt\"><value>%0.2fm REL</value></Data>\n", SurveySetup.alt);
 		}
 	}
-	fprintf(kmlout, "    <Data name=\"Angle\"><value>%0.1f</value></Data>\n", cam_angle);
+	fprintf(kmlout, "    <Data name=\"Angle\"><value>%0.1f</value></Data>\n", SurveySetup.angle);
 	fprintf(kmlout, "    </ExtendedData>\n");
 	fprintf(kmlout, "      <styleUrl>#yellowLineGreenPoly</styleUrl>\n");
 	fprintf(kmlout, "      <LineString>\n");
@@ -1213,47 +1203,47 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 	if (max_w < max_x - min_x) {
 		max_w = max_x - min_x;
 	}
-	float ltx = center_x + cos((45.0 + 180.0 + cam_angle) * DEG2RAD) * max_w;
-	float lty = center_y + sin((45.0 + 180.0 + cam_angle) * DEG2RAD) * max_w;
+	float ltx = center_x + cos((45.0 + 180.0 + SurveySetup.angle) * DEG2RAD) * max_w;
+	float lty = center_y + sin((45.0 + 180.0 + SurveySetup.angle) * DEG2RAD) * max_w;
 	for (n_y = 0.0; n_y <= max_w * 1.5; n_y += grid_y) {
-		float lnx = ltx + cos((cam_angle + 90.0) * DEG2RAD) * n_y;
-		float lny = lty + sin((cam_angle + 90.0) * DEG2RAD) * n_y;
+		float lnx = ltx + cos((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
+		float lny = lty + sin((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
 		for (n_x = 0; n_x < max_w * 1.5; n_x += grid_x) {
-			float nx = lnx + cos((cam_angle) * DEG2RAD) * n_x;
-			float ny = lny + sin((cam_angle) * DEG2RAD) * n_x;
+			float nx = lnx + cos((SurveySetup.angle) * DEG2RAD) * n_x;
+			float ny = lny + sin((SurveySetup.angle) * DEG2RAD) * n_x;
 			if (point_in_poly(nx, ny) == 0) {
 				continue;
 			}
 			float np_long = x2long(nx, lon, mapdata->zoom);
 			float np_lat = y2lat(ny, lat, mapdata->zoom);
 			float pos_alt = get_altitude(np_lat, np_long);
-			float alt = img_alt + pos_alt;
-			if (img_alt_abs == 1) {
-				if (img_alt < pos_alt + 1.0) {
-					img_alt = pos_alt + 1.0;
+			float alt = SurveySetup.alt + pos_alt;
+			if (SurveySetup.alt_abs == 1) {
+				if (SurveySetup.alt < pos_alt + 1.0) {
+					SurveySetup.alt = pos_alt + 1.0;
 				}
-				alt = img_alt;
+				alt = SurveySetup.alt;
 			}
 			fprintf(kmlout, "          %f,%f,%f\n", np_long, np_lat, alt);
 		}
 		n_y += grid_y;
-		lnx = ltx + cos((cam_angle + 90.0) * DEG2RAD) * n_y;
-		lny = lty + sin((cam_angle + 90.0) * DEG2RAD) * n_y;
+		lnx = ltx + cos((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
+		lny = lty + sin((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
 		for (n_x = n_x - grid_x; n_x > -grid_x; n_x -= grid_x) {
-			float nx = lnx + cos((cam_angle) * DEG2RAD) * n_x;
-			float ny = lny + sin((cam_angle) * DEG2RAD) * n_x;
+			float nx = lnx + cos((SurveySetup.angle) * DEG2RAD) * n_x;
+			float ny = lny + sin((SurveySetup.angle) * DEG2RAD) * n_x;
 			if (point_in_poly(nx, ny) == 0) {
 				continue;
 			}
 			float np_long = x2long(nx, lon, mapdata->zoom);
 			float np_lat = y2lat(ny, lat, mapdata->zoom);
 			float pos_alt = get_altitude(np_lat, np_long);
-			float alt = img_alt + pos_alt;
-			if (img_alt_abs == 1) {
-				if (img_alt < pos_alt + 1.0) {
-					img_alt = pos_alt + 1.0;
+			float alt = SurveySetup.alt + pos_alt;
+			if (SurveySetup.alt_abs == 1) {
+				if (SurveySetup.alt < pos_alt + 1.0) {
+					SurveySetup.alt = pos_alt + 1.0;
 				}
-				alt = img_alt;
+				alt = SurveySetup.alt;
 			}
 			fprintf(kmlout, "          %f,%f,%f\n", np_long, np_lat, alt);
 		}
@@ -1263,23 +1253,23 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 	fprintf(kmlout, "    </Placemark>\n");
 	int mark_n = 0;
 	for (n_y = 0.0; n_y <= max_w * 1.5; n_y += grid_y) {
-		float lnx = ltx + cos((cam_angle + 90.0) * DEG2RAD) * n_y;
-		float lny = lty + sin((cam_angle + 90.0) * DEG2RAD) * n_y;
+		float lnx = ltx + cos((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
+		float lny = lty + sin((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
 		for (n_x = 0; n_x < max_w * 1.5; n_x += grid_x) {
-			float nx = lnx + cos((cam_angle) * DEG2RAD) * n_x;
-			float ny = lny + sin((cam_angle) * DEG2RAD) * n_x;
+			float nx = lnx + cos((SurveySetup.angle) * DEG2RAD) * n_x;
+			float ny = lny + sin((SurveySetup.angle) * DEG2RAD) * n_x;
 			if (point_in_poly(nx, ny) == 0) {
 				continue;
 			}
 			float np_long = x2long(nx, lon, mapdata->zoom);
 			float np_lat = y2lat(ny, lat, mapdata->zoom);
 			float pos_alt = get_altitude(np_lat, np_long);
-			float alt = img_alt + pos_alt;
-			if (img_alt_abs == 1) {
-				if (img_alt < pos_alt + 1.0) {
-					img_alt = pos_alt + 1.0;
+			float alt = SurveySetup.alt + pos_alt;
+			if (SurveySetup.alt_abs == 1) {
+				if (SurveySetup.alt < pos_alt + 1.0) {
+					SurveySetup.alt = pos_alt + 1.0;
 				}
-				alt = img_alt;
+				alt = SurveySetup.alt;
 			}
 			fprintf(kmlout, "    <Placemark>\n");
 			fprintf(kmlout, "      <name>WP: %i</name>\n", mark_n);
@@ -1290,23 +1280,23 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 			fprintf(kmlout, "    </Placemark>\n");
 		}
 		n_y += grid_y;
-		lnx = ltx + cos((cam_angle + 90.0) * DEG2RAD) * n_y;
-		lny = lty + sin((cam_angle + 90.0) * DEG2RAD) * n_y;
+		lnx = ltx + cos((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
+		lny = lty + sin((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
 		for (n_x = n_x - grid_x; n_x > -grid_x; n_x -= grid_x) {
-			float nx = lnx + cos((cam_angle) * DEG2RAD) * n_x;
-			float ny = lny + sin((cam_angle) * DEG2RAD) * n_x;
+			float nx = lnx + cos((SurveySetup.angle) * DEG2RAD) * n_x;
+			float ny = lny + sin((SurveySetup.angle) * DEG2RAD) * n_x;
 			if (point_in_poly(nx, ny) == 0) {
 				continue;
 			}
 			float np_long = x2long(nx, lon, mapdata->zoom);
 			float np_lat = y2lat(ny, lat, mapdata->zoom);
 			float pos_alt = get_altitude(np_lat, np_long);
-			float alt = img_alt + pos_alt;
-			if (img_alt_abs == 1) {
-				if (img_alt < pos_alt + 1.0) {
-					img_alt = pos_alt + 1.0;
+			float alt = SurveySetup.alt + pos_alt;
+			if (SurveySetup.alt_abs == 1) {
+				if (SurveySetup.alt < pos_alt + 1.0) {
+					SurveySetup.alt = pos_alt + 1.0;
 				}
-				alt = img_alt;
+				alt = SurveySetup.alt;
 			}
 			fprintf(kmlout, "    <Placemark>\n");
 			fprintf(kmlout, "      <name>WP: %i</name>\n", mark_n);
@@ -1325,98 +1315,129 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 
 uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (strncmp(name, "cam_lense_", 10) == 0) {
-		cam_lense = atof(name + 10);
+		SurveySetup.lense = atof(name + 10);
+	} else if (strcmp(name, "SurveySetup.options") == 0) {
+		SurveySetup.options = 1 - SurveySetup.options;
+	} else if (strcmp(name, "SurveySetup.type") == 0) {
+		SurveySetup.type++;
+		if (SurveySetup.type > 2) {
+			SurveySetup.type = 0;
+		}
+	} else if (strcmp(name, "SurveySetup.pos") == 0) {
+		if (button == 4 && SurveySetup.pos < 2000) {
+			SurveySetup.pos += 10.0;
+		} else if (button == 5 && SurveySetup.pos > 1000) {
+			SurveySetup.pos -= 10.0;
+		}
+	} else if (strcmp(name, "SurveySetup.num") == 0) {
+		if (button == 4 && SurveySetup.num < 10) {
+			SurveySetup.num += 1.0;
+		} else if (button == 5 && SurveySetup.num > 1) {
+			SurveySetup.num -= 1.0;
+		}
+	} else if (strcmp(name, "SurveySetup.interval") == 0) {
+		if (button == 4) {
+			SurveySetup.interval += 1.0;
+		} else if (button == 5 && SurveySetup.interval > 1) {
+			SurveySetup.interval -= 1.0;
+		}
+	} else if (strcmp(name, "SurveySetup.triggermode") == 0) {
+		SurveySetup.triggermode++;
+		if (SurveySetup.triggermode > 2) {
+			SurveySetup.triggermode = 0;
+		}
 	} else if (strcmp(name, "cam_del") == 0) {
 		int n = 0;
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
 			PolyPoints[n].p_lat = 0.0;
 			PolyPoints[n].p_long = 0.0;
 		}
-	} else if (strcmp(name, "cam_mode") == 0) {
-		cam_mode = 1 - cam_mode;
-	} else if (strcmp(name, "cam_angle") == 0) {
+	} else if (strcmp(name, "SurveySetup.mode") == 0) {
+		SurveySetup.mode = 1 - SurveySetup.mode;
+		SurveySetup.options = 0;
+	} else if (strcmp(name, "SurveySetup.angle") == 0) {
 		if (button == 4) {
-			if (cam_angle < 359.0) {
-				cam_angle += 1.0;
+			if (SurveySetup.angle < 359.0) {
+				SurveySetup.angle += 1.0;
 			} else {
-				cam_angle = 0.0;
+				SurveySetup.angle = 0.0;
 			}
 		}
 		if (button == 5) {
-			if (cam_angle > 0.0) {
-				cam_angle -= 1.0;
+			if (SurveySetup.angle > 0.0) {
+				SurveySetup.angle -= 1.0;
 			} else {
-				cam_angle = 359.0;
+				SurveySetup.angle = 359.0;
 			}
 		}
-	} else if (strcmp(name, "cam_grid_x") == 0) {
+	} else if (strcmp(name, "SurveySetup.grid_x") == 0) {
 		if (button == 4) {
-			cam_grid_x += 1.0;
+			SurveySetup.grid_x += 1.0;
 		}
 		if (button == 5) {
-			cam_grid_x -= 1.0;
+			SurveySetup.grid_x -= 1.0;
 		}
-		if (cam_grid_x < 1.0) {
-			cam_grid_x = 1.0;
+		if (SurveySetup.grid_x < 1.0) {
+			SurveySetup.grid_x = 1.0;
 		}
-	} else if (strcmp(name, "cam_grid_y") == 0) {
+	} else if (strcmp(name, "SurveySetup.grid_y") == 0) {
 		if (button == 4) {
-			cam_grid_y += 1.0;
+			SurveySetup.grid_y += 1.0;
 		}
 		if (button == 5) {
-			cam_grid_y -= 1.0;
+			SurveySetup.grid_y -= 1.0;
 		}
-		if (cam_grid_y < 1.0) {
-			cam_grid_y = 1.0;
+		if (SurveySetup.grid_y < 1.0) {
+			SurveySetup.grid_y = 1.0;
 		}
-	} else if (strcmp(name, "cam_lense") == 0) {
+	} else if (strcmp(name, "SurveySetup.lense") == 0) {
 		if (button == 4) {
-			cam_lense += 1.0;
+			SurveySetup.lense += 1.0;
 		}
 		if (button == 5) {
-			cam_lense -= 1.0;
+			SurveySetup.lense -= 1.0;
 		}
-	} else if (strcmp(name, "cam_film_width") == 0) {
+	} else if (strcmp(name, "SurveySetup.film_width") == 0) {
 		if (button == 4) {
-			cam_film_width += 1.0;
+			SurveySetup.film_width += 1.0;
 		}
 		if (button == 5) {
-			cam_film_width -= 1.0;
+			SurveySetup.film_width -= 1.0;
 		}
-	} else if (strcmp(name, "cam_film_height") == 0) {
+	} else if (strcmp(name, "SurveySetup.film_height") == 0) {
 		if (button == 4) {
-			cam_film_height += 1.0;
+			SurveySetup.film_height += 1.0;
 		}
 		if (button == 5) {
-			cam_film_height -= 1.0;
+			SurveySetup.film_height -= 1.0;
 		}
-	} else if (strcmp(name, "cam_sensor_mult") == 0) {
+	} else if (strcmp(name, "SurveySetup.sensor_mult") == 0) {
 		if (button == 4) {
-			cam_sensor_mult += 0.01;
+			SurveySetup.sensor_mult += 0.01;
 		}
 		if (button == 5) {
-			cam_sensor_mult -= 0.01;
+			SurveySetup.sensor_mult -= 0.01;
 		}
-	} else if (strcmp(name, "img_overlap") == 0) {
+	} else if (strcmp(name, "SurveySetup.overlap") == 0) {
 		if (button == 4) {
-			img_overlap += 0.01;
+			SurveySetup.overlap += 0.01;
 		}
 		if (button == 5) {
-			img_overlap -= 0.01;
+			SurveySetup.overlap -= 0.01;
 		}
-	} else if (strcmp(name, "img_alt") == 0) {
+	} else if (strcmp(name, "SurveySetup.alt") == 0) {
 		if (button == 4) {
-			img_alt += 1.0;
+			SurveySetup.alt += 1.0;
 		}
 		if (button == 5) {
-			img_alt -= 1.0;
+			SurveySetup.alt -= 1.0;
 		}
-		if (img_alt_abs == 0) {
-			if (img_alt < 1.0) {
-				img_alt = 1.0;
+		if (SurveySetup.alt_abs == 0) {
+			if (SurveySetup.alt < 1.0) {
+				SurveySetup.alt = 1.0;
 			}
 		}
-	} else if (strcmp(name, "img_alt_abs") == 0) {
+	} else if (strcmp(name, "SurveySetup.alt_abs") == 0) {
 		float pos_alt_max = -999999.0;
 		int n = 0;
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
@@ -1427,16 +1448,16 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 				}
 			}
 		}
-		img_alt_abs = 1 - img_alt_abs;
-		if (img_alt_abs == 1) {
-			img_alt += pos_alt_max;
+		SurveySetup.alt_abs = 1 - SurveySetup.alt_abs;
+		if (SurveySetup.alt_abs == 1) {
+			SurveySetup.alt += pos_alt_max;
 		} else {
-			img_alt -= pos_alt_max;
+			SurveySetup.alt -= pos_alt_max;
 		}
 	} else if (strncmp(name, "cam_sensor_", 11) == 0) {
-		cam_film_width = 36.0;
-		cam_film_height = 24.0;
-		cam_sensor_mult = atof(name + 11);
+		SurveySetup.film_width = 36.0;
+		SurveySetup.film_height = 24.0;
+		SurveySetup.sensor_mult = atof(name + 11);
 	} else if (strcmp(name, "cam_setup") == 0) {
 		map_show_cam_setup = 1 - map_show_cam_setup;
 		map_show_poly = 1;
@@ -1486,23 +1507,35 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 		float dist = 0.0;
 		float grid_x = 0.0;
 		float grid_y = 0.0;
-		if (img_alt_abs == 1) {
-			dist = img_alt - pos_alt_max;
+		if (SurveySetup.alt_abs == 1) {
+			dist = SurveySetup.alt - pos_alt_max;
 		} else {
-			dist = img_alt;
+			dist = SurveySetup.alt;
 		}
 		if (dist < 1.0) {
 			dist = 1.0;
 		}
-		if (cam_mode == 1) {
-			grid_x = cam_grid_x / mpp;
-			grid_y = cam_grid_y / mpp;
+		if (SurveySetup.mode == 1) {
+			grid_x = SurveySetup.grid_x / mpp;
+			grid_y = SurveySetup.grid_y / mpp;
 		} else {
-			calc_fov(cam_film_width, cam_film_height, cam_sensor_mult, cam_lense, dist, &w, &h);
-			grid_x = w / mpp / img_overlap;
-			grid_y = h / mpp / img_overlap;
+			calc_fov(SurveySetup.film_width, SurveySetup.film_height, SurveySetup.sensor_mult, SurveySetup.lense, dist, &w, &h);
+			grid_x = w / mpp / SurveySetup.overlap;
+			grid_y = h / mpp / SurveySetup.overlap;
 		}
 		n = 1;
+
+		if (SurveySetup.triggermode == 2) {
+			WayPoints[n].p_lat = 1.0;
+			WayPoints[n].p_long = 0.0;
+			WayPoints[n].p_alt = 0.0;
+			WayPoints[n].frametype = 0;
+			sprintf(WayPoints[n].name, "SHUTTER %im", SurveySetup.interval);
+			strcpy(WayPoints[n].command, "SHUTTER_INT");
+			WayPoints[n].param1 = (float)SurveySetup.interval;
+			n++;
+		}
+
 		float n_x = 0.0;
 		float n_y = 0.0;
 		float center_x = min_x + (max_x - min_x) / 2.0;
@@ -1511,26 +1544,26 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 		if (max_w < max_x - min_x) {
 			max_w = max_x - min_x;
 		}
-		float ltx = center_x + cos((45.0 + 180.0 + cam_angle) * DEG2RAD) * max_w;
-		float lty = center_y + sin((45.0 + 180.0 + cam_angle) * DEG2RAD) * max_w;
+		float ltx = center_x + cos((45.0 + 180.0 + SurveySetup.angle) * DEG2RAD) * max_w;
+		float lty = center_y + sin((45.0 + 180.0 + SurveySetup.angle) * DEG2RAD) * max_w;
 		for (n_y = 0.0; n_y <= max_w * 1.5; n_y += grid_y) {
-			float lnx = ltx + cos((cam_angle + 90.0) * DEG2RAD) * n_y;
-			float lny = lty + sin((cam_angle + 90.0) * DEG2RAD) * n_y;
+			float lnx = ltx + cos((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
+			float lny = lty + sin((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
 			for (n_x = 0; n_x < max_w * 1.5; n_x += grid_x) {
-				float nx = lnx + cos((cam_angle) * DEG2RAD) * n_x;
-				float ny = lny + sin((cam_angle) * DEG2RAD) * n_x;
+				float nx = lnx + cos((SurveySetup.angle) * DEG2RAD) * n_x;
+				float ny = lny + sin((SurveySetup.angle) * DEG2RAD) * n_x;
 				if (point_in_poly(nx, ny) == 0) {
 					continue;
 				}
 				float np_long = x2long(nx, lon, mapdata->zoom);
 				float np_lat = y2lat(ny, lat, mapdata->zoom);
 				float pos_alt = get_altitude(np_lat, np_long);
-				float alt = img_alt + pos_alt;
-				if (img_alt_abs == 1) {
-					if (img_alt < pos_alt + 1.0) {
-						img_alt = pos_alt + 1.0;
+				float alt = SurveySetup.alt + pos_alt;
+				if (SurveySetup.alt_abs == 1) {
+					if (SurveySetup.alt < pos_alt + 1.0) {
+						SurveySetup.alt = pos_alt + 1.0;
 					}
-					alt = img_alt;
+					alt = SurveySetup.alt;
 				}
 				WayPoints[n].p_lat = np_lat;
 				WayPoints[n].p_long = np_long;
@@ -1544,33 +1577,49 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 				sprintf(WayPoints[n].name, "PIC%i", n);
 				strcpy(WayPoints[n].command, "WAYPOINT");
 				n++;
-
-				WayPoints[n].p_lat = 1.0;
-				WayPoints[n].p_long = 0.0;
-				WayPoints[n].p_alt = 0.0;
-				WayPoints[n].frametype = 0;
-				sprintf(WayPoints[n].name, "SHUTTER%i", n);
-				strcpy(WayPoints[n].command, "SHUTTER");
-				n++;
+				if (SurveySetup.triggermode == 1) {
+					WayPoints[n].p_lat = 1.0;
+					WayPoints[n].p_long = 0.0;
+					WayPoints[n].p_alt = 0.0;
+					WayPoints[n].frametype = 0;
+					if (SurveySetup.type == 1) {
+						sprintf(WayPoints[n].name, "RELAY%i", SurveySetup.num);
+						strcpy(WayPoints[n].command, "RELAY_REP");
+						WayPoints[n].param1 = (float)SurveySetup.num;
+						WayPoints[n].param2 = (float)2;
+						WayPoints[n].param3 = (float)1;
+					} else if (SurveySetup.type == 2) {
+						sprintf(WayPoints[n].name, "SERVO%i", SurveySetup.num);
+						strcpy(WayPoints[n].command, "SERVO_REP");
+						WayPoints[n].param1 = (float)SurveySetup.num;
+						WayPoints[n].param2 = (float)SurveySetup.pos;
+						WayPoints[n].param3 = (float)1;
+						WayPoints[n].param4 = (float)500;
+					} else {
+						sprintf(WayPoints[n].name, "SHUTTER%i", n);
+						strcpy(WayPoints[n].command, "SHUTTER");
+					}
+					n++;
+				}
 			}
 			n_y += grid_y;
-			lnx = ltx + cos((cam_angle + 90.0) * DEG2RAD) * n_y;
-			lny = lty + sin((cam_angle + 90.0) * DEG2RAD) * n_y;
+			lnx = ltx + cos((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
+			lny = lty + sin((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
 			for (n_x = n_x - grid_x; n_x > -grid_x; n_x -= grid_x) {
-				float nx = lnx + cos((cam_angle) * DEG2RAD) * n_x;
-				float ny = lny + sin((cam_angle) * DEG2RAD) * n_x;
+				float nx = lnx + cos((SurveySetup.angle) * DEG2RAD) * n_x;
+				float ny = lny + sin((SurveySetup.angle) * DEG2RAD) * n_x;
 				if (point_in_poly(nx, ny) == 0) {
 					continue;
 				}
 				float np_long = x2long(nx, lon, mapdata->zoom);
 				float np_lat = y2lat(ny, lat, mapdata->zoom);
 				float pos_alt = get_altitude(np_lat, np_long);
-				float alt = img_alt + pos_alt;
-				if (img_alt_abs == 1) {
-					if (img_alt < pos_alt + 1.0) {
-						img_alt = pos_alt + 1.0;
+				float alt = SurveySetup.alt + pos_alt;
+				if (SurveySetup.alt_abs == 1) {
+					if (SurveySetup.alt < pos_alt + 1.0) {
+						SurveySetup.alt = pos_alt + 1.0;
 					}
-					alt = img_alt;
+					alt = SurveySetup.alt;
 				}
 				WayPoints[n].p_lat = np_lat;
 				WayPoints[n].p_long = np_long;
@@ -1584,16 +1633,44 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 				sprintf(WayPoints[n].name, "PIC%i", n);
 				strcpy(WayPoints[n].command, "WAYPOINT");
 				n++;
-
-				WayPoints[n].p_lat = 1.0;
-				WayPoints[n].p_long = 0.0;
-				WayPoints[n].p_alt = 0.0;
-				WayPoints[n].frametype = 0;
-				sprintf(WayPoints[n].name, "SHUTTER%i", n);
-				strcpy(WayPoints[n].command, "SHUTTER");
-				n++;
+				if (SurveySetup.triggermode == 1) {
+					WayPoints[n].p_lat = 1.0;
+					WayPoints[n].p_long = 0.0;
+					WayPoints[n].p_alt = 0.0;
+					WayPoints[n].frametype = 0;
+					if (SurveySetup.type == 1) {
+						sprintf(WayPoints[n].name, "RELAY%i", SurveySetup.num);
+						strcpy(WayPoints[n].command, "RELAY_REP");
+						WayPoints[n].param1 = (float)SurveySetup.num;
+						WayPoints[n].param2 = (float)2;
+						WayPoints[n].param3 = (float)1;
+					} else if (SurveySetup.type == 2) {
+						sprintf(WayPoints[n].name, "SERVO%i", SurveySetup.num);
+						strcpy(WayPoints[n].command, "SERVO_REP");
+						WayPoints[n].param1 = (float)SurveySetup.num;
+						WayPoints[n].param2 = (float)SurveySetup.pos;
+						WayPoints[n].param3 = (float)1;
+						WayPoints[n].param4 = (float)500;
+					} else {
+						sprintf(WayPoints[n].name, "SHUTTER%i", n);
+						strcpy(WayPoints[n].command, "SHUTTER");
+					}
+					n++;
+				}
 			}
 		}
+
+		if (SurveySetup.triggermode == 2) {
+			WayPoints[n].p_lat = 1.0;
+			WayPoints[n].p_long = 0.0;
+			WayPoints[n].p_alt = 0.0;
+			WayPoints[n].frametype = 0;
+			sprintf(WayPoints[n].name, "SHUTTER %im", SurveySetup.interval);
+			strcpy(WayPoints[n].command, "SHUTTER_INT");
+			WayPoints[n].param1 = (float)SurveySetup.interval;
+			n++;
+		}
+
 		map_show_poly = 0;
 		map_show_wp = 1;
 	}
@@ -1620,39 +1697,75 @@ void map_draw_cam_setup (ESContext *esContext) {
 	draw_box_f3(esContext, px1, py1, 0.005, px2, py1 + 0.06, 0.005, 255, 255, 255, 127);
 	draw_rect_f3(esContext, px1, py1, 0.005, px2, py1 + 0.06, 0.005, 255, 255, 255, 255);
 	draw_text_button(esContext, "cam_setup_title", setup.view_mode, "Cam-Setup", FONT_GREEN, px1, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
-	draw_text_button(esContext, "cam_mode", setup.view_mode, "[MODE]", FONT_GREEN, px1 + 0.5, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
-	if (cam_mode == 1) {
+	draw_text_button(esContext, "SurveySetup.mode", setup.view_mode, "[MODE]", FONT_GREEN, px1 + 0.5, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+	if (SurveySetup.options == 0) {
+		draw_text_button(esContext, "SurveySetup.options", setup.view_mode, "[TRIGGER]", FONT_WHITE, px1 + 0.8, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+	} else {
+		draw_text_button(esContext, "SurveySetup.options", setup.view_mode, "[TRIGGER]", FONT_GREEN, px1 + 0.8, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+	}
+	if (SurveySetup.options == 1) {
+		draw_text_button(esContext, "trigger_title", setup.view_mode, "Trigger:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		ny++;
+		if (SurveySetup.triggermode == 1) {
+			draw_text_button(esContext, "SurveySetup.triggermode", setup.view_mode, "  Mode: ON EACH WP", FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+			ny++;
+			if (SurveySetup.type == 1) {
+				draw_text_button(esContext, "SurveySetup.type", setup.view_mode, "  Type: RELAY", FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+				ny++;
+				sprintf(tmp_str, "  Relay-Number: %i", SurveySetup.num);
+				draw_text_button(esContext, "SurveySetup.num", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+			} else if (SurveySetup.type == 2) {
+				draw_text_button(esContext, "SurveySetup.type", setup.view_mode, "  Type: SERVO", FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+				ny++;
+				sprintf(tmp_str, "  Servo-Num: %i", SurveySetup.num);
+				draw_text_button(esContext, "SurveySetup.num", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+				ny++;
+				sprintf(tmp_str, "  Servo-Position: %i", SurveySetup.pos);
+				draw_text_button(esContext, "SurveySetup.pos", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+			} else {
+				draw_text_button(esContext, "SurveySetup.type", setup.view_mode, "  Type: SHUTTER", FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+			}
+		} else if (SurveySetup.triggermode == 2) {
+			draw_text_button(esContext, "SurveySetup.triggermode", setup.view_mode, "  Mode: SHUTTER INTERVAL", FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+			ny++;
+			sprintf(tmp_str, "  Interval: %im", SurveySetup.interval);
+			draw_text_button(esContext, "SurveySetup.interval", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		} else {
+			draw_text_button(esContext, "SurveySetup.triggermode", setup.view_mode, "  Mode: NONE", FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		}
+		ny++;
+	} else if (SurveySetup.mode == 1) {
 		// fixed grid
 		draw_text_button(esContext, "cam_grid", setup.view_mode, "Grid:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		ny++;
-		sprintf(tmp_str, "  grid_x: %0.0fm", cam_grid_x);
-		draw_text_button(esContext, "cam_grid_x", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		sprintf(tmp_str, "  grid_x: %0.0fm", SurveySetup.grid_x);
+		draw_text_button(esContext, "SurveySetup.grid_x", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		ny++;
-		sprintf(tmp_str, "  grid_y: %0.0fm", cam_grid_y);
-		draw_text_button(esContext, "cam_grid_y", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		sprintf(tmp_str, "  grid_y: %0.0fm", SurveySetup.grid_y);
+		draw_text_button(esContext, "SurveySetup.grid_y", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		ny++;
 		draw_text_button(esContext, "cam_alt", setup.view_mode, "Misc:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		ny++;
-		sprintf(tmp_str, "  Alt: %0.2f", img_alt);
-		draw_text_button(esContext, "img_alt", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
-		if (img_alt_abs == 1) {
-			draw_text_button(esContext, "img_alt_abs", setup.view_mode, "ABS", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		sprintf(tmp_str, "  Alt: %0.2f", SurveySetup.alt);
+		draw_text_button(esContext, "SurveySetup.alt", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		if (SurveySetup.alt_abs == 1) {
+			draw_text_button(esContext, "SurveySetup.alt_abs", setup.view_mode, "ABS", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		} else {
-			draw_text_button(esContext, "img_alt_abs", setup.view_mode, "REL", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+			draw_text_button(esContext, "SurveySetup.alt_abs", setup.view_mode, "REL", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		}
 		ny++;
-		sprintf(tmp_str, "  Angle: %0.0f", cam_angle);
-		draw_text_button(esContext, "cam_angle", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		sprintf(tmp_str, "  Angle: %0.0f", SurveySetup.angle);
+		draw_text_button(esContext, "SurveySetup.angle", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		ny++;
 	} else {
 		// Lense
-		draw_text_button(esContext, "cam_lense", setup.view_mode, "Lense:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		draw_text_button(esContext, "SurveySetup.lense", setup.view_mode, "Lense:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		draw_text_button(esContext, "cam_lense_20", setup.view_mode, "[20mm]", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
 		draw_text_button(esContext, "cam_lense_50", setup.view_mode, "[50mm]", FONT_GREEN, px1 + 1.1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
 		draw_text_button(esContext, "cam_lense_70", setup.view_mode, "[70mm]", FONT_GREEN, px1 + 1.4, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
 		ny++;
-		sprintf(tmp_str, "  focal length: %0.0fmm", cam_lense);
-		draw_text_button(esContext, "cam_lense", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		sprintf(tmp_str, "  focal length: %0.0fmm", SurveySetup.lense);
+		draw_text_button(esContext, "SurveySetup.lense", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		ny++;
 		// Sensor
 		draw_text_button(esContext, "cam_sensor", setup.view_mode, "Sensor:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
@@ -1660,31 +1773,31 @@ void map_draw_cam_setup (ESContext *esContext) {
 		draw_text_button(esContext, "cam_sensor_1.4", setup.view_mode, "[APS-E]", FONT_GREEN, px1 + 1.1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
 		draw_text_button(esContext, "cam_sensor_1.6", setup.view_mode, "[APS-C]", FONT_GREEN, px1 + 1.4, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
 		ny++;
-		sprintf(tmp_str, "  Film-Width: %0.0fmm", cam_film_width);
-		draw_text_button(esContext, "cam_film_width", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		sprintf(tmp_str, "  Film-Width: %0.0fmm", SurveySetup.film_width);
+		draw_text_button(esContext, "SurveySetup.film_width", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		ny++;
-		sprintf(tmp_str, "  Film-Height: %0.0fmm", cam_film_height);
-		draw_text_button(esContext, "cam_film_height", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		sprintf(tmp_str, "  Film-Height: %0.0fmm", SurveySetup.film_height);
+		draw_text_button(esContext, "SurveySetup.film_height", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		ny++;
-		sprintf(tmp_str, "  Sensor-Mult.: %0.2fx", cam_sensor_mult);
-		draw_text_button(esContext, "cam_sensor_mult", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		sprintf(tmp_str, "  Sensor-Mult.: %0.2fx", SurveySetup.sensor_mult);
+		draw_text_button(esContext, "SurveySetup.sensor_mult", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		ny++;
 		// Overlap/Alt
-		draw_text_button(esContext, "img_overlap", setup.view_mode, "Misc:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		draw_text_button(esContext, "SurveySetup.overlap", setup.view_mode, "Misc:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		ny++;
-		sprintf(tmp_str, "  Overlap: %0.2f", img_overlap);
-		draw_text_button(esContext, "img_overlap", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		sprintf(tmp_str, "  Overlap: %0.2f", SurveySetup.overlap);
+		draw_text_button(esContext, "SurveySetup.overlap", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		ny++;
-		sprintf(tmp_str, "  Alt: %0.2f", img_alt);
-		draw_text_button(esContext, "img_alt", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
-		if (img_alt_abs == 1) {
-			draw_text_button(esContext, "img_alt_abs", setup.view_mode, "ABS", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		sprintf(tmp_str, "  Alt: %0.2f", SurveySetup.alt);
+		draw_text_button(esContext, "SurveySetup.alt", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		if (SurveySetup.alt_abs == 1) {
+			draw_text_button(esContext, "SurveySetup.alt_abs", setup.view_mode, "ABS", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		} else {
-			draw_text_button(esContext, "img_alt_abs", setup.view_mode, "REL", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+			draw_text_button(esContext, "SurveySetup.alt_abs", setup.view_mode, "REL", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		}
 		ny++;
-		sprintf(tmp_str, "  Angle: %0.0f", cam_angle);
-		draw_text_button(esContext, "cam_angle", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		sprintf(tmp_str, "  Angle: %0.0f", SurveySetup.angle);
+		draw_text_button(esContext, "SurveySetup.angle", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		ny++;
 	}
 	draw_text_button(esContext, "cam_export_kml", setup.view_mode, "[KML]", FONT_GREEN, px2 - 0.62, py2 - 0.075, 0.005, 0.07, ALIGN_RIGHT, ALIGN_TOP, map_cam_export_kml, 0.0);
@@ -2274,7 +2387,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 
 	if (map_startup == 0) {
 		map_startup = 1;
-
 		int n = 0;
 		for (n = 0; n < 20; n++) {
 			mapnames[n][MAP_COPYRIGHT][0] = 0;
@@ -2641,7 +2753,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
 			if (WayPoints[n].p_lat != 0.0) {
-				if (strcmp(WayPoints[n].command, "SHUTTER") == 0) {
+				if (strcmp(WayPoints[n].command, "SHUTTER") == 0 || strcmp(WayPoints[n].command, "SHUTTER_INT") == 0 || strcmp(WayPoints[n].command, "RELAY") == 0 || strcmp(WayPoints[n].command, "RELAY_REP") == 0 || strcmp(WayPoints[n].command, "SERVO") == 0 || strcmp(WayPoints[n].command, "SERVO_REP") == 0) {
 					if (flag != 0) {
 						mark_point(esContext, last_lat, last_lon, last_alt, WayPoints[n].name, WayPoints[n].command, 6, WayPoints[n].param1, WayPoints[n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
 					}
@@ -2678,12 +2790,12 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
 			if (PolyPoints[n].p_lat != 0.0) {
 				float pos_alt = get_altitude(PolyPoints[n].p_lat, PolyPoints[n].p_long);
-				float alt = img_alt + pos_alt;
-				if (img_alt_abs == 1) {
-					if (img_alt < pos_alt + 1.0) {
-						img_alt = pos_alt + 1.0;
+				float alt = SurveySetup.alt + pos_alt;
+				if (SurveySetup.alt_abs == 1) {
+					if (SurveySetup.alt < pos_alt + 1.0) {
+						SurveySetup.alt = pos_alt + 1.0;
 					}
-					alt = img_alt;
+					alt = SurveySetup.alt;
 				}
 				if (n == polypoint_active) {
 					mark_point(esContext, PolyPoints[n].p_lat, PolyPoints[n].p_long, alt, PolyPoints[n].name, PolyPoints[n].command, 1, PolyPoints[n].param1, PolyPoints[n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
@@ -2695,12 +2807,12 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
 			if (PolyPoints[n].p_lat != 0.0) {
 				float pos_alt = get_altitude(PolyPoints[n].p_lat, PolyPoints[n].p_long);
-				float alt = img_alt + pos_alt;
-				if (img_alt_abs == 1) {
-					if (img_alt < pos_alt + 1.0) {
-						img_alt = pos_alt + 1.0;
+				float alt = SurveySetup.alt + pos_alt;
+				if (SurveySetup.alt_abs == 1) {
+					if (SurveySetup.alt < pos_alt + 1.0) {
+						SurveySetup.alt = pos_alt + 1.0;
 					}
-					alt = img_alt;
+					alt = SurveySetup.alt;
 				}
 				last_lat = PolyPoints[n].p_lat;
 				last_lon = PolyPoints[n].p_long;
@@ -2710,12 +2822,12 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
 			if (PolyPoints[n].p_lat != 0.0) {
 				float pos_alt = get_altitude(PolyPoints[n].p_lat, PolyPoints[n].p_long);
-				float alt = img_alt + pos_alt;
-				if (img_alt_abs == 1) {
-					if (img_alt < pos_alt + 1.0) {
-						img_alt = pos_alt + 1.0;
+				float alt = SurveySetup.alt + pos_alt;
+				if (SurveySetup.alt_abs == 1) {
+					if (SurveySetup.alt < pos_alt + 1.0) {
+						SurveySetup.alt = pos_alt + 1.0;
 					}
-					alt = img_alt;
+					alt = SurveySetup.alt;
 				}
 				mark_route(esContext, last_lat, last_lon, last_alt, PolyPoints[n].p_lat, PolyPoints[n].p_long, alt, 0, mapdata->lat, mapdata->lon, mapdata->zoom);
 				last_lat = PolyPoints[n].p_lat;
@@ -2757,12 +2869,12 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				if (pos_alt_max < pos_alt) {
 					pos_alt_max = pos_alt;
 				}
-				float alt = img_alt + pos_alt;
-				if (img_alt_abs == 1) {
-					if (img_alt < pos_alt + 1.0) {
-						img_alt = pos_alt + 1.0;
+				float alt = SurveySetup.alt + pos_alt;
+				if (SurveySetup.alt_abs == 1) {
+					if (SurveySetup.alt < pos_alt + 1.0) {
+						SurveySetup.alt = pos_alt + 1.0;
 					}
-					alt = img_alt;
+					alt = SurveySetup.alt;
 				}
 //				px1 = (float)pmark_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 //				py1 = (float)pmark_y / (float)esContext->height * 2.0 - 1.0;
@@ -2779,21 +2891,21 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		float dist = 0.0;
 		float grid_x = 0.0;
 		float grid_y = 0.0;
-		if (img_alt_abs == 1) {
-			dist = img_alt - pos_alt_max;
+		if (SurveySetup.alt_abs == 1) {
+			dist = SurveySetup.alt - pos_alt_max;
 		} else {
-			dist = img_alt;
+			dist = SurveySetup.alt;
 		}
 		if (dist < 1.0) {
 			dist = 1.0;
 		}
-		if (cam_mode == 1) {
-			grid_x = cam_grid_x / mpp;
-			grid_y = cam_grid_y / mpp;
+		if (SurveySetup.mode == 1) {
+			grid_x = SurveySetup.grid_x / mpp;
+			grid_y = SurveySetup.grid_y / mpp;
 		} else {
-			calc_fov(cam_film_width, cam_film_height, cam_sensor_mult, cam_lense, dist, &h, &w);
-			grid_x = w / mpp / img_overlap;
-			grid_y = h / mpp / img_overlap;
+			calc_fov(SurveySetup.film_width, SurveySetup.film_height, SurveySetup.sensor_mult, SurveySetup.lense, dist, &h, &w);
+			grid_x = w / mpp / SurveySetup.overlap;
+			grid_y = h / mpp / SurveySetup.overlap;
 		}
 		float n_x = 0.0;
 		float n_y = 0.0;
@@ -2806,14 +2918,14 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		if (max_w < max_x - min_x) {
 			max_w = max_x - min_x;
 		}
-		float ltx = center_x + cos((45.0 + 180.0 + cam_angle) * DEG2RAD) * max_w;
-		float lty = center_y + sin((45.0 + 180.0 + cam_angle) * DEG2RAD) * max_w;
+		float ltx = center_x + cos((45.0 + 180.0 + SurveySetup.angle) * DEG2RAD) * max_w;
+		float lty = center_y + sin((45.0 + 180.0 + SurveySetup.angle) * DEG2RAD) * max_w;
 		for (n_y = 0.0; n_y <= max_w * 1.5; n_y += grid_y) {
-			float lnx = ltx + cos((cam_angle + 90.0) * DEG2RAD) * n_y;
-			float lny = lty + sin((cam_angle + 90.0) * DEG2RAD) * n_y;
+			float lnx = ltx + cos((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
+			float lny = lty + sin((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
 			for (n_x = 0; n_x < max_w * 1.5; n_x += grid_x) {
-				float nx = lnx + cos((cam_angle) * DEG2RAD) * n_x;
-				float ny = lny + sin((cam_angle) * DEG2RAD) * n_x;
+				float nx = lnx + cos((SurveySetup.angle) * DEG2RAD) * n_x;
+				float ny = lny + sin((SurveySetup.angle) * DEG2RAD) * n_x;
 				if (point_in_poly(nx, ny) == 0) {
 					continue;
 				}
@@ -2822,15 +2934,15 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				float np_long = x2long(nx, lon, mapdata->zoom);
 				float np_lat = y2lat(ny, lat, mapdata->zoom);
 				float pos_alt = get_altitude(np_lat, np_long);
-				float alt = img_alt + pos_alt;
-				if (img_alt_abs == 1) {
-					if (img_alt < pos_alt + 1.0) {
-						img_alt = pos_alt + 1.0;
+				float alt = SurveySetup.alt + pos_alt;
+				if (SurveySetup.alt_abs == 1) {
+					if (SurveySetup.alt < pos_alt + 1.0) {
+						SurveySetup.alt = pos_alt + 1.0;
 					}
-					alt = img_alt;
+					alt = SurveySetup.alt;
 				}
-				if (cam_mode == 0) {
-					draw_fov(esContext, np_lat, np_long, alt, cam_angle + 90.0);
+				if (SurveySetup.mode == 0) {
+					draw_fov(esContext, np_lat, np_long, alt, SurveySetup.angle + 90.0);
 				}
 				draw_line_f3(esContext, px1 + 0.01, py1 + 0.01, (alt / alt_zoom), px1 - 0.01, py1 - 0.01, (alt / alt_zoom), 0, 255, 255, 255);
 				draw_line_f3(esContext, px1 + 0.01, py1 - 0.01, (alt / alt_zoom), px1 - 0.01, py1 + 0.01, (alt / alt_zoom), 0, 255, 255, 255);
@@ -2845,11 +2957,11 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				lastn_alt = alt;
 			}
 			n_y += grid_y;
-			lnx = ltx + cos((cam_angle + 90.0) * DEG2RAD) * n_y;
-			lny = lty + sin((cam_angle + 90.0) * DEG2RAD) * n_y;
+			lnx = ltx + cos((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
+			lny = lty + sin((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
 			for (n_x = n_x - grid_x; n_x > -grid_x; n_x -= grid_x) {
-				float nx = lnx + cos((cam_angle) * DEG2RAD) * n_x;
-				float ny = lny + sin((cam_angle) * DEG2RAD) * n_x;
+				float nx = lnx + cos((SurveySetup.angle) * DEG2RAD) * n_x;
+				float ny = lny + sin((SurveySetup.angle) * DEG2RAD) * n_x;
 				if (point_in_poly(nx, ny) == 0) {
 					continue;
 				}
@@ -2858,15 +2970,15 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				float np_long = x2long(nx, lon, mapdata->zoom);
 				float np_lat = y2lat(ny, lat, mapdata->zoom);
 				float pos_alt = get_altitude(np_lat, np_long);
-				float alt = img_alt + pos_alt;
-				if (img_alt_abs == 1) {
-					if (img_alt < pos_alt + 1.0) {
-						img_alt = pos_alt + 1.0;
+				float alt = SurveySetup.alt + pos_alt;
+				if (SurveySetup.alt_abs == 1) {
+					if (SurveySetup.alt < pos_alt + 1.0) {
+						SurveySetup.alt = pos_alt + 1.0;
 					}
-					alt = img_alt;
+					alt = SurveySetup.alt;
 				}
-				if (cam_mode == 0) {
-					draw_fov(esContext, np_lat, np_long, alt, cam_angle + 90.0);
+				if (SurveySetup.mode == 0) {
+					draw_fov(esContext, np_lat, np_long, alt, SurveySetup.angle + 90.0);
 				}
 				draw_line_f3(esContext, px1 + 0.01, py1 + 0.01, (alt / alt_zoom), px1 - 0.01, py1 - 0.01, (alt / alt_zoom), 0, 255, 255, 255);
 				draw_line_f3(esContext, px1 + 0.01, py1 - 0.01, (alt / alt_zoom), px1 - 0.01, py1 + 0.01, (alt / alt_zoom), 0, 255, 255, 255);
@@ -2884,7 +2996,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	}
 
 	// drawing Cam-FOV
-	if (map_show_fov == 1 || (map_show_cam_setup == 1 && cam_mode == 0)) {
+	if (map_show_fov == 1 || (map_show_cam_setup == 1 && SurveySetup.mode == 0)) {
 		draw_fov(esContext, ModelData.p_lat, ModelData.p_long, ModelData.p_alt, ModelData.yaw);
 	}
 

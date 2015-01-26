@@ -185,6 +185,27 @@ typedef struct {
 #endif
 } GcsSetup;
 
+typedef struct {
+	uint16_t interval;
+	uint16_t pos;
+	uint8_t type;
+	uint8_t num;
+	uint8_t triggermode;
+	uint8_t options;
+	uint8_t mode;
+	float angle;
+	float grid_x;
+	float grid_y;
+	float film_width;
+	float film_height;
+	float sensor_mult;
+	float lense;
+	float overlap;
+	float alt;
+	uint8_t alt_abs;
+} Survey;
+
+extern Survey SurveySetup;
 extern Button Buttons[MAX_BUTTONS + 1];
 extern WayPoint WayPoints[MAX_WAYPOINTS + 1];
 extern PolyPoint PolyPoints[MAX_WAYPOINTS + 1];

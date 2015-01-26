@@ -389,6 +389,24 @@ void setup_waypoints (void) {
 	strncpy(WayPoints[0].name, "HOME", 127);
 	strncpy(WayPoints[0].command, "", 127);
 
+	SurveySetup.interval = 10;
+	SurveySetup.pos = 1900;
+	SurveySetup.type = 0;
+	SurveySetup.num = 0;
+	SurveySetup.triggermode = 0;
+	SurveySetup.options = 0;
+	SurveySetup.mode = 1; // 0 = cam, 1 = fixed distance
+	SurveySetup.angle = 0.0;
+	SurveySetup.grid_x = 20.0; // abstand in metern
+	SurveySetup.grid_y = 20.0; // abstand in metern
+	SurveySetup.film_width = 36.0;  // 35 mm standard film
+	SurveySetup.film_height = 24.0; // 35 mm standard film
+	SurveySetup.sensor_mult = 1.62; // Formatfaktor / APS-C-Sensor (Canon)
+	SurveySetup.lense = 20.0; // Brennweite in mm
+	SurveySetup.overlap = 1.2;
+	SurveySetup.alt = 30.0;
+	SurveySetup.alt_abs = 0;
+
 	ModelData.sysid = 250;
 	ModelData.compid = 0;
 }
@@ -492,6 +510,24 @@ void setup_save (void) {
 	        fprintf(fr, "Ground_fm_radius	%f\n", GroundData.fm_radius);
 	        fprintf(fr, "Ground_sp_alt	%f\n", GroundData.sp_alt);
 	        fprintf(fr, "Ground_sp_radius	%f\n", GroundData.sp_radius);
+	        fprintf(fr, "\n");
+	        fprintf(fr, "SurveySetup.interval	%i\n", SurveySetup.interval);
+	        fprintf(fr, "SurveySetup.pos	%i\n", SurveySetup.pos);
+	        fprintf(fr, "SurveySetup.type	%i\n", SurveySetup.type);
+	        fprintf(fr, "SurveySetup.num	%i\n", SurveySetup.num);
+	        fprintf(fr, "SurveySetup.triggermode	%i\n", SurveySetup.triggermode);
+	        fprintf(fr, "SurveySetup.options	%i\n", SurveySetup.options);
+	        fprintf(fr, "SurveySetup.mode	%i\n", SurveySetup.mode);
+	        fprintf(fr, "SurveySetup.angle	%f\n", SurveySetup.angle);
+	        fprintf(fr, "SurveySetup.grid_x	%f\n", SurveySetup.grid_x);
+	        fprintf(fr, "SurveySetup.grid_y	%f\n", SurveySetup.grid_y);
+	        fprintf(fr, "SurveySetup.film_width	%f\n", SurveySetup.film_width);
+	        fprintf(fr, "SurveySetup.film_height	%f\n", SurveySetup.film_height);
+	        fprintf(fr, "SurveySetup.sensor_mult	%f\n", SurveySetup.sensor_mult);
+	        fprintf(fr, "SurveySetup.lense	%f\n", SurveySetup.lense);
+	        fprintf(fr, "SurveySetup.overlap	%f\n", SurveySetup.overlap);
+	        fprintf(fr, "SurveySetup.alt	%f\n", SurveySetup.alt);
+	        fprintf(fr, "SurveySetup.alt_abs	%i\n", SurveySetup.alt_abs);
 	        fprintf(fr, "\n");
 	        fprintf(fr, "[waypoints]\n");
 	        for (n = 0; n < MAX_WAYPOINTS; n++) {
@@ -770,6 +806,40 @@ void setup_load (void) {
 	                        } else if (strcmp(var, "aprs_enable") == 0) {
 	                                setup.aprs_enable = atoi(val);
 #endif
+	                        } else if (strcmp(var, "SurveySetup.interval") == 0) {
+	                               SurveySetup.interval  = atoi(val);
+	                        } else if (strcmp(var, "SurveySetup.pos") == 0) {
+	                                SurveySetup.pos = atoi(val);
+	                        } else if (strcmp(var, "SurveySetup.type") == 0) {
+	                                SurveySetup.type = atoi(val);
+	                        } else if (strcmp(var, "SurveySetup.num") == 0) {
+	                                SurveySetup.num = atoi(val);
+	                        } else if (strcmp(var, "SurveySetup.triggermode") == 0) {
+	                                SurveySetup.triggermode = atoi(val);
+	                        } else if (strcmp(var, "SurveySetup.options") == 0) {
+	                                SurveySetup.options = atoi(val);
+	                        } else if (strcmp(var, "SurveySetup.mode") == 0) {
+	                                SurveySetup.mode = atoi(val);
+	                        } else if (strcmp(var, "SurveySetup.angle") == 0) {
+	                                SurveySetup.angle = atof(val);
+	                        } else if (strcmp(var, "SurveySetup.grid_x") == 0) {
+	                                SurveySetup.grid_x = atof(val);
+	                        } else if (strcmp(var, "SurveySetup.grid_y") == 0) {
+	                                SurveySetup.grid_y = atof(val);
+	                        } else if (strcmp(var, "SurveySetup.film_width") == 0) {
+	                                SurveySetup.film_width = atof(val);
+	                        } else if (strcmp(var, "SurveySetup.film_height") == 0) {
+	                                SurveySetup.film_height = atof(val);
+	                        } else if (strcmp(var, "SurveySetup.sensor_mult") == 0) {
+	                                SurveySetup.sensor_mult = atof(val);
+	                        } else if (strcmp(var, "SurveySetup.lense") == 0) {
+	                                SurveySetup.lense = atof(val);
+	                        } else if (strcmp(var, "SurveySetup.overlap") == 0) {
+	                                SurveySetup.overlap = atof(val);
+	                        } else if (strcmp(var, "SurveySetup.alt") == 0) {
+	                                SurveySetup.alt = atof(val);
+	                        } else if (strcmp(var, "SurveySetup.alt_abs") == 0) {
+	                                SurveySetup.alt_abs = atoi(val);
 	                        } else if (strcmp(var, "[waypoints]") == 0) {
 	                                mode = 1;
 	                        } else if (strcmp(var, "[polypoints]") == 0) {
