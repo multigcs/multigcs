@@ -74,6 +74,7 @@ typedef struct {
 	float_t hdop;
 	float_t vdop;
 	int16_t radio[16];
+	int16_t radio_raw[8];
 	float acc_x;
 	float acc_y;
 	float acc_z;

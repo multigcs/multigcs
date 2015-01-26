@@ -324,6 +324,7 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 				mode = MODE_SETHOME;
 			}
 */
+
 			ModelData.radio[0] = (int)packet.chan1_scaled / 100.0;
 			ModelData.radio[1] = (int)packet.chan2_scaled / 100.0;
 			ModelData.radio[2] = (int)packet.chan3_scaled / 100.0;
@@ -386,6 +387,15 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 		case MAVLINK_MSG_ID_RC_CHANNELS_RAW: {
 			mavlink_rc_channels_raw_t packet;
 			mavlink_msg_rc_channels_raw_decode(msg, &packet);
+
+			ModelData.radio_raw[0] = (int)packet.chan1_raw;
+			ModelData.radio_raw[1] = (int)packet.chan2_raw;
+			ModelData.radio_raw[2] = (int)packet.chan3_raw;
+			ModelData.radio_raw[3] = (int)packet.chan4_raw;
+			ModelData.radio_raw[4] = (int)packet.chan5_raw;
+			ModelData.radio_raw[5] = (int)packet.chan6_raw;
+			ModelData.radio_raw[6] = (int)packet.chan7_raw;
+			ModelData.radio_raw[7] = (int)packet.chan8_raw;
 
 			ModelData.radio[0] = (int)packet.chan1_raw / 5 - 300;
 			ModelData.radio[1] = (int)packet.chan2_raw / 5 - 300;
@@ -519,6 +529,9 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 			} else if (strcmp(WayPoints[id2 + 1].command, "TAKEOFF") == 0) {
 				SDL_Log("mavlink: Type: MAV_CMD_NAV_TAKEOFF\n");
 				type = MAV_CMD_NAV_TAKEOFF;
+			} else if (strcmp(WayPoints[id2 + 1].command, "SHUTTER") == 0) {
+				SDL_Log("mavlink: Type: MAV_CMD_DO_DIGICAM_CONTROL\n");
+				type = MAV_CMD_DO_DIGICAM_CONTROL;
 			} else if (strcmp(WayPoints[id2 + 1].command, "SET_ROI") == 0) {
 				SDL_Log("mavlink: Type: MAV_CMD_NAV_ROI\n");
 				type = MAV_CMD_NAV_ROI;
@@ -634,6 +647,10 @@ uint8_t autocontinue; ///< autocontinue to next wp
 				}
 				case MAV_CMD_NAV_TAKEOFF: {
 					strcpy(WayPoints[1 + packet.seq].command, "TAKEOFF");
+					break;
+				}
+				case MAVLINK_MSG_ID_DIGICAM_CONTROL: {
+					strcpy(WayPoints[1 + packet.seq].command, "SHUTTER");
 					break;
 				}
 				case MAV_CMD_NAV_ROI: {
@@ -819,6 +836,16 @@ uint8_t autocontinue; ///< autocontinue to next wp
 		case MAVLINK_MSG_ID_RC_CHANNELS: {
 			mavlink_rc_channels_t packet;
 			mavlink_msg_rc_channels_decode(msg, &packet);
+
+			ModelData.radio_raw[0] = (int)packet.chan1_raw;
+			ModelData.radio_raw[1] = (int)packet.chan2_raw;
+			ModelData.radio_raw[2] = (int)packet.chan3_raw;
+			ModelData.radio_raw[3] = (int)packet.chan4_raw;
+			ModelData.radio_raw[4] = (int)packet.chan5_raw;
+			ModelData.radio_raw[5] = (int)packet.chan6_raw;
+			ModelData.radio_raw[6] = (int)packet.chan7_raw;
+			ModelData.radio_raw[7] = (int)packet.chan8_raw;
+
 			ModelData.radio[0] = (int)packet.chan1_raw / 5 - 300;
 			ModelData.radio[1] = (int)packet.chan2_raw / 5 - 300;
 			ModelData.radio[2] = (int)packet.chan3_raw / 5 - 300;
@@ -1114,14 +1141,28 @@ void mavlink_read_waypoints (void) {
 void mavlink_save_to_flash (void) {
 	SDL_Log("mavlink: save values to flash\n");
 	mavlink_message_t msg;
-	mavlink_msg_command_long_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_CMD_PREFLIGHT_STORAGE, 0, 1.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_CMD_PREFLIGHT_STORAGE, 0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	mavlink_send_message(&msg);
 }
 
 void mavlink_load_from_flash (void) {
 	SDL_Log("mavlink: load values from flash\n");
 	mavlink_message_t msg;
-	mavlink_msg_command_long_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_CMD_PREFLIGHT_STORAGE, 0, 0.0f, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_CMD_PREFLIGHT_STORAGE, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	mavlink_send_message(&msg);
+}
+
+void mavlink_send_cmd_calibration (void) {
+	SDL_Log("mavlink: send cmd: Calibration\n");
+	mavlink_message_t msg;
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, MAV_CMD_PREFLIGHT_CALIBRATION, 0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+	mavlink_send_message(&msg);
+}
+
+void mavlink_send_cmd_calibration_ack (void) {
+	SDL_Log("mavlink: send cmd: Calibration ACK\n");
+	mavlink_message_t msg;
+	mavlink_msg_command_ack_pack(127, 0, &msg, MAV_CMD_PREFLIGHT_CALIBRATION, MAV_CMD_ACK_OK);
 	mavlink_send_message(&msg);
 }
 
