@@ -21,6 +21,8 @@ int16_t cal_max[8];
 uint8_t mavlink_view_screen = 0;
 uint8_t mavlink_view_rccal = 0;
 uint8_t acccal_step = 0;
+uint8_t mavlink_channel_select = 0;
+uint8_t mavlink_channel_select_num = 0;
 
 static char select_section[1024];
 static int option_menu = -1;
@@ -722,6 +724,19 @@ void screen_mavlink_flightmodes (ESContext *esContext) {
 	screen_mavlink_list(esContext, plist, sizeof(plist) / sizeof(paralist));
 }
 
+uint8_t mavlink_channel_select_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	mavlink_channel_select = (uint8_t)data;
+	mavlink_channel_select_num = 0;
+	reset_buttons();
+	return 0;
+}
+
+uint8_t mavlink_channel_select_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	mavlink_channel_select_num = (uint8_t)data;
+	reset_buttons();
+	return 0;
+}
+
 void screen_mavlink_rccal (ESContext *esContext) {
 	char tmp_str[128];
 	char tmp_str2[128];
@@ -764,6 +779,21 @@ void screen_mavlink_rccal (ESContext *esContext) {
 				draw_box_f3c2(esContext, SLIDER_START, -0.8 + row * 0.14, 0.001, SLIDER_START + ((minv - min) * SLIDER_LEN / (max - min)), -0.8 + row * 0.14 + 0.1, 0.001, 255, 255, 55, 220, 255, 85, 85, 100);
 				draw_box_f3c2(esContext, SLIDER_START + ((maxv - min) * SLIDER_LEN / (max - min)), -0.8 + row * 0.14, 0.001, SLIDER_START + SLIDER_LEN, -0.8 + row * 0.14 + 0.1, 0.001, 255, 255, 55, 220, 255, 85, 85, 100);
 				set_button(tmp_str, setup.view_mode, SLIDER_START, -0.8 + row * 0.14, SLIDER_START + SLIDER_LEN, -0.8 + row * 0.14 + 0.1, mavlink_slider_move, (float)row, 1);
+				if (pn < 4) { 
+					if (pn == 0) { 
+						sprintf(tmp_str, "RCMAP_ROLL");
+					} else if (pn == 1) { 
+						sprintf(tmp_str, "RCMAP_PITCH");
+					} else if (pn == 2) { 
+						sprintf(tmp_str, "RCMAP_THROTTLE");
+					} else if (pn == 3) { 
+						sprintf(tmp_str, "RCMAP_YAW");
+					}
+					uint8_t map = MavLinkVars[mavlink_get_id_by_name(tmp_str)].value;
+					sprintf(tmp_str, "SRC%iMAP", pn + 1);
+					sprintf(tmp_str2, "IN%i", map);
+					draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_GREEN, SLIDER_START + SLIDER_LEN + 0.01, -0.8 + row * 0.14, 0.002, 0.06, 0, 0, mavlink_channel_select_change, (float)(pn + 1));
+				}
 			}
 			row++;
 	}
@@ -772,6 +802,31 @@ void screen_mavlink_rccal (ESContext *esContext) {
 		draw_text_button(esContext, "rccalsave", VIEW_MODE_FCMENU, "[SAVE]", FONT_GREEN, 0.0, 0.9, 0.002, 0.06, 1, 0, mavlink_view_rccal_save, 0.0);
 	} else {
 		draw_text_button(esContext, "rccalchange", VIEW_MODE_FCMENU, "[CAL]", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 1, 0, mavlink_view_rccal_change, 0.0);
+	}
+	if (mavlink_channel_select_num != 0) {
+		if (mavlink_channel_select == 1) { 
+			sprintf(tmp_str, "RCMAP_ROLL");
+		} else if (mavlink_channel_select == 2) { 
+			sprintf(tmp_str, "RCMAP_PITCH");
+		} else if (mavlink_channel_select == 3) { 
+			sprintf(tmp_str, "RCMAP_THROTTLE");
+		} else if (mavlink_channel_select == 4) { 
+			sprintf(tmp_str, "RCMAP_YAW");
+		}
+		int selected = mavlink_get_id_by_name(tmp_str);
+		MavLinkVars[selected].value = (float)mavlink_channel_select_num;
+		mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+		mavlink_channel_select = 0;
+		mavlink_channel_select_num = 0;
+	} else if (mavlink_channel_select != 0) {
+		row = 0;
+		reset_buttons();
+		draw_box_f3(esContext, -0.8, -0.85 + 0 * 0.14, 0.004, 0.8, -0.85 + 4 * 0.14 + 0.1, 0.004, 128, 128, 200, 200);
+		for (pn = 0; pn < 4; pn++) {
+			sprintf(tmp_str, "Input %i", pn + 1);
+			draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_channel_select_set, (float)(pn + 1));
+			row++;
+		}
 	}
 }
 
@@ -793,6 +848,127 @@ void screen_mavlink_magcal (ESContext *esContext) {
 	};
 	draw_title(esContext, "Compass-Calibration");
 	screen_mavlink_list(esContext, plist, sizeof(plist) / sizeof(paralist));
+}
+
+void screen_mavlink_camrelay (ESContext *esContext) {
+	paralist plist[] = {
+		{"MNT_MODE", "Gimbal Mode"},
+		{"MNT_RC_IN_ROLL", "Gimbal RC-Roll"},
+		{"MNT_RC_IN_TILT", "Gimbal RC-Tilt"},
+		{"MNT_RC_IN_PAN", "Gimbal RC-Pan"},
+		{"---", "---"},
+		{"CAM_TRIGG_TYPE", "Cam Trigger-Type"},
+		{"CAM_DURATION", "Cam Duration"},
+		{"CAM_SERVO_ON", "Cam Trigger-On"},
+		{"CAM_SERVO_OFF", "Cam Trigger-Off"},
+		{"CAM_TRIGG_DIST", "Cam Trigger-Distance"},
+		{"---", "---"},
+		{"RELAY_PIN", "Relay-Pin"},
+	};
+
+	draw_title(esContext, "Gimbal/Cam/Relay");
+	screen_mavlink_list(esContext, plist, sizeof(plist) / sizeof(paralist));
+
+	int row	 = 0;
+	char tmp_str[1024];
+	int pn = 0;
+	int trigger = 0;
+	int pan = -1;
+	int tilt = -1;
+	int roll = -1;
+	for (pn = 0; pn < 11; pn++) {
+			sprintf(tmp_str, "RC%i_FUNCTION", pn + 1);
+			int selected = mavlink_get_id_by_name(tmp_str);
+			if ((int)MavLinkVars[selected].value == 6) {
+				pan = pn;
+			} else if ((int)MavLinkVars[selected].value == 7) {
+				tilt = pn;
+			} else if ((int)MavLinkVars[selected].value == 8) {
+				roll = pn;
+			} else if ((int)MavLinkVars[selected].value == 10) {
+				trigger = pn;
+			}
+	}
+	sprintf(tmp_str, "TRIG OUT=%i", trigger + 1);
+	if (mavlink_channel_select == 1) {
+		draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str, FONT_GREEN, -0.9, 0.65, 0.005, 0.08, 1, 0, mavlink_channel_select_change, (float)(0));
+	} else {
+		draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -0.9, 0.65, 0.005, 0.08, 1, 0, mavlink_channel_select_change, (float)(1));
+	}
+	sprintf(tmp_str, "PAN OUT=%i", pan + 1);
+	if (mavlink_channel_select == 2) {
+		draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str, FONT_GREEN, -0.3, 0.65, 0.005, 0.08, 1, 0, mavlink_channel_select_change, (float)(0));
+	} else {
+		draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -0.3, 0.65, 0.005, 0.08, 1, 0, mavlink_channel_select_change, (float)(2));
+	}
+	sprintf(tmp_str, "TILT OUT=%i", tilt + 1);
+	if (mavlink_channel_select == 3) {
+		draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str, FONT_GREEN, 0.3, 0.65, 0.005, 0.08, 1, 0, mavlink_channel_select_change, (float)(0));
+	} else {
+		draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.3, 0.65, 0.005, 0.08, 1, 0, mavlink_channel_select_change, (float)(3));
+	}
+	sprintf(tmp_str, "ROLL OUT=%i", roll + 1);
+	if (mavlink_channel_select == 4) {
+		draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str, FONT_GREEN, 0.9, 0.65, 0.005, 0.08, 1, 0, mavlink_channel_select_change, (float)(0));
+	} else {
+		draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.9, 0.65, 0.005, 0.08, 1, 0, mavlink_channel_select_change, (float)(4));
+	}
+	if (mavlink_channel_select_num != 0) {
+		printf("%i  %i\n", mavlink_channel_select, mavlink_channel_select_num);
+		for (pn = 4; pn < 11; pn++) {
+				sprintf(tmp_str, "RC%i_FUNCTION", pn + 1);
+				int selected = mavlink_get_id_by_name(tmp_str);
+				if (mavlink_channel_select == 1) {
+					if (pn == mavlink_channel_select_num - 1) {
+						MavLinkVars[selected].value = (float)10;
+						mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+					} else if ((int)MavLinkVars[selected].value == 10) {
+						MavLinkVars[selected].value = (float)0;
+						mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+					}
+				} else if (mavlink_channel_select == 2) {
+					if (pn == mavlink_channel_select_num - 1) {
+						MavLinkVars[selected].value = (float)6;
+						mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+					} else if ((int)MavLinkVars[selected].value == 6) {
+						MavLinkVars[selected].value = (float)0;
+						mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+					}
+				} else if (mavlink_channel_select == 3) {
+					if (pn == mavlink_channel_select_num - 1) {
+						MavLinkVars[selected].value = (float)7;
+						mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+					} else if ((int)MavLinkVars[selected].value == 7) {
+						MavLinkVars[selected].value = (float)0;
+						mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+					}
+				} else if (mavlink_channel_select == 4) {
+					if (pn == mavlink_channel_select_num - 1) {
+						MavLinkVars[selected].value = (float)8;
+						mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+					} else if ((int)MavLinkVars[selected].value == 8) {
+						MavLinkVars[selected].value = (float)0;
+						mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+					}
+				}
+		}
+		mavlink_channel_select = 0;
+		mavlink_channel_select_num = 0;
+	} else if (mavlink_channel_select != 0) {
+		row = 0;
+		draw_box_f3(esContext, -0.8, -0.85 + 0 * 0.14, 0.004, 0.8, -0.85 + 8 * 0.14 + 0.1, 0.004, 128, 128, 200, 200);
+		draw_text_button(esContext, "DISABLE", VIEW_MODE_FCMENU, "DISABLE", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_channel_select_set, (float)(-1));
+		row++;
+		for (pn = 4; pn < 11; pn++) {
+			sprintf(tmp_str, "RC%i_FUNCTION", pn + 1);
+			int selected = mavlink_get_id_by_name(tmp_str);
+			if (selected != -1) {
+				sprintf(tmp_str, "Output %i", pn + 1);
+				draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_channel_select_set, (float)(pn + 1));
+			}
+			row++;
+		}
+	}
 }
 
 void screen_mavlink_acccal (ESContext *esContext) {
@@ -846,6 +1022,9 @@ void screen_mavlink_menu (ESContext *esContext) {
 			return;
 		} else if (mavlink_view_screen == 8) {
 			screen_mavlink_acccal(esContext);
+			return;
+		} else if (mavlink_view_screen == 9) {
+			screen_mavlink_camrelay(esContext);
 			return;
 		} else {
 			mavlink_view_screen = 0;
