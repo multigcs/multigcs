@@ -1298,6 +1298,26 @@ void check_events (ESContext *esContext, SDL_Event event) {
 							break;
 						}
 					}
+				} else if (map_poimode == 1) {
+					uint16_t n = 0;
+					int16_t nz = get_altitude(mouse_lat, mouse_long);
+					for (n = 0; n < MAX_WAYPOINTS; n++) {
+						if (WayPoints[n].p_lat == 0.0) {
+							WayPoints[n].p_lat = mouse_lat;
+							WayPoints[n].p_long = mouse_long;
+							WayPoints[n].p_alt = nz;
+							WayPoints[n].param1 = 0.0;
+							WayPoints[n].param2 = 0.0;
+							WayPoints[n].param3 = 0.0;
+							WayPoints[n].param4 = 0.0;
+							WayPoints[n].type = 0;
+							WayPoints[n].frametype = 0;
+							sprintf(WayPoints[n].name, "ROI%i", n);
+							strncpy(WayPoints[n].command, "SET_ROI", 127);
+							break;
+						}
+					}
+					map_poimode = 0;
 				} else if (map_poly_addmode == 1) {
 					uint16_t n = 0;
 					int16_t nz = get_altitude(mouse_lat, mouse_long);

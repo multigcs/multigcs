@@ -911,14 +911,24 @@ void mark_point (ESContext *esContext, float mark_lat, float mark_long, float ma
 	} else if (type == 5) {
 		draw_circleFilled_f3(esContext, x1, y1, z2, 0.01, 0, 255, 0, 255);
 		return;
+	} else if (type == 6) {
+		draw_circleFilled_f3(esContext, x1, y1, z2, 0.01, 0, 255, 255, 127);
+		return;
+	} else if (type == 7) {
+		draw_circleFilled_f3(esContext, x1, y1, z2, 0.01, 255, 255, 0, 127);
+		return;
 	}
 
 	if (strcmp(command, "RTL") == 0) {
-		draw_text_f3(esContext, x1 + 0.01, y1 + 0.1, 0.001, 0.05, 0.05, FONT_GREEN, "RTL");
+		draw_text_f3(esContext, x1, y1, z, 0.05, 0.05, FONT_GREEN, "RTL");
 	} else if (strcmp(command, "TAKEOFF") == 0) {
-		draw_text_f3(esContext, x1 + 0.01, y1 + 0.05, 0.001, 0.05, 0.05, FONT_GREEN, "TAKEOFF");
+		draw_text_f3(esContext, x1, y1, z, 0.05, 0.05, FONT_GREEN, "TAKEOFF");
 	} else if (strcmp(command, "LAND") == 0) {
-		draw_text_f3(esContext, x1 + 0.01, y1 + 0.15, 0.001, 0.05, 0.05, FONT_GREEN, "LAND");
+		draw_text_f3(esContext, x1, y1, z, 0.05, 0.05, FONT_GREEN, "LAND");
+	} else if (strcmp(command, "SET_ROI") == 0) {
+		draw_text_f3(esContext, x1, y1, z, 0.05, 0.05, FONT_PINK, "POI");
+	} else if (strcmp(command, "SHUTTER") == 0) {
+		draw_text_f3(esContext, x1, y1, z, 0.05, 0.05, FONT_PINK, "SHUTTER");
 	} else {
 
 #ifdef SDLGL

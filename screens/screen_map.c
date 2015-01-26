@@ -22,6 +22,7 @@ uint8_t map_startup = 0;
 uint8_t map_fm = 0;
 uint8_t map_add = 0;
 uint8_t map_addmode = 0;
+uint8_t map_poimode = 0;
 uint8_t map_poly_addmode = 0;
 uint8_t map_start_addmode = 0;
 uint8_t map_wp_mopen = 0;
@@ -434,7 +435,31 @@ uint8_t map_sethome_change (char *name, float x, float y, int8_t button, float d
 }
 
 uint8_t map_addmode_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	map_addmode = 1 - map_addmode;
+	int n = 0;
+	if ((int)data == 1) {
+		for (n = 0; n < MAX_WAYPOINTS; n++) {
+			if (WayPoints[n].p_lat == 0.0) {
+				WayPoints[n].p_lat = 1.0;
+				WayPoints[n].p_long = 0.0;
+				WayPoints[n].p_alt = 0.0;
+				WayPoints[n].param1 = 0.0;
+				WayPoints[n].param2 = 0.0;
+				WayPoints[n].param3 = 0.0;
+				WayPoints[n].param4 = 0.0;
+				WayPoints[n].type = 0;
+				WayPoints[n].frametype = 0;
+				strcpy(WayPoints[n].name, "SHUTTER");
+				strcpy(WayPoints[n].command, "SHUTTER");
+				break;
+			}
+		}
+	} else if ((int)data == 2) {
+		map_poimode = 1 - map_poimode;
+		map_addmode = 0;
+	} else {
+		map_addmode = 1 - map_addmode;
+		map_poimode = 0;
+	}
 	map_show_wp = 1;
 	return 0;
 }
@@ -1970,6 +1995,7 @@ void map_draw_buttons (ESContext *esContext) {
 	if (map_wp_mopen == 0) {
 		draw_button(esContext, "map_wp_mopen", setup.view_mode, "WP", FONT_WHITE, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_wp_mopen_change, 0.0);
 		map_addmode = 0;
+		map_poimode = 0;
 	} else {
 		draw_button(esContext, "map_wp_mopen", setup.view_mode, "WP", FONT_GREEN, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_wp_mopen_change, 0.0);
 		ny2 = ny;
@@ -1978,6 +2004,7 @@ void map_draw_buttons (ESContext *esContext) {
 		if (map_show_wp == 0) {
 			draw_button(esContext, "map_show_wp", setup.view_mode, "SHOW", FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_wp, 0.0);
 			map_addmode = 0;
+			map_poimode = 0;
 		} else {
 			draw_button(esContext, "map_show_wp", setup.view_mode, "SHOW", FONT_GREEN, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, show_wp, 0.0);
 		}
@@ -1991,6 +2018,20 @@ void map_draw_buttons (ESContext *esContext) {
 			draw_button(esContext, "map_addmode_change", setup.view_mode, "ADD", FONT_GREEN, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_addmode_change, 0.0);
 		}
 		draw_text_button(esContext, "map_addmode_change_", setup.view_mode, "add waypoint", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_addmode_change, 0.0);
+		ny2++;
+		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
+		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
+		if (map_poimode == 0) {
+			draw_button(esContext, "map_poimode_change", setup.view_mode, "POI", FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_addmode_change, 2.0);
+		} else {
+			draw_button(esContext, "map_poimode_change", setup.view_mode, "POI", FONT_GREEN, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_addmode_change, 2.0);
+		}
+		draw_text_button(esContext, "map_poimode_change_", setup.view_mode, "add poi", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_addmode_change, 2.0);
+		ny2++;
+		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
+		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
+		draw_button(esContext, "wp_shutter", setup.view_mode, "SHUTTER", FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_addmode_change, 1.0);
+		draw_text_button(esContext, "wp_shutter_", setup.view_mode, "add trigger shutter", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_addmode_change, 1.0);
 		ny2++;
 		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
 		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
@@ -2586,9 +2627,14 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
 			if (WayPoints[n].p_lat != 0.0) {
-				if (strcmp(WayPoints[n].command, "SET_ROI") == 0) {
+				if (strcmp(WayPoints[n].command, "SHUTTER") == 0) {
+					if (flag != 0) {
+						mark_point(esContext, last_lat, last_lon, last_alt, WayPoints[n].name, WayPoints[n].command, 6, WayPoints[n].param1, WayPoints[n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
+					}
+				} else if (strcmp(WayPoints[n].command, "SET_ROI") == 0) {
 					if (flag != 0) {
 						mark_route(esContext, last_lat, last_lon, last_alt, WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].p_alt, 1, mapdata->lat, mapdata->lon, mapdata->zoom);
+						mark_point(esContext, WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].p_alt, WayPoints[n].name, WayPoints[n].command, 7, WayPoints[n].param1, WayPoints[n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
 					}
 				} else {
 					if (flag != 0) {

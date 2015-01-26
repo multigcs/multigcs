@@ -95,6 +95,8 @@ uint8_t wpedit_waypoint_type_select (char *name, float x, float y, int8_t button
 		strcpy(WayPoints[waypoint_active].command, "LAND");
 	} else if (strcmp(WayPoints[waypoint_active].command, "LAND") == 0) {
 		strcpy(WayPoints[waypoint_active].command, "SET_ROI");
+	} else if (strcmp(WayPoints[waypoint_active].command, "SET_ROI") == 0) {
+		strcpy(WayPoints[waypoint_active].command, "SHUTTER");
 	} else {
 		strcpy(WayPoints[waypoint_active].command, "WAYPOINT");
 	}
@@ -126,37 +128,33 @@ void screen_wpedit (ESContext *esContext) {
 		draw_text_button(esContext, tmp_str, VIEW_MODE_WPEDIT, "[BACK]", FONT_GREEN, 1.2, -0.9 + (n_y * step_y), 0.002, 0.1, ALIGN_RIGHT, ALIGN_TOP, wpedit_back, 0.0);
 		n_y++;
 
-		sprintf(tmp_str, "LAT   : %f", WayPoints[waypoint_active].p_lat);
-		draw_text_f3(esContext, -1.1, -0.9 + (n_y * step_y), 0.0025, 0.1, 0.1, FONT_GREEN, tmp_str);
-//		draw_text_button(esContext, "wpedit_lat-", VIEW_MODE_WPEDIT, "[-]", FONT_GREEN, 0.8, -0.9 + (n_y * step_y), 0.002, 0.1, ALIGN_LEFT, ALIGN_TOP, wpedit_waypoint_lat_set, -0.01);
-//		draw_text_button(esContext, "wpedit_lat+", VIEW_MODE_WPEDIT, "[+]", FONT_GREEN, 1.2, -0.9 + (n_y * step_y), 0.002, 0.1, ALIGN_RIGHT, ALIGN_TOP, wpedit_waypoint_lat_set, 0.01);
-		n_y++;
-
-		sprintf(tmp_str, "LON   : %f", WayPoints[waypoint_active].p_long);
-		draw_text_f3(esContext, -1.1, -0.9 + (n_y * step_y), 0.0025, 0.1, 0.1, FONT_GREEN, tmp_str);
-//		draw_text_button(esContext, "wpedit_lon-", VIEW_MODE_WPEDIT, "[-]", FONT_GREEN, 0.8, -0.9 + (n_y * step_y), 0.002, 0.1, ALIGN_LEFT, ALIGN_TOP, wpedit_waypoint_lon_set, -0.01);
-//		draw_text_button(esContext, "wpedit_lon+", VIEW_MODE_WPEDIT, "[+]", FONT_GREEN, 1.2, -0.9 + (n_y * step_y), 0.002, 0.1, ALIGN_RIGHT, ALIGN_TOP, wpedit_waypoint_lon_set, 0.01);
-		n_y++;
-
-		if (WayPoints[waypoint_active].frametype == MAV_FRAME_GLOBAL) {
-			sprintf(tmp_str, "Alt   : %0.1fm abs", WayPoints[waypoint_active].p_alt);
-		} else if (WayPoints[waypoint_active].frametype == MAV_FRAME_GLOBAL_RELATIVE_ALT || WayPoints[waypoint_active].frametype == MAV_FRAME_GLOBAL_RELATIVE_ALT_INT) {
-			sprintf(tmp_str, "Alt   : %0.1fm rel", WayPoints[waypoint_active].p_alt);
-		} else {
-			sprintf(tmp_str, "Alt   : %0.1fm ???", WayPoints[waypoint_active].p_alt);
-		}
-		draw_text_f3(esContext, -1.1, -0.9 + (n_y * step_y), 0.0025, 0.1, 0.1, FONT_GREEN, tmp_str);
-		draw_text_button(esContext, "wpedit_alt_", VIEW_MODE_WPEDIT, "[G]", FONT_GREEN, 0.6, -0.9 + (n_y * step_y), 0.002, 0.1, ALIGN_RIGHT, ALIGN_TOP, wpedit_waypoint_alt_set, 0.0);
-		draw_text_button(esContext, "wpedit_alt-", VIEW_MODE_WPEDIT, "[-]", FONT_GREEN, 0.8, -0.9 + (n_y * step_y), 0.002, 0.1, ALIGN_LEFT, ALIGN_TOP, wpedit_waypoint_alt_set, -1.0);
-		draw_text_button(esContext, "wpedit_alt+", VIEW_MODE_WPEDIT, "[+]", FONT_GREEN, 1.2, -0.9 + (n_y * step_y), 0.002, 0.1, ALIGN_RIGHT, ALIGN_TOP, wpedit_waypoint_alt_set, 1.0);
-		n_y++;
-
 		sprintf(tmp_str, "CMD   : %s", WayPoints[waypoint_active].command);
 		draw_text_f3(esContext, -1.1, -0.9 + (n_y * step_y), 0.0025, 0.1, 0.1, FONT_GREEN, tmp_str);
 		draw_text_button(esContext, "wpedit_cmd", VIEW_MODE_WPEDIT, "[SELECT]", FONT_GREEN, 1.2, -0.9 + (n_y * step_y), 0.002, 0.1, ALIGN_RIGHT, ALIGN_TOP, wpedit_waypoint_type_select, 0.0);
 		n_y++;
 
 		if (strcmp(WayPoints[waypoint_active].command, "WAYPOINT") == 0) {
+			sprintf(tmp_str, "LAT   : %f", WayPoints[waypoint_active].p_lat);
+			draw_text_f3(esContext, -1.1, -0.9 + (n_y * step_y), 0.0025, 0.1, 0.1, FONT_GREEN, tmp_str);
+			n_y++;
+
+			sprintf(tmp_str, "LON   : %f", WayPoints[waypoint_active].p_long);
+			draw_text_f3(esContext, -1.1, -0.9 + (n_y * step_y), 0.0025, 0.1, 0.1, FONT_GREEN, tmp_str);
+			n_y++;
+
+			if (WayPoints[waypoint_active].frametype == MAV_FRAME_GLOBAL) {
+				sprintf(tmp_str, "Alt   : %0.1fm abs", WayPoints[waypoint_active].p_alt);
+			} else if (WayPoints[waypoint_active].frametype == MAV_FRAME_GLOBAL_RELATIVE_ALT || WayPoints[waypoint_active].frametype == MAV_FRAME_GLOBAL_RELATIVE_ALT_INT) {
+				sprintf(tmp_str, "Alt   : %0.1fm rel", WayPoints[waypoint_active].p_alt);
+			} else {
+				sprintf(tmp_str, "Alt   : %0.1fm ???", WayPoints[waypoint_active].p_alt);
+			}
+			draw_text_f3(esContext, -1.1, -0.9 + (n_y * step_y), 0.0025, 0.1, 0.1, FONT_GREEN, tmp_str);
+			draw_text_button(esContext, "wpedit_alt_", VIEW_MODE_WPEDIT, "[G]", FONT_GREEN, 0.6, -0.9 + (n_y * step_y), 0.002, 0.1, ALIGN_RIGHT, ALIGN_TOP, wpedit_waypoint_alt_set, 0.0);
+			draw_text_button(esContext, "wpedit_alt-", VIEW_MODE_WPEDIT, "[-]", FONT_GREEN, 0.8, -0.9 + (n_y * step_y), 0.002, 0.1, ALIGN_LEFT, ALIGN_TOP, wpedit_waypoint_alt_set, -1.0);
+			draw_text_button(esContext, "wpedit_alt+", VIEW_MODE_WPEDIT, "[+]", FONT_GREEN, 1.2, -0.9 + (n_y * step_y), 0.002, 0.1, ALIGN_RIGHT, ALIGN_TOP, wpedit_waypoint_alt_set, 1.0);
+			n_y++;
+
 			sprintf(tmp_str, "RADIUS: %0.1fm", WayPoints[waypoint_active].param1);
 			draw_text_f3(esContext, -1.1, -0.9 + (n_y * step_y), 0.0025, 0.1, 0.1, FONT_GREEN, tmp_str);
 			draw_text_button(esContext, "wpedit_param1-", VIEW_MODE_WPEDIT, "[-]", FONT_GREEN, 0.8, -0.9 + (n_y * step_y), 0.002, 0.1, ALIGN_LEFT, ALIGN_TOP, wpedit_waypoint_param1_set, -1.0);
@@ -193,6 +191,27 @@ void screen_wpedit (ESContext *esContext) {
 			draw_text_button(esContext, "wpedit_frametype+", VIEW_MODE_WPEDIT, "[+]", FONT_GREEN, 1.2, -0.9 + (n_y * step_y), 0.002, 0.1, ALIGN_RIGHT, ALIGN_TOP, wpedit_waypoint_frametype_set, 1.0);
 			n_y++;
 		} else if (strcmp(WayPoints[waypoint_active].command, "SET_ROI") == 0) {
+			sprintf(tmp_str, "LAT   : %f", WayPoints[waypoint_active].p_lat);
+			draw_text_f3(esContext, -1.1, -0.9 + (n_y * step_y), 0.0025, 0.1, 0.1, FONT_GREEN, tmp_str);
+			n_y++;
+
+			sprintf(tmp_str, "LON   : %f", WayPoints[waypoint_active].p_long);
+			draw_text_f3(esContext, -1.1, -0.9 + (n_y * step_y), 0.0025, 0.1, 0.1, FONT_GREEN, tmp_str);
+			n_y++;
+
+			if (WayPoints[waypoint_active].frametype == MAV_FRAME_GLOBAL) {
+				sprintf(tmp_str, "Alt   : %0.1fm abs", WayPoints[waypoint_active].p_alt);
+			} else if (WayPoints[waypoint_active].frametype == MAV_FRAME_GLOBAL_RELATIVE_ALT || WayPoints[waypoint_active].frametype == MAV_FRAME_GLOBAL_RELATIVE_ALT_INT) {
+				sprintf(tmp_str, "Alt   : %0.1fm rel", WayPoints[waypoint_active].p_alt);
+			} else {
+				sprintf(tmp_str, "Alt   : %0.1fm ???", WayPoints[waypoint_active].p_alt);
+			}
+			draw_text_f3(esContext, -1.1, -0.9 + (n_y * step_y), 0.0025, 0.1, 0.1, FONT_GREEN, tmp_str);
+			draw_text_button(esContext, "wpedit_alt_", VIEW_MODE_WPEDIT, "[G]", FONT_GREEN, 0.6, -0.9 + (n_y * step_y), 0.002, 0.1, ALIGN_RIGHT, ALIGN_TOP, wpedit_waypoint_alt_set, 0.0);
+			draw_text_button(esContext, "wpedit_alt-", VIEW_MODE_WPEDIT, "[-]", FONT_GREEN, 0.8, -0.9 + (n_y * step_y), 0.002, 0.1, ALIGN_LEFT, ALIGN_TOP, wpedit_waypoint_alt_set, -1.0);
+			draw_text_button(esContext, "wpedit_alt+", VIEW_MODE_WPEDIT, "[+]", FONT_GREEN, 1.2, -0.9 + (n_y * step_y), 0.002, 0.1, ALIGN_RIGHT, ALIGN_TOP, wpedit_waypoint_alt_set, 1.0);
+			n_y++;
+
 			if (WayPoints[waypoint_active].frametype == MAV_FRAME_GLOBAL) {
 				sprintf(tmp_str, "FTYPE : GLOBAL");
 			} else if (WayPoints[waypoint_active].frametype == MAV_FRAME_GLOBAL_RELATIVE_ALT || WayPoints[waypoint_active].frametype == MAV_FRAME_GLOBAL_RELATIVE_ALT_INT) {
