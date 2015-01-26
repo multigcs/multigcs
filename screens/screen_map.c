@@ -1502,9 +1502,7 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 			grid_x = w / mpp / img_overlap;
 			grid_y = h / mpp / img_overlap;
 		}
-
 		n = 1;
-
 		float n_x = 0.0;
 		float n_y = 0.0;
 		float center_x = min_x + (max_x - min_x) / 2.0;
@@ -1546,6 +1544,14 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 				sprintf(WayPoints[n].name, "PIC%i", n);
 				strcpy(WayPoints[n].command, "WAYPOINT");
 				n++;
+
+				WayPoints[n].p_lat = 1.0;
+				WayPoints[n].p_long = 0.0;
+				WayPoints[n].p_alt = 0.0;
+				WayPoints[n].frametype = 0;
+				sprintf(WayPoints[n].name, "SHUTTER%i", n);
+				strcpy(WayPoints[n].command, "SHUTTER");
+				n++;
 			}
 			n_y += grid_y;
 			lnx = ltx + cos((cam_angle + 90.0) * DEG2RAD) * n_y;
@@ -1577,6 +1583,14 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 				WayPoints[n].frametype = 0;
 				sprintf(WayPoints[n].name, "PIC%i", n);
 				strcpy(WayPoints[n].command, "WAYPOINT");
+				n++;
+
+				WayPoints[n].p_lat = 1.0;
+				WayPoints[n].p_long = 0.0;
+				WayPoints[n].p_alt = 0.0;
+				WayPoints[n].frametype = 0;
+				sprintf(WayPoints[n].name, "SHUTTER%i", n);
+				strcpy(WayPoints[n].command, "SHUTTER");
 				n++;
 			}
 		}
@@ -1673,9 +1687,9 @@ void map_draw_cam_setup (ESContext *esContext) {
 		draw_text_button(esContext, "cam_angle", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		ny++;
 	}
-	draw_text_button(esContext, "cam_export_kml", setup.view_mode, "[KML]", FONT_GREEN, px2 - 0.55, py2 - 0.075, 0.005, 0.07, ALIGN_RIGHT, ALIGN_TOP, map_cam_export_kml, 0.0);
-	draw_text_button(esContext, "cam_setup_write", setup.view_mode, "[WRITE]", FONT_GREEN, px2 - 0.25, py2 - 0.075, 0.005, 0.07, ALIGN_RIGHT, ALIGN_TOP, map_cam_set, 0.0);
-	draw_text_button(esContext, "cam_setup_done", setup.view_mode, "[DONE]", FONT_GREEN, px2 - 0.02, py2 - 0.075, 0.005, 0.07, ALIGN_RIGHT, ALIGN_TOP, map_cam_set, 0.0);
+	draw_text_button(esContext, "cam_export_kml", setup.view_mode, "[KML]", FONT_GREEN, px2 - 0.62, py2 - 0.075, 0.005, 0.07, ALIGN_RIGHT, ALIGN_TOP, map_cam_export_kml, 0.0);
+	draw_text_button(esContext, "cam_setup_write", setup.view_mode, "[WRITE]", FONT_GREEN, px2 - 0.32, py2 - 0.075, 0.005, 0.07, ALIGN_RIGHT, ALIGN_TOP, map_cam_set, 0.0);
+	draw_text_button(esContext, "cam_setup_done", setup.view_mode, "[CLOSE]", FONT_GREEN, px2 - 0.02, py2 - 0.075, 0.005, 0.07, ALIGN_RIGHT, ALIGN_TOP, map_cam_set, 0.0);
 	draw_rect_f3(esContext, px1, py1, 0.005, px2, py2, 0.005, 255, 255, 255, 255);
 }
 
@@ -2031,7 +2045,7 @@ void map_draw_buttons (ESContext *esContext) {
 		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
 		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
 		draw_button(esContext, "wp_shutter", setup.view_mode, "SHUTTER", FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_addmode_change, 1.0);
-		draw_text_button(esContext, "wp_shutter_", setup.view_mode, "add trigger shutter", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_addmode_change, 1.0);
+		draw_text_button(esContext, "wp_shutter_", setup.view_mode, "trigger cam", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_addmode_change, 1.0);
 		ny2++;
 		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
 		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
