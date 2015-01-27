@@ -136,16 +136,54 @@ void screen_fms (ESContext *esContext) {
 			draw_circleFilled_f(esContext, ss, -0.55 + ((n2 - 1) * step_y), 0.01, 0, 255, 0, 128);
 			draw_circleFilled_f(esContext, ss, -0.55 + (n2 * step_y), 0.01, 0, 255, 0, 128);
 
+
 			sprintf(tmp_str, "%s", WayPoints[n].name);
 			draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, -1.2, -0.7 + (n2 * step_y), 0.002, 0.1, 0, 0, fms_select, (float)n);
-
 			if (WayPoints[n].command[0] == 0) {
 				strcpy(tmp_str, "---");
 			} else {
 				sprintf(tmp_str, "%s", WayPoints[n].command);
 			}
 			draw_text_f3(esContext, -1.2 + 0.01, -0.7 + (n2 * step_y) - 0.04, 0.002, 0.05, 0.05, FONT_GREEN, tmp_str);
-			if (strcmp(WayPoints[n].command, "SHUTTER") != 0) {
+
+			int nny = 0;
+			int nny2 = 0;
+			if (strcmp(WayPoints[n].command, "SHUTTER") == 0) {
+			} else if (strcmp(WayPoints[n].command, "RTL") == 0) {
+			} else if (strcmp(WayPoints[n].command, "LAND") == 0) {
+			} else if (strcmp(WayPoints[n].command, "SHUTTER_INT") == 0) {
+				sprintf(tmp_str, "Dist:%0.1fm", WayPoints[n].param1);
+				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.75 + (nny++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
+			} else if (strcmp(WayPoints[n].command, "RELAY") == 0) {
+				sprintf(tmp_str, "NUM:%0.0f", WayPoints[n].param1);
+				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.75 + (nny++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
+				sprintf(tmp_str, "SET/UNSET:%0.0f", WayPoints[n].param2);
+				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.75 + (nny++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
+			} else if (strcmp(WayPoints[n].command, "RELAY_REP") == 0) {
+				sprintf(tmp_str, "NUM:%0.1f", WayPoints[n].param1);
+				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.75 + (nny++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
+				sprintf(tmp_str, "TOGGLES:%0.0f", WayPoints[n].param2);
+				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.75 + (nny++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
+				sprintf(tmp_str, "SECONDS:%0.0f", WayPoints[n].param3);
+				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, 0.1, -0.75 + (nny2++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
+			} else if (strcmp(WayPoints[n].command, "SERVO") == 0) {
+				sprintf(tmp_str, "NUM:%0.1f", WayPoints[n].param1);
+				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.75 + (nny++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
+				sprintf(tmp_str, "POS:%0.0f", WayPoints[n].param2);
+				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.75 + (nny++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
+			} else if (strcmp(WayPoints[n].command, "SERVO_REP") == 0) {
+				sprintf(tmp_str, "NUM:%0.1f", WayPoints[n].param1);
+				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.75 + (nny++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
+				sprintf(tmp_str, "POS:%0.0f", WayPoints[n].param2);
+				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.75 + (nny++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
+				sprintf(tmp_str, "TOGGLES:%0.0f", WayPoints[n].param3);
+				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, 0.1, -0.75 + (nny2++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
+				sprintf(tmp_str, "SECONDS:%0.0f", WayPoints[n].param4);
+				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, 0.1, -0.75 + (nny2++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
+			} else if (strcmp(WayPoints[n].command, "TAKEOFF") == 0) {
+				sprintf(tmp_str, "PITCH:%0.0f", WayPoints[n].param2);
+				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.75 + (nny++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
+			} else {
 				if (WayPoints[n].p_lat == 0.0) {
 					strcpy(tmp_str, "---");
 				} else {
@@ -169,7 +207,7 @@ void screen_fms (ESContext *esContext) {
 						sprintf(tmp_str, "%0.1fm ???", WayPoints[n].p_alt);
 					}
 				}
-				draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, 1.3, -0.7 + (n2 * step_y), 0.002, 0.1, 2, 0, fms_select, (float)n);
+				draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, 1.25, -0.7 + (n2 * step_y), 0.002, 0.1, 2, 0, fms_select, (float)n);
 			}
 
 			sprintf(tmp_str2, "%s-%i-d", WayPoints[n].name, n);

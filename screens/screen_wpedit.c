@@ -387,7 +387,6 @@ void screen_wpedit (ESContext *esContext) {
 			n_y++;
 		}
 	}
-
 	draw_text_button(esContext, "map_read_wp", VIEW_MODE_WPEDIT, "READ_WP", FONT_GREEN_BG, -0.2, 0.9, 0.002, 0.06, 1, 0, read_wp, 0.0);
 	draw_text_button(esContext, "map_write_wp", VIEW_MODE_WPEDIT, "WRITE_WP", FONT_GREEN_BG, 0.2, 0.9, 0.002, 0.06, 1, 0, write_wp, 0.0);
 }
