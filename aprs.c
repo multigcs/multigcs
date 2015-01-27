@@ -65,8 +65,8 @@ int aprs_exit (void) {
 void aprs_pos_update(char *id, float lat, float lon) {
 	int n = 0;
 	// filter
-	float diff_lat = lat - ModelData.p_lat;
-	float diff_lon = lon - ModelData.p_long;
+	float diff_lat = lat - ModelData[ModelActive].p_lat;
+	float diff_lon = lon - ModelData[ModelActive].p_long;
 	if (diff_lat < 1.0 && diff_lat > -1.0 && diff_lon < 1.0 && diff_lon > -1.0) {
 	} else {
 		return;

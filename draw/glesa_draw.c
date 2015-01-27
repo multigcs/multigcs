@@ -679,7 +679,7 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 				glDisable(GL_TEXTURE_2D);
 			}
-			if (alpha1 > 0.0 && ((float)_alt1 > ModelData.p_alt || (float)_alt2 > ModelData.p_alt || (float)_alt3 > ModelData.p_alt || (float)_alt4 > ModelData.p_alt)) {
+			if (alpha1 > 0.0 && ((float)_alt1 > ModelData[ModelActive].p_alt || (float)_alt2 > ModelData[ModelActive].p_alt || (float)_alt3 > ModelData[ModelActive].p_alt || (float)_alt4 > ModelData[ModelActive].p_alt)) {
 				glColor4f(255.0, 0.0, 0.0, alpha1);
 				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
 			} else if (alpha2 > 0.0) {

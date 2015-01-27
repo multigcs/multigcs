@@ -275,7 +275,7 @@ static void rcflow_tcl_init (void) {
 		SDL_Log("rcflow: ...failed (%s)\n", Tcl_GetStringResult(rcflow_tcl_interp));
 		return;
 	}
-//	Tcl_CreateObjCommand(rcflow_tcl_interp, "ModelData", ModelData_Cmd, NULL, NULL);
+//	Tcl_CreateObjCommand(rcflow_tcl_interp, "ModelData[ModelActive]", ModelData[ModelActive]_Cmd, NULL, NULL);
 	Tcl_CreateObjCommand(rcflow_tcl_interp, "set_output", rcflow_tcl_output_Cmd, NULL, NULL);
 	SDL_Log("...done\n");
 */
@@ -489,7 +489,7 @@ void rcflow_parseTelemetry (xmlDocPtr doc, xmlNodePtr cur) {
 		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"type"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
-				ModelData.teletype = rctransmitter_get_type_by_name((char *)key);
+				ModelData[ModelActive].teletype = rctransmitter_get_type_by_name((char *)key);
 			}
 			xmlFree(key);
 		}
@@ -617,7 +617,7 @@ static void rcflow_parseDoc (char *docname) {
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"image"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
-				strcpy(ModelData.image, (char *)key);
+				strcpy(ModelData[ModelActive].image, (char *)key);
 			}
 			xmlFree(key);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"scale"))) {
@@ -1226,7 +1226,7 @@ uint8_t rcflow_save_xml (char *name, float x, float y, int8_t button, float data
 	if (fr != 0) {
 		fprintf(fr, "<rcflow>\n");
 		fprintf(fr, " <name>%s</name>\n", setup_name);
-		fprintf(fr, " <image>%s</image>\n", ModelData.image);
+		fprintf(fr, " <image>%s</image>\n", ModelData[ModelActive].image);
 		fprintf(fr, " <scale>%f</scale>\n", scale);
 		fprintf(fr, " <virt_view>%i</virt_view>\n", virt_view);
 		fprintf(fr, " <mavlink>\n");
@@ -4020,7 +4020,7 @@ void screen_rcflow (ESContext *esContext) {
 	glEnable( GL_DEPTH_TEST );
 
 
-//	rcflow_tcl_run("puts $ModelData(name)");
+//	rcflow_tcl_run("puts $ModelData[ModelActive](name)");
 
 
 //SDL_Log("%i %i %i\n", (int)sizeof(RcPluginEmbedded), (int)sizeof(RcLinkEmbedded), (int)sizeof(RcPluginEmbedded) + (int)sizeof(RcLinkEmbedded));

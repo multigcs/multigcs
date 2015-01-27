@@ -2,6 +2,8 @@
 #ifndef MODEL_H
 #define MODEL_H
 
+#define MODELS_MAX 2
+
 enum {
 	TELETYPE_MULTIWII_21,
 	TELETYPE_AUTOQUAD,
@@ -115,7 +117,8 @@ typedef struct {
 	float sp_radius;
 } Ground;
 
-extern Model ModelData;
+extern uint8_t ModelActive;
+extern Model ModelData[MODELS_MAX];
 extern Ground GroundData;
 extern char teletypes[16][16];
 extern char modeltypes[5][15];

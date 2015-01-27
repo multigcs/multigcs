@@ -149,10 +149,10 @@ void simplebgc_update (void) {
 						SDL_Log("	AXIS %i\n", data_buffer[4]);
 					} else if (data_cmd == 'D') {
 						info_num = 2;
-						ModelData.heartbeat = 100;
-						ModelData.roll = (float)simplebgc_read16(data_buffer, 38) / 10.0;
-						ModelData.pitch = (float)simplebgc_read16(data_buffer, 40) / 10.0;
-						ModelData.yaw = (float)simplebgc_read16(data_buffer, 42) / 10.0;
+						ModelData[ModelActive].heartbeat = 100;
+						ModelData[ModelActive].roll = (float)simplebgc_read16(data_buffer, 38) / 10.0;
+						ModelData[ModelActive].pitch = (float)simplebgc_read16(data_buffer, 40) / 10.0;
+						ModelData[ModelActive].yaw = (float)simplebgc_read16(data_buffer, 42) / 10.0;
 					} else if (data_cmd == 'R') {
 						info_num = 2;
 						memcpy(&simplebgc_setup, &data_buffer[1], sizeof(SimpleBgcSetup));

@@ -33,14 +33,14 @@ static uint8_t model_null (char *name, float x, float y, int8_t button, float da
 }
 
 static uint8_t model_reconnect (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	set_telemetry(ModelData.teledevice, ModelData.telebaud);
+	set_telemetry(ModelData[ModelActive].teledevice, ModelData[ModelActive].telebaud);
 	return 0;
 }
 
 
 uint8_t model_teletype_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int)data < TELETYPE_LAST) {
-		ModelData.teletype = (int)data;
+		ModelData[ModelActive].teletype = (int)data;
 	}
 	select_teletype = 0;
 	reset_telemetry();
@@ -48,10 +48,10 @@ uint8_t model_teletype_set (char *name, float x, float y, int8_t button, float d
 }
 
 static uint8_t model_modeltype_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	if (ModelData.modeltype < MODELTYPE_LAST - 1) {
-		ModelData.modeltype++;
+	if (ModelData[ModelActive].modeltype < MODELTYPE_LAST - 1) {
+		ModelData[ModelActive].modeltype++;
 	} else {
-		ModelData.modeltype = 0;
+		ModelData[ModelActive].modeltype = 0;
 	}
 	return 0;
 }
@@ -64,7 +64,7 @@ static uint8_t model_teletype_change (char *name, float x, float y, int8_t butto
 
 
 static uint8_t model_baud_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	ModelData.telebaud = atoi(name);
+	ModelData[ModelActive].telebaud = atoi(name);
 	return 0;
 }
 
@@ -76,7 +76,7 @@ static uint8_t model_baud_change (char *name, float x, float y, int8_t button, f
 
 
 static uint8_t model_device_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	strncpy(ModelData.teledevice, name, 199);
+	strncpy(ModelData[ModelActive].teledevice, name, 199);
 	return 0;
 }
 
@@ -92,13 +92,13 @@ static uint8_t model_device_change (char *name, float x, float y, int8_t button,
 }
 
 static uint8_t model_name_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	strncpy(ModelData.name, name, 199);
+	strncpy(ModelData[ModelActive].name, name, 199);
 	return 0;
 }
 
 static uint8_t model_name_edit (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	keyboard_set_callback(model_name_set);
-	keyboard_set_text(ModelData.name);
+	keyboard_set_text(ModelData[ModelActive].name);
 	keyboard_set_mode(setup.view_mode);
 	return 0;
 }
@@ -113,16 +113,16 @@ static uint8_t model_save_xml (char *name, float x, float y, int8_t button, floa
         fr = fopen(tmp_str, "wb");
 	if (fr != 0) {
 		fprintf(fr, "<rcflow>\n");
-		fprintf(fr, " <name>%s</name>\n", ModelData.name);
-		fprintf(fr, " <image>%s</image>\n", ModelData.image);
-		fprintf(fr, " <type>%s</type>\n", modeltypes[ModelData.modeltype]);
+		fprintf(fr, " <name>%s</name>\n", ModelData[ModelActive].name);
+		fprintf(fr, " <image>%s</image>\n", ModelData[ModelActive].image);
+		fprintf(fr, " <type>%s</type>\n", modeltypes[ModelData[ModelActive].modeltype]);
 		fprintf(fr, " <telemetry>\n");
-		fprintf(fr, "  <type>%s</type>\n", teletypes[ModelData.teletype]);
-		fprintf(fr, "  <device>%s</device>\n", ModelData.teledevice);
-		fprintf(fr, "  <baud>%i</baud>\n", ModelData.telebaud);
-		if (strstr(ModelData.teledevice, "rfcomm") > 0) {
-			fprintf(fr, "  <bluetooth_addr>%s</bluetooth_addr>\n", ModelData.telebtaddr);
-			fprintf(fr, "  <bluetooth_pin>%s</bluetooth_pin>\n", ModelData.telebtpin);
+		fprintf(fr, "  <type>%s</type>\n", teletypes[ModelData[ModelActive].teletype]);
+		fprintf(fr, "  <device>%s</device>\n", ModelData[ModelActive].teledevice);
+		fprintf(fr, "  <baud>%i</baud>\n", ModelData[ModelActive].telebaud);
+		if (strstr(ModelData[ModelActive].teledevice, "rfcomm") > 0) {
+			fprintf(fr, "  <bluetooth_addr>%s</bluetooth_addr>\n", ModelData[ModelActive].telebtaddr);
+			fprintf(fr, "  <bluetooth_pin>%s</bluetooth_pin>\n", ModelData[ModelActive].telebtpin);
 		}
 		fprintf(fr, " </telemetry>\n");
 		mavlink_xml_save(fr);
@@ -138,10 +138,10 @@ uint8_t model_save (char *name, float x, float y, int8_t button, float data, uin
 	char tmp_str[200];
 	reset_buttons();
 	keyboard_set_callback(model_save_xml);
-	if (strstr(ModelData.name, ".xml\0") > 0) {
-		strncpy(tmp_str, ModelData.name, 199);
+	if (strstr(ModelData[ModelActive].name, ".xml\0") > 0) {
+		strncpy(tmp_str, ModelData[ModelActive].name, 199);
 	} else {
-		sprintf(tmp_str, "%s.xml", ModelData.name);
+		sprintf(tmp_str, "%s.xml", ModelData[ModelActive].name);
 	}
 	keyboard_set_text(tmp_str);
 	keyboard_set_mode(setup.view_mode);
@@ -162,31 +162,31 @@ static void model_parseTelemetry (xmlDocPtr doc, xmlNodePtr cur) {
 		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"type"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
-				ModelData.teletype = model_get_teletype_by_name((char *)key);
+				ModelData[ModelActive].teletype = model_get_teletype_by_name((char *)key);
 			}
 			xmlFree(key);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"device"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
-				strncpy(ModelData.teledevice, (char *)key, 199);
+				strncpy(ModelData[ModelActive].teledevice, (char *)key, 199);
 			}
 			xmlFree(key);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"baud"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
-				ModelData.telebaud = atoi((char *)key);
+				ModelData[ModelActive].telebaud = atoi((char *)key);
 			}
 			xmlFree(key);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"bluetooth_addr"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
-				strncpy(ModelData.telebtaddr, (char *)key, 199);
+				strncpy(ModelData[ModelActive].telebtaddr, (char *)key, 199);
 			}
 			xmlFree(key);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"bluetooth_pin"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
-				strncpy(ModelData.telebtpin, (char *)key, 199);
+				strncpy(ModelData[ModelActive].telebtpin, (char *)key, 199);
 			}
 			xmlFree(key);
 		}
@@ -229,28 +229,28 @@ static void model_parseDoc (char *docname) {
 		die("Document is Empty!!!\n");
 		return;
 	}
-	strncpy(ModelData.name, basename(docname), 199);
+	strncpy(ModelData[ModelActive].name, basename(docname), 199);
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
 		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"name"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
-				strncpy(ModelData.name, (char *)key, 199);
-				if (strstr(ModelData.name, ".xml\0") <= 0) {
-					strcat(ModelData.name, ".xml");
+				strncpy(ModelData[ModelActive].name, (char *)key, 199);
+				if (strstr(ModelData[ModelActive].name, ".xml\0") <= 0) {
+					strcat(ModelData[ModelActive].name, ".xml");
 				}
 			}
 			xmlFree(key);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"image"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
-				strncpy(ModelData.image, (char *)key, 511);
+				strncpy(ModelData[ModelActive].image, (char *)key, 511);
 			}
 			xmlFree(key);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"type"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
-				ModelData.modeltype = model_get_modeltype_by_name((char *)key);
+				ModelData[ModelActive].modeltype = model_get_modeltype_by_name((char *)key);
 			}
 			xmlFree(key);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"telemetry"))) {
@@ -289,7 +289,7 @@ static uint8_t model_load (char *name, float x, float y, int8_t button, float da
 }
 
 static uint8_t model_image_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	strncpy(ModelData.image, name, 511);
+	strncpy(ModelData[ModelActive].image, name, 511);
 	reset_buttons();
 	return 0;
 }
@@ -348,19 +348,19 @@ void screen_model (ESContext *esContext) {
 	draw_text_button(esContext, "model_load", VIEW_MODE_MODEL, "[LOAD]", FONT_WHITE, 1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_RIGHT, ALIGN_TOP, model_load, 0);
 
 	draw_text_button(esContext, "model_load2", VIEW_MODE_MODEL, "NAME:", FONT_WHITE, -1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_name_edit, 0);
-	if (ModelData.name[0] == 0) {
-		strcpy(ModelData.name, "model1");
+	if (ModelData[ModelActive].name[0] == 0) {
+		strcpy(ModelData[ModelActive].name, "model1");
 	}
-	sprintf(tmp_str, "%s", ModelData.name);
+	sprintf(tmp_str, "%s", ModelData[ModelActive].name);
 	draw_text_button(esContext, "model_name_edit", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_name_edit, 0);
 	n++;
 
 	draw_text_button(esContext, "model_type", VIEW_MODE_MODEL, "TYPE:", FONT_WHITE, -1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_modeltype_change, 0);
-	draw_text_button(esContext, "modeltype_change", VIEW_MODE_MODEL, modeltypes[ModelData.modeltype], FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_modeltype_change, 0);
+	draw_text_button(esContext, "modeltype_change", VIEW_MODE_MODEL, modeltypes[ModelData[ModelActive].modeltype], FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_modeltype_change, 0);
 
 
 #ifdef SDLGL
-	sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, modeltypes[ModelData.modeltype]);
+	sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, modeltypes[ModelData[ModelActive].modeltype]);
 	if (file_exists(tmp_str) != 0) {
 		static uint8_t startup = 0;
 		static float rotate = 0.0;
@@ -379,11 +379,11 @@ void screen_model (ESContext *esContext) {
 		glMatrixMode( GL_MODELVIEW );
 		glLoadIdentity();
 	} else {
-		sprintf(tmp_str, "%s/textures/%s.png", BASE_DIR, modeltypes[ModelData.modeltype]);
+		sprintf(tmp_str, "%s/textures/%s.png", BASE_DIR, modeltypes[ModelData[ModelActive].modeltype]);
 		draw_image_f3(esContext, -1.1 + 1.0, -0.8 + n * 0.12 - 0.02, -1.1 + 1.0 + 0.1, -0.8 + n * 0.12 + 0.1 - 0.02, 0.002, tmp_str);
 	}
 #else
-	sprintf(tmp_str, "%s/textures/%s.png", BASE_DIR, modeltypes[ModelData.modeltype]);
+	sprintf(tmp_str, "%s/textures/%s.png", BASE_DIR, modeltypes[ModelData[ModelActive].modeltype]);
 	draw_image_f3(esContext, -1.1 + 1.0, -0.8 + n * 0.12 - 0.02, -1.1 + 1.0 + 0.1, -0.8 + n * 0.12 + 0.1 - 0.02, 0.002, tmp_str);
 #endif
 
@@ -391,7 +391,7 @@ void screen_model (ESContext *esContext) {
 	n++;
 
 	draw_text_button(esContext, "model_image_change", VIEW_MODE_MODEL, "IMAGE:", FONT_WHITE, -1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_image_change, 0);
-	draw_image_f3(esContext, -1.1 + 0.3, -0.8 + n * 0.12 - 0.02, -1.2 + 0.3 + 0.4, -0.8 + n * 0.12 + 0.3 - 0.02, 0.002, ModelData.image);
+	draw_image_f3(esContext, -1.1 + 0.3, -0.8 + n * 0.12 - 0.02, -1.2 + 0.3 + 0.4, -0.8 + n * 0.12 + 0.3 - 0.02, 0.002, ModelData[ModelActive].image);
 	n++;
 
 	n++;
@@ -400,12 +400,12 @@ void screen_model (ESContext *esContext) {
 	n++;
 
 	draw_text_button(esContext, "model_load3", VIEW_MODE_MODEL, "TYPE:", FONT_WHITE, -1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_teletype_change, 0);
-	draw_text_button(esContext, "model_teletype_change", VIEW_MODE_MODEL, teletypes[ModelData.teletype], FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_teletype_change, 0);
+	draw_text_button(esContext, "model_teletype_change", VIEW_MODE_MODEL, teletypes[ModelData[ModelActive].teletype], FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_teletype_change, 0);
 	n++;
 
 
 #ifdef SDLGL
-	sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, teletypes[ModelData.teletype]);
+	sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, teletypes[ModelData[ModelActive].teletype]);
 	if (file_exists(tmp_str) != 0) {
 		static uint8_t startup = 0;
 		static float rotate = 0.0;
@@ -428,32 +428,32 @@ void screen_model (ESContext *esContext) {
 
 
 	draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "DEVICE:");
-	if (ModelData.teledevice[0] == 0) {
-		strcpy(ModelData.teledevice, "/dev/rfcomm0");
+	if (ModelData[ModelActive].teledevice[0] == 0) {
+		strcpy(ModelData[ModelActive].teledevice, "/dev/rfcomm0");
 	}
-	sprintf(tmp_str, "%s [SELECT]", ModelData.teledevice);
+	sprintf(tmp_str, "%s [SELECT]", ModelData[ModelActive].teledevice);
 	draw_text_button(esContext, "device_select", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_device_change, 0);
 
 	n++;
 	draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "BAUD:");
-	sprintf(tmp_str, "%i [CHANGE]", ModelData.telebaud);
+	sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].telebaud);
 	draw_text_button(esContext, "rc_baud", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_baud_change, n);
 
-	if (strstr(ModelData.teledevice, "rfcomm") > 0) {
+	if (strstr(ModelData[ModelActive].teledevice, "rfcomm") > 0) {
 		n++;
 		draw_text_f3(esContext, -1.1 + 0.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "BLUETOOTH_DEVICE:");
-		if (ModelData.telebtaddr[0] == 0) {
-			strcpy(ModelData.telebtaddr, "00:00:00:00:00:00");
+		if (ModelData[ModelActive].telebtaddr[0] == 0) {
+			strcpy(ModelData[ModelActive].telebtaddr, "00:00:00:00:00:00");
 		}
-		sprintf(tmp_str, "%s [RESCAN]", ModelData.telebtaddr);
+		sprintf(tmp_str, "%s [RESCAN]", ModelData[ModelActive].telebtaddr);
 		draw_text_button(esContext, "bt_scan", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.8, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_null, n);
 
 		n++;
 		draw_text_f3(esContext, -1.1 + 0.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "BLUETOOTH_PIN:");
-		if (ModelData.telebtpin[0] == 0) {
-			strcpy(ModelData.telebtpin, "1234");
+		if (ModelData[ModelActive].telebtpin[0] == 0) {
+			strcpy(ModelData[ModelActive].telebtpin, "1234");
 		}
-		sprintf(tmp_str, "%s [CHANGE]", ModelData.telebtpin);
+		sprintf(tmp_str, "%s [CHANGE]", ModelData[ModelActive].telebtpin);
 		draw_text_button(esContext, "bt_pin", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.8, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_null, n);
 	} else {
 		n++;

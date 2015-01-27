@@ -59,8 +59,8 @@ int thread_serial_frsky (void *unused) {
 					buffer_ptr = 0;
 					start = 1;
 				} else if (type != 0 && new == 0x7e && buffer_ptr > 0) {
-					ModelData.heartbeat_rc = 100;
-					ModelData.found_rc = 1;
+					ModelData[ModelActive].heartbeat_rc = 100;
+					ModelData[ModelActive].found_rc = 1;
 					last_connection = time(0);
 					if (type == 0xfe) {
 //						SDL_Log("# remote voltage and link quality (len=%i) #\n", buffer_ptr);
@@ -69,10 +69,10 @@ int thread_serial_frsky (void *unused) {
 //						SDL_Log("	Strom        %0.1f A\n", ((float)buffer[1] - 129.0) * 100.0 / 126.0);
 //						SDL_Log("	LQI-UpLink   %i %%\n", (buffer[2] - 40) * 100 / 70);
 //						SDL_Log("	LQI-DownLink %i %%\n", buffer[3] / 2);
-						ModelData.rssi_rc_rx = (buffer[2] - 40) * 100 / 70;
-						ModelData.rssi_rc_tx = buffer[3] / 2;
-						ModelData.voltage_rx = (float)buffer[0] * 3.3 / 255.0 * 4.0;
-						ModelData.ampere = ((float)buffer[1] - 129.0) * 100.0 / 126.0;
+						ModelData[ModelActive].rssi_rc_rx = (buffer[2] - 40) * 100 / 70;
+						ModelData[ModelActive].rssi_rc_tx = buffer[3] / 2;
+						ModelData[ModelActive].voltage_rx = (float)buffer[0] * 3.3 / 255.0 * 4.0;
+						ModelData[ModelActive].ampere = ((float)buffer[1] - 129.0) * 100.0 / 126.0;
 						redraw_flag = 1;
 					} else if (type == 0xfd) {
 //						SDL_Log("# user data (len=%i) #\n", buffer[0]);
@@ -89,7 +89,7 @@ int thread_serial_frsky (void *unused) {
 								if (buffer_user[1] == 0x06) {
 									float volt = ((((buffer_user[2] & 0x0f)<<8) + (buffer_user[3] & 0xff)) & 0x0fff) * 0.002;
 									uint16_t cell = buffer_user[2]>>4;
-									ModelData.voltage_zell[cell] = volt;
+									ModelData[ModelActive].voltage_zell[cell] = volt;
 									redraw_flag = 1;
 //									SDL_Log("############## Voltage: %i = %0.2f Volt\n", cell, volt);
 								} else if (buffer_user[1] == 0x03) {
@@ -98,12 +98,12 @@ int thread_serial_frsky (void *unused) {
 								} else if (buffer_user[1] == 0x02) {
 									int16_t temp1 = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
 									//SDL_Log("############## Temp1: %i\n", temp1 * 280 / 0xffff);
-									ModelData.temperature[0] = temp1;
+									ModelData[ModelActive].temperature[0] = temp1;
 									redraw_flag = 1;
 								} else if (buffer_user[1] == 0x05) {
 									int16_t temp2 = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
 									//SDL_Log("############## Temp2: %i\n", temp2 * 280 / 0xffff);
-									ModelData.temperature[1] = temp2;
+									ModelData[ModelActive].temperature[1] = temp2;
 									redraw_flag = 1;
 								} else if (buffer_user[1] == 0x04) {
 //									SDL_Log("############## Fuel: \n");
@@ -113,9 +113,9 @@ int thread_serial_frsky (void *unused) {
 								} else if (buffer_user[1] == 0x21) {
 									uint16_t alt = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
 									if (mode == 1) {
-										ModelData.baro = (float)BARO_alt + (float)alt / 100;
+										ModelData[ModelActive].baro = (float)BARO_alt + (float)alt / 100;
 										if (GPS_found == 0) {
-											ModelData.p_alt = (float)BARO_alt + (float)alt / 100;
+											ModelData[ModelActive].p_alt = (float)BARO_alt + (float)alt / 100;
 										}
 										redraw_flag = 1;
 									}
@@ -123,21 +123,21 @@ int thread_serial_frsky (void *unused) {
 								} else if (buffer_user[1] == 0x24) {
 									int16_t acc_x = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
 //									SDL_Log("############## Acc-x: %f\n", (float)acc_x / 100.0);
-									ModelData.acc_x = acc_x / 10.0;
+									ModelData[ModelActive].acc_x = acc_x / 10.0;
 								} else if (buffer_user[1] == 0x25) {
 									int16_t acc_y = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
 //									SDL_Log("############## Acc-y: %f\n", (float)acc_y / 100.0);
-									ModelData.acc_y = acc_y / 10.0;
+									ModelData[ModelActive].acc_y = acc_y / 10.0;
 								} else if (buffer_user[1] == 0x26) {
 									int16_t acc_z = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
 //									SDL_Log("############## Acc-z: %f\n", (float)acc_z / 100.0);
-									ModelData.acc_z = acc_z / 10.0;
+									ModelData[ModelActive].acc_z = acc_z / 10.0;
 								} else if (buffer_user[1] == 0x01) {
 									GPS_alt = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
 								} else if (buffer_user[1] == 0x01 + 8) {
 									uint16_t gps_alt = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
 									if (mode == 1) {
-										ModelData.p_alt = (float)GPS_alt + (float)gps_alt / 100;
+										ModelData[ModelActive].p_alt = (float)GPS_alt + (float)gps_alt / 100;
 										redraw_flag = 1;
 									}
 								} else if (buffer_user[1] == 0x11) {
@@ -145,7 +145,7 @@ int thread_serial_frsky (void *unused) {
 								} else if (buffer_user[1] == 0x11 + 8) {
 									uint16_t gps_speed = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
 									if (mode == 1) {
-										ModelData.speed = (float)GPS_speed + (float)gps_speed / 100;
+										ModelData[ModelActive].speed = (float)GPS_speed + (float)gps_speed / 100;
 										redraw_flag = 1;
 									}
 								} else if (buffer_user[1] == 0x12) {
@@ -155,7 +155,7 @@ int thread_serial_frsky (void *unused) {
 								} else if (buffer_user[1] == 0x12 + 8) {
 									uint16_t gps_long = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
 									if (mode == 1 && GPS_long_m != 0) {
-										ModelData.p_long = ((float)GPS_long_m + (float)gps_long / 10000.0) / 60.0 + (float)GPS_long_d;
+										ModelData[ModelActive].p_long = ((float)GPS_long_m + (float)gps_long / 10000.0) / 60.0 + (float)GPS_long_d;
 										GPS_found = 1;
 										redraw_flag = 1;
 									}
@@ -166,7 +166,7 @@ int thread_serial_frsky (void *unused) {
 								} else if (buffer_user[1] == 0x13 + 8) {
 									uint16_t gps_lat = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
 									if (mode == 1 && GPS_lat_m != 0) {
-										ModelData.p_lat = ((float)GPS_lat_m + (float)gps_lat / 10000.0) / 60.0 + (float)GPS_lat_d;
+										ModelData[ModelActive].p_lat = ((float)GPS_lat_m + (float)gps_lat / 10000.0) / 60.0 + (float)GPS_lat_d;
 										GPS_found = 1;
 										redraw_flag = 1;
 									}
@@ -175,7 +175,7 @@ int thread_serial_frsky (void *unused) {
 								} else if (buffer_user[1] == 0x14 + 8) {
 									uint16_t gps_curse = (buffer_user[3]<<8) + (buffer_user[2] & 0xff);
 									if (mode == 1) {
-										ModelData.yaw = (float)GPS_dir + (float)gps_curse / 100;
+										ModelData[ModelActive].yaw = (float)GPS_dir + (float)gps_curse / 100;
 										redraw_flag = 1;
 									}
 								} else if (buffer_user[1] == 0x15) {

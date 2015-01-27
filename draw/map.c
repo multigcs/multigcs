@@ -850,10 +850,10 @@ void mark_tunnel (ESContext *esContext, float last_lat, float last_long, float l
 	float my1 = 0.0;
 	float mx2 = 0.0;
 	float my2 = 0.0;
-	next_point(x1, y1, ModelData.yaw, 0.001, &nx1, &ny1);
-	next_point(x2, y2, ModelData.yaw, 0.001, &nx2, &ny2);
-	next_point(x1, y1, ModelData.yaw - 180.0, 0.001, &mx1, &my1);
-	next_point(x2, y2, ModelData.yaw - 180.0, 0.001, &mx2, &my2);
+	next_point(x1, y1, ModelData[ModelActive].yaw, 0.001, &nx1, &ny1);
+	next_point(x2, y2, ModelData[ModelActive].yaw, 0.001, &nx2, &ny2);
+	next_point(x1, y1, ModelData[ModelActive].yaw - 180.0, 0.001, &mx1, &my1);
+	next_point(x2, y2, ModelData[ModelActive].yaw - 180.0, 0.001, &mx2, &my2);
 	draw_line_f3(esContext, nx1, ny1, last_z - 0.0006, nx2, ny2, mark_z, 0, 255, 255, 127);
 	draw_line_f3(esContext, nx1, ny1, last_z + 0.0006, nx2, ny2, mark_z, 0, 255, 255, 127);
 	draw_line_f3(esContext, nx1, ny1, last_z - 0.0006, nx1, ny1, last_z + 0.0006, 0, 255, 255, 127);

@@ -132,7 +132,7 @@ void screen_mwi_menu (ESContext *esContext) {
 
 		for (n3 = 0; n3 < 4; n3++) {
 			if (n3 < 4) {
-				float val = (float)ModelData.radio[4 + n3] / 2.0 + 50.0;
+				float val = (float)ModelData[ModelActive].radio[4 + n3] / 2.0 + 50.0;
 				if (val > 100.0) {
 					val = 100.0;
 				} else if (val < -100.0) {
@@ -142,11 +142,11 @@ void screen_mwi_menu (ESContext *esContext) {
 			}
 			sprintf(tmp_str2, "   AUX%i", n3 + 1);
 			draw_text_button(esContext, "box", VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -0.85 + (float)n3 * 0.16 * 3.0, -0.87, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
-			if (ModelData.radio[4 + n3] < -40) {
+			if (ModelData[ModelActive].radio[4 + n3] < -40) {
 				draw_text_button(esContext, "box", VIEW_MODE_FCMENU, " L", FONT_GREEN, -0.8 + (float)n3 * 0.16 * 3.0, -0.8, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
 				draw_text_button(esContext, "box", VIEW_MODE_FCMENU, " M", FONT_WHITE, -0.8 + (float)n3 * 0.16 * 3.0 + 0.16, -0.8, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
 				draw_text_button(esContext, "box", VIEW_MODE_FCMENU, " H", FONT_WHITE, -0.8 + (float)n3 * 0.16 * 3.0 + 0.32, -0.8, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
-			} else if (ModelData.radio[4 + n3] > 40) {
+			} else if (ModelData[ModelActive].radio[4 + n3] > 40) {
 				draw_text_button(esContext, "box", VIEW_MODE_FCMENU, " L", FONT_WHITE, -0.8 + (float)n3 * 0.16 * 3.0, -0.8, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
 				draw_text_button(esContext, "box", VIEW_MODE_FCMENU, " M", FONT_WHITE, -0.8 + (float)n3 * 0.16 * 3.0 + 0.16, -0.8, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
 				draw_text_button(esContext, "box", VIEW_MODE_FCMENU, " H", FONT_GREEN, -0.8 + (float)n3 * 0.16 * 3.0 + 0.32, -0.8, 0.002, 0.08, 0, 0, mwi_null, (float)n3);
@@ -194,7 +194,7 @@ void screen_mwi_menu (ESContext *esContext) {
 			sprintf(tmp_str2, "%s", mwi_pid_names[n2]);
 			draw_text_button(esContext, "pid", VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -1.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 0, 0, mwi_null, (float)n2);
 			if (n2 < 3) {
-				float val = (float)ModelData.radio[n2] / 2.0 + 50.0;
+				float val = (float)ModelData[ModelActive].radio[n2] / 2.0 + 50.0;
 				if (val > 100.0) {
 					val = 100.0;
 				} else if (val < -100.0) {

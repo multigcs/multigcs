@@ -445,51 +445,51 @@ if (obj_id == HWFLYINGF3_OBJID) {
 	}
 }
 */
-						ModelData.roll = uavtalk_AttitudeActualData.Roll;
-						ModelData.pitch = uavtalk_AttitudeActualData.Pitch;
-						ModelData.yaw = uavtalk_AttitudeActualData.Yaw;
-						ModelData.acc_x = uavtalk_AccelsData.x / 10.0;
-						ModelData.acc_y = uavtalk_AccelsData.y / 10.0;
-						ModelData.acc_z = uavtalk_AccelsData.z / 10.0;
-						ModelData.gyro_x = uavtalk_GyrosData.x;
-						ModelData.gyro_y = uavtalk_GyrosData.y;
-						ModelData.gyro_z = uavtalk_GyrosData.z;
-						ModelData.load = uavtalk_SystemStatsData.CPULoad;
+						ModelData[ModelActive].roll = uavtalk_AttitudeActualData.Roll;
+						ModelData[ModelActive].pitch = uavtalk_AttitudeActualData.Pitch;
+						ModelData[ModelActive].yaw = uavtalk_AttitudeActualData.Yaw;
+						ModelData[ModelActive].acc_x = uavtalk_AccelsData.x / 10.0;
+						ModelData[ModelActive].acc_y = uavtalk_AccelsData.y / 10.0;
+						ModelData[ModelActive].acc_z = uavtalk_AccelsData.z / 10.0;
+						ModelData[ModelActive].gyro_x = uavtalk_GyrosData.x;
+						ModelData[ModelActive].gyro_y = uavtalk_GyrosData.y;
+						ModelData[ModelActive].gyro_z = uavtalk_GyrosData.z;
+						ModelData[ModelActive].load = uavtalk_SystemStatsData.CPULoad;
 /*
  * 						for (n2 = 0; n2 < 8; n2++) {
-							ModelData.radio[n2] = (int16_t)(uavtalk_ManualControlCommandData.Channel[n2] - 1500) / 5;
+							ModelData[ModelActive].radio[n2] = (int16_t)(uavtalk_ManualControlCommandData.Channel[n2] - 1500) / 5;
 						}
-						ModelData.radio[0] = (int16_t)(uavtalk_ManualControlCommandData.Roll * 100);
-						ModelData.radio[1] = (int16_t)(uavtalk_ManualControlCommandData.Pitch * 100);
-						ModelData.radio[2] = (int16_t)(uavtalk_ManualControlCommandData.Yaw * 100);
-						ModelData.radio[3] = (int16_t)(uavtalk_ManualControlCommandData.Throttle * 100);
-						ModelData.radio[4] = (int16_t)(uavtalk_ManualControlCommandData.Collective * 100);
-						ModelData.chancount = 8;
+						ModelData[ModelActive].radio[0] = (int16_t)(uavtalk_ManualControlCommandData.Roll * 100);
+						ModelData[ModelActive].radio[1] = (int16_t)(uavtalk_ManualControlCommandData.Pitch * 100);
+						ModelData[ModelActive].radio[2] = (int16_t)(uavtalk_ManualControlCommandData.Yaw * 100);
+						ModelData[ModelActive].radio[3] = (int16_t)(uavtalk_ManualControlCommandData.Throttle * 100);
+						ModelData[ModelActive].radio[4] = (int16_t)(uavtalk_ManualControlCommandData.Collective * 100);
+						ModelData[ModelActive].chancount = 8;
 
 						if (uavtalk_GPSPositionData.Latitude != 0.0) {
-							ModelData.p_lat = (float)uavtalk_GPSPositionData.Latitude / 10000000.0;
-							ModelData.p_long = (float)uavtalk_GPSPositionData.Longitude / 10000000.0;
-							ModelData.p_alt = uavtalk_GPSPositionData.Altitude;
-							ModelData.speed = uavtalk_GPSPositionData.Groundspeed;
-							ModelData.numSat = uavtalk_GPSPositionData.Satellites;
-							ModelData.gpsfix = uavtalk_GPSPositionData.State;
-							ModelData.hdop = uavtalk_GPSPositionData.HDOP;
-							ModelData.vdop = uavtalk_GPSPositionData.VDOP;
+							ModelData[ModelActive].p_lat = (float)uavtalk_GPSPositionData.Latitude / 10000000.0;
+							ModelData[ModelActive].p_long = (float)uavtalk_GPSPositionData.Longitude / 10000000.0;
+							ModelData[ModelActive].p_alt = uavtalk_GPSPositionData.Altitude;
+							ModelData[ModelActive].speed = uavtalk_GPSPositionData.Groundspeed;
+							ModelData[ModelActive].numSat = uavtalk_GPSPositionData.Satellites;
+							ModelData[ModelActive].gpsfix = uavtalk_GPSPositionData.State;
+							ModelData[ModelActive].hdop = uavtalk_GPSPositionData.HDOP;
+							ModelData[ModelActive].vdop = uavtalk_GPSPositionData.VDOP;
 						}
 						if (uavtalk_FlightStatusData.Armed == 0) {
-							ModelData.armed = MODEL_DISARMED;
+							ModelData[ModelActive].armed = MODEL_DISARMED;
 						} else if (uavtalk_FlightStatusData.Armed == 1) {
-							ModelData.armed = MODEL_ARMING;
+							ModelData[ModelActive].armed = MODEL_ARMING;
 						} else {
-							ModelData.armed = MODEL_ARMED;
+							ModelData[ModelActive].armed = MODEL_ARMED;
 						}
 */
 						if (uavtalk_FlightStatusData.FlightMode == 0) {
-							ModelData.mode = MODEL_MODE_MANUAL;
+							ModelData[ModelActive].mode = MODEL_MODE_MANUAL;
 						} else {
-							ModelData.mode = MODEL_MODE_POSHOLD;
+							ModelData[ModelActive].mode = MODEL_MODE_POSHOLD;
 						}
-						ModelData.heartbeat = 100;
+						ModelData[ModelActive].heartbeat = 100;
 
 
 //uavtalk_request(MIXERSETTINGS_OBJID);

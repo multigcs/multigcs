@@ -231,33 +231,33 @@ void screen_telemetry (ESContext *esContext) {
 
 	draw_title(esContext, "Telemetry");
 
-	draw_value_barmeter(esContext, -1.2, -0.8, -0.9, 0.0, "SPEED", "km/h", 0, 0.0, 200.0, 0.0, 0.0, ModelData.speed);
-	draw_value_barmeter(esContext, -0.7, -0.8, -0.4, 0.0, "ALT", "m", 0, -10.0, 999.0, 0.0, 0.0, ModelData.p_alt);
-	if (ModelData.heartbeat == 0 && ModelData.voltage < 5.0) {
-		draw_value_barmeter(esContext, -0.2, -0.8, 0.1, 0.0, "VOLTS", "V", 0, 2.0, 4.2, 3.6, 3.1, ModelData.voltage);
+	draw_value_barmeter(esContext, -1.2, -0.8, -0.9, 0.0, "SPEED", "km/h", 0, 0.0, 200.0, 0.0, 0.0, ModelData[ModelActive].speed);
+	draw_value_barmeter(esContext, -0.7, -0.8, -0.4, 0.0, "ALT", "m", 0, -10.0, 999.0, 0.0, 0.0, ModelData[ModelActive].p_alt);
+	if (ModelData[ModelActive].heartbeat == 0 && ModelData[ModelActive].voltage < 5.0) {
+		draw_value_barmeter(esContext, -0.2, -0.8, 0.1, 0.0, "VOLTS", "V", 0, 2.0, 4.2, 3.6, 3.1, ModelData[ModelActive].voltage);
 	} else {
-		draw_value_barmeter(esContext, -0.2, -0.8, 0.1, 0.0, "VOLTS", "V", 0, 8.0, 14.0, 11.0, 10.0, ModelData.voltage);
+		draw_value_barmeter(esContext, -0.2, -0.8, 0.1, 0.0, "VOLTS", "V", 0, 8.0, 14.0, 11.0, 10.0, ModelData[ModelActive].voltage);
 	}
-	draw_value_barmeter(esContext, 0.3, -0.8, 0.6, 0.0, "AMPS", "A", 0, 0.0, 100.0, 75.0, 50.0, ModelData.ampere);
+	draw_value_barmeter(esContext, 0.3, -0.8, 0.6, 0.0, "AMPS", "A", 0, 0.0, 100.0, 75.0, 50.0, ModelData[ModelActive].ampere);
 
-	if (ModelData.voltage_rx == 0) {
-		draw_value_barmeter_duo(esContext, 0.8, -0.8, 1.1, 0.0, "VOLTS(FC)", "V", 0, 3.0, 6.0, 4.8, 4.2, ModelData.fc_voltage1, ModelData.fc_voltage2);
+	if (ModelData[ModelActive].voltage_rx == 0) {
+		draw_value_barmeter_duo(esContext, 0.8, -0.8, 1.1, 0.0, "VOLTS(FC)", "V", 0, 3.0, 6.0, 4.8, 4.2, ModelData[ModelActive].fc_voltage1, ModelData[ModelActive].fc_voltage2);
 	} else {
-		draw_value_barmeter(esContext, 0.8, -0.8, 1.1, 0.0, "VOLTS(RX)", "V", 0, 8.0, 14.0, 11.0, 10.0, ModelData.voltage_rx);
+		draw_value_barmeter(esContext, 0.8, -0.8, 1.1, 0.0, "VOLTS(RX)", "V", 0, 8.0, 14.0, 11.0, 10.0, ModelData[ModelActive].voltage_rx);
 	}
-	draw_value_barmeter_duo(esContext, -1.2, 0.0, -0.9, 0.8, "RSSI(Tele)", "", 0, 0.0, 100.0, 40.0, 20.0, ModelData.rssi_tx, ModelData.rssi_rx);
-	draw_value_barmeter_duo(esContext, -0.7, 0.0, -0.4, 0.8, "RSSI(RC)", "", 0, 0.0, 100.0, 40.0, 20.0, ModelData.rssi_rc_tx, ModelData.rssi_rc_rx);
-	if (ModelData.chancount > 8) {
-		draw_value_barchannels(esContext, -0.2, 0.1, "Channels", 0, 100, 8, ModelData.radio);
-		if (ModelData.chancount > 16) {
-			ModelData.chancount = 16;
+	draw_value_barmeter_duo(esContext, -1.2, 0.0, -0.9, 0.8, "RSSI(Tele)", "", 0, 0.0, 100.0, 40.0, 20.0, ModelData[ModelActive].rssi_tx, ModelData[ModelActive].rssi_rx);
+	draw_value_barmeter_duo(esContext, -0.7, 0.0, -0.4, 0.8, "RSSI(RC)", "", 0, 0.0, 100.0, 40.0, 20.0, ModelData[ModelActive].rssi_rc_tx, ModelData[ModelActive].rssi_rc_rx);
+	if (ModelData[ModelActive].chancount > 8) {
+		draw_value_barchannels(esContext, -0.2, 0.1, "Channels", 0, 100, 8, ModelData[ModelActive].radio);
+		if (ModelData[ModelActive].chancount > 16) {
+			ModelData[ModelActive].chancount = 16;
 		}
-		draw_value_barchannels(esContext, -0.2, 0.5, "", 0, 100, ModelData.chancount - 8, ModelData.radio + 8);
+		draw_value_barchannels(esContext, -0.2, 0.5, "", 0, 100, ModelData[ModelActive].chancount - 8, ModelData[ModelActive].radio + 8);
 	} else {
-		draw_value_barchannels(esContext, -0.2, 0.1, "Channels", 0, 100, 8, ModelData.radio);
+		draw_value_barchannels(esContext, -0.2, 0.1, "Channels", 0, 100, 8, ModelData[ModelActive].radio);
 	}
-	draw_value_barmeter(esContext, 0.3, 0.0, 0.6, 0.8, "SATS", "", 0, 0.0, 18.0, 6.0, 4.0, ModelData.numSat);
-	draw_value_barmeter(esContext, 0.8, 0.0, 1.1, 0.8, "HEART", "", 0, 0.0, 100.0, 40.0, 20.0, ModelData.heartbeat);
+	draw_value_barmeter(esContext, 0.3, 0.0, 0.6, 0.8, "SATS", "", 0, 0.0, 18.0, 6.0, 4.0, ModelData[ModelActive].numSat);
+	draw_value_barmeter(esContext, 0.8, 0.0, 1.1, 0.8, "HEART", "", 0, 0.0, 100.0, 40.0, 20.0, ModelData[ModelActive].heartbeat);
 
 #ifdef SDLGL
 	glPopMatrix();

@@ -46,7 +46,7 @@ void gps_update (void) {
 				char ch_K;
 				sscanf( line, "$GPVTG,%f,%c,%c,%c,%f,%c,%f,%c,", &track, &ch_T, &null1, &null2, &speed_knots, &knots, &speed, &ch_K);
 //					SDL_Log("gps: %s\n", line);
-				ModelData.speed = speed;
+				ModelData[ModelActive].speed = speed;
 				redraw_flag = 1;
 			} else if (strncmp(line, "$GPRMC", 6) == 0) {
 				float time;
@@ -62,7 +62,7 @@ void gps_update (void) {
 				char ch_E;
 				sscanf( line, "$GPRMC,%f,%c,%f,%c,%f,%c,%f,%f,%f,%f,%c", &time, &ch_A, &lat1, &ch_N, &lon1, &ch_W, &speed_knots, &curse, &date, &mag_var, &ch_E);
 //					SDL_Log("gps: %s %f\n", line, curse);
-				ModelData.yaw = curse;
+				ModelData[ModelActive].yaw = curse;
 				redraw_flag = 1;
 			} else if (strncmp(line, "$GPGGA", 6) == 0) {
 				float time;
@@ -89,13 +89,13 @@ void gps_update (void) {
 				float hlon = atof(tmp_str + 3) / 60.0;
 				tmp_str[3] = 0;
 				hlon += atof(tmp_str);
-				ModelData.heartbeat = 100;
+				ModelData[ModelActive].heartbeat = 100;
 				if (hlat != 0.0 && hlon != 0.0) {
-					ModelData.p_lat = hlat;
-					ModelData.p_long = hlon;
-					ModelData.p_alt = alt2;
-					ModelData.numSat = num_sat;
-					ModelData.gpsfix = quality;
+					ModelData[ModelActive].p_lat = hlat;
+					ModelData[ModelActive].p_long = hlon;
+					ModelData[ModelActive].p_alt = alt2;
+					ModelData[ModelActive].numSat = num_sat;
+					ModelData[ModelActive].gpsfix = quality;
 					redraw_flag = 1;
 				}
 /*
@@ -117,25 +117,25 @@ void gps_update (void) {
 				float imuY;
 				float imuZ;
 				sscanf( line, "$IMU,%f,%f,%f", &imuX, &imuY, &imuZ);
-				ModelData.pitch = imuX;
-				ModelData.roll = imuY;
-				ModelData.yaw = imuZ;
+				ModelData[ModelActive].pitch = imuX;
+				ModelData[ModelActive].roll = imuY;
+				ModelData[ModelActive].yaw = imuZ;
 				redraw_flag = 1;
 			} else if (strncmp(line, "$ACC", 4) == 0) {
 				float accX;
 				float accY;
 				sscanf( line, "$ACC,%f,%f", &accX, &accY);
-				ModelData.acc_x = accX / 90.0;
-				ModelData.acc_y = accY / 90.0;
+				ModelData[ModelActive].acc_x = accX / 90.0;
+				ModelData[ModelActive].acc_y = accY / 90.0;
 				redraw_flag = 1;
 			} else if (strncmp(line, "$GYRO", 5) == 0) {
 				float gyroX;
 				float gyroY;
 				float gyroZ;
 				sscanf( line, "$GYRO,%f,%f,%f", &gyroX, &gyroY, &gyroZ);
-				ModelData.gyro_x = gyroX;
-				ModelData.gyro_y = gyroY;
-				ModelData.gyro_z = gyroZ;
+				ModelData[ModelActive].gyro_x = gyroX;
+				ModelData[ModelActive].gyro_y = gyroY;
+				ModelData[ModelActive].gyro_z = gyroZ;
 				redraw_flag = 1;
 			}
 			n = 0;

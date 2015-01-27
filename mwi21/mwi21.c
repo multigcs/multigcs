@@ -411,10 +411,10 @@ void mwi21_update (void) {
 				break;
 				case MSP_ATTITUDE:
 					mwi21_cn = 5 + mwi21_frame_start;
-					ModelData.roll = (float)mwi21_read16() / 10.0;
-					ModelData.pitch = (float)mwi21_read16() / -10.0;
-					ModelData.yaw = (float)mwi21_read16();
-					ModelData.heartbeat = 100;
+					ModelData[ModelActive].roll = (float)mwi21_read16() / 10.0;
+					ModelData[ModelActive].pitch = (float)mwi21_read16() / -10.0;
+					ModelData[ModelActive].yaw = (float)mwi21_read16();
+					ModelData[ModelActive].heartbeat = 100;
 					if (mwi_startup == 0) {
 						mwi21_get_values();
 					}
@@ -422,30 +422,30 @@ void mwi21_update (void) {
 				break;
 				case MSP_RC:
 					mwi21_cn = 5 + mwi21_frame_start;
-					ModelData.radio[0] = (mwi21_read16() - 1500) / 5;
-					ModelData.radio[1] = (mwi21_read16() - 1500) / 5;
-					ModelData.radio[2] = (mwi21_read16() - 1500) / 5;
-					ModelData.radio[3] = (mwi21_read16() - 1500) / 5;
-					ModelData.radio[4] = (mwi21_read16() - 1500) / 5;
-					ModelData.radio[5] = (mwi21_read16() - 1500) / 5;
-					ModelData.radio[6] = (mwi21_read16() - 1500) / 5;
-					ModelData.radio[7] = (mwi21_read16() - 1500) / 5;
-					ModelData.chancount = 8;
+					ModelData[ModelActive].radio[0] = (mwi21_read16() - 1500) / 5;
+					ModelData[ModelActive].radio[1] = (mwi21_read16() - 1500) / 5;
+					ModelData[ModelActive].radio[2] = (mwi21_read16() - 1500) / 5;
+					ModelData[ModelActive].radio[3] = (mwi21_read16() - 1500) / 5;
+					ModelData[ModelActive].radio[4] = (mwi21_read16() - 1500) / 5;
+					ModelData[ModelActive].radio[5] = (mwi21_read16() - 1500) / 5;
+					ModelData[ModelActive].radio[6] = (mwi21_read16() - 1500) / 5;
+					ModelData[ModelActive].radio[7] = (mwi21_read16() - 1500) / 5;
+					ModelData[ModelActive].chancount = 8;
 					redraw_flag = 1;
 				break;
 				case MSP_BAT:
 					mwi21_cn = 5 + mwi21_frame_start;
-					ModelData.voltage = (float)mwi21_read8() / 10.0;
+					ModelData[ModelActive].voltage = (float)mwi21_read8() / 10.0;
 					redraw_flag = 1;
 				break;
 				case MSP_ALTITUDE:
 					mwi21_cn = 5 + mwi21_frame_start;
-					ModelData.baro = (float)mwi21_read32() / 100.0;
-					ModelData.heartbeat = 100;
+					ModelData[ModelActive].baro = (float)mwi21_read32() / 100.0;
+					ModelData[ModelActive].heartbeat = 100;
 					if (GPS_found == 0) {
-						ModelData.p_alt = (float)mwi21_read32() / 100.0;
-						if (ModelData.p_alt > 8000.0) {
-							ModelData.p_alt = ModelData.baro;
+						ModelData[ModelActive].p_alt = (float)mwi21_read32() / 100.0;
+						if (ModelData[ModelActive].p_alt > 8000.0) {
+							ModelData[ModelActive].p_alt = ModelData[ModelActive].baro;
 						}
 					}
 					redraw_flag = 1;
@@ -470,16 +470,16 @@ void mwi21_update (void) {
 					mwi_sensors = mwi21_read16();
 					mwi_status = mwi21_read32();
 					if (mwi_status & (1<<BOXARM)) {
-						ModelData.armed = MODEL_ARMED;
+						ModelData[ModelActive].armed = MODEL_ARMED;
 					} else {
-						ModelData.armed = MODEL_DISARMED;
+						ModelData[ModelActive].armed = MODEL_DISARMED;
 					}
 					if (mwi_status & (1<<BOXGPSHOLD)) {
-						ModelData.mode = MODEL_MODE_POSHOLD;
+						ModelData[ModelActive].mode = MODEL_MODE_POSHOLD;
 					} else if (mwi_status & (1<<BOXGPSHOME)) {
-						ModelData.mode = MODEL_MODE_RTL;
+						ModelData[ModelActive].mode = MODEL_MODE_RTL;
 					} else {
-						ModelData.mode = MODEL_MODE_MANUAL;
+						ModelData[ModelActive].mode = MODEL_MODE_MANUAL;
 					}
 					redraw_flag = 1;
 				break;
@@ -496,12 +496,12 @@ void mwi21_update (void) {
 				break;
 				case MSP_RAW_IMU:
 					mwi21_cn = 5 + mwi21_frame_start;
-					ModelData.acc_x = mwi21_read16();
-					ModelData.acc_y = mwi21_read16();
-					ModelData.acc_z = mwi21_read16();
-					ModelData.gyro_x = mwi21_read16();
-					ModelData.gyro_y = mwi21_read16();
-					ModelData.gyro_z = mwi21_read16();
+					ModelData[ModelActive].acc_x = mwi21_read16();
+					ModelData[ModelActive].acc_y = mwi21_read16();
+					ModelData[ModelActive].acc_z = mwi21_read16();
+					ModelData[ModelActive].gyro_x = mwi21_read16();
+					ModelData[ModelActive].gyro_y = mwi21_read16();
+					ModelData[ModelActive].gyro_z = mwi21_read16();
 					mwi_mag_x = mwi21_read16();
 					mwi_mag_y = mwi21_read16();
 					mwi_mag_z = mwi21_read16();
@@ -521,13 +521,13 @@ void mwi21_update (void) {
 					new_lon = (float)mwi21_read32() / 10000000.0;
 					new_alt = (float)mwi21_read16();
 					GPS_speed = (float)mwi21_read16();
-					ModelData.speed = GPS_speed;
-					ModelData.gpsfix = GPS_fix;
-					ModelData.numSat = GPS_numSat;
+					ModelData[ModelActive].speed = GPS_speed;
+					ModelData[ModelActive].gpsfix = GPS_fix;
+					ModelData[ModelActive].numSat = GPS_numSat;
 					if (new_lat > 0.0 && new_lon > 0.0) {
-						ModelData.p_lat = new_lat;
-						ModelData.p_long = new_lon;
-						ModelData.p_alt = new_alt;
+						ModelData[ModelActive].p_lat = new_lat;
+						ModelData[ModelActive].p_long = new_lon;
+						ModelData[ModelActive].p_alt = new_alt;
 						GPS_found = 1;
 						redraw_flag = 1;
 					}

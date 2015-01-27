@@ -12,11 +12,11 @@ int aserbuffer_pos = 0;
 
 void Java_org_libsdl_app_mylocationlistener_gpsSetPosition (JNIEnv* env, jclass cls, jfloat lat, jfloat lon, jfloat alt, jfloat speed) {
 	if (lat != 0.0 && lon != 0.0) {
-		if (ModelData.heartbeat == 0) {
-			ModelData.p_lat = lat;
-			ModelData.p_long = lon;
-			ModelData.p_alt = alt;
-			ModelData.speed = speed;
+		if (ModelData[ModelActive].heartbeat == 0) {
+			ModelData[ModelActive].p_lat = lat;
+			ModelData[ModelActive].p_long = lon;
+			ModelData[ModelActive].p_alt = alt;
+			ModelData[ModelActive].speed = speed;
 		} else {
 			WayPoints[0].p_lat = lat;
 			WayPoints[0].p_long = lon;
@@ -27,7 +27,7 @@ void Java_org_libsdl_app_mylocationlistener_gpsSetPosition (JNIEnv* env, jclass 
 }
 
 void Java_org_libsdl_app_SDLSurface_attitudeSetPosition (JNIEnv* env, jclass cls, jfloat pitch, jfloat roll, jfloat yaw) {
-	if (ModelData.heartbeat == 0) {
+	if (ModelData[ModelActive].heartbeat == 0) {
 		float jni_att_roll = 0.0;
 		float jni_att_pitch = 0.0;
 		float jni_att_yaw = 0.0;
@@ -42,9 +42,9 @@ void Java_org_libsdl_app_SDLSurface_attitudeSetPosition (JNIEnv* env, jclass cls
 			yaw -= 360;
 		}
 		jni_att_yaw = yaw;
-		ModelData.pitch = jni_att_pitch;
-		ModelData.roll = jni_att_roll;
-		ModelData.yaw = jni_att_yaw;
+		ModelData[ModelActive].pitch = jni_att_pitch;
+		ModelData[ModelActive].roll = jni_att_roll;
+		ModelData[ModelActive].yaw = jni_att_yaw;
 	}
 	return;
 }
@@ -94,8 +94,8 @@ void Java_org_libsdl_app_ConnectBT_deviceList (JNIEnv* env, jclass cls, jstring 
 void Java_org_libsdl_app_SDLActivity_batterySetStatus (JNIEnv* env, jclass cls, jboolean present, jint level, jint health, jint plugged, jint status, jint temperature, jint voltage, jstring technology) {
 	const char *type = (*env)->GetStringUTFChars(env, technology, 0);
 	SDL_Log("BATTERY (%s): %0.2fV (%i%%)", type, (float)voltage / 1000.0, level);
-	if (ModelData.heartbeat == 0) {
-		ModelData.voltage = (float)voltage / 1000.0;
+	if (ModelData[ModelActive].heartbeat == 0) {
+		ModelData[ModelActive].voltage = (float)voltage / 1000.0;
 	}
 }
 

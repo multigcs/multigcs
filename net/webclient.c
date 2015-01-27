@@ -94,134 +94,134 @@ void webclient_update (char *server, uint16_t port) {
 //			SDL_Log("webserv: ## %s ### %s (%i)##\n", tmp_str, tmp_str + start, start);
 
 			if (strcmp(tmp_str, "name") == 0) {
-				strncpy(ModelData.name, tmp_str + start, 199);
+				strncpy(ModelData[ModelActive].name, tmp_str + start, 199);
 			} else if (strcmp(tmp_str, "image") == 0) {
-				strncpy(ModelData.image, tmp_str + start, 511);
+				strncpy(ModelData[ModelActive].image, tmp_str + start, 511);
 			} else if (strcmp(tmp_str, "modeltype") == 0) {
-				ModelData.modeltype = atoi(tmp_str + start);
+				ModelData[ModelActive].modeltype = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "teletype") == 0) {
-				ModelData.teletype = atoi(tmp_str + start);
+				ModelData[ModelActive].teletype = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "teledevice") == 0) {
-				strncpy(ModelData.teledevice, tmp_str + start, 199);
+				strncpy(ModelData[ModelActive].teledevice, tmp_str + start, 199);
 			} else if (strcmp(tmp_str, "telebaud") == 0) {
-				ModelData.telebaud = atoi(tmp_str + start);
+				ModelData[ModelActive].telebaud = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "telebtaddr") == 0) {
-				strncpy(ModelData.telebtaddr, tmp_str + start, 199);
+				strncpy(ModelData[ModelActive].telebtaddr, tmp_str + start, 199);
 			} else if (strcmp(tmp_str, "telebtpin") == 0) {
-				strncpy(ModelData.telebtpin, tmp_str + start, 199);
+				strncpy(ModelData[ModelActive].telebtpin, tmp_str + start, 199);
 			} else if (strcmp(tmp_str, "mode") == 0) {
-				ModelData.mode = atoi(tmp_str + start);
+				ModelData[ModelActive].mode = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "status") == 0) {
-				ModelData.status = atoi(tmp_str + start);
+				ModelData[ModelActive].status = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "armed") == 0) {
-				ModelData.armed = atoi(tmp_str + start);
+				ModelData[ModelActive].armed = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "heartbeat") == 0) {
-				ModelData.heartbeat = atoi(tmp_str + start);
+				ModelData[ModelActive].heartbeat = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "heartbeat_rc") == 0) {
-				ModelData.heartbeat_rc = atoi(tmp_str + start);
+				ModelData[ModelActive].heartbeat_rc = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "found_rc") == 0) {
-				ModelData.found_rc = atoi(tmp_str + start);
+				ModelData[ModelActive].found_rc = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "p_lat") == 0) {
-				ModelData.p_lat = atof(tmp_str + start);
+				ModelData[ModelActive].p_lat = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "p_long") == 0) {
-				ModelData.p_long = atof(tmp_str + start);
+				ModelData[ModelActive].p_long = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "p_alt") == 0) {
-				ModelData.p_alt = atof(tmp_str + start);
+				ModelData[ModelActive].p_alt = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "alt_offset") == 0) {
-				ModelData.alt_offset = atof(tmp_str + start);
+				ModelData[ModelActive].alt_offset = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "baro") == 0) {
-				ModelData.baro = atof(tmp_str + start);
+				ModelData[ModelActive].baro = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "pitch") == 0) {
-				ModelData.pitch = atof(tmp_str + start);
+				ModelData[ModelActive].pitch = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "roll") == 0) {
-				ModelData.roll = atof(tmp_str + start);
+				ModelData[ModelActive].roll = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "yaw") == 0) {
-				ModelData.yaw = atof(tmp_str + start);
+				ModelData[ModelActive].yaw = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "speed") == 0) {
-				ModelData.speed = atof(tmp_str + start);
+				ModelData[ModelActive].speed = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "voltage") == 0) {
-				ModelData.voltage = atof(tmp_str + start);
+				ModelData[ModelActive].voltage = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "load") == 0) {
-				ModelData.load = atof(tmp_str + start);
+				ModelData[ModelActive].load = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "gpsfix") == 0) {
-				ModelData.gpsfix = atoi(tmp_str + start);
+				ModelData[ModelActive].gpsfix = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "numSat") == 0) {
-				ModelData.numSat = atoi(tmp_str + start);
+				ModelData[ModelActive].numSat = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "radio1") == 0) {
-				ModelData.radio[0] = atoi(tmp_str + start);
+				ModelData[ModelActive].radio[0] = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "radio2") == 0) {
-				ModelData.radio[1] = atoi(tmp_str + start);
+				ModelData[ModelActive].radio[1] = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "radio3") == 0) {
-				ModelData.radio[2] = atoi(tmp_str + start);
+				ModelData[ModelActive].radio[2] = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "radio4") == 0) {
-				ModelData.radio[3] = atoi(tmp_str + start);
+				ModelData[ModelActive].radio[3] = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "radio5") == 0) {
-				ModelData.radio[4] = atoi(tmp_str + start);
+				ModelData[ModelActive].radio[4] = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "radio6") == 0) {
-				ModelData.radio[5] = atoi(tmp_str + start);
+				ModelData[ModelActive].radio[5] = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "radio7") == 0) {
-				ModelData.radio[6] = atoi(tmp_str + start);
+				ModelData[ModelActive].radio[6] = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "radio8") == 0) {
-				ModelData.radio[7] = atoi(tmp_str + start);
+				ModelData[ModelActive].radio[7] = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "radio9") == 0) {
-				ModelData.radio[8] = atoi(tmp_str + start);
+				ModelData[ModelActive].radio[8] = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "radio10") == 0) {
-				ModelData.radio[9] = atoi(tmp_str + start);
+				ModelData[ModelActive].radio[9] = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "radio11") == 0) {
-				ModelData.radio[10] = atoi(tmp_str + start);
+				ModelData[ModelActive].radio[10] = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "radio12") == 0) {
-				ModelData.radio[11] = atoi(tmp_str + start);
+				ModelData[ModelActive].radio[11] = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "radio13") == 0) {
-				ModelData.radio[12] = atoi(tmp_str + start);
+				ModelData[ModelActive].radio[12] = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "radio14") == 0) {
-				ModelData.radio[13] = atoi(tmp_str + start);
+				ModelData[ModelActive].radio[13] = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "radio15") == 0) {
-				ModelData.radio[14] = atoi(tmp_str + start);
+				ModelData[ModelActive].radio[14] = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "radio16") == 0) {
-				ModelData.radio[15] = atoi(tmp_str + start);
+				ModelData[ModelActive].radio[15] = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "acc_x") == 0) {
-				ModelData.acc_x = atof(tmp_str + start);
+				ModelData[ModelActive].acc_x = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "acc_y") == 0) {
-				ModelData.acc_y = atof(tmp_str + start);
+				ModelData[ModelActive].acc_y = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "acc_z") == 0) {
-				ModelData.acc_z = atof(tmp_str + start);
+				ModelData[ModelActive].acc_z = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "gyro_x") == 0) {
-				ModelData.gyro_x = atof(tmp_str + start);
+				ModelData[ModelActive].gyro_x = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "gyro_y") == 0) {
-				ModelData.gyro_y = atof(tmp_str + start);
+				ModelData[ModelActive].gyro_y = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "gyro_z") == 0) {
-				ModelData.gyro_z = atof(tmp_str + start);
+				ModelData[ModelActive].gyro_z = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "rssi_rx") == 0) {
-				ModelData.rssi_rx = atoi(tmp_str + start);
+				ModelData[ModelActive].rssi_rx = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "rssi_tx") == 0) {
-				ModelData.rssi_tx = atoi(tmp_str + start);
+				ModelData[ModelActive].rssi_tx = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "voltage_rx") == 0) {
-				ModelData.voltage_rx = atof(tmp_str + start);
+				ModelData[ModelActive].voltage_rx = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "voltage_zell1") == 0) {
-				ModelData.voltage_zell[0] = atof(tmp_str + start);
+				ModelData[ModelActive].voltage_zell[0] = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "voltage_zell2") == 0) {
-				ModelData.voltage_zell[1] = atof(tmp_str + start);
+				ModelData[ModelActive].voltage_zell[1] = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "voltage_zell3") == 0) {
-				ModelData.voltage_zell[2] = atof(tmp_str + start);
+				ModelData[ModelActive].voltage_zell[2] = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "voltage_zell4") == 0) {
-				ModelData.voltage_zell[3] = atof(tmp_str + start);
+				ModelData[ModelActive].voltage_zell[3] = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "voltage_zell5") == 0) {
-				ModelData.voltage_zell[4] = atof(tmp_str + start);
+				ModelData[ModelActive].voltage_zell[4] = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "voltage_zell6") == 0) {
-				ModelData.voltage_zell[5] = atof(tmp_str + start);
+				ModelData[ModelActive].voltage_zell[5] = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "temperature1") == 0) {
-				ModelData.temperature[0] = atoi(tmp_str + start);
+				ModelData[ModelActive].temperature[0] = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "temperature2") == 0) {
-				ModelData.temperature[1] = atoi(tmp_str + start);
+				ModelData[ModelActive].temperature[1] = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "ampere") == 0) {
-				ModelData.ampere = atof(tmp_str + start);
+				ModelData[ModelActive].ampere = atof(tmp_str + start);
 			} else if (strcmp(tmp_str, "sysid") == 0) {
-				ModelData.sysid = atoi(tmp_str + start);
+				ModelData[ModelActive].sysid = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "compid") == 0) {
-				ModelData.compid = atoi(tmp_str + start);
+				ModelData[ModelActive].compid = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "mavlink_update") == 0) {
-				if (ModelData.mavlink_update < atoi(tmp_str + start)) {
-					ModelData.mavlink_update = atoi(tmp_str + start);
+				if (ModelData[ModelActive].mavlink_update < atoi(tmp_str + start)) {
+					ModelData[ModelActive].mavlink_update = atoi(tmp_str + start);
 					flag = 1;
 				}
 			}

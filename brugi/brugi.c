@@ -346,8 +346,8 @@ void brugi_update (void) {
 				int acc_x = 0;
 				int acc_y = 0;
 				sscanf(data_buffer, "%i ACC %i", &acc_y, &acc_x);
-				ModelData.roll = (float)acc_x / 1000.0;
-				ModelData.pitch = (float)acc_y / 1000.0;
+				ModelData[ModelActive].roll = (float)acc_x / 1000.0;
+				ModelData[ModelActive].pitch = (float)acc_y / 1000.0;
 //				SDL_Log("#### %f,%f -- %s\n", (float)acc_x / 1000.0, (float)acc_y / 1000.0,  data_buffer);
 				info_num = 2;
 			}

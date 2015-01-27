@@ -71,20 +71,20 @@ void screen_hud_vista2d (ESContext *esContext) {
 		vdViewStartAnim(vdView);
 	}
 	char tmp_str[128];
-	vdVarSetStr(vdView, "NAME", ModelData.name);
-	sprintf(tmp_str, "%f", ModelData.roll);
+	vdVarSetStr(vdView, "NAME", ModelData[ModelActive].name);
+	sprintf(tmp_str, "%f", ModelData[ModelActive].roll);
 	vdVarSetStr(vdView, "BODY_ROLL_ANGLE", tmp_str);
-	sprintf(tmp_str, "%f", ModelData.pitch);
+	sprintf(tmp_str, "%f", ModelData[ModelActive].pitch);
 	vdVarSetStr(vdView, "BODY_PITCH_ANGLE", tmp_str);
-	sprintf(tmp_str, "%f", ModelData.yaw);
+	sprintf(tmp_str, "%f", ModelData[ModelActive].yaw);
 	vdVarSetStr(vdView, "BODY_HEADING_ANGLE", tmp_str);
-	sprintf(tmp_str, "%f", ModelData.p_alt);
+	sprintf(tmp_str, "%f", ModelData[ModelActive].p_alt);
 	vdVarSetStr(vdView, "BARO_CORRECTED_ALTITUDE", tmp_str);
-	sprintf(tmp_str, "%f", ModelData.speed);
+	sprintf(tmp_str, "%f", ModelData[ModelActive].speed);
 	vdVarSetStr(vdView, "INDICATED_AIRSPEED", tmp_str);
-	sprintf(tmp_str, "%f", ModelData.p_lat);
+	sprintf(tmp_str, "%f", ModelData[ModelActive].p_lat);
 	vdVarSetStr(vdView, "POS_LAT", tmp_str);
-	sprintf(tmp_str, "%f", ModelData.p_long);
+	sprintf(tmp_str, "%f", ModelData[ModelActive].p_long);
 	vdVarSetStr(vdView, "POS_LON", tmp_str);
 
 	int w = (int)vdViewWidth(vdView);
@@ -134,8 +134,8 @@ uint8_t hud_goto_screen (char *name, float x, float y, int8_t button, float data
 }
 
 uint8_t hud_altitude_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	float ground_alt = (float)get_altitude(ModelData.p_lat, ModelData.p_long);
-	ModelData.alt_offset = ModelData.p_alt - ground_alt;
+	float ground_alt = (float)get_altitude(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long);
+	ModelData[ModelActive].alt_offset = ModelData[ModelActive].p_alt - ground_alt;
 	return 0;
 }
 
@@ -217,10 +217,10 @@ void draw_gcs (ESContext *esContext, float x1, float y1, float roll, float pitch
 #endif
 
 	// Transmitter
-	float rc_roll = ModelData.radio[0];
-	float rc_pitch = -ModelData.radio[1];
-	float rc_yaw = ModelData.radio[2];
-	float rc_throttle = ModelData.radio[3];
+	float rc_roll = ModelData[ModelActive].radio[0];
+	float rc_pitch = -ModelData[ModelActive].radio[1];
+	float rc_yaw = ModelData[ModelActive].radio[2];
+	float rc_throttle = ModelData[ModelActive].radio[3];
 	draw_box_f3(esContext, x1 - 0.01, y1 - 0.08, 0.101, x1 + 0.01, y1 - 0.15, 0.101, 200, 200, 200, 255);
 	draw_box_f3(esContext, x1 - 0.1, y1 - 0.08, 0.101, x1 + 0.1, y1 + 0.1, 0.101, 255, 255, 255, 255);
 	draw_circle_f3(esContext, x1 - 0.05, y1, 0.1012, 0.03, 127, 127, 127, 255);
@@ -241,9 +241,9 @@ void draw_turning_indicator (ESContext *esContext, float ti_x, float ti_y, float
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
 #endif
-	float rate_yaw = (float)ModelData.gyro_z / 40.0;
-	if (ModelData.teletype == TELETYPE_MULTIWII_21 || ModelData.teletype == TELETYPE_BASEFLIGHT) {
-		rate_yaw = (float)ModelData.gyro_z / 40.0;
+	float rate_yaw = (float)ModelData[ModelActive].gyro_z / 40.0;
+	if (ModelData[ModelActive].teletype == TELETYPE_MULTIWII_21 || ModelData[ModelActive].teletype == TELETYPE_BASEFLIGHT) {
+		rate_yaw = (float)ModelData[ModelActive].gyro_z / 40.0;
 	}
 #ifdef SDLGL
 	glMatrixMode(GL_MODELVIEW);
@@ -292,9 +292,9 @@ void draw_turning_indicator (ESContext *esContext, float ti_x, float ti_y, float
 #ifndef SDLGL
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
-	float accel = ModelData.acc_y * 50.0;
-	if (ModelData.teletype == TELETYPE_MULTIWII_21 || ModelData.teletype == TELETYPE_BASEFLIGHT) {
-		accel = (float)ModelData.acc_x / 256.0 * -50.0;
+	float accel = ModelData[ModelActive].acc_y * 50.0;
+	if (ModelData[ModelActive].teletype == TELETYPE_MULTIWII_21 || ModelData[ModelActive].teletype == TELETYPE_BASEFLIGHT) {
+		accel = (float)ModelData[ModelActive].acc_x / 256.0 * -50.0;
 	}
 	draw_circleFilled_f3_part(esContext, 0.0, 0.0 - (w / 4.0), 0.0005, (w / 2.0), (w / 2.2), 235.0, 300.0, 255, 255, 255, 255);
 	draw_circleFilled_f3_part_end(esContext, 0.0, 0.0 - (w / 4.0), 0.001, (w / 2.0), (w / 2.2), 270.0 + accel, 25, 25, 25, 255);
@@ -340,10 +340,10 @@ void draw_altiude_rule (ESContext *esContext, float ti_x, float ti_y, float w, f
 
 
 #ifdef SDLGL
-	float ground_alt = (float)get_altitude(ModelData.p_lat, ModelData.p_long);
-	if (ground_alt - (ModelData.p_alt - ModelData.alt_offset) > -7.0) {
-		float y1a = 0.0 - (ground_alt + 2.0 - (ModelData.p_alt - ModelData.alt_offset)) * 0.1;
-		float y2a = 0.0 - (ground_alt - (ModelData.p_alt - ModelData.alt_offset)) * 0.1;
+	float ground_alt = (float)get_altitude(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long);
+	if (ground_alt - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) > -7.0) {
+		float y1a = 0.0 - (ground_alt + 2.0 - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset)) * 0.1;
+		float y2a = 0.0 - (ground_alt - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset)) * 0.1;
 		float y1b = y2a;
 		float y2b = 0.0 - (-7.0) * 0.1;
 		if (y1b < -0.7) {
@@ -366,10 +366,10 @@ void draw_altiude_rule (ESContext *esContext, float ti_x, float ti_y, float w, f
 			, 255, 0, 0, 128
 		);
 		draw_line_f3(esContext, ax1 - 0.05, y2a, 0.0015, ax1 + 0.25, y2a, 0.002, 255, 255, 255, 255);
-	} else if ((ModelData.p_alt - ModelData.alt_offset) - ground_alt > 100.0 - 7.0) {
-		float y1a = 0.0 - (ground_alt + 100.0 - 2.0 - (ModelData.p_alt - ModelData.alt_offset)) * 0.1;
-		float y2a = 0.0 - (ground_alt + 100.0 - (ModelData.p_alt - ModelData.alt_offset)) * 0.1;
-		float y1b = 0.0 - (ground_alt + 100.0 - (ModelData.p_alt - ModelData.alt_offset)) * 0.1;
+	} else if ((ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) - ground_alt > 100.0 - 7.0) {
+		float y1a = 0.0 - (ground_alt + 100.0 - 2.0 - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset)) * 0.1;
+		float y2a = 0.0 - (ground_alt + 100.0 - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset)) * 0.1;
+		float y1b = 0.0 - (ground_alt + 100.0 - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset)) * 0.1;
 		float y2b = 0.0 - (7.0) * 0.1;
 		if (y1b > 0.7) {
 			y1b = 0.7;
@@ -393,15 +393,15 @@ void draw_altiude_rule (ESContext *esContext, float ti_x, float ti_y, float w, f
 		draw_line_f3(esContext, ax1 - 0.05, y2a, 0.0015, ax1 + 0.25, y2a, 0.002, 255, 255, 255, 255);
 	}
 
-	if (ground_alt - (ModelData.p_alt - ModelData.alt_offset) > 0.0) {
+	if (ground_alt - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) > 0.0) {
 		draw_text_f3(esContext, 0.0 - (float)strlen("GROUND CONTACT") * 0.07 * 0.6 / 2.0, -0.75, 0.002, 0.07, 0.07, FONT_GREEN, "GROUND CONTACT");
-	} else if (ground_alt - (ModelData.p_alt - ModelData.alt_offset) > -2.0) {
+	} else if (ground_alt - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) > -2.0) {
 		draw_text_f3(esContext, 0.0 - (float)strlen("LOW ALT") * 0.07 * 0.6 / 2.0, -0.75, 0.002, 0.07, 0.07, FONT_GREEN, "LOW ALT");
-	} else if ((ModelData.p_alt - ModelData.alt_offset) - ground_alt > 100.0) {
+	} else if ((ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) - ground_alt > 100.0) {
 		draw_text_f3(esContext, 0.0 - (float)strlen("PUBLIC AIRSPACE") * 0.07 * 0.6 / 2.0, -0.75, 0.002, 0.07, 0.07, FONT_GREEN, "PUBLIC AIRSPACE");
 	}
 
-	sprintf(tmp_str, "%0.1f", (ModelData.p_alt - ModelData.alt_offset) - ground_alt);
+	sprintf(tmp_str, "%0.1f", (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) - ground_alt);
 	if (setup.contrast == 1) {
 		draw_text_f3(esContext, ax + 0.15 - strlen(tmp_str) * 0.07 * 0.6 - 0.05, 0.7, 0.0025, 0.07, 0.07, FONT_WHITE, tmp_str);
 	} else {
@@ -410,14 +410,14 @@ void draw_altiude_rule (ESContext *esContext, float ti_x, float ti_y, float w, f
 #endif
 
 	draw_rect_f3(esContext, ax1, 0.0 - 7 * 0.1, 0.002, ax1 + 0.17, 0.0 + 7 * 0.1, 0.002, 255, 255, 255, 127);
-	for (n = (int)(ModelData.p_alt - ModelData.alt_offset) - 5; n <= (int)(ModelData.p_alt - ModelData.alt_offset) + 6; n += 1) {
+	for (n = (int)(ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) - 5; n <= (int)(ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) + 6; n += 1) {
 		float tsize = 0.05;
 		sprintf(tmp_str, "%i", n);
-		draw_text_f3(esContext, ax1 + 0.02, 0.0 - 0.025 - ((float)n - (ModelData.p_alt - ModelData.alt_offset)) * 0.1, 0.0015, tsize, tsize, FONT_WHITE, tmp_str);
-		draw_line_f3(esContext, ax1, 0.0 - ((float)n - (ModelData.p_alt - ModelData.alt_offset)) * 0.1, 0.0015, ax1 + 0.02, 0.0 - ((float)n - (ModelData.p_alt - ModelData.alt_offset)) * 0.1, 0.0015, 255, 255, 255, 255);
+		draw_text_f3(esContext, ax1 + 0.02, 0.0 - 0.025 - ((float)n - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset)) * 0.1, 0.0015, tsize, tsize, FONT_WHITE, tmp_str);
+		draw_line_f3(esContext, ax1, 0.0 - ((float)n - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset)) * 0.1, 0.0015, ax1 + 0.02, 0.0 - ((float)n - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset)) * 0.1, 0.0015, 255, 255, 255, 255);
 	}
-	for (n = (ModelData.p_alt - ModelData.alt_offset) + 0.3 - 5; n <= (ModelData.p_alt - ModelData.alt_offset) - 0.3 + 7; n += 1) {
-		draw_line_f3(esContext, ax1, 0.0 - ((float)n - (ModelData.p_alt - ModelData.alt_offset)) * 0.1 + 0.05, 0.0015, ax1 + 0.01, 0.0 - ((float)n - (ModelData.p_alt - ModelData.alt_offset)) * 0.1 + 0.05, 0.0015, 255, 255, 255, 255);
+	for (n = (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) + 0.3 - 5; n <= (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) - 0.3 + 7; n += 1) {
+		draw_line_f3(esContext, ax1, 0.0 - ((float)n - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset)) * 0.1 + 0.05, 0.0015, ax1 + 0.01, 0.0 - ((float)n - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset)) * 0.1 + 0.05, 0.0015, 255, 255, 255, 255);
 	}
 	draw_box_f3(esContext, ax, -0.05, 0.002, ax + 0.28, 0.05, 0.002, 0, 0, 0, 255);
 	draw_triaFilled_f3(esContext, ax, -0.02, 0.002, ax - 0.02, 0.0, 0.002, ax, 0.02, 0.002, 0, 0, 0, 255);
@@ -429,16 +429,16 @@ void draw_altiude_rule (ESContext *esContext, float ti_x, float ti_y, float w, f
 	draw_line_f3(esContext, ax - 0.02, 0.0, 0.002, ax, -0.02, 0.002, 255, 255, 255, 255);
 	draw_line_f3(esContext, ax - 0.02, 0.0, 0.002, ax, 0.02, 0.002, 255, 255, 255, 255);
 
-	sprintf(tmp_str, "%0.1f", (ModelData.p_alt - ModelData.alt_offset));
+	sprintf(tmp_str, "%0.1f", (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset));
 	if (setup.contrast == 1) {
 		draw_text_f3(esContext, ax + 0.15 - strlen(tmp_str) * 0.07 * 0.6 - 0.05, -0.77, 0.0025, 0.07, 0.07, FONT_WHITE, tmp_str);
 	} else {
 		draw_text_f3(esContext, ax + 0.15 - strlen(tmp_str) * 0.07 * 0.6 - 0.05, -0.77, 0.0025, 0.07, 0.07, FONT_PINK, tmp_str);
 	}
 
-	sprintf(tmp_str, "%0.1fm", (ModelData.p_alt - ModelData.alt_offset));
+	sprintf(tmp_str, "%0.1fm", (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset));
 	draw_text_f3(esContext, ax + 0.28 - strlen(tmp_str) * 0.05 * 0.6 - 0.05, 0.0 - 0.025, 0.0025, 0.05, 0.05, FONT_WHITE, tmp_str);
-	set_button("alt_null", VIEW_MODE_HUD, ax, -0.05, ax + 0.28, 0.05, hud_altitude_null, ModelData.p_alt, 0);
+	set_button("alt_null", VIEW_MODE_HUD, ax, -0.05, ax + 0.28, 0.05, hud_altitude_null, ModelData[ModelActive].p_alt, 0);
 
 }
 
@@ -452,7 +452,7 @@ void draw_speed_rule (ESContext *esContext, float ti_x, float ti_y, float w, flo
 	char tmp_str[100];
 	int n = 0;
 
-	float speed = ModelData.speed * 1000.0 / 60.0 / 60.0; // km/h -> m/s
+	float speed = ModelData[ModelActive].speed * 1000.0 / 60.0 / 60.0; // km/h -> m/s
 
 	// Speed
 #ifndef SDLGL
@@ -582,8 +582,8 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 	esMatrixLoadIdentity(&modelview);
 #endif
 	esTranslate(&modelview, 0.0, 0.0, -3.0);
-	esRotate(&modelview, -ModelData.roll, 0.0, 0.0, 1.0);
-	esTranslate(&modelview, 0.0, -ModelData.pitch / 70.0, 0.0);
+	esRotate(&modelview, -ModelData[ModelActive].roll, 0.0, 0.0, 1.0);
+	esTranslate(&modelview, 0.0, -ModelData[ModelActive].pitch / 70.0, 0.0);
 	esTranslate(&modelview, 0.0, 0.0, 3.0);
 #ifndef SDLGL
 	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
@@ -612,7 +612,7 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 #endif
 if (type == 1) {
 	// Pitch & Roll-Winkel
-	for (n = -30 - ((int)(-ModelData.pitch / 10) % 10 * 10); n <= 20 - ((int)((-ModelData.pitch - 3) / 10) % 10 * 10); n += 10) {
+	for (n = -30 - ((int)(-ModelData[ModelActive].pitch / 10) % 10 * 10); n <= 20 - ((int)((-ModelData[ModelActive].pitch - 3) / 10) % 10 * 10); n += 10) {
 		// Pitch
 #ifdef SDLGL
 		glMatrixMode(GL_MODELVIEW);
@@ -621,8 +621,8 @@ if (type == 1) {
 		esMatrixLoadIdentity(&modelview);
 #endif
 		esTranslate(&modelview, 0.0, 0.0, -3.0);
-		esRotate(&modelview, -ModelData.roll, 0.0, 0.0, 1.0);
-		esTranslate(&modelview, 0.0, (float)(n + -ModelData.pitch) / 70.0, 0.0);
+		esRotate(&modelview, -ModelData[ModelActive].roll, 0.0, 0.0, 1.0);
+		esTranslate(&modelview, 0.0, (float)(n + -ModelData[ModelActive].pitch) / 70.0, 0.0);
 		esTranslate(&modelview, 0.0, 0.0, 3.0);
 #ifndef SDLGL
 		esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
@@ -636,12 +636,12 @@ if (type == 1) {
 			draw_text_f3(esContext, 0.2, -0.025, 0.001, 0.05, 0.05, FONT_WHITE, tmp_str);
 
 			uint8_t alpha = 255;
-			if ((n + -ModelData.pitch) < 0) {
-				alpha = 255 - -(n + -ModelData.pitch) * 255 / 45;
+			if ((n + -ModelData[ModelActive].pitch) < 0) {
+				alpha = 255 - -(n + -ModelData[ModelActive].pitch) * 255 / 45;
 			} else {
-				alpha = 255 - (n + -ModelData.pitch) * 255 / 45;
+				alpha = 255 - (n + -ModelData[ModelActive].pitch) * 255 / 45;
 			}
-			if ((n + -ModelData.pitch) > -45 && (n + -ModelData.pitch) < 45) {
+			if ((n + -ModelData[ModelActive].pitch) > -45 && (n + -ModelData[ModelActive].pitch) < 45) {
 				draw_line_f3(esContext, -0.15, 0.0, 0.001, 0.15, 0.0, 0.001, 255, 255, 255, alpha);
 			}
 		}
@@ -649,7 +649,7 @@ if (type == 1) {
 		glPopMatrix();
 #endif
 	}
-	for (n = -35 - ((int)(-ModelData.pitch / 10) % 10 * 10); n <= 25 - ((int)((-ModelData.pitch - 3) / 10) % 10 * 10); n += 10) {
+	for (n = -35 - ((int)(-ModelData[ModelActive].pitch / 10) % 10 * 10); n <= 25 - ((int)((-ModelData[ModelActive].pitch - 3) / 10) % 10 * 10); n += 10) {
 		// Pitch
 #ifdef SDLGL
 		glMatrixMode(GL_MODELVIEW);
@@ -658,20 +658,20 @@ if (type == 1) {
 		esMatrixLoadIdentity(&modelview);
 #endif
 		esTranslate(&modelview, 0.0, 0.0, -3.0);
-		esRotate(&modelview, -ModelData.roll, 0.0, 0.0, 1.0);
-		esTranslate(&modelview, 0.0, (float)(n + -ModelData.pitch) / 70.0, 0.0);
+		esRotate(&modelview, -ModelData[ModelActive].roll, 0.0, 0.0, 1.0);
+		esTranslate(&modelview, 0.0, (float)(n + -ModelData[ModelActive].pitch) / 70.0, 0.0);
 		esTranslate(&modelview, 0.0, 0.0, 3.0);
 #ifndef SDLGL
 		esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
 		esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
 		uint8_t alpha = 255;
-		if ((n + -ModelData.pitch) < 0) {
-			alpha = 255 - -(n + -ModelData.pitch) * 255 / 45;
+		if ((n + -ModelData[ModelActive].pitch) < 0) {
+			alpha = 255 - -(n + -ModelData[ModelActive].pitch) * 255 / 45;
 		} else {
-			alpha = 255 - (n + -ModelData.pitch) * 255 / 45;
+			alpha = 255 - (n + -ModelData[ModelActive].pitch) * 255 / 45;
 		}
-		if ((n + -ModelData.pitch) > -45 && (n + -ModelData.pitch) < 45) {
+		if ((n + -ModelData[ModelActive].pitch) > -45 && (n + -ModelData[ModelActive].pitch) < 45) {
 			draw_line_f3(esContext, -0.1, 0.0, 0.001, 0.1, 0.0, 0.001, 255, 255, 255, alpha);
 		}
 #ifdef SDLGL
@@ -744,7 +744,7 @@ if (type == 1) {
 	esMatrixLoadIdentity(&modelview);
 #endif
 
-	esRotate(&modelview, -ModelData.roll, 0.0, 0.0, 1.0);
+	esRotate(&modelview, -ModelData[ModelActive].roll, 0.0, 0.0, 1.0);
 
 #ifndef SDLGL
 	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
@@ -1076,13 +1076,13 @@ void screen_hud_internal (ESContext *esContext) {
 	float angle2 = 0.0;
 	float angle_home = 0.0;
 
-	get_dir(ModelData.p_lat, ModelData.p_long, ModelData.p_alt, WayPoints[waypoint_active].p_lat, WayPoints[waypoint_active].p_long, WayPoints[waypoint_active].p_alt, &angle_wp, &dist1, &angle_up, &dist2);
-	angle2 = angle_wp - ModelData.yaw;
+	get_dir(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].p_alt, WayPoints[waypoint_active].p_lat, WayPoints[waypoint_active].p_long, WayPoints[waypoint_active].p_alt, &angle_wp, &dist1, &angle_up, &dist2);
+	angle2 = angle_wp - ModelData[ModelActive].yaw;
 	if (angle2 > 180.0) {
 		angle2 = angle2 - 360.0;
 	}
-	get_dir(ModelData.p_lat, ModelData.p_long, ModelData.p_alt, WayPoints[0].p_lat, WayPoints[0].p_long, WayPoints[0].p_alt, &angle, &dist1, &angle_up, &dist2);
-	angle_home = angle - ModelData.yaw;
+	get_dir(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].p_alt, WayPoints[0].p_lat, WayPoints[0].p_long, WayPoints[0].p_alt, &angle, &dist1, &angle_up, &dist2);
+	angle_home = angle - ModelData[ModelActive].yaw;
 	if (angle_home > 180.0) {
 		angle_home = angle_home - 360.0;
 	}
@@ -1111,44 +1111,44 @@ void screen_hud_internal (ESContext *esContext) {
 	draw_text_f3(esContext, -1.0 - strlen("ARMED") * 0.07 * 0.6 / 2.0, -0.92, 0.002, 0.07, 0.07, FONT_TRANS, "ARMED");
 	draw_line_f3(esContext, -0.8, -0.94, 0.002, -0.8, -0.83, 0.002, 255, 255, 255, 255);
 
-	if (ModelData.mode == 0) {
+	if (ModelData[ModelActive].mode == 0) {
 		sprintf(tmp_str, "MANUAL");
-	} else if (ModelData.mode == 1) {
+	} else if (ModelData[ModelActive].mode == 1) {
 		sprintf(tmp_str, "ACRO");
-	} else if (ModelData.mode == 2) {
+	} else if (ModelData[ModelActive].mode == 2) {
 		sprintf(tmp_str, "ALT_HOLD");
-	} else if (ModelData.mode == 3) {
+	} else if (ModelData[ModelActive].mode == 3) {
 		sprintf(tmp_str, "AUTO");
-	} else if (ModelData.mode == 4) {
+	} else if (ModelData[ModelActive].mode == 4) {
 		sprintf(tmp_str, "GUIDED");
-	} else if (ModelData.mode == 5) {
+	} else if (ModelData[ModelActive].mode == 5) {
 		sprintf(tmp_str, "LOITER");
-	} else if (ModelData.mode == 6) {
+	} else if (ModelData[ModelActive].mode == 6) {
 		sprintf(tmp_str, "RTL");
-	} else if (ModelData.mode == 7) {
+	} else if (ModelData[ModelActive].mode == 7) {
 		sprintf(tmp_str, "CIRCLE");
-	} else if (ModelData.mode == 8) {
+	} else if (ModelData[ModelActive].mode == 8) {
 		sprintf(tmp_str, "POSITION");
-	} else if (ModelData.mode == 9) {
+	} else if (ModelData[ModelActive].mode == 9) {
 		sprintf(tmp_str, "LAND");
-	} else if (ModelData.mode == 10) {
+	} else if (ModelData[ModelActive].mode == 10) {
 		sprintf(tmp_str, "OF_LOITER");
-	} else if (ModelData.mode == 11) {
+	} else if (ModelData[ModelActive].mode == 11) {
 		sprintf(tmp_str, "DRIFT");
-	} else if (ModelData.mode == 13) {
+	} else if (ModelData[ModelActive].mode == 13) {
 		sprintf(tmp_str, "SPORT");
-	} else if (ModelData.mode == 16) {
+	} else if (ModelData[ModelActive].mode == 16) {
 		sprintf(tmp_str, "POSH");
 	} else {
-		sprintf(tmp_str, "UNKNOWN%i", ModelData.mode);
+		sprintf(tmp_str, "UNKNOWN%i", ModelData[ModelActive].mode);
 	}
 	draw_text_f3(esContext, -0.6 - strlen(tmp_str) * 0.07 * 0.6 / 2.0, -0.92, 0.002, 0.07, 0.07, FONT_GREEN, tmp_str);
 	draw_line_f3(esContext, -0.4, -0.94, 0.002, -0.4, -0.83, 0.002, 255, 255, 255, 255);
 
 	static uint8_t last_armed = MODEL_ARMED;
 
-	if (ModelData.armed == MODEL_ARMED) {
-		if (last_armed != ModelData.armed) {
+	if (ModelData[ModelActive].armed == MODEL_ARMED) {
+		if (last_armed != ModelData[ModelActive].armed) {
 			system("#espeak -v en \"armed\" > /dev/null 2> /dev/null &");
 		}
 		if (setup.contrast == 1) {
@@ -1156,14 +1156,14 @@ void screen_hud_internal (ESContext *esContext) {
 		} else {
 			draw_text_f(esContext, -1.0 - strlen("ARMED") * 0.07 * 0.6 / 2.0, -0.92, 0.07, 0.07, FONT_GREEN, "ARMED");
 		}
-	} else if (ModelData.armed == MODEL_ARMING) {
+	} else if (ModelData[ModelActive].armed == MODEL_ARMING) {
 		draw_text_f(esContext, -1.0 - strlen("ARMED") * 0.07 * 0.6 / 2.0, -0.92, 0.07, 0.07, FONT_GREEN_BG, "ARMED");
 	} else {
-		if (last_armed != ModelData.armed) {
+		if (last_armed != ModelData[ModelActive].armed) {
 			system("#espeak -v en \"disarmed\" > /dev/null 2> /dev/null &");
 		}
 	}
-	last_armed = ModelData.armed;
+	last_armed = ModelData[ModelActive].armed;
 
 	// Yaw
 	float compas_r = 0.9;
@@ -1174,7 +1174,7 @@ void screen_hud_internal (ESContext *esContext) {
 		draw_circleFilled_f(esContext, 0.0, compas_y, compas_r + 0.01, 0, 0, 0, 127);
 	}
 	draw_line_f(esContext, 0.0, compas_y - compas_r, 0.0, compas_y, 255, 255, 255, 255);
-	sprintf(tmp_str, "%0.1f", ModelData.yaw);
+	sprintf(tmp_str, "%0.1f", ModelData[ModelActive].yaw);
 	if (setup.contrast == 1) {
 		draw_text_f(esContext, -0.2 - strlen(tmp_str) * 0.07 * 0.6 / 2.0 - 0.01, 0.9, 0.07, 0.07, FONT_WHITE, tmp_str);
 	} else {
@@ -1200,7 +1200,7 @@ void screen_hud_internal (ESContext *esContext) {
 		draw_line_f(esContext, -0.05, compas_y - compas_r - 0.05, 0.05, compas_y - compas_r - 0.05, 255, 255, 255, 255);
 	}
 
-	for (n = (int)ModelData.yaw / 10 * 10 - 60; n <= (int)ModelData.yaw / 10 * 10 + 60; n += 10) {
+	for (n = (int)ModelData[ModelActive].yaw / 10 * 10 - 60; n <= (int)ModelData[ModelActive].yaw / 10 * 10 + 60; n += 10) {
 #ifdef SDLGL
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
@@ -1208,7 +1208,7 @@ void screen_hud_internal (ESContext *esContext) {
 		esMatrixLoadIdentity(&modelview);
 #endif
 		esTranslate(&modelview, 0.0, -compas_y, -3.0);
-		esRotate(&modelview, ((float)n - ModelData.yaw), 0.0, 0.0, 1.0);
+		esRotate(&modelview, ((float)n - ModelData[ModelActive].yaw), 0.0, 0.0, 1.0);
 		esTranslate(&modelview, 0.0, compas_y, 3.0);
 #ifndef SDLGL
 		esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
@@ -1227,7 +1227,7 @@ void screen_hud_internal (ESContext *esContext) {
 		glPopMatrix();
 #endif
 	}
-	for (n = (int)ModelData.yaw / 10 * 10 - 60; n <= (int)ModelData.yaw / 10 * 10 + 60; n += 1) {
+	for (n = (int)ModelData[ModelActive].yaw / 10 * 10 - 60; n <= (int)ModelData[ModelActive].yaw / 10 * 10 + 60; n += 1) {
 #ifdef SDLGL
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
@@ -1235,7 +1235,7 @@ void screen_hud_internal (ESContext *esContext) {
 		esMatrixLoadIdentity(&modelview);
 #endif
 		esTranslate(&modelview, 0.0, -compas_y, -3.0);
-		esRotate(&modelview, ((float)n - ModelData.yaw) + 5.0, 0.0, 0.0, 1.0);
+		esRotate(&modelview, ((float)n - ModelData[ModelActive].yaw) + 5.0, 0.0, 0.0, 1.0);
 		esTranslate(&modelview, 0.0, compas_y, 3.0);
 #ifndef SDLGL
 		esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
@@ -1257,7 +1257,7 @@ void screen_hud_internal (ESContext *esContext) {
 			C += 360.0;
 		}
 		double a = weather.wind_speed * 3.6; // Wind-Speed
-		double b = ModelData.speed; // Plane-Speed
+		double b = ModelData[ModelActive].speed; // Plane-Speed
 		if (b < 1.0) {
 			b = 1.0;
 		}
@@ -1278,7 +1278,7 @@ void screen_hud_internal (ESContext *esContext) {
 		esMatrixLoadIdentity(&modelview);
 #endif
 		esTranslate(&modelview, 0.0, -compas_y, -3.0);
-		esRotate(&modelview, NewDir - ModelData.yaw, 0.0, 0.0, 1.0);
+		esRotate(&modelview, NewDir - ModelData[ModelActive].yaw, 0.0, 0.0, 1.0);
 		esTranslate(&modelview, 0.0, compas_y, 3.0);
 #ifndef SDLGL
 		esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
@@ -1301,7 +1301,7 @@ void screen_hud_internal (ESContext *esContext) {
 		esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
 		esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
-		float diff_wpw = NewDir - ModelData.yaw;
+		float diff_wpw = NewDir - ModelData[ModelActive].yaw;
 		if (diff_wpw > 180.0) {
 			diff_wpw -= 360.0;
 		}
@@ -1479,32 +1479,32 @@ void screen_hud_internal (ESContext *esContext) {
 		float volt_mind = 4.0;
 		float volt_max = 6.0;
 		float volt_diff = volt_max - volt_mind;
-		float volt_diff2 = ModelData.voltage_rx - volt_mind;
-		if (ModelData.found_rc != 1) {
+		float volt_diff2 = ModelData[ModelActive].voltage_rx - volt_mind;
+		if (ModelData[ModelActive].found_rc != 1) {
 			volt_mind = 10.0;
 			volt_max = 12.6;
-			volt_diff2 = ModelData.voltage - volt_mind;
+			volt_diff2 = ModelData[ModelActive].voltage - volt_mind;
 		}
 		float percent = 100.0 / volt_diff * volt_diff2;
 		float voltage_all = 0.0;
 		float voltage_real = 0.0;
 		float voltage_max = 0.0;
 		for (i = 0; i < 6; i++) {
-			if (ModelData.voltage_zell[i] > 0.0) {
-				voltage_real += ModelData.voltage_zell[i];
-				voltage_all += ModelData.voltage_zell[i] - 3.0;
+			if (ModelData[ModelActive].voltage_zell[i] > 0.0) {
+				voltage_real += ModelData[ModelActive].voltage_zell[i];
+				voltage_all += ModelData[ModelActive].voltage_zell[i] - 3.0;
 				voltage_max += 1.2;
 			}
 		}
 
-		sprintf(tmp_str, "%0.0fkm/h", ModelData.speed);
-		draw_circleMeter_f3(esContext, -1.05, -0.6, 0.001, 0.14, 0.0, 25.0, 50.0, 180.0, (ModelData.speed * 100.0 / 250.0), "Speed", tmp_str, 0);
+		sprintf(tmp_str, "%0.0fkm/h", ModelData[ModelActive].speed);
+		draw_circleMeter_f3(esContext, -1.05, -0.6, 0.001, 0.14, 0.0, 25.0, 50.0, 180.0, (ModelData[ModelActive].speed * 100.0 / 250.0), "Speed", tmp_str, 0);
 
-		if (ModelData.found_rc == 1) {
-			sprintf(tmp_str, "%0.1fV", ModelData.voltage_rx);
+		if (ModelData[ModelActive].found_rc == 1) {
+			sprintf(tmp_str, "%0.1fV", ModelData[ModelActive].voltage_rx);
 			draw_circleMeter_f3(esContext, -1.05, -0.3, 0.001, 0.14, 0.0, 25.0, 50.0, 180.0, percent, "Volt-RX", tmp_str, 0);
 		} else {
-			sprintf(tmp_str, "%0.1fV", ModelData.voltage);
+			sprintf(tmp_str, "%0.1fV", ModelData[ModelActive].voltage);
 			draw_circleMeter_f3(esContext, -1.05, -0.3, 0.001, 0.14, 0.0, 25.0, 50.0, 180.0, percent, "Volt", tmp_str, 0);
 		}
 
@@ -1513,15 +1513,15 @@ void screen_hud_internal (ESContext *esContext) {
 			draw_circleMeter_f3(esContext, -1.05, 0.3, 0.001, 0.14, 0.0, 25.0, 50.0, 180.0, voltage_all * 100.0 / voltage_max, "Volt", tmp_str, 0);
 		}
 
-		if (ModelData.found_rc == 1) {
-			sprintf(tmp_str, "%0.1fA", ModelData.ampere);
-			draw_circleMeter_f3(esContext, -1.05, 0.6, 0.001, 0.14, 0.0, 25.0, 50.0, 180.0, ModelData.ampere, "Strom", tmp_str, 0);
+		if (ModelData[ModelActive].found_rc == 1) {
+			sprintf(tmp_str, "%0.1fA", ModelData[ModelActive].ampere);
+			draw_circleMeter_f3(esContext, -1.05, 0.6, 0.001, 0.14, 0.0, 25.0, 50.0, 180.0, ModelData[ModelActive].ampere, "Strom", tmp_str, 0);
 		}
 
 	//SDL_Log("hud#9e\n");
 
-		if (ModelData.teletype != TELETYPE_MULTIWII_21 && ModelData.teletype != TELETYPE_BASEFLIGHT) {
-			sprintf(tmp_str, "CPU %0.0f%%", ModelData.load);
+		if (ModelData[ModelActive].teletype != TELETYPE_MULTIWII_21 && ModelData[ModelActive].teletype != TELETYPE_BASEFLIGHT) {
+			sprintf(tmp_str, "CPU %0.0f%%", ModelData[ModelActive].load);
 			draw_circleMeter_f3(esContext, -1.05, -0.1, 0.001, 0.06, 20.0, 33.0, 66.0, 160.0, 50, "", "", 3);
 			draw_text_button(esContext, "hud_load", VIEW_MODE_HUD, tmp_str, FONT_WHITE, -1.05, -0.1, 0.003, 0.035, 1, 0, hud_null, 0);
 		}
@@ -1529,16 +1529,16 @@ void screen_hud_internal (ESContext *esContext) {
 	//SDL_Log("hud#9f\n");
 
 		// RC-Values
-		for (n = 0; n < ModelData.chancount && n < 16; n++) {
+		for (n = 0; n < ModelData[ModelActive].chancount && n < 16; n++) {
 			float x1 = -1.3;
 			float y1 = -0.55 + (float)n * 0.1;
-			float val = (float)ModelData.radio[n] / 2.0 + 50.0;
+			float val = (float)ModelData[ModelActive].radio[n] / 2.0 + 50.0;
 			if (val > 100.0) {
 				val = 100.0;
 			} else if (val < -100.0) {
 				val = -100.0;
 			}
-			if (ModelData.chancount > 8) {
+			if (ModelData[ModelActive].chancount > 8) {
 				y1 -= 0.2;
 			}
 			if (n >= 4) {
@@ -1546,7 +1546,7 @@ void screen_hud_internal (ESContext *esContext) {
 			} else {
 				draw_circleMeter_f3(esContext, x1, y1, 0.001, 0.06, 20.0, 50.0, 50.0, 160.0, val, "", "", 1);
 			}
-			if (ModelData.teletype == TELETYPE_MULTIWII_21 || ModelData.teletype == TELETYPE_OPENPILOT || ModelData.teletype == TELETYPE_BASEFLIGHT) {
+			if (ModelData[ModelActive].teletype == TELETYPE_MULTIWII_21 || ModelData[ModelActive].teletype == TELETYPE_OPENPILOT || ModelData[ModelActive].teletype == TELETYPE_BASEFLIGHT) {
 				if (n == 0) {
 					draw_text_button(esContext, "hud_rd_1", VIEW_MODE_HUD, "ROLL", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 1) {
@@ -1567,7 +1567,7 @@ void screen_hud_internal (ESContext *esContext) {
 					sprintf(tmp_str, "CH %i", n);
 					draw_text_button(esContext, tmp_str, VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				}
-			} else if (ModelData.teletype == TELETYPE_AUTOQUAD) {
+			} else if (ModelData[ModelActive].teletype == TELETYPE_AUTOQUAD) {
 				if (n == 0) {
 					draw_text_button(esContext, "hud_rd_1", VIEW_MODE_HUD, "THROTTLE", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 1) {
@@ -1588,7 +1588,7 @@ void screen_hud_internal (ESContext *esContext) {
 					sprintf(tmp_str, "CH %i", n);
 					draw_text_button(esContext, tmp_str, VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				}
-			} else if (ModelData.teletype == TELETYPE_ARDUPILOT || ModelData.teletype == TELETYPE_MEGAPIRATE_NG) {
+			} else if (ModelData[ModelActive].teletype == TELETYPE_ARDUPILOT || ModelData[ModelActive].teletype == TELETYPE_MEGAPIRATE_NG) {
 				if (n == 0) {
 					draw_text_button(esContext, "hud_rd_1", VIEW_MODE_HUD, "ROLL", FONT_WHITE, x1, y1, 0.003, 0.035, 1, 0, hud_null, 0);
 				} else if (n == 1) {
@@ -1624,9 +1624,9 @@ void screen_hud_internal (ESContext *esContext) {
 
 	//SDL_Log("hud#9g\n");
 
-		float all_g = ModelData.acc_z * -1;
-		if (ModelData.teletype == TELETYPE_MULTIWII_21 || ModelData.teletype == TELETYPE_BASEFLIGHT) {
-			all_g = (float)ModelData.acc_z / 256.0;
+		float all_g = ModelData[ModelActive].acc_z * -1;
+		if (ModelData[ModelActive].teletype == TELETYPE_MULTIWII_21 || ModelData[ModelActive].teletype == TELETYPE_BASEFLIGHT) {
+			all_g = (float)ModelData[ModelActive].acc_z / 256.0;
 		}
 		if (min_g > all_g) {
 			min_g = all_g;
@@ -1640,28 +1640,28 @@ void screen_hud_internal (ESContext *esContext) {
 		draw_circleMeter_f3(esContext, 1.15, -0.3, 0.001, 0.14, 0.0, 50.0, 50.0, 180.0, 50.0, "Vario", "-1.2m/s", 0);
 
 
-		if (ModelData.found_rc == 1) {
+		if (ModelData[ModelActive].found_rc == 1) {
 			// Lipo-Watch
 			for (i = 0; i < 6; i++) {
 				sprintf(tmp_str2, "hud_lv%i", i);
-				if (ModelData.voltage_zell[i] != 0.0) {
-					sprintf(tmp_str, "%0.2fV", ModelData.voltage_zell[i]);
-					draw_circleMeter_f3(esContext, -1.3, 0.3 + (i * 0.1), 0.001, 0.06, 20.0, 20.0, 40.0, 160.0, ((ModelData.voltage_zell[i] - 3.0) * 100.0 / 1.2), "", "", 1);
+				if (ModelData[ModelActive].voltage_zell[i] != 0.0) {
+					sprintf(tmp_str, "%0.2fV", ModelData[ModelActive].voltage_zell[i]);
+					draw_circleMeter_f3(esContext, -1.3, 0.3 + (i * 0.1), 0.001, 0.06, 20.0, 20.0, 40.0, 160.0, ((ModelData[ModelActive].voltage_zell[i] - 3.0) * 100.0 / 1.2), "", "", 1);
 					draw_text_button(esContext, tmp_str2, VIEW_MODE_HUD, tmp_str, FONT_WHITE, -1.3, 0.3 + (i * 0.1), 0.003, 0.035, 1, 0, hud_null, 0);
 				}
 			}
 
 			// Temperature
-			draw_circleMeter_f3(esContext, 1.07, 0.025, 0.001, 0.06, 20.0, 50.0, 50.0, 160.0, ((float)ModelData.temperature[0] + 30) * 100 / 280, "", "", 3);
-			sprintf(tmp_str, "%i°C", ModelData.temperature[0]);
+			draw_circleMeter_f3(esContext, 1.07, 0.025, 0.001, 0.06, 20.0, 50.0, 50.0, 160.0, ((float)ModelData[ModelActive].temperature[0] + 30) * 100 / 280, "", "", 3);
+			sprintf(tmp_str, "%i°C", ModelData[ModelActive].temperature[0]);
 			draw_text_button(esContext, "temp1", VIEW_MODE_HUD, tmp_str, FONT_WHITE, 1.07, 0.025, 0.003, 0.035, 1, 0, hud_null, 0);
 			draw_circleMeter_f3(esContext, 1.23, 0.025, 0.001, 0.06, 20.0, 50.0, 50.0, 160.0, 50.0, "", "", 3);
-			sprintf(tmp_str, "%i°C", ModelData.temperature[1]);
+			sprintf(tmp_str, "%i°C", ModelData[ModelActive].temperature[1]);
 			draw_text_button(esContext, "temp2", VIEW_MODE_HUD, tmp_str, FONT_WHITE, 1.23, 0.025, 0.003, 0.035, 1, 0, hud_null, 0);
 
 			// Test-Graph
-			graph1_data[0][graph1_pointer] = ModelData.rssi_rx;
-			graph1_data[1][graph1_pointer] = ModelData.rssi_tx;
+			graph1_data[0][graph1_pointer] = ModelData[ModelActive].rssi_rx;
+			graph1_data[1][graph1_pointer] = ModelData[ModelActive].rssi_tx;
 			if (graph1_pointer < graph1_size) {
 				graph1_pointer++;
 			} else {
@@ -1677,7 +1677,7 @@ void screen_hud_internal (ESContext *esContext) {
 				}
 				draw_graph_value(esContext, 0.95, 0.45 + (float)n * 0.1, 1.35, 0.45 + (float)n * 0.1 + 0.08, 0.001, graph1_data[n], graph1_size, graph1_pointer, 255 - n * 25, n * 25, n * 125, 255);
 			}
-			draw_image_f3(esContext, 0.8, 0.85, 1.0, 0.96, 0.002, ModelData.image);
+			draw_image_f3(esContext, 0.8, 0.85, 1.0, 0.96, 0.002, ModelData[ModelActive].image);
 		}
 	}
 
@@ -1738,44 +1738,44 @@ void screen_hud_internal (ESContext *esContext) {
 #else
 	draw_text_button(esContext, "view_map_bw", VIEW_MODE_HUD, "BW", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_bw, 0);
 #endif
-	if (ModelData.dronetype == MAV_TYPE_GENERIC) {
+	if (ModelData[ModelActive].dronetype == MAV_TYPE_GENERIC) {
 		strcpy(tmp_str, "Generic air vehicle");
-	} else if (ModelData.dronetype == MAV_TYPE_FIXED_WING) {
+	} else if (ModelData[ModelActive].dronetype == MAV_TYPE_FIXED_WING) {
 		strcpy(tmp_str, "Fixed wing aircraft");
-	} else if (ModelData.dronetype == MAV_TYPE_QUADROTOR) {
+	} else if (ModelData[ModelActive].dronetype == MAV_TYPE_QUADROTOR) {
 		strcpy(tmp_str, "Quadrotor");
-	} else if (ModelData.dronetype == MAV_TYPE_COAXIAL) {
+	} else if (ModelData[ModelActive].dronetype == MAV_TYPE_COAXIAL) {
 		strcpy(tmp_str, "Coaxial helicopter");
-	} else if (ModelData.dronetype == MAV_TYPE_HELICOPTER) {
+	} else if (ModelData[ModelActive].dronetype == MAV_TYPE_HELICOPTER) {
 		strcpy(tmp_str, "Helicopter");
-	} else if (ModelData.dronetype == MAV_TYPE_ANTENNA_TRACKER) {
+	} else if (ModelData[ModelActive].dronetype == MAV_TYPE_ANTENNA_TRACKER) {
 		strcpy(tmp_str, "Antenna-Tracker");
-	} else if (ModelData.dronetype == MAV_TYPE_GCS) {
+	} else if (ModelData[ModelActive].dronetype == MAV_TYPE_GCS) {
 		strcpy(tmp_str, "ground control station");
-	} else if (ModelData.dronetype == MAV_TYPE_AIRSHIP) {
+	} else if (ModelData[ModelActive].dronetype == MAV_TYPE_AIRSHIP) {
 		strcpy(tmp_str, "Airship, controlled");
-	} else if (ModelData.dronetype == MAV_TYPE_FREE_BALLOON) {
+	} else if (ModelData[ModelActive].dronetype == MAV_TYPE_FREE_BALLOON) {
 		strcpy(tmp_str, "Free balloon, uncontrolled");
-	} else if (ModelData.dronetype == MAV_TYPE_ROCKET) {
+	} else if (ModelData[ModelActive].dronetype == MAV_TYPE_ROCKET) {
 		strcpy(tmp_str, "Rocket");
-	} else if (ModelData.dronetype == MAV_TYPE_GROUND_ROVER) {
+	} else if (ModelData[ModelActive].dronetype == MAV_TYPE_GROUND_ROVER) {
 		strcpy(tmp_str, "Ground rover");
-	} else if (ModelData.dronetype == MAV_TYPE_SURFACE_BOAT) {
+	} else if (ModelData[ModelActive].dronetype == MAV_TYPE_SURFACE_BOAT) {
 		strcpy(tmp_str, "Boat");
-	} else if (ModelData.dronetype == MAV_TYPE_SUBMARINE) {
+	} else if (ModelData[ModelActive].dronetype == MAV_TYPE_SUBMARINE) {
 		strcpy(tmp_str, "Submarine");
-	} else if (ModelData.dronetype == MAV_TYPE_HEXAROTOR) {
+	} else if (ModelData[ModelActive].dronetype == MAV_TYPE_HEXAROTOR) {
 		strcpy(tmp_str, "Hexarotor");
-	} else if (ModelData.dronetype == MAV_TYPE_OCTOROTOR) {
+	} else if (ModelData[ModelActive].dronetype == MAV_TYPE_OCTOROTOR) {
 		strcpy(tmp_str, "Octorotor");
-	} else if (ModelData.dronetype == MAV_TYPE_TRICOPTER) {
+	} else if (ModelData[ModelActive].dronetype == MAV_TYPE_TRICOPTER) {
 		strcpy(tmp_str, "Tricopter");
-	} else if (ModelData.dronetype == MAV_TYPE_FLAPPING_WING) {
+	} else if (ModelData[ModelActive].dronetype == MAV_TYPE_FLAPPING_WING) {
 		strcpy(tmp_str, "Flapping wing");
-	} else if (ModelData.dronetype == MAV_TYPE_KITE) {
+	} else if (ModelData[ModelActive].dronetype == MAV_TYPE_KITE) {
 		strcpy(tmp_str, "Flapping wing");
 	} else {
-		sprintf(tmp_str, "UNKNOWN(%i)", ModelData.dronetype);
+		sprintf(tmp_str, "UNKNOWN(%i)", ModelData[ModelActive].dronetype);
 	}
 	draw_text_button(esContext, "view_hud_v", VIEW_MODE_HUD, tmp_str, FONT_GREEN, 0.0, -0.99, 0.002, 0.06, 1, 0, hud_null, 0);
 

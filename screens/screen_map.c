@@ -381,8 +381,8 @@ uint8_t show_poi (char *name, float x, float y, int8_t button, float data, uint8
 
 uint8_t map_goto (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (data == -1.0) {
-		int tile_y = lat2tiley(ModelData.p_lat, mapdata->zoom) - 1;
-		int tile_x = long2tilex(ModelData.p_long, mapdata->zoom) - 1;
+		int tile_y = lat2tiley(ModelData[ModelActive].p_lat, mapdata->zoom) - 1;
+		int tile_x = long2tilex(ModelData[ModelActive].p_long, mapdata->zoom) - 1;
 		lat = tiley2lat(tile_y, mapdata->zoom);
 		lon = tilex2long(tile_x, mapdata->zoom);
 	} else {
@@ -395,9 +395,9 @@ uint8_t map_goto (char *name, float x, float y, int8_t button, float data, uint8
 }
 
 uint8_t map_uav2home (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	ModelData.p_lat = WayPoints[0].p_lat;
-	ModelData.p_long = WayPoints[0].p_long;
-	ModelData.p_alt = WayPoints[0].p_alt;
+	ModelData[ModelActive].p_lat = WayPoints[0].p_lat;
+	ModelData[ModelActive].p_long = WayPoints[0].p_long;
+	ModelData[ModelActive].p_alt = WayPoints[0].p_alt;
 	return 0;
 }
 
@@ -641,7 +641,7 @@ void show_dir (ESContext *esContext, uint16_t px, uint16_t py, float lat_from, f
 	}
 #endif
 	esTranslate( &modelview, x1, -y1, -2.0 );
-	esRotate( &modelview, ModelData.yaw, 0.0, 0.0, 1.0 );
+	esRotate( &modelview, ModelData[ModelActive].yaw, 0.0, 0.0, 1.0 );
 	esTranslate( &modelview, -x1, y1, 2.02 );
 #ifndef SDLGL
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
@@ -974,7 +974,7 @@ void list_waypoints_cup (ESContext *esContext, char *search) {
 						if ((int)wp_lat >= min_lat && (int)wp_lat <= max_lat && (int)wp_lon >= min_lon && (int)wp_lon <= max_lon) {
 
 
-							float wp_dist = get_distance(ModelData.p_lat, ModelData.p_long, wp_lat, wp_lon, wp_alt);
+							float wp_dist = get_distance(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, wp_lat, wp_lon, wp_alt);
 
 							if (wp_dist > 1200.0) {
 								printf("## %s %f %f %f %0.1fkm ##\n", wp_name, wp_lat, wp_lon, wp_alt, wp_dist / 1000.0);
@@ -1859,15 +1859,15 @@ void map_draw_alt_profile (ESContext *esContext) {
 	float max_py = -99999.0;
 	float max_alt = -99999.0;
 	float min_alt = 99999.0;
-	next_point_ll(esContext, ModelData.p_long, ModelData.p_lat, ModelData.yaw * -1.0 - 90.0, alt_profile_scale_w, &nx2, &ny2);
+	next_point_ll(esContext, ModelData[ModelActive].p_long, ModelData[ModelActive].p_lat, ModelData[ModelActive].yaw * -1.0 - 90.0, alt_profile_scale_w, &nx2, &ny2);
 	mark_alt = get_altitude(ny2, nx2);
-	float distance_max = get_distance(ModelData.p_lat, ModelData.p_long, ny2, nx2, mark_alt);
+	float distance_max = get_distance(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ny2, nx2, mark_alt);
 	draw_box_f3c2(esContext, px1, py1, 0.002, px2, py2, 0.002, 0, 0, 255, 200, 255, 255, 255, 200);
 	for (nf = 1.0; nf < alt_profile_scale_w; nf += 2.0) {
-		next_point_ll(esContext, ModelData.p_long, ModelData.p_lat, ModelData.yaw * -1.0 - 90.0, nf, &nx2, &ny2);
+		next_point_ll(esContext, ModelData[ModelActive].p_long, ModelData[ModelActive].p_lat, ModelData[ModelActive].yaw * -1.0 - 90.0, nf, &nx2, &ny2);
 		mark_alt = get_altitude(ny2, nx2);
 		float px = nf * pw / alt_profile_scale_w;
-		float py = (mark_alt - ModelData.p_alt) * ph / alt_profile_scale_h;
+		float py = (mark_alt - ModelData[ModelActive].p_alt) * ph / alt_profile_scale_h;
 		if (max_alt < mark_alt) {
 			max_alt = mark_alt;
 			max_py = py;
@@ -1880,7 +1880,7 @@ void map_draw_alt_profile (ESContext *esContext) {
 				py = (ph / 2.0);
 			}
 			draw_line_f3(esContext, px1 + last_px, py1 + (ph / 2.0) - last_py, 0.004, px1 + px, py1 + (ph / 2.0) - py, 0.004, 0, 0, 0, 255);
-			if (ModelData.p_alt > mark_alt) {
+			if (ModelData[ModelActive].p_alt > mark_alt) {
 				draw_line_f3(esContext, px1 + px, py1 + (ph / 2.0) - py, 0.004, px1 + px, py2, 0.004, 100, 255, 100, 200);
 			} else {
 				draw_line_f3(esContext, px1 + px, py1 + (ph / 2.0) - py, 0.004, px1 + px, py1 + (ph / 2.0), 0.004, 255, 0, 0, 200);
@@ -1907,7 +1907,7 @@ void map_draw_alt_profile (ESContext *esContext) {
 	draw_text_button(esContext, "alt_profile_scale_w", setup.view_mode, tmp_str, FONT_GREEN, px1 + (pw / 2.0), py1, 0.003, 0.04, ALIGN_CENTER, ALIGN_TOP, map_profile, 0.0);
 	sprintf(tmp_str, "%0.0fm", min_alt);
 	draw_text_button(esContext, "alt_profile_max", setup.view_mode, tmp_str, FONT_GREEN, px2, py2 - 0.04, 0.005, 0.04, ALIGN_RIGHT, ALIGN_TOP, map_null, 0.0);
-	sprintf(tmp_str, "%0.0fm", ModelData.p_alt);
+	sprintf(tmp_str, "%0.0fm", ModelData[ModelActive].p_alt);
 	draw_text_button(esContext, "alt_profile_max", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (ph / 2.0) - 0.04, 0.005, 0.04, ALIGN_LEFT, ALIGN_TOP, map_null, 0.0);
 	sprintf(tmp_str, "alt-scale: %0.0fm", alt_profile_scale_h);
 	draw_text_button(esContext, "alt_profile_scale_h", setup.view_mode, tmp_str, FONT_GREEN, px1 + (pw / 2.0), py2 - 0.04, 0.005, 0.04, ALIGN_CENTER, ALIGN_TOP, map_profile, 0.0);
@@ -1924,9 +1924,9 @@ void map_draw_buttons (ESContext *esContext) {
 		draw_rect_f3(esContext, 0.9, 0.45, 0.002, 1.4, 0.9, 0.002, 0, 0, 0, 255);
 		draw_rect_f3(esContext, 0.9 - 0.005, 0.45 - 0.005, 0.002, 1.4 + 0.005, 0.9 + 0.005, 0.002, 255, 255, 255, 255);
 		set_button("goto_hud", setup.view_mode, 0.9, 0.45, 1.4, 0.9, map_goto_screen, (float)VIEW_MODE_HUD, 0);
-		sprintf(tmp_str, "Alt: %0.0f", ModelData.p_alt);
+		sprintf(tmp_str, "Alt: %0.0f", ModelData[ModelActive].p_alt);
 		draw_text_button(esContext, "map_alt", setup.view_mode, tmp_str, FONT_GREEN, 0.92, 0.8, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
-		sprintf(tmp_str, "Speed: %0.0f", ModelData.speed);
+		sprintf(tmp_str, "Speed: %0.0f", ModelData[ModelActive].speed);
 		draw_text_button(esContext, "map_speed", setup.view_mode, tmp_str, FONT_GREEN, 0.92, 0.85, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
 	}
 #endif
@@ -2064,51 +2064,51 @@ void map_draw_buttons (ESContext *esContext) {
 	}
 	draw_box_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 	draw_rect_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
-	if (ModelData.gpsfix > 0) {
-		sprintf(tmp_str, "Fix: %iD", ModelData.gpsfix);
+	if (ModelData[ModelActive].gpsfix > 0) {
+		sprintf(tmp_str, "Fix: %iD", ModelData[ModelActive].gpsfix);
 		draw_text_button(esContext, "map_fix", setup.view_mode, tmp_str, FONT_GREEN, -1.4, -0.8 + ny * 0.12 - 0.03, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
-		sprintf(tmp_str, "Sat: %i", ModelData.numSat);
+		sprintf(tmp_str, "Sat: %i", ModelData[ModelActive].numSat);
 		draw_text_button(esContext, "map_sats", setup.view_mode, tmp_str, FONT_GREEN, -1.4, -0.8 + ny * 0.12 + 0.0, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
 	} else {
 		strcpy(tmp_str, "No GPS");
 		draw_text_button(esContext, "map_fix", setup.view_mode, tmp_str, FONT_WHITE, -1.4, -0.8 + ny * 0.12 - 0.03, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
-		sprintf(tmp_str, "Sat: %i", ModelData.numSat);
+		sprintf(tmp_str, "Sat: %i", ModelData[ModelActive].numSat);
 		draw_text_button(esContext, "map_sats", setup.view_mode, tmp_str, FONT_WHITE, -1.4, -0.8 + ny * 0.12 + 0.0, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
 	}
-	sprintf(tmp_str, "HDOP: %0.1f", ModelData.hdop);
+	sprintf(tmp_str, "HDOP: %0.1f", ModelData[ModelActive].hdop);
 	draw_text_button(esContext, "map_hdop", setup.view_mode, tmp_str, FONT_GREEN, -1.4, -0.8 + ny * 0.12 + 0.03, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
 
 	ny = 0;
-	if (ModelData.mode == 0) {
+	if (ModelData[ModelActive].mode == 0) {
 		sprintf(tmp_str, "MANUAL");
-	} else if (ModelData.mode == 1) {
+	} else if (ModelData[ModelActive].mode == 1) {
 		sprintf(tmp_str, "ACRO");
-	} else if (ModelData.mode == 2) {
+	} else if (ModelData[ModelActive].mode == 2) {
 		sprintf(tmp_str, "ALT_HOLD");
-	} else if (ModelData.mode == 3) {
+	} else if (ModelData[ModelActive].mode == 3) {
 		sprintf(tmp_str, "AUTO");
-	} else if (ModelData.mode == 4) {
+	} else if (ModelData[ModelActive].mode == 4) {
 		sprintf(tmp_str, "GUIDED");
-	} else if (ModelData.mode == 5) {
+	} else if (ModelData[ModelActive].mode == 5) {
 		sprintf(tmp_str, "LOITER");
-	} else if (ModelData.mode == 6) {
+	} else if (ModelData[ModelActive].mode == 6) {
 		sprintf(tmp_str, "RTL");
-	} else if (ModelData.mode == 7) {
+	} else if (ModelData[ModelActive].mode == 7) {
 		sprintf(tmp_str, "CIRCLE");
-	} else if (ModelData.mode == 8) {
+	} else if (ModelData[ModelActive].mode == 8) {
 		sprintf(tmp_str, "POSITION");
-	} else if (ModelData.mode == 9) {
+	} else if (ModelData[ModelActive].mode == 9) {
 		sprintf(tmp_str, "LAND");
-	} else if (ModelData.mode == 10) {
+	} else if (ModelData[ModelActive].mode == 10) {
 		sprintf(tmp_str, "OF_LOITER");
-	} else if (ModelData.mode == 11) {
+	} else if (ModelData[ModelActive].mode == 11) {
 		sprintf(tmp_str, "DRIFT");
-	} else if (ModelData.mode == 13) {
+	} else if (ModelData[ModelActive].mode == 13) {
 		sprintf(tmp_str, "SPORT");
-	} else if (ModelData.mode == 16) {
+	} else if (ModelData[ModelActive].mode == 16) {
 		sprintf(tmp_str, "POSH");
 	} else {
-		sprintf(tmp_str, "UNKNOWN%i", ModelData.mode);
+		sprintf(tmp_str, "UNKNOWN%i", ModelData[ModelActive].mode);
 	}
 	draw_box_f3(esContext, 1.05, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 	draw_rect_f3(esContext, 1.05, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
@@ -2306,7 +2306,7 @@ void map_draw_buttons (ESContext *esContext) {
 		draw_text_button(esContext, "map_sp_radius_change_", setup.view_mode, "radius", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_sp_radius_change, 0.0);
 		ny2++;
 	}
-	if (ModelData.mode != 4) {
+	if (ModelData[ModelActive].mode != 4) {
 		draw_text_button(esContext, "map_sp_", setup.view_mode, "guided not active", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_fm_change, 0.0);
 	} else {
 		draw_text_button(esContext, "map_sp_", setup.view_mode, "fly to point", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_sp_change, 0.0);
@@ -2347,7 +2347,7 @@ void map_draw_buttons (ESContext *esContext) {
 	}
 	if (GroundData.active == 0) {
 		draw_text_button(esContext, "map_fallowme_", setup.view_mode, "no ground gps", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_fm_change, 0.0);
-	} else if (ModelData.mode != 4) {
+	} else if (ModelData[ModelActive].mode != 4) {
 		draw_text_button(esContext, "map_fallowme_", setup.view_mode, "guided not active", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_fm_change, 0.0);
 	} else {
 		draw_text_button(esContext, "map_fallowme_", setup.view_mode, "follow me", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_fm_change, 0.0);
@@ -2479,7 +2479,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	}
 #endif
 	if (center_map == 1 || _map_view == 3 || _map_view == 4 || _map_view == 5) {
-		draw_xy(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset), lat, lon, zoom, &mapdata->offset_x1, &mapdata->offset_y1);
+		draw_xy(esContext, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset), lat, lon, zoom, &mapdata->offset_x1, &mapdata->offset_y1);
 		if (mapdata->offset_x1 < -0.8) {
 			map_goto("UAV", 0.0, 0.0, 1, -1.0, 0);
 		}
@@ -2499,9 +2499,9 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			roty = 0.0;
 		}
 	} else if (map_dir == 1) {
-		roty = ModelData.yaw;
+		roty = ModelData[ModelActive].yaw;
 	} else if (map_dir == 2) {
-		roty = ModelData.yaw;
+		roty = ModelData[ModelActive].yaw;
 	} else {
 		roty = 0.0;
 	}
@@ -2544,7 +2544,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		glTranslatef( 0.0, 0.0, 2.0 );
 		glTranslatef(-mapdata->offset_x1, mapdata->offset_y1, 0.0);
 		if (map_side != 0) {
-			glTranslatef(0.0, 0.0, -(ModelData.p_alt - ModelData.alt_offset) / alt_zoom);
+			glTranslatef(0.0, 0.0, -(ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) / alt_zoom);
 		}
 	} else if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
 		roty = 0.0;
@@ -2556,15 +2556,15 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		if (setup.hud_view_stab == 1) {
 			glRotatef(0.0, 1.0, 1.0, 1.0);
 		} else if (setup.hud_view_stab == 2) {
-			glRotatef(-ModelData.mnt_pitch, 1.0, 0.0, 0.0);
-			glRotatef(-ModelData.mnt_roll, 0.0, 1.0, 0.0);
-			glRotatef(-ModelData.mnt_yaw, 0.0, 0.0, 1.0);
+			glRotatef(-ModelData[ModelActive].mnt_pitch, 1.0, 0.0, 0.0);
+			glRotatef(-ModelData[ModelActive].mnt_roll, 0.0, 1.0, 0.0);
+			glRotatef(-ModelData[ModelActive].mnt_yaw, 0.0, 0.0, 1.0);
 		} else {
-			glRotatef(-ModelData.pitch, 1.0, 0.0, 0.0);
-			glRotatef(-ModelData.roll, 0.0, 1.0, 0.0);
+			glRotatef(-ModelData[ModelActive].pitch, 1.0, 0.0, 0.0);
+			glRotatef(-ModelData[ModelActive].roll, 0.0, 1.0, 0.0);
 		}
-		glRotatef(ModelData.yaw, 0.0, 0.0, 1.0);
-		glTranslatef(0.0, 0.0, 2.0 - 0.00 - (ModelData.p_alt - ModelData.alt_offset) / alt_zoom);
+		glRotatef(ModelData[ModelActive].yaw, 0.0, 0.0, 1.0);
+		glTranslatef(0.0, 0.0, 2.0 - 0.00 - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) / alt_zoom);
 		glTranslatef(-mapdata->offset_x1, mapdata->offset_y1, 0.0);
 		glMatrixMode(GL_MODELVIEW);
 	} else {
@@ -2615,7 +2615,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			glTranslatef(-(float)esContext->width / 2.0, -(float)esContext->height / 2.0, -0.5);
 			T_Color mred = {255, 0, 0, 255};
 			mpMarkerClear(fdMap);
-			mpMarkerSet(fdMap, ModelData.p_lat, ModelData.p_long, ModelData.yaw, "PLANE", mred);
+			mpMarkerSet(fdMap, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].yaw, "PLANE", mred);
 			int fn = 0;
 			fmap_zoom = fmap_scale;
 			for (fn = 0; fn < 20 - zoom; fn++) {
@@ -2626,9 +2626,9 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			}
 			mpMapSetVisibleRange(fdMap, fmap_zoom * (float)esContext->width / (float)esContext->height, fmap_zoom);
 			if (map_dir == 0) {
-				mpMapDrawPlane(fdMap, ModelData.p_lat, ModelData.p_long, 0.0, 0);
+				mpMapDrawPlane(fdMap, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, 0.0, 0);
 			} else {
-				mpMapDrawPlane(fdMap, ModelData.p_lat, ModelData.p_long, ModelData.yaw, 0);
+				mpMapDrawPlane(fdMap, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].yaw, 0);
 			}
 			mpMarkerDraw(fdMap);
 			glPopMatrix();
@@ -2762,9 +2762,9 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	mark_point(esContext, WayPoints[0].p_lat, WayPoints[0].p_long, WayPoints[0].p_alt, WayPoints[0].name, "", 0, 0.0, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
 
 	// drawing Waypoint-Route
-	float last_lat = ModelData.p_lat;
-	float last_lon = ModelData.p_long;
-	float last_alt = (ModelData.p_alt - ModelData.alt_offset);
+	float last_lat = ModelData[ModelActive].p_lat;
+	float last_lon = ModelData[ModelActive].p_long;
+	float last_alt = (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset);
 	int flag = 0;
 	if (map_show_wp == 1) {
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
@@ -2782,10 +2782,10 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 		if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
 			if (setup.hud_view_tunnel == 1) {
-				mark_tunnel(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset) + 10.6, WayPoints[waypoint_active].p_lat, WayPoints[waypoint_active].p_long, WayPoints[waypoint_active].p_alt, 5, mapdata->lat, mapdata->lon, mapdata->zoom);
+				mark_tunnel(esContext, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) + 10.6, WayPoints[waypoint_active].p_lat, WayPoints[waypoint_active].p_long, WayPoints[waypoint_active].p_alt, 5, mapdata->lat, mapdata->lon, mapdata->zoom);
 			}
 		} else {
-			draw_quad(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset), ModelData.roll, ModelData.pitch, ModelData.yaw, mapdata->lat, mapdata->lon, mapdata->zoom);
+			draw_quad(esContext, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset), ModelData[ModelActive].roll, ModelData[ModelActive].pitch, ModelData[ModelActive].yaw, mapdata->lat, mapdata->lon, mapdata->zoom);
 		}
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
 			if (WayPoints[n].p_lat != 0.0) {
@@ -2809,14 +2809,14 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				}
 			}
 		}
-//		mark_route(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset), WayPoints[uav_active_waypoint + 1].p_lat, WayPoints[uav_active_waypoint + 1].p_long, WayPoints[uav_active_waypoint + 1].p_alt, 1, mapdata->lat, mapdata->lon, mapdata->zoom);
+//		mark_route(esContext, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset), WayPoints[uav_active_waypoint + 1].p_lat, WayPoints[uav_active_waypoint + 1].p_long, WayPoints[uav_active_waypoint + 1].p_alt, 1, mapdata->lat, mapdata->lon, mapdata->zoom);
 	} else {
 		if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
 			if (setup.hud_view_tunnel == 1) {
-				mark_tunnel(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset) + 10.6, WayPoints[waypoint_active].p_lat, WayPoints[waypoint_active].p_long, WayPoints[waypoint_active].p_alt, 5, mapdata->lat, mapdata->lon, mapdata->zoom);
+				mark_tunnel(esContext, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) + 10.6, WayPoints[waypoint_active].p_lat, WayPoints[waypoint_active].p_long, WayPoints[waypoint_active].p_alt, 5, mapdata->lat, mapdata->lon, mapdata->zoom);
 			}
 		} else {
-			draw_quad(esContext, ModelData.p_lat, ModelData.p_long, (ModelData.p_alt - ModelData.alt_offset), ModelData.roll, ModelData.pitch, ModelData.yaw, mapdata->lat, mapdata->lon, mapdata->zoom);
+			draw_quad(esContext, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset), ModelData[ModelActive].roll, ModelData[ModelActive].pitch, ModelData[ModelActive].yaw, mapdata->lat, mapdata->lon, mapdata->zoom);
 		}
 	}
 
@@ -3027,7 +3027,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 
 	// drawing Cam-FOV
 	if (map_show_fov == 1 || (map_show_cam_setup == 1 && SurveySetup.mode == 0)) {
-		draw_fov(esContext, ModelData.p_lat, ModelData.p_long, ModelData.p_alt, ModelData.yaw);
+		draw_fov(esContext, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].p_alt, ModelData[ModelActive].yaw);
 	}
 
 #ifdef SDLGL
@@ -3041,10 +3041,10 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	float distance = 0.0;
 	float nalt = 0.0;
 	for (nf = 1; nf < 1024; nf += 20) {
-		next_point_ll(esContext, ModelData.p_long, ModelData.p_lat, ModelData.yaw * -1.0 - 90.0, nf, &nx2, &ny2);
+		next_point_ll(esContext, ModelData[ModelActive].p_long, ModelData[ModelActive].p_lat, ModelData[ModelActive].yaw * -1.0 - 90.0, nf, &nx2, &ny2);
 		mark_alt = get_altitude(ny2, nx2);
-		distance = get_distance(ModelData.p_lat, ModelData.p_long, ny2, nx2, mark_alt);
-		nalt = (ModelData.p_alt - ModelData.alt_offset) + distance * tan(ModelData.pitch * DEG2RAD * 0.7);
+		distance = get_distance(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ny2, nx2, mark_alt);
+		nalt = (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) + distance * tan(ModelData[ModelActive].pitch * DEG2RAD * 0.7);
 //		mark_point(esContext, ny2, nx2, nalt, "", "", 0, 0.1, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
 		if (mark_alt >= (int16_t)nalt) {
 			break;
@@ -3052,10 +3052,10 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	}
 	if (nf < 1024 && nf > 20) {
 		for (nf -= 20; nf < 1024; nf += 1) {
-			next_point_ll(esContext, ModelData.p_long, ModelData.p_lat, ModelData.yaw * -1.0 - 90.0, nf, &nx2, &ny2);
+			next_point_ll(esContext, ModelData[ModelActive].p_long, ModelData[ModelActive].p_lat, ModelData[ModelActive].yaw * -1.0 - 90.0, nf, &nx2, &ny2);
 			mark_alt = get_altitude(ny2, nx2);
-			distance = get_distance(ModelData.p_lat, ModelData.p_long, ny2, nx2, mark_alt);
-			nalt = (ModelData.p_alt - ModelData.alt_offset) + distance * tan(ModelData.pitch * DEG2RAD * 0.7);
+			distance = get_distance(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ny2, nx2, mark_alt);
+			nalt = (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) + distance * tan(ModelData[ModelActive].pitch * DEG2RAD * 0.7);
 //			mark_point(esContext, ny2, nx2, nalt, "", "", 0, 0.1, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
 			if (mark_alt >= (int16_t)nalt) {
 				break;
@@ -3069,7 +3069,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 					WayPoints[n].p_lat = ny2;
 					WayPoints[n].p_long = nx2;
 					WayPoints[n].p_alt = mark_alt;
-					WayPoints[n].param4 = ModelData.yaw;
+					WayPoints[n].param4 = ModelData[ModelActive].yaw;
 					sprintf(WayPoints[n].name, "MARK%i", n);
 					strcpy(WayPoints[n].command, "WAYPOINT");
 					break;

@@ -322,7 +322,7 @@ uint8_t mavlink_set_magdecl (char *name, float x, float y, int8_t button, float 
 	char tmp_str[100];
 	int ret_dd = 0;
 	int ret_dm = 0;
-	get_declination(ModelData.p_lat, ModelData.p_long, ModelData.p_alt, &ret_dd, &ret_dm);
+	get_declination(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].p_alt, &ret_dd, &ret_dm);
 	if (strcmp(name + 1, "COMPASS_DEC") == 0) {
 		sprintf(tmp_str, "%i.%2.0i", ret_dd, ret_dm * 100 / 60);
 		MavLinkVars[selected].value = atof(tmp_str) * DEG_TO_RAD;
@@ -407,7 +407,7 @@ uint8_t mavlink_param_file_save (char *name, float x, float y, int8_t button, fl
 		fprintf(fr, "# MAV ID  COMPONENT ID  PARAM NAME  VALUE (FLOAT)\n");
 		for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
 			if (MavLinkVars[n].name[0] != 0) {
-				fprintf(fr, "%i	%i	%s	%f\n", ModelData.sysid, ModelData.compid, MavLinkVars[n].name, MavLinkVars[n].value);
+				fprintf(fr, "%i	%i	%s	%f\n", ModelData[ModelActive].sysid, ModelData[ModelActive].compid, MavLinkVars[n].name, MavLinkVars[n].value);
 			}
 		}
 		fprintf(fr, "\n");
@@ -421,7 +421,7 @@ uint8_t mavlink_param_file_save (char *name, float x, float y, int8_t button, fl
 
 uint8_t mavlink_param_save (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	char filename[1024];
-	sprintf(filename, "%s.txt", ModelData.name);
+	sprintf(filename, "%s.txt", ModelData[ModelActive].name);
 	keyboard_set_callback(mavlink_param_file_save);
 	keyboard_set_text(filename);
 	keyboard_set_mode(VIEW_MODE_FCMENU);
@@ -760,7 +760,7 @@ void screen_mavlink_rccal (ESContext *esContext) {
 			if (mav_id != -1) {
 				float min = 800;
 				float max = 2200;
-				float value = ModelData.radio_raw[pn];
+				float value = ModelData[ModelActive].radio_raw[pn];
 				sprintf(tmp_str, "RC%i_MIN", pn + 1);
 				float minv = MavLinkVars[mavlink_get_id_by_name(tmp_str)].value;
 				sprintf(tmp_str, "RC%i_MAX", pn + 1);
@@ -1295,7 +1295,7 @@ void screen_mavlink_menu (ESContext *esContext) {
 		if (strcmp(MavLinkVars[param_menu].name, "mag_declination") == 0 || strcmp(MavLinkVars[param_menu].name, "COMPASS_DEC") == 0) {
 			int ret_dd = 0;
 			int ret_dm = 0;
-			get_declination(ModelData.p_lat, ModelData.p_long, ModelData.p_alt, &ret_dd, &ret_dm);
+			get_declination(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].p_alt, &ret_dd, &ret_dm);
 			sprintf(tmp_str, "M%s", MavLinkVars[param_menu].name);
 			sprintf(tmp_str2, "[SET: %id%2.0im]", ret_dd, ret_dm);
 			draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, 1.2, 0.6, 0.002, 0.08, 2, 0, mavlink_set_magdecl, 0.0);
@@ -1435,7 +1435,7 @@ void screen_mavlink_menu (ESContext *esContext) {
 				if (strcmp(MavLinkVars[mav_id].name, "mag_declination") == 0) {
 					int ret_dd = 0;
 					int ret_dm = 0;
-					get_declination(ModelData.p_lat, ModelData.p_long, ModelData.p_alt, &ret_dd, &ret_dm);
+					get_declination(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].p_alt, &ret_dd, &ret_dm);
 					sprintf(tmp_str, "M%s", MavLinkVars[mav_id].name);
 					sprintf(tmp_str2, "%i%2.0i", ret_dd, ret_dm);
 					draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, 1.2, -0.7 + row * 0.14, 0.002, 0.08, 0, 0, mavlink_set_magdecl, 0.0);
@@ -1454,7 +1454,7 @@ void screen_mavlink_menu (ESContext *esContext) {
 	draw_text_button(esContext, "upload", VIEW_MODE_FCMENU, "[UPLOAD ALL]", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, 1, 0, mavlink_param_upload_all, 1.0);
 
 
-	if (ModelData.teletype != TELETYPE_ARDUPILOT && ModelData.teletype != TELETYPE_MEGAPIRATE_NG) {
+	if (ModelData[ModelActive].teletype != TELETYPE_ARDUPILOT && ModelData[ModelActive].teletype != TELETYPE_MEGAPIRATE_NG) {
 		draw_text_button(esContext, "flash_r", VIEW_MODE_FCMENU, "[LOAD FLASH]", FONT_WHITE, 0.5, 0.9, 0.002, 0.06, 1, 0, mavlink_flashload, 0.0);
 		draw_text_button(esContext, "flash_w", VIEW_MODE_FCMENU, "[WRITE FLASH]", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, 1, 0, mavlink_flash, 0.0);
 	}

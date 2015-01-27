@@ -130,12 +130,12 @@ void webserv_child_dump_blender (int fd) {
 	char content[BUFSIZE + 1];
 	char tmp_str[100];
 	if (blender_first_lat == 0.0 || blender_first_long == 0.0) {
-		blender_first_lat = ModelData.p_lat;
-		blender_first_long = ModelData.p_long;
-		blender_first_alt = ModelData.p_alt;
+		blender_first_lat = ModelData[ModelActive].p_lat;
+		blender_first_long = ModelData[ModelActive].p_long;
+		blender_first_alt = ModelData[ModelActive].p_alt;
 	}
 	content[0] = 0;
-	sprintf(tmp_str, "%f %f %f %f %f %f\n", ModelData.pitch, ModelData.roll, ModelData.yaw, (ModelData.p_lat - blender_first_lat), (ModelData.p_long - blender_first_long), (ModelData.p_alt - blender_first_alt));
+	sprintf(tmp_str, "%f %f %f %f %f %f\n", ModelData[ModelActive].pitch, ModelData[ModelActive].roll, ModelData[ModelActive].yaw, (ModelData[ModelActive].p_lat - blender_first_lat), (ModelData[ModelActive].p_long - blender_first_long), (ModelData[ModelActive].p_alt - blender_first_alt));
 	strcat(content, tmp_str);
 
 	sprintf(buffer, header_str, (int)strlen(content), "text/plain");
@@ -148,133 +148,133 @@ void webserv_child_dump_modeldata (int fd) {
 	char content[BUFSIZE + 1];
 	char tmp_str[100];
 	content[0] = 0;
-	sprintf(tmp_str, "name=%s\n", ModelData.name);
+	sprintf(tmp_str, "name=%s\n", ModelData[ModelActive].name);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "image=%s\n", ModelData.image);
+	sprintf(tmp_str, "image=%s\n", ModelData[ModelActive].image);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "modeltype=%i\n", ModelData.modeltype);
+	sprintf(tmp_str, "modeltype=%i\n", ModelData[ModelActive].modeltype);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "teletype=%i\n", ModelData.teletype);
+	sprintf(tmp_str, "teletype=%i\n", ModelData[ModelActive].teletype);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "teledevice=%s\n", ModelData.teledevice);
+	sprintf(tmp_str, "teledevice=%s\n", ModelData[ModelActive].teledevice);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "telebaud=%i\n", ModelData.telebaud);
+	sprintf(tmp_str, "telebaud=%i\n", ModelData[ModelActive].telebaud);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "telebtaddr=%s\n", ModelData.telebtaddr);
+	sprintf(tmp_str, "telebtaddr=%s\n", ModelData[ModelActive].telebtaddr);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "telebtpin=%s\n", ModelData.telebtpin);
+	sprintf(tmp_str, "telebtpin=%s\n", ModelData[ModelActive].telebtpin);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "mode=%i\n", ModelData.mode);
+	sprintf(tmp_str, "mode=%i\n", ModelData[ModelActive].mode);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "status=%i\n", ModelData.status);
+	sprintf(tmp_str, "status=%i\n", ModelData[ModelActive].status);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "armed=%i\n", ModelData.armed);
+	sprintf(tmp_str, "armed=%i\n", ModelData[ModelActive].armed);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "heartbeat=%i\n", ModelData.heartbeat);
+	sprintf(tmp_str, "heartbeat=%i\n", ModelData[ModelActive].heartbeat);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "heartbeat_rc=%i\n", ModelData.heartbeat_rc);
+	sprintf(tmp_str, "heartbeat_rc=%i\n", ModelData[ModelActive].heartbeat_rc);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "found_rc=%i\n", ModelData.found_rc);
+	sprintf(tmp_str, "found_rc=%i\n", ModelData[ModelActive].found_rc);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "p_lat=%f\n", ModelData.p_lat);
+	sprintf(tmp_str, "p_lat=%f\n", ModelData[ModelActive].p_lat);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "p_long=%f\n", ModelData.p_long);
+	sprintf(tmp_str, "p_long=%f\n", ModelData[ModelActive].p_long);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "p_alt=%f\n", ModelData.p_alt);
+	sprintf(tmp_str, "p_alt=%f\n", ModelData[ModelActive].p_alt);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "alt_offset=%f\n", ModelData.alt_offset);
+	sprintf(tmp_str, "alt_offset=%f\n", ModelData[ModelActive].alt_offset);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "baro=%f\n", ModelData.baro);
+	sprintf(tmp_str, "baro=%f\n", ModelData[ModelActive].baro);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "pitch=%f\n", ModelData.pitch);
+	sprintf(tmp_str, "pitch=%f\n", ModelData[ModelActive].pitch);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "roll=%f\n", ModelData.roll);
+	sprintf(tmp_str, "roll=%f\n", ModelData[ModelActive].roll);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "yaw=%f\n", ModelData.yaw);
+	sprintf(tmp_str, "yaw=%f\n", ModelData[ModelActive].yaw);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "speed=%f\n", ModelData.speed);
+	sprintf(tmp_str, "speed=%f\n", ModelData[ModelActive].speed);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "voltage=%f\n", ModelData.voltage);
+	sprintf(tmp_str, "voltage=%f\n", ModelData[ModelActive].voltage);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "load=%f\n", ModelData.load);
+	sprintf(tmp_str, "load=%f\n", ModelData[ModelActive].load);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "gpsfix=%i\n", ModelData.gpsfix);
+	sprintf(tmp_str, "gpsfix=%i\n", ModelData[ModelActive].gpsfix);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "numSat=%i\n", ModelData.numSat);
+	sprintf(tmp_str, "numSat=%i\n", ModelData[ModelActive].numSat);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "radio=%i\n", ModelData.radio[0]);
+	sprintf(tmp_str, "radio=%i\n", ModelData[ModelActive].radio[0]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "radio=%i\n", ModelData.radio[1]);
+	sprintf(tmp_str, "radio=%i\n", ModelData[ModelActive].radio[1]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "radio=%i\n", ModelData.radio[2]);
+	sprintf(tmp_str, "radio=%i\n", ModelData[ModelActive].radio[2]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "radio=%i\n", ModelData.radio[3]);
+	sprintf(tmp_str, "radio=%i\n", ModelData[ModelActive].radio[3]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "radio=%i\n", ModelData.radio[4]);
+	sprintf(tmp_str, "radio=%i\n", ModelData[ModelActive].radio[4]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "radio=%i\n", ModelData.radio[5]);
+	sprintf(tmp_str, "radio=%i\n", ModelData[ModelActive].radio[5]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "radio=%i\n", ModelData.radio[6]);
+	sprintf(tmp_str, "radio=%i\n", ModelData[ModelActive].radio[6]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "radio=%i\n", ModelData.radio[7]);
+	sprintf(tmp_str, "radio=%i\n", ModelData[ModelActive].radio[7]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "radio=%i\n", ModelData.radio[8]);
+	sprintf(tmp_str, "radio=%i\n", ModelData[ModelActive].radio[8]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "radio=%i\n", ModelData.radio[9]);
+	sprintf(tmp_str, "radio=%i\n", ModelData[ModelActive].radio[9]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "radio=%i\n", ModelData.radio[10]);
+	sprintf(tmp_str, "radio=%i\n", ModelData[ModelActive].radio[10]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "radio=%i\n", ModelData.radio[11]);
+	sprintf(tmp_str, "radio=%i\n", ModelData[ModelActive].radio[11]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "radio=%i\n", ModelData.radio[12]);
+	sprintf(tmp_str, "radio=%i\n", ModelData[ModelActive].radio[12]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "radio=%i\n", ModelData.radio[13]);
+	sprintf(tmp_str, "radio=%i\n", ModelData[ModelActive].radio[13]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "radio=%i\n", ModelData.radio[14]);
+	sprintf(tmp_str, "radio=%i\n", ModelData[ModelActive].radio[14]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "radio=%i\n", ModelData.radio[15]);
+	sprintf(tmp_str, "radio=%i\n", ModelData[ModelActive].radio[15]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "acc_x=%f\n", ModelData.acc_x);
+	sprintf(tmp_str, "acc_x=%f\n", ModelData[ModelActive].acc_x);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "acc_y=%f\n", ModelData.acc_y);
+	sprintf(tmp_str, "acc_y=%f\n", ModelData[ModelActive].acc_y);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "acc_z=%f\n", ModelData.acc_z);
+	sprintf(tmp_str, "acc_z=%f\n", ModelData[ModelActive].acc_z);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "gyro_x=%f\n", ModelData.gyro_x);
+	sprintf(tmp_str, "gyro_x=%f\n", ModelData[ModelActive].gyro_x);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "gyro_y=%f\n", ModelData.gyro_y);
+	sprintf(tmp_str, "gyro_y=%f\n", ModelData[ModelActive].gyro_y);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "gyro_z=%f\n", ModelData.gyro_z);
+	sprintf(tmp_str, "gyro_z=%f\n", ModelData[ModelActive].gyro_z);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "rssi_rx=%i\n", ModelData.rssi_rx);
+	sprintf(tmp_str, "rssi_rx=%i\n", ModelData[ModelActive].rssi_rx);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "rssi_tx=%i\n", ModelData.rssi_tx);
+	sprintf(tmp_str, "rssi_tx=%i\n", ModelData[ModelActive].rssi_tx);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "voltage_rx=%f\n", ModelData.voltage_rx);
+	sprintf(tmp_str, "voltage_rx=%f\n", ModelData[ModelActive].voltage_rx);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "voltage_zell=%f\n", ModelData.voltage_zell[0]);
+	sprintf(tmp_str, "voltage_zell=%f\n", ModelData[ModelActive].voltage_zell[0]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "voltage_zell=%f\n", ModelData.voltage_zell[1]);
+	sprintf(tmp_str, "voltage_zell=%f\n", ModelData[ModelActive].voltage_zell[1]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "voltage_zell=%f\n", ModelData.voltage_zell[2]);
+	sprintf(tmp_str, "voltage_zell=%f\n", ModelData[ModelActive].voltage_zell[2]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "voltage_zell=%f\n", ModelData.voltage_zell[3]);
+	sprintf(tmp_str, "voltage_zell=%f\n", ModelData[ModelActive].voltage_zell[3]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "voltage_zell=%f\n", ModelData.voltage_zell[4]);
+	sprintf(tmp_str, "voltage_zell=%f\n", ModelData[ModelActive].voltage_zell[4]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "voltage_zell=%f\n", ModelData.voltage_zell[5]);
+	sprintf(tmp_str, "voltage_zell=%f\n", ModelData[ModelActive].voltage_zell[5]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "temperature=%i\n", ModelData.temperature[0]);
+	sprintf(tmp_str, "temperature=%i\n", ModelData[ModelActive].temperature[0]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "temperature=%i\n", ModelData.temperature[1]);
+	sprintf(tmp_str, "temperature=%i\n", ModelData[ModelActive].temperature[1]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "ampere=%f\n", ModelData.ampere);
+	sprintf(tmp_str, "ampere=%f\n", ModelData[ModelActive].ampere);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "sysid=%i\n", ModelData.sysid);
+	sprintf(tmp_str, "sysid=%i\n", ModelData[ModelActive].sysid);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "compid=%i\n", ModelData.compid);
+	sprintf(tmp_str, "compid=%i\n", ModelData[ModelActive].compid);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "mavlink_update=%i\n", ModelData.mavlink_update);
+	sprintf(tmp_str, "mavlink_update=%i\n", ModelData[ModelActive].mavlink_update);
 	strcat(content, tmp_str);
 
 	sprintf(buffer, header_str, (int)strlen(content), "text/plain");
@@ -285,7 +285,7 @@ void webserv_child_dump_modeldata (int fd) {
 void webserv_child_show_lonlat (int fd) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
-	sprintf(content, "%f, %f, %.1f, %0.1f", ModelData.p_long, ModelData.p_lat, ModelData.p_alt, ModelData.yaw);
+	sprintf(content, "%f, %f, %.1f, %0.1f", ModelData[ModelActive].p_long, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_alt, ModelData[ModelActive].yaw);
 	sprintf(buffer, header_str, (int)strlen(content), "text/plain");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
@@ -417,7 +417,7 @@ void webserv_child_show_map (int fd) {
 	strcat(content, "    }\n");
 	strcat(content, "    self.xmlHttpReq.send();\n");
 	strcat(content, "}\n");
-	sprintf(tmp_str, " var map,model,laenge=%f,breite=%f;\n", ModelData.p_long, ModelData.p_lat);
+	sprintf(tmp_str, " var map,model,laenge=%f,breite=%f;\n", ModelData[ModelActive].p_long, ModelData[ModelActive].p_lat);
 	strcat(content, tmp_str);
 	strcat(content, " var fromProjection = new OpenLayers.Projection(\"EPSG:4326\");   // Transform from WGS 1984\n");
 	strcat(content, " var toProjection   = new OpenLayers.Projection(\"EPSG:900913\"); // to Spherical Mercator Projection\n");
@@ -425,7 +425,7 @@ void webserv_child_show_map (int fd) {
 	strcat(content, " var canvas = document.getElementById('small_hudcanvas');\n");
 	strcat(content, " var context = canvas.getContext('2d');\n");
 	strcat(content, " context.clearRect(0, 0, canvas.width, canvas.height);\n");
-	sprintf(tmp_str, " drawHorizon(context, 100, 50, 400, %f, %f);\n", ModelData.roll, ModelData.pitch);
+	sprintf(tmp_str, " drawHorizon(context, 100, 50, 400, %f, %f);\n", ModelData[ModelActive].roll, ModelData[ModelActive].pitch);
 	strcat(content, tmp_str);
 	strcat(content, " HUDxmlhttpGet();\n");
 	strcat(content, " map = new OpenLayers.Map('mapdiv', {projection: toProjection, displayProjection: fromProjection});\n");
@@ -452,9 +452,9 @@ void webserv_child_show_map (int fd) {
 	strcat(content, "                })\n");
 	strcat(content, " });\n");
 	strcat(content, " model = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(laenge,breite).transform(map.displayProjection,map.projection));\n");
-	sprintf(tmp_str, " model.attributes.alt = \"%0.1f\";\n", ModelData.p_alt);
+	sprintf(tmp_str, " model.attributes.alt = \"%0.1f\";\n", ModelData[ModelActive].p_alt);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, " model.attributes.yaw = \"%0.1f\";\n", ModelData.yaw);
+	sprintf(tmp_str, " model.attributes.yaw = \"%0.1f\";\n", ModelData[ModelActive].yaw);
 	strcat(content, tmp_str);
 	strcat(content, " modellayer.addFeatures([model]);\n");
 	strcat(content, " var markerlayer = new OpenLayers.Layer.Vector(\"Marker\", {\n");
@@ -756,14 +756,14 @@ void webserv_child_show_hud (int fd) {
 	strcat(content, "	var context = canvas.getContext('2d');\n");
 	strcat(content, "	context.clearRect(0, 0, canvas.width, canvas.height);\n");
 	strcat(content, "	drawMeter(context, 50, 100, 30, 45, 90, 45, 'roll');\n");
-	sprintf(tmp_str, "	drawPointer(context, 50, 100, 30, %f);\n", ModelData.roll + 90.0);
+	sprintf(tmp_str, "	drawPointer(context, 50, 100, 30, %f);\n", ModelData[ModelActive].roll + 90.0);
 	strcat(content, tmp_str);
 	strcat(content, "	drawMeter(context, 50, 200, 30, 45, 90, 45, 'pitch');\n");
-	sprintf(tmp_str, "	drawPointer(context, 50, 200, 30, %f);\n", ModelData.pitch + 90.0);
+	sprintf(tmp_str, "	drawPointer(context, 50, 200, 30, %f);\n", ModelData[ModelActive].pitch + 90.0);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "	drawHorizon(context, 100, 50, 400, %f, %f);\n", ModelData.roll, ModelData.pitch);
+	sprintf(tmp_str, "	drawHorizon(context, 100, 50, 400, %f, %f);\n", ModelData[ModelActive].roll, ModelData[ModelActive].pitch);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "	drawCompas(context, 300, 500, 150, %f);\n", ModelData.yaw);
+	sprintf(tmp_str, "	drawCompas(context, 300, 500, 150, %f);\n", ModelData[ModelActive].yaw);
 	strcat(content, tmp_str);
 	strcat(content, "       HUDxmlhttpGet();\n");
 	strcat(content, "}\n");
@@ -825,14 +825,14 @@ void webserv_child_hud_redraw (int fd) {
 	strcat(content, "	var context = canvas.getContext('2d');\n");
 	strcat(content, "	context.clearRect(0, 0, canvas.width, canvas.height);\n");
 	strcat(content, "	drawMeter(context, 50, 100, 30, 45, 90, 45, 'roll');\n");
-	sprintf(tmp_str, "	drawPointer(context, 50, 100, 30, %f);\n", ModelData.roll + 90.0);
+	sprintf(tmp_str, "	drawPointer(context, 50, 100, 30, %f);\n", ModelData[ModelActive].roll + 90.0);
 	strcat(content, tmp_str);
 	strcat(content, "	drawMeter(context, 50, 200, 30, 45, 90, 45, 'pitch');\n");
-	sprintf(tmp_str, "	drawPointer(context, 50, 200, 30, %f);\n", ModelData.pitch + 90.0);
+	sprintf(tmp_str, "	drawPointer(context, 50, 200, 30, %f);\n", ModelData[ModelActive].pitch + 90.0);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "	drawHorizon(context, 100, 50, 400, %f, %f);\n", ModelData.roll, ModelData.pitch);
+	sprintf(tmp_str, "	drawHorizon(context, 100, 50, 400, %f, %f);\n", ModelData[ModelActive].roll, ModelData[ModelActive].pitch);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "	drawCompas(context, 300, 500, 150, %f);\n", ModelData.yaw);
+	sprintf(tmp_str, "	drawCompas(context, 300, 500, 150, %f);\n", ModelData[ModelActive].yaw);
 	strcat(content, tmp_str);
 	sprintf(buffer, header_str, (int)strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
@@ -847,7 +847,7 @@ void webserv_child_hud_redraw_small (int fd) {
 	strcat(content, "	var canvas = document.getElementById('hudcanvas');\n");
 	strcat(content, "	var context = canvas.getContext('2d');\n");
 	strcat(content, "	context.clearRect(0, 0, canvas.width, canvas.height);\n");
-	sprintf(tmp_str, "	drawHorizon(context, 100, 50, 400, %f, %f);\n", ModelData.roll, ModelData.pitch);
+	sprintf(tmp_str, "	drawHorizon(context, 100, 50, 400, %f, %f);\n", ModelData[ModelActive].roll, ModelData[ModelActive].pitch);
 	strcat(content, tmp_str);
 	sprintf(buffer, header_str, (int)strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
@@ -1068,19 +1068,19 @@ void webserv_child_kml_feed (int fd, uint8_t mode, char *servername) {
 		strcat(content, "				<extrude>1</extrude>\n");
 		strcat(content, "				<altitudeMode>absolute</altitudeMode>\n");
 		strcat(content, "				<Location>\n");
-		sprintf(tmp_str, "					<longitude>%f</longitude>\n", ModelData.p_long);
+		sprintf(tmp_str, "					<longitude>%f</longitude>\n", ModelData[ModelActive].p_long);
 		strcat(content, tmp_str);
-		sprintf(tmp_str, "					<latitude>%f</latitude>\n", ModelData.p_lat);
+		sprintf(tmp_str, "					<latitude>%f</latitude>\n", ModelData[ModelActive].p_lat);
 		strcat(content, tmp_str);
-		sprintf(tmp_str, "					<altitude>%f</altitude>\n", ModelData.p_alt);
+		sprintf(tmp_str, "					<altitude>%f</altitude>\n", ModelData[ModelActive].p_alt);
 		strcat(content, tmp_str);
 		strcat(content, "				</Location>\n");
 		strcat(content, "				<Orientation>\n");
-		sprintf(tmp_str, "					<tilt>%f</tilt>\n", ModelData.pitch * -1);
+		sprintf(tmp_str, "					<tilt>%f</tilt>\n", ModelData[ModelActive].pitch * -1);
 		strcat(content, tmp_str);
-		sprintf(tmp_str, "					<roll>%f</roll>\n", ModelData.roll * -1);
+		sprintf(tmp_str, "					<roll>%f</roll>\n", ModelData[ModelActive].roll * -1);
 		strcat(content, tmp_str);
-		sprintf(tmp_str, "					<heading>%f</heading>\n", ModelData.yaw);
+		sprintf(tmp_str, "					<heading>%f</heading>\n", ModelData[ModelActive].yaw);
 		strcat(content, tmp_str);
 		strcat(content, "				</Orientation>\n");
 		strcat(content, "				<Scale>\n");
@@ -1096,17 +1096,17 @@ void webserv_child_kml_feed (int fd, uint8_t mode, char *servername) {
 		strcat(content, "			<name>Pilot-View</name>\n");
 		strcat(content, "			<Camera>\n");
 		strcat(content, "				<altitudeMode>absolute</altitudeMode>\n");
-		sprintf(tmp_str, "				<longitude>%f</longitude>\n", ModelData.p_long);
+		sprintf(tmp_str, "				<longitude>%f</longitude>\n", ModelData[ModelActive].p_long);
 		strcat(content, tmp_str);
-		sprintf(tmp_str, "				<latitude>%f</latitude>\n", ModelData.p_lat);
+		sprintf(tmp_str, "				<latitude>%f</latitude>\n", ModelData[ModelActive].p_lat);
 		strcat(content, tmp_str);
-		sprintf(tmp_str, "				<altitude>%f</altitude>\n", ModelData.p_alt);
+		sprintf(tmp_str, "				<altitude>%f</altitude>\n", ModelData[ModelActive].p_alt);
 		strcat(content, tmp_str);
-		sprintf(tmp_str, "				<heading>%f</heading>\n", ModelData.yaw);
+		sprintf(tmp_str, "				<heading>%f</heading>\n", ModelData[ModelActive].yaw);
 		strcat(content, tmp_str);
-		sprintf(tmp_str, "				<tilt>%f</tilt>\n", ModelData.pitch + 90.0);
+		sprintf(tmp_str, "				<tilt>%f</tilt>\n", ModelData[ModelActive].pitch + 90.0);
 		strcat(content, tmp_str);
-		sprintf(tmp_str, "				<roll>%f</roll>\n", ModelData.roll * -1);
+		sprintf(tmp_str, "				<roll>%f</roll>\n", ModelData[ModelActive].roll * -1);
 		strcat(content, tmp_str);
 		strcat(content, "			</Camera>\n");
 	}
@@ -2635,133 +2635,133 @@ void webserv_child (int fd) {
 						}
 					}
 					if (strcmp(tmp_str, "name") == 0) {
-						strncpy(ModelData.name, tmp_str + start, 199);
+						strncpy(ModelData[ModelActive].name, tmp_str + start, 199);
 					} else if (strcmp(tmp_str, "image") == 0) {
-						strncpy(ModelData.image, tmp_str + start, 511);
+						strncpy(ModelData[ModelActive].image, tmp_str + start, 511);
 					} else if (strcmp(tmp_str, "modeltype") == 0) {
-						ModelData.modeltype = atoi(tmp_str + start);
+						ModelData[ModelActive].modeltype = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "teletype") == 0) {
-						ModelData.teletype = atoi(tmp_str + start);
+						ModelData[ModelActive].teletype = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "teledevice") == 0) {
-						strncpy(ModelData.teledevice, tmp_str + start, 199);
+						strncpy(ModelData[ModelActive].teledevice, tmp_str + start, 199);
 					} else if (strcmp(tmp_str, "telebaud") == 0) {
-						ModelData.telebaud = atoi(tmp_str + start);
+						ModelData[ModelActive].telebaud = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "telebtaddr") == 0) {
-						strncpy(ModelData.telebtaddr, tmp_str + start, 199);
+						strncpy(ModelData[ModelActive].telebtaddr, tmp_str + start, 199);
 					} else if (strcmp(tmp_str, "telebtpin") == 0) {
-						strncpy(ModelData.telebtpin, tmp_str + start, 199);
+						strncpy(ModelData[ModelActive].telebtpin, tmp_str + start, 199);
 					} else if (strcmp(tmp_str, "mode") == 0) {
-						ModelData.mode = atoi(tmp_str + start);
+						ModelData[ModelActive].mode = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "status") == 0) {
-						ModelData.status = atoi(tmp_str + start);
+						ModelData[ModelActive].status = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "armed") == 0) {
-						ModelData.armed = atoi(tmp_str + start);
+						ModelData[ModelActive].armed = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "heartbeat") == 0) {
-						ModelData.heartbeat = atoi(tmp_str + start);
+						ModelData[ModelActive].heartbeat = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "heartbeat_rc") == 0) {
-						ModelData.heartbeat_rc = atoi(tmp_str + start);
+						ModelData[ModelActive].heartbeat_rc = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "found_rc") == 0) {
-						ModelData.found_rc = atoi(tmp_str + start);
+						ModelData[ModelActive].found_rc = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "p_lat") == 0) {
-						ModelData.p_lat = atof(tmp_str + start);
+						ModelData[ModelActive].p_lat = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "p_long") == 0) {
-						ModelData.p_long = atof(tmp_str + start);
+						ModelData[ModelActive].p_long = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "p_alt") == 0) {
-						ModelData.p_alt = atof(tmp_str + start);
+						ModelData[ModelActive].p_alt = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "alt_offset") == 0) {
-						ModelData.alt_offset = atof(tmp_str + start);
+						ModelData[ModelActive].alt_offset = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "baro") == 0) {
-						ModelData.baro = atof(tmp_str + start);
+						ModelData[ModelActive].baro = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "pitch") == 0) {
-						ModelData.pitch = atof(tmp_str + start);
+						ModelData[ModelActive].pitch = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "roll") == 0) {
-						ModelData.roll = atof(tmp_str + start);
+						ModelData[ModelActive].roll = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "yaw") == 0) {
-						ModelData.yaw = atof(tmp_str + start);
+						ModelData[ModelActive].yaw = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "speed") == 0) {
-						ModelData.speed = atof(tmp_str + start);
+						ModelData[ModelActive].speed = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "voltage") == 0) {
-						ModelData.voltage = atof(tmp_str + start);
+						ModelData[ModelActive].voltage = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "load") == 0) {
-						ModelData.load = atof(tmp_str + start);
+						ModelData[ModelActive].load = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "gpsfix") == 0) {
-						ModelData.gpsfix = atoi(tmp_str + start);
+						ModelData[ModelActive].gpsfix = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "numSat") == 0) {
-						ModelData.numSat = atoi(tmp_str + start);
+						ModelData[ModelActive].numSat = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "radio1") == 0) {
-						ModelData.radio[0] = atoi(tmp_str + start);
+						ModelData[ModelActive].radio[0] = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "radio2") == 0) {
-						ModelData.radio[1] = atoi(tmp_str + start);
+						ModelData[ModelActive].radio[1] = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "radio3") == 0) {
-						ModelData.radio[2] = atoi(tmp_str + start);
+						ModelData[ModelActive].radio[2] = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "radio4") == 0) {
-						ModelData.radio[3] = atoi(tmp_str + start);
+						ModelData[ModelActive].radio[3] = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "radio5") == 0) {
-						ModelData.radio[4] = atoi(tmp_str + start);
+						ModelData[ModelActive].radio[4] = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "radio6") == 0) {
-						ModelData.radio[5] = atoi(tmp_str + start);
+						ModelData[ModelActive].radio[5] = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "radio7") == 0) {
-						ModelData.radio[6] = atoi(tmp_str + start);
+						ModelData[ModelActive].radio[6] = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "radio8") == 0) {
-						ModelData.radio[7] = atoi(tmp_str + start);
+						ModelData[ModelActive].radio[7] = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "radio9") == 0) {
-						ModelData.radio[8] = atoi(tmp_str + start);
+						ModelData[ModelActive].radio[8] = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "radio10") == 0) {
-						ModelData.radio[9] = atoi(tmp_str + start);
+						ModelData[ModelActive].radio[9] = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "radio11") == 0) {
-						ModelData.radio[10] = atoi(tmp_str + start);
+						ModelData[ModelActive].radio[10] = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "radio12") == 0) {
-						ModelData.radio[11] = atoi(tmp_str + start);
+						ModelData[ModelActive].radio[11] = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "radio13") == 0) {
-						ModelData.radio[12] = atoi(tmp_str + start);
+						ModelData[ModelActive].radio[12] = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "radio14") == 0) {
-						ModelData.radio[13] = atoi(tmp_str + start);
+						ModelData[ModelActive].radio[13] = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "radio15") == 0) {
-						ModelData.radio[14] = atoi(tmp_str + start);
+						ModelData[ModelActive].radio[14] = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "radio16") == 0) {
-						ModelData.radio[15] = atoi(tmp_str + start);
+						ModelData[ModelActive].radio[15] = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "acc_x") == 0) {
-						ModelData.acc_x = atof(tmp_str + start);
+						ModelData[ModelActive].acc_x = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "acc_y") == 0) {
-						ModelData.acc_y = atof(tmp_str + start);
+						ModelData[ModelActive].acc_y = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "acc_z") == 0) {
-						ModelData.acc_z = atof(tmp_str + start);
+						ModelData[ModelActive].acc_z = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "gyro_x") == 0) {
-						ModelData.gyro_x = atof(tmp_str + start);
+						ModelData[ModelActive].gyro_x = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "gyro_y") == 0) {
-						ModelData.gyro_y = atof(tmp_str + start);
+						ModelData[ModelActive].gyro_y = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "gyro_z") == 0) {
-						ModelData.gyro_z = atof(tmp_str + start);
+						ModelData[ModelActive].gyro_z = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "rssi_rx") == 0) {
-						ModelData.rssi_rx = atoi(tmp_str + start);
+						ModelData[ModelActive].rssi_rx = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "rssi_tx") == 0) {
-						ModelData.rssi_tx = atoi(tmp_str + start);
+						ModelData[ModelActive].rssi_tx = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "voltage_rx") == 0) {
-						ModelData.voltage_rx = atof(tmp_str + start);
+						ModelData[ModelActive].voltage_rx = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "voltage_zell1") == 0) {
-						ModelData.voltage_zell[0] = atof(tmp_str + start);
+						ModelData[ModelActive].voltage_zell[0] = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "voltage_zell2") == 0) {
-						ModelData.voltage_zell[1] = atof(tmp_str + start);
+						ModelData[ModelActive].voltage_zell[1] = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "voltage_zell3") == 0) {
-						ModelData.voltage_zell[2] = atof(tmp_str + start);
+						ModelData[ModelActive].voltage_zell[2] = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "voltage_zell4") == 0) {
-						ModelData.voltage_zell[3] = atof(tmp_str + start);
+						ModelData[ModelActive].voltage_zell[3] = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "voltage_zell5") == 0) {
-						ModelData.voltage_zell[4] = atof(tmp_str + start);
+						ModelData[ModelActive].voltage_zell[4] = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "voltage_zell6") == 0) {
-						ModelData.voltage_zell[5] = atof(tmp_str + start);
+						ModelData[ModelActive].voltage_zell[5] = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "temperature1") == 0) {
-						ModelData.temperature[0] = atoi(tmp_str + start);
+						ModelData[ModelActive].temperature[0] = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "temperature2") == 0) {
-						ModelData.temperature[1] = atoi(tmp_str + start);
+						ModelData[ModelActive].temperature[1] = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "ampere") == 0) {
-						ModelData.ampere = atof(tmp_str + start);
+						ModelData[ModelActive].ampere = atof(tmp_str + start);
 					} else if (strcmp(tmp_str, "sysid") == 0) {
-						ModelData.sysid = atoi(tmp_str + start);
+						ModelData[ModelActive].sysid = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "compid") == 0) {
-						ModelData.compid = atoi(tmp_str + start);
+						ModelData[ModelActive].compid = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "mavlink_update") == 0) {
-						ModelData.mavlink_update = atoi(tmp_str + start);
+						ModelData[ModelActive].mavlink_update = atoi(tmp_str + start);
 					}
 				}
 			}
@@ -2840,9 +2840,9 @@ void webserv_child (int fd) {
 		} else if (strncmp(buffer + 4,"/blender-export.py", 18) == 0) {
 			sprintf(tmp_str, "%s/webserv/blender-export.py", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/plain");
-			blender_first_lat = ModelData.p_lat;
-			blender_first_long = ModelData.p_long;
-			blender_first_alt = ModelData.p_alt;
+			blender_first_lat = ModelData[ModelActive].p_lat;
+			blender_first_long = ModelData[ModelActive].p_long;
+			blender_first_alt = ModelData[ModelActive].p_alt;
 		} else if (strncmp(buffer + 4,"/screenshot", 11) == 0) {
 			webserv_child_dump_screen(fd);
 
@@ -3034,7 +3034,7 @@ void webserv_child (int fd) {
 			sprintf(tmp_str, "%s/webserv/marker.png", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "image/png");
 		} else if (strncmp(buffer + 4,"/model.png", 10) == 0) {
-			sprintf(tmp_str, "%s/textures/%s.png", BASE_DIR, modeltypes[ModelData.modeltype]);
+			sprintf(tmp_str, "%s/textures/%s.png", BASE_DIR, modeltypes[ModelData[ModelActive].modeltype]);
 			webserv_child_dump_file(fd, tmp_str, "image/png");
 		} else if (strncmp(buffer + 4,"/img/marker.png", 15) == 0) {
 			sprintf(tmp_str, "%s/webserv/marker.png", BASE_DIR);

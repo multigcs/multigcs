@@ -128,9 +128,9 @@ uint8_t tracker_connection_status (void) {
 }
 
 void tracker_set_home (void) {
-	tracker_lat = ModelData.p_lat;
-	tracker_long = ModelData.p_long;
-	tracker_alt = ModelData.p_alt;
+	tracker_lat = ModelData[ModelActive].p_lat;
+	tracker_long = ModelData[ModelActive].p_long;
+	tracker_alt = ModelData[ModelActive].p_alt;
 }
 
 int thread_serial_tracker (void *unused) {
@@ -153,7 +153,7 @@ int thread_serial_tracker (void *unused) {
 			float dist1 = 0.0;
 			float angle_up = 0.0;
 			float dist2 = 0.0;
-			get_dir(tracker_lat, tracker_long, tracker_alt, ModelData.p_lat, ModelData.p_long, ModelData.p_alt, &angle, &dist1, &angle_up, &dist2);
+			get_dir(tracker_lat, tracker_long, tracker_alt, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].p_alt, &angle, &dist1, &angle_up, &dist2);
 			float direction = angle - TrackerData[TRACKER_PAN_TRIM].value;
 			if (direction >= 180.0) {
 				direction -= 360.0;
@@ -202,7 +202,7 @@ int thread_serial_tracker (void *unused) {
 //				SDL_Log("#%s#", tmp_str);
 //				serial_write(serial_fd_tracker, tmp_str, strlen(tmp_str));
 
-				sprintf(tmp_str, "P%f %f %f\n", ModelData.p_lat, ModelData.p_long, ModelData.p_alt);
+				sprintf(tmp_str, "P%f %f %f\n", ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].p_alt);
 //				SDL_Log("#%s#", tmp_str);
 				serial_write(serial_fd_tracker, tmp_str, strlen(tmp_str));
 

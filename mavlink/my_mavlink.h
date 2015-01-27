@@ -1,7 +1,6 @@
 
 #include "GCS_MAVLink/include/mavlink/v1.0/ardupilotmega/mavlink.h"
 
-
 #define PI 3.14159265
 #define toDeg(x) (x*180.0)/PI
 #define toRad(x) (PI/180.0) * x
@@ -12,9 +11,7 @@
 #define MODE_MISSION 3
 #define MODE_FAILSAVE 4
 #define MODE_SETHOME 5
-
 #define MAVLINK_PARAMETER_MAX 500
-
 
 #define MAV_DATA_STREAM_POSITION_ACTIVE 1
 #define MAV_DATA_STREAM_RAW_SENSORS_ACTIVE 1
@@ -34,8 +31,7 @@
 #define MAV_DATA_STREAM_EXTRA3_RATE 2
 #define MAV_DATA_STREAM_RC_CHANNELS_RATE 1
 
-enum MAV_VAR
-{
+enum MAV_VAR {
 	MAV_VAR_FLOAT=0, /* 32 bit float | */
 	MAV_VAR_UINT8=1, /* 8 bit unsigned integer | */
 	MAV_VAR_INT8=2, /* 8 bit signed integer | */
@@ -45,7 +41,6 @@ enum MAV_VAR
 	MAV_VAR_INT32=6, /* 32 bit signed integer | */
 	MAV_VAR_ENUM_END=7, /*  | */
 };
-
 
 typedef struct {
 	int16_t id;

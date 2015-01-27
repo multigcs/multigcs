@@ -809,12 +809,12 @@ void Logging (void) {
 							float p_alt = 0.0;
 							sscanf(last_line, "GPS;%i.%i;%f;%f;%f", &lsec, &lmicros, &p_lat, &p_long, &p_alt);
 							if (p_lat != 0.0 && p_long != 0.0) {
-								ModelData.p_lat = p_lat;
-								ModelData.p_long = p_long;
-								ModelData.p_alt = p_alt;
+								ModelData[ModelActive].p_lat = p_lat;
+								ModelData[ModelActive].p_long = p_long;
+								ModelData[ModelActive].p_alt = p_alt;
 							}
 						} else if (strncmp(last_line, "ATT;", 4) == 0) {
-							sscanf(last_line, "ATT;%i.%i;%f;%f;%f", &lsec, &lmicros, &ModelData.pitch, &ModelData.roll, &ModelData.yaw);
+							sscanf(last_line, "ATT;%i.%i;%f;%f;%f", &lsec, &lmicros, &ModelData[ModelActive].pitch, &ModelData[ModelActive].roll, &ModelData[ModelActive].yaw);
 						} else if (strncmp(last_line, "GPS,", 4) == 0) {
 							float dn = 0.0;
 							float dn2 = 0.0;
@@ -824,15 +824,15 @@ void Logging (void) {
 							float p_long = 0.0;
 							int gpsfix = 0;
 							int numSat = 0;
-							sscanf(last_line, "GPS,%i,%i,%i,%f,%f,%f,%f,%f,%f,%f", &gpsfix, &dn3, &numSat, &dn, &p_lat, &p_long, &dn2, &ModelData.p_alt, &ModelData.speed, &dn4);
-							ModelData.gpsfix = gpsfix;
-							ModelData.numSat = numSat;
+							sscanf(last_line, "GPS,%i,%i,%i,%f,%f,%f,%f,%f,%f,%f", &gpsfix, &dn3, &numSat, &dn, &p_lat, &p_long, &dn2, &ModelData[ModelActive].p_alt, &ModelData[ModelActive].speed, &dn4);
+							ModelData[ModelActive].gpsfix = gpsfix;
+							ModelData[ModelActive].numSat = numSat;
 							if (p_lat != 0.0 && p_long != 0.0) {
-								ModelData.p_lat = p_lat;
-								ModelData.p_long = p_long;
+								ModelData[ModelActive].p_lat = p_lat;
+								ModelData[ModelActive].p_long = p_long;
 							}
 						} else if (strncmp(last_line, "ATT,", 4) == 0) {
-							sscanf(last_line, "ATT,%f,%f,%f", &ModelData.pitch, &ModelData.roll, &ModelData.yaw);
+							sscanf(last_line, "ATT,%f,%f,%f", &ModelData[ModelActive].pitch, &ModelData[ModelActive].roll, &ModelData[ModelActive].yaw);
 						}
 						if (fgets(line, 500, fr_play) != NULL) {
 							strncpy(last_line, line, 1023);
@@ -896,57 +896,57 @@ void Logging (void) {
 		}
 		sec = logrec_startsec + (SDL_GetTicks() - logrec_starttime) / 1000;
 		micros = (SDL_GetTicks() - logrec_starttime) % 1000;
-		if (last_lat != ModelData.p_lat || last_lon != ModelData.p_long || (int)last_alt != (int)ModelData.p_alt || last_sats != ModelData.numSat) {
-			sprintf(line, "GPS;%i.%03i;%f;%f;%f;%f;%i;%i", sec, micros, ModelData.p_lat, ModelData.p_long, ModelData.p_alt - ModelData.alt_offset, ModelData.speed, ModelData.gpsfix, ModelData.numSat);
+		if (last_lat != ModelData[ModelActive].p_lat || last_lon != ModelData[ModelActive].p_long || (int)last_alt != (int)ModelData[ModelActive].p_alt || last_sats != ModelData[ModelActive].numSat) {
+			sprintf(line, "GPS;%i.%03i;%f;%f;%f;%f;%i;%i", sec, micros, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset, ModelData[ModelActive].speed, ModelData[ModelActive].gpsfix, ModelData[ModelActive].numSat);
 			LogAppend(line);
-			last_lat = ModelData.p_lat;
-			last_lon = ModelData.p_long;
-			last_alt = ModelData.p_alt;
-			last_sats = ModelData.numSat;
+			last_lat = ModelData[ModelActive].p_lat;
+			last_lon = ModelData[ModelActive].p_long;
+			last_alt = ModelData[ModelActive].p_alt;
+			last_sats = ModelData[ModelActive].numSat;
 		}
-		if ((int)last_pitch != (int)ModelData.pitch || (int)last_roll != (int)ModelData.roll || (int)last_yaw != (int)ModelData.yaw) {
-			sprintf(line, "ATT;%i.%03i;%f;%f;%f", sec, micros, ModelData.pitch, ModelData.roll, ModelData.yaw);
+		if ((int)last_pitch != (int)ModelData[ModelActive].pitch || (int)last_roll != (int)ModelData[ModelActive].roll || (int)last_yaw != (int)ModelData[ModelActive].yaw) {
+			sprintf(line, "ATT;%i.%03i;%f;%f;%f", sec, micros, ModelData[ModelActive].pitch, ModelData[ModelActive].roll, ModelData[ModelActive].yaw);
 			LogAppend(line);
-			last_pitch = ModelData.pitch;
-			last_roll = ModelData.roll;
-			last_yaw = ModelData.yaw;
+			last_pitch = ModelData[ModelActive].pitch;
+			last_roll = ModelData[ModelActive].roll;
+			last_yaw = ModelData[ModelActive].yaw;
 		}
 		logflag = 0;
 		for (n = 0; n < 8; n++) {
-			if (last_radio[n] != ModelData.radio[n]) {
+			if (last_radio[n] != ModelData[ModelActive].radio[n]) {
 				logflag = 1;
-				last_radio[n] = ModelData.radio[n];
+				last_radio[n] = ModelData[ModelActive].radio[n];
 			}
 		}
 		if (logflag == 1) {
 			logflag = 0;
-			sprintf(line, "RC0;%i.%03i;%i;%i;%i;%i;%i;%i;%i;%i", sec, micros, ModelData.radio[0], ModelData.radio[1], ModelData.radio[2], ModelData.radio[3], ModelData.radio[4], ModelData.radio[5], ModelData.radio[6], ModelData.radio[7]);
+			sprintf(line, "RC0;%i.%03i;%i;%i;%i;%i;%i;%i;%i;%i", sec, micros, ModelData[ModelActive].radio[0], ModelData[ModelActive].radio[1], ModelData[ModelActive].radio[2], ModelData[ModelActive].radio[3], ModelData[ModelActive].radio[4], ModelData[ModelActive].radio[5], ModelData[ModelActive].radio[6], ModelData[ModelActive].radio[7]);
 			LogAppend(line);
 		}
-		if (last_voltage != ModelData.voltage || last_voltage != ModelData.voltage || last_ampere != ModelData.ampere) {
-			sprintf(line, "AV0;%i.%03i;%f;%f;%f;%f;%f;%f;%f;%f;%i;%i", sec, micros, ModelData.ampere, ModelData.voltage, ModelData.voltage_zell[0], ModelData.voltage_zell[1], ModelData.voltage_zell[2], ModelData.voltage_zell[3], ModelData.voltage_zell[4], ModelData.voltage_zell[5], ModelData.temperature[0], ModelData.temperature[1]);
+		if (last_voltage != ModelData[ModelActive].voltage || last_voltage != ModelData[ModelActive].voltage || last_ampere != ModelData[ModelActive].ampere) {
+			sprintf(line, "AV0;%i.%03i;%f;%f;%f;%f;%f;%f;%f;%f;%i;%i", sec, micros, ModelData[ModelActive].ampere, ModelData[ModelActive].voltage, ModelData[ModelActive].voltage_zell[0], ModelData[ModelActive].voltage_zell[1], ModelData[ModelActive].voltage_zell[2], ModelData[ModelActive].voltage_zell[3], ModelData[ModelActive].voltage_zell[4], ModelData[ModelActive].voltage_zell[5], ModelData[ModelActive].temperature[0], ModelData[ModelActive].temperature[1]);
 			LogAppend(line);
-			last_ampere = ModelData.ampere;
-			last_voltage = ModelData.voltage;
+			last_ampere = ModelData[ModelActive].ampere;
+			last_voltage = ModelData[ModelActive].voltage;
 		}
-		if (last_mode != ModelData.mode || last_armed != ModelData.armed || last_status != ModelData.status) {
-			sprintf(line, "AM0;%i.%03i;%i;%i;%i", sec, micros, ModelData.mode, ModelData.armed, ModelData.status);
+		if (last_mode != ModelData[ModelActive].mode || last_armed != ModelData[ModelActive].armed || last_status != ModelData[ModelActive].status) {
+			sprintf(line, "AM0;%i.%03i;%i;%i;%i", sec, micros, ModelData[ModelActive].mode, ModelData[ModelActive].armed, ModelData[ModelActive].status);
 			LogAppend(line);
-			last_mode = ModelData.mode;
-			last_armed = ModelData.armed;
-			last_status = ModelData.status;
+			last_mode = ModelData[ModelActive].mode;
+			last_armed = ModelData[ModelActive].armed;
+			last_status = ModelData[ModelActive].status;
 		}
-		if (last_modeltype != ModelData.modeltype || last_teletype != ModelData.teletype) {
-			sprintf(line, "MT0;%i.%03i;%i;%i", sec, micros, ModelData.modeltype, ModelData.teletype);
+		if (last_modeltype != ModelData[ModelActive].modeltype || last_teletype != ModelData[ModelActive].teletype) {
+			sprintf(line, "MT0;%i.%03i;%i;%i", sec, micros, ModelData[ModelActive].modeltype, ModelData[ModelActive].teletype);
 			LogAppend(line);
-			last_modeltype = ModelData.modeltype;
-			last_teletype = ModelData.teletype;
+			last_modeltype = ModelData[ModelActive].modeltype;
+			last_teletype = ModelData[ModelActive].teletype;
 		}
-		if (last_heartbeat == 0 && ModelData.heartbeat > 0) {
-			sprintf(line, "HB0;%i.%03i;%i", sec, micros, ModelData.heartbeat);
+		if (last_heartbeat == 0 && ModelData[ModelActive].heartbeat > 0) {
+			sprintf(line, "HB0;%i.%03i;%i", sec, micros, ModelData[ModelActive].heartbeat);
 			LogAppend(line);
 			last_heartbeat = 1;
-		} if (last_heartbeat != 0 && ModelData.heartbeat == 0) {
+		} if (last_heartbeat != 0 && ModelData[ModelActive].heartbeat == 0) {
 			sprintf(line, "HB0;%i.%03i;0", sec, micros);
 			LogAppend(line);
 			last_heartbeat = 0;

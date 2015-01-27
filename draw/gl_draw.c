@@ -1119,27 +1119,27 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 					glEnd();
 					glDisable( GL_TEXTURE_2D );
 				}
-				if ((float)_alt1 > ModelData.p_alt || (float)_alt2 > ModelData.p_alt || (float)_alt3 > ModelData.p_alt || (float)_alt4 > ModelData.p_alt) {
+				if ((float)_alt1 > ModelData[ModelActive].p_alt || (float)_alt2 > ModelData[ModelActive].p_alt || (float)_alt3 > ModelData[ModelActive].p_alt || (float)_alt4 > ModelData[ModelActive].p_alt) {
 					glBegin( GL_QUADS );
-					if ((float)_alt1 > ModelData.p_alt) {
+					if ((float)_alt1 > ModelData[ModelActive].p_alt) {
 						glColor4f(1.0, 0.0, 0.0, alpha1);
 					} else {
 						glColor4f(0.0, 1.0, 0.0, alpha2);
 					}
 					glVertex3f(tx1, ty1, -2.0 + z1);
-					if ((float)_alt2 > ModelData.p_alt) {
+					if ((float)_alt2 > ModelData[ModelActive].p_alt) {
 						glColor4f(1.0, 0.0, 0.0, alpha1);
 					} else {
 						glColor4f(0.0, 1.0, 0.0, alpha2);
 					}
 					glVertex3f(tx2, ty1, -2.0 + z2);
-					if ((float)_alt3 > ModelData.p_alt) {
+					if ((float)_alt3 > ModelData[ModelActive].p_alt) {
 						glColor4f(1.0, 0.0, 0.0, alpha1);
 					} else {
 						glColor4f(0.0, 1.0, 0.0, alpha2);
 					}
 					glVertex3f(tx2, ty2, -2.0 + z3);
-					if ((float)_alt4 > ModelData.p_alt) {
+					if ((float)_alt4 > ModelData[ModelActive].p_alt) {
 						glColor4f(1.0, 0.0, 0.0, alpha1);
 					} else {
 						glColor4f(0.0, 1.0, 0.0, alpha2);

@@ -1,25 +1,13 @@
 
 #include <all.h>
 
-Model ModelData;
+uint8_t ModelActive = 0;
+Model ModelData[MODELS_MAX];
 Ground GroundData;
 char teletypes[16][16] = {
-	"MULTIWII_21",
-	"AUTOQUAD",
-	"ARDUPILOT",
-	"MEGAPIRATE_NG",
-	"OPENPILOT",
-	"GPS_NMEA",
-	"FRSKY",
-	"BASEFLIGHT",
-	"BASEFLIGHTCLI",
-	"HARAKIRI_ML",
-	"CLI",
-	"SIMPLEBGC",
-	"BRUGI",
-	"---",
-	"---",
-	"---",
+	"MULTIWII_21", "AUTOQUAD", "ARDUPILOT", "MEGAPIRATE_NG", 
+	"OPENPILOT", "GPS_NMEA", "FRSKY", "BASEFLIGHT", "BASEFLIGHTCLI", 
+	"HARAKIRI_ML", "CLI", "SIMPLEBGC", "BRUGI", "---", "---", "---",
 };
 char modeltypes[5][15] = {
 	"MULTICOPTER",
@@ -142,7 +130,7 @@ void save_screenshot (void) {
 	} else if (setup.view_mode == VIEW_MODE_TRACKER) {
 		strncpy(name, "tracker", 99);
 	} else if (setup.view_mode == VIEW_MODE_FCMENU) {
-		strncpy(name, teletypes[ModelData.teletype], 99);
+		strncpy(name, teletypes[ModelData[ModelActive].teletype], 99);
 	}
 #ifdef SDL2
 	sprintf(tmp_str, "xwd -name \"%s\" -out /tmp/screen.dump; ./utils/save_screenshot.sh /tmp/screen.dump %s", SDL_GetWindowTitle(MainWindow), name);
@@ -300,21 +288,21 @@ void reset_telemetry (void) {
 #ifdef ANDROID
 	Android_JNI_ConnectUsbSerial(setup.telemetry_baud);
 #endif
-	if (ModelData.teletype == TELETYPE_MULTIWII_21 || ModelData.teletype == TELETYPE_BASEFLIGHT) {
+	if (ModelData[ModelActive].teletype == TELETYPE_MULTIWII_21 || ModelData[ModelActive].teletype == TELETYPE_BASEFLIGHT) {
 		mwi21_init(setup.telemetry_port, setup.telemetry_baud);
-	} else if (ModelData.teletype == TELETYPE_SIMPLEBGC) {
+	} else if (ModelData[ModelActive].teletype == TELETYPE_SIMPLEBGC) {
 		simplebgc_init(setup.telemetry_port, setup.telemetry_baud);
-	} else if (ModelData.teletype == TELETYPE_BRUGI) {
+	} else if (ModelData[ModelActive].teletype == TELETYPE_BRUGI) {
 		brugi_init(setup.telemetry_port, setup.telemetry_baud);
-	} else if (ModelData.teletype == TELETYPE_GPS_NMEA) {
+	} else if (ModelData[ModelActive].teletype == TELETYPE_GPS_NMEA) {
 		gps_init(setup.telemetry_port, setup.telemetry_baud);
-	} else if (ModelData.teletype == TELETYPE_OPENPILOT) {
+	} else if (ModelData[ModelActive].teletype == TELETYPE_OPENPILOT) {
 		openpilot_init(setup.telemetry_port, setup.telemetry_baud);
-	} else if (ModelData.teletype == TELETYPE_CLI) {
+	} else if (ModelData[ModelActive].teletype == TELETYPE_CLI) {
 		cli_init(setup.telemetry_port, setup.telemetry_baud);
-	} else if (ModelData.teletype == TELETYPE_BASEFLIGHTCLI) {
+	} else if (ModelData[ModelActive].teletype == TELETYPE_BASEFLIGHTCLI) {
 		baseflightcli_init(setup.telemetry_port, setup.telemetry_baud);
-	} else if (ModelData.teletype == TELETYPE_FRSKY) {
+	} else if (ModelData[ModelActive].teletype == TELETYPE_FRSKY) {
 		frsky_mode(1);
 	} else {
 		mavlink_init(setup.telemetry_port, setup.telemetry_baud);
@@ -407,8 +395,10 @@ void setup_waypoints (void) {
 	SurveySetup.alt = 30.0;
 	SurveySetup.alt_abs = 0;
 
-	ModelData.sysid = 250;
-	ModelData.compid = 0;
+	for (n = 0; n < MODELS_MAX; n++) {
+		ModelData[n].sysid = 250;
+		ModelData[n].compid = 0;
+	}
 }
 
 void sys_message (char *msg) {
@@ -434,7 +424,6 @@ void setup_save (void) {
 	sprintf(filename, "%s/setup.cfg", get_datadirectory());
 	fr = fopen(filename, "wb");
 	if (fr != 0) {
-	        fprintf(fr, "model_name		%s\n", ModelData.name);
 	        fprintf(fr, "view_mode		%i\n", setup.view_mode);
 	        fprintf(fr, "contrast		%i\n", setup.contrast);
 	        fprintf(fr, "screen_w		%i\n", setup.screen_w);
@@ -454,9 +443,6 @@ void setup_save (void) {
 	        fprintf(fr, "gcs_gps_baud		%i\n", setup.gcs_gps_baud);
 	        fprintf(fr, "rcflow_port		%s\n", setup.rcflow_port);
 	        fprintf(fr, "rcflow_baud		%i\n", setup.rcflow_baud);
-	        fprintf(fr, "telemetry_port		%s\n", setup.telemetry_port);
-	        fprintf(fr, "telemetry_baud		%i\n", setup.telemetry_baud);
-	        fprintf(fr, "telemetry_type		%i\n", ModelData.teletype);
 	        fprintf(fr, "jeti_port		%s\n", setup.jeti_port);
 	        fprintf(fr, "jeti_baud		%i\n", setup.jeti_baud);
 	        fprintf(fr, "frsky_port		%s\n", setup.frsky_port);
@@ -498,10 +484,6 @@ void setup_save (void) {
 #endif
 	        fprintf(fr, "waypoint_active		%i\n", waypoint_active);
 	        fprintf(fr, "\n");
-	        fprintf(fr, "Model_lat		%f\n", ModelData.p_lat);
-	        fprintf(fr, "Model_long		%f\n", ModelData.p_long);
-	        fprintf(fr, "Model_alt		%f\n", ModelData.p_alt);
-	        fprintf(fr, "\n");
 	        fprintf(fr, "Ground_lat		%f\n", GroundData.p_lat);
 	        fprintf(fr, "Ground_long		%f\n", GroundData.p_long);
 	        fprintf(fr, "Ground_alt		%f\n", GroundData.p_alt);
@@ -526,8 +508,22 @@ void setup_save (void) {
 	        fprintf(fr, "SurveySetup.sensor_mult	%f\n", SurveySetup.sensor_mult);
 	        fprintf(fr, "SurveySetup.lense	%f\n", SurveySetup.lense);
 	        fprintf(fr, "SurveySetup.overlap	%f\n", SurveySetup.overlap);
-	        fprintf(fr, "SurveySetup.alt	%f\n", SurveySetup.alt);
+	        fprintf(fr, "SurveySetup.alt		%f\n", SurveySetup.alt);
 	        fprintf(fr, "SurveySetup.alt_abs	%i\n", SurveySetup.alt_abs);
+
+	        fprintf(fr, "ModelActive		%i\n", ModelActive);
+
+	        for (n = 0; n < MODELS_MAX; n++) {
+				fprintf(fr, "\n");
+				fprintf(fr, "[%i]\n", n);
+				fprintf(fr, "telemetry_port		%s\n", setup.telemetry_port);
+				fprintf(fr, "telemetry_baud		%i\n", setup.telemetry_baud);
+				fprintf(fr, "model_name		%s\n", ModelData[n].name);
+				fprintf(fr, "telemetry_type		%i\n", ModelData[n].teletype);
+				fprintf(fr, "Model_lat		%f\n", ModelData[n].p_lat);
+				fprintf(fr, "Model_long		%f\n", ModelData[n].p_long);
+				fprintf(fr, "Model_alt		%f\n", ModelData[n].p_alt);
+			}
 	        fprintf(fr, "\n");
 	        fprintf(fr, "[waypoints]\n");
 	        for (n = 0; n < MAX_WAYPOINTS; n++) {
@@ -575,6 +571,7 @@ void setup_load (void) {
         char var[1024];
         char val[1024];
         int mode = 0;
+        int model_n = 0;
         int wp_num = 0;
         int pp_num = 1;
 #ifdef RPI_NO_X
@@ -642,9 +639,11 @@ void setup_load (void) {
 	setup.videocapture_width = 640;
 	setup.videocapture_height = 480;
 
-	strcpy(ModelData.name, "Unset");
-	ModelData.chancount = 8;
-
+	for (model_n = 0; model_n < MODELS_MAX; model_n++) {
+		sprintf(ModelData[model_n].name, "Model%i", model_n);
+		ModelData[model_n].chancount = 8;
+	}
+	model_n = 0;
 	char filename[1024];
 	sprintf(filename, "%s/setup.cfg", get_datadirectory());
 	fr = fopen (filename, "r");
@@ -658,8 +657,6 @@ void setup_load (void) {
 	                        if (strcmp(var, "view_mode") == 0) {
 					setup.view_mode = atoi(val);
 					view_mode_next = setup.view_mode;
-	                        } else if (strcmp(var, "model_name") == 0) {
-	                                strncpy(ModelData.name, val, 199);
 	                        } else if (strcmp(var, "volt_min") == 0) {
 					setup.volt_min = atof(val);
 	                        } else if (strcmp(var, "contrast") == 0) {
@@ -696,16 +693,6 @@ void setup_load (void) {
 	                                strncpy(setup.rcflow_port, val, 1023);
 	                        } else if (strcmp(var, "rcflow_baud") == 0) {
 	                                setup.rcflow_baud = atoi(val);
-	                        } else if (strcmp(var, "telemetry_port") == 0) {
-	                                strncpy(setup.telemetry_port, val, 1023);
-	                        } else if (strcmp(var, "telemetry_baud") == 0) {
-	                                setup.telemetry_baud = atoi(val);
-	                        } else if (strcmp(var, "telemetry_port") == 0) {
-	                                strncpy(setup.telemetry_port, val, 1023);
-	                        } else if (strcmp(var, "telemetry_baud") == 0) {
-	                                setup.telemetry_baud = atoi(val);
-	                        } else if (strcmp(var, "telemetry_type") == 0) {
-	                                ModelData.teletype = atoi(val);
 	                        } else if (strcmp(var, "jeti_port") == 0) {
 	                                strncpy(setup.jeti_port, val, 1023);
 	                        } else if (strcmp(var, "jeti_baud") == 0) {
@@ -766,12 +753,6 @@ void setup_load (void) {
 	                                setup.videocapture_width = atoi(val);
 	                        } else if (strcmp(var, "videocapture_height") == 0) {
 	                                setup.videocapture_height = atoi(val);
-	                        } else if (strcmp(var, "Model_lat") == 0) {
-	                                ModelData.p_lat = atof(val);
-	                        } else if (strcmp(var, "Model_long") == 0) {
-	                                ModelData.p_long = atof(val);
-	                        } else if (strcmp(var, "Model_alt") == 0) {
-	                                ModelData.p_alt = atof(val);
 	                        } else if (strcmp(var, "Ground_lat") == 0) {
 	                                GroundData.p_lat = atof(val);
 	                        } else if (strcmp(var, "Ground_long") == 0) {
@@ -840,10 +821,32 @@ void setup_load (void) {
 	                                SurveySetup.alt = atof(val);
 	                        } else if (strcmp(var, "SurveySetup.alt_abs") == 0) {
 	                                SurveySetup.alt_abs = atoi(val);
+
+	                        } else if (strcmp(var, "ModelActive") == 0) {
+	                                ModelActive = atoi(val);
+
+	                        } else if (strcmp(var, "model_name") == 0) {
+	                                strncpy(ModelData[model_n].name, val, 199);
+	                        } else if (strcmp(var, "telemetry_port") == 0) {
+	                                strncpy(setup.telemetry_port, val, 1023);
+	                        } else if (strcmp(var, "telemetry_baud") == 0) {
+	                                setup.telemetry_baud = atoi(val);
+	                        } else if (strcmp(var, "telemetry_type") == 0) {
+	                                ModelData[model_n].teletype = atoi(val);
+	                        } else if (strcmp(var, "Model_lat") == 0) {
+	                                ModelData[model_n].p_lat = atof(val);
+	                        } else if (strcmp(var, "Model_long") == 0) {
+	                                ModelData[model_n].p_long = atof(val);
+	                        } else if (strcmp(var, "Model_alt") == 0) {
+	                                ModelData[model_n].p_alt = atof(val);
+
+
 	                        } else if (strcmp(var, "[waypoints]") == 0) {
 	                                mode = 1;
 	                        } else if (strcmp(var, "[polypoints]") == 0) {
 	                                mode = 2;
+	                        } else if (var[0] == '[') {
+	                                model_n = atoi(var + 1);
 	                        }
 	                } else if (mode == 1) {
 	                        if (var[0] == 0) {
@@ -885,6 +888,8 @@ void setup_load (void) {
 	                                WayPoints[wp_num].frametype = atoi(val);
 	                        } else if (strcmp(var, "[polypoints]") == 0) {
 	                                mode = 2;
+	                        } else if (strcmp(var, "[waypoints]") == 0) {
+	                                mode = 1;
 	                        }
 	                } else if (mode == 2) {
 	                        if (var[0] == 0) {
@@ -921,6 +926,10 @@ void setup_load (void) {
 	                                PolyPoints[wp_num].param4 = atof(val);
 	                        } else if (strcmp(var, "type") == 0) {
 	                                PolyPoints[pp_num].type = atoi(val);
+	                        } else if (strcmp(var, "[polypoints]") == 0) {
+	                                mode = 2;
+	                        } else if (strcmp(var, "[waypoints]") == 0) {
+	                                mode = 1;
 	                        }
 	                }
 	        }
@@ -932,13 +941,15 @@ void setup_load (void) {
 		setup.calibration_mode = 1;
 	}
 	strncpy(WayPoints[0].name, "HOME", 127);
-	if (ModelData.p_lat == 0.0) {
-		ModelData.p_lat = WayPoints[0].p_lat;
-		ModelData.p_long = WayPoints[0].p_long;
-		ModelData.p_alt = WayPoints[0].p_alt;
+	for (model_n = 0; model_n < MODELS_MAX; model_n++) {
+		if (ModelData[model_n].p_lat == 0.0) {
+			ModelData[model_n].p_lat = WayPoints[0].p_lat;
+			ModelData[model_n].p_long = WayPoints[0].p_long;
+			ModelData[model_n].p_alt = WayPoints[0].p_alt;
+		}
+		strncpy(ModelData[model_n].teledevice, setup.telemetry_port, 199);
+		ModelData[model_n].telebaud = setup.telemetry_baud;
 	}
-	strncpy(ModelData.teledevice, setup.telemetry_port, 199);
-	ModelData.telebaud = setup.telemetry_baud;
 }
 
 void next_point (float x_origin, float y_origin, float winkel, float r1, float *nx1, float *ny1) {
@@ -1022,13 +1033,13 @@ void check_events (ESContext *esContext, SDL_Event event) {
 		} else if (strcmp(keyname, "[-]") == 0 || strcmp(keyname, "keypad -") == 0) {
 			key_pressed &= ~(1<<5);
 		} else if (strcmp(keyname, "[4]") == 0 || strcmp(keyname, "keypad 4") == 0) {
-			ModelData.roll -= 3.0;
+			ModelData[ModelActive].roll -= 3.0;
 		} else if (strcmp(keyname, "[6]") == 0 || strcmp(keyname, "keypad 6") == 0) {
-			ModelData.roll += 3.0;
+			ModelData[ModelActive].roll += 3.0;
 		} else if (strcmp(keyname, "[8]") == 0 || strcmp(keyname, "keypad 8") == 0) {
-			ModelData.pitch -= 3.0;
+			ModelData[ModelActive].pitch -= 3.0;
 		} else if (strcmp(keyname, "[2]") == 0 || strcmp(keyname, "keypad 2") == 0) {
-			ModelData.pitch += 3.0;
+			ModelData[ModelActive].pitch += 3.0;
 		} else if (strcmp(keyname, "right shift") == 0 || strcmp(keyname, "left shift") == 0) {
 			keyboard_shift = 0;
 		} else if (strcmp(keyname, "alt gr") == 0) {
@@ -1346,8 +1357,8 @@ void check_events (ESContext *esContext, SDL_Event event) {
 				if (map_addmode == 1) {
 					uint16_t n = 0;
 					int16_t nz = get_altitude(mouse_lat, mouse_long);
-					if (ModelData.p_alt > nz) {
-						nz = ModelData.p_alt;
+					if (ModelData[ModelActive].p_alt > nz) {
+						nz = ModelData[ModelActive].p_alt;
 					}
 					if (WayPoints[0].p_alt > nz) {
 						nz = WayPoints[0].p_alt;
@@ -1391,8 +1402,8 @@ void check_events (ESContext *esContext, SDL_Event event) {
 				} else if (map_poly_addmode == 1) {
 					uint16_t n = 0;
 					int16_t nz = get_altitude(mouse_lat, mouse_long);
-					if (ModelData.p_alt > nz) {
-						nz = ModelData.p_alt;
+					if (ModelData[ModelActive].p_alt > nz) {
+						nz = ModelData[ModelActive].p_alt;
 					}
 					if (PolyPoints[0].p_alt > nz) {
 						nz = PolyPoints[0].p_alt;
@@ -1464,8 +1475,8 @@ void check_events (ESContext *esContext, SDL_Event event) {
 			} else if (event.button.button == 3) {
 				uint16_t n = 0;
 				int16_t nz = get_altitude(mouse_lat, mouse_long);
-				if (ModelData.p_alt > nz) {
-					nz = ModelData.p_alt;
+				if (ModelData[ModelActive].p_alt > nz) {
+					nz = ModelData[ModelActive].p_alt;
 				}
 				if (WayPoints[0].p_alt > nz) {
 					nz = WayPoints[0].p_alt;
@@ -1538,19 +1549,19 @@ int telemetry_thread (void *data) {
 		if (clientmode == 1) {
 			webclient_update(clientmode_server, clientmode_port);
 			SDL_Delay(90);
-		} else if (ModelData.teletype == TELETYPE_MULTIWII_21 || ModelData.teletype == TELETYPE_BASEFLIGHT) {
+		} else if (ModelData[ModelActive].teletype == TELETYPE_MULTIWII_21 || ModelData[ModelActive].teletype == TELETYPE_BASEFLIGHT) {
 			mwi21_update();
-		} else if (ModelData.teletype == TELETYPE_SIMPLEBGC) {
+		} else if (ModelData[ModelActive].teletype == TELETYPE_SIMPLEBGC) {
 			simplebgc_update();
-		} else if (ModelData.teletype == TELETYPE_BRUGI) {
+		} else if (ModelData[ModelActive].teletype == TELETYPE_BRUGI) {
 			brugi_update();
-		} else if (ModelData.teletype == TELETYPE_GPS_NMEA) {
+		} else if (ModelData[ModelActive].teletype == TELETYPE_GPS_NMEA) {
 			gps_update();
-		} else if (ModelData.teletype == TELETYPE_OPENPILOT) {
+		} else if (ModelData[ModelActive].teletype == TELETYPE_OPENPILOT) {
 			openpilot_update();
-		} else if (ModelData.teletype == TELETYPE_BASEFLIGHTCLI) {
+		} else if (ModelData[ModelActive].teletype == TELETYPE_BASEFLIGHTCLI) {
 			baseflightcli_update();
-		} else if (ModelData.teletype == TELETYPE_CLI) {
+		} else if (ModelData[ModelActive].teletype == TELETYPE_CLI) {
 			cli_update();
 		} else {
 			mavlink_update();
@@ -1721,7 +1732,7 @@ static uint8_t screen_next (char *name, float x, float y, int8_t button, float d
 
 void Draw (ESContext *esContext) {
 	uint32_t timer = SDL_GetTicks() / 10;
-	if (ModelData.heartbeat != 0) {
+	if (ModelData[ModelActive].heartbeat != 0) {
 		connection_found = 1;
 	}
 	Logging();
@@ -1767,8 +1778,8 @@ void Draw (ESContext *esContext) {
 		lat = tiley2lat(tile_y, zoom);
 		lon = tilex2long(tile_x, zoom);
 	} else if (strcmp(keyboard_key, "u") == 0) {
-		int tile_y = lat2tiley(ModelData.p_lat, zoom) - 1;
-		int tile_x = long2tilex(ModelData.p_long, zoom) - 1;
+		int tile_y = lat2tiley(ModelData[ModelActive].p_lat, zoom) - 1;
+		int tile_x = long2tilex(ModelData[ModelActive].p_long, zoom) - 1;
 		lat = tiley2lat(tile_y, zoom);
 		lon = tilex2long(tile_x, zoom);
 	} else if (strcmp(keyboard_key, "t") == 0) {
@@ -1805,49 +1816,49 @@ void Draw (ESContext *esContext) {
 		check_events(esContext, event);
 	}
 	if (key_pressed & (1<<0)) {
-		ModelData.yaw++;
-		if (ModelData.yaw >= 360.0) {
-			ModelData.yaw = 0.0;
+		ModelData[ModelActive].yaw++;
+		if (ModelData[ModelActive].yaw >= 360.0) {
+			ModelData[ModelActive].yaw = 0.0;
 		}
 		redraw_flag = 1;
 	}
 	if (key_pressed & (1<<1)) {
-		ModelData.yaw--;
-		if (ModelData.yaw < 0.0) {
-			ModelData.yaw = 359.0;
+		ModelData[ModelActive].yaw--;
+		if (ModelData[ModelActive].yaw < 0.0) {
+			ModelData[ModelActive].yaw = 359.0;
 		}
 		redraw_flag = 1;
 	}
 	if (key_pressed & (1<<2)) {
 		float nx1 = 0.0;
 		float ny1 = 0.0;
-		next_point(ModelData.p_lat, ModelData.p_long, ModelData.yaw + 180.0, 0.00016, &nx1, &ny1);
-		ModelData.p_lat = nx1;
-		ModelData.p_long = ny1;
-		int16_t zz = get_altitude(ModelData.p_lat, ModelData.p_long);
-		if (ModelData.p_alt < zz + 10) {
-			ModelData.p_alt = zz + 10;
+		next_point(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].yaw + 180.0, 0.00016, &nx1, &ny1);
+		ModelData[ModelActive].p_lat = nx1;
+		ModelData[ModelActive].p_long = ny1;
+		int16_t zz = get_altitude(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long);
+		if (ModelData[ModelActive].p_alt < zz + 10) {
+			ModelData[ModelActive].p_alt = zz + 10;
 		}
 		redraw_flag = 1;
 	}
 	if (key_pressed & (1<<3)) {
 		float nx1 = 0.0;
 		float ny1 = 0.0;
-		next_point(ModelData.p_lat, ModelData.p_long, ModelData.yaw, 0.00016, &nx1, &ny1);
-		ModelData.p_lat = nx1;
-		ModelData.p_long = ny1;
-		int16_t zz = get_altitude(ModelData.p_lat, ModelData.p_long);
-		if (ModelData.p_alt < zz + 10) {
-			ModelData.p_alt = zz + 10;
+		next_point(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].yaw, 0.00016, &nx1, &ny1);
+		ModelData[ModelActive].p_lat = nx1;
+		ModelData[ModelActive].p_long = ny1;
+		int16_t zz = get_altitude(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long);
+		if (ModelData[ModelActive].p_alt < zz + 10) {
+			ModelData[ModelActive].p_alt = zz + 10;
 		}
 		redraw_flag = 1;
 	}
 	if (key_pressed & (1<<4)) {
-		ModelData.p_alt++;
+		ModelData[ModelActive].p_alt++;
 		redraw_flag = 1;
 	}
 	if (key_pressed & (1<<5)) {
-		ModelData.p_alt--;
+		ModelData[ModelActive].p_alt--;
 		redraw_flag = 1;
 	}
 
@@ -1862,21 +1873,21 @@ void Draw (ESContext *esContext) {
 		redraw_flag = 1;
 	}
 	if (timer - heartbeat_timer > 10 || timer < heartbeat_timer) {
-		if (ModelData.heartbeat > 1) {
-			ModelData.heartbeat -= 1;
+		if (ModelData[ModelActive].heartbeat > 1) {
+			ModelData[ModelActive].heartbeat -= 1;
 		} else {
-			ModelData.heartbeat = 0;
+			ModelData[ModelActive].heartbeat = 0;
 		}
 		heartbeat_timer = timer;
 		redraw_flag = 1;
 	}
-	if (ModelData.found_rc == 1 && (timer - heartbeat_rc_timer > 20 || timer < heartbeat_rc_timer)) {
-		if (ModelData.heartbeat_rc > 20) {
-			ModelData.heartbeat_rc -= 20;
+	if (ModelData[ModelActive].found_rc == 1 && (timer - heartbeat_rc_timer > 20 || timer < heartbeat_rc_timer)) {
+		if (ModelData[ModelActive].heartbeat_rc > 20) {
+			ModelData[ModelActive].heartbeat_rc -= 20;
 		} else {
-			ModelData.heartbeat_rc = 0;
-			ModelData.rssi_rx = 0;
-			ModelData.rssi_tx = 0;
+			ModelData[ModelActive].heartbeat_rc = 0;
+			ModelData[ModelActive].rssi_rx = 0;
+			ModelData[ModelActive].rssi_tx = 0;
 		}
 		heartbeat_rc_timer = timer;
 		redraw_flag = 1;
@@ -1895,27 +1906,27 @@ void Draw (ESContext *esContext) {
 		}
 		if (speak > 40) {
 			speak = 0;
-			if (ModelData.found_rc == 1 && ModelData.heartbeat_rc == 0) {
+			if (ModelData[ModelActive].found_rc == 1 && ModelData[ModelActive].heartbeat_rc == 0) {
 				system_say("lost rc");
-			} else 	if (ModelData.heartbeat == 0 && connection_found == 1) {
+			} else 	if (ModelData[ModelActive].heartbeat == 0 && connection_found == 1) {
 				system_say("lost heartbeat");
-			} else 	if ((ModelData.found_rc == 1 || connection_found == 1) && ModelData.voltage > 0.0 && ModelData.voltage < setup.volt_min) {
+			} else 	if ((ModelData[ModelActive].found_rc == 1 || connection_found == 1) && ModelData[ModelActive].voltage > 0.0 && ModelData[ModelActive].voltage < setup.volt_min) {
 				system_say("low battery");
 			} else {
 				static uint8_t say_mode = 0;
 				char tmp_str[1024];
-				if (say_mode++ == 0 && ModelData.voltage > 0.0) {
-					sprintf(tmp_str, "%0.1f volt", ModelData.voltage);
+				if (say_mode++ == 0 && ModelData[ModelActive].voltage > 0.0) {
+					sprintf(tmp_str, "%0.1f volt", ModelData[ModelActive].voltage);
 				} else {
-					float ground_alt = (float)get_altitude(ModelData.p_lat, ModelData.p_long);
-					if (ground_alt - (ModelData.p_alt - ModelData.alt_offset) > 0.0) {
-						sprintf(tmp_str, "WARNING, Altitude %i meter , GROUND CONTACT", (int)((ModelData.p_alt - ModelData.alt_offset) - ground_alt));
-					} else if (ground_alt - (ModelData.p_alt - ModelData.alt_offset) > -2.0) {
-						sprintf(tmp_str, "WARNING, Altitude %i meter , TOO LOW", (int)((ModelData.p_alt - ModelData.alt_offset) - ground_alt));
-					} else if ((ModelData.p_alt - ModelData.alt_offset) - ground_alt > 100.0) {
-						sprintf(tmp_str, "WARNING, Altitude %i meter , PUBLIC AIRSPACE", (int)((ModelData.p_alt - ModelData.alt_offset) - ground_alt));
+					float ground_alt = (float)get_altitude(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long);
+					if (ground_alt - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) > 0.0) {
+						sprintf(tmp_str, "WARNING, Altitude %i meter , GROUND CONTACT", (int)((ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) - ground_alt));
+					} else if (ground_alt - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) > -2.0) {
+						sprintf(tmp_str, "WARNING, Altitude %i meter , TOO LOW", (int)((ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) - ground_alt));
+					} else if ((ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) - ground_alt > 100.0) {
+						sprintf(tmp_str, "WARNING, Altitude %i meter , PUBLIC AIRSPACE", (int)((ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) - ground_alt));
 					} else {
-						sprintf(tmp_str, "Altitude %i meter", (int)((ModelData.p_alt - ModelData.alt_offset) - ground_alt));
+						sprintf(tmp_str, "Altitude %i meter", (int)((ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) - ground_alt));
 					}
 					say_mode = 0;
 				}
@@ -2006,21 +2017,21 @@ void Draw (ESContext *esContext) {
 		screen_tracker(esContext);
 	} else if (setup.view_mode == VIEW_MODE_FCMENU) {
 		screen_background(esContext);
-		if (ModelData.teletype == TELETYPE_MULTIWII_21) {
+		if (ModelData[ModelActive].teletype == TELETYPE_MULTIWII_21) {
 			screen_mwi_menu(esContext);
-		} else if (ModelData.teletype == TELETYPE_BASEFLIGHT) {
+		} else if (ModelData[ModelActive].teletype == TELETYPE_BASEFLIGHT) {
 			screen_mwi_menu(esContext);
-		} else if (ModelData.teletype == TELETYPE_GPS_NMEA) {
+		} else if (ModelData[ModelActive].teletype == TELETYPE_GPS_NMEA) {
 			screen_graph(esContext);
-		} else if (ModelData.teletype == TELETYPE_OPENPILOT) {
+		} else if (ModelData[ModelActive].teletype == TELETYPE_OPENPILOT) {
 			screen_openpilot(esContext);
-		} else if (ModelData.teletype == TELETYPE_CLI) {
+		} else if (ModelData[ModelActive].teletype == TELETYPE_CLI) {
 			screen_cli(esContext);
-		} else if (ModelData.teletype == TELETYPE_BASEFLIGHTCLI) {
+		} else if (ModelData[ModelActive].teletype == TELETYPE_BASEFLIGHTCLI) {
 			screen_baseflightcli(esContext);
-		} else if (ModelData.teletype == TELETYPE_BRUGI) {
+		} else if (ModelData[ModelActive].teletype == TELETYPE_BRUGI) {
 			screen_brugi(esContext);
-		} else if (ModelData.teletype == TELETYPE_SIMPLEBGC) {
+		} else if (ModelData[ModelActive].teletype == TELETYPE_SIMPLEBGC) {
 			screen_simplebgc(esContext);
 		} else {
 			screen_mavlink_menu(esContext);
@@ -2041,9 +2052,9 @@ void Draw (ESContext *esContext) {
 #endif
 
 	glDisable( GL_DEPTH_TEST );
-	draw_circleFilled_f3(esContext, 1.3, 0.92, 0.0002, (float)ModelData.heartbeat / 3000.0, 255, 0, 0, ModelData.heartbeat * 2);
-	if (ModelData.found_rc == 1) {
-		draw_circleFilled_f3(esContext, 1.3, 0.87, 0.01, (float)ModelData.heartbeat_rc / 4000.0, 0, 0, 255, ModelData.heartbeat_rc * 2);
+	draw_circleFilled_f3(esContext, 1.3, 0.92, 0.0002, (float)ModelData[ModelActive].heartbeat / 3000.0, 255, 0, 0, ModelData[ModelActive].heartbeat * 2);
+	if (ModelData[ModelActive].found_rc == 1) {
+		draw_circleFilled_f3(esContext, 1.3, 0.87, 0.01, (float)ModelData[ModelActive].heartbeat_rc / 4000.0, 0, 0, 255, ModelData[ModelActive].heartbeat_rc * 2);
 	}
 	if (view_overview == 0) {
 		draw_text_button(esContext, "<<", setup.view_mode, "[<<]", FONT_WHITE, -1.3, -0.95, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, screen_last, 0.0);
@@ -2053,11 +2064,11 @@ void Draw (ESContext *esContext) {
 		draw_text_f(esContext, 0.0 - strlen(message_txt) * 0.04 * 0.6 / 2 - 0.012, -0.98, 0.04, 0.04, FONT_BLACK_BG, message_txt);
 	}
 	if (blink > 128) {
-		if (ModelData.found_rc == 1 && ModelData.heartbeat_rc == 0) {
+		if (ModelData[ModelActive].found_rc == 1 && ModelData[ModelActive].heartbeat_rc == 0) {
 			draw_text_f(esContext, 1.2 - strlen("LOST_RC") * 0.06 * 0.6, 0.9, 0.06, 0.06, FONT_PINK, "LOST_RC");
-		} else if (ModelData.heartbeat == 0 && connection_found == 1) {
+		} else if (ModelData[ModelActive].heartbeat == 0 && connection_found == 1) {
 			draw_text_f(esContext, 1.2 - strlen("LOST_CON") * 0.06 * 0.6, 0.9, 0.06, 0.06, FONT_PINK, "LOST_CON");
-		} else if (ModelData.voltage > 1.0 && ModelData.voltage < setup.volt_min && connection_found == 1) {
+		} else if (ModelData[ModelActive].voltage > 1.0 && ModelData[ModelActive].voltage < setup.volt_min && connection_found == 1) {
 			draw_text_f(esContext, 1.2 - strlen("LOW_BAT") * 0.06 * 0.6, 0.9, 0.06, 0.06, FONT_PINK, "LOW_BAT");
 		}
 	}
@@ -2313,9 +2324,9 @@ int main ( int argc, char *argv[] ) {
 	screen_map(&esContext, lat, lon, zoom);
 #endif
 
-	int16_t zz = get_altitude(ModelData.p_lat, ModelData.p_long);
-	if (ModelData.p_alt < zz + 10) {
-		ModelData.p_alt = zz + 10;
+	int16_t zz = get_altitude(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long);
+	if (ModelData[ModelActive].p_alt < zz + 10) {
+		ModelData[ModelActive].p_alt = zz + 10;
 	}
 
 	frsky_init(setup.frsky_port, setup.frsky_baud);

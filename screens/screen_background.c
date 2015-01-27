@@ -10,12 +10,12 @@ Object3d obj3d;
 
 uint8_t get_background_model (char *filename) {
 	char tmp_str[1024];
-	sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, modeltypes[ModelData.modeltype]);
+	sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, modeltypes[ModelData[ModelActive].modeltype]);
 	if (file_exists(tmp_str) != 0) {
 		strncpy(filename, tmp_str, 1023);
 		return 0;
 	}
-	sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, teletypes[ModelData.teletype]);
+	sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, teletypes[ModelData[ModelActive].teletype]);
 	if (file_exists(tmp_str) != 0) {
 		strncpy(filename, tmp_str, 1023);
 		return 0;
@@ -47,11 +47,11 @@ void screen_background (ESContext *esContext) {
 		}
 		glTranslatef(0.0, 0.0, -3.2);
 
-		if (ModelData.heartbeat == 0) {
+		if (ModelData[ModelActive].heartbeat == 0) {
 			glRotatef(rotate, 1.0, 0.2, 0.3);
 		} else {
-			glRotatef(ModelData.pitch + 90.0, 1.0, 0.0, 0.0);
-			glRotatef(ModelData.roll, 0.0, 1.0, 0.0);
+			glRotatef(ModelData[ModelActive].pitch + 90.0, 1.0, 0.0, 0.0);
+			glRotatef(ModelData[ModelActive].roll, 0.0, 1.0, 0.0);
 		}
 
 
@@ -63,12 +63,12 @@ void screen_background (ESContext *esContext) {
 		if (setup.contrast == 1) {
 			draw_box_f3(esContext, -1.5, -1.0, 0.0, 1.5, 1.0, 0.0, 0, 0, 0, 255);
 		} else {
-			sprintf(tmp_str, "%s", ModelData.image);
+			sprintf(tmp_str, "%s", ModelData[ModelActive].image);
 			if (file_exists(tmp_str) != 0) {
 				draw_image_f3(esContext, -1.5, -1.0, 1.5, 1.0, 0.0, tmp_str);
 				draw_box_f3(esContext, -1.5, -1.0, 0.0, 1.5, 1.0, 0.0, 0, 0, 0, 200);
 			} else {
-				sprintf(tmp_str, "%s/textures/logo-%s.png", BASE_DIR, teletypes[ModelData.teletype]);
+				sprintf(tmp_str, "%s/textures/logo-%s.png", BASE_DIR, teletypes[ModelData[ModelActive].teletype]);
 				if (file_exists(tmp_str) != 0) {
 					draw_image_f3(esContext, -1.0, -0.3, 1.0, 0.3, 0.0, tmp_str);
 				} else {
@@ -82,12 +82,12 @@ void screen_background (ESContext *esContext) {
 	if (setup.contrast == 1) {
 		draw_box_f3(esContext, -1.5, -1.0, 0.0, 1.5, 1.0, 0.0, 0, 0, 0, 255);
 	} else {
-		sprintf(tmp_str, "%s", ModelData.image);
+		sprintf(tmp_str, "%s", ModelData[ModelActive].image);
 		if (file_exists(tmp_str) != 0) {
 			draw_image_f3(esContext, -1.5, -1.0, 1.5, 1.0, 0.0, tmp_str);
 			draw_box_f3(esContext, -1.5, -1.0, 0.0, 1.5, 1.0, 0.0, 0, 0, 0, 200);
 		} else {
-			sprintf(tmp_str, "%s/textures/logo-%s.png", BASE_DIR, teletypes[ModelData.teletype]);
+			sprintf(tmp_str, "%s/textures/logo-%s.png", BASE_DIR, teletypes[ModelData[ModelActive].teletype]);
 			if (file_exists(tmp_str) != 0) {
 				draw_image_f3(esContext, -1.0, -0.3, 1.0, 0.3, 0.0, tmp_str);
 			} else {

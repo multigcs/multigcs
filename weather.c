@@ -105,7 +105,7 @@ int weather_thread (void *data) {
 	while (gui_running == 1) {
 		char url[1024];
 		char cmd[1024];
-		sprintf(url, "http://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&mode=xml&APPID=1be90e8af7cce1504db3fdb0a727e06c", ModelData.p_lat, ModelData.p_long);
+		sprintf(url, "http://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&mode=xml&APPID=1be90e8af7cce1504db3fdb0a727e06c", ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long);
 		SDL_Log("weather: get %s\n", url);
 		file_download("/tmp/weather.xml.tmp", url);
 		sprintf(cmd, "wget -q -O/tmp/weather.xml.tmp \"%s\"", url);
@@ -178,7 +178,7 @@ void weather_draw_wind (ESContext *esContext, float x1, float y1, uint8_t mode) 
 	float i = direction - 90.0;
 	float i2 = direction - 90.0;
 	if (mode == 1) {
-		i -= ModelData.yaw;
+		i -= ModelData[ModelActive].yaw;
 	}
 	sprintf(tmp_str, "%0.1fm/s", weather.wind_speed);
 	draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1 + 0.04, y1 - 0.04 + yn++ * 0.05, 0.003, 0.045, 0, 0, weather_null, 0);

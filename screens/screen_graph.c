@@ -16,11 +16,11 @@ void screen_graph (ESContext *esContext) {
 
 	}
 
-	graph_data[0][graph_pointer] = (uint8_t)(ModelData.gyro_x / 4.0 + 128);
-	graph_data[1][graph_pointer] = (uint8_t)(ModelData.gyro_y / 4.0 + 128);
-	graph_data[2][graph_pointer] = (uint8_t)(ModelData.gyro_z / 4.0 + 128);
-	graph_data[3][graph_pointer] = (uint8_t)(ModelData.acc_x * 128.0 + 128);
-	graph_data[4][graph_pointer] = (uint8_t)(ModelData.acc_y * 128.0 + 128);
+	graph_data[0][graph_pointer] = (uint8_t)(ModelData[ModelActive].gyro_x / 4.0 + 128);
+	graph_data[1][graph_pointer] = (uint8_t)(ModelData[ModelActive].gyro_y / 4.0 + 128);
+	graph_data[2][graph_pointer] = (uint8_t)(ModelData[ModelActive].gyro_z / 4.0 + 128);
+	graph_data[3][graph_pointer] = (uint8_t)(ModelData[ModelActive].acc_x * 128.0 + 128);
+	graph_data[4][graph_pointer] = (uint8_t)(ModelData[ModelActive].acc_y * 128.0 + 128);
 
 
 	if (graph_pointer < graph_size) {
