@@ -2784,8 +2784,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			if (setup.hud_view_tunnel == 1) {
 				mark_tunnel(esContext, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) + 10.6, WayPoints[waypoint_active].p_lat, WayPoints[waypoint_active].p_long, WayPoints[waypoint_active].p_alt, 5, mapdata->lat, mapdata->lon, mapdata->zoom);
 			}
-		} else {
-			draw_quad(esContext, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset), ModelData[ModelActive].roll, ModelData[ModelActive].pitch, ModelData[ModelActive].yaw, mapdata->lat, mapdata->lon, mapdata->zoom);
 		}
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
 			if (WayPoints[n].p_lat != 0.0) {
@@ -2815,8 +2813,13 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			if (setup.hud_view_tunnel == 1) {
 				mark_tunnel(esContext, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) + 10.6, WayPoints[waypoint_active].p_lat, WayPoints[waypoint_active].p_long, WayPoints[waypoint_active].p_alt, 5, mapdata->lat, mapdata->lon, mapdata->zoom);
 			}
+		}
+	}
+
+	for (n = 0; n < MODELS_MAX; n++) {
+		if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
 		} else {
-			draw_quad(esContext, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset), ModelData[ModelActive].roll, ModelData[ModelActive].pitch, ModelData[ModelActive].yaw, mapdata->lat, mapdata->lon, mapdata->zoom);
+			draw_quad(esContext, ModelData[n].p_lat, ModelData[n].p_long, (ModelData[n].p_alt - ModelData[n].alt_offset), ModelData[n].roll, ModelData[n].pitch, ModelData[n].yaw, mapdata->lat, mapdata->lon, mapdata->zoom);
 		}
 	}
 
