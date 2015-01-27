@@ -2065,7 +2065,8 @@ void Draw (ESContext *esContext) {
 		draw_text_button(esContext, ">>", setup.view_mode, "[>>]", FONT_WHITE, 1.3, -0.95, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, screen_next, 0.0);
 	}
 	if (message > 0) {
-		draw_text_f(esContext, 0.0 - strlen(message_txt) * 0.04 * 0.6 / 2 - 0.012, -0.98, 0.04, 0.04, FONT_BLACK_BG, message_txt);
+		draw_text_f(esContext, 0.0 - strlen(message_txt) * 0.05 * 0.6 / 2 - 0.012, -0.99, 0.05, 0.05, FONT_PINK, message_txt);
+//		draw_text_f(esContext, -1.35, -0.99, 0.04, 0.04, FONT_PINK, message_txt);
 	}
 	if (blink > 128) {
 		if (ModelData[ModelActive].found_rc == 1 && ModelData[ModelActive].heartbeat_rc == 0) {

@@ -3090,7 +3090,7 @@ void webserv_child (int fd) {
 				write(fd, content, strlen(content));
 			}
 
-			mavlink_web_get(buffer + 4, content, type);
+			mavlink_web_get(ModelActive, buffer + 4, content, type);
 			if (type[0] != 0 && content[0] != 0) {
 				sprintf(buffer, header_str, (int)strlen(content), type);
 				write(fd, buffer, strlen(buffer));

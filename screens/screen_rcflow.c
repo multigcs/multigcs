@@ -505,13 +505,13 @@ void rcflow_parseMavlinkParam (xmlDocPtr doc, xmlNodePtr cur, uint16_t param) {
 		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"name"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
-				strcpy(MavLinkVars[param].name, (char *)key);
+				strcpy(MavLinkVars[ModelActive][param].name, (char *)key);
 			}
 			xmlFree(key);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"value"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
-				MavLinkVars[param].value = atof((char *)key);
+				MavLinkVars[ModelActive][param].value = atof((char *)key);
 			}
 			xmlFree(key);
 		}
@@ -523,8 +523,8 @@ void rcflow_parseMavlinkParam (xmlDocPtr doc, xmlNodePtr cur, uint16_t param) {
 void rcflow_parseMavlink (xmlDocPtr doc, xmlNodePtr cur) { 
 	uint16_t param = 0;
 	for (param = 0; param < MAVLINK_PARAMETER_MAX; param++) {
-		MavLinkVars[param].name[0] = 0;
-		MavLinkVars[param].value = 0.0;
+		MavLinkVars[ModelActive][param].name[0] = 0;
+		MavLinkVars[ModelActive][param].value = 0.0;
 	}
 	param = 0;
 	cur = cur->xmlChildrenNode;
@@ -1231,8 +1231,8 @@ uint8_t rcflow_save_xml (char *name, float x, float y, int8_t button, float data
 		fprintf(fr, " <virt_view>%i</virt_view>\n", virt_view);
 		fprintf(fr, " <mavlink>\n");
 		for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
-			if (MavLinkVars[n].name[0] != 0) {
-				fprintf(fr, "  <param><name>%s</name><value>%f</value></param>\n", MavLinkVars[n].name, MavLinkVars[n].value);
+			if (MavLinkVars[ModelActive][n].name[0] != 0) {
+				fprintf(fr, "  <param><name>%s</name><value>%f</value></param>\n", MavLinkVars[ModelActive][n].name, MavLinkVars[ModelActive][n].value);
 			}
 		}
 		fprintf(fr, " </mavlink>\n");

@@ -69,7 +69,7 @@ extern LogList loglist[255];
 
 extern int16_t mission_max;
 extern int serial_fd_mavlink;
-extern ValueList MavLinkVars[MAVLINK_PARAMETER_MAX];
+extern ValueList MavLinkVars[MODELS_MAX][MAVLINK_PARAMETER_MAX];
 extern uint8_t droneType;
 extern uint8_t autoPilot;
 extern int c;
@@ -86,8 +86,8 @@ extern uint32_t mavlink_loggetsize;
 extern uint16_t mavlink_logs_total;
 extern uint32_t mavlink_logstartstamp;
 
-void mavlink_xml_save (FILE *fr);
-void mavlink_xml_load (xmlDocPtr doc, xmlNodePtr cur);
+void mavlink_xml_save (uint8_t modelid, FILE *fr);
+void mavlink_xml_load (uint8_t modelid, xmlDocPtr doc, xmlNodePtr cur);
 
 void mavlink_web_get (uint8_t modelid, char *url, char *content, char *type);
 
