@@ -20,6 +20,10 @@ int c, res;
 char serial_buf[255];
 static uint32_t last_connection = 1;
 static int8_t GPS_found = 0;
+uint8_t mavlink_loghbeat = 0;
+uint16_t mavlink_logid = 0;
+uint16_t mavlink_logstat = 0;
+uint32_t mavlink_logreqsize = 0;
 uint16_t mavlink_timeout = 0;
 uint16_t mavlink_maxparam = 0;
 uint16_t mavlink_foundparam = 0;
@@ -407,20 +411,6 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 			ModelData.radio[6] = (int)packet.chan7_raw / 5 - 300;
 			ModelData.radio[7] = (int)packet.chan8_raw / 5 - 300;
 			ModelData.rssi_rc_rx = (int)packet.rssi * 100 / 255;
-//			redraw_flag = 1;
-/*
-			SDL_Log("RC_CHANNELS_RAW\n");
-			SDL_Log("mavlink: ## rc: ch1 %i ##\n", packet.chan1_raw);
-			SDL_Log("mavlink: ## rc: ch2 %i ##\n", packet.chan2_raw);
-			SDL_Log("mavlink: ## rc: ch3 %i ##\n", packet.chan3_raw);
-			SDL_Log("mavlink: ## rc: ch4 %i ##\n", packet.chan4_raw);
-			SDL_Log("mavlink: ## rc: ch5 %i ##\n", packet.chan5_raw);
-			SDL_Log("mavlink: ## rc: ch6 %i ##\n", packet.chan6_raw);
-			SDL_Log("mavlink: ## rc: ch7 %i ##\n", packet.chan7_raw);
-			SDL_Log("mavlink: ## rc: ch8 %i ##\n", packet.chan8_raw);
-			SDL_Log("mavlink: ## rc: port %i ##\n", packet.port);
-			SDL_Log("mavlink: ## rc: rssi %i ##\n", packet.rssi);
-*/
 			break;
 		}
 		case MAVLINK_MSG_ID_SERVO_OUTPUT_RAW: {
@@ -754,17 +744,6 @@ uint8_t autocontinue; ///< autocontinue to next wp
 		case MAVLINK_MSG_ID_RAW_IMU: {
 			mavlink_raw_imu_t packet;
 			mavlink_msg_raw_imu_decode(msg, &packet);
-/*
-			SDL_Log("## IMU_RAW_ACC_X %i ##\n", packet.xacc);
-			SDL_Log("## IMU_RAW_ACC_Y %i ##\n", packet.yacc);
-			SDL_Log("## IMU_RAW_ACC_Z %i ##\n", packet.zacc);
-			SDL_Log("## IMU_RAW_GYRO_X %i ##\n", packet.xgyro);
-			SDL_Log("## IMU_RAW_GYRO_Y %i ##\n", packet.ygyro);
-			SDL_Log("## IMU_RAW_GYRO_Z %i ##\n", packet.zgyro);
-			SDL_Log("## IMU_RAW_MAG_X %i ##\n", packet.xmag);
-			SDL_Log("## IMU_RAW_MAG_Y %i ##\n", packet.ymag);
-			SDL_Log("## IMU_RAW_MAG_Z %i ##\n", packet.zmag);
-*/
 			ModelData.acc_x = (float)packet.xacc / 1000.0;
 			ModelData.acc_y = (float)packet.yacc / 1000.0;
 			ModelData.acc_z = (float)packet.zacc / 1000.0;
@@ -777,16 +756,6 @@ uint8_t autocontinue; ///< autocontinue to next wp
 		case MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT: {
 			mavlink_nav_controller_output_t packet;
 			mavlink_msg_nav_controller_output_decode(msg, &packet);
-/*
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT nav_roll %f ##\n", packet.nav_roll); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT nav_pitch %f ##\n", packet.nav_pitch); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT alt_error %f ##\n", packet.alt_error); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT aspd_error %f ##\n", packet.aspd_error); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT xtrack_error %f ##\n", packet.xtrack_error); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT nav_bearing %i ##\n", packet.nav_bearing); //INT16_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT target_bearing %i ##\n", packet.target_bearing); //INT16_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT wp_dist %i ##\n", packet.wp_dist); //UINT16_T
-*/	
 			break;
 		}
 		case MAVLINK_MSG_ID_VFR_HUD: {
@@ -795,14 +764,6 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			if (GPS_found == 0) {
 				ModelData.p_alt = packet.alt;
 			}
-/*
-			SDL_Log("## pa %f ##\n", packet.airspeed);
-			SDL_Log("## pg %f ##\n", packet.groundspeed);
-			SDL_Log("## palt %f ##\n", packet.alt);
-			SDL_Log("## pc %f ##\n", packet.climb);
-			SDL_Log("## ph %i ##\n", packet.heading);
-			SDL_Log("## pt %i ##\n", packet.throttle);
-*/
 			break;
 		}
 		case MAVLINK_MSG_ID_RADIO_STATUS: {
@@ -810,15 +771,6 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			mavlink_msg_radio_status_decode(msg, &packet);
 			ModelData.rssi_tx = packet.rssi / 2;
 			ModelData.rssi_rx = packet.remrssi / 2;
-/*
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RADIO_STATUS rxerrors %i ##\n", packet.rxerrors); //UINT16_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RADIO_STATUS fixed %i ##\n", packet.fixed); //UINT16_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RADIO_STATUS rssi %i ##\n", packet.rssi); //UINT8_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RADIO_STATUS remrssi %i ##\n", packet.remrssi); //UINT8_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RADIO_STATUS txbuf %i ##\n", packet.txbuf); //UINT8_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RADIO_STATUS noise %i ##\n", packet.noise); //UINT8_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RADIO_STATUS remnoise %i ##\n", packet.remnoise); //UINT8_T
-*/
 			break;
 		}
 		case MAVLINK_MSG_ID_RADIO: {
@@ -826,15 +778,6 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			mavlink_msg_radio_decode(msg, &packet);
 			ModelData.rssi_tx = packet.rssi / 2;
 			ModelData.rssi_rx = packet.remrssi / 2;
-/*
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RADIO rxerrors %i ##\n", packet.rxerrors); //UINT16_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RADIO fixed %i ##\n", packet.fixed); //UINT16_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RADIO rssi %i ##\n", packet.rssi); //UINT8_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RADIO remrssi %i ##\n", packet.remrssi); //UINT8_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RADIO txbuf %i ##\n", packet.txbuf); //UINT8_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RADIO noise %i ##\n", packet.noise); //UINT8_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RADIO remnoise %i ##\n", packet.remnoise); //UINT8_T
-*/
 			break;
 		}
 		case MAVLINK_MSG_ID_GLOBAL_POSITION_INT: {
@@ -848,25 +791,11 @@ uint8_t autocontinue; ///< autocontinue to next wp
 //					ModelData.yaw = (float)packet.hdg / 100.0;
 				}
 			}
-/*
-			SDL_Log("mavlink: ## gp: lat %i ##\n", packet.lat);
-			SDL_Log("mavlink: ## gp: lon %i ##\n", packet.lon);
-			SDL_Log("mavlink: ## gp: alt %i ##\n", packet.alt);
-			SDL_Log("mavlink: ## gp: ralt %i ##\n", packet.relative_alt);
-			SDL_Log("mavlink: ## gp: vx %i ##\n", packet.vx);
-			SDL_Log("mavlink: ## gp: vy %i ##\n", packet.vy);
-			SDL_Log("mavlink: ## gp: vz %i ##\n", packet.vz);
-			SDL_Log("mavlink: ## gp: hdg %0.2f ##\n", (float)packet.hdg / 100.0);
-*/
 			break;
 		}
 		case MAVLINK_MSG_ID_SYSTEM_TIME: {
 			mavlink_system_time_t packet;
 			mavlink_msg_system_time_decode(msg, &packet);
-/*
-			SDL_Log("mavlink: ## time_unix_usec %i ##\n", packet.time_unix_usec);
-			SDL_Log("mavlink: ## time_boot_ms %i ##\n", packet.time_boot_ms);
-*/
 			break;
 		}
 		case MAVLINK_MSG_ID_RC_CHANNELS: {
@@ -908,44 +837,11 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			}
 			ModelData.rssi_rc_rx = (int)packet.rssi * 100 / 255;
 			ModelData.chancount = (uint8_t)packet.chancount;
-//			redraw_flag = 1;
-/*
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RC_CHANNELS time_boot_ms %i ##\n", packet.time_boot_ms);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RC_CHANNELS chan1_raw %i ##\n", packet.chan1_raw);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RC_CHANNELS chan2_raw %i ##\n", packet.chan2_raw);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RC_CHANNELS chan3_raw %i ##\n", packet.chan3_raw);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RC_CHANNELS chan4_raw %i ##\n", packet.chan4_raw);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RC_CHANNELS chan5_raw %i ##\n", packet.chan5_raw);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RC_CHANNELS chan6_raw %i ##\n", packet.chan6_raw);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RC_CHANNELS chan7_raw %i ##\n", packet.chan7_raw);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RC_CHANNELS chan8_raw %i ##\n", packet.chan8_raw);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RC_CHANNELS chan9_raw %i ##\n", packet.chan9_raw);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RC_CHANNELS chan10_raw %i ##\n", packet.chan10_raw);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RC_CHANNELS chan11_raw %i ##\n", packet.chan11_raw);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RC_CHANNELS chan12_raw %i ##\n", packet.chan12_raw);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RC_CHANNELS chan13_raw %i ##\n", packet.chan13_raw);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RC_CHANNELS chan14_raw %i ##\n", packet.chan14_raw);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RC_CHANNELS chan15_raw %i ##\n", packet.chan15_raw);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RC_CHANNELS chan16_raw %i ##\n", packet.chan16_raw);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RC_CHANNELS chan17_raw %i ##\n", packet.chan17_raw);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RC_CHANNELS chan18_raw %i ##\n", packet.chan18_raw);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RC_CHANNELS chancount %i ##\n", packet.chancount);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_RC_CHANNELS rssi %i ##\n", packet.rssi);
-*/
 			break;
 		}
 		case MAVLINK_MSG_ID_AHRS: {
 			mavlink_ahrs_t packet;
 			mavlink_msg_ahrs_decode(msg, &packet);
-/*
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AHRS omegaIx %f ##\n", packet.omegaIx);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AHRS omegaIy %f ##\n", packet.omegaIy);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AHRS omegaIz %f ##\n", packet.omegaIz);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AHRS accel_weight %f ##\n", packet.accel_weight);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AHRS renorm_val %f ##\n", packet.renorm_val);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AHRS error_rp %f ##\n", packet.error_rp);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AHRS error_yaw %f ##\n", packet.error_yaw);
-*/
 			break;
 		}
 		case MAVLINK_MSG_ID_HWSTATUS: {
@@ -953,26 +849,11 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			mavlink_msg_hwstatus_decode(msg, &packet);
 			ModelData.fc_voltage1 = (float)packet.Vcc / 1000.0;
 			ModelData.fc_i2c_errors = packet.I2Cerr;
-/*
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_HWSTATUS Vcc %i ##\n", packet.Vcc);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_HWSTATUS I2Cerr %i ##\n", packet.I2Cerr);
-*/
 			break;
 		}
 		case MAVLINK_MSG_ID_SCALED_IMU2: {
 			mavlink_scaled_imu2_t packet;
 			mavlink_msg_scaled_imu2_decode(msg, &packet);
-/*
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SCALED_IMU2 xacc %i ##\n", packet.xacc);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SCALED_IMU2 yacc %i ##\n", packet.yacc);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SCALED_IMU2 zacc %i ##\n", packet.zacc);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SCALED_IMU2 xgyro %i ##\n", packet.xgyro);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SCALED_IMU2 ygyro %i ##\n", packet.ygyro);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SCALED_IMU2 zgyro %i ##\n", packet.zgyro);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SCALED_IMU2 xmag %i ##\n", packet.xmag);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SCALED_IMU2 ymag %i ##\n", packet.ymag);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SCALED_IMU2 zmag %i ##\n", packet.zmag);
-*/
 			break;
 		}
 		case MAVLINK_MSG_ID_POWER_STATUS: {
@@ -981,59 +862,16 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			ModelData.fc_voltage1 = (float)packet.Vcc / 1000.0;
 			ModelData.fc_voltage2 = (float)packet.Vservo / 1000.0;
 			ModelData.fc_status = packet.flags;
-/*
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_POWER_STATUS Vcc %i ##\n", packet.Vcc);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_POWER_STATUS Vservo %i ##\n", packet.Vservo);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_POWER_STATUS flags %i ##\n", packet.flags);
-			if (packet.flags & MAV_POWER_STATUS_BRICK_VALID) {
-				SDL_Log("	mavlink: ## POWER_STATUS: main brick power supply valid ##\n");
-			}
-			if (packet.flags & MAV_POWER_STATUS_SERVO_VALID) {
-				SDL_Log("	mavlink: ## POWER_STATUS: main servo power supply valid for FMU ##\n");
-			}
-			if (packet.flags & MAV_POWER_STATUS_USB_CONNECTED) {
-				SDL_Log("	mavlink: ## POWER_STATUS: USB power is connected ##\n");
-				ModelData.rssi_rx = 100;
-				ModelData.rssi_tx = 100;
-			}
-			if (packet.flags & MAV_POWER_STATUS_PERIPH_OVERCURRENT) {
-				SDL_Log("	mavlink: ## POWER_STATUS: peripheral supply is in over-current state ##\n");
-			}
-			if (packet.flags & MAV_POWER_STATUS_PERIPH_HIPOWER_OVERCURRENT) {
-				SDL_Log("	mavlink: ## POWER_STATUS: hi-power peripheral supply is in over-current state ##\n");
-			}
-			if (packet.flags & MAV_POWER_STATUS_CHANGED) {
-				SDL_Log("	mavlink: ## POWER_STATUS: Power status has changed since boot ##\n");
-			}
-*/
 			break;
 		}
 		case MAVLINK_MSG_ID_MEMINFO: {
 			mavlink_meminfo_t packet;
 			mavlink_msg_meminfo_decode(msg, &packet);
-/*
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_MEMINFO brkval %i ##\n", packet.brkval);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_MEMINFO freemem %i ##\n", packet.freemem);
-*/
 			break;
 		}
 		case MAVLINK_MSG_ID_SENSOR_OFFSETS: {
 			mavlink_sensor_offsets_t packet;
 			mavlink_msg_sensor_offsets_decode(msg, &packet);
-/*
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SENSOR_OFFSETS mag_declination %f ##\n", packet.mag_declination); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SENSOR_OFFSETS raw_press %i ##\n", packet.raw_press); //INT32_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SENSOR_OFFSETS raw_temp %i ##\n", packet.raw_temp); //INT32_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SENSOR_OFFSETS gyro_cal_x %f ##\n", packet.gyro_cal_x); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SENSOR_OFFSETS gyro_cal_y %f ##\n", packet.gyro_cal_y); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SENSOR_OFFSETS gyro_cal_z %f ##\n", packet.gyro_cal_z); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SENSOR_OFFSETS accel_cal_x %f ##\n", packet.accel_cal_x); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SENSOR_OFFSETS accel_cal_y %f ##\n", packet.accel_cal_y); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SENSOR_OFFSETS accel_cal_z %f ##\n", packet.accel_cal_z); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SENSOR_OFFSETS mag_ofs_x %i ##\n", packet.mag_ofs_x); //INT16_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SENSOR_OFFSETS mag_ofs_y %i ##\n", packet.mag_ofs_y); //INT16_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SENSOR_OFFSETS mag_ofs_z %i ##\n", packet.mag_ofs_z); //INT16_T
-*/
 			break;
 		}
 		case MAVLINK_MSG_ID_AHRS2: {
@@ -1042,26 +880,8 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			ahrs2_found = 1;
 			ModelData.roll = toDeg(packet.roll);
 			ModelData.pitch = toDeg(packet.pitch);
-//			if (toDeg(packet.yaw) < 0.0) {
-//				ModelData.yaw = 360.0 + toDeg(packet.yaw);
-//			} else {
-//				ModelData.yaw = toDeg(packet.yaw);
-//			}
-//			ModelData.p_alt = packet.altitude;
-//			if (packet.lat != 0 && packet.lng != 0) {
-//				ModelData.p_lat = (float)packet.lat / 10000000.0;
-//				ModelData.p_long = (float)packet.lng / 10000000.0;
-//			}
 			mavlink_update_yaw = 1;
 			redraw_flag = 1;
-/*
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AHRS2 roll %f ##\n", packet.roll); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AHRS2 pitch %f ##\n", packet.pitch); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AHRS2 yaw %f ##\n", packet.yaw); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AHRS2 altitude %f ##\n", packet.altitude); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AHRS2 lat %i ##\n", packet.lat); //INT32_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AHRS2 lng %i ##\n", packet.lng); //INT32_T
-*/
 			break;
 		}
 		case MAVLINK_MSG_ID_TERRAIN_REPORT: {
@@ -1078,21 +898,6 @@ uint8_t autocontinue; ///< autocontinue to next wp
 */
 			break;
 		}
-		case MAVLINK_MSG_ID_MOUNT_STATUS: {
-			mavlink_mount_status_t packet;
-			mavlink_msg_mount_status_decode(msg, &packet);
-			ModelData.mnt_pitch = (float)packet.pointing_a / 100.0;
-			ModelData.mnt_roll = (float)packet.pointing_b / 100.0;
-			ModelData.mnt_yaw = (float)packet.pointing_c / 100.0;
-/*
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_MOUNT_STATUS pointing_a %i ##\n", packet.pointing_a); //INT32_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_MOUNT_STATUS pointing_b %i ##\n", packet.pointing_b); //INT32_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_MOUNT_STATUS pointing_c %i ##\n", packet.pointing_c); //INT32_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_MOUNT_STATUS target_system %i ##\n", packet.target_system); //UINT8_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_MOUNT_STATUS target_component %i ##\n", packet.target_component); //UINT8_T
-*/
-			break;
-		}
 		case MAVLINK_MSG_ID_TERRAIN_REQUEST: {
 			mavlink_terrain_request_t packet;
 			mavlink_msg_terrain_request_decode(msg, &packet);
@@ -1104,17 +909,18 @@ uint8_t autocontinue; ///< autocontinue to next wp
 */
 			break;
 		}
+		case MAVLINK_MSG_ID_MOUNT_STATUS: {
+			mavlink_mount_status_t packet;
+			mavlink_msg_mount_status_decode(msg, &packet);
+			ModelData.mnt_pitch = (float)packet.pointing_a / 100.0;
+			ModelData.mnt_roll = (float)packet.pointing_b / 100.0;
+			ModelData.mnt_yaw = (float)packet.pointing_c / 100.0;
+		}
 		case MAVLINK_MSG_ID_WIND: {
 			mavlink_wind_t packet;
 			mavlink_msg_wind_decode(msg, &packet);
-/*
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_WIND direction %f ##\n", packet.direction); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_WIND speed %f ##\n", packet.speed); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_WIND speed_z %f ##\n", packet.speed_z); //FLOAT
-*/
 			break;
 		}
-
 		case MAVLINK_MSG_ID_SIMSTATE: {
 			mavlink_simstate_t packet;
 			mavlink_msg_simstate_decode(msg, &packet);
@@ -1133,7 +939,33 @@ uint8_t autocontinue; ///< autocontinue to next wp
 */
 			break;
 		}
-
+		case MAVLINK_MSG_ID_LOG_ENTRY: {
+			mavlink_log_entry_t packet;
+			mavlink_msg_log_entry_decode(msg, &packet);
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOG_ENTRY size %i ##\n", packet.size); //UINT32_T
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOG_ENTRY id %i ##\n", packet.id); //UINT16_T
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOG_ENTRY num_logs %i ##\n", packet.num_logs); //UINT16_T
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOG_ENTRY last_log_num %i ##\n", packet.last_log_num); //UINT16_T
+			break;
+		}
+		case MAVLINK_MSG_ID_LOG_DATA: {
+			mavlink_log_data_t packet;
+			mavlink_msg_log_data_decode(msg, &packet);
+			mavlink_logid = packet.id;
+			mavlink_logstat = packet.ofs * 100 / mavlink_logreqsize;
+			mavlink_loghbeat = 100;
+			if (packet.ofs + packet.count == mavlink_logreqsize) {
+				mavlink_logstat = 100;
+				mavlink_loghbeat = 255;
+			}
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOG_DATA id:%i %i + %i (%i%%) ##\n", packet.id, packet.ofs, packet.count, mavlink_logstat);
+			char tmp_str[1024];
+			sprintf(tmp_str, "/tmp/mavlink_%i.log", packet.id);
+			FILE *fdlog = fopen(tmp_str, "ab");
+			fwrite(packet.data, packet.count, 1, fdlog);
+			fclose(fdlog);
+			break;
+		}
 		case MAVLINK_MSG_ID_COMMAND_ACK: {
 			mavlink_command_ack_t packet;
 			mavlink_msg_command_ack_decode(msg, &packet);
@@ -1171,6 +1003,26 @@ void mavlink_read_waypoints (void) {
 	SDL_Log("mavlink: reading Waypoints\n");
 	mavlink_message_t msg;
 	mavlink_msg_mission_request_list_pack(127, 0, &msg, ModelData.sysid, ModelData.compid);
+	mavlink_send_message(&msg);
+}
+
+void mavlink_read_loglist (void) {
+	SDL_Log("mavlink: reading loglist\n");
+	mavlink_message_t msg;
+	mavlink_msg_log_request_list_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, 0, 0xffff);
+	mavlink_send_message(&msg);
+}
+
+void mavlink_read_logfile (uint16_t id, uint32_t offset, uint32_t len) {
+	char tmp_str[1024];
+	sprintf(tmp_str, "/tmp/mavlink_%i.log", id);
+	FILE *fdlog = fopen(tmp_str, "w");
+	fclose(fdlog);
+	mavlink_logreqsize = len;
+	mavlink_loghbeat = 100;
+	SDL_Log("mavlink: reading logfile\n");
+	mavlink_message_t msg;
+	mavlink_msg_log_request_data_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, id, offset, len);
 	mavlink_send_message(&msg);
 }
 
@@ -1264,8 +1116,6 @@ void mavlink_send_cmd_follow (float p_lat, float p_long, float p_alt, float radi
 	mavlink_msg_mission_item_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, 0, MAV_FRAME_GLOBAL_RELATIVE_ALT, MAV_CMD_NAV_WAYPOINT, 2, 0, 0.0, radius, 0.0, 0.0, p_lat, p_long, p_alt);
 	mavlink_send_message(&msg);
 }
-
-
 
 void mavlink_send_waypoints (void) {
 	mavlink_message_t msg;
@@ -1671,9 +1521,9 @@ static void mavlink_parseDoc (char *docname) {
 	}
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((xmlStrcasecmp(cur->name, (const xmlChar *)"text"))) {
+		if ((xmlStrcasecmp(cur->name, (const xmlChar *)"vehicles")) == 0) {
 			mavlink_parseParams(doc, cur);
-		} else if ((xmlStrcasecmp(cur->name, (const xmlChar *)"vehicles"))) {
+		} else if ((xmlStrcasecmp(cur->name, (const xmlChar *)"ArduCopter2")) == 0) {
 			mavlink_parseParams(doc, cur);
 		}
 		cur = cur->next;

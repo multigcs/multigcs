@@ -145,6 +145,16 @@ void mavlink_meta_get_bits (int id, char *name, char *entry) {
 	}
 }
 
+uint8_t mavlink_read_loglist_get (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	mavlink_read_loglist();
+	return 0;
+}
+
+uint8_t mavlink_read_logfile_get (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	mavlink_read_logfile(17, 0, 217008);
+	return 0;
+}
+
 uint8_t mavlink_param_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	int n = 0;
 	int selected = -1;
@@ -1383,6 +1393,18 @@ void screen_mavlink_menu (ESContext *esContext) {
 	draw_text_button(esContext, "load", VIEW_MODE_FCMENU, "[LOAD FILE]", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 1, 0, mavlink_param_load, 1.0);
 	draw_text_button(esContext, "save", VIEW_MODE_FCMENU, "[SAVE FILE]", FONT_WHITE, -0.5, 0.9, 0.002, 0.06, 1, 0, mavlink_param_save, 1.0);
 	draw_text_button(esContext, "upload", VIEW_MODE_FCMENU, "[UPLOAD ALL]", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, 1, 0, mavlink_param_upload_all, 1.0);
+//	draw_text_button(esContext, "loglist", VIEW_MODE_FCMENU, "[LOGS]", FONT_WHITE, 0.5, 0.9, 0.002, 0.06, 1, 0, mavlink_read_loglist_get, 1.0);
+
+
+//	if (mavlink_loghbeat == 255) {
+//		mavlink_loghbeat = 0;
+//	} else if (mavlink_loghbeat > 0) {
+//		sprintf(tmp_str, "ID:%i %i%%", mavlink_logid, mavlink_logstat);
+//		draw_text_button(esContext, "_", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, 0.8, 0.002, 0.06, 1, 0, mavlink_read_logfile_get, 1.0);
+//	}
+//	draw_text_button(esContext, "loglist", VIEW_MODE_FCMENU, "[LOGS]", FONT_WHITE, 0.5, 0.9, 0.002, 0.06, 1, 0, mavlink_read_logfile_get, 1.0);
+
+
 	if (ModelData.teletype != TELETYPE_ARDUPILOT && ModelData.teletype != TELETYPE_MEGAPIRATE_NG) {
 		draw_text_button(esContext, "flash_r", VIEW_MODE_FCMENU, "[LOAD FLASH]", FONT_WHITE, 0.5, 0.9, 0.002, 0.06, 1, 0, mavlink_flashload, 0.0);
 		draw_text_button(esContext, "flash_w", VIEW_MODE_FCMENU, "[WRITE FLASH]", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, 1, 0, mavlink_flash, 0.0);

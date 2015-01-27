@@ -52,8 +52,8 @@ typedef struct {
 	char name[100];
 	char display[100];
 	char desc[1024];
-	char values[1024];
-	char bits[1024];
+	char values[2048];
+	char bits[2048];
 	char group[20];
 	float value;
 	float onload;
@@ -76,6 +76,10 @@ extern char serial_buf[255];
 extern uint16_t mavlink_timeout;
 extern uint16_t mavlink_maxparam;
 extern uint8_t mavlink_update_yaw;
+extern uint8_t mavlink_loghbeat;
+extern uint16_t mavlink_logid;
+extern uint16_t mavlink_logstat;
+extern uint32_t mavlink_logreqsize;
 
 uint8_t mavlink_init (char *port, uint32_t baud);
 void mavlink_exit (void);
@@ -88,6 +92,8 @@ void mavlink_web_get (char *url, char *content, char *type);
 
 void mavlink_read_waypoints (void);
 void mavlink_send_waypoints (void);
+void mavlink_read_loglist (void);
+void mavlink_read_logfile (uint16_t id, uint32_t offset, uint32_t len);
 
 void mavlink_param_xml_meta_load (void);
 void mavlink_stop_feeds (void);
