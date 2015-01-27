@@ -33,3 +33,5 @@ android/jni/libxml2
 External
 mavlink/sitl-transmitter/joystick
 openpilot/generate_objid
+utils/log2kmlroute
+utils/logdump
