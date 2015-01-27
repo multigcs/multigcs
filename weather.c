@@ -105,8 +105,8 @@ int weather_thread (void *data) {
 	while (gui_running == 1) {
 		char url[1024];
 		char cmd[1024];
-		sprintf(url, "http://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&mode=xml", ModelData.p_lat, ModelData.p_long);
-printf("## %s ##\n", url);
+		sprintf(url, "http://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&mode=xml&APPID=1be90e8af7cce1504db3fdb0a727e06c", ModelData.p_lat, ModelData.p_long);
+		SDL_Log("weather: get %s\n", url);
 		file_download("/tmp/weather.xml.tmp", url);
 		sprintf(cmd, "wget -q -O/tmp/weather.xml.tmp \"%s\"", url);
 		system(cmd);
@@ -118,7 +118,7 @@ printf("## %s ##\n", url);
 //		SDL_Log("weather: wind_direction %f\n", weather.wind_direction);
 //		SDL_Log("weather: sun_rise %s\n", weather.sun_rise);
 //		SDL_Log("weather: sun_set %s\n", weather.sun_set);
-		for (n = 0; n < 60 && gui_running == 1; n++) {
+		for (n = 0; n < 600 && gui_running == 1; n++) {
 			SDL_Delay(1000);
 		}
 	}
