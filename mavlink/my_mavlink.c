@@ -15,7 +15,6 @@ LogList loglist[255];
 
 static uint8_t udp_running = 0;
 int16_t mission_max = -1;
-int serial_fd_mavlink = -1;
 ValueList MavLinkVars[MAVLINK_PARAMETER_MAX];
 uint8_t mavlink_update_yaw = 0;
 int c, res;
@@ -30,7 +29,7 @@ uint32_t mavlink_logreqsize = 0;
 uint32_t mavlink_loggetsize = 0;
 uint32_t mavlink_logstartstamp = 0;
 uint16_t mavlink_timeout = 0;
-uint16_t mavlink_maxparam = 0;
+uint16_t mavlink_maxparam[MODELS_MAX];
 uint16_t mavlink_foundparam = 0;
 uint8_t mavlink_udp_active = 0;
 uint8_t mavlink_tcp_active = 0;
@@ -53,12 +52,12 @@ void mavlink_xml_save (FILE *fr) {
 	fprintf(fr, " </mavlink>\n");
 }
 
-uint8_t mavlink_init (char *port, uint32_t baud) {
+uint8_t mavlink_init (uint8_t modelid, char *port, uint32_t baud) {
 	int n = 0;
-	mavlink_maxparam = 0;
+	mavlink_maxparam[modelid] = 0;
 	mavlink_foundparam = 0;
 	SDL_Log("mavlink: init serial port...\n");
-	serial_fd_mavlink = serial_open(port, baud);
+	ModelData[modelid].serial_fd = serial_open(port, baud);
 	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
 		MavLinkVars[n].name[0] = 0;
 		MavLinkVars[n].group[0] = 0;
@@ -90,11 +89,10 @@ uint8_t mavlink_init (char *port, uint32_t baud) {
 	if ( thread_tcp == NULL ) {
 		fprintf(stderr, "mavlink: Thread konnte nicht gestartet werden (mavlink_tcp): %s\n", SDL_GetError());
 	}
-
 	return 0;
 }
 
-void mavlink_exit (void) {
+void mavlink_exit (uint8_t modelid) {
 	udp_running = 0;
 	if (thread_udp != NULL) {
 		SDL_Log("mavlink: wait udp thread\n");
@@ -106,36 +104,36 @@ void mavlink_exit (void) {
 		SDL_WaitThread(thread_tcp, NULL);
 		thread_tcp = NULL;
 	}
-	if (serial_fd_mavlink >= 0) {
-		serial_close(serial_fd_mavlink);
-		serial_fd_mavlink = -1;
+	if (ModelData[modelid].serial_fd >= 0) {
+		serial_close(ModelData[modelid].serial_fd);
+		ModelData[modelid].serial_fd = -1;
 	}
 }
 
-void mavlink_stop_feeds (void) {
+void mavlink_stop_feeds (uint8_t modelid) {
 	SDL_Log("mavlink: stopping feeds!\n");
 	mavlink_message_t msg1;
-	mavlink_msg_request_data_stream_pack(127, 0, &msg1, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, MAV_DATA_STREAM_ALL, 0, 0);
-	mavlink_send_message(&msg1);
+	mavlink_msg_request_data_stream_pack(127, 0, &msg1, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_DATA_STREAM_ALL, 0, 0);
+	mavlink_send_message(modelid, &msg1);
 }
 
-void mavlink_send_value (char *name, float val, int8_t type) {
+void mavlink_send_value (uint8_t modelid, char *name, float val, int8_t type) {
 	mavlink_message_t msg;
 	if (type == -1) {
 		type = MAV_VAR_FLOAT;
 	}
-	mavlink_msg_param_set_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, name, val, type);
+	mavlink_msg_param_set_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, name, val, type);
 	if (clientmode == 1) {
 #ifndef WINDOWS
 		webclient_send_value(clientmode_server, clientmode_port, name, val, type);
 #endif
 	} else {
-		mavlink_send_message(&msg);
-		ModelData[ModelActive].mavlink_update = (int)time(0);
+		mavlink_send_message(modelid, &msg);
+		ModelData[modelid].mavlink_update = (int)time(0);
 	}
 }
 
-void mavlink_set_value (char *name, float value, int8_t type, int16_t id) {
+void mavlink_set_value (uint8_t modelid, char *name, float value, int8_t type, int16_t id) {
 	uint16_t n = 0;
 	uint8_t flag = 0;
 	float min = 999999.0;
@@ -246,10 +244,10 @@ void mavlink_set_value (char *name, float value, int8_t type, int16_t id) {
 			}
 		}
 	}
-	ModelData[ModelActive].mavlink_update = (int)time(0);
+	ModelData[modelid].mavlink_update = (int)time(0);
 }
 
-void mavlink_handleMessage(mavlink_message_t* msg) {
+void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 	mavlink_message_t msg2;
 	char sysmsg_str[1024];
 	if (param_complete == 0) {
@@ -260,7 +258,7 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 			int n = 0;
 			int n2 = 0;
 			int flag2 = 0;
-			for (n2 = 0; n2 < mavlink_maxparam; n2++) {
+			for (n2 = 0; n2 < mavlink_maxparam[modelid]; n2++) {
 				int flag = 0;
 				for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
 					if (MavLinkVars[n].name[0] != 0 && MavLinkVars[n].id == n2) {
@@ -270,7 +268,7 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 				}
 				if (flag == 0) {
 					printf("# parameter %i not found #\n", n2);
-					mavlink_param_get_id(n2);
+					mavlink_param_get_id(modelid, n2);
 					flag2 = 1;
 					break;
 				}
@@ -288,31 +286,29 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 		case MAVLINK_MSG_ID_HEARTBEAT: {
 			mavlink_heartbeat_t packet;
 			mavlink_msg_heartbeat_decode(msg, &packet);
-			ModelData[ModelActive].dronetype = packet.type;
-			ModelData[ModelActive].pilottype = packet.autopilot;
-//			ModelData[ModelActive].mode = (packet.base_mode & 0x80)>7;
-
-			ModelData[ModelActive].mode = packet.custom_mode;
+			ModelData[modelid].dronetype = packet.type;
+			ModelData[modelid].pilottype = packet.autopilot;
+			ModelData[modelid].mode = packet.custom_mode;
 
 			if (packet.system_status == MAV_STATE_ACTIVE) {
-				ModelData[ModelActive].armed = MODEL_ARMED;
+				ModelData[modelid].armed = MODEL_ARMED;
 			} else {
-				ModelData[ModelActive].armed = MODEL_DISARMED;
+				ModelData[modelid].armed = MODEL_DISARMED;
 			}
-//			SDL_Log("Heartbeat: %i, %i, %i\n", ModelData[ModelActive].armed, ModelData[ModelActive].mode, ModelData[ModelActive].status);
-			ModelData[ModelActive].heartbeat = 100;
+//			SDL_Log("Heartbeat: %i, %i, %i\n", ModelData[modelid].armed, ModelData[modelid].mode, ModelData[modelid].status);
+			ModelData[modelid].heartbeat = 100;
 //			sprintf(sysmsg_str, "Heartbeat: %i", (int)time(0));
 			if ((*msg).sysid != 0xff) {
-				ModelData[ModelActive].sysid = (*msg).sysid;
-				ModelData[ModelActive].compid = (*msg).compid;
-				if (mavlink_maxparam == 0) {
-					mavlink_start_feeds();
+				ModelData[modelid].sysid = (*msg).sysid;
+				ModelData[modelid].compid = (*msg).compid;
+				if (mavlink_maxparam[modelid] == 0) {
+					mavlink_start_feeds(modelid);
 				}
 			}
 //			redraw_flag = 1;
 
 			mavlink_msg_heartbeat_pack(127, 0, &msg2, MAV_TYPE_GCS, MAV_AUTOPILOT_INVALID, 0, 0, 0);
-			mavlink_send_message(&msg2);
+			mavlink_send_message(modelid, &msg2);
 
 			break;
 		}
@@ -335,14 +331,14 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 			}
 */
 
-			ModelData[ModelActive].radio[0] = (int)packet.chan1_scaled / 100.0;
-			ModelData[ModelActive].radio[1] = (int)packet.chan2_scaled / 100.0;
-			ModelData[ModelActive].radio[2] = (int)packet.chan3_scaled / 100.0;
-			ModelData[ModelActive].radio[3] = (int)packet.chan4_scaled / 100.0;
-			ModelData[ModelActive].radio[4] = (int)packet.chan5_scaled / 100.0;
-			ModelData[ModelActive].radio[5] = (int)packet.chan6_scaled / 100.0;
-			ModelData[ModelActive].radio[6] = (int)packet.chan7_scaled / 100.0;
-			ModelData[ModelActive].radio[7] = (int)packet.chan8_scaled / 100.0;
+			ModelData[modelid].radio[0] = (int)packet.chan1_scaled / 100.0;
+			ModelData[modelid].radio[1] = (int)packet.chan2_scaled / 100.0;
+			ModelData[modelid].radio[2] = (int)packet.chan3_scaled / 100.0;
+			ModelData[modelid].radio[3] = (int)packet.chan4_scaled / 100.0;
+			ModelData[modelid].radio[4] = (int)packet.chan5_scaled / 100.0;
+			ModelData[modelid].radio[5] = (int)packet.chan6_scaled / 100.0;
+			ModelData[modelid].radio[6] = (int)packet.chan7_scaled / 100.0;
+			ModelData[modelid].radio[7] = (int)packet.chan8_scaled / 100.0;
 
 //			redraw_flag = 1;
 			break;
@@ -358,13 +354,13 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 			mavlink_attitude_t packet;
 			mavlink_msg_attitude_decode(msg, &packet);
 			if (ahrs2_found == 0) {
-				ModelData[ModelActive].roll = toDeg(packet.roll);
-				ModelData[ModelActive].pitch = toDeg(packet.pitch);
+				ModelData[modelid].roll = toDeg(packet.roll);
+				ModelData[modelid].pitch = toDeg(packet.pitch);
 			}
 			if (toDeg(packet.yaw) < 0.0) {
-				ModelData[ModelActive].yaw = 360.0 + toDeg(packet.yaw);
+				ModelData[modelid].yaw = 360.0 + toDeg(packet.yaw);
 			} else {
-				ModelData[ModelActive].yaw = toDeg(packet.yaw);
+				ModelData[modelid].yaw = toDeg(packet.yaw);
 			}
 			mavlink_update_yaw = 1;
 //			SDL_Log("ATT;%i;%0.2f;%0.2f;%0.2f\n", time(0), toDeg(packet.roll), toDeg(packet.pitch), toDeg(packet.yaw));
@@ -379,16 +375,16 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 			mavlink_gps_raw_int_t packet;
 			mavlink_msg_gps_raw_int_decode(msg, &packet);
 			if (packet.lat != 0 && packet.lon != 0) {
-				ModelData[ModelActive].p_lat = (float)packet.lat / 10000000.0;
-				ModelData[ModelActive].p_long = (float)packet.lon / 10000000.0;
-				ModelData[ModelActive].speed = (float)packet.vel / 100.0;
-				ModelData[ModelActive].numSat = packet.satellites_visible;
-				ModelData[ModelActive].gpsfix = packet.fix_type;
-				ModelData[ModelActive].hdop = (float)packet.eph / 100.0;
-				ModelData[ModelActive].vdop = (float)packet.epv / 100.0;
-				if (ModelData[ModelActive].gpsfix > 2) {
+				ModelData[modelid].p_lat = (float)packet.lat / 10000000.0;
+				ModelData[modelid].p_long = (float)packet.lon / 10000000.0;
+				ModelData[modelid].speed = (float)packet.vel / 100.0;
+				ModelData[modelid].numSat = packet.satellites_visible;
+				ModelData[modelid].gpsfix = packet.fix_type;
+				ModelData[modelid].hdop = (float)packet.eph / 100.0;
+				ModelData[modelid].vdop = (float)packet.epv / 100.0;
+				if (ModelData[modelid].gpsfix > 2) {
 					GPS_found = 1;
-					ModelData[ModelActive].p_alt = (float)packet.alt / 1000.0;
+					ModelData[modelid].p_alt = (float)packet.alt / 1000.0;
 				}
 				redraw_flag = 1;
 			}
@@ -398,24 +394,24 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 			mavlink_rc_channels_raw_t packet;
 			mavlink_msg_rc_channels_raw_decode(msg, &packet);
 
-			ModelData[ModelActive].radio_raw[0] = (int)packet.chan1_raw;
-			ModelData[ModelActive].radio_raw[1] = (int)packet.chan2_raw;
-			ModelData[ModelActive].radio_raw[2] = (int)packet.chan3_raw;
-			ModelData[ModelActive].radio_raw[3] = (int)packet.chan4_raw;
-			ModelData[ModelActive].radio_raw[4] = (int)packet.chan5_raw;
-			ModelData[ModelActive].radio_raw[5] = (int)packet.chan6_raw;
-			ModelData[ModelActive].radio_raw[6] = (int)packet.chan7_raw;
-			ModelData[ModelActive].radio_raw[7] = (int)packet.chan8_raw;
+			ModelData[modelid].radio_raw[0] = (int)packet.chan1_raw;
+			ModelData[modelid].radio_raw[1] = (int)packet.chan2_raw;
+			ModelData[modelid].radio_raw[2] = (int)packet.chan3_raw;
+			ModelData[modelid].radio_raw[3] = (int)packet.chan4_raw;
+			ModelData[modelid].radio_raw[4] = (int)packet.chan5_raw;
+			ModelData[modelid].radio_raw[5] = (int)packet.chan6_raw;
+			ModelData[modelid].radio_raw[6] = (int)packet.chan7_raw;
+			ModelData[modelid].radio_raw[7] = (int)packet.chan8_raw;
 
-			ModelData[ModelActive].radio[0] = (int)packet.chan1_raw / 5 - 300;
-			ModelData[ModelActive].radio[1] = (int)packet.chan2_raw / 5 - 300;
-			ModelData[ModelActive].radio[2] = (int)packet.chan3_raw / 5 - 300;
-			ModelData[ModelActive].radio[3] = (int)packet.chan4_raw / 5 - 300;
-			ModelData[ModelActive].radio[4] = (int)packet.chan5_raw / 5 - 300;
-			ModelData[ModelActive].radio[5] = (int)packet.chan6_raw / 5 - 300;
-			ModelData[ModelActive].radio[6] = (int)packet.chan7_raw / 5 - 300;
-			ModelData[ModelActive].radio[7] = (int)packet.chan8_raw / 5 - 300;
-			ModelData[ModelActive].rssi_rc_rx = (int)packet.rssi * 100 / 255;
+			ModelData[modelid].radio[0] = (int)packet.chan1_raw / 5 - 300;
+			ModelData[modelid].radio[1] = (int)packet.chan2_raw / 5 - 300;
+			ModelData[modelid].radio[2] = (int)packet.chan3_raw / 5 - 300;
+			ModelData[modelid].radio[3] = (int)packet.chan4_raw / 5 - 300;
+			ModelData[modelid].radio[4] = (int)packet.chan5_raw / 5 - 300;
+			ModelData[modelid].radio[5] = (int)packet.chan6_raw / 5 - 300;
+			ModelData[modelid].radio[6] = (int)packet.chan7_raw / 5 - 300;
+			ModelData[modelid].radio[7] = (int)packet.chan8_raw / 5 - 300;
+			ModelData[modelid].rssi_rc_rx = (int)packet.rssi * 100 / 255;
 			break;
 		}
 		case MAVLINK_MSG_ID_SERVO_OUTPUT_RAW: {
@@ -426,9 +422,9 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 			mavlink_sys_status_t packet;
 			mavlink_msg_sys_status_decode(msg, &packet);
 //			SDL_Log("%0.1f %%, %0.3f V)\n", packet.load / 10.0, packet.voltage_battery / 1000.0);
-			ModelData[ModelActive].voltage = packet.voltage_battery / 1000.0;
-			ModelData[ModelActive].ampere = (float)packet.current_battery / 100.0;
-			ModelData[ModelActive].load = packet.load / 10.0;
+			ModelData[modelid].voltage = packet.voltage_battery / 1000.0;
+			ModelData[modelid].ampere = (float)packet.current_battery / 100.0;
+			ModelData[modelid].load = packet.load / 10.0;
 //			redraw_flag = 1;
 			break;
 		}
@@ -467,13 +463,13 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 			sprintf(sysmsg_str, "PARAM_VALUE (%i/%i): #%s#%s# = %f (Type: %i)", packet.param_index + 1, packet.param_count, var, packet.param_id, packet.param_value, packet.param_type);
 			SDL_Log("mavlink: %s\n", sysmsg_str);
 			sys_message(sysmsg_str);
-			mavlink_maxparam = packet.param_count;
+			mavlink_maxparam[modelid] = packet.param_count;
 			mavlink_timeout = 0;
 
-			mavlink_set_value(var, packet.param_value, packet.param_type, packet.param_index);
+			mavlink_set_value(modelid, var, packet.param_value, packet.param_type, packet.param_index);
 
 			if (packet.param_index + 1 == packet.param_count || packet.param_index % 10 == 0) {
-				mavlink_param_xml_meta_load();
+				mavlink_param_xml_meta_load(modelid);
 			}
 
 			param_timeout = 10;
@@ -488,8 +484,8 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 			sys_message(sysmsg_str);
 			mission_max = packet.count;
 			if (mission_max > 0) {
-				mavlink_msg_mission_request_pack(127, 0, &msg2, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, 0);
-				mavlink_send_message(&msg2);
+				mavlink_msg_mission_request_pack(127, 0, &msg2, ModelData[modelid].sysid, ModelData[modelid].compid, 0);
+				mavlink_send_message(modelid, &msg2);
 			}
 //			redraw_flag = 1;
 			break;
@@ -505,7 +501,7 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 			uint16_t id2 = packet.seq;
 			uint16_t type = 0;
 
-			if (ModelData[ModelActive].teletype == TELETYPE_MEGAPIRATE_NG || ModelData[ModelActive].teletype == TELETYPE_ARDUPILOT) {
+			if (ModelData[modelid].teletype == TELETYPE_MEGAPIRATE_NG || ModelData[modelid].teletype == TELETYPE_ARDUPILOT) {
 				if (id2 > 0) {
 					id2 = id2 - 1;
 				}
@@ -570,13 +566,13 @@ void mavlink_handleMessage(mavlink_message_t* msg) {
 //	MAV_FRAME_GLOBAL_TERRAIN_ALT_INT=11, /* Global coordinate frame with above terrain level altitude. WGS84 coordinate system, relative altitude over terrain with respect to the waypoint coordinate. First value / x: latitude in degrees*10e-7, second value / y: longitude in degrees*10e-7, third value / z: positive altitude in meters with 0 being at ground level in terrain model. | */
 
 
-			if (ModelData[ModelActive].dronetype != MAV_TYPE_FIXED_WING && WayPoints[id2 + 1].frametype == MAV_FRAME_GLOBAL) {
+			if (ModelData[modelid].dronetype != MAV_TYPE_FIXED_WING && WayPoints[id2 + 1].frametype == MAV_FRAME_GLOBAL) {
 				SDL_Log("mavlink: copter absolut alt workaround");
-				mavlink_msg_mission_item_pack(127, 0, &msg2, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, id, WayPoints[id2 + 1].frametype, type, 0, 1, WayPoints[id2 + 1].param1, WayPoints[id2 + 1].param2, WayPoints[id2 + 1].param3, WayPoints[id2 + 1].param4, WayPoints[id2 + 1].p_lat, WayPoints[id2 + 1].p_long, WayPoints[id2 + 1].p_alt - WayPoints[0].p_alt);
+				mavlink_msg_mission_item_pack(127, 0, &msg2, ModelData[modelid].sysid, ModelData[modelid].compid, id, WayPoints[id2 + 1].frametype, type, 0, 1, WayPoints[id2 + 1].param1, WayPoints[id2 + 1].param2, WayPoints[id2 + 1].param3, WayPoints[id2 + 1].param4, WayPoints[id2 + 1].p_lat, WayPoints[id2 + 1].p_long, WayPoints[id2 + 1].p_alt - WayPoints[0].p_alt);
 			} else {
-				mavlink_msg_mission_item_pack(127, 0, &msg2, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, id, WayPoints[id2 + 1].frametype, type, 0, 1, WayPoints[id2 + 1].param1, WayPoints[id2 + 1].param2, WayPoints[id2 + 1].param3, WayPoints[id2 + 1].param4, WayPoints[id2 + 1].p_lat, WayPoints[id2 + 1].p_long, WayPoints[id2 + 1].p_alt);
+				mavlink_msg_mission_item_pack(127, 0, &msg2, ModelData[modelid].sysid, ModelData[modelid].compid, id, WayPoints[id2 + 1].frametype, type, 0, 1, WayPoints[id2 + 1].param1, WayPoints[id2 + 1].param2, WayPoints[id2 + 1].param3, WayPoints[id2 + 1].param4, WayPoints[id2 + 1].p_lat, WayPoints[id2 + 1].p_long, WayPoints[id2 + 1].p_alt);
 			}
-			mavlink_send_message(&msg2);
+			mavlink_send_message(modelid, &msg2);
 
 /*
 mavlink_msg_mission_item_pack(system_id, component_id, &msg , packet1.target_system , packet1.target_component , packet1.seq , packet1.frame , packet1.command , packet1.current , packet1.autocontinue , packet1.param1 , packet1.param2 , packet1.param3 , packet1.param4 , packet1.x , packet1.y , packet1.z );
@@ -614,14 +610,14 @@ uint8_t autocontinue; ///< autocontinue to next wp
 
 
 			if (packet.seq < mission_max - 1) {
-				mavlink_msg_mission_request_pack(127, 0, &msg2, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, packet.seq + 1);
-				mavlink_send_message(&msg2);
+				mavlink_msg_mission_request_pack(127, 0, &msg2, ModelData[modelid].sysid, ModelData[modelid].compid, packet.seq + 1);
+				mavlink_send_message(modelid, &msg2);
 			} else {
-				mavlink_msg_mission_ack_pack(127, 0, &msg2, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, 15);
-				mavlink_send_message(&msg2);
+				mavlink_msg_mission_ack_pack(127, 0, &msg2, ModelData[modelid].sysid, ModelData[modelid].compid, 15);
+				mavlink_send_message(modelid, &msg2);
 			}
 
-			if (ModelData[ModelActive].teletype == TELETYPE_MEGAPIRATE_NG || ModelData[ModelActive].teletype == TELETYPE_ARDUPILOT) {
+			if (ModelData[modelid].teletype == TELETYPE_MEGAPIRATE_NG || ModelData[modelid].teletype == TELETYPE_ARDUPILOT) {
 				if (packet.seq > 0) {
 					packet.seq = packet.seq - 1;
 				} else {
@@ -709,7 +705,7 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			}
 
 
-			if (ModelData[ModelActive].dronetype != MAV_TYPE_FIXED_WING && WayPoints[1 + packet.seq].frametype == MAV_FRAME_GLOBAL) {
+			if (ModelData[modelid].dronetype != MAV_TYPE_FIXED_WING && WayPoints[1 + packet.seq].frametype == MAV_FRAME_GLOBAL) {
 				SDL_Log("mavlink: copter absolut alt workaround");
 				packet.z += WayPoints[0].p_alt;
 			}
@@ -749,12 +745,12 @@ uint8_t autocontinue; ///< autocontinue to next wp
 		case MAVLINK_MSG_ID_RAW_IMU: {
 			mavlink_raw_imu_t packet;
 			mavlink_msg_raw_imu_decode(msg, &packet);
-			ModelData[ModelActive].acc_x = (float)packet.xacc / 1000.0;
-			ModelData[ModelActive].acc_y = (float)packet.yacc / 1000.0;
-			ModelData[ModelActive].acc_z = (float)packet.zacc / 1000.0;
-			ModelData[ModelActive].gyro_x = (float)packet.zgyro;
-			ModelData[ModelActive].gyro_y = (float)packet.zgyro;
-			ModelData[ModelActive].gyro_z = (float)packet.zgyro;
+			ModelData[modelid].acc_x = (float)packet.xacc / 1000.0;
+			ModelData[modelid].acc_y = (float)packet.yacc / 1000.0;
+			ModelData[modelid].acc_z = (float)packet.zacc / 1000.0;
+			ModelData[modelid].gyro_x = (float)packet.zgyro;
+			ModelData[modelid].gyro_y = (float)packet.zgyro;
+			ModelData[modelid].gyro_z = (float)packet.zgyro;
 //			redraw_flag = 1;
 			break;
 		}
@@ -767,22 +763,22 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			mavlink_vfr_hud_t packet;
 			mavlink_msg_vfr_hud_decode(msg, &packet);
 			if (GPS_found == 0) {
-				ModelData[ModelActive].p_alt = packet.alt;
+				ModelData[modelid].p_alt = packet.alt;
 			}
 			break;
 		}
 		case MAVLINK_MSG_ID_RADIO_STATUS: {
 			mavlink_radio_status_t packet;
 			mavlink_msg_radio_status_decode(msg, &packet);
-			ModelData[ModelActive].rssi_tx = packet.rssi / 2;
-			ModelData[ModelActive].rssi_rx = packet.remrssi / 2;
+			ModelData[modelid].rssi_tx = packet.rssi / 2;
+			ModelData[modelid].rssi_rx = packet.remrssi / 2;
 			break;
 		}
 		case MAVLINK_MSG_ID_RADIO: {
 			mavlink_radio_t packet;
 			mavlink_msg_radio_decode(msg, &packet);
-			ModelData[ModelActive].rssi_tx = packet.rssi / 2;
-			ModelData[ModelActive].rssi_rx = packet.remrssi / 2;
+			ModelData[modelid].rssi_tx = packet.rssi / 2;
+			ModelData[modelid].rssi_rx = packet.remrssi / 2;
 			break;
 		}
 		case MAVLINK_MSG_ID_GLOBAL_POSITION_INT: {
@@ -790,10 +786,10 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			mavlink_msg_global_position_int_decode(msg, &packet);
 			if (GPS_found == 0) {
 				if (packet.lat != 0 && packet.lon != 0) {
-//					ModelData[ModelActive].p_lat = (float)packet.lat / 10000000.0;
-//					ModelData[ModelActive].p_long = (float)packet.lon / 10000000.0;
-//					ModelData[ModelActive].p_alt = (float)packet.alt / 1000.0;
-//					ModelData[ModelActive].yaw = (float)packet.hdg / 100.0;
+//					ModelData[modelid].p_lat = (float)packet.lat / 10000000.0;
+//					ModelData[modelid].p_long = (float)packet.lon / 10000000.0;
+//					ModelData[modelid].p_alt = (float)packet.alt / 1000.0;
+//					ModelData[modelid].yaw = (float)packet.hdg / 100.0;
 				}
 			}
 			break;
@@ -807,41 +803,41 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			mavlink_rc_channels_t packet;
 			mavlink_msg_rc_channels_decode(msg, &packet);
 
-			ModelData[ModelActive].radio_raw[0] = (int)packet.chan1_raw;
-			ModelData[ModelActive].radio_raw[1] = (int)packet.chan2_raw;
-			ModelData[ModelActive].radio_raw[2] = (int)packet.chan3_raw;
-			ModelData[ModelActive].radio_raw[3] = (int)packet.chan4_raw;
-			ModelData[ModelActive].radio_raw[4] = (int)packet.chan5_raw;
-			ModelData[ModelActive].radio_raw[5] = (int)packet.chan6_raw;
-			ModelData[ModelActive].radio_raw[6] = (int)packet.chan7_raw;
-			ModelData[ModelActive].radio_raw[7] = (int)packet.chan8_raw;
+			ModelData[modelid].radio_raw[0] = (int)packet.chan1_raw;
+			ModelData[modelid].radio_raw[1] = (int)packet.chan2_raw;
+			ModelData[modelid].radio_raw[2] = (int)packet.chan3_raw;
+			ModelData[modelid].radio_raw[3] = (int)packet.chan4_raw;
+			ModelData[modelid].radio_raw[4] = (int)packet.chan5_raw;
+			ModelData[modelid].radio_raw[5] = (int)packet.chan6_raw;
+			ModelData[modelid].radio_raw[6] = (int)packet.chan7_raw;
+			ModelData[modelid].radio_raw[7] = (int)packet.chan8_raw;
 
-			ModelData[ModelActive].radio[0] = (int)packet.chan1_raw / 5 - 300;
-			ModelData[ModelActive].radio[1] = (int)packet.chan2_raw / 5 - 300;
-			ModelData[ModelActive].radio[2] = (int)packet.chan3_raw / 5 - 300;
-			ModelData[ModelActive].radio[3] = (int)packet.chan4_raw / 5 - 300;
-			ModelData[ModelActive].radio[4] = (int)packet.chan5_raw / 5 - 300;
-			ModelData[ModelActive].radio[5] = (int)packet.chan6_raw / 5 - 300;
-			ModelData[ModelActive].radio[6] = (int)packet.chan7_raw / 5 - 300;
-			ModelData[ModelActive].radio[7] = (int)packet.chan8_raw / 5 - 300;
-			ModelData[ModelActive].radio[8] = (int)packet.chan9_raw / 5 - 300;
-			ModelData[ModelActive].radio[9] = (int)packet.chan10_raw / 5 - 300;
-			ModelData[ModelActive].radio[10] = (int)packet.chan11_raw / 5 - 300;
-			ModelData[ModelActive].radio[11] = (int)packet.chan12_raw / 5 - 300;
-			ModelData[ModelActive].radio[12] = (int)packet.chan13_raw / 5 - 300;
-			ModelData[ModelActive].radio[13] = (int)packet.chan14_raw / 5 - 300;
-			ModelData[ModelActive].radio[14] = (int)packet.chan15_raw / 5 - 300;
-			ModelData[ModelActive].radio[15] = (int)packet.chan16_raw / 5 - 300;
+			ModelData[modelid].radio[0] = (int)packet.chan1_raw / 5 - 300;
+			ModelData[modelid].radio[1] = (int)packet.chan2_raw / 5 - 300;
+			ModelData[modelid].radio[2] = (int)packet.chan3_raw / 5 - 300;
+			ModelData[modelid].radio[3] = (int)packet.chan4_raw / 5 - 300;
+			ModelData[modelid].radio[4] = (int)packet.chan5_raw / 5 - 300;
+			ModelData[modelid].radio[5] = (int)packet.chan6_raw / 5 - 300;
+			ModelData[modelid].radio[6] = (int)packet.chan7_raw / 5 - 300;
+			ModelData[modelid].radio[7] = (int)packet.chan8_raw / 5 - 300;
+			ModelData[modelid].radio[8] = (int)packet.chan9_raw / 5 - 300;
+			ModelData[modelid].radio[9] = (int)packet.chan10_raw / 5 - 300;
+			ModelData[modelid].radio[10] = (int)packet.chan11_raw / 5 - 300;
+			ModelData[modelid].radio[11] = (int)packet.chan12_raw / 5 - 300;
+			ModelData[modelid].radio[12] = (int)packet.chan13_raw / 5 - 300;
+			ModelData[modelid].radio[13] = (int)packet.chan14_raw / 5 - 300;
+			ModelData[modelid].radio[14] = (int)packet.chan15_raw / 5 - 300;
+			ModelData[modelid].radio[15] = (int)packet.chan16_raw / 5 - 300;
 			uint16_t n = 0;
 			for (n = 1; n < 16; n++) {
-				if (ModelData[ModelActive].radio[n] > 100) {
-					ModelData[ModelActive].radio[n] = 100;
-				} else if (ModelData[ModelActive].radio[n] < -100) {
-					ModelData[ModelActive].radio[n] = -100;
+				if (ModelData[modelid].radio[n] > 100) {
+					ModelData[modelid].radio[n] = 100;
+				} else if (ModelData[modelid].radio[n] < -100) {
+					ModelData[modelid].radio[n] = -100;
 				}
 			}
-			ModelData[ModelActive].rssi_rc_rx = (int)packet.rssi * 100 / 255;
-			ModelData[ModelActive].chancount = (uint8_t)packet.chancount;
+			ModelData[modelid].rssi_rc_rx = (int)packet.rssi * 100 / 255;
+			ModelData[modelid].chancount = (uint8_t)packet.chancount;
 			break;
 		}
 		case MAVLINK_MSG_ID_AHRS: {
@@ -852,8 +848,8 @@ uint8_t autocontinue; ///< autocontinue to next wp
 		case MAVLINK_MSG_ID_HWSTATUS: {
 			mavlink_hwstatus_t packet;
 			mavlink_msg_hwstatus_decode(msg, &packet);
-			ModelData[ModelActive].fc_voltage1 = (float)packet.Vcc / 1000.0;
-			ModelData[ModelActive].fc_i2c_errors = packet.I2Cerr;
+			ModelData[modelid].fc_voltage1 = (float)packet.Vcc / 1000.0;
+			ModelData[modelid].fc_i2c_errors = packet.I2Cerr;
 			break;
 		}
 		case MAVLINK_MSG_ID_SCALED_IMU2: {
@@ -864,9 +860,9 @@ uint8_t autocontinue; ///< autocontinue to next wp
 		case MAVLINK_MSG_ID_POWER_STATUS: {
 			mavlink_power_status_t packet;
 			mavlink_msg_power_status_decode(msg, &packet);
-			ModelData[ModelActive].fc_voltage1 = (float)packet.Vcc / 1000.0;
-			ModelData[ModelActive].fc_voltage2 = (float)packet.Vservo / 1000.0;
-			ModelData[ModelActive].fc_status = packet.flags;
+			ModelData[modelid].fc_voltage1 = (float)packet.Vcc / 1000.0;
+			ModelData[modelid].fc_voltage2 = (float)packet.Vservo / 1000.0;
+			ModelData[modelid].fc_status = packet.flags;
 			break;
 		}
 		case MAVLINK_MSG_ID_MEMINFO: {
@@ -883,8 +879,8 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			mavlink_ahrs2_t packet;
 			mavlink_msg_ahrs2_decode(msg, &packet);
 			ahrs2_found = 1;
-			ModelData[ModelActive].roll = toDeg(packet.roll);
-			ModelData[ModelActive].pitch = toDeg(packet.pitch);
+			ModelData[modelid].roll = toDeg(packet.roll);
+			ModelData[modelid].pitch = toDeg(packet.pitch);
 			mavlink_update_yaw = 1;
 			redraw_flag = 1;
 			break;
@@ -917,9 +913,9 @@ uint8_t autocontinue; ///< autocontinue to next wp
 		case MAVLINK_MSG_ID_MOUNT_STATUS: {
 			mavlink_mount_status_t packet;
 			mavlink_msg_mount_status_decode(msg, &packet);
-			ModelData[ModelActive].mnt_pitch = (float)packet.pointing_a / 100.0;
-			ModelData[ModelActive].mnt_roll = (float)packet.pointing_b / 100.0;
-			ModelData[ModelActive].mnt_yaw = (float)packet.pointing_c / 100.0;
+			ModelData[modelid].mnt_pitch = (float)packet.pointing_a / 100.0;
+			ModelData[modelid].mnt_roll = (float)packet.pointing_b / 100.0;
+			ModelData[modelid].mnt_yaw = (float)packet.pointing_c / 100.0;
 		}
 		case MAVLINK_MSG_ID_WIND: {
 			mavlink_wind_t packet;
@@ -1006,21 +1002,21 @@ uint8_t autocontinue; ///< autocontinue to next wp
 	}
 }
 
-void mavlink_send_terrain_data (int32_t lat, int32_t lon, uint16_t grid_spacing, uint8_t gridbit, int16_t data[16]) {
+void mavlink_send_terrain_data (uint8_t modelid, int32_t lat, int32_t lon, uint16_t grid_spacing, uint8_t gridbit, int16_t data[16]) {
 	SDL_Log("mavlink: sending terrain_data\n");
 	mavlink_message_t msg;
 	mavlink_msg_terrain_data_pack(127, 0, &msg, lat, lon, grid_spacing, gridbit, data);
-	mavlink_send_message(&msg);
+	mavlink_send_message(modelid, &msg);
 }
 
-void mavlink_read_waypoints (void) {
+void mavlink_read_waypoints (uint8_t modelid) {
 	SDL_Log("mavlink: reading Waypoints\n");
 	mavlink_message_t msg;
-	mavlink_msg_mission_request_list_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid);
-	mavlink_send_message(&msg);
+	mavlink_msg_mission_request_list_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid);
+	mavlink_send_message(modelid, &msg);
 }
 
-void mavlink_read_loglist (void) {
+void mavlink_read_loglist (uint8_t modelid) {
 	int n = 0;
 	SDL_Log("mavlink: reading loglist\n");
 	mavlink_logs_total = 0;
@@ -1029,11 +1025,11 @@ void mavlink_read_loglist (void) {
 		loglist[n].size = 0;
 	}
 	mavlink_message_t msg;
-	mavlink_msg_log_request_list_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, 0, 0xffff);
-	mavlink_send_message(&msg);
+	mavlink_msg_log_request_list_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, 0, 0xffff);
+	mavlink_send_message(modelid, &msg);
 }
 
-void mavlink_read_logfile (uint16_t id, uint32_t offset, uint32_t len) {
+void mavlink_read_logfile (uint8_t modelid, uint16_t id, uint32_t offset, uint32_t len) {
 	char tmp_str[1024];
 	sprintf(tmp_str, "/tmp/mavlink_%i_%i.log", id, len);
 	FILE *fdlog = fopen(tmp_str, "w");
@@ -1044,105 +1040,105 @@ void mavlink_read_logfile (uint16_t id, uint32_t offset, uint32_t len) {
 	mavlink_loghbeat = 100;
 	SDL_Log("mavlink: get logfile: %i (%ibytes)\n", id, len);
 	mavlink_message_t msg;
-	mavlink_msg_log_request_data_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, id, offset, len);
-	mavlink_send_message(&msg);
+	mavlink_msg_log_request_data_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, id, offset, len);
+	mavlink_send_message(modelid, &msg);
 }
 
-void mavlink_save_to_flash (void) {
+void mavlink_save_to_flash (uint8_t modelid) {
 	SDL_Log("mavlink: save values to flash\n");
 	mavlink_message_t msg;
-	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, MAV_CMD_PREFLIGHT_STORAGE, 0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-	mavlink_send_message(&msg);
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_CMD_PREFLIGHT_STORAGE, 0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	mavlink_send_message(modelid, &msg);
 }
 
-void mavlink_load_from_flash (void) {
+void mavlink_load_from_flash (uint8_t modelid) {
 	SDL_Log("mavlink: load values from flash\n");
 	mavlink_message_t msg;
-	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, MAV_CMD_PREFLIGHT_STORAGE, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-	mavlink_send_message(&msg);
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_CMD_PREFLIGHT_STORAGE, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	mavlink_send_message(modelid, &msg);
 }
 
-void mavlink_send_cmd_calibration (void) {
+void mavlink_send_cmd_calibration (uint8_t modelid) {
 	SDL_Log("mavlink: send cmd: Calibration\n");
 	mavlink_message_t msg;
-	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, MAV_CMD_PREFLIGHT_CALIBRATION, 0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0);
-	mavlink_send_message(&msg);
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_CMD_PREFLIGHT_CALIBRATION, 0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+	mavlink_send_message(modelid, &msg);
 }
 
-void mavlink_send_cmd_calibration_ack (void) {
+void mavlink_send_cmd_calibration_ack (uint8_t modelid) {
 	SDL_Log("mavlink: send cmd: Calibration ACK\n");
 	mavlink_message_t msg;
 	mavlink_msg_command_ack_pack(127, 0, &msg, MAV_CMD_PREFLIGHT_CALIBRATION, MAV_CMD_ACK_OK);
-	mavlink_send_message(&msg);
+	mavlink_send_message(modelid, &msg);
 }
 
-void mavlink_send_cmd_rtl (void) {
+void mavlink_send_cmd_rtl (uint8_t modelid) {
 	SDL_Log("mavlink: send cmd: RTL\n");
 	mavlink_message_t msg;
-	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, MAV_CMD_NAV_RETURN_TO_LAUNCH, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-	mavlink_send_message(&msg);
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_CMD_NAV_RETURN_TO_LAUNCH, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	mavlink_send_message(modelid, &msg);
 }
 
-void mavlink_send_cmd_land (void) {
+void mavlink_send_cmd_land (uint8_t modelid) {
 	SDL_Log("mavlink: send cmd: RTL\n");
 	mavlink_message_t msg;
-	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, MAV_CMD_NAV_LAND, 0, 0.0, 0.0, 0.0, 0.0, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].p_alt);
-	mavlink_send_message(&msg);
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_CMD_NAV_LAND, 0, 0.0, 0.0, 0.0, 0.0, ModelData[modelid].p_lat, ModelData[modelid].p_long, ModelData[modelid].p_alt);
+	mavlink_send_message(modelid, &msg);
 }
 
-void mavlink_send_cmd_takeoff (void) {
+void mavlink_send_cmd_takeoff (uint8_t modelid) {
 	SDL_Log("mavlink: send cmd: RTL\n");
 	mavlink_message_t msg;
-	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, MAV_CMD_NAV_TAKEOFF, 0, 0.0, 0.0, 0.0, 0.0, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].p_alt);
-	mavlink_send_message(&msg);
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_CMD_NAV_TAKEOFF, 0, 0.0, 0.0, 0.0, 0.0, ModelData[modelid].p_lat, ModelData[modelid].p_long, ModelData[modelid].p_alt);
+	mavlink_send_message(modelid, &msg);
 }
 
-void mavlink_send_cmd_mission (void) {
+void mavlink_send_cmd_mission (uint8_t modelid) {
 	SDL_Log("mavlink: send cmd: MISSION\n");
 	mavlink_message_t msg;
-	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, MAV_CMD_MISSION_START, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-	mavlink_send_message(&msg);
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_CMD_MISSION_START, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	mavlink_send_message(modelid, &msg);
 }
 
-void mavlink_send_cmd_arm (uint8_t mode) {
+void mavlink_send_cmd_arm (uint8_t modelid, uint8_t mode) {
 	SDL_Log("mavlink: send cmd: ARM: %i\n", mode);
 	mavlink_message_t msg;
-	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, MAV_CMD_COMPONENT_ARM_DISARM, 0, (float)mode, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-	mavlink_send_message(&msg);
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_CMD_COMPONENT_ARM_DISARM, 0, (float)mode, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	mavlink_send_message(modelid, &msg);
 }
 
-void mavlink_send_cmd_mode (uint8_t mode) {
+void mavlink_send_cmd_mode (uint8_t modelid, uint8_t mode) {
 	SDL_Log("mavlink: send cmd: MODE: %i\n", mode);
 	mavlink_message_t msg;
-	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, MAV_CMD_DO_SET_MODE, 0, (float)mode, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-	mavlink_send_message(&msg);
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_CMD_DO_SET_MODE, 0, (float)mode, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	mavlink_send_message(modelid, &msg);
 }
 
-void mavlink_send_cmd_guided (void) {
+void mavlink_send_cmd_guided (uint8_t modelid) {
 	SDL_Log("mavlink: send cmd: GUIDED\n");
 	mavlink_message_t msg;
-	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, MAV_CMD_DO_SET_MODE, 0, MAV_MODE_GUIDED_ARMED, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-	mavlink_send_message(&msg);
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_CMD_DO_SET_MODE, 0, MAV_MODE_GUIDED_ARMED, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	mavlink_send_message(modelid, &msg);
 }
 
-void mavlink_send_cmd_loiter (void) {
+void mavlink_send_cmd_loiter (uint8_t modelid) {
 	SDL_Log("mavlink: send cmd: LOITER\n");
 	mavlink_message_t msg;
-	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, MAV_CMD_NAV_LOITER_UNLIM, 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
-	mavlink_send_message(&msg);
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_CMD_NAV_LOITER_UNLIM, 0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	mavlink_send_message(modelid, &msg);
 }
 
-void mavlink_send_cmd_follow (float p_lat, float p_long, float p_alt, float radius) {
+void mavlink_send_cmd_follow (uint8_t modelid, float p_lat, float p_long, float p_alt, float radius) {
 //	SDL_Log("mavlink: send cmd: FOLLOW\n");
 	mavlink_message_t msg;
-	mavlink_msg_mission_item_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, 0, MAV_FRAME_GLOBAL_RELATIVE_ALT, MAV_CMD_NAV_WAYPOINT, 2, 0, 0.0, radius, 0.0, 0.0, p_lat, p_long, p_alt);
-	mavlink_send_message(&msg);
+	mavlink_msg_mission_item_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, 0, MAV_FRAME_GLOBAL_RELATIVE_ALT, MAV_CMD_NAV_WAYPOINT, 2, 0, 0.0, radius, 0.0, 0.0, p_lat, p_long, p_alt);
+	mavlink_send_message(modelid, &msg);
 }
 
-void mavlink_send_waypoints (void) {
+void mavlink_send_waypoints (uint8_t modelid) {
 	mavlink_message_t msg;
-	mavlink_msg_mission_clear_all_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid);
-	mavlink_send_message(&msg);
+	mavlink_msg_mission_clear_all_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid);
+	mavlink_send_message(modelid, &msg);
 	usleep(100000);
 	uint16_t n = 0;
 	for (n = 1; n < MAX_WAYPOINTS; n++) {
@@ -1150,23 +1146,23 @@ void mavlink_send_waypoints (void) {
 			break;
 		}
 	}
-	if (ModelData[ModelActive].teletype == TELETYPE_MEGAPIRATE_NG || ModelData[ModelActive].teletype == TELETYPE_ARDUPILOT) {
+	if (ModelData[modelid].teletype == TELETYPE_MEGAPIRATE_NG || ModelData[modelid].teletype == TELETYPE_ARDUPILOT) {
 		SDL_Log("mavlink: WORKAROUND: MEGAPIRATE_NG: fake one WP\n");
 		n++;
 	}
 	SDL_Log("mavlink: sending Waypoints (%i)\n", n - 1);
-	mavlink_msg_mission_count_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, n - 1);
-	mavlink_send_message(&msg);
+	mavlink_msg_mission_count_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, n - 1);
+	mavlink_send_message(modelid, &msg);
 }
 
-void mavlink_send_message (mavlink_message_t* msg) {
+void mavlink_send_message (uint8_t modelid, mavlink_message_t* msg) {
 	uint8_t buf[MAVLINK_MAX_PACKET_LEN];
 //	SDL_Log("mavlink: send_msg...\n");
 	uint16_t len = mavlink_msg_to_send_buffer(buf, msg);
 	uint16_t i = 0;
 	for(i = 0; i < len; i++) {
 		uint8_t c = buf[i];
-		serial_write(serial_fd_mavlink, &c, 1);
+		serial_write(ModelData[modelid].serial_fd, &c, 1);
 	}
 #ifndef WINDOWS
 	if (mavlink_udp_active == 1) {
@@ -1180,82 +1176,80 @@ void mavlink_send_message (mavlink_message_t* msg) {
 #endif
 }
 
-uint8_t mavlink_connection_status (void) {
-	if (serial_fd_mavlink == -1) {
+uint8_t mavlink_connection_status (uint8_t modelid) {
+	if (ModelData[modelid].serial_fd == -1) {
 		return 0;
 	}
 	return last_connection;
 }
 
-void mavlink_update (void) {
-	if (serial_fd_mavlink == -1) {
+void mavlink_update (uint8_t modelid) {
+	if (ModelData[modelid].serial_fd == -1) {
 		return;
 	}
 	uint8_t c = 0;
 	uint16_t n = 0;
 	mavlink_message_t msg;
 	mavlink_status_t status;
-	while ((res = serial_read(serial_fd_mavlink, serial_buf, 250)) > 0) {
+	while ((res = serial_read(ModelData[modelid].serial_fd, serial_buf, 250)) > 0) {
 		last_connection = time(0);
 		for (n = 0; n < res; n++) {
 			c = serial_buf[n];
 			if(mavlink_parse_char(0, c, &msg, &status)) {
-				mavlink_handleMessage(&msg);
+				mavlink_handleMessage(modelid, &msg);
 			}
 		}
 	}
 }
 
-void mavlink_param_get_id (uint16_t id) {
+void mavlink_param_get_id (uint8_t modelid, uint16_t id) {
 	SDL_Log("mavlink: get id: %i\n", id);
 	mavlink_message_t msg;
-	mavlink_msg_param_request_read_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, NULL, id);
-	mavlink_send_message(&msg);
+	mavlink_msg_param_request_read_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, NULL, id);
+	mavlink_send_message(modelid, &msg);
 }
 
-void mavlink_start_feeds (void) {
+void mavlink_start_feeds (uint8_t modelid) {
 	mavlink_message_t msg;
 	mavlink_timeout = 0;
 	param_complete = 0;
 
-//	mavlink_maxparam = 1;
-
-	SDL_Log("mavlink: starting feeds!\n");
-	mavlink_msg_param_request_list_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid);
-	mavlink_send_message(&msg);
+	SDL_Log("mavlink: starting feeds (modelid: %i)!\n", modelid);
+	mavlink_msg_param_request_list_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid);
+	mavlink_send_message(modelid, &msg);
 	SDL_Delay(30);
 
-	mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, MAV_DATA_STREAM_RAW_SENSORS, MAV_DATA_STREAM_RAW_SENSORS_RATE, MAV_DATA_STREAM_RAW_SENSORS_ACTIVE);
-	mavlink_send_message(&msg);
+	mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_DATA_STREAM_RAW_SENSORS, MAV_DATA_STREAM_RAW_SENSORS_RATE, MAV_DATA_STREAM_RAW_SENSORS_ACTIVE);
+	mavlink_send_message(modelid, &msg);
 	SDL_Delay(30);
 
-	mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, MAV_DATA_STREAM_RC_CHANNELS, MAV_DATA_STREAM_RC_CHANNELS_RATE, MAV_DATA_STREAM_RC_CHANNELS_ACTIVE);
-	mavlink_send_message(&msg);
+	mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_DATA_STREAM_RC_CHANNELS, MAV_DATA_STREAM_RC_CHANNELS_RATE, MAV_DATA_STREAM_RC_CHANNELS_ACTIVE);
+	mavlink_send_message(modelid, &msg);
 	SDL_Delay(30);
 
-	if (ModelData[ModelActive].teletype == TELETYPE_MEGAPIRATE_NG || ModelData[ModelActive].teletype == TELETYPE_ARDUPILOT || ModelData[ModelActive].teletype == TELETYPE_HARAKIRIML) {
-		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, MAV_DATA_STREAM_EXTENDED_STATUS, MAV_DATA_STREAM_EXTENDED_STATUS_RATE, MAV_DATA_STREAM_EXTENDED_STATUS_ACTIVE);
-		mavlink_send_message(&msg);
+	if (ModelData[modelid].teletype == TELETYPE_MEGAPIRATE_NG || ModelData[modelid].teletype == TELETYPE_ARDUPILOT || ModelData[modelid].teletype == TELETYPE_HARAKIRIML) {
+		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_DATA_STREAM_EXTENDED_STATUS, MAV_DATA_STREAM_EXTENDED_STATUS_RATE, MAV_DATA_STREAM_EXTENDED_STATUS_ACTIVE);
+		mavlink_send_message(modelid, &msg);
 		SDL_Delay(30);
 
-		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, MAV_DATA_STREAM_RAW_CONTROLLER, MAV_DATA_STREAM_RAW_CONTROLLER_RATE, MAV_DATA_STREAM_RAW_CONTROLLER_ACTIVE);
-		mavlink_send_message(&msg);
+		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_DATA_STREAM_RAW_CONTROLLER, MAV_DATA_STREAM_RAW_CONTROLLER_RATE, MAV_DATA_STREAM_RAW_CONTROLLER_ACTIVE);
+		mavlink_send_message(modelid, &msg);
 		SDL_Delay(30);
 
-		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, MAV_DATA_STREAM_POSITION, MAV_DATA_STREAM_POSITION_RATE, MAV_DATA_STREAM_POSITION_ACTIVE);
-		mavlink_send_message(&msg);
+		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_DATA_STREAM_POSITION, MAV_DATA_STREAM_POSITION_RATE, MAV_DATA_STREAM_POSITION_ACTIVE);
+		mavlink_send_message(modelid, &msg);
 		SDL_Delay(30);
 
-		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, MAV_DATA_STREAM_EXTRA1, MAV_DATA_STREAM_EXTRA1_RATE, MAV_DATA_STREAM_EXTRA1_ACTIVE);
-		mavlink_send_message(&msg);
+		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_DATA_STREAM_EXTRA1, MAV_DATA_STREAM_EXTRA1_RATE, MAV_DATA_STREAM_EXTRA1_ACTIVE);
+		mavlink_send_message(modelid, &msg);
 		SDL_Delay(30);
 
-		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, MAV_DATA_STREAM_EXTRA2, MAV_DATA_STREAM_EXTRA2_RATE, MAV_DATA_STREAM_EXTRA2_ACTIVE);
-		mavlink_send_message(&msg);
+		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_DATA_STREAM_EXTRA2, MAV_DATA_STREAM_EXTRA2_RATE, MAV_DATA_STREAM_EXTRA2_ACTIVE);
+		mavlink_send_message(modelid, &msg);
 		SDL_Delay(30);
 
-		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData[ModelActive].sysid, ModelData[ModelActive].compid, MAV_DATA_STREAM_EXTRA3, MAV_DATA_STREAM_EXTRA3_RATE, MAV_DATA_STREAM_EXTRA3_ACTIVE);
-		mavlink_send_message(&msg);
+		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_DATA_STREAM_EXTRA3, MAV_DATA_STREAM_EXTRA3_RATE, MAV_DATA_STREAM_EXTRA3_ACTIVE);
+		mavlink_send_message(modelid, &msg);
 		SDL_Delay(30);
 	}
 }
@@ -1554,14 +1548,14 @@ static void mavlink_parseDoc (char *docname) {
 	return;
 }
 
-void mavlink_param_xml_meta_load (void) {
+void mavlink_param_xml_meta_load (uint8_t modelid) {
 	char filename[1024];
-	sprintf(filename, "%s/mavlink/ParameterMetaData-%s.xml", get_datadirectory(), teletypes[ModelData[ModelActive].teletype]);
+	sprintf(filename, "%s/mavlink/ParameterMetaData-%s.xml", get_datadirectory(), teletypes[ModelData[modelid].teletype]);
 	if (file_exists(filename) != 0) {
 		mavlink_parseDoc(filename);
 		return;
 	}
-	sprintf(filename, "%s/mavlink/ParameterMetaData-%s.xml", BASE_DIR, teletypes[ModelData[ModelActive].teletype]);
+	sprintf(filename, "%s/mavlink/ParameterMetaData-%s.xml", BASE_DIR, teletypes[ModelData[modelid].teletype]);
 	if (file_exists(filename) != 0) {
 		mavlink_parseDoc(filename);
 		return;
@@ -1763,15 +1757,15 @@ static void mavlink_html_page (char *content, char *sub) {
 }
 
 
-void mavlink_web_get (char *url, char *content, char *type) {
+void mavlink_web_get (uint8_t modelid, char *url, char *content, char *type) {
 	char tmp_str[512];
 	if (strncmp(url, "/mavlink_value_set?", 19) == 0) {
 		char name[20];
 		float value = 0.0;
 		int ntype = 0;
 		sscanf(url + 19, "%[0-9a-zA-Z_]=%f&%i", name, &value, &ntype);
-		mavlink_set_value(name, value, ntype, -1);
-		mavlink_send_value(name, value, ntype);
+		mavlink_set_value(0, name, value, ntype, -1);
+		mavlink_send_value(0, name, value, ntype);
 		sprintf(content, "mavlink set value: %s to %f (type:%i)\n", name, value, ntype);
 		strcpy(type, "text/plain");
 	} else if (strncmp(url, "/mavlink.html?", 14) == 0) {
@@ -1787,7 +1781,7 @@ void mavlink_web_get (char *url, char *content, char *type) {
 		strcpy(content, "# MAV ID  COMPONENT ID  PARAM NAME  VALUE (FLOAT) TYPE (INT)\n");
 		for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
 			if (MavLinkVars[n].name[0] != 0) {
-				sprintf(tmp_str, "%i %i %s %f %i\n", ModelData[ModelActive].sysid, ModelData[ModelActive].compid, MavLinkVars[n].name, MavLinkVars[n].value, MavLinkVars[n].type);
+				sprintf(tmp_str, "%i %i %s %f %i\n", ModelData[modelid].sysid, ModelData[modelid].compid, MavLinkVars[n].name, MavLinkVars[n].value, MavLinkVars[n].type);
 				strcat(content, tmp_str);
 			}
 		}
@@ -1851,7 +1845,7 @@ int mavlink_tcp (void *data) {
 			int n = 0;
 			for (n = 0; n < rv; n++) {
 				if(mavlink_parse_char(1, buf[n], &msg, &status)) {
-					mavlink_handleMessage(&msg);
+					mavlink_handleMessage(0, &msg);
 					mavlink_tcp_active = 1;
 				}
 			}
@@ -1889,7 +1883,7 @@ int mavlink_udp (void *data) {
 			int n = 0;
 			for (n = 0; n < recv_len; n++) {
 				if(mavlink_parse_char(1, buf[n], &msg, &status)) {
-					mavlink_handleMessage(&msg);
+					mavlink_handleMessage(0, &msg);
 					mavlink_udp_active = 1;
 				}
 			}

@@ -201,28 +201,28 @@ uint8_t map_fm_change (char *name, float x, float y, int8_t button, float data, 
 
 uint8_t map_cmd_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (strcmp(name, "map_cmd_rtl") == 0) {
-		mavlink_send_cmd_rtl();
+		mavlink_send_cmd_rtl(ModelActive);
 		map_cmd_set = 0;
 	} else if (strcmp(name, "map_cmd_mission") == 0) {
-		mavlink_send_cmd_mission();
+		mavlink_send_cmd_mission(ModelActive);
 		map_cmd_set = 0;
 	} else if (strcmp(name, "map_cmd_guided") == 0) {
-		mavlink_send_cmd_guided();
+		mavlink_send_cmd_guided(ModelActive);
 		map_cmd_set = 0;
 	} else if (strcmp(name, "map_cmd_loiter") == 0) {
-		mavlink_send_cmd_loiter();
+		mavlink_send_cmd_loiter(ModelActive);
 		map_cmd_set = 0;
 	} else if (strcmp(name, "map_cmd_takeoff") == 0) {
-		mavlink_send_cmd_takeoff();
+		mavlink_send_cmd_takeoff(ModelActive);
 		map_cmd_set = 0;
 	} else if (strcmp(name, "map_cmd_land") == 0) {
-		mavlink_send_cmd_land();
+		mavlink_send_cmd_land(ModelActive);
 		map_cmd_set = 0;
 	} else if (strcmp(name, "map_cmd_disarm") == 0) {
-		mavlink_send_cmd_arm(0);
+		mavlink_send_cmd_arm(ModelActive, 0);
 		map_cmd_set = 0;
 	} else if (strcmp(name, "map_cmd_arm") == 0) {
-		mavlink_send_cmd_arm(1);
+		mavlink_send_cmd_arm(ModelActive, 1);
 		map_cmd_set = 0;
 	} else {
 		map_cmd_set = 1 - map_cmd_set;

@@ -42,7 +42,7 @@ void webclient_mavlink_get (char *server, uint16_t port) {
 			float value = 0.0;
 			int type = 0;
 			sscanf(tmp_str, "%i %i %[0-9a-zA-Z_] %f %i", &id1, &id2, name, &value, &type);
-			mavlink_set_value(name, value, type, -1);
+			mavlink_set_value(0, name, value, type, -1);
 //			SDL_Log("webserv: ## %s = %f ##\n", name, value);
 		}
 	}
@@ -254,7 +254,6 @@ void webclient_send_value (char *server, uint16_t port, char *name, float value,
 	servaddr.sin_port = htons(port);
 
 	connect(sockfd, (struct sockaddr *)&servaddr, sizeof(servaddr));
-
 	sprintf(sendline, "GET /mavlink_value_set?%s=%f&%i HTTP/1.1\nHost: %s:%i\n\n", name, value, type, server, port);
 
 	sendto(sockfd, sendline, strlen(sendline), 0, (struct sockaddr *)&servaddr, sizeof(servaddr));

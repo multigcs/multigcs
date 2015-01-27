@@ -105,7 +105,7 @@ typedef struct {
 
 	char telemetry_port[1024];
 	uint32_t telemetry_baud;
-	int telemetry_serial_fd;
+	int serial_fd;
 
 } Model;
 

@@ -13,12 +13,12 @@ uint8_t fms_add (char *name, float x, float y, int8_t button, float data, uint8_
 }
 
 uint8_t fms_rtl (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	mavlink_send_cmd_rtl();
+	mavlink_send_cmd_rtl(ModelActive);
 	return 0;
 }
 
 uint8_t fms_start_mission (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	mavlink_send_cmd_mission();
+	mavlink_send_cmd_mission(ModelActive);
 	return 0;
 }
 

@@ -146,14 +146,14 @@ void mavlink_meta_get_bits (int id, char *name, char *entry) {
 }
 
 uint8_t mavlink_read_loglist_get (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	mavlink_read_loglist();
+	mavlink_read_loglist(ModelActive);
 	return 0;
 }
 
 uint8_t mavlink_read_logfile_get (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	int id = (int)data;
 	if (id != -1) {
-		mavlink_read_logfile(loglist[id].id, 0, loglist[id].size);
+		mavlink_read_logfile(ModelActive, loglist[id].id, 0, loglist[id].size);
 	}
 	return 0;
 }
@@ -173,7 +173,7 @@ uint8_t mavlink_param_set (char *name, float x, float y, int8_t button, float da
 	} else if (MavLinkVars[selected].value > MavLinkVars[selected].max) {
 		MavLinkVars[selected].value = MavLinkVars[selected].max;
 	}
-	mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+	mavlink_send_value(ModelActive, MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
 	return 0;
 }
 
@@ -192,7 +192,7 @@ uint8_t mavlink_param_diff (char *name, float x, float y, int8_t button, float d
 	} else if (MavLinkVars[selected].value > MavLinkVars[selected].max) {
 		MavLinkVars[selected].value = MavLinkVars[selected].max;
 	}
-	mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+	mavlink_send_value(ModelActive, MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
 	return 0;
 }
 
@@ -247,7 +247,7 @@ uint8_t mavlink_slider_move (char *name, float x, float y, int8_t button, float 
 	} else if (MavLinkVars[selected].value > MavLinkVars[selected].max) {
 		MavLinkVars[selected].value = MavLinkVars[selected].max;
 	}
-	mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+	mavlink_send_value(ModelActive, MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
 	return 0;
 }
 
@@ -302,7 +302,7 @@ uint8_t mavlink_slider2_move (char *name, float x, float y, int8_t button, float
 	} else if (MavLinkVars[selected].value > MavLinkVars[selected].max) {
 		MavLinkVars[selected].value = MavLinkVars[selected].max;
 	}
-	mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+	mavlink_send_value(ModelActive, MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
 	return 0;
 }
 
@@ -330,7 +330,7 @@ uint8_t mavlink_set_magdecl (char *name, float x, float y, int8_t button, float 
 		sprintf(tmp_str, "%i%2.0i", ret_dd, ret_dm);
 		MavLinkVars[selected].value = atof(tmp_str);
 	}
-	mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+	mavlink_send_value(ModelActive, MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
 	return 0;
 }
 
@@ -353,7 +353,7 @@ uint8_t mavlink_option_sel (char *name, float x, float y, int8_t button, float d
 		return 0;
 	}
 	MavLinkVars[selected].value = data;
-	mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+	mavlink_send_value(ModelActive, MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
 	option_menu = -1;
 	return 0;
 }
@@ -392,7 +392,7 @@ uint8_t mavlink_bits_sel (char *name, float x, float y, int8_t button, float dat
 		new |= (1<<(int)data);
 	}
 	MavLinkVars[selected].value = (float)new;
-	mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+	mavlink_send_value(ModelActive, MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
 	return 0;
 }
 
@@ -447,12 +447,12 @@ uint8_t mavlink_param_load (char *name, float x, float y, int8_t button, float d
 }
 
 uint8_t mavlink_flash (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	mavlink_save_to_flash();
+	mavlink_save_to_flash(ModelActive);
 	return 0;
 }
 
 uint8_t mavlink_flashload (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	mavlink_load_from_flash();
+	mavlink_load_from_flash(ModelActive);
 	return 0;
 }
 
@@ -471,7 +471,7 @@ uint8_t mavlink_aux_toggle (char *name, float x, float y, int8_t button, float d
 		new &= ~(1<<(int)data);
 	}
 	MavLinkVars[n].value = (float)new;
-	mavlink_send_value(MavLinkVars[n].name, MavLinkVars[n].value, MavLinkVars[n].type);
+	mavlink_send_value(ModelActive, MavLinkVars[n].name, MavLinkVars[n].value, MavLinkVars[n].type);
 	reset_buttons();
 	return 0;
 }
@@ -483,11 +483,11 @@ uint8_t mavlink_view_rccal_change (char *name, float x, float y, int8_t button, 
 
 uint8_t mavlink_view_acccal_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int)data == 1) {
-		mavlink_send_cmd_calibration_ack();
+		mavlink_send_cmd_calibration_ack(ModelActive);
 	} else if ((int)data == 2) {
 		sys_message("acc cal");
 	} else {
-		mavlink_send_cmd_calibration();
+		mavlink_send_cmd_calibration(ModelActive);
 	}
 	return 0;
 }
@@ -503,12 +503,12 @@ uint8_t mavlink_view_rccal_save (char *name, float x, float y, int8_t button, fl
 				sprintf(tmp_str, "RC%i_MIN", pn + 1);
 				selected = mavlink_get_id_by_name(tmp_str);
 				MavLinkVars[selected].value = cal_min[pn];
-				mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+				mavlink_send_value(ModelActive, MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
 				SDL_Delay(30);
 				sprintf(tmp_str, "RC%i_MAX", pn + 1);
 				selected = mavlink_get_id_by_name(tmp_str);
 				MavLinkVars[selected].value = cal_max[pn];
-				mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+				mavlink_send_value(ModelActive, MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
 				SDL_Delay(30);
 			}
 		}
@@ -518,12 +518,12 @@ uint8_t mavlink_view_rccal_save (char *name, float x, float y, int8_t button, fl
 				sprintf(tmp_str, "RC%i_MIN", pn + 1);
 				selected = mavlink_get_id_by_name(tmp_str);
 				MavLinkVars[selected].value = cal_min[pn];
-				mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+				mavlink_send_value(ModelActive, MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
 				SDL_Delay(30);
 				sprintf(tmp_str, "RC%i_MAX", pn + 1);
 				selected = mavlink_get_id_by_name(tmp_str);
 				MavLinkVars[selected].value = cal_max[pn];
-				mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+				mavlink_send_value(ModelActive, MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
 				SDL_Delay(30);
 			}
 		}
@@ -582,13 +582,13 @@ void mavlink_param_read_file (char *param_file) {
 		val = 0.0;
 		if ((line[0] >= 'a' && line[0] <= 'z') || (line[0] >= 'A' && line[0] <= 'Z')) {
 			if (sscanf (line, "%s %f %f %f", var, &val, &min, &max) == 4) {
-				mavlink_set_value(var, val, -1, -1);
+				mavlink_set_value(ModelActive, var, val, -1, -1);
 			} else if (sscanf (line, "%[0-9a-zA-Z_],%f", var, &val) == 2) {
-				mavlink_set_value(var, val, -1, -1);
+				mavlink_set_value(ModelActive, var, val, -1, -1);
 			}
 		} else if (line[0] >= '0' && line[0] <= '9') {
 			sscanf (line, "%i %i %s %f", &tmp_int1, &tmp_int2, var, &val);
-			mavlink_set_value(var, val, -1, -1);
+			mavlink_set_value(ModelActive, var, val, -1, -1);
 		}
 	}
 	fclose(fr);
@@ -599,7 +599,7 @@ uint8_t mavlink_param_upload_all (char *name, float x, float y, int8_t button, f
 	int n = 0;
 	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
 		if (MavLinkVars[n].name[0] != 0) {
-			mavlink_send_value(MavLinkVars[n].name, MavLinkVars[n].value, MavLinkVars[n].type);
+			mavlink_send_value(ModelActive, MavLinkVars[n].name, MavLinkVars[n].value, MavLinkVars[n].type);
 			SDL_Delay(20);
 		}
 	}
@@ -826,7 +826,7 @@ void screen_mavlink_rccal (ESContext *esContext) {
 		}
 		int selected = mavlink_get_id_by_name(tmp_str);
 		MavLinkVars[selected].value = (float)mavlink_channel_select_num;
-		mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+		mavlink_send_value(ModelActive, MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
 		mavlink_channel_select = 0;
 		mavlink_channel_select_num = 0;
 	} else if (mavlink_channel_select != 0) {
@@ -932,34 +932,34 @@ void screen_mavlink_camrelay (ESContext *esContext) {
 				if (mavlink_channel_select == 1) {
 					if (pn == mavlink_channel_select_num - 1) {
 						MavLinkVars[selected].value = (float)10;
-						mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+						mavlink_send_value(ModelActive, MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
 					} else if ((int)MavLinkVars[selected].value == 10) {
 						MavLinkVars[selected].value = (float)0;
-						mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+						mavlink_send_value(ModelActive, MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
 					}
 				} else if (mavlink_channel_select == 2) {
 					if (pn == mavlink_channel_select_num - 1) {
 						MavLinkVars[selected].value = (float)6;
-						mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+						mavlink_send_value(ModelActive, MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
 					} else if ((int)MavLinkVars[selected].value == 6) {
 						MavLinkVars[selected].value = (float)0;
-						mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+						mavlink_send_value(ModelActive, MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
 					}
 				} else if (mavlink_channel_select == 3) {
 					if (pn == mavlink_channel_select_num - 1) {
 						MavLinkVars[selected].value = (float)7;
-						mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+						mavlink_send_value(ModelActive, MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
 					} else if ((int)MavLinkVars[selected].value == 7) {
 						MavLinkVars[selected].value = (float)0;
-						mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+						mavlink_send_value(ModelActive, MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
 					}
 				} else if (mavlink_channel_select == 4) {
 					if (pn == mavlink_channel_select_num - 1) {
 						MavLinkVars[selected].value = (float)8;
-						mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+						mavlink_send_value(ModelActive, MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
 					} else if ((int)MavLinkVars[selected].value == 8) {
 						MavLinkVars[selected].value = (float)0;
-						mavlink_send_value(MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
+						mavlink_send_value(ModelActive, MavLinkVars[selected].name, MavLinkVars[selected].value, MavLinkVars[selected].type);
 					}
 				}
 		}

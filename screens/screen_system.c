@@ -489,8 +489,8 @@ void screen_system (ESContext *esContext) {
 	char tmp_str[100];
 	uint8_t n = 0;
 	if (ModelData[ModelActive].teletype == TELETYPE_AUTOQUAD || ModelData[ModelActive].teletype == TELETYPE_ARDUPILOT || ModelData[ModelActive].teletype == TELETYPE_MEGAPIRATE_NG) {
-		if (mavlink_connection_status() != 0) {
-			sprintf(tmp_str, "MAVLINK %s (%i / %i)", ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud, (uint8_t)(time(0)) - mavlink_connection_status());
+		if (mavlink_connection_status(ModelActive) != 0) {
+			sprintf(tmp_str, "MAVLINK %s (%i / %i)", ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud, (uint8_t)(time(0)) - mavlink_connection_status(ModelActive));
 			draw_text_button(esContext, "mavlink_connection_status", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 		} else {
 			sprintf(tmp_str, "MAVLINK %s (%i)", ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud);

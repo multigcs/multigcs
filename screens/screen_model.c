@@ -33,7 +33,7 @@ static uint8_t model_null (char *name, float x, float y, int8_t button, float da
 }
 
 static uint8_t model_reconnect (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	set_telemetry(ModelData[ModelActive].teledevice, ModelData[ModelActive].telebaud);
+	set_telemetry(ModelActive, ModelData[ModelActive].teledevice, ModelData[ModelActive].telebaud);
 	return 0;
 }
 
@@ -43,7 +43,7 @@ uint8_t model_teletype_set (char *name, float x, float y, int8_t button, float d
 		ModelData[ModelActive].teletype = (int)data;
 	}
 	select_teletype = 0;
-	reset_telemetry();
+	reset_telemetry(ModelActive);
 	return 0;
 }
 

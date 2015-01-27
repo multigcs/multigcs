@@ -268,9 +268,9 @@ uint8_t need_bluetooth (void) {
 	return 0;
 }
 
-void stop_telemetry (void) {
+void stop_telemetry (uint8_t modelid) {
 	mwi21_exit();
-	mavlink_exit();
+	mavlink_exit(modelid);
 	baseflightcli_exit();
 	cli_exit();
 	gps_exit();
@@ -280,8 +280,8 @@ void stop_telemetry (void) {
 	frsky_mode(0);
 }
 
-void reset_telemetry (void) {
-	stop_telemetry();
+void reset_telemetry (uint8_t modelid) {
+	stop_telemetry(modelid);
 	if (clientmode == 1) {
 		return;
 	}
@@ -305,23 +305,23 @@ void reset_telemetry (void) {
 	} else if (ModelData[ModelActive].teletype == TELETYPE_FRSKY) {
 		frsky_mode(1);
 	} else {
-		mavlink_init(ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud);
+		mavlink_init(modelid, ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
 	}
 }
 
-void set_telemetry (char *device, uint32_t baud) {
+void set_telemetry (uint8_t modelid, char *device, uint32_t baud) {
 	if (clientmode == 1) {
 		return;
 	}
-	strncpy(ModelData[ModelActive].telemetry_port, device, 1023);
-	ModelData[ModelActive].telemetry_baud = baud;
+	strncpy(ModelData[modelid].telemetry_port, device, 1023);
+	ModelData[modelid].telemetry_baud = baud;
 
 #ifdef ANDROID
-	if (strncmp(ModelData[ModelActive].telemetry_port, "bt:", 3) == 0) {
-		Android_JNI_ConnectSerial(ModelData[ModelActive].telemetry_port + 3);
+	if (strncmp(ModelData[modelid].telemetry_port, "bt:", 3) == 0) {
+		Android_JNI_ConnectSerial(ModelData[modelid].telemetry_port + 3);
 	}
 #endif
-	reset_telemetry();
+	reset_telemetry(modelid);
 }
 
 void setup_waypoints (void) {
@@ -642,6 +642,7 @@ void setup_load (void) {
 		ModelData[model_n].chancount = 8;
 		strcpy(ModelData[ModelActive].telemetry_port, "UNSET");
 		ModelData[ModelActive].telemetry_baud = 115200;
+		ModelData[ModelActive].serial_fd = -1;
 	}
 	model_n = 0;
 	char filename[1024];
@@ -1435,7 +1436,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 					map_sethome = 0;
 				} else if (map_setpos == 1) {
 					GroundData.followme = 0;
-					mavlink_send_cmd_follow(mouse_lat, mouse_long, GroundData.sp_alt, GroundData.sp_radius);
+					mavlink_send_cmd_follow(ModelActive, mouse_lat, mouse_long, GroundData.sp_alt, GroundData.sp_radius);
 				} else {
 					waypoint_active = -1;
 					polypoint_active = -1;
@@ -1545,6 +1546,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 }
 
 int telemetry_thread (void *data) {
+	int n = 0;
 	while (gui_running == 1) {
 		if (clientmode == 1) {
 			webclient_update(clientmode_server, clientmode_port);
@@ -1564,11 +1566,13 @@ int telemetry_thread (void *data) {
 		} else if (ModelData[ModelActive].teletype == TELETYPE_CLI) {
 			cli_update();
 		} else {
-			mavlink_update();
+			for (n = 0; n < MODELS_MAX; n++) {
+				mavlink_update(n);
+			}
 		}
 		static uint16_t utimier = 0;
 		if (utimier++ >= 300 && GroundData.active == 1 && GroundData.followme == 1) {
-			mavlink_send_cmd_follow(GroundData.p_lat, GroundData.p_long, GroundData.fm_alt, GroundData.fm_radius);
+			mavlink_send_cmd_follow(ModelActive, GroundData.p_lat, GroundData.p_long, GroundData.fm_alt, GroundData.fm_radius);
 			utimier = 0;
 		}
 		SDL_Delay(1);
@@ -1797,11 +1801,11 @@ void Draw (ESContext *esContext) {
 		setup_save();
 	} else if (strcmp(keyboard_key, "s") == 0) {
 		if (setup.view_mode == VIEW_MODE_FMS || setup.view_mode == VIEW_MODE_MAP) {
-			mavlink_send_waypoints();
+			mavlink_send_waypoints(ModelActive);
 		}
 	} else if (strcmp(keyboard_key, "r") == 0) {
 		if (setup.view_mode == VIEW_MODE_FMS || setup.view_mode == VIEW_MODE_MAP) {
-			mavlink_read_waypoints();
+			mavlink_read_waypoints(ModelActive);
 		}
 	} else if (strcmp(keyboard_key, "print screen") == 0 || strcmp(keyboard_key, "printscreen") == 0) {
 #ifdef SDLGL
@@ -2115,7 +2119,7 @@ void Draw (ESContext *esContext) {
 }
 
 void ShutDown ( ESContext *esContext ) {
-
+	int n = 0;
 #ifdef USE_VLC
 	vlc_exit();
 #endif
@@ -2127,7 +2131,10 @@ void ShutDown ( ESContext *esContext ) {
 	SDL_Delay(600);
 	LogSave();
 	setup_save();
-	stop_telemetry();
+	for (n = 0; n < MODELS_MAX; n++) {
+		stop_telemetry(n);
+	}
+
 	frsky_exit();
 	tracker_exit();
 	jeti_exit();
@@ -2203,6 +2210,7 @@ void glut_timer (int t) {
 
 
 int main ( int argc, char *argv[] ) {
+	int n = 0;
 	char dir[1024];
 	char tmp_name[201];
 	ESContext esContext;
@@ -2340,7 +2348,10 @@ int main ( int argc, char *argv[] ) {
 	}
 
 	SDL_Log("telemetry: init thread\n");
-	reset_telemetry();
+	for (n = 0; n < MODELS_MAX; n++) {
+		reset_telemetry(n);
+	}
+
 #ifdef SDL2
 	thread_telemetry = SDL_CreateThread(telemetry_thread, NULL, NULL);
 #else

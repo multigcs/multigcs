@@ -236,9 +236,9 @@ extern char display_html2[HTML_MAX];
 extern ESContext *GlobalesContext;
 
 void draw_text_f (ESContext *esContext, float x1, float y1, float w, float h, char *file, char *text);
-void reset_telemetry (void);
-void stop_telemetry (void);
-void set_telemetry (char *device, uint32_t baud);
+void reset_telemetry (uint8_t modelid);
+void stop_telemetry (uint8_t modelid);
+void set_telemetry (uint8_t modelid, char *device, uint32_t baud);
 uint8_t need_bluetooth (void);
 void reset_buttons (void);
 uint8_t set_button (char *name, uint8_t view_mode, float x1, float y1, float x2, float y2, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t), float data, uint8_t type);
