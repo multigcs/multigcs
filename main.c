@@ -640,9 +640,9 @@ void setup_load (void) {
 	for (model_n = 0; model_n < MODELS_MAX; model_n++) {
 		sprintf(ModelData[model_n].name, "Model%i", model_n);
 		ModelData[model_n].chancount = 8;
-		strcpy(ModelData[ModelActive].telemetry_port, "UNSET");
-		ModelData[ModelActive].telemetry_baud = 115200;
-		ModelData[ModelActive].serial_fd = -1;
+		strcpy(ModelData[model_n].telemetry_port, "UNSET");
+		ModelData[model_n].telemetry_baud = 115200;
+		ModelData[model_n].serial_fd = -1;
 	}
 	model_n = 0;
 	char filename[1024];
@@ -1735,10 +1735,15 @@ static uint8_t screen_next (char *name, float x, float y, int8_t button, float d
 }
 
 void Draw (ESContext *esContext) {
+	int n = 0;
 	uint32_t timer = SDL_GetTicks() / 10;
-	if (ModelData[ModelActive].heartbeat != 0) {
-		connection_found = 1;
+
+	for (n = 0; n < MODELS_MAX; n++) {
+		if (ModelData[n].heartbeat != 0) {
+			connection_found = 1;
+		}
 	}
+
 	Logging();
 	// set RTL-Waypoints to HOME-Position
 	if (setup.view_mode != VIEW_MODE_WPEDIT) {
@@ -1877,21 +1882,25 @@ void Draw (ESContext *esContext) {
 		redraw_flag = 1;
 	}
 	if (timer - heartbeat_timer > 10 || timer < heartbeat_timer) {
-		if (ModelData[ModelActive].heartbeat > 1) {
-			ModelData[ModelActive].heartbeat -= 1;
-		} else {
-			ModelData[ModelActive].heartbeat = 0;
+		for (n = 0; n < MODELS_MAX; n++) {
+			if (ModelData[n].heartbeat > 1) {
+				ModelData[n].heartbeat -= 1;
+			} else {
+				ModelData[n].heartbeat = 0;
+			}
 		}
 		heartbeat_timer = timer;
 		redraw_flag = 1;
 	}
 	if (ModelData[ModelActive].found_rc == 1 && (timer - heartbeat_rc_timer > 20 || timer < heartbeat_rc_timer)) {
-		if (ModelData[ModelActive].heartbeat_rc > 20) {
-			ModelData[ModelActive].heartbeat_rc -= 20;
-		} else {
-			ModelData[ModelActive].heartbeat_rc = 0;
-			ModelData[ModelActive].rssi_rx = 0;
-			ModelData[ModelActive].rssi_tx = 0;
+		for (n = 0; n < MODELS_MAX; n++) {
+			if (ModelData[n].heartbeat_rc > 20) {
+				ModelData[n].heartbeat_rc -= 20;
+			} else {
+				ModelData[n].heartbeat_rc = 0;
+				ModelData[n].rssi_rx = 0;
+				ModelData[n].rssi_tx = 0;
+			}
 		}
 		heartbeat_rc_timer = timer;
 		redraw_flag = 1;

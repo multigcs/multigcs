@@ -2,7 +2,7 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-#define MODELS_MAX 2
+#define MODELS_MAX 9
 
 enum {
 	TELETYPE_MULTIWII_21,

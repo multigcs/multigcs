@@ -125,7 +125,7 @@ static uint8_t model_save_xml (char *name, float x, float y, int8_t button, floa
 			fprintf(fr, "  <bluetooth_pin>%s</bluetooth_pin>\n", ModelData[ModelActive].telebtpin);
 		}
 		fprintf(fr, " </telemetry>\n");
-		mavlink_xml_save(fr);
+		mavlink_xml_save(ModelActive, fr);
 		mwi21_xml_save(fr);
 		openpilot_xml_save(fr);
 		fprintf(fr, "</rcflow>\n");
@@ -257,7 +257,7 @@ static void model_parseDoc (char *docname) {
 			model_parseTelemetry(doc, cur);
 
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"mavlink"))) {
-			mavlink_xml_load(doc, cur);
+			mavlink_xml_load(ModelActive, doc, cur);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"mwi21"))) {
 			mwi21_xml_load(doc, cur);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"OpenPilot"))) {
