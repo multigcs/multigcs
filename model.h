@@ -102,6 +102,11 @@ typedef struct {
 	uint8_t sysid;
 	uint8_t compid;
 	uint32_t mavlink_update;
+
+	char telemetry_port[1024];
+	uint32_t telemetry_baud;
+	int telemetry_serial_fd;
+
 } Model;
 
 typedef struct {

@@ -262,7 +262,7 @@ int8_t check_button (uint8_t view_mode, float x, float y, uint8_t button, uint8_
 }
 
 uint8_t need_bluetooth (void) {
-	if (strstr(setup.telemetry_port, "/dev/rfcomm") > 0) {
+	if (strstr(ModelData[ModelActive].telemetry_port, "/dev/rfcomm") > 0) {
 		return 1;
 	}
 	return 0;
@@ -286,26 +286,26 @@ void reset_telemetry (void) {
 		return;
 	}
 #ifdef ANDROID
-	Android_JNI_ConnectUsbSerial(setup.telemetry_baud);
+	Android_JNI_ConnectUsbSerial(ModelData[ModelActive].telemetry_baud);
 #endif
 	if (ModelData[ModelActive].teletype == TELETYPE_MULTIWII_21 || ModelData[ModelActive].teletype == TELETYPE_BASEFLIGHT) {
-		mwi21_init(setup.telemetry_port, setup.telemetry_baud);
+		mwi21_init(ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud);
 	} else if (ModelData[ModelActive].teletype == TELETYPE_SIMPLEBGC) {
-		simplebgc_init(setup.telemetry_port, setup.telemetry_baud);
+		simplebgc_init(ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud);
 	} else if (ModelData[ModelActive].teletype == TELETYPE_BRUGI) {
-		brugi_init(setup.telemetry_port, setup.telemetry_baud);
+		brugi_init(ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud);
 	} else if (ModelData[ModelActive].teletype == TELETYPE_GPS_NMEA) {
-		gps_init(setup.telemetry_port, setup.telemetry_baud);
+		gps_init(ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud);
 	} else if (ModelData[ModelActive].teletype == TELETYPE_OPENPILOT) {
-		openpilot_init(setup.telemetry_port, setup.telemetry_baud);
+		openpilot_init(ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud);
 	} else if (ModelData[ModelActive].teletype == TELETYPE_CLI) {
-		cli_init(setup.telemetry_port, setup.telemetry_baud);
+		cli_init(ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud);
 	} else if (ModelData[ModelActive].teletype == TELETYPE_BASEFLIGHTCLI) {
-		baseflightcli_init(setup.telemetry_port, setup.telemetry_baud);
+		baseflightcli_init(ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud);
 	} else if (ModelData[ModelActive].teletype == TELETYPE_FRSKY) {
 		frsky_mode(1);
 	} else {
-		mavlink_init(setup.telemetry_port, setup.telemetry_baud);
+		mavlink_init(ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud);
 	}
 }
 
@@ -313,12 +313,12 @@ void set_telemetry (char *device, uint32_t baud) {
 	if (clientmode == 1) {
 		return;
 	}
-	strncpy(setup.telemetry_port, device, 1023);
-	setup.telemetry_baud = baud;
+	strncpy(ModelData[ModelActive].telemetry_port, device, 1023);
+	ModelData[ModelActive].telemetry_baud = baud;
 
 #ifdef ANDROID
-	if (strncmp(setup.telemetry_port, "bt:", 3) == 0) {
-		Android_JNI_ConnectSerial(setup.telemetry_port + 3);
+	if (strncmp(ModelData[ModelActive].telemetry_port, "bt:", 3) == 0) {
+		Android_JNI_ConnectSerial(ModelData[ModelActive].telemetry_port + 3);
 	}
 #endif
 	reset_telemetry();
@@ -516,8 +516,8 @@ void setup_save (void) {
 	        for (n = 0; n < MODELS_MAX; n++) {
 				fprintf(fr, "\n");
 				fprintf(fr, "[%i]\n", n);
-				fprintf(fr, "telemetry_port		%s\n", setup.telemetry_port);
-				fprintf(fr, "telemetry_baud		%i\n", setup.telemetry_baud);
+				fprintf(fr, "telemetry_port		%s\n", ModelData[n].telemetry_port);
+				fprintf(fr, "telemetry_baud		%i\n", ModelData[n].telemetry_baud);
 				fprintf(fr, "model_name		%s\n", ModelData[n].name);
 				fprintf(fr, "telemetry_type		%i\n", ModelData[n].teletype);
 				fprintf(fr, "Model_lat		%f\n", ModelData[n].p_lat);
@@ -581,8 +581,6 @@ void setup_load (void) {
 	strncpy(setup.gcs_gps_port, "/dev/ttyUSB20", 1023);
 	setup.gcs_gps_baud = 9600;
 #endif
-	strncpy(setup.telemetry_port, "/dev/ttyUSB22", 1023);
-	setup.telemetry_baud = 115200;
 	strncpy(setup.rcflow_port, "/dev/ttyUSB21", 1023);
 	setup.rcflow_baud = 115200;
 	strncpy(setup.jeti_port, "/dev/ttyUSB10", 1023);
@@ -642,6 +640,8 @@ void setup_load (void) {
 	for (model_n = 0; model_n < MODELS_MAX; model_n++) {
 		sprintf(ModelData[model_n].name, "Model%i", model_n);
 		ModelData[model_n].chancount = 8;
+		strcpy(ModelData[ModelActive].telemetry_port, "UNSET");
+		ModelData[ModelActive].telemetry_baud = 115200;
 	}
 	model_n = 0;
 	char filename[1024];
@@ -828,9 +828,9 @@ void setup_load (void) {
 	                        } else if (strcmp(var, "model_name") == 0) {
 	                                strncpy(ModelData[model_n].name, val, 199);
 	                        } else if (strcmp(var, "telemetry_port") == 0) {
-	                                strncpy(setup.telemetry_port, val, 1023);
+	                                strncpy(ModelData[model_n].telemetry_port, val, 1023);
 	                        } else if (strcmp(var, "telemetry_baud") == 0) {
-	                                setup.telemetry_baud = atoi(val);
+	                                ModelData[model_n].telemetry_baud = atoi(val);
 	                        } else if (strcmp(var, "telemetry_type") == 0) {
 	                                ModelData[model_n].teletype = atoi(val);
 	                        } else if (strcmp(var, "Model_lat") == 0) {
@@ -947,8 +947,8 @@ void setup_load (void) {
 			ModelData[model_n].p_long = WayPoints[0].p_long;
 			ModelData[model_n].p_alt = WayPoints[0].p_alt;
 		}
-		strncpy(ModelData[model_n].teledevice, setup.telemetry_port, 199);
-		ModelData[model_n].telebaud = setup.telemetry_baud;
+		strncpy(ModelData[model_n].teledevice, ModelData[ModelActive].telemetry_port, 199);
+		ModelData[model_n].telebaud = ModelData[ModelActive].telemetry_baud;
 	}
 }
 

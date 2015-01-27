@@ -1374,10 +1374,10 @@ void gcssetup_set (char *name, char *value) {
 		setup.rcflow_baud = atoi(value);
 	}
 	if (strcmp("telemetry_port", name) == 0) {
-		strcpy(setup.telemetry_port, value);
+		strcpy(ModelData[ModelActive].telemetry_port, value);
 	}
 	if (strcmp("telemetry_baud", name) == 0) {
-		setup.telemetry_baud = atoi(value);
+		ModelData[ModelActive].telemetry_baud = atoi(value);
 	}
 	if (strcmp("jeti_port", name) == 0) {
 		strcpy(setup.jeti_port, value);
@@ -1789,7 +1789,7 @@ void webserv_child_gcssetup (int fd, uint8_t mode) {
 						if ( statbuf.st_mode & S_IFDIR) {
 						} else {
 							if (strstr(new_path, "ttyS") > 0 || strstr(new_path, "ttyUSB") > 0 || strstr(new_path, "ttyACM") > 0) {
-								if (strcmp(new_path, setup.telemetry_port) == 0) {
+								if (strcmp(new_path, ModelData[ModelActive].telemetry_port) == 0) {
 									sprintf(tmp_str, " <OPTION value=\"%s\" selected>%s</OPTION>\n", new_path, new_path);
 									flag = 1;
 								} else {
@@ -1805,7 +1805,7 @@ void webserv_child_gcssetup (int fd, uint8_t mode) {
 			dir = NULL;
 		}
 		if (flag == 0) {
-			sprintf(tmp_str, " <OPTION value=\"%s\" selected>%s</OPTION>\n", setup.telemetry_port, setup.telemetry_port);
+			sprintf(tmp_str, " <OPTION value=\"%s\" selected>%s</OPTION>\n", ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_port);
 			strcat(content, tmp_str);
 		}
 		strcat(content, " </SELECT></TD>\n");
@@ -1819,56 +1819,56 @@ void webserv_child_gcssetup (int fd, uint8_t mode) {
 		strcat(content, " <TD>telemetry_baud</TD>");
 		flag = 0;
 		strcat(content, " <TD><SELECT class=\"form-input\" onchange=\"check_option('telemetry_baud');\" id=\"telemetry_baud\">\n");
-		if (setup.telemetry_baud == 1200) {
+		if (ModelData[ModelActive].telemetry_baud == 1200) {
 			sprintf(tmp_str, " <OPTION value=\"1200\" selected>1200</OPTION>\n");
 			flag = 1;
 		} else {
 			sprintf(tmp_str, " <OPTION value=\"1200\">1200</OPTION>\n");
 		}
 		strcat(content, tmp_str);
-		if (setup.telemetry_baud == 2400) {
+		if (ModelData[ModelActive].telemetry_baud == 2400) {
 			sprintf(tmp_str, " <OPTION value=\"2400\" selected>2400</OPTION>\n");
 			flag = 1;
 		} else {
 			sprintf(tmp_str, " <OPTION value=\"2400\">2400</OPTION>\n");
 		}
 		strcat(content, tmp_str);
-		if (setup.telemetry_baud == 4800) {
+		if (ModelData[ModelActive].telemetry_baud == 4800) {
 			sprintf(tmp_str, " <OPTION value=\"4800\" selected>4800</OPTION>\n");
 			flag = 1;
 		} else {
 			sprintf(tmp_str, " <OPTION value=\"4800\">4800</OPTION>\n");
 		}
 		strcat(content, tmp_str);
-		if (setup.telemetry_baud == 9600) {
+		if (ModelData[ModelActive].telemetry_baud == 9600) {
 			sprintf(tmp_str, " <OPTION value=\"9600\" selected>9600</OPTION>\n");
 			flag = 1;
 		} else {
 			sprintf(tmp_str, " <OPTION value=\"9600\">9600</OPTION>\n");
 		}
 		strcat(content, tmp_str);
-		if (setup.telemetry_baud == 19200) {
+		if (ModelData[ModelActive].telemetry_baud == 19200) {
 			sprintf(tmp_str, " <OPTION value=\"19200\" selected>19200</OPTION>\n");
 			flag = 1;
 		} else {
 			sprintf(tmp_str, " <OPTION value=\"19200\">19200</OPTION>\n");
 		}
 		strcat(content, tmp_str);
-		if (setup.telemetry_baud == 38400) {
+		if (ModelData[ModelActive].telemetry_baud == 38400) {
 			sprintf(tmp_str, " <OPTION value=\"38400\" selected>38400</OPTION>\n");
 			flag = 1;
 		} else {
 			sprintf(tmp_str, " <OPTION value=\"38400\">38400</OPTION>\n");
 		}
 		strcat(content, tmp_str);
-		if (setup.telemetry_baud == 57600) {
+		if (ModelData[ModelActive].telemetry_baud == 57600) {
 			sprintf(tmp_str, " <OPTION value=\"57600\" selected>57600</OPTION>\n");
 			flag = 1;
 		} else {
 			sprintf(tmp_str, " <OPTION value=\"57600\">57600</OPTION>\n");
 		}
 		strcat(content, tmp_str);
-		if (setup.telemetry_baud == 115200) {
+		if (ModelData[ModelActive].telemetry_baud == 115200) {
 			sprintf(tmp_str, " <OPTION value=\"115200\" selected>115200</OPTION>\n");
 			flag = 1;
 		} else {
@@ -1876,7 +1876,7 @@ void webserv_child_gcssetup (int fd, uint8_t mode) {
 		}
 		strcat(content, tmp_str);
 		if (flag == 0) {
-			sprintf(tmp_str, " <OPTION value=\"%i\" selected>%i</OPTION>\n", setup.telemetry_baud, setup.telemetry_baud);
+			sprintf(tmp_str, " <OPTION value=\"%i\" selected>%i</OPTION>\n", ModelData[ModelActive].telemetry_baud, ModelData[ModelActive].telemetry_baud);
 			strcat(content, tmp_str);
 		}
 		strcat(content, " </SELECT></TD>\n");

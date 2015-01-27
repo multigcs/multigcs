@@ -123,8 +123,6 @@ typedef struct {
 	uint32_t gcs_gps_baud;
 	char rcflow_port[1024];
 	uint32_t rcflow_baud;
-	char telemetry_port[1024];
-	uint32_t telemetry_baud;
 	char jeti_port[1024];
 	uint32_t jeti_baud;
 	char frsky_port[1024];
