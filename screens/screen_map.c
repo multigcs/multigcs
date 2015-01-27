@@ -1314,8 +1314,8 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (strncmp(name, "cam_lense_", 10) == 0) {
 		SurveySetup.lense = atof(name + 10);
-	} else if (strcmp(name, "SurveySetup.options") == 0) {
-		SurveySetup.options = 1 - SurveySetup.options;
+	} else if (strncmp(name, "SurveySetup.options", 19) == 0) {
+		SurveySetup.options = (int)data;
 	} else if (strcmp(name, "SurveySetup.type") == 0) {
 		SurveySetup.type++;
 		if (SurveySetup.type > 2) {
@@ -1352,7 +1352,6 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 		}
 	} else if (strcmp(name, "SurveySetup.mode") == 0) {
 		SurveySetup.mode = 1 - SurveySetup.mode;
-		SurveySetup.options = 0;
 	} else if (strcmp(name, "SurveySetup.angle") == 0) {
 		if (button == 4) {
 			if (SurveySetup.angle < 359.0) {
@@ -1528,9 +1527,12 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 			WayPoints[n].p_long = 0.0;
 			WayPoints[n].p_alt = 0.0;
 			WayPoints[n].frametype = 0;
-			sprintf(WayPoints[n].name, "SHUTTER %im", SurveySetup.interval);
+			sprintf(WayPoints[n].name, "SHUTTER");
 			strcpy(WayPoints[n].command, "SHUTTER_INT");
 			WayPoints[n].param1 = (float)SurveySetup.interval;
+			WayPoints[n].param2 = (float)0;
+			WayPoints[n].param3 = (float)0;
+			WayPoints[n].param4 = (float)0;
 			n++;
 		}
 
@@ -1550,8 +1552,19 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 			for (n_x = 0; n_x < max_w * 1.5; n_x += grid_x) {
 				float nx = lnx + cos((SurveySetup.angle) * DEG2RAD) * n_x;
 				float ny = lny + sin((SurveySetup.angle) * DEG2RAD) * n_x;
-				if (point_in_poly(nx, ny) == 0) {
-					continue;
+				if (SurveySetup.triggermode == 2) {
+					float nx1 = lnx + cos((SurveySetup.angle) * DEG2RAD) * (n_x - grid_x);
+					float ny1 = lny + sin((SurveySetup.angle) * DEG2RAD) * (n_x - grid_x);
+					float nx2 = lnx + cos((SurveySetup.angle) * DEG2RAD) * (n_x + grid_x);
+					float ny2 = lny + sin((SurveySetup.angle) * DEG2RAD) * (n_x + grid_x);
+					if ((point_in_poly(nx, ny) == 1 && point_in_poly(nx1, ny1) == 0) || (point_in_poly(nx, ny) == 1 && point_in_poly(nx2, ny2) == 0)) {
+					} else {
+						continue;
+					}
+				} else {
+					if (point_in_poly(nx, ny) == 0) {
+						continue;
+					}
 				}
 				float np_long = x2long(nx, lon, mapdata->zoom);
 				float np_lat = y2lat(ny, lat, mapdata->zoom);
@@ -1606,8 +1619,19 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 			for (n_x = n_x - grid_x; n_x > -grid_x; n_x -= grid_x) {
 				float nx = lnx + cos((SurveySetup.angle) * DEG2RAD) * n_x;
 				float ny = lny + sin((SurveySetup.angle) * DEG2RAD) * n_x;
-				if (point_in_poly(nx, ny) == 0) {
-					continue;
+				if (SurveySetup.triggermode == 2) {
+					float nx1 = lnx + cos((SurveySetup.angle) * DEG2RAD) * (n_x - grid_x);
+					float ny1 = lny + sin((SurveySetup.angle) * DEG2RAD) * (n_x - grid_x);
+					float nx2 = lnx + cos((SurveySetup.angle) * DEG2RAD) * (n_x + grid_x);
+					float ny2 = lny + sin((SurveySetup.angle) * DEG2RAD) * (n_x + grid_x);
+					if ((point_in_poly(nx, ny) == 1 && point_in_poly(nx1, ny1) == 0) || (point_in_poly(nx, ny) == 1 && point_in_poly(nx2, ny2) == 0)) {
+					} else {
+						continue;
+					}
+				} else {
+					if (point_in_poly(nx, ny) == 0) {
+						continue;
+					}
 				}
 				float np_long = x2long(nx, lon, mapdata->zoom);
 				float np_lat = y2lat(ny, lat, mapdata->zoom);
@@ -1663,9 +1687,12 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 			WayPoints[n].p_long = 0.0;
 			WayPoints[n].p_alt = 0.0;
 			WayPoints[n].frametype = 0;
-			sprintf(WayPoints[n].name, "SHUTTER %im", SurveySetup.interval);
+			sprintf(WayPoints[n].name, "SHUTTER");
 			strcpy(WayPoints[n].command, "SHUTTER_INT");
-			WayPoints[n].param1 = (float)SurveySetup.interval;
+			WayPoints[n].param1 = (float)0;
+			WayPoints[n].param2 = (float)0;
+			WayPoints[n].param3 = (float)0;
+			WayPoints[n].param4 = (float)0;
 			n++;
 		}
 
@@ -1690,17 +1717,19 @@ void map_draw_cam_setup (ESContext *esContext) {
 	float px1 = -0.8;
 	float py1 = -0.9;
 	float px2 = 0.8;
-	float py2 = -0.2;
+	float py2 = -0.0;
 	draw_box_f3(esContext, px1, py1, 0.002, px2, py2, 0.002, 0, 0, 0, 127);
 	draw_box_f3(esContext, px1, py1, 0.005, px2, py1 + 0.06, 0.005, 255, 255, 255, 127);
 	draw_rect_f3(esContext, px1, py1, 0.005, px2, py1 + 0.06, 0.005, 255, 255, 255, 255);
-	draw_text_button(esContext, "cam_setup_title", setup.view_mode, "Cam-Setup", FONT_GREEN, px1, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
-	draw_text_button(esContext, "SurveySetup.mode", setup.view_mode, "[MODE]", FONT_GREEN, px1 + 0.5, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+	draw_text_button(esContext, "survey_setup_title", setup.view_mode, "Survey-Setup", FONT_PINK, px1, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 	if (SurveySetup.options == 0) {
-		draw_text_button(esContext, "SurveySetup.options", setup.view_mode, "[TRIGGER]", FONT_WHITE, px1 + 0.8, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		draw_text_button(esContext, "SurveySetup.options1", setup.view_mode, "[GRID]", FONT_GREEN, px1 + 0.95, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		draw_text_button(esContext, "SurveySetup.options2", setup.view_mode, "[TRIGGER]", FONT_WHITE, px1 + 1.25, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 1.0);
 	} else {
-		draw_text_button(esContext, "SurveySetup.options", setup.view_mode, "[TRIGGER]", FONT_GREEN, px1 + 0.8, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		draw_text_button(esContext, "SurveySetup.options1", setup.view_mode, "[GRID]", FONT_WHITE, px1 + 0.95, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		draw_text_button(esContext, "SurveySetup.options2", setup.view_mode, "[TRIGGER]", FONT_GREEN, px1 + 1.25, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 1.0);
 	}
+	ny++;
 	if (SurveySetup.options == 1) {
 		draw_text_button(esContext, "trigger_title", setup.view_mode, "Trigger:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		ny++;
@@ -1734,9 +1763,15 @@ void map_draw_cam_setup (ESContext *esContext) {
 		ny++;
 	} else if (SurveySetup.mode == 1) {
 		// fixed grid
+		draw_text_button(esContext, "SurveySetup.mode", setup.view_mode, "Mode: GRID", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		ny++;
 		draw_text_button(esContext, "cam_grid", setup.view_mode, "Grid:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		ny++;
-		sprintf(tmp_str, "  grid_x: %0.0fm", SurveySetup.grid_x);
+		if (SurveySetup.triggermode == 2) {
+			sprintf(tmp_str, "  grid_x: %0.0fm (set by Trigger-Intervall)", SurveySetup.grid_x);
+		} else {
+			sprintf(tmp_str, "  grid_x: %0.0fm", SurveySetup.grid_x);
+		}
 		draw_text_button(esContext, "SurveySetup.grid_x", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		ny++;
 		sprintf(tmp_str, "  grid_y: %0.0fm", SurveySetup.grid_y);
@@ -1756,6 +1791,9 @@ void map_draw_cam_setup (ESContext *esContext) {
 		draw_text_button(esContext, "SurveySetup.angle", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		ny++;
 	} else {
+		// Cam-Grid
+		draw_text_button(esContext, "SurveySetup.mode", setup.view_mode, "Mode: CAM", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
+		ny++;
 		// Lense
 		draw_text_button(esContext, "SurveySetup.lense", setup.view_mode, "Lense:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		draw_text_button(esContext, "cam_lense_20", setup.view_mode, "[20mm]", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
@@ -2873,7 +2911,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			}
 		}
 
-
 		// drawing Grid
 		float h = 0.0;
 		float w = 0.0;
@@ -2888,6 +2925,9 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 		if (dist < 1.0) {
 			dist = 1.0;
+		}
+		if (SurveySetup.triggermode == 2) {
+			SurveySetup.grid_x = (float)SurveySetup.interval;
 		}
 		if (SurveySetup.mode == 1) {
 			grid_x = SurveySetup.grid_x / mpp;
