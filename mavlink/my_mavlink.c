@@ -11,6 +11,8 @@ static int s, slen = sizeof(si_other) , recv_len;
 int mavlink_tcp_send (uint8_t *buf, uint16_t len);
 #endif
 
+LogList loglist[255];
+
 static uint8_t udp_running = 0;
 int16_t mission_max = -1;
 int serial_fd_mavlink = -1;
@@ -21,9 +23,12 @@ char serial_buf[255];
 static uint32_t last_connection = 1;
 static int8_t GPS_found = 0;
 uint8_t mavlink_loghbeat = 0;
+uint16_t mavlink_logs_total = 0;
 uint16_t mavlink_logid = 0;
 uint16_t mavlink_logstat = 0;
 uint32_t mavlink_logreqsize = 0;
+uint32_t mavlink_loggetsize = 0;
+uint32_t mavlink_logstartstamp = 0;
 uint16_t mavlink_timeout = 0;
 uint16_t mavlink_maxparam = 0;
 uint16_t mavlink_foundparam = 0;
@@ -946,21 +951,30 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOG_ENTRY id %i ##\n", packet.id); //UINT16_T
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOG_ENTRY num_logs %i ##\n", packet.num_logs); //UINT16_T
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOG_ENTRY last_log_num %i ##\n", packet.last_log_num); //UINT16_T
+
+			loglist[mavlink_logs_total].id = packet.id;
+			loglist[mavlink_logs_total].size = packet.size;
+			mavlink_logs_total++;
+
 			break;
 		}
 		case MAVLINK_MSG_ID_LOG_DATA: {
 			mavlink_log_data_t packet;
 			mavlink_msg_log_data_decode(msg, &packet);
 			mavlink_logid = packet.id;
-			mavlink_logstat = packet.ofs * 100 / mavlink_logreqsize;
+			mavlink_loggetsize = packet.ofs + packet.count;
+			mavlink_logstat = mavlink_loggetsize * 100 / mavlink_logreqsize;
 			mavlink_loghbeat = 100;
-			if (packet.ofs + packet.count == mavlink_logreqsize) {
+			if (mavlink_logstartstamp == 0) {
+				mavlink_logstartstamp = SDL_GetTicks();
+			}
+			if (mavlink_loggetsize == mavlink_logreqsize) {
 				mavlink_logstat = 100;
 				mavlink_loghbeat = 255;
 			}
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOG_DATA id:%i %i + %i (%i%%) ##\n", packet.id, packet.ofs, packet.count, mavlink_logstat);
+//			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOG_DATA id:%i %i + %i (%i%%) ##\n", packet.id, packet.ofs, packet.count, mavlink_logstat);
 			char tmp_str[1024];
-			sprintf(tmp_str, "/tmp/mavlink_%i.log", packet.id);
+			sprintf(tmp_str, "/tmp/mavlink_%i_%i.log", packet.id, mavlink_logreqsize);
 			FILE *fdlog = fopen(tmp_str, "ab");
 			fwrite(packet.data, packet.count, 1, fdlog);
 			fclose(fdlog);
@@ -1007,7 +1021,13 @@ void mavlink_read_waypoints (void) {
 }
 
 void mavlink_read_loglist (void) {
+	int n = 0;
 	SDL_Log("mavlink: reading loglist\n");
+	mavlink_logs_total = 0;
+	for (n = 0; n < 255; n++) {
+		loglist[n].id = 0;
+		loglist[n].size = 0;
+	}
 	mavlink_message_t msg;
 	mavlink_msg_log_request_list_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, 0, 0xffff);
 	mavlink_send_message(&msg);
@@ -1015,12 +1035,14 @@ void mavlink_read_loglist (void) {
 
 void mavlink_read_logfile (uint16_t id, uint32_t offset, uint32_t len) {
 	char tmp_str[1024];
-	sprintf(tmp_str, "/tmp/mavlink_%i.log", id);
+	sprintf(tmp_str, "/tmp/mavlink_%i_%i.log", id, len);
 	FILE *fdlog = fopen(tmp_str, "w");
 	fclose(fdlog);
+	mavlink_loggetsize = 0;
+	mavlink_logstartstamp = 0;
 	mavlink_logreqsize = len;
 	mavlink_loghbeat = 100;
-	SDL_Log("mavlink: reading logfile\n");
+	SDL_Log("mavlink: get logfile: %i (%ibytes)\n", id, len);
 	mavlink_message_t msg;
 	mavlink_msg_log_request_data_pack(127, 0, &msg, ModelData.sysid, ModelData.compid, id, offset, len);
 	mavlink_send_message(&msg);

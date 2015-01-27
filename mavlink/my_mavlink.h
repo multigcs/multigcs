@@ -64,6 +64,13 @@ typedef struct {
 	uint16_t option2;
 } ValueList;
 
+typedef struct {
+	int16_t id;
+	uint32_t stamp;
+	uint32_t size;
+} LogList;
+
+extern LogList loglist[255];
 
 extern int16_t mission_max;
 extern int serial_fd_mavlink;
@@ -80,6 +87,9 @@ extern uint8_t mavlink_loghbeat;
 extern uint16_t mavlink_logid;
 extern uint16_t mavlink_logstat;
 extern uint32_t mavlink_logreqsize;
+extern uint32_t mavlink_loggetsize;
+extern uint16_t mavlink_logs_total;
+extern uint32_t mavlink_logstartstamp;
 
 uint8_t mavlink_init (char *port, uint32_t baud);
 void mavlink_exit (void);

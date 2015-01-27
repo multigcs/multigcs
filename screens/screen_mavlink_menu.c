@@ -151,7 +151,10 @@ uint8_t mavlink_read_loglist_get (char *name, float x, float y, int8_t button, f
 }
 
 uint8_t mavlink_read_logfile_get (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	mavlink_read_logfile(17, 0, 217008);
+	int id = (int)data;
+	if (id != -1) {
+		mavlink_read_logfile(loglist[id].id, 0, loglist[id].size);
+	}
 	return 0;
 }
 
@@ -990,6 +993,57 @@ void screen_mavlink_acccal (ESContext *esContext) {
 	}
 }
 
+void screen_mavlink_logfile (ESContext *esContext) {
+	char tmp_str[1024];
+	char tmp_str2[1024];
+	char filepath[1024];
+	int row = 0;
+	int n = 0;
+	if (mavlink_loghbeat == 255) {
+		mavlink_loghbeat = 0;
+		draw_title(esContext, "Logfiles (Done)");
+	} else if (mavlink_loghbeat > 0) {
+		sprintf(tmp_str, "Logfiles (ID:%i %i%%)", mavlink_logid, mavlink_logstat);
+		draw_title(esContext, tmp_str);
+		sprintf(tmp_str, "downloading logfile ID:%i", mavlink_logid);
+		draw_text_button(esContext, "logstat", VIEW_MODE_FCMENU, tmp_str, FONT_GREEN, 0.0, -0.35, 0.005, 0.1, 1, 0, mavlink_read_logfile_get, (float)(-1));
+		draw_box_f3c2(esContext, -1.0, -0.25, 0.002, 1.0, 0.05, 0.002, 55, 55, 55, 220, 75, 45, 85, 100);
+		draw_box_f3c2(esContext, -1.0, -0.25, 0.002, -1.0 + ((float)mavlink_logstat * 2.0 / 100.0), 0.05, 0.002, 255, 255, 55, 220, 175, 145, 85, 100);
+		sprintf(tmp_str, "%i%%", mavlink_logstat);
+		draw_text_button(esContext, "logstat", VIEW_MODE_FCMENU, tmp_str, FONT_GREEN, 0.0, -0.175, 0.005, 0.1, 1, 0, mavlink_read_logfile_get, (float)(-1));
+		sprintf(tmp_str, "%i KB / %i KB", mavlink_loggetsize / 1024, mavlink_logreqsize / 1024);
+		draw_text_button(esContext, "logsize", VIEW_MODE_FCMENU, tmp_str, FONT_GREEN, 0.0, -0.075, 0.005, 0.1, 1, 0, mavlink_read_logfile_get, (float)(-1));
+		uint32_t dtime = SDL_GetTicks() - mavlink_logstartstamp;
+		if (dtime / 1000 > 0) {
+			uint32_t bs = mavlink_loggetsize * 1000 / dtime;
+			sprintf(tmp_str, "%is (%i Bytes/s)", dtime / 1000, bs);
+			draw_text_button(esContext, "logsize", VIEW_MODE_FCMENU, tmp_str, FONT_GREEN, 0.0, 0.15, 0.005, 0.1, 1, 0, mavlink_read_logfile_get, (float)(-1));
+			uint32_t remaining_bytes = mavlink_logreqsize - mavlink_loggetsize;
+			if (bs > 0) {
+				sprintf(tmp_str, "%i KB to get (%is)", remaining_bytes / 1024, remaining_bytes / bs);
+				draw_text_button(esContext, "logrem", VIEW_MODE_FCMENU, tmp_str, FONT_GREEN, 0.0, 0.3, 0.005, 0.1, 1, 0, mavlink_read_logfile_get, (float)(-1));
+			}
+		}
+	} else if (mavlink_logs_total > 0) {
+		draw_title(esContext, "Logfiles");
+		for (n = 0; n < mavlink_logs_total; n++) {
+			sprintf(tmp_str, "log_%i", loglist[n].id);
+			sprintf(filepath, "/tmp/mavlink_%i_%i.log", loglist[n].id, loglist[n].size);
+			if (file_exists(filepath) != 0) {
+				sprintf(filepath, "mavlink_%i_%i.log", loglist[n].id, loglist[n].size);
+				sprintf(tmp_str2, "logfile %i: %i KB (%s)", loglist[n].id, loglist[n].size / 1024, filepath);
+				draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_GREEN, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_read_logfile_get, (float)(-1));
+			} else {
+				sprintf(tmp_str2, "logfile %i: %i KB", loglist[n].id, loglist[n].size / 1024);
+				draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_read_logfile_get, (float)(n));
+			}
+			row++;
+		}
+	} else {
+		draw_text_button(esContext, "loglist_", VIEW_MODE_FCMENU, "[GET LOGFILE LIST]", FONT_WHITE, 0.0, 0.0, 0.002, 0.1, 1, 0, mavlink_read_loglist_get, 1.0);
+	}
+}
+
 
 void screen_mavlink_menu (ESContext *esContext) {
 	int16_t row = 0;
@@ -1034,6 +1088,9 @@ void screen_mavlink_menu (ESContext *esContext) {
 		} else if (mavlink_view_screen == 9) {
 			screen_mavlink_camrelay(esContext);
 			return;
+		} else if (mavlink_view_screen == 10) {
+			screen_mavlink_logfile(esContext);
+			return;
 		} else if (mavlink_view_screen == -1) {
 			draw_title(esContext, "Mavlink");
 			draw_text_button(esContext, "mlscreen1", VIEW_MODE_FCMENU, "Stabilize-P", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(1));
@@ -1053,6 +1110,8 @@ void screen_mavlink_menu (ESContext *esContext) {
 			draw_text_button(esContext, "mlscreen8", VIEW_MODE_FCMENU, "ACC-Calibration", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(8));
 			row++;
 			draw_text_button(esContext, "mlscreen9", VIEW_MODE_FCMENU, "Camera/Gimbal/Relay", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(9));
+			row++;
+			draw_text_button(esContext, "mlscreen10", VIEW_MODE_FCMENU, "Logfiles", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(10));
 			row++;
 			draw_text_button(esContext, "mlscreen0", VIEW_MODE_FCMENU, "All-Parameters", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(0));
 			row++;
@@ -1393,16 +1452,6 @@ void screen_mavlink_menu (ESContext *esContext) {
 	draw_text_button(esContext, "load", VIEW_MODE_FCMENU, "[LOAD FILE]", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 1, 0, mavlink_param_load, 1.0);
 	draw_text_button(esContext, "save", VIEW_MODE_FCMENU, "[SAVE FILE]", FONT_WHITE, -0.5, 0.9, 0.002, 0.06, 1, 0, mavlink_param_save, 1.0);
 	draw_text_button(esContext, "upload", VIEW_MODE_FCMENU, "[UPLOAD ALL]", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, 1, 0, mavlink_param_upload_all, 1.0);
-//	draw_text_button(esContext, "loglist", VIEW_MODE_FCMENU, "[LOGS]", FONT_WHITE, 0.5, 0.9, 0.002, 0.06, 1, 0, mavlink_read_loglist_get, 1.0);
-
-
-//	if (mavlink_loghbeat == 255) {
-//		mavlink_loghbeat = 0;
-//	} else if (mavlink_loghbeat > 0) {
-//		sprintf(tmp_str, "ID:%i %i%%", mavlink_logid, mavlink_logstat);
-//		draw_text_button(esContext, "_", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, 0.0, 0.8, 0.002, 0.06, 1, 0, mavlink_read_logfile_get, 1.0);
-//	}
-//	draw_text_button(esContext, "loglist", VIEW_MODE_FCMENU, "[LOGS]", FONT_WHITE, 0.5, 0.9, 0.002, 0.06, 1, 0, mavlink_read_logfile_get, 1.0);
 
 
 	if (ModelData.teletype != TELETYPE_ARDUPILOT && ModelData.teletype != TELETYPE_MEGAPIRATE_NG) {

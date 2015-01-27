@@ -65,7 +65,7 @@ int main (int argc, char *argv[]) {
 	printf("<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
 	printf("  <Document>\n");
 	printf("    <name>Mission</name>\n");
-	printf("    <description>File: %s</description>\n", argv[1]);
+	printf("    <description>File: %s</description>\n", argv[n + 1]);
 	printf("    <Style id=\"yellowLineGreenPoly\">\n");
 	printf("      <LineStyle>\n");
 	printf("        <color>7f00ffff</color>\n");
@@ -118,6 +118,7 @@ int main (int argc, char *argv[]) {
 					uint8_t buf[1024];
 					for (n = 0; n < fn; n++) {
 						if (c == Formats[n].type) {
+							uint8_t stat = 0;
 							float lat = 0.0;
 							float lon = 0.0;
 							float alt_rel = 0.0;
@@ -126,7 +127,12 @@ int main (int argc, char *argv[]) {
 							for (valn = 0; valn < 16 && Formats[n].format[valn] != 0; valn++) {
 								//fprintf(stderr, "	%s	", vNames[n][valn]);
 								if (strcmp(Formats[n].name, "GPS") == 0) {
-									if (strcmp(vNames[n][valn], "Lat") == 0) {
+									if (strcmp(vNames[n][valn], "Status") == 0) {
+											uint8_t val;
+											fread(&val, sizeof(val), 1, fd);
+											stat = val;
+											continue;
+									} else if (strcmp(vNames[n][valn], "Lat") == 0) {
 											int32_t val;
 											fread(&val, sizeof(val), 1, fd);
 											lat = (float)val / 10000000.0;
@@ -251,7 +257,7 @@ int main (int argc, char *argv[]) {
 									}
 								}
 							}
-							if (strcmp(Formats[n].name, "GPS") == 0) {
+							if (strcmp(Formats[n].name, "GPS") == 0 && stat == 3 && lon != 0.0 && lat != 0.0) {
 								printf("          %f,%f,%f\n", lon, lat, alt_rel);
 							}
 						}
