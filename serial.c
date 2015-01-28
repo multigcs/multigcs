@@ -1,12 +1,28 @@
 
 #include <all.h>
 
+#ifndef WINDOWS
+#ifndef ANDROID
+#include <libudev.h>
+#endif
+#endif
+
+
 typedef struct {
 	char name[1024];
+	char device[1024];
 	int fd;
 } SerialLockFile;
 
 SerialLockFile locks[100];
+
+
+typedef struct {
+	char device[1024];
+	char deviceid[1024];
+} SerialInfo;
+
+SerialInfo info[100];
 
 
 #ifdef ANDROID
@@ -18,6 +34,182 @@ struct termios oldtio, newtio;
 #else
 HANDLE hSerial[10] = {INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE};
 #endif
+
+SDL_Thread *thread_sermon = NULL;
+uint8_t thread_sermon_running = 0;
+
+int serial_info_get (char *device, char *deviceid) {
+	int n = 0;
+	deviceid[0] = 0;
+	for (n = 0; n < 100; n++) {
+		if (strcmp(info[n].device, device) == 0) {
+			strcpy(deviceid, info[n].deviceid);
+			return 0;
+		}
+	}
+	return -1;
+}
+
+int serial_get_device_by_id (char *deviceid, char *device) {
+	int n = 0;
+	device[0] = 0;
+	for (n = 0; n < 100; n++) {
+		if (strcmp(info[n].deviceid, deviceid) == 0) {
+			strcpy(device, info[n].device);
+			return 0;
+		}
+	}
+	return -1;
+}
+
+void serial_info_update (void) {
+#ifndef WINDOWS
+#ifndef ANDROID
+	struct udev *udev;
+	struct udev_enumerate *enumerate;
+	struct udev_list_entry *devices, *dev_list_entry;
+	struct udev_device *dev;
+	struct udev_device *dev2;
+   	struct udev_monitor *mon;
+	char tmp_str[1024];
+	int n = 0;
+	int n2 = 0;
+	int fd;
+	for (n = 0; n < 100; n++) {
+		info[n].device[0] = 0;
+		info[n].deviceid[0] = 0;
+	}
+	n = 0;
+	udev = udev_new();
+	if (!udev) {
+		printf("Can't create udev\n");
+		return;
+	}
+	mon = udev_monitor_new_from_netlink(udev, "udev");
+	udev_monitor_filter_add_match_subsystem_devtype(mon, "tty", NULL);
+	udev_monitor_enable_receiving(mon);
+	fd = udev_monitor_get_fd(mon);
+	enumerate = udev_enumerate_new(udev);
+	udev_enumerate_add_match_subsystem(enumerate, "tty");
+	udev_enumerate_scan_devices(enumerate);
+	devices = udev_enumerate_get_list_entry(enumerate);
+	udev_list_entry_foreach(dev_list_entry, devices) {
+		const char *path;
+		path = udev_list_entry_get_name(dev_list_entry);
+		dev = udev_device_new_from_syspath(udev, path);
+		dev2 = udev_device_get_parent_with_subsystem_devtype(dev, "usb", "usb_device");
+		if (dev2) {
+			strcpy(info[n].device, udev_device_get_devnode(dev));
+			sprintf(tmp_str, "%s", udev_device_get_sysattr_value(dev2,"manufacturer"));
+			strcat(info[n].deviceid, tmp_str);
+			sprintf(tmp_str, "%s", udev_device_get_sysattr_value(dev2,"product"));
+			strcat(info[n].deviceid, tmp_str);
+			sprintf(tmp_str, "%s", udev_device_get_sysattr_value(dev2,"serial"));
+			strcat(info[n].deviceid, tmp_str);
+			for (n2 = 0; n2 < strlen(info[n].deviceid); n2++) {
+				if (info[n].deviceid[n2] == ' ') {
+					info[n].deviceid[n2] = '_';
+				}
+			}
+			SDL_Log("sermon: %s: %s\n", info[n].device, info[n].deviceid);
+			udev_device_unref(dev2);
+			n++;
+		}
+	}
+	udev_enumerate_unref(enumerate);
+	udev_device_unref(dev);
+	udev_unref(udev);
+#endif
+#endif
+}
+
+int serial_monitor (void *data) {
+#ifndef WINDOWS
+#ifndef ANDROID
+	char tmp_str[1024];
+	struct udev *udev;
+	struct udev_device *dev;
+   	struct udev_monitor *mon;
+	int n = 0;
+	int fd;
+	udev = udev_new();
+	if (!udev) {
+		printf("Can't create udev\n");
+		return 1;
+	}
+	mon = udev_monitor_new_from_netlink(udev, "udev");
+	udev_monitor_filter_add_match_subsystem_devtype(mon, "tty", NULL);
+	udev_monitor_enable_receiving(mon);
+	fd = udev_monitor_get_fd(mon);
+	while (thread_sermon_running == 1) {
+		fd_set fds;
+		struct timeval tv;
+		int ret;
+		FD_ZERO(&fds);
+		FD_SET(fd, &fds);
+		tv.tv_sec = 0;
+		tv.tv_usec = 0;
+		ret = select(fd+1, &fds, NULL, NULL, &tv);
+		if (ret > 0 && FD_ISSET(fd, &fds)) {
+			dev = udev_monitor_receive_device(mon);
+			if (dev) {
+				serial_info_update();
+				printf("serialmon: Device changed\n");
+				printf("   Node: %s\n", udev_device_get_devnode(dev));
+				printf("   Subsystem: %s\n", udev_device_get_subsystem(dev));
+				printf("   Action: %s\n", udev_device_get_action(dev));
+				if (strcmp((char *)udev_device_get_action(dev), "remove") == 0) {
+					serial_close_by_device((char *)udev_device_get_devnode(dev));
+				} else if (strcmp((char *)udev_device_get_action(dev), "add") == 0) {
+					for (n = 0; n < MODELS_MAX; n++) {
+						if (ModelData[n].use_deviceid == 1) {
+							serial_info_get((char *)udev_device_get_devnode(dev), tmp_str);
+							if (strcmp(ModelData[n].deviceid, tmp_str) == 0) {
+									serial_get_device_by_id(ModelData[n].deviceid, ModelData[n].telemetry_port);
+									reset_telemetry(n);
+									break;
+							}
+						} else {
+							if (strcmp(ModelData[n].telemetry_port, (char *)udev_device_get_devnode(dev)) == 0) {
+								reset_telemetry(n);
+								break;
+							}
+						}
+					}
+				}
+				udev_device_unref(dev);
+			}					
+		}
+		usleep(250*1000);
+		fflush(stdout);
+	}
+	udev_unref(udev);
+#endif
+#endif
+	return 0;
+}
+
+void serial_monitor_init (void) {
+	serial_info_update();
+	SDL_Log("sermon: init thread\n");
+	thread_sermon_running = 1;
+#ifdef SDL2
+	thread_sermon = SDL_CreateThread(serial_monitor, NULL, NULL);
+#else
+	thread_sermon = SDL_CreateThread(serial_monitor, NULL);
+#endif
+	if (thread_sermon == NULL) {
+		fprintf(stderr, "sermon: Thread konnte nicht gestartet werden: %s\n", SDL_GetError());
+	}
+}
+
+void serial_monitor_exit (void) {
+	thread_sermon_running = 0;
+	SDL_Log("sermon: wait thread\n");
+	SDL_WaitThread(thread_sermon, NULL);
+	thread_sermon = NULL;
+}
+
 
 void serial_write (int fd, void *data, int len) {
 #ifndef WINDOWS
@@ -52,6 +244,34 @@ ssize_t serial_read(int fd, void *data, size_t len) {
 #endif
 }
 
+int serial_check (int fd) {
+	int n = 0;
+	for (n = 0; n < 100; n++) {
+		if (locks[n].name[0] != 0 && locks[n].fd == fd) {
+			return fd;
+		}
+	}
+	return -1;
+}
+
+int serial_close_by_device (char *device) {
+#ifndef WINDOWS
+	int n = 0;
+	for (n = 0; n < 100; n++) {
+		if (locks[n].name[0] != 0 && strcmp(locks[n].device, device) == 0) {
+			SDL_Log("closing serial fd %s (%i)\n", device, locks[n].fd);
+			close(locks[n].fd);
+			SDL_Log("	removing Lockfile: %s\n", locks[n].name);
+			remove(locks[n].name);
+			locks[n].name[0] = 0;
+			locks[n].device[0] = 0;
+			locks[n].fd = -1;
+		}
+	}
+#endif
+	return 0;
+}
+
 int serial_close (int fd) {
 #ifndef WINDOWS
 	SDL_Log("closing serial fd (%i)\n", fd);
@@ -61,6 +281,7 @@ int serial_close (int fd) {
 			if (locks[n].name[0] != 0 && locks[n].fd == fd) {
 				SDL_Log("	removing Lockfile: %s\n", locks[n].name);
 				remove(locks[n].name);
+				locks[n].device[0] = 0;
 				locks[n].name[0] = 0;
 				locks[n].fd = -1;
 			}
@@ -158,6 +379,7 @@ int serial_open (char *mdevice, uint32_t baud) {
 		for (n = 0; n < 100; n++) {
 			if (locks[n].name[0] == 0) {
 				strcpy(locks[n].name, mdevice_name);
+				strcpy(locks[n].device, mdevice);
 				locks[n].fd = fd;
 				break;
 			}
