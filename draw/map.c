@@ -588,9 +588,7 @@ int thread_get_maps2 (void *data) {
 	return 0;
 }
 
-
-
-void draw_quad (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, float roll, float pitch, float yaw, float lat, float lon, uint8_t zoom) {
+void draw_quad (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, float roll, float pitch, float yaw, uint8_t type, uint8_t mode, float lat, float lon, uint8_t zoom) {
 	ESMatrix modelview;
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
@@ -600,6 +598,10 @@ void draw_quad (ESContext *esContext, float mark_lat, float mark_long, float mar
 	float x1 = (float)mark_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 	float y1 = (float)mark_y / (float)esContext->height * 2.0 - 1.0;
 	float mark_z = mark_alt / alt_zoom - 0.022;
+	uint8_t alpha = 255;
+	if (mode == 1) {
+		alpha = 127;
+	}
 	if (map_view == 0) {
 		mark_z = 0.001;
 	}
@@ -619,8 +621,8 @@ void draw_quad (ESContext *esContext, float mark_lat, float mark_long, float mar
 	}
 	// Ground-Line
 	float z2 = (float)get_altitude(mark_lat, mark_long) / alt_zoom;
-	draw_line_f3(esContext, x1, y1, z2, x1, y1, mark_z, 0, 0, 255, 255);
-	draw_circleFilled_f3(esContext, x1, y1, z2, 0.005, 255, 255, 255, 255);
+	draw_line_f3(esContext, x1, y1, z2, x1, y1, mark_z, 0, 0, 255, alpha);
+	draw_circleFilled_f3(esContext, x1, y1, z2, 0.005, 255, 255, 255, alpha);
 #ifdef SDLGL
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
@@ -639,27 +641,69 @@ void draw_quad (ESContext *esContext, float mark_lat, float mark_long, float mar
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
 	// Arrow
-	draw_line_f3(esContext, x1, y1 - 0.1, mark_z, x1, y1, mark_z, 0, 0, 0, 255);
-	draw_line_f3(esContext, x1, y1 - 0.1, mark_z, x1 - 0.02, y1 - 0.1 + 0.02, mark_z, 0, 0, 0, 255);
-	draw_line_f3(esContext, x1, y1 - 0.1, mark_z, x1 + 0.02, y1 - 0.1 + 0.02, mark_z, 0, 0, 0, 255);
+	draw_line_f3(esContext, x1, y1 - 0.1, mark_z, x1, y1, mark_z, 0, 0, 0, alpha);
+	draw_line_f3(esContext, x1, y1 - 0.1, mark_z, x1 - 0.02, y1 - 0.1 + 0.02, mark_z, 0, 0, 0, alpha);
+	draw_line_f3(esContext, x1, y1 - 0.1, mark_z, x1 + 0.02, y1 - 0.1 + 0.02, mark_z, 0, 0, 0, alpha);
 	// View-Line
-	draw_line_f3(esContext, x1, y1 - 10.0, mark_z, x1, y1, mark_z, 255, 255, 255, 128);
-	// Quad
-	float size = 0.03;
-	draw_line_f3(esContext, x1 - size - 0.003, y1 - size, mark_z, x1 + size - 0.003, y1 + size, mark_z, 0, 0, 0, 255);
-	draw_line_f3(esContext, x1 - size + 0.003, y1 - size, mark_z, x1 + size + 0.003, y1 + size, mark_z, 0, 0, 0, 255);
-	draw_line_f3(esContext, x1 - size - 0.003, y1 + size, mark_z, x1 + size - 0.003, y1 - size, mark_z, 0, 0, 0, 255);
-	draw_line_f3(esContext, x1 - size + 0.003, y1 + size, mark_z, x1 + size + 0.003, y1 - size, mark_z, 0, 0, 0, 255);
-	draw_line_f3(esContext, x1 - size, y1 - size, mark_z, x1 + size, y1 + size, mark_z, 255, 0, 0, 255);
-	draw_line_f3(esContext, x1 - size, y1 + size, mark_z, x1 + size, y1 - size, mark_z, 255, 0, 0, 255);
-	draw_circleFilled_f3(esContext, x1 + size, y1 + size, mark_z, 0.015, 255, 0, 0, 255);
-	draw_circleFilled_f3(esContext, x1 - size, y1 + size, mark_z, 0.015, 255, 0, 0, 255);
-	draw_circleFilled_f3(esContext, x1 + size, y1 - size, mark_z, 0.015, 0, 255, 0, 255);
-	draw_circleFilled_f3(esContext, x1 - size, y1 - size, mark_z, 0.015, 0, 255, 0, 255);
-	draw_circle_f3(esContext, x1 + size, y1 + size, mark_z, 0.015, 0, 0, 0, 255);
-	draw_circle_f3(esContext, x1 - size, y1 + size, mark_z, 0.015, 0, 0, 0, 255);
-	draw_circle_f3(esContext, x1 + size, y1 - size, mark_z, 0.015, 0, 0, 0, 255);
-	draw_circle_f3(esContext, x1 - size, y1 - size, mark_z, 0.015, 0, 0, 0, 255);
+	draw_line_f3(esContext, x1, y1 - 10.0, mark_z, x1, y1, mark_z, 255, 255, 255, alpha / 2);
+
+	if (type == MAV_TYPE_FIXED_WING) {
+		// Airplane
+		float size = 0.09;
+		char tmp_str[1024];
+		sprintf(tmp_str, "%s/textures/plane.png", BASE_DIR);
+		draw_image_f3(esContext, x1 - size, y1 - size, x1 + size, y1 + size, mark_z, tmp_str);
+//	} else if (type == MAV_TYPE_COAXIAL) {
+//	} else if (type == MAV_TYPE_HELICOPTER) {
+//	} else if (type == MAV_TYPE_ANTENNA_TRACKER) {
+//	} else if (type == MAV_TYPE_GCS) {
+//	} else if (type == MAV_TYPE_AIRSHIP) {
+//	} else if (type == MAV_TYPE_FREE_BALLOON) {
+//	} else if (type == MAV_TYPE_ROCKET) {
+//	} else if (type == MAV_TYPE_GROUND_ROVER) {
+//	} else if (type == MAV_TYPE_SURFACE_BOAT) {
+//	} else if (type == MAV_TYPE_SUBMARINE) {
+//	} else if (type == MAV_TYPE_GENERIC) {
+	} else if (type == MAV_TYPE_HEXAROTOR) {
+		// Hexa
+		float size = 0.03;
+		glLineWidth(3);
+		draw_line_f3(esContext, x1 - size * 0.6, y1 - size, mark_z, x1 + size * 0.6, y1 + size, mark_z, 0, 0, 0, alpha);
+		draw_line_f3(esContext, x1 - size * 0.6, y1 + size, mark_z, x1 + size * 0.6, y1 - size, mark_z, 0, 0, 0, alpha);
+		draw_line_f3(esContext, x1 - size * 1.2, y1, mark_z, x1 + size * 1.2, y1, mark_z, 0, 0, 0, alpha);
+		glLineWidth(1);
+		draw_circleFilled_f3(esContext, x1 + size * 0.6, y1 + size, mark_z, 0.012, 255, 0, 0, alpha);
+		draw_circleFilled_f3(esContext, x1 - size * 0.6, y1 + size, mark_z, 0.012, 255, 0, 0, alpha);
+		draw_circleFilled_f3(esContext, x1 + size * 0.6, y1 - size, mark_z, 0.012, 0, 255, 0, alpha);
+		draw_circleFilled_f3(esContext, x1 - size * 0.6, y1 - size, mark_z, 0.012, 0, 255, 0, alpha);
+		draw_circleFilled_f3(esContext, x1 + size * 1.2, y1, mark_z, 0.012, 0, 255, 0, alpha);
+		draw_circleFilled_f3(esContext, x1 - size * 1.2, y1, mark_z, 0.012, 0, 255, 0, alpha);
+		draw_circle_f3(esContext, x1 + size * 0.6, y1 + size, mark_z, 0.012, 0, 0, 0, alpha);
+		draw_circle_f3(esContext, x1 - size * 0.6, y1 + size, mark_z, 0.012, 0, 0, 0, alpha);
+		draw_circle_f3(esContext, x1 + size * 0.6, y1 - size, mark_z, 0.012, 0, 0, 0, alpha);
+		draw_circle_f3(esContext, x1 - size * 0.6, y1 - size, mark_z, 0.012, 0, 0, 0, alpha);
+		draw_circle_f3(esContext, x1 + size * 1.2, y1, mark_z, 0.012, 0, 0, 0, alpha);
+		draw_circle_f3(esContext, x1 - size * 1.2, y1, mark_z, 0.012, 0, 0, 0, alpha);
+//	} else if (type == MAV_TYPE_OCTOROTOR) {
+//	} else if (type == MAV_TYPE_TRICOPTER) {
+//	} else if (type == MAV_TYPE_FLAPPING_WING) {
+//	} else if (type == MAV_TYPE_KITE) {
+	} else {
+		// Quad
+		float size = 0.03;
+		glLineWidth(3);
+		draw_line_f3(esContext, x1 - size, y1 - size, mark_z, x1 + size, y1 + size, mark_z, 0, 0, 0, alpha);
+		draw_line_f3(esContext, x1 - size, y1 + size, mark_z, x1 + size, y1 - size, mark_z, 0, 0, 0, alpha);
+		glLineWidth(1);
+		draw_circleFilled_f3(esContext, x1 + size, y1 + size, mark_z, 0.012, 255, 0, 0, alpha);
+		draw_circleFilled_f3(esContext, x1 - size, y1 + size, mark_z, 0.012, 255, 0, 0, alpha);
+		draw_circleFilled_f3(esContext, x1 + size, y1 - size, mark_z, 0.012, 0, 255, 0, alpha);
+		draw_circleFilled_f3(esContext, x1 - size, y1 - size, mark_z, 0.012, 0, 255, 0, alpha);
+		draw_circle_f3(esContext, x1 + size, y1 + size, mark_z, 0.012, 0, 0, 0, alpha);
+		draw_circle_f3(esContext, x1 - size, y1 + size, mark_z, 0.012, 0, 0, 0, alpha);
+		draw_circle_f3(esContext, x1 + size, y1 - size, mark_z, 0.012, 0, 0, 0, alpha);
+		draw_circle_f3(esContext, x1 - size, y1 - size, mark_z, 0.012, 0, 0, 0, alpha);
+	}
 #ifdef SDLGL
 	glPopMatrix();
 #endif
@@ -991,7 +1035,7 @@ void mark_poi (ESContext *esContext, float mark_lat, float mark_long, char *text
 	float y1 = (float)mark_y / (float)esContext->height * 2.0 - 1.0;
 	float z2 = (float)get_altitude(mark_lat, mark_long) / alt_zoom;
 	if (type == 1) {
-		char tmp_str[128];
+		char tmp_str[1024];
 		sprintf(tmp_str, "%s/textures/poi_airport.png", BASE_DIR);
 		draw_image_f3(esContext, x1 - 0.03, y1 - 0.03, x1 + 0.03, y1 + 0.03, z2, tmp_str);
 	} else if (type == 2) {

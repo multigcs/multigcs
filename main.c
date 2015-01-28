@@ -277,7 +277,7 @@ void stop_telemetry (uint8_t modelid) {
 	gps_exit();
 	simplebgc_exit();
 	brugi_exit();
-	openpilot_exit();
+	openpilot_exit(modelid);
 	frsky_mode(0);
 }
 
@@ -298,7 +298,7 @@ void reset_telemetry (uint8_t modelid) {
 	} else if (ModelData[modelid].teletype == TELETYPE_GPS_NMEA) {
 		gps_init(ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
 	} else if (ModelData[modelid].teletype == TELETYPE_OPENPILOT) {
-		openpilot_init(ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
+		openpilot_init(modelid, ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
 	} else if (ModelData[modelid].teletype == TELETYPE_CLI) {
 		cli_init(ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
 	} else if (ModelData[modelid].teletype == TELETYPE_BASEFLIGHTCLI) {
@@ -355,8 +355,8 @@ void setup_waypoints (void) {
 			WayPoints[modeln][n].command[0] = 0;
 			WayPoints[modeln][n].type = 0;
 		}
-		WayPoints[modeln][0].p_lat = 50.29197;
-		WayPoints[modeln][0].p_long = 9.12764;
+		WayPoints[modeln][0].p_lat = 50.2942581;
+		WayPoints[modeln][0].p_long = 9.1228580;
 		WayPoints[modeln][0].p_alt = 150.0;
 		WayPoints[modeln][0].param1 = 0.0;
 		WayPoints[modeln][0].param2 = 2.0;
@@ -420,6 +420,7 @@ void setup_save (void) {
 	}
 	FILE *fr;
 	int n = 0;
+	int nn = 0;
 	if (setup.calibration_mode > 0) {
 		setup.calibration_mode = 1;
 	}
@@ -525,32 +526,31 @@ void setup_save (void) {
 				fprintf(fr, "deviceid		%s\n", ModelData[n].deviceid);
 				fprintf(fr, "use_deviceid		%i\n", ModelData[n].use_deviceid);
 				fprintf(fr, "mavlink_sysid		%i\n", ModelData[n].mavlink_sysid);
-//				fprintf(fr, "mavlink_compid		%i\n", ModelData[n].mavlink_compid);
 				fprintf(fr, "model_name		%s\n", ModelData[n].name);
 				fprintf(fr, "model_sysstr		%s\n", ModelData[n].sysstr);
 				fprintf(fr, "telemetry_type		%i\n", ModelData[n].teletype);
 				fprintf(fr, "Model_lat		%f\n", ModelData[n].p_lat);
 				fprintf(fr, "Model_long		%f\n", ModelData[n].p_long);
 				fprintf(fr, "Model_alt		%f\n", ModelData[n].p_alt);
+				fprintf(fr, "\n");
+				fprintf(fr, "[waypoints]\n");
+				for (nn = 0; nn < MAX_WAYPOINTS; nn++) {
+						if (WayPoints[ModelActive][nn].p_lat != 0.0) {
+								fprintf(fr, "name	%s\n", WayPoints[n][nn].name);
+								fprintf(fr, "command	%s\n", WayPoints[n][nn].command);
+								fprintf(fr, "lat	%0.8f\n", WayPoints[n][nn].p_lat);
+								fprintf(fr, "lon	%0.8f\n", WayPoints[n][nn].p_long);
+								fprintf(fr, "alt	%f\n", WayPoints[n][nn].p_alt);
+								fprintf(fr, "param1	%f\n", WayPoints[n][nn].param1);
+								fprintf(fr, "param2	%f\n", WayPoints[n][nn].param2);
+								fprintf(fr, "param3	%f\n", WayPoints[n][nn].param3);
+								fprintf(fr, "param4	%f\n", WayPoints[n][nn].param4);
+								fprintf(fr, "type	%i\n", WayPoints[n][nn].type);
+								fprintf(fr, "frametype %i\n", WayPoints[n][nn].frametype);
+								fprintf(fr, "\n");
+						}
+				}
 			}
-	        fprintf(fr, "\n");
-	        fprintf(fr, "[waypoints]\n");
-	        for (n = 0; n < MAX_WAYPOINTS; n++) {
-	                if (WayPoints[ModelActive][n].p_lat != 0.0) {
-	                        fprintf(fr, "name	%s\n", WayPoints[ModelActive][n].name);
-	                        fprintf(fr, "command	%s\n", WayPoints[ModelActive][n].command);
-	                        fprintf(fr, "lat	%0.8f\n", WayPoints[ModelActive][n].p_lat);
-	                        fprintf(fr, "lon	%0.8f\n", WayPoints[ModelActive][n].p_long);
-	                        fprintf(fr, "alt	%f\n", WayPoints[ModelActive][n].p_alt);
-	                        fprintf(fr, "param1	%f\n", WayPoints[ModelActive][n].param1);
-	                        fprintf(fr, "param2	%f\n", WayPoints[ModelActive][n].param2);
-	                        fprintf(fr, "param3	%f\n", WayPoints[ModelActive][n].param3);
-	                        fprintf(fr, "param4	%f\n", WayPoints[ModelActive][n].param4);
-	                        fprintf(fr, "type	%i\n", WayPoints[ModelActive][n].type);
-	                        fprintf(fr, "frametype %i\n", WayPoints[ModelActive][n].frametype);
-	                        fprintf(fr, "\n");
-	                }
-	        }
 	        fprintf(fr, "\n");
 	        fprintf(fr, "[polypoints]\n");
 	        for (n = 0; n < MAX_WAYPOINTS; n++) {
@@ -575,14 +575,14 @@ void setup_save (void) {
 }
 
 void setup_load (void) {
-        FILE *fr;
-        char line[1024];
-        char var[1024];
-        char val[1024];
-        int mode = 0;
-        int model_n = 0;
-        int wp_num = 0;
-        int pp_num = 1;
+	FILE *fr;
+	char line[1024];
+	char var[1024];
+	char val[1024];
+	int mode = 0;
+	int model_n = 0;
+	int wp_num = 0;
+	int pp_num = 1;
 #ifdef RPI_NO_X
 	strncpy(setup.gcs_gps_port, "/dev/ttyAMA0", 1023);
 	setup.gcs_gps_baud = 9600;
@@ -659,7 +659,6 @@ void setup_load (void) {
 		strcpy(ModelData[model_n].deviceid, "");
 		ModelData[model_n].use_deviceid = 0;
 		ModelData[model_n].mavlink_sysid = 0;
-//		ModelData[model_n].mavlink_compid = 0;
 	}
 	model_n = 0;
 	char filename[1024];
@@ -866,57 +865,59 @@ void setup_load (void) {
 	                                ModelData[model_n].p_long = atof(val);
 	                        } else if (strcmp(var, "Model_alt") == 0) {
 	                                ModelData[model_n].p_alt = atof(val);
-
-
 	                        } else if (strcmp(var, "[waypoints]") == 0) {
 	                                mode = 1;
+									wp_num = 0;
 	                        } else if (strcmp(var, "[polypoints]") == 0) {
 	                                mode = 2;
 	                        } else if (var[0] == '[') {
 	                                model_n = atoi(var + 1);
+	                                mode = 0;
 	                        }
 	                } else if (mode == 1) {
 	                        if (var[0] == 0) {
-	                                if (WayPoints[ModelActive][wp_num].p_lat != 0.0) {
-	                                        wp_num++;
-	                                        WayPoints[ModelActive][wp_num].p_lat = 0.0;
-	                                        WayPoints[ModelActive][wp_num].p_long = 0.0;
-	                                        WayPoints[ModelActive][wp_num].p_alt = 0.0;
-	                                        WayPoints[ModelActive][wp_num].param1 = 0.0;
-	                                        WayPoints[ModelActive][wp_num].param2 = 0.0;
-	                                        WayPoints[ModelActive][wp_num].param3 = 0.0;
-	                                        WayPoints[ModelActive][wp_num].param4 = 0.0;
-	                                        WayPoints[ModelActive][wp_num].name[0] = 0;
-	                                        WayPoints[ModelActive][wp_num].command[0] = 0;
-	                                        WayPoints[ModelActive][wp_num].type = 0;
-	                                        WayPoints[ModelActive][wp_num].frametype = 0;
-	                                }
+									wp_num++;
+									WayPoints[model_n][wp_num].p_lat = 0.0;
+									WayPoints[model_n][wp_num].p_long = 0.0;
+									WayPoints[model_n][wp_num].p_alt = 0.0;
+									WayPoints[model_n][wp_num].param1 = 0.0;
+									WayPoints[model_n][wp_num].param2 = 0.0;
+									WayPoints[model_n][wp_num].param3 = 0.0;
+									WayPoints[model_n][wp_num].param4 = 0.0;
+									WayPoints[model_n][wp_num].name[0] = 0;
+									WayPoints[model_n][wp_num].command[0] = 0;
+									WayPoints[model_n][wp_num].type = 0;
+									WayPoints[model_n][wp_num].frametype = 0;
 	                        } else if (strcmp(var, "name") == 0) {
-	                                strncpy(WayPoints[ModelActive][wp_num].name, val, 127);
+	                                strncpy(WayPoints[model_n][wp_num].name, val, 127);
 	                        } else if (strcmp(var, "command") == 0) {
-	                                strncpy(WayPoints[ModelActive][wp_num].command, val, 127);
+	                                strncpy(WayPoints[model_n][wp_num].command, val, 127);
 	                        } else if (strcmp(var, "lat") == 0) {
-	                                WayPoints[ModelActive][wp_num].p_lat = atof(val);
+	                                WayPoints[model_n][wp_num].p_lat = atof(val);
 	                        } else if (strcmp(var, "lon") == 0) {
-	                                WayPoints[ModelActive][wp_num].p_long = atof(val);
+	                                WayPoints[model_n][wp_num].p_long = atof(val);
 	                        } else if (strcmp(var, "alt") == 0) {
-	                                WayPoints[ModelActive][wp_num].p_alt = atof(val);
+	                                WayPoints[model_n][wp_num].p_alt = atof(val);
 	                        } else if (strcmp(var, "param1") == 0) {
-	                                WayPoints[ModelActive][wp_num].param1 = atof(val);
+	                                WayPoints[model_n][wp_num].param1 = atof(val);
 	                        } else if (strcmp(var, "param2") == 0) {
-	                                WayPoints[ModelActive][wp_num].param2 = atof(val);
+	                                WayPoints[model_n][wp_num].param2 = atof(val);
 	                        } else if (strcmp(var, "param3") == 0) {
-	                                WayPoints[ModelActive][wp_num].param3 = atof(val);
+	                                WayPoints[model_n][wp_num].param3 = atof(val);
 	                        } else if (strcmp(var, "param4") == 0) {
-	                                WayPoints[ModelActive][wp_num].param4 = atof(val);
+	                                WayPoints[model_n][wp_num].param4 = atof(val);
 	                        } else if (strcmp(var, "type") == 0) {
-	                                WayPoints[ModelActive][wp_num].type = atoi(val);
+	                                WayPoints[model_n][wp_num].type = atoi(val);
 	                        } else if (strcmp(var, "frametype") == 0) {
-	                                WayPoints[ModelActive][wp_num].frametype = atoi(val);
+	                                WayPoints[model_n][wp_num].frametype = atoi(val);
 	                        } else if (strcmp(var, "[polypoints]") == 0) {
 	                                mode = 2;
 	                        } else if (strcmp(var, "[waypoints]") == 0) {
 	                                mode = 1;
+									wp_num = 0;
+	                        } else if (var[0] == '[') {
+	                                model_n = atoi(var + 1);
+	                                mode = 0;
 	                        }
 	                } else if (mode == 2) {
 	                        if (var[0] == 0) {
@@ -957,6 +958,10 @@ void setup_load (void) {
 	                                mode = 2;
 	                        } else if (strcmp(var, "[waypoints]") == 0) {
 	                                mode = 1;
+									wp_num = 0;
+	                        } else if (var[0] == '[') {
+	                                model_n = atoi(var + 1);
+	                                mode = 0;
 	                        }
 	                }
 	        }
@@ -970,12 +975,7 @@ void setup_load (void) {
 	strncpy(WayPoints[ModelActive][0].name, "HOME", 127);
 	serial_info_update();
 	for (model_n = 0; model_n < MODELS_MAX; model_n++) {
-		if (ModelData[model_n].p_lat == 0.0) {
-			ModelData[model_n].p_lat = WayPoints[ModelActive][0].p_lat;
-			ModelData[model_n].p_long = WayPoints[ModelActive][0].p_long;
-			ModelData[model_n].p_alt = WayPoints[ModelActive][0].p_alt;
-		}
-		if (ModelData[ModelActive].use_deviceid == 1 && strcmp(ModelData[ModelActive].telemetry_port, "UDP") != 0 && strcmp(ModelData[ModelActive].telemetry_port, "TCP") != 0) {
+		if (ModelData[model_n].use_deviceid == 1 && strcmp(ModelData[model_n].telemetry_port, "UDP") != 0 && strcmp(ModelData[model_n].telemetry_port, "TCP") != 0) {
 			serial_get_device_by_id(ModelData[model_n].deviceid, ModelData[model_n].telemetry_port);
 		}
 	}
@@ -1589,7 +1589,7 @@ int telemetry_thread (void *data) {
 			} else if (ModelData[modelid].teletype == TELETYPE_GPS_NMEA) {
 				gps_update();
 			} else if (ModelData[modelid].teletype == TELETYPE_OPENPILOT) {
-				openpilot_update();
+				openpilot_update(modelid);
 			} else if (ModelData[modelid].teletype == TELETYPE_BASEFLIGHTCLI) {
 				baseflightcli_update();
 			} else if (ModelData[modelid].teletype == TELETYPE_CLI) {
@@ -2130,7 +2130,8 @@ void Draw (ESContext *esContext) {
 		sprintf(tmp_str, "%s", ModelData[ModelActive].name);
 		draw_text_button(esContext, "MODELSEL", setup.view_mode, tmp_str, FONT_WHITE, 1.0, -0.95, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, model_select, -1.0);
 		if (view_modellist == 1) {
-			draw_box_f3(esContext, 0.7, -0.9, 0.002, 1.3, 0.1, 0.002, 0, 0, 0, 200);
+			draw_box_f3(esContext, 0.7, -0.88, 0.002, 1.3, 0.05, 0.002, 0, 0, 0, 200);
+			draw_rect_f3(esContext, 0.7, -0.88, 0.002, 1.3, 0.05, 0.002, 255, 255, 255, 200);
 			for (n = 0; n < MODELS_MAX; n++) {
 				if (ModelData[n].dronetype == MAV_TYPE_GENERIC) {
 					strcpy(tmp_str2, "Generic air vehicle");

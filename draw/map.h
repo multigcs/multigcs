@@ -49,7 +49,7 @@ void get_maps (uint8_t mode, GeoMap *mapdata);
 uint8_t map_downloader (char *name, float x, float y, int8_t button, float data, uint8_t action);
 int thread_get_maps1 (void *data);
 int thread_get_maps2 (void *data);
-void draw_quad (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, float roll, float pitch, float yaw, float lat, float lon, uint8_t zoom);
+void draw_quad (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, float roll, float pitch, float yaw, uint8_t type, uint8_t mode, float lat, float lon, uint8_t zoom);
 void draw_tracker (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, float pitch, float yaw, float lat, float lon, uint8_t zoom);
 void get_dir (float lat_from, float lon_from, float alt_from, float lat_to, float lon_to, float alt_to, float *angle, float *dist1, float *angle_up, float *dist2);
 void winkel_line (ESContext *esContext, float x_origin, float y_origin, float winkel, float r1, uint8_t r, uint8_t g, uint8_t b, uint8_t a, float *nx1, float *ny1);

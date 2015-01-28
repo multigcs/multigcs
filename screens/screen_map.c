@@ -2816,10 +2816,16 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 	}
 
-	for (n = 0; n < MODELS_MAX; n++) {
-		if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
-		} else if (ModelData[n].heartbeat > 0) {
-			draw_quad(esContext, ModelData[n].p_lat, ModelData[n].p_long, (ModelData[n].p_alt - ModelData[n].alt_offset), ModelData[n].roll, ModelData[n].pitch, ModelData[n].yaw, mapdata->lat, mapdata->lon, mapdata->zoom);
+	if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
+	} else {
+		for (n = 0; n < MODELS_MAX; n++) {
+			if (ModelData[n].heartbeat > 0 || n == ModelActive) {
+				uint8_t mode = 1;
+				if (n == ModelActive) {
+					mode = 0;
+				}
+				draw_quad(esContext, ModelData[n].p_lat, ModelData[n].p_long, (ModelData[n].p_alt - ModelData[n].alt_offset), ModelData[n].roll, ModelData[n].pitch, ModelData[n].yaw, ModelData[n].dronetype, mode, mapdata->lat, mapdata->lon, mapdata->zoom);
+			}
 		}
 	}
 

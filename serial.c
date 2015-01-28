@@ -40,6 +40,9 @@ uint8_t thread_sermon_running = 0;
 
 int serial_info_get (char *device, char *deviceid) {
 	int n = 0;
+	if (device[0] == 0) {
+		return -1;
+	}
 	deviceid[0] = 0;
 	for (n = 0; n < 100; n++) {
 		if (strcmp(info[n].device, device) == 0) {
@@ -52,6 +55,9 @@ int serial_info_get (char *device, char *deviceid) {
 
 int serial_get_device_by_id (char *deviceid, char *device) {
 	int n = 0;
+	if (deviceid[0] == 0) {
+		return -1;
+	}
 	device[0] = 0;
 	for (n = 0; n < 100; n++) {
 		if (strcmp(info[n].deviceid, deviceid) == 0) {

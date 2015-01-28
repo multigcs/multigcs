@@ -910,6 +910,7 @@ uint8_t autocontinue; ///< autocontinue to next wp
 		case MAVLINK_MSG_ID_LOCAL_POSITION_NED: {
 			mavlink_local_position_ned_t packet;
 			mavlink_msg_local_position_ned_decode(msg, &packet);
+/*
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOCAL_POSITION_NED time_boot_ms %i ##\n", packet.time_boot_ms); //UINT32_T
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOCAL_POSITION_NED x %f ##\n", packet.x); //FLOAT
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOCAL_POSITION_NED y %f ##\n", packet.y); //FLOAT
@@ -917,6 +918,7 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOCAL_POSITION_NED vx %f ##\n", packet.vx); //FLOAT
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOCAL_POSITION_NED vy %f ##\n", packet.vy); //FLOAT
 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOCAL_POSITION_NED vz %f ##\n", packet.vz); //FLOAT
+* */
 			break;
 		}
 		case MAVLINK_MSG_ID_MOUNT_STATUS: {

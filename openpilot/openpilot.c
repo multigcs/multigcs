@@ -12,16 +12,15 @@
 
 //#define DEBUG
 
-static uint32_t last_connection = 1;
-uint8_t openpilot_get = 1;
-uint8_t openpilot_set = 0;
-uint8_t openpilot_save = 0;
+int hidraw_fd_openpilot[MODELS_MAX];
+uint32_t last_connection[MODELS_MAX];
+uint8_t openpilot_get[MODELS_MAX];
+uint8_t openpilot_set[MODELS_MAX];
+uint8_t openpilot_save[MODELS_MAX];
 uint8_t msg_obj_id1 = 0;
 uint8_t msg_obj_id2 = 0;
 uint8_t msg_obj_id3 = 0;
 uint8_t msg_obj_id4 = 0;
-int serial_fd_openpilot = -1;
-int hidraw_fd_openpilot = -1;
 
 static const uint8_t crc_table[256] = {
 	0x00, 0x07, 0x0e, 0x09, 0x1c, 0x1b, 0x12, 0x15, 0x38, 0x3f, 0x36, 0x31, 0x24, 0x23, 0x2a, 0x2d,
@@ -57,15 +56,15 @@ uint8_t PIOS_CRC_updateCRC(uint8_t crc, const uint8_t* data, int32_t length) {
 	return crc8;
 }
 
-uint8_t openpilot_connection_status (void) {
-	if (serial_fd_openpilot == -1) {
+uint8_t openpilot_connection_status (uint8_t modelid) {
+	if (ModelData[modelid].serial_fd == -1) {
 		return 0;
 	}
-	return last_connection;
+	return last_connection[modelid];
 }
 
 #ifndef WINDOWS
-int openpilot_hidraw_find (void) {
+int openpilot_hidraw_find (uint8_t modelid) {
 	char device[1024];
 	int fd = -1;
 	struct udev *udev;
@@ -93,6 +92,10 @@ int openpilot_hidraw_find (void) {
 			SDL_Log("uavtalk: serial: %s\n", udev_device_get_sysattr_value(dev, "serial"));
 			strcpy(device, udev_device_get_devnode(udev_device_new_from_syspath(udev, udev_list_entry_get_name(dev_list_entry))));
 			SDL_Log("uavtalk: device: %s\n", device);
+
+			strcpy(ModelData[modelid].sysstr, udev_device_get_sysattr_value(dev,"product"));
+
+
 			fd = open(device, O_RDWR|O_NONBLOCK);
 			udev_device_unref(dev);
 			break;
@@ -115,18 +118,18 @@ void openpilot_hidraw_write (int fd, uint8_t *data, int len) {
 }
 #endif
 
-void openpilot_write (uint8_t *data, int len) {
-	if (serial_fd_openpilot >= 0) {
-		serial_write(serial_fd_openpilot, data, len);
+void openpilot_write (uint8_t modelid, uint8_t *data, int len) {
+	if (ModelData[modelid].serial_fd >= 0) {
+		serial_write(ModelData[modelid].serial_fd, data, len);
 	}
 #ifndef WINDOWS
-	if (hidraw_fd_openpilot >= 0) {
-		openpilot_hidraw_write(hidraw_fd_openpilot, data, len);
+	if (hidraw_fd_openpilot[modelid] >= 0) {
+		openpilot_hidraw_write(hidraw_fd_openpilot[modelid], data, len);
 	}
 #endif
 }
 
-void uavtalk_send (uint8_t *buf, uint32_t obj_id, uint8_t command, uint16_t len) {
+void uavtalk_send (uint8_t modelid, uint8_t *buf, uint32_t obj_id, uint8_t command, uint16_t len) {
 	uint8_t openpilot_write_buf[256];
 	uint8_t crc = 0;
 	uint8_t n = 0;
@@ -150,7 +153,7 @@ void uavtalk_send (uint8_t *buf, uint32_t obj_id, uint8_t command, uint16_t len)
 		crc = PIOS_CRC_updateByte(crc, openpilot_write_buf[n]);
 	}
 	openpilot_write_buf[len] = crc;
-	openpilot_write(openpilot_write_buf, len + 1);
+	openpilot_write(modelid, openpilot_write_buf, len + 1);
 }
 
 uint16_t openpilot_add_4byte (uint8_t *buf, uint16_t pos, uint32_t value) {
@@ -178,24 +181,23 @@ uint16_t openpilot_add_1byte (uint8_t *buf, uint16_t pos, uint8_t value) {
 	return pos;
 }
 
-
-void uavtalk_request (uint32_t obj_id) {
+void uavtalk_request (uint8_t modelid, uint32_t obj_id) {
 	uint8_t openpilot_write_buf[256];
 #ifdef DEBUG
 	SDL_Log("uavtalk: >> SEND_REQ\n");
 #endif
-	uavtalk_send(openpilot_write_buf, obj_id, 0x21, 0);
+	uavtalk_send(modelid, openpilot_write_buf, obj_id, 0x21, 0);
 }
 
-void uavtalk_send_ack (uint32_t obj_id) {
+void uavtalk_send_ack (uint8_t modelid, uint32_t obj_id) {
 	uint8_t openpilot_write_buf[256];
 #ifdef DEBUG
 	SDL_Log("uavtalk: >> SEND_ACK\n");
 #endif
-	uavtalk_send(openpilot_write_buf, obj_id, 0x3c, 0);
+	uavtalk_send(modelid, openpilot_write_buf, obj_id, 0x3c, 0);
 }
 
-void openpilot_send_ack (void) {
+void openpilot_send_ack (uint8_t modelid) {
 #ifdef DEBUG
 	SDL_Log("uavtalk: >> SEND_ACK\n");
 #endif
@@ -219,10 +221,10 @@ void openpilot_send_ack (void) {
 //		SDL_Log("uavtalk: %i: %x (%x)\n", n2, openpilot_write_buf[n2], crc);
 	}
 	openpilot_write_buf[n++] = crc; 	//Checksum
-	openpilot_write(openpilot_write_buf, n);
+	openpilot_write(modelid, openpilot_write_buf, n);
 }
 
-void openpilot_save_to_flash (void) {
+void openpilot_save_to_flash (uint8_t modelid) {
 	uint8_t openpilot_write_buf[256];
 	uint8_t crc = 0;
 	uint8_t n = 0;
@@ -252,11 +254,11 @@ void openpilot_save_to_flash (void) {
 		crc = PIOS_CRC_updateByte(crc, openpilot_write_buf[n2]);
 	}
 	openpilot_write_buf[len] = crc; 	//Checksum
-	openpilot_write(openpilot_write_buf, len + 1);
+	openpilot_write(modelid, openpilot_write_buf, len + 1);
 
 }
 
-void openpilot_send_req (uint8_t status) {
+void openpilot_send_req (uint8_t modelid, uint8_t status) {
 	uint8_t openpilot_write_buf[256];
 	uint8_t len = 0;
 
@@ -275,11 +277,11 @@ void openpilot_send_req (uint8_t status) {
 	len = openpilot_add_4byte(openpilot_write_buf, len, data.TxRetries);
 	len = openpilot_add_1byte(openpilot_write_buf, len, data.State);
 
-	uavtalk_send(openpilot_write_buf, GCSTELEMETRYSTATS_OBJID, 0x22, len);
+	uavtalk_send(modelid, openpilot_write_buf, GCSTELEMETRYSTATS_OBJID, 0x22, len);
 }
 
 
-void openpilot_send_setting_req (void) {
+void openpilot_send_setting_req (uint8_t modelid) {
 	uint8_t openpilot_write_buf[256];
 	uint8_t crc = 0;
 	uint8_t n = 0;
@@ -311,11 +313,11 @@ void openpilot_send_setting_req (void) {
 //		SDL_Log("uavtalk: %i: %x (%x)\n", n2, openpilot_write_buf[n2], crc);
 	}
 	openpilot_write_buf[len] = crc; 	//Checksum
-	openpilot_write(openpilot_write_buf, len + 1);
+	openpilot_write(modelid, openpilot_write_buf, len + 1);
 
 }
 
-void openpilot_request_StabilizationSettings (void) {
+void openpilot_request_StabilizationSettings (uint8_t modelid) {
 	uint8_t openpilot_write_buf[256];
 	uint8_t crc = 0;
 	uint8_t n = 0;
@@ -335,11 +337,11 @@ void openpilot_request_StabilizationSettings (void) {
 		crc = PIOS_CRC_updateByte(crc, openpilot_write_buf[n2]);
 	}
 	openpilot_write_buf[len] = crc; 	//Checksum
-	openpilot_write(openpilot_write_buf, len + 1);
+	openpilot_write(modelid, openpilot_write_buf, len + 1);
 
 }
 
-void openpilot_decode (char c) {
+void openpilot_decode (uint8_t modelid, char c) {
 	static uint8_t openpilot_read_buf[1024];
 	static uint8_t crc = 0;
 	static uint16_t n = 0;
@@ -431,7 +433,7 @@ void openpilot_decode (char c) {
 							//Object (OBJ): 0x20, Object request (OBJ_REQ): 0x21, Object with acknowledge request (OBJ_ACK): 0x22, Acknowledge (ACK): 0x23, Negative-Acknowledge (NACK) : 0x24. Note: The most significant 4 bits indicate the protocol version (v2 currently)
 						}
 						if (msg_type == 0x22) {
-							openpilot_send_ack();
+							openpilot_send_ack(modelid);
 						}
 
 						// update modeldata
@@ -445,71 +447,71 @@ if (obj_id == HWFLYINGF3_OBJID) {
 	}
 }
 */
-						ModelData[ModelActive].roll = uavtalk_AttitudeActualData.Roll;
-						ModelData[ModelActive].pitch = uavtalk_AttitudeActualData.Pitch;
-						ModelData[ModelActive].yaw = uavtalk_AttitudeActualData.Yaw;
-						ModelData[ModelActive].acc_x = uavtalk_AccelsData.x / 10.0;
-						ModelData[ModelActive].acc_y = uavtalk_AccelsData.y / 10.0;
-						ModelData[ModelActive].acc_z = uavtalk_AccelsData.z / 10.0;
-						ModelData[ModelActive].gyro_x = uavtalk_GyrosData.x;
-						ModelData[ModelActive].gyro_y = uavtalk_GyrosData.y;
-						ModelData[ModelActive].gyro_z = uavtalk_GyrosData.z;
-						ModelData[ModelActive].load = uavtalk_SystemStatsData.CPULoad;
+						ModelData[modelid].roll = uavtalk_AttitudeActualData.Roll;
+						ModelData[modelid].pitch = uavtalk_AttitudeActualData.Pitch;
+						ModelData[modelid].yaw = uavtalk_AttitudeActualData.Yaw;
+						ModelData[modelid].acc_x = uavtalk_AccelsData.x / 10.0;
+						ModelData[modelid].acc_y = uavtalk_AccelsData.y / 10.0;
+						ModelData[modelid].acc_z = uavtalk_AccelsData.z / 10.0;
+						ModelData[modelid].gyro_x = uavtalk_GyrosData.x;
+						ModelData[modelid].gyro_y = uavtalk_GyrosData.y;
+						ModelData[modelid].gyro_z = uavtalk_GyrosData.z;
+						ModelData[modelid].load = uavtalk_SystemStatsData.CPULoad;
 /*
  * 						for (n2 = 0; n2 < 8; n2++) {
-							ModelData[ModelActive].radio[n2] = (int16_t)(uavtalk_ManualControlCommandData.Channel[n2] - 1500) / 5;
+							ModelData[modelid].radio[n2] = (int16_t)(uavtalk_ManualControlCommandData.Channel[n2] - 1500) / 5;
 						}
-						ModelData[ModelActive].radio[0] = (int16_t)(uavtalk_ManualControlCommandData.Roll * 100);
-						ModelData[ModelActive].radio[1] = (int16_t)(uavtalk_ManualControlCommandData.Pitch * 100);
-						ModelData[ModelActive].radio[2] = (int16_t)(uavtalk_ManualControlCommandData.Yaw * 100);
-						ModelData[ModelActive].radio[3] = (int16_t)(uavtalk_ManualControlCommandData.Throttle * 100);
-						ModelData[ModelActive].radio[4] = (int16_t)(uavtalk_ManualControlCommandData.Collective * 100);
-						ModelData[ModelActive].chancount = 8;
+						ModelData[modelid].radio[0] = (int16_t)(uavtalk_ManualControlCommandData.Roll * 100);
+						ModelData[modelid].radio[1] = (int16_t)(uavtalk_ManualControlCommandData.Pitch * 100);
+						ModelData[modelid].radio[2] = (int16_t)(uavtalk_ManualControlCommandData.Yaw * 100);
+						ModelData[modelid].radio[3] = (int16_t)(uavtalk_ManualControlCommandData.Throttle * 100);
+						ModelData[modelid].radio[4] = (int16_t)(uavtalk_ManualControlCommandData.Collective * 100);
+						ModelData[modelid].chancount = 8;
 
 						if (uavtalk_GPSPositionData.Latitude != 0.0) {
-							ModelData[ModelActive].p_lat = (float)uavtalk_GPSPositionData.Latitude / 10000000.0;
-							ModelData[ModelActive].p_long = (float)uavtalk_GPSPositionData.Longitude / 10000000.0;
-							ModelData[ModelActive].p_alt = uavtalk_GPSPositionData.Altitude;
-							ModelData[ModelActive].speed = uavtalk_GPSPositionData.Groundspeed;
-							ModelData[ModelActive].numSat = uavtalk_GPSPositionData.Satellites;
-							ModelData[ModelActive].gpsfix = uavtalk_GPSPositionData.State;
-							ModelData[ModelActive].hdop = uavtalk_GPSPositionData.HDOP;
-							ModelData[ModelActive].vdop = uavtalk_GPSPositionData.VDOP;
+							ModelData[modelid].p_lat = (float)uavtalk_GPSPositionData.Latitude / 10000000.0;
+							ModelData[modelid].p_long = (float)uavtalk_GPSPositionData.Longitude / 10000000.0;
+							ModelData[modelid].p_alt = uavtalk_GPSPositionData.Altitude;
+							ModelData[modelid].speed = uavtalk_GPSPositionData.Groundspeed;
+							ModelData[modelid].numSat = uavtalk_GPSPositionData.Satellites;
+							ModelData[modelid].gpsfix = uavtalk_GPSPositionData.State;
+							ModelData[modelid].hdop = uavtalk_GPSPositionData.HDOP;
+							ModelData[modelid].vdop = uavtalk_GPSPositionData.VDOP;
 						}
 						if (uavtalk_FlightStatusData.Armed == 0) {
-							ModelData[ModelActive].armed = MODEL_DISARMED;
+							ModelData[modelid].armed = MODEL_DISARMED;
 						} else if (uavtalk_FlightStatusData.Armed == 1) {
-							ModelData[ModelActive].armed = MODEL_ARMING;
+							ModelData[modelid].armed = MODEL_ARMING;
 						} else {
-							ModelData[ModelActive].armed = MODEL_ARMED;
+							ModelData[modelid].armed = MODEL_ARMED;
 						}
 */
 						if (uavtalk_FlightStatusData.FlightMode == 0) {
-							ModelData[ModelActive].mode = MODEL_MODE_MANUAL;
+							ModelData[modelid].mode = MODEL_MODE_MANUAL;
 						} else {
-							ModelData[ModelActive].mode = MODEL_MODE_POSHOLD;
+							ModelData[modelid].mode = MODEL_MODE_POSHOLD;
 						}
-						ModelData[ModelActive].heartbeat = 100;
+						ModelData[modelid].heartbeat = 100;
 
 
-//uavtalk_request(MIXERSETTINGS_OBJID);
+//uavtalk_request(modelid, MIXERSETTINGS_OBJID);
 
 
-						if (openpilot_get == 1) {
-//							uavtalk_request(STABILIZATIONSETTINGS_OBJID);
-							openpilot_get = 2;
-						} else if (openpilot_get == 2) {
-//							uavtalk_request(HWSETTINGS_OBJID);
-							openpilot_get = 0;
-						} else if (openpilot_set == 1) {
-//							openpilot_send_StabilizationSettings(&OpenpilotStabilizationSettings);
-							openpilot_set = 2;
-						} else if (openpilot_set == 2) {
-//							openpilot_send_HwSettings(&OpenpilotHwSettings);
-							openpilot_set = 0;
-						} else if (openpilot_save == 1) {
-//							openpilot_save_to_flash();
-							openpilot_save = 0;
+						if (openpilot_get[modelid] == 1) {
+//							uavtalk_request(modelid, STABILIZATIONSETTINGS_OBJID);
+							openpilot_get[modelid] = 2;
+						} else if (openpilot_get[modelid] == 2) {
+//							uavtalk_request(modelid, HWSETTINGS_OBJID);
+							openpilot_get[modelid] = 0;
+						} else if (openpilot_set[modelid] == 1) {
+//							openpilot_send_StabilizationSettings(modelid, &OpenpilotStabilizationSettings);
+							openpilot_set[modelid] = 2;
+						} else if (openpilot_set[modelid] == 2) {
+//							openpilot_send_HwSettings(modelid, &OpenpilotHwSettings);
+							openpilot_set[modelid] = 0;
+						} else if (openpilot_save[modelid] == 1) {
+//							openpilot_save_to_flash(modelid);
+							openpilot_save[modelid] = 0;
 						}
 
 						// connection handshake
@@ -518,19 +520,19 @@ if (obj_id == HWFLYINGF3_OBJID) {
 								UAVT_FlightTelemetryStatsData *data = (UAVT_FlightTelemetryStatsData *)&openpilot_read_buf[n + 8];
 								if (data->State == 0) { // -> FLIGHTTELEMETRYSTATS_STATUS_DISCONNECTED
 									SDL_Log("uavtalk: << FlightTelemetryStats: DISCONNECTED\n");
-									openpilot_send_req(1); // <- GCSTELEMETRYSTATS_STATUS_HANDSHAKEREQ
+									openpilot_send_req(modelid, 1); // <- GCSTELEMETRYSTATS_STATUS_HANDSHAKEREQ
 								} else if (data->State == 2) { // -> FLIGHTTELEMETRYSTATS_STATUS_HANDSHAKEACK
 									SDL_Log("uavtalk: << FlightTelemetryStats: HANDSHAKEACK\n");
-									openpilot_send_req(3); // <- GCSTELEMETRYSTATS_STATUS_CONNECTED
+									openpilot_send_req(modelid, 3); // <- GCSTELEMETRYSTATS_STATUS_CONNECTED
 									redraw_flag = 1;
 								} else if (data->State == 3) {
 									SDL_Log("uavtalk: << FlightTelemetryStats: CONNECTED\n");
 
-uavtalk_request(HWFLYINGF3_OBJID);
+uavtalk_request(modelid, HWFLYINGF3_OBJID);
 
-//uavtalk_request(MANUALCONTROLSETTINGS_OBJID);
+//uavtalk_request(modelid, MANUALCONTROLSETTINGS_OBJID);
 
-									openpilot_get = 1;
+									openpilot_get[modelid] = 1;
 								} else {
 									SDL_Log("uavtalk: << FlightTelemetryStats: %i\n", data->State);
 								}
@@ -550,49 +552,60 @@ uavtalk_request(HWFLYINGF3_OBJID);
 	}
 }
 
-void openpilot_update (void) {
+void openpilot_update (uint8_t modelid) {
 	uint8_t buf[1024];
 	int res = 0;
 	int n = 0;
-	if (serial_fd_openpilot >= 0) {
-		if (serial_read(serial_fd_openpilot, buf, 1000) > 0) {
+	if (ModelData[modelid].serial_fd >= 0) {
+		if (serial_read(ModelData[modelid].serial_fd, buf, 1000) > 0) {
 			for (n = 0; n < res; n++) {
-				openpilot_decode(buf[n]);
+				openpilot_decode(modelid, buf[n]);
 			}
 		}
 	}
 #ifndef WINDOWS
-	if (hidraw_fd_openpilot >= 0) {
-		while ((res = read(hidraw_fd_openpilot, buf, 1000)) > 0) {
+	if (hidraw_fd_openpilot[modelid] >= 0) {
+		while ((res = read(hidraw_fd_openpilot[modelid], buf, 1000)) > 0) {
 			for (n = 0; n < res; n++) {
-				openpilot_decode(buf[n]);
+				openpilot_decode(modelid, buf[n]);
 			}
 		}
 	}
 #endif
 }
 
-uint8_t openpilot_init (char *port, uint32_t baud) {
-	openpilot_get = 1;
+uint8_t openpilot_init (uint8_t modelid, char *port, uint32_t baud) {
+	last_connection[modelid] = 1;
+	openpilot_get[modelid] = 1;
+	openpilot_set[modelid] = 0;
+	openpilot_save[modelid] = 0;
+	hidraw_fd_openpilot[modelid] = -1;
 	SDL_Log("uavtalk: init openpilot serial port...\n");
-	serial_fd_openpilot = serial_open(port, baud);
+	ModelData[modelid].serial_fd = serial_open(port, baud);
 #ifndef WINDOWS
-	if (serial_fd_openpilot < 0) {
-		hidraw_fd_openpilot = openpilot_hidraw_find();
+	if (ModelData[modelid].serial_fd < 0) {
+		hidraw_fd_openpilot[modelid] = openpilot_hidraw_find(modelid);
 	}
 #endif
 	return 0;
 }
 
-void openpilot_exit (void) {
-	if (serial_fd_openpilot >= 0) {
-		serial_close(serial_fd_openpilot);
-		serial_fd_openpilot = -1;
+void openpilot_exit (uint8_t modelid) {
+	static uint8_t flag = 0;
+	uint8_t n = 0;
+	if (flag == 0) {
+		for (n = 0; n < MODELS_MAX; n++) {
+			hidraw_fd_openpilot[n] = -1;
+		}
+	}
+	if (ModelData[modelid].serial_fd >= 0) {
+		serial_close(ModelData[modelid].serial_fd);
+		ModelData[modelid].serial_fd = -1;
 	}
 #ifndef WINDOWS
-	if (hidraw_fd_openpilot >= 0) {
-		close(hidraw_fd_openpilot);
-		hidraw_fd_openpilot = -1;
+	if (hidraw_fd_openpilot[modelid] >= 0) {
+		close(hidraw_fd_openpilot[modelid]);
+		hidraw_fd_openpilot[modelid] = -1;
 	}
 #endif
 }

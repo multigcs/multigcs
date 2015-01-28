@@ -60,7 +60,6 @@ extern uint8_t center_map;
 extern uint8_t maplen;
 extern uint8_t omaplen;
 
-void draw_quad (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, float roll, float pitch, float yaw, float lat, float lon, uint8_t zoom);
 void get_dir (float lat_from, float lon_from, float alt_from, float lat_to, float lon_to, float alt_to, float *heading, float *dist1, float *angle_up, float *dist2);
 void show_dir(ESContext *esContext, uint16_t px, uint16_t py, float lat_from, float lon_from, float alt_from, float lat_to, float lon_to, float alt_to);
 void winkel_line (ESContext *esContext, float x_origin, float y_origin, float winkel, float r1, uint8_t r, uint8_t g, uint8_t b, uint8_t a, float *nx1, float *ny1);
