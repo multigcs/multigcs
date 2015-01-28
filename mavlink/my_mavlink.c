@@ -303,44 +303,44 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 			}
 			mavlink_msg_heartbeat_pack(127, 0, &msg2, MAV_TYPE_GCS, MAV_AUTOPILOT_INVALID, 0, 0, 0);
 			mavlink_send_message(modelid, &msg2);
-				if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_GENERIC) {
+				if (ModelData[modelid].pilottype == MAV_AUTOPILOT_GENERIC) {
 					strcpy(ModelData[modelid].sysstr, "Generic autopilot");
-				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_PIXHAWK) {
+				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_PIXHAWK) {
 					strcpy(ModelData[modelid].sysstr, "Pixhawk");
-				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_SLUGS) {
+				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_SLUGS) {
 					strcpy(ModelData[modelid].sysstr, "SLUGS autopilot");
-				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_ARDUPILOTMEGA) {
+				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_ARDUPILOTMEGA) {
 					strcpy(ModelData[modelid].sysstr, "ArduPilotMega");
-				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_OPENPILOT) {
+				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_OPENPILOT) {
 					strcpy(ModelData[modelid].sysstr, "OpenPilot");
-				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_GENERIC_WAYPOINTS_ONLY) {
+				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_GENERIC_WAYPOINTS_ONLY) {
 					strcpy(ModelData[modelid].sysstr, "simple Generic autopilot");
-				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_GENERIC_WAYPOINTS_AND_SIMPLE_NAVIGATION_ONLY) {
+				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_GENERIC_WAYPOINTS_AND_SIMPLE_NAVIGATION_ONLY) {
 					strcpy(ModelData[modelid].sysstr, "simple2 Generic autopilot");
-				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_GENERIC_MISSION_FULL) {
+				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_GENERIC_MISSION_FULL) {
 					strcpy(ModelData[modelid].sysstr, "Generic autopilot");
-				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_INVALID) {
+				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_INVALID) {
 					strcpy(ModelData[modelid].sysstr, "GCS or other MAVLink component");
-				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_PPZ) {
+				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_PPZ) {
 					strcpy(ModelData[modelid].sysstr, "PPZ UAV");
-				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_UDB) {
+				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_UDB) {
 					strcpy(ModelData[modelid].sysstr, "UAV Dev Board");
-				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_FP) {
+				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_FP) {
 					strcpy(ModelData[modelid].sysstr, "FlexiPilot");
-				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_PX4) {
+				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_PX4) {
 					strcpy(ModelData[modelid].sysstr, "PX4 Autopilot");
-				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_SMACCMPILOT) {
+				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_SMACCMPILOT) {
 					strcpy(ModelData[modelid].sysstr, "SMACCMPilot");
-				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_AUTOQUAD) {
+				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_AUTOQUAD) {
 					strcpy(ModelData[modelid].sysstr, "AutoQuad");
-				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_ARMAZILA) {
+				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_ARMAZILA) {
 					strcpy(ModelData[modelid].sysstr, "Armazila");
-				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_AEROB) {
+				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_AEROB) {
 					strcpy(ModelData[modelid].sysstr, "Aerob");
-				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_ASLUAV) {
+				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_ASLUAV) {
 					strcpy(ModelData[modelid].sysstr, "ASLUAV autopilot");
 				} else {
-					sprintf(ModelData[modelid].sysstr, "UNKNOWN(%i)", ModelData[ModelActive].pilottype);
+					sprintf(ModelData[modelid].sysstr, "UNKNOWN_FC(%i)", ModelData[modelid].pilottype);
 				}
 			break;
 		}

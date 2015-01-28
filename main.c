@@ -648,8 +648,8 @@ void setup_load (void) {
 		strcpy(ModelData[model_n].telemetry_port, "UNSET");
 		ModelData[model_n].telemetry_baud = 115200;
 		ModelData[model_n].serial_fd = -1;
-		ModelData[model_n].dronetype = -1;
-		ModelData[model_n].pilottype = -1;
+		ModelData[model_n].dronetype = 250;
+		ModelData[model_n].pilottype = 250;
 	}
 	model_n = 0;
 	char filename[1024];
@@ -2166,7 +2166,7 @@ void Draw (ESContext *esContext) {
 					strcpy(tmp_str2, "Kite");
 					strcpy(tmp_str3, "textures/type_kite.png");
 				} else {
-					sprintf(tmp_str2, "UNKNOWN(%i)", ModelData[n].dronetype);
+					sprintf(tmp_str2, "UNKNOWN_UAV(%i)", ModelData[n].dronetype);
 					strcpy(tmp_str3, "");
 				}
 				if (tmp_str3[0] != 0) {
