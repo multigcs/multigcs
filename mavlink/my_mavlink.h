@@ -67,15 +67,14 @@ typedef struct {
 
 extern LogList loglist[255];
 
-extern int16_t mission_max;
-extern int serial_fd_mavlink;
+extern int16_t mission_max[MODELS_MAX];
 extern ValueList MavLinkVars[MODELS_MAX][MAVLINK_PARAMETER_MAX];
 extern uint8_t droneType;
 extern uint8_t autoPilot;
 extern int c;
 extern int res;
 extern char serial_buf[255];
-extern uint16_t mavlink_timeout;
+extern uint16_t mavlink_timeout[MODELS_MAX];
 extern uint16_t mavlink_maxparam[MODELS_MAX];
 extern uint8_t mavlink_update_yaw;
 extern uint8_t mavlink_loghbeat;

@@ -14,13 +14,13 @@ int mavlink_tcp_send (uint8_t *buf, uint16_t len);
 LogList loglist[255];
 
 static uint8_t udp_running = 0;
-int16_t mission_max = -1;
+int16_t mission_max[MODELS_MAX];
 ValueList MavLinkVars[MODELS_MAX][MAVLINK_PARAMETER_MAX];
 uint8_t mavlink_update_yaw = 0;
 int c, res;
 char serial_buf[255];
-static uint32_t last_connection = 1;
-static int8_t GPS_found = 0;
+static uint32_t last_connection[MODELS_MAX];
+static int8_t GPS_found[MODELS_MAX];
 uint8_t mavlink_loghbeat = 0;
 uint16_t mavlink_logs_total = 0;
 uint16_t mavlink_logid = 0;
@@ -28,18 +28,18 @@ uint16_t mavlink_logstat = 0;
 uint32_t mavlink_logreqsize = 0;
 uint32_t mavlink_loggetsize = 0;
 uint32_t mavlink_logstartstamp = 0;
-uint16_t mavlink_timeout = 0;
+uint16_t mavlink_timeout[MODELS_MAX];
 uint16_t mavlink_maxparam[MODELS_MAX];
-uint16_t mavlink_foundparam = 0;
+uint16_t mavlink_foundparam[MODELS_MAX];
 uint8_t mavlink_udp_active = 0;
 uint8_t mavlink_tcp_active = 0;
 SDL_Thread *thread_udp = NULL;
 SDL_Thread *thread_tcp = NULL;
 int mavlink_udp (void *data);
 int mavlink_tcp (void *data);
-int param_timeout = 0;
+int param_timeout[MODELS_MAX];
 int param_complete[MODELS_MAX];
-int ahrs2_found = 0;
+int ahrs2_found[MODELS_MAX];
 
 void mavlink_xml_save (uint8_t modelid, FILE *fr) {
 	int16_t n = 0;
@@ -55,7 +55,7 @@ void mavlink_xml_save (uint8_t modelid, FILE *fr) {
 uint8_t mavlink_init (uint8_t modelid, char *port, uint32_t baud) {
 	int n = 0;
 	mavlink_maxparam[modelid] = 0;
-	mavlink_foundparam = 0;
+	mavlink_foundparam[modelid] = 0;
 	SDL_Log("mavlink(%i): init serial port...\n", modelid);
 	ModelData[modelid].serial_fd = serial_open(port, baud);
 	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
@@ -251,10 +251,10 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 	mavlink_message_t msg2;
 	char sysmsg_str[1024];
 	if (param_complete[modelid] == 0) {
-		if (param_timeout > 1) {
-			param_timeout--;
-		} else if (param_timeout == 1) {
-			param_timeout = 10;
+		if (param_timeout[modelid] > 1) {
+			param_timeout[modelid]--;
+		} else if (param_timeout[modelid] == 1) {
+			param_timeout[modelid] = 10;
 			int n = 0;
 			int n2 = 0;
 			int flag2 = 0;
@@ -367,7 +367,7 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 		case MAVLINK_MSG_ID_ATTITUDE: {
 			mavlink_attitude_t packet;
 			mavlink_msg_attitude_decode(msg, &packet);
-			if (ahrs2_found == 0) {
+			if (ahrs2_found[modelid] == 0) {
 				ModelData[modelid].roll = toDeg(packet.roll);
 				ModelData[modelid].pitch = toDeg(packet.pitch);
 			}
@@ -396,7 +396,7 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 				ModelData[modelid].hdop = (float)packet.eph / 100.0;
 				ModelData[modelid].vdop = (float)packet.epv / 100.0;
 				if (ModelData[modelid].gpsfix > 2) {
-					GPS_found = 1;
+					GPS_found[modelid] = 1;
 					ModelData[modelid].p_alt = (float)packet.alt / 1000.0;
 				}
 				redraw_flag = 1;
@@ -468,7 +468,7 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 //	MAV_VAR_INT32=6, /* 32 bit signed integer | */
 //mavlink_param_get_id (uint16_t id);
 			mavlink_maxparam[modelid] = packet.param_count;
-			mavlink_timeout = 0;
+			mavlink_timeout[modelid] = 0;
 			mavlink_set_value(modelid, var, packet.param_value, packet.param_type, packet.param_index);
 			if (packet.param_index + 1 == packet.param_count || packet.param_index % 10 == 0) {
 				mavlink_param_xml_meta_load(modelid);
@@ -485,7 +485,7 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 				sysmsg_str[n1 + 1] = 0;
 			}
 			sys_message(sysmsg_str);
-			param_timeout = 10;
+			param_timeout[modelid] = 10;
 			break;
 		}
 		case MAVLINK_MSG_ID_MISSION_COUNT: {
@@ -493,8 +493,8 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 			mavlink_msg_mission_count_decode(msg, &packet);
 			sprintf(sysmsg_str, "model:%i MISSION_COUNT: %i\n", modelid, packet.count);
 			sys_message(sysmsg_str);
-			mission_max = packet.count;
-			if (mission_max > 0) {
+			mission_max[modelid] = packet.count;
+			if (mission_max[modelid] > 0) {
 				mavlink_msg_mission_request_pack(127, 0, &msg2, ModelData[modelid].sysid, ModelData[modelid].compid, 0);
 				mavlink_send_message(modelid, &msg2);
 			}
@@ -600,15 +600,15 @@ uint8_t autocontinue; ///< autocontinue to next wp
 		case MAVLINK_MSG_ID_MISSION_ITEM: {
 			mavlink_mission_item_t packet;
 			mavlink_msg_mission_item_decode(msg, &packet);
-			sprintf(sysmsg_str, "RECEIVED MISSION_ITEM: %i/%i: %f, %f, %f (%i)", packet.seq, mission_max, packet.x, packet.y, packet.z, packet.frame);
+			sprintf(sysmsg_str, "RECEIVED MISSION_ITEM: %i/%i: %f, %f, %f (%i)", packet.seq, mission_max[modelid], packet.x, packet.y, packet.z, packet.frame);
 			SDL_Log("mavlink(%i): %s\n", modelid, sysmsg_str);
 			sprintf(sysmsg_str, "	->: %f, %f, %f, %f", packet.param1, packet.param2, packet.param3, packet.param4);
 			SDL_Log("mavlink(%i): %s\n", modelid, sysmsg_str);
 			sprintf(sysmsg_str, "	->: %i, %i, %i", packet.command, packet.current, packet.autocontinue);
 			SDL_Log("mavlink(%i): %s\n", modelid, sysmsg_str);
-			sprintf(sysmsg_str, "model:%i RECEIVED MISSION_ITEM: %i/%i: %f, %f, %f (%i)", modelid, packet.seq, mission_max, packet.x, packet.y, packet.z, packet.frame);
+			sprintf(sysmsg_str, "model:%i RECEIVED MISSION_ITEM: %i/%i: %f, %f, %f (%i)", modelid, packet.seq, mission_max[modelid], packet.x, packet.y, packet.z, packet.frame);
 			sys_message(sysmsg_str);
-			if (packet.seq < mission_max - 1) {
+			if (packet.seq < mission_max[modelid] - 1) {
 				mavlink_msg_mission_request_pack(127, 0, &msg2, ModelData[modelid].sysid, ModelData[modelid].compid, packet.seq + 1);
 				mavlink_send_message(modelid, &msg2);
 			} else {
@@ -750,7 +750,7 @@ uint8_t autocontinue; ///< autocontinue to next wp
 		case MAVLINK_MSG_ID_VFR_HUD: {
 			mavlink_vfr_hud_t packet;
 			mavlink_msg_vfr_hud_decode(msg, &packet);
-			if (GPS_found == 0) {
+			if (GPS_found[modelid] == 0) {
 				ModelData[modelid].p_alt = packet.alt;
 			}
 			break;
@@ -772,7 +772,7 @@ uint8_t autocontinue; ///< autocontinue to next wp
 		case MAVLINK_MSG_ID_GLOBAL_POSITION_INT: {
 			mavlink_global_position_int_t packet;
 			mavlink_msg_global_position_int_decode(msg, &packet);
-			if (GPS_found == 0) {
+			if (GPS_found[modelid] == 0) {
 				if (packet.lat != 0 && packet.lon != 0) {
 				}
 			}
@@ -862,7 +862,7 @@ uint8_t autocontinue; ///< autocontinue to next wp
 		case MAVLINK_MSG_ID_AHRS2: {
 			mavlink_ahrs2_t packet;
 			mavlink_msg_ahrs2_decode(msg, &packet);
-			ahrs2_found = 1;
+			ahrs2_found[modelid] = 1;
 			ModelData[modelid].roll = toDeg(packet.roll);
 			ModelData[modelid].pitch = toDeg(packet.pitch);
 			mavlink_update_yaw = 1;
@@ -1155,7 +1155,7 @@ uint8_t mavlink_connection_status (uint8_t modelid) {
 	if (ModelData[modelid].serial_fd == -1) {
 		return 0;
 	}
-	return last_connection;
+	return last_connection[modelid];
 }
 
 void mavlink_update (uint8_t modelid) {
@@ -1167,7 +1167,7 @@ void mavlink_update (uint8_t modelid) {
 	mavlink_message_t msg;
 	mavlink_status_t status;
 	while ((res = serial_read(ModelData[modelid].serial_fd, serial_buf, 250)) > 0) {
-		last_connection = time(0);
+		last_connection[modelid] = time(0);
 		for (n = 0; n < res; n++) {
 			c = serial_buf[n];
 			if(mavlink_parse_char(modelid, c, &msg, &status)) {
@@ -1186,7 +1186,7 @@ void mavlink_param_get_id (uint8_t modelid, uint16_t id) {
 
 void mavlink_start_feeds (uint8_t modelid) {
 	mavlink_message_t msg;
-	mavlink_timeout = 0;
+	mavlink_timeout[modelid] = 0;
 	param_complete[modelid] = 0;
 
 	SDL_Log("mavlink(%i): starting feeds\n", modelid);

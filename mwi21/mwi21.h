@@ -65,20 +65,28 @@ void mwi21_write_rom (uint8_t modelid);
 
 void mwi21_web_get (uint8_t modelid, char *url, char *content, char *type);
 
-extern int32_t mwi_status;
-extern uint8_t mwi_pid[16][3];
-extern uint8_t mwi_set_pid[16][3];
-extern uint8_t mwi_set_pid_flag;
-extern volatile int16_t mwi_box[16];
-extern volatile int16_t mwi_set_box[16];
-extern int8_t  mwi_set_box_flag;
-extern int16_t mwi_i2cErrors;
-extern int16_t mwi_sensors;
-extern int16_t mwi_mag_x;
-extern int16_t mwi_mag_y;
-extern int16_t mwi_mag_z;
-extern int16_t cycleTime;
-extern char mwi_box_names[16][12];
-extern char mwi_pid_names[16][12];
-
+extern uint8_t mwi21_serial_buf[MODELS_MAX][255];
+extern uint8_t serial_buffer[MODELS_MAX][1024];
+extern uint8_t mwi21_serial_n[MODELS_MAX];
+extern uint8_t mwi21_frame_start[MODELS_MAX];
+extern uint8_t mwi21_frame_len[MODELS_MAX];
+extern uint8_t mwi21_cn[MODELS_MAX];
+extern uint8_t mwi21_rn[MODELS_MAX];
+extern int32_t mwi_status[MODELS_MAX];
+extern uint8_t mwi_pid[MODELS_MAX][16][3];
+extern uint8_t mwi_set_pid[MODELS_MAX][16][3];
+extern uint8_t mwi_set_pid_flag[MODELS_MAX];
+extern volatile int16_t mwi_box[MODELS_MAX][16];
+extern volatile int16_t mwi_set_box[MODELS_MAX][16];
+extern int8_t mwi_set_box_flag[MODELS_MAX];
+extern int8_t mwi_get_pid_flag[MODELS_MAX];
+extern int8_t mwi_get_box_flag[MODELS_MAX];
+extern int8_t mwi_req[MODELS_MAX];
+extern int16_t mwi_i2cErrors[MODELS_MAX];
+extern int16_t mwi_sensors[MODELS_MAX];
+extern int16_t cycleTime[MODELS_MAX];
+extern char mwi_box_names[MODELS_MAX][16][12];
+extern char mwi_pid_names[MODELS_MAX][16][12];
+extern int8_t mwi_get_boxnames_flag[MODELS_MAX];
+extern int8_t mwi_get_pidnames_flag[MODELS_MAX];
 
