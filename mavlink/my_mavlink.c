@@ -1913,11 +1913,13 @@ int mavlink_udp (void *data) {
 	return 0;
 }
 #else
-int mavlink_udp (void *data) {
+int mavlink_tcp (void *data) {
+	SDL_Log("mavlink: tcp not supported\n");
 	return 0;
 }
 
-int mavlink_tcp (void *data) {
+int mavlink_udp (void *data) {
+	SDL_Log("mavlink: udp not supported\n");
 	return 0;
 }
 #endif
