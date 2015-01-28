@@ -286,7 +286,6 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 			ModelData[modelid].dronetype = packet.type;
 			ModelData[modelid].pilottype = packet.autopilot;
 			ModelData[modelid].mode = packet.custom_mode;
-
 			if (packet.system_status == MAV_STATE_ACTIVE) {
 				ModelData[modelid].armed = MODEL_ARMED;
 			} else {
@@ -302,32 +301,53 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 					mavlink_start_feeds(modelid);
 				}
 			}
-//			redraw_flag = 1;
-
 			mavlink_msg_heartbeat_pack(127, 0, &msg2, MAV_TYPE_GCS, MAV_AUTOPILOT_INVALID, 0, 0, 0);
 			mavlink_send_message(modelid, &msg2);
-
+				if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_GENERIC) {
+					strcpy(ModelData[modelid].sysstr, "Generic autopilot");
+				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_PIXHAWK) {
+					strcpy(ModelData[modelid].sysstr, "Pixhawk");
+				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_SLUGS) {
+					strcpy(ModelData[modelid].sysstr, "SLUGS autopilot");
+				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_ARDUPILOTMEGA) {
+					strcpy(ModelData[modelid].sysstr, "ArduPilotMega");
+				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_OPENPILOT) {
+					strcpy(ModelData[modelid].sysstr, "OpenPilot");
+				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_GENERIC_WAYPOINTS_ONLY) {
+					strcpy(ModelData[modelid].sysstr, "simple Generic autopilot");
+				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_GENERIC_WAYPOINTS_AND_SIMPLE_NAVIGATION_ONLY) {
+					strcpy(ModelData[modelid].sysstr, "simple2 Generic autopilot");
+				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_GENERIC_MISSION_FULL) {
+					strcpy(ModelData[modelid].sysstr, "Generic autopilot");
+				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_INVALID) {
+					strcpy(ModelData[modelid].sysstr, "GCS or other MAVLink component");
+				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_PPZ) {
+					strcpy(ModelData[modelid].sysstr, "PPZ UAV");
+				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_UDB) {
+					strcpy(ModelData[modelid].sysstr, "UAV Dev Board");
+				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_FP) {
+					strcpy(ModelData[modelid].sysstr, "FlexiPilot");
+				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_PX4) {
+					strcpy(ModelData[modelid].sysstr, "PX4 Autopilot");
+				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_SMACCMPILOT) {
+					strcpy(ModelData[modelid].sysstr, "SMACCMPilot");
+				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_AUTOQUAD) {
+					strcpy(ModelData[modelid].sysstr, "AutoQuad");
+				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_ARMAZILA) {
+					strcpy(ModelData[modelid].sysstr, "Armazila");
+				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_AEROB) {
+					strcpy(ModelData[modelid].sysstr, "Aerob");
+				} else if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_ASLUAV) {
+					strcpy(ModelData[modelid].sysstr, "ASLUAV autopilot");
+				} else {
+					sprintf(ModelData[modelid].sysstr, "UNKNOWN(%i)", ModelData[ModelActive].pilottype);
+				}
 			break;
 		}
 		case MAVLINK_MSG_ID_RC_CHANNELS_SCALED: {
 			mavlink_rc_channels_scaled_t packet;
 			mavlink_msg_rc_channels_scaled_decode(msg, &packet);
 //			SDL_Log("Radio: %i,%i,%i\n", packet.chan1_scaled, packet.chan2_scaled, packet.chan3_scaled);
-
-/*			if ((int)packet.chan6_scaled > 1000) {
-				mode = MODE_MISSION;
-			} else if ((int)packet.chan6_scaled < -1000) {
-				mode = MODE_MANUEL;
-			} else {
-				mode = MODE_POSHOLD;
-			}
-			if ((int)packet.chan7_scaled > 1000) {
-				mode = MODE_RTL;
-			} else if ((int)packet.chan7_scaled < -1000) {
-				mode = MODE_SETHOME;
-			}
-*/
-
 			ModelData[modelid].radio[0] = (int)packet.chan1_scaled / 100.0;
 			ModelData[modelid].radio[1] = (int)packet.chan2_scaled / 100.0;
 			ModelData[modelid].radio[2] = (int)packet.chan3_scaled / 100.0;
@@ -336,15 +356,12 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 			ModelData[modelid].radio[5] = (int)packet.chan6_scaled / 100.0;
 			ModelData[modelid].radio[6] = (int)packet.chan7_scaled / 100.0;
 			ModelData[modelid].radio[7] = (int)packet.chan8_scaled / 100.0;
-
-//			redraw_flag = 1;
 			break;
 		}
 		case MAVLINK_MSG_ID_SCALED_PRESSURE: {
 			mavlink_scaled_pressure_t packet;
 			mavlink_msg_scaled_pressure_decode(msg, &packet);
 //			SDL_Log("BAR;%i;%0.2f;%0.2f;%0.2f\n", time(0), packet.press_abs, packet.press_diff, packet.temperature / 100.0);
-//			redraw_flag = 1;
 			break;
 		}
 		case MAVLINK_MSG_ID_ATTITUDE: {
@@ -365,7 +382,6 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 			break;
 		}
 		case MAVLINK_MSG_ID_SCALED_IMU: {
-//			SDL_Log("SCALED_IMU\n");
 			break;
 		}
 		case MAVLINK_MSG_ID_GPS_RAW_INT: {
@@ -390,7 +406,6 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 		case MAVLINK_MSG_ID_RC_CHANNELS_RAW: {
 			mavlink_rc_channels_raw_t packet;
 			mavlink_msg_rc_channels_raw_decode(msg, &packet);
-
 			ModelData[modelid].radio_raw[0] = (int)packet.chan1_raw;
 			ModelData[modelid].radio_raw[1] = (int)packet.chan2_raw;
 			ModelData[modelid].radio_raw[2] = (int)packet.chan3_raw;
@@ -399,7 +414,6 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 			ModelData[modelid].radio_raw[5] = (int)packet.chan6_raw;
 			ModelData[modelid].radio_raw[6] = (int)packet.chan7_raw;
 			ModelData[modelid].radio_raw[7] = (int)packet.chan8_raw;
-
 			ModelData[modelid].radio[0] = (int)packet.chan1_raw / 5 - 300;
 			ModelData[modelid].radio[1] = (int)packet.chan2_raw / 5 - 300;
 			ModelData[modelid].radio[2] = (int)packet.chan3_raw / 5 - 300;
@@ -422,17 +436,14 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 			ModelData[modelid].voltage = packet.voltage_battery / 1000.0;
 			ModelData[modelid].ampere = (float)packet.current_battery / 100.0;
 			ModelData[modelid].load = packet.load / 10.0;
-//			redraw_flag = 1;
 			break;
 		}
 		case MAVLINK_MSG_ID_STATUSTEXT: {
 			mavlink_statustext_t packet;
 			mavlink_msg_statustext_decode(msg, &packet);
-			SDL_Log("mavlink(%i): ## %s ##\n", modelid, packet.text);
-
+			SDL_Log("mavlink(%i): ### %s ###\n", modelid, packet.text);
 			sprintf(sysmsg_str, "model:%i %s", modelid, packet.text);
-			sys_message((char *)sysmsg_str);
-//			redraw_flag = 1;
+			sys_message(sysmsg_str);
 			break;
 		}
 		case MAVLINK_MSG_ID_PARAM_VALUE: {
@@ -448,7 +459,6 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 			}
 			var[n2++] = 0;
 //strcpy(var, packet.param_id);
-
 //	MAV_VAR_FLOAT=0, /* 32 bit float | */
 //	MAV_VAR_UINT8=1, /* 8 bit unsigned integer | */
 //	MAV_VAR_INT8=2, /* 8 bit signed integer | */
@@ -456,19 +466,15 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 //	MAV_VAR_INT16=4, /* 16 bit signed integer | */
 //	MAV_VAR_UINT32=5, /* 32 bit unsigned integer | */
 //	MAV_VAR_INT32=6, /* 32 bit signed integer | */
-
 //mavlink_param_get_id (uint16_t id);
-
 			mavlink_maxparam[modelid] = packet.param_count;
 			mavlink_timeout = 0;
 			mavlink_set_value(modelid, var, packet.param_value, packet.param_type, packet.param_index);
 			if (packet.param_index + 1 == packet.param_count || packet.param_index % 10 == 0) {
 				mavlink_param_xml_meta_load(modelid);
 			}
-
 			sprintf(sysmsg_str, "PARAM_VALUE (%03i/%03i): %s = %f (Type: %i)", packet.param_index + 1, packet.param_count, var, packet.param_value, packet.param_type);
 			SDL_Log("mavlink(%i): %s\n", modelid, sysmsg_str);
-
 			for (n1 = strlen(var); n1 < 20; n1++) {
 				var[n1] = ' ';
 				var[n1 + 1] = 0;
@@ -479,9 +485,7 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 				sysmsg_str[n1 + 1] = 0;
 			}
 			sys_message(sysmsg_str);
-
 			param_timeout = 10;
-
 			break;
 		}
 		case MAVLINK_MSG_ID_MISSION_COUNT: {
@@ -494,7 +498,6 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 				mavlink_msg_mission_request_pack(127, 0, &msg2, ModelData[modelid].sysid, ModelData[modelid].compid, 0);
 				mavlink_send_message(modelid, &msg2);
 			}
-//			redraw_flag = 1;
 			break;
 		}
 		case MAVLINK_MSG_ID_MISSION_ACK: {
@@ -507,46 +510,44 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 			uint16_t id = packet.seq;
 			uint16_t id2 = packet.seq;
 			uint16_t type = 0;
-
 			if (ModelData[modelid].teletype == TELETYPE_MEGAPIRATE_NG || ModelData[modelid].teletype == TELETYPE_ARDUPILOT) {
 				if (id2 > 0) {
 					id2 = id2 - 1;
 				}
 			}
-
-			sprintf(sysmsg_str, "model:%i sending Waypoint (%i): %s\n", modelid, id, WayPoints[id2 + 1].name);
+			sprintf(sysmsg_str, "model:%i sending Waypoint (%i): %s\n", modelid, id, WayPoints[modelid][id2 + 1].name);
 			sys_message(sysmsg_str);
-			if (strcmp(WayPoints[id2 + 1].command, "WAYPOINT") == 0) {
+			if (strcmp(WayPoints[modelid][id2 + 1].command, "WAYPOINT") == 0) {
 				SDL_Log("mavlink(%i): Type: MAV_CMD_NAV_WAYPOINT\n", modelid);
 				type = MAV_CMD_NAV_WAYPOINT;
-			} else if (strcmp(WayPoints[id2 + 1].command, "RTL") == 0) {
+			} else if (strcmp(WayPoints[modelid][id2 + 1].command, "RTL") == 0) {
 				SDL_Log("mavlink(%i): Type: MAV_CMD_NAV_RETURN_TO_LAUNCH\n", modelid);
 				type = MAV_CMD_NAV_RETURN_TO_LAUNCH;
-			} else if (strcmp(WayPoints[id2 + 1].command, "LAND") == 0) {
+			} else if (strcmp(WayPoints[modelid][id2 + 1].command, "LAND") == 0) {
 				SDL_Log("mavlink(%i): Type: MAV_CMD_NAV_LAND\n", modelid);
 				type = MAV_CMD_NAV_LAND;
-			} else if (strcmp(WayPoints[id2 + 1].command, "TAKEOFF") == 0) {
+			} else if (strcmp(WayPoints[modelid][id2 + 1].command, "TAKEOFF") == 0) {
 				SDL_Log("mavlink(%i): Type: MAV_CMD_NAV_TAKEOFF\n", modelid);
 				type = MAV_CMD_NAV_TAKEOFF;
-			} else if (strcmp(WayPoints[id2 + 1].command, "SHUTTER") == 0) {
+			} else if (strcmp(WayPoints[modelid][id2 + 1].command, "SHUTTER") == 0) {
 				SDL_Log("mavlink(%i): Type: MAV_CMD_DO_DIGICAM_CONTROL\n", modelid);
 				type = MAV_CMD_DO_DIGICAM_CONTROL;
-			} else if (strcmp(WayPoints[id2 + 1].command, "SHUTTER_INT") == 0) {
+			} else if (strcmp(WayPoints[modelid][id2 + 1].command, "SHUTTER_INT") == 0) {
 				SDL_Log("mavlink(%i): Type: MAV_CMD_DO_SET_CAM_TRIGG_DIST\n", modelid);
 				type = MAV_CMD_DO_SET_CAM_TRIGG_DIST;
-			} else if (strcmp(WayPoints[id2 + 1].command, "RELAY") == 0) {
+			} else if (strcmp(WayPoints[modelid][id2 + 1].command, "RELAY") == 0) {
 				SDL_Log("mavlink(%i): Type: MAV_CMD_DO_SET_RELAY\n", modelid);
 				type = MAV_CMD_DO_SET_RELAY;
-			} else if (strcmp(WayPoints[id2 + 1].command, "RELAY_REP") == 0) {
+			} else if (strcmp(WayPoints[modelid][id2 + 1].command, "RELAY_REP") == 0) {
 				SDL_Log("mavlink(%i): Type: MAV_CMD_DO_REPEAT_RELAY\n", modelid);
 				type = MAV_CMD_DO_REPEAT_RELAY;
-			} else if (strcmp(WayPoints[id2 + 1].command, "SERVO") == 0) {
+			} else if (strcmp(WayPoints[modelid][id2 + 1].command, "SERVO") == 0) {
 				SDL_Log("mavlink(%i): Type: MAV_CMD_DO_SET_SERVO\n", modelid);
 				type = MAV_CMD_DO_SET_SERVO;
-			} else if (strcmp(WayPoints[id2 + 1].command, "SERVO_REP") == 0) {
+			} else if (strcmp(WayPoints[modelid][id2 + 1].command, "SERVO_REP") == 0) {
 				SDL_Log("mavlink(%i): Type: MAV_CMD_DO_REPEAT_SERVO\n", modelid);
 				type = MAV_CMD_DO_REPEAT_SERVO;
-			} else if (strcmp(WayPoints[id2 + 1].command, "SET_ROI") == 0) {
+			} else if (strcmp(WayPoints[modelid][id2 + 1].command, "SET_ROI") == 0) {
 				SDL_Log("mavlink(%i): Type: MAV_CMD_NAV_ROI\n", modelid);
 				type = MAV_CMD_NAV_ROI;
 				type = 201;
@@ -555,10 +556,8 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 				type = MAV_CMD_NAV_WAYPOINT;
 			}
 
-			sprintf(sysmsg_str, "SENDING MISSION_ITEM: %i: %f, %f, %f\n", id, WayPoints[id2 + 1].p_lat, WayPoints[id2 + 1].p_long, WayPoints[id2 + 1].p_alt);
+			sprintf(sysmsg_str, "SENDING MISSION_ITEM: %i: %f, %f, %f\n", id, WayPoints[modelid][id2 + 1].p_lat, WayPoints[modelid][id2 + 1].p_long, WayPoints[modelid][id2 + 1].p_alt);
 			SDL_Log("mavlink(%i): %s\n", modelid, sysmsg_str);
-
-
 //	MAV_FRAME_GLOBAL=0, /* Global coordinate frame, WGS84 coordinate system. First value / x: latitude, second value / y: longitude, third value / z: positive altitude over mean sea level (MSL) | */
 //	MAV_FRAME_LOCAL_NED=1, /* Local coordinate frame, Z-up (x: north, y: east, z: down). | */
 //	MAV_FRAME_MISSION=2, /* NOT a coordinate frame, indicates a mission command. | */
@@ -572,15 +571,13 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 //	MAV_FRAME_GLOBAL_TERRAIN_ALT=10, /* Global coordinate frame with above terrain level altitude. WGS84 coordinate system, relative altitude over terrain with respect to the waypoint coordinate. First value / x: latitude in degrees, second value / y: longitude in degrees, third value / z: positive altitude in meters with 0 being at ground level in terrain model. | */
 //	MAV_FRAME_GLOBAL_TERRAIN_ALT_INT=11, /* Global coordinate frame with above terrain level altitude. WGS84 coordinate system, relative altitude over terrain with respect to the waypoint coordinate. First value / x: latitude in degrees*10e-7, second value / y: longitude in degrees*10e-7, third value / z: positive altitude in meters with 0 being at ground level in terrain model. | */
 
-
-			if (ModelData[modelid].dronetype != MAV_TYPE_FIXED_WING && WayPoints[id2 + 1].frametype == MAV_FRAME_GLOBAL) {
+			if (ModelData[modelid].dronetype != MAV_TYPE_FIXED_WING && WayPoints[modelid][id2 + 1].frametype == MAV_FRAME_GLOBAL) {
 				SDL_Log("mavlink(%i): copter absolut alt workaround", modelid);
-				mavlink_msg_mission_item_pack(127, 0, &msg2, ModelData[modelid].sysid, ModelData[modelid].compid, id, WayPoints[id2 + 1].frametype, type, 0, 1, WayPoints[id2 + 1].param1, WayPoints[id2 + 1].param2, WayPoints[id2 + 1].param3, WayPoints[id2 + 1].param4, WayPoints[id2 + 1].p_lat, WayPoints[id2 + 1].p_long, WayPoints[id2 + 1].p_alt - WayPoints[0].p_alt);
+				mavlink_msg_mission_item_pack(127, 0, &msg2, ModelData[modelid].sysid, ModelData[modelid].compid, id, WayPoints[modelid][id2 + 1].frametype, type, 0, 1, WayPoints[modelid][id2 + 1].param1, WayPoints[modelid][id2 + 1].param2, WayPoints[modelid][id2 + 1].param3, WayPoints[modelid][id2 + 1].param4, WayPoints[modelid][id2 + 1].p_lat, WayPoints[modelid][id2 + 1].p_long, WayPoints[modelid][id2 + 1].p_alt - WayPoints[modelid][0].p_alt);
 			} else {
-				mavlink_msg_mission_item_pack(127, 0, &msg2, ModelData[modelid].sysid, ModelData[modelid].compid, id, WayPoints[id2 + 1].frametype, type, 0, 1, WayPoints[id2 + 1].param1, WayPoints[id2 + 1].param2, WayPoints[id2 + 1].param3, WayPoints[id2 + 1].param4, WayPoints[id2 + 1].p_lat, WayPoints[id2 + 1].p_long, WayPoints[id2 + 1].p_alt);
+				mavlink_msg_mission_item_pack(127, 0, &msg2, ModelData[modelid].sysid, ModelData[modelid].compid, id, WayPoints[modelid][id2 + 1].frametype, type, 0, 1, WayPoints[modelid][id2 + 1].param1, WayPoints[modelid][id2 + 1].param2, WayPoints[modelid][id2 + 1].param3, WayPoints[modelid][id2 + 1].param4, WayPoints[modelid][id2 + 1].p_lat, WayPoints[modelid][id2 + 1].p_long, WayPoints[modelid][id2 + 1].p_alt);
 			}
 			mavlink_send_message(modelid, &msg2);
-
 /*
 mavlink_msg_mission_item_pack(system_id, component_id, &msg , packet1.target_system , packet1.target_component , packet1.seq , packet1.frame , packet1.command , packet1.current , packet1.autocontinue , packet1.param1 , packet1.param2 , packet1.param3 , packet1.param4 , packet1.x , packet1.y , packet1.z );
 float param1; ///< PARAM1 / For NAV command MISSIONs: Radius in which the MISSION is accepted as reached, in meters
@@ -598,14 +595,11 @@ uint8_t frame; ///< The coordinate system of the MISSION. see MAV_FRAME in mavli
 uint8_t current; ///< false:0, true:1
 uint8_t autocontinue; ///< autocontinue to next wp
 */
-
-//			redraw_flag = 1;
 			break;
 		}
 		case MAVLINK_MSG_ID_MISSION_ITEM: {
 			mavlink_mission_item_t packet;
 			mavlink_msg_mission_item_decode(msg, &packet);
-
 			sprintf(sysmsg_str, "RECEIVED MISSION_ITEM: %i/%i: %f, %f, %f (%i)", packet.seq, mission_max, packet.x, packet.y, packet.z, packet.frame);
 			SDL_Log("mavlink(%i): %s\n", modelid, sysmsg_str);
 			sprintf(sysmsg_str, "	->: %f, %f, %f, %f", packet.param1, packet.param2, packet.param3, packet.param4);
@@ -614,9 +608,6 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			SDL_Log("mavlink(%i): %s\n", modelid, sysmsg_str);
 			sprintf(sysmsg_str, "model:%i RECEIVED MISSION_ITEM: %i/%i: %f, %f, %f (%i)", modelid, packet.seq, mission_max, packet.x, packet.y, packet.z, packet.frame);
 			sys_message(sysmsg_str);
-
-
-
 			if (packet.seq < mission_max - 1) {
 				mavlink_msg_mission_request_pack(127, 0, &msg2, ModelData[modelid].sysid, ModelData[modelid].compid, packet.seq + 1);
 				mavlink_send_message(modelid, &msg2);
@@ -624,7 +615,6 @@ uint8_t autocontinue; ///< autocontinue to next wp
 				mavlink_msg_mission_ack_pack(127, 0, &msg2, ModelData[modelid].sysid, ModelData[modelid].compid, 15);
 				mavlink_send_message(modelid, &msg2);
 			}
-
 			if (ModelData[modelid].teletype == TELETYPE_MEGAPIRATE_NG || ModelData[modelid].teletype == TELETYPE_ARDUPILOT) {
 				if (packet.seq > 0) {
 					packet.seq = packet.seq - 1;
@@ -632,76 +622,73 @@ uint8_t autocontinue; ///< autocontinue to next wp
 					break;
 				}
 			}
-
 			SDL_Log("mavlink(%i): getting WP(%i): %f, %f\n", modelid, packet.seq, packet.x, packet.y);
-
 			switch (packet.command) {
 				case MAV_CMD_NAV_WAYPOINT: {
-					strcpy(WayPoints[1 + packet.seq].command, "WAYPOINT");
+					strcpy(WayPoints[modelid][1 + packet.seq].command, "WAYPOINT");
 					break;
 				}
 				case MAV_CMD_NAV_LOITER_UNLIM: {
-					strcpy(WayPoints[1 + packet.seq].command, "LOITER_UNLIM");
+					strcpy(WayPoints[modelid][1 + packet.seq].command, "LOITER_UNLIM");
 					break;
 				}
 				case MAV_CMD_NAV_LOITER_TURNS: {
-					strcpy(WayPoints[1 + packet.seq].command, "LOITER_TURNS");
+					strcpy(WayPoints[modelid][1 + packet.seq].command, "LOITER_TURNS");
 					break;
 				}
 				case MAV_CMD_NAV_LOITER_TIME: {
-					strcpy(WayPoints[1 + packet.seq].command, "LOITER_TIME");
+					strcpy(WayPoints[modelid][1 + packet.seq].command, "LOITER_TIME");
 					break;
 				}
 				case MAV_CMD_NAV_RETURN_TO_LAUNCH: {
-					strcpy(WayPoints[1 + packet.seq].command, "RTL");
+					strcpy(WayPoints[modelid][1 + packet.seq].command, "RTL");
 					break;
 				}
 				case MAV_CMD_NAV_LAND: {
-					strcpy(WayPoints[1 + packet.seq].command, "LAND");
+					strcpy(WayPoints[modelid][1 + packet.seq].command, "LAND");
 					break;
 				}
 				case MAV_CMD_NAV_TAKEOFF: {
-					strcpy(WayPoints[1 + packet.seq].command, "TAKEOFF");
+					strcpy(WayPoints[modelid][1 + packet.seq].command, "TAKEOFF");
 					break;
 				}
 				case MAV_CMD_DO_DIGICAM_CONTROL: {
-					strcpy(WayPoints[1 + packet.seq].command, "SHUTTER");
+					strcpy(WayPoints[modelid][1 + packet.seq].command, "SHUTTER");
 					break;
 				}
 				case MAV_CMD_DO_SET_CAM_TRIGG_DIST: {
-					strcpy(WayPoints[1 + packet.seq].command, "SHUTTER_INT");
+					strcpy(WayPoints[modelid][1 + packet.seq].command, "SHUTTER_INT");
 					break;
 				}
 				case MAV_CMD_DO_SET_RELAY: {
-					strcpy(WayPoints[1 + packet.seq].command, "RELAY");
+					strcpy(WayPoints[modelid][1 + packet.seq].command, "RELAY");
 					break;
 				}
 				case MAV_CMD_DO_REPEAT_RELAY: {
-					strcpy(WayPoints[1 + packet.seq].command, "RELAY_REP");
+					strcpy(WayPoints[modelid][1 + packet.seq].command, "RELAY_REP");
 					break;
 				}
 				case MAV_CMD_DO_SET_SERVO: {
-					strcpy(WayPoints[1 + packet.seq].command, "SERVO");
+					strcpy(WayPoints[modelid][1 + packet.seq].command, "SERVO");
 					break;
 				}
 				case MAV_CMD_DO_REPEAT_SERVO: {
-					strcpy(WayPoints[1 + packet.seq].command, "SERVO_REP");
+					strcpy(WayPoints[modelid][1 + packet.seq].command, "SERVO_REP");
 					break;
 				}
 				case MAV_CMD_NAV_ROI: {
-					strcpy(WayPoints[1 + packet.seq].command, "SET_ROI");
+					strcpy(WayPoints[modelid][1 + packet.seq].command, "SET_ROI");
 					break;
 				}
 				case 201: {
-					strcpy(WayPoints[1 + packet.seq].command, "SET_ROI");
+					strcpy(WayPoints[modelid][1 + packet.seq].command, "SET_ROI");
 					break;
 				}
 				default: {
-					sprintf(WayPoints[1 + packet.seq].command, "CMD:%i", packet.command);
+					sprintf(WayPoints[modelid][1 + packet.seq].command, "CMD:%i", packet.command);
 					break;
 				}
 			}
-
 			if (packet.x == 0.0) {
 				packet.x = 0.00001;
 			}
@@ -711,36 +698,31 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			if (packet.z == 0.0) {
 				packet.z = 0.00001;
 			}
-
-
-			if (ModelData[modelid].dronetype != MAV_TYPE_FIXED_WING && WayPoints[1 + packet.seq].frametype == MAV_FRAME_GLOBAL) {
+			if (ModelData[modelid].dronetype != MAV_TYPE_FIXED_WING && WayPoints[modelid][1 + packet.seq].frametype == MAV_FRAME_GLOBAL) {
 				SDL_Log("mavlink(%i): copter absolut alt workaround", modelid);
-				packet.z += WayPoints[0].p_alt;
+				packet.z += WayPoints[modelid][0].p_alt;
 			}
 
+			WayPoints[modelid][1 + packet.seq].p_lat = packet.x;
+			WayPoints[modelid][1 + packet.seq].p_long = packet.y;
+			WayPoints[modelid][1 + packet.seq].p_alt = packet.z;
+			WayPoints[modelid][1 + packet.seq].param1 = packet.param1;
+			WayPoints[modelid][1 + packet.seq].param2 = packet.param2;
+			WayPoints[modelid][1 + packet.seq].param3 = packet.param3;
+			WayPoints[modelid][1 + packet.seq].param4 = packet.param4;
+			WayPoints[modelid][1 + packet.seq].frametype = packet.frame;
+			sprintf(WayPoints[modelid][1 + packet.seq].name, "WP%i", packet.seq + 1);
 
-			WayPoints[1 + packet.seq].p_lat = packet.x;
-			WayPoints[1 + packet.seq].p_long = packet.y;
-			WayPoints[1 + packet.seq].p_alt = packet.z;
-			WayPoints[1 + packet.seq].param1 = packet.param1;
-			WayPoints[1 + packet.seq].param2 = packet.param2;
-			WayPoints[1 + packet.seq].param3 = packet.param3;
-			WayPoints[1 + packet.seq].param4 = packet.param4;
-			WayPoints[1 + packet.seq].frametype = packet.frame;
-			sprintf(WayPoints[1 + packet.seq].name, "WP%i", packet.seq + 1);
-
-			WayPoints[1 + packet.seq + 1].p_lat = 0.0;
-			WayPoints[1 + packet.seq + 1].p_long = 0.0;
-			WayPoints[1 + packet.seq + 1].p_alt = 0.0;
-			WayPoints[1 + packet.seq + 1].param1 = 0.0;
-			WayPoints[1 + packet.seq + 1].param2 = 0.0;
-			WayPoints[1 + packet.seq + 1].param3 = 0.0;
-			WayPoints[1 + packet.seq + 1].param4 = 0.0;
-			WayPoints[1 + packet.seq + 1].name[0] = 0;
-			WayPoints[1 + packet.seq + 1].frametype = 0;
-			WayPoints[1 + packet.seq + 1].command[0] = 0;
-
-//			redraw_flag = 1;
+			WayPoints[modelid][1 + packet.seq + 1].p_lat = 0.0;
+			WayPoints[modelid][1 + packet.seq + 1].p_long = 0.0;
+			WayPoints[modelid][1 + packet.seq + 1].p_alt = 0.0;
+			WayPoints[modelid][1 + packet.seq + 1].param1 = 0.0;
+			WayPoints[modelid][1 + packet.seq + 1].param2 = 0.0;
+			WayPoints[modelid][1 + packet.seq + 1].param3 = 0.0;
+			WayPoints[modelid][1 + packet.seq + 1].param4 = 0.0;
+			WayPoints[modelid][1 + packet.seq + 1].name[0] = 0;
+			WayPoints[modelid][1 + packet.seq + 1].frametype = 0;
+			WayPoints[modelid][1 + packet.seq + 1].command[0] = 0;
 			break;
 		}
 		case MAVLINK_MSG_ID_MISSION_CURRENT: {
@@ -758,7 +740,6 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			ModelData[modelid].gyro_x = (float)packet.zgyro;
 			ModelData[modelid].gyro_y = (float)packet.zgyro;
 			ModelData[modelid].gyro_z = (float)packet.zgyro;
-//			redraw_flag = 1;
 			break;
 		}
 		case MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT: {
@@ -793,10 +774,6 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			mavlink_msg_global_position_int_decode(msg, &packet);
 			if (GPS_found == 0) {
 				if (packet.lat != 0 && packet.lon != 0) {
-//					ModelData[modelid].p_lat = (float)packet.lat / 10000000.0;
-//					ModelData[modelid].p_long = (float)packet.lon / 10000000.0;
-//					ModelData[modelid].p_alt = (float)packet.alt / 1000.0;
-//					ModelData[modelid].yaw = (float)packet.hdg / 100.0;
 				}
 			}
 			break;
@@ -1141,7 +1118,7 @@ void mavlink_send_waypoints (uint8_t modelid) {
 	usleep(100000);
 	uint16_t n = 0;
 	for (n = 1; n < MAX_WAYPOINTS; n++) {
-		if (WayPoints[n].p_lat == 0.0) {
+		if (WayPoints[modelid][n].p_lat == 0.0) {
 			break;
 		}
 	}

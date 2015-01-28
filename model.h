@@ -45,6 +45,7 @@ enum {
 
 typedef struct {
 	char name[200];
+	char sysstr[200];
 	char image[512];
 	uint8_t modeltype;
 	uint8_t teletype;

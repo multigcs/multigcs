@@ -482,14 +482,14 @@ void webserv_child_show_map (int fd) {
 	strcat(content, " });\n");
 	int n = 0;
 	for (n = 0; n < MAX_WAYPOINTS; n++) {
-		if (WayPoints[n].p_lat != 0.0) {
-			sprintf(tmp_str, " marker%i = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(%f, %f).transform(map.displayProjection,map.projection));\n", n, WayPoints[n].p_long, WayPoints[n].p_lat);
+		if (WayPoints[ModelActive][n].p_lat != 0.0) {
+			sprintf(tmp_str, " marker%i = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(%f, %f).transform(map.displayProjection,map.projection));\n", n, WayPoints[ModelActive][n].p_long, WayPoints[ModelActive][n].p_lat);
 			strcat(content, tmp_str);
-			sprintf(tmp_str, " marker%i.attributes.name = \"%s\";\n", n, WayPoints[n].name);
+			sprintf(tmp_str, " marker%i.attributes.name = \"%s\";\n", n, WayPoints[ModelActive][n].name);
 			strcat(content, tmp_str);
-			sprintf(tmp_str, " marker%i.attributes.command = \"%s\";\n", n, WayPoints[n].command);
+			sprintf(tmp_str, " marker%i.attributes.command = \"%s\";\n", n, WayPoints[ModelActive][n].command);
 			strcat(content, tmp_str);
-			sprintf(tmp_str, " marker%i.attributes.alt = \"%0.1f\";\n", n, WayPoints[n].p_alt);
+			sprintf(tmp_str, " marker%i.attributes.alt = \"%0.1f\";\n", n, WayPoints[ModelActive][n].p_alt);
 			strcat(content, tmp_str);
 			sprintf(tmp_str, " markerlayer.addFeatures([marker%i]);\n", n);
 			strcat(content, tmp_str);
@@ -502,11 +502,11 @@ void webserv_child_show_map (int fd) {
 	uint8_t flag = 0;
 	int n2 = 1;
 	for (n = 0; n < MAX_WAYPOINTS; n++) {
-		if (WayPoints[n].p_lat != 0.0) {
+		if (WayPoints[ModelActive][n].p_lat != 0.0) {
 			if (flag == 1) {
 				strcat(content, ",\n");
 			}
-			sprintf(tmp_str, "   new OpenLayers.Geometry.Point(%f, %f).transform(map.displayProjection,map.projection)", WayPoints[n].p_long, WayPoints[n].p_lat);
+			sprintf(tmp_str, "   new OpenLayers.Geometry.Point(%f, %f).transform(map.displayProjection,map.projection)", WayPoints[ModelActive][n].p_long, WayPoints[ModelActive][n].p_lat);
 			strcat(content, tmp_str);
 			n2 = n + 1;
 			flag = 1;
@@ -865,16 +865,16 @@ void webserv_child_kml_wp (int fd, char *servername) {
 	strcat(content, "  <Document>\n");
 	strcat(content, "    <name>Waypoint-List</name>\n");
 	for (n = 0; n < MAX_WAYPOINTS; n++) {
-		if (WayPoints[n].name[0] != 0) {
+		if (WayPoints[ModelActive][n].name[0] != 0) {
 			strcat(content, "    <Placemark>\n");
-			sprintf(tmp_str, "      <name>%s</name>\n", WayPoints[n].name);
+			sprintf(tmp_str, "      <name>%s</name>\n", WayPoints[ModelActive][n].name);
 			strcat(content, tmp_str);
-			sprintf(tmp_str, "      <description>%s</description>\n", WayPoints[n].command);
+			sprintf(tmp_str, "      <description>%s</description>\n", WayPoints[ModelActive][n].command);
 			strcat(content, tmp_str);
 			strcat(content, "      <Point>\n");
 			strcat(content, "        <extrude>1</extrude>\n");
 			strcat(content, "        <altitudeMode>absolute</altitudeMode>\n");
-			sprintf(tmp_str, "        <coordinates>%f,%f,%f</coordinates>\n", WayPoints[n].p_long, WayPoints[n].p_lat, WayPoints[n].p_alt);
+			sprintf(tmp_str, "        <coordinates>%f,%f,%f</coordinates>\n", WayPoints[ModelActive][n].p_long, WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_alt);
 			strcat(content, tmp_str);
 			strcat(content, "      </Point>\n");
 			strcat(content, "    </Placemark>\n");
@@ -899,8 +899,8 @@ void webserv_child_kml_wp (int fd, char *servername) {
 	strcat(content, "        <altitudeMode>absolute</altitudeMode>\n");
 	strcat(content, "        <coordinates>");
 	for (n = 0; n < MAX_WAYPOINTS; n++) {
-		if (WayPoints[n].name[0] != 0) {
-			sprintf(tmp_str, " %f,%f,%f \n", WayPoints[n].p_long, WayPoints[n].p_lat, WayPoints[n].p_alt);
+		if (WayPoints[ModelActive][n].name[0] != 0) {
+			sprintf(tmp_str, " %f,%f,%f \n", WayPoints[ModelActive][n].p_long, WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_alt);
 			strcat(content, tmp_str);
 		}
 	}
@@ -1150,7 +1150,7 @@ void webserv_child_waypoints (int fd, char *servername) {
 	strcat(content, "<TR class=\"thead\"><TH>ACTIVE</TH><TH>NAME</TH><TH>TYPE</TH><TH>LONG</TH><TH>LAT</TH><TH>ALT</TH><TH>DIST</TH><TH>ACTION</TH><TH>MAP</TH></TR>\n");
 	int lc = 0;
 	for (n = 0; n < MAX_WAYPOINTS; n++) {
-		if (WayPoints[n].p_lat != 0.0) {
+		if (WayPoints[ModelActive][n].p_lat != 0.0) {
 			lc = 1 - lc;
 			if (lc == 0) {
 				strcat(content, "<TR class=\"first\">\n");
@@ -1162,54 +1162,54 @@ void webserv_child_waypoints (int fd, char *servername) {
 			} else {
 				strcat(content, "<TD>&nbsp;</TD>");
 			}
-			sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('wp%i', 'NAME');\" id=\"wp%i-NAME\" value=\"%s\" type=\"text\"></TD>", n, n, WayPoints[n].name);
+			sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('wp%i', 'NAME');\" id=\"wp%i-NAME\" value=\"%s\" type=\"text\"></TD>", n, n, WayPoints[ModelActive][n].name);
 			strcat(content, tmp_str);
 			if (n != 0) {
 				sprintf(tmp_str, "<TD><SELECT class=\"form-input\" onchange=\"check_option('wp%i', 'TYPE');\" id=\"wp%i-TYPE\">\n", n, n);
 				strcat(content, tmp_str);
-				if (WayPoints[n].command[0] == 0) {
+				if (WayPoints[ModelActive][n].command[0] == 0) {
 					sprintf(tmp_str, " <OPTION value=\"NONE\" selected>NONE</OPTION>\n");
 				} else {
 					sprintf(tmp_str, " <OPTION value=\"NONE\">NONE</OPTION>\n");
 				}
 				strcat(content, tmp_str);
-				if (strcmp(WayPoints[n].command, "WAYPOINT") == 0) {
+				if (strcmp(WayPoints[ModelActive][n].command, "WAYPOINT") == 0) {
 					sprintf(tmp_str, " <OPTION value=\"WAYPOINT\" selected>WAYPOINT</OPTION>\n");
 				} else {
 					sprintf(tmp_str, " <OPTION value=\"WAYPOINT\">WAYPOINT</OPTION>\n");
 				}
 				strcat(content, tmp_str);
-				if (strcmp(WayPoints[n].command, "LOITER_UNLIM") == 0) {
+				if (strcmp(WayPoints[ModelActive][n].command, "LOITER_UNLIM") == 0) {
 					sprintf(tmp_str, " <OPTION value=\"LOITER_UNLIM\" selected>LOITER_UNLIM</OPTION>\n");
 				} else {
 					sprintf(tmp_str, " <OPTION value=\"LOITER_UNLIM\">LOITER_UNLIM</OPTION>\n");
 				}
 				strcat(content, tmp_str);
-				if (strcmp(WayPoints[n].command, "LOITER_TURNS") == 0) {
+				if (strcmp(WayPoints[ModelActive][n].command, "LOITER_TURNS") == 0) {
 					sprintf(tmp_str, " <OPTION value=\"LOITER_TURNS\" selected>LOITER_TURNS</OPTION>\n");
 				} else {
 					sprintf(tmp_str, " <OPTION value=\"LOITER_TURNS\">LOITER_TURNS</OPTION>\n");
 				}
 				strcat(content, tmp_str);
-				if (strcmp(WayPoints[n].command, "LOITER_TIME") == 0) {
+				if (strcmp(WayPoints[ModelActive][n].command, "LOITER_TIME") == 0) {
 					sprintf(tmp_str, " <OPTION value=\"LOITER_TIME\" selected>LOITER_TIME</OPTION>\n");
 				} else {
 					sprintf(tmp_str, " <OPTION value=\"LOITER_TIME\">LOITER_TIME</OPTION>\n");
 				}
 				strcat(content, tmp_str);
-				if (strcmp(WayPoints[n].command, "RTL") == 0) {
+				if (strcmp(WayPoints[ModelActive][n].command, "RTL") == 0) {
 					sprintf(tmp_str, " <OPTION value=\"RTL\" selected>RTL</OPTION>\n");
 				} else {
 					sprintf(tmp_str, " <OPTION value=\"RTL\">RTL</OPTION>\n");
 				}
 				strcat(content, tmp_str);
-				if (strcmp(WayPoints[n].command, "LAND") == 0) {
+				if (strcmp(WayPoints[ModelActive][n].command, "LAND") == 0) {
 					sprintf(tmp_str, " <OPTION value=\"LAND\" selected>LAND</OPTION>\n");
 				} else {
 					sprintf(tmp_str, " <OPTION value=\"LAND\">LAND</OPTION>\n");
 				}
 				strcat(content, tmp_str);
-				if (strcmp(WayPoints[n].command, "TAKEOFF") == 0) {
+				if (strcmp(WayPoints[ModelActive][n].command, "TAKEOFF") == 0) {
 					sprintf(tmp_str, " <OPTION value=\"TAKEOFF\" selected>TAKEOFF</OPTION>\n");
 				} else {
 					sprintf(tmp_str, " <OPTION value=\"TAKEOFF\">TAKEOFF</OPTION>\n");
@@ -1219,11 +1219,11 @@ void webserv_child_waypoints (int fd, char *servername) {
 			} else {
 				strcat(content, "<TD>&nbsp;</TD>");
 			}
-			sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('wp%i', 'LAT');\" id=\"wp%i-LAT\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_lat);
+			sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('wp%i', 'LAT');\" id=\"wp%i-LAT\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[ModelActive][n].p_lat);
 			strcat(content, tmp_str);
-			sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('wp%i', 'LONG');\" id=\"wp%i-LONG\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_long);
+			sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('wp%i', 'LONG');\" id=\"wp%i-LONG\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[ModelActive][n].p_long);
 			strcat(content, tmp_str);
-			sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('wp%i', 'ALT');\" id=\"wp%i-ALT\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[n].p_alt);
+			sprintf(tmp_str, "<TD><INPUT class=\"form-input\" onchange=\"check_value('wp%i', 'ALT');\" id=\"wp%i-ALT\" value=\"%f\" type=\"text\"></TD>", n, n, WayPoints[ModelActive][n].p_alt);
 			strcat(content, tmp_str);
 			float distance1 = 0.0;
 			float distance2 = 0.0;
@@ -1232,12 +1232,12 @@ void webserv_child_waypoints (int fd, char *servername) {
 				/* Distance - Ground-Level */
 				distance1 = acos( 
 					cos(toRad(last_lat))
-					* cos(toRad(WayPoints[n].p_lat))
-					* cos(toRad(last_lon) - toRad(WayPoints[n].p_long))
+					* cos(toRad(WayPoints[ModelActive][n].p_lat))
+					* cos(toRad(last_lon) - toRad(WayPoints[ModelActive][n].p_long))
 					+ sin(toRad(last_lat)) 
-					* sin(toRad(WayPoints[n].p_lat))
+					* sin(toRad(WayPoints[ModelActive][n].p_lat))
 				) * 6378.137 * 1000.0;
-				alt = WayPoints[n].p_alt - last_alt;
+				alt = WayPoints[ModelActive][n].p_alt - last_alt;
 				/* Distance - Sichtverbindung */
 				distance2 = sqrt(((distance1) * (distance1)) + (alt * alt));
 				/* Steigung */
@@ -1247,9 +1247,9 @@ void webserv_child_waypoints (int fd, char *servername) {
 			} else {
 				strcat(content, "<TD>&nbsp;</TD>");
 			}
-			last_lat = WayPoints[n].p_lat;
-			last_lon = WayPoints[n].p_long;
-			last_alt = WayPoints[n].p_alt;
+			last_lat = WayPoints[ModelActive][n].p_lat;
+			last_lon = WayPoints[ModelActive][n].p_long;
+			last_alt = WayPoints[ModelActive][n].p_alt;
 
 			if (n != 0) {
 				sprintf(tmp_str, "<TD><A href=\"/waypoint_set?wp%i&DEL=1\">DEL</A></TD>", n);
@@ -1258,7 +1258,7 @@ void webserv_child_waypoints (int fd, char *servername) {
 			}
 			strcat(content, tmp_str);
 
-			sprintf(tmp_str, "<TD><A target=\"map\" href=\"https://maps.google.de/maps?q=%f,%f%%28%s%%29&t=k&z=17\">SHOW</A></TD>", WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].name);
+			sprintf(tmp_str, "<TD><A target=\"map\" href=\"https://maps.google.de/maps?q=%f,%f%%28%s%%29&t=k&z=17\">SHOW</A></TD>", WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long, WayPoints[ModelActive][n].name);
 			strcat(content, tmp_str);
 
 			strcat(content, "</TR>\n");
@@ -2789,11 +2789,11 @@ void webserv_child (int fd) {
 			float lat = 0.0;
 			float lon = 0.0;
 			sscanf(buffer + 4 + 14, "wp%i=%f,%f", &wp_num, &lat, &lon);
-			sprintf(WayPoints[wp_num].name, "WP%i", wp_num);
-			strcpy(WayPoints[wp_num].command, "WAYPOINT");
-			WayPoints[wp_num].p_lat = lat;
-			WayPoints[wp_num].p_long = lon;
-			WayPoints[wp_num].p_alt = WayPoints[0].p_alt;
+			sprintf(WayPoints[ModelActive][wp_num].name, "WP%i", wp_num);
+			strcpy(WayPoints[ModelActive][wp_num].command, "WAYPOINT");
+			WayPoints[ModelActive][wp_num].p_lat = lat;
+			WayPoints[ModelActive][wp_num].p_long = lon;
+			WayPoints[ModelActive][wp_num].p_alt = WayPoints[ModelActive][0].p_alt;
 			sprintf(content, "done");
 			sprintf(buffer, header_str, (int)strlen(content), "text/plain");
 		} else if (strncmp(buffer + 4,"/waypoint_set?", 14) == 0) {
@@ -2803,26 +2803,26 @@ void webserv_child (int fd) {
 			char value[20];
 			sscanf(buffer + 4 + 14, "wp%i&%[0-9a-zA-Z_]=%s", &wp_num, name, value);
 			if (strcmp(name, "NAME") == 0) {
-				strcpy(WayPoints[wp_num].name, value);
+				strcpy(WayPoints[ModelActive][wp_num].name, value);
 			} else if (strcmp(name, "TYPE") == 0) {
-				strcpy(WayPoints[wp_num].command, value);
+				strcpy(WayPoints[ModelActive][wp_num].command, value);
 			} else if (strcmp(name, "LONG") == 0) {
-				WayPoints[wp_num].p_long = atof(value);
+				WayPoints[ModelActive][wp_num].p_long = atof(value);
 			} else if (strcmp(name, "LAT") == 0) {
-				WayPoints[wp_num].p_lat = atof(value);
+				WayPoints[ModelActive][wp_num].p_lat = atof(value);
 			} else if (strcmp(name, "ALT") == 0) {
-				WayPoints[wp_num].p_alt = atof(value);
+				WayPoints[ModelActive][wp_num].p_alt = atof(value);
 			} else if (strcmp(name, "DEL") == 0) {
-				WayPoints[wp_num].name[0] = 0;
-				WayPoints[wp_num].p_lat = 0.0;
-				WayPoints[wp_num].p_long = 0.0;
-				WayPoints[wp_num].p_alt = 0.0;
+				WayPoints[ModelActive][wp_num].name[0] = 0;
+				WayPoints[ModelActive][wp_num].p_lat = 0.0;
+				WayPoints[ModelActive][wp_num].p_long = 0.0;
+				WayPoints[ModelActive][wp_num].p_alt = 0.0;
 			} else if (strcmp(name, "ADD") == 0) {
-				sprintf(WayPoints[wp_num].name, "WP%i", n);
-				strcpy(WayPoints[wp_num].command, "WAYPOINT");
-				WayPoints[wp_num].p_lat = WayPoints[0].p_lat;
-				WayPoints[wp_num].p_long = WayPoints[0].p_long;
-				WayPoints[wp_num].p_alt = WayPoints[0].p_alt;
+				sprintf(WayPoints[ModelActive][wp_num].name, "WP%i", n);
+				strcpy(WayPoints[ModelActive][wp_num].command, "WAYPOINT");
+				WayPoints[ModelActive][wp_num].p_lat = WayPoints[ModelActive][0].p_lat;
+				WayPoints[ModelActive][wp_num].p_long = WayPoints[ModelActive][0].p_long;
+				WayPoints[ModelActive][wp_num].p_alt = WayPoints[ModelActive][0].p_alt;
 			}
 			if (strcmp(name, "DEL") == 0 || strcmp(name, "ADD") == 0) {
 				sprintf(content, "<meta http-equiv=\"Refresh\" content=\"0; URL=/waypoints.html\">");

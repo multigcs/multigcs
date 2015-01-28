@@ -18,9 +18,9 @@ void Java_org_libsdl_app_mylocationlistener_gpsSetPosition (JNIEnv* env, jclass 
 			ModelData[ModelActive].p_alt = alt;
 			ModelData[ModelActive].speed = speed;
 		} else {
-			WayPoints[0].p_lat = lat;
-			WayPoints[0].p_long = lon;
-			WayPoints[0].p_alt = alt;
+			WayPoints[ModelActive][0].p_lat = lat;
+			WayPoints[ModelActive][0].p_long = lon;
+			WayPoints[ModelActive][0].p_alt = alt;
 		}
 	}
 	return;

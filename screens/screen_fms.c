@@ -27,18 +27,18 @@ uint8_t fms_del (char *name, float x, float y, int8_t button, float data, uint8_
 	uint16_t n = 0;
 	uint16_t n2 = waypoint_active + 1;
 	for (n = waypoint_active; n < MAX_WAYPOINTS; n++) {
-		if (WayPoints[n].p_lat != 0.0) {
-			WayPoints[n].p_lat = WayPoints[n2].p_lat;
-			WayPoints[n].p_long = WayPoints[n2].p_long;
-			WayPoints[n].p_alt = WayPoints[n2].p_alt;
-			WayPoints[n].param1 = WayPoints[n2].param1;
-			WayPoints[n].param2 = WayPoints[n2].param2;
-			WayPoints[n].param3 = WayPoints[n2].param3;
-			WayPoints[n].param4 = WayPoints[n2].param4;
-			WayPoints[n].type = WayPoints[n2].type;
-			WayPoints[n].frametype = WayPoints[n2].frametype;
-			strncpy(WayPoints[n].name, WayPoints[n2].name, 127);
-			strncpy(WayPoints[n].command, WayPoints[n2].command, 127);
+		if (WayPoints[ModelActive][n].p_lat != 0.0) {
+			WayPoints[ModelActive][n].p_lat = WayPoints[ModelActive][n2].p_lat;
+			WayPoints[ModelActive][n].p_long = WayPoints[ModelActive][n2].p_long;
+			WayPoints[ModelActive][n].p_alt = WayPoints[ModelActive][n2].p_alt;
+			WayPoints[ModelActive][n].param1 = WayPoints[ModelActive][n2].param1;
+			WayPoints[ModelActive][n].param2 = WayPoints[ModelActive][n2].param2;
+			WayPoints[ModelActive][n].param3 = WayPoints[ModelActive][n2].param3;
+			WayPoints[ModelActive][n].param4 = WayPoints[ModelActive][n2].param4;
+			WayPoints[ModelActive][n].type = WayPoints[ModelActive][n2].type;
+			WayPoints[ModelActive][n].frametype = WayPoints[ModelActive][n2].frametype;
+			strncpy(WayPoints[ModelActive][n].name, WayPoints[ModelActive][n2].name, 127);
+			strncpy(WayPoints[ModelActive][n].command, WayPoints[ModelActive][n2].command, 127);
 			n2++;
 		}
 	}
@@ -90,7 +90,7 @@ void screen_fms (ESContext *esContext) {
 	float ss = -0.7;
 	uint16_t num_waypoints = 0;
 	for (n = 1; n < MAX_WAYPOINTS; n++) {
-		if (WayPoints[n].p_lat == 0.0) {
+		if (WayPoints[ModelActive][n].p_lat == 0.0) {
 			break;
 		}
 	}
@@ -105,21 +105,21 @@ void screen_fms (ESContext *esContext) {
 			draw_line_f(esContext, ss - 0.01, -0.53 + ((n2 - 1) * step_y), ss, -0.51 + ((n2 - 1) * step_y), 0, 255, 0, 255);
 			draw_line_f(esContext, ss + 0.01, -0.53 + ((n2 - 1) * step_y), ss, -0.51 + ((n2 - 1) * step_y), 0, 255, 0, 255);
 		}
-		if (WayPoints[n].p_lat != 0.0) {
+		if (WayPoints[ModelActive][n].p_lat != 0.0) {
 			float distance1 = 0.0;
 			float distance2 = 0.0;
 			float winkel_up = 0.0;
-			if (strcmp(WayPoints[n].command, "WAYPOINT") == 0) {
+			if (strcmp(WayPoints[ModelActive][n].command, "WAYPOINT") == 0) {
 				if (last_lat != 0.0) {
 					/* Distance - Ground-Level */
 					distance1 = acos( 
 						cos(toRad(last_lat))
-						* cos(toRad(WayPoints[n].p_lat))
-						* cos(toRad(last_lon) - toRad(WayPoints[n].p_long))
+						* cos(toRad(WayPoints[ModelActive][n].p_lat))
+						* cos(toRad(last_lon) - toRad(WayPoints[ModelActive][n].p_long))
 						+ sin(toRad(last_lat)) 
-						* sin(toRad(WayPoints[n].p_lat))
+						* sin(toRad(WayPoints[ModelActive][n].p_lat))
 					) * 6378.137 * 1000.0;
-					alt = WayPoints[n].p_alt - last_alt;
+					alt = WayPoints[ModelActive][n].p_alt - last_alt;
 					/* Distance - Sichtverbindung */
 					distance2 = sqrt(((distance1) * (distance1)) + (alt * alt));
 					/* Steigung */
@@ -127,9 +127,9 @@ void screen_fms (ESContext *esContext) {
 					sprintf(tmp_str, "%0.1fm (%0.1fm / %0.1fGrad)", distance1, distance2, winkel_up);
 					draw_text_f3(esContext, ss + 0.01, -0.62 + (n2 * step_y) - 0.125, 0.002, 0.05, 0.05, FONT_GREEN, tmp_str);
 				}
-				last_lat = WayPoints[n].p_lat;
-				last_lon = WayPoints[n].p_long;
-				last_alt = WayPoints[n].p_alt;
+				last_lat = WayPoints[ModelActive][n].p_lat;
+				last_lon = WayPoints[ModelActive][n].p_long;
+				last_alt = WayPoints[ModelActive][n].p_alt;
 			}
 
 			draw_line_f(esContext, ss, -0.55 + ((n2 - 1) * step_y), ss, -0.55 + (n2 * step_y), 0, 255, 0, 255);
@@ -137,80 +137,80 @@ void screen_fms (ESContext *esContext) {
 			draw_circleFilled_f(esContext, ss, -0.55 + (n2 * step_y), 0.01, 0, 255, 0, 128);
 
 
-			sprintf(tmp_str, "%s", WayPoints[n].name);
+			sprintf(tmp_str, "%s", WayPoints[ModelActive][n].name);
 			draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, -1.2, -0.7 + (n2 * step_y), 0.002, 0.1, 0, 0, fms_select, (float)n);
-			if (WayPoints[n].command[0] == 0) {
+			if (WayPoints[ModelActive][n].command[0] == 0) {
 				strcpy(tmp_str, "---");
 			} else {
-				sprintf(tmp_str, "%s", WayPoints[n].command);
+				sprintf(tmp_str, "%s", WayPoints[ModelActive][n].command);
 			}
 			draw_text_f3(esContext, -1.2 + 0.01, -0.7 + (n2 * step_y) - 0.04, 0.002, 0.05, 0.05, FONT_GREEN, tmp_str);
 
 			int nny = 0;
 			int nny2 = 0;
-			if (strcmp(WayPoints[n].command, "SHUTTER") == 0) {
-			} else if (strcmp(WayPoints[n].command, "RTL") == 0) {
-			} else if (strcmp(WayPoints[n].command, "LAND") == 0) {
-			} else if (strcmp(WayPoints[n].command, "SHUTTER_INT") == 0) {
-				sprintf(tmp_str, "Dist:%0.1fm", WayPoints[n].param1);
+			if (strcmp(WayPoints[ModelActive][n].command, "SHUTTER") == 0) {
+			} else if (strcmp(WayPoints[ModelActive][n].command, "RTL") == 0) {
+			} else if (strcmp(WayPoints[ModelActive][n].command, "LAND") == 0) {
+			} else if (strcmp(WayPoints[ModelActive][n].command, "SHUTTER_INT") == 0) {
+				sprintf(tmp_str, "Dist:%0.1fm", WayPoints[ModelActive][n].param1);
 				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.75 + (nny++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
-			} else if (strcmp(WayPoints[n].command, "RELAY") == 0) {
-				sprintf(tmp_str, "NUM:%0.0f", WayPoints[n].param1);
+			} else if (strcmp(WayPoints[ModelActive][n].command, "RELAY") == 0) {
+				sprintf(tmp_str, "NUM:%0.0f", WayPoints[ModelActive][n].param1);
 				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.75 + (nny++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
-				sprintf(tmp_str, "SET/UNSET:%0.0f", WayPoints[n].param2);
+				sprintf(tmp_str, "SET/UNSET:%0.0f", WayPoints[ModelActive][n].param2);
 				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.75 + (nny++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
-			} else if (strcmp(WayPoints[n].command, "RELAY_REP") == 0) {
-				sprintf(tmp_str, "NUM:%0.1f", WayPoints[n].param1);
+			} else if (strcmp(WayPoints[ModelActive][n].command, "RELAY_REP") == 0) {
+				sprintf(tmp_str, "NUM:%0.1f", WayPoints[ModelActive][n].param1);
 				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.75 + (nny++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
-				sprintf(tmp_str, "TOGGLES:%0.0f", WayPoints[n].param2);
+				sprintf(tmp_str, "TOGGLES:%0.0f", WayPoints[ModelActive][n].param2);
 				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.75 + (nny++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
-				sprintf(tmp_str, "SECONDS:%0.0f", WayPoints[n].param3);
+				sprintf(tmp_str, "SECONDS:%0.0f", WayPoints[ModelActive][n].param3);
 				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, 0.1, -0.75 + (nny2++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
-			} else if (strcmp(WayPoints[n].command, "SERVO") == 0) {
-				sprintf(tmp_str, "NUM:%0.1f", WayPoints[n].param1);
+			} else if (strcmp(WayPoints[ModelActive][n].command, "SERVO") == 0) {
+				sprintf(tmp_str, "NUM:%0.1f", WayPoints[ModelActive][n].param1);
 				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.75 + (nny++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
-				sprintf(tmp_str, "POS:%0.0f", WayPoints[n].param2);
+				sprintf(tmp_str, "POS:%0.0f", WayPoints[ModelActive][n].param2);
 				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.75 + (nny++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
-			} else if (strcmp(WayPoints[n].command, "SERVO_REP") == 0) {
-				sprintf(tmp_str, "NUM:%0.1f", WayPoints[n].param1);
+			} else if (strcmp(WayPoints[ModelActive][n].command, "SERVO_REP") == 0) {
+				sprintf(tmp_str, "NUM:%0.1f", WayPoints[ModelActive][n].param1);
 				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.75 + (nny++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
-				sprintf(tmp_str, "POS:%0.0f", WayPoints[n].param2);
+				sprintf(tmp_str, "POS:%0.0f", WayPoints[ModelActive][n].param2);
 				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.75 + (nny++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
-				sprintf(tmp_str, "TOGGLES:%0.0f", WayPoints[n].param3);
+				sprintf(tmp_str, "TOGGLES:%0.0f", WayPoints[ModelActive][n].param3);
 				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, 0.1, -0.75 + (nny2++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
-				sprintf(tmp_str, "SECONDS:%0.0f", WayPoints[n].param4);
+				sprintf(tmp_str, "SECONDS:%0.0f", WayPoints[ModelActive][n].param4);
 				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, 0.1, -0.75 + (nny2++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
-			} else if (strcmp(WayPoints[n].command, "TAKEOFF") == 0) {
-				sprintf(tmp_str, "PITCH:%0.0f", WayPoints[n].param2);
+			} else if (strcmp(WayPoints[ModelActive][n].command, "TAKEOFF") == 0) {
+				sprintf(tmp_str, "PITCH:%0.0f", WayPoints[ModelActive][n].param2);
 				draw_text_button(esContext, tmp_str, VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.75 + (nny++ * 0.1) + (n2 * step_y), 0.002, 0.08, 0, 0, fms_select, (float)n);
 			} else {
-				if (WayPoints[n].p_lat == 0.0) {
+				if (WayPoints[ModelActive][n].p_lat == 0.0) {
 					strcpy(tmp_str, "---");
 				} else {
-					sprintf(tmp_str, "%0.6f", WayPoints[n].p_lat);
+					sprintf(tmp_str, "%0.6f", WayPoints[ModelActive][n].p_lat);
 				}
 				draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, -0.5, -0.7 + (n2 * step_y), 0.002, 0.1, 0, 0, fms_select, (float)n);
-				if (WayPoints[n].p_long == 0.0) {
+				if (WayPoints[ModelActive][n].p_long == 0.0) {
 					strcpy(tmp_str, "---");
 				} else {
-					sprintf(tmp_str, "%0.6f", WayPoints[n].p_long);
+					sprintf(tmp_str, "%0.6f", WayPoints[ModelActive][n].p_long);
 				}
 				draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, 0.1, -0.7 + (n2 * step_y), 0.002, 0.1, 0, 0, fms_select, (float)n);
-				if (WayPoints[n].p_alt == 0.0) {
+				if (WayPoints[ModelActive][n].p_alt == 0.0) {
 					strcpy(tmp_str, "---");
 				} else {
-					if (WayPoints[n].frametype == MAV_FRAME_GLOBAL) {
-						sprintf(tmp_str, "%0.1fm abs", WayPoints[n].p_alt);
-					} else if (WayPoints[n].frametype == MAV_FRAME_GLOBAL_RELATIVE_ALT || WayPoints[n].frametype == MAV_FRAME_GLOBAL_RELATIVE_ALT_INT) {
-						sprintf(tmp_str, "%0.1fm rel", WayPoints[n].p_alt);
+					if (WayPoints[ModelActive][n].frametype == MAV_FRAME_GLOBAL) {
+						sprintf(tmp_str, "%0.1fm abs", WayPoints[ModelActive][n].p_alt);
+					} else if (WayPoints[ModelActive][n].frametype == MAV_FRAME_GLOBAL_RELATIVE_ALT || WayPoints[ModelActive][n].frametype == MAV_FRAME_GLOBAL_RELATIVE_ALT_INT) {
+						sprintf(tmp_str, "%0.1fm rel", WayPoints[ModelActive][n].p_alt);
 					} else {
-						sprintf(tmp_str, "%0.1fm ???", WayPoints[n].p_alt);
+						sprintf(tmp_str, "%0.1fm ???", WayPoints[ModelActive][n].p_alt);
 					}
 				}
 				draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, 1.25, -0.7 + (n2 * step_y), 0.002, 0.1, 2, 0, fms_select, (float)n);
 			}
 
-			sprintf(tmp_str2, "%s-%i-d", WayPoints[n].name, n);
+			sprintf(tmp_str2, "%s-%i-d", WayPoints[ModelActive][n].name, n);
 			set_button(tmp_str2, VIEW_MODE_FMS, -1.2, -0.55 + ((n2 - 1) * step_y), 1.3, -0.55 + (n2 * step_y), fms_select, (float)n, 0);
 
 			n2++;

@@ -386,8 +386,8 @@ uint8_t map_goto (char *name, float x, float y, int8_t button, float data, uint8
 		lat = tiley2lat(tile_y, mapdata->zoom);
 		lon = tilex2long(tile_x, mapdata->zoom);
 	} else {
-		int tile_y = lat2tiley(WayPoints[(int)data].p_lat, mapdata->zoom) - 1;
-		int tile_x = long2tilex(WayPoints[(int)data].p_long, mapdata->zoom) - 1;
+		int tile_y = lat2tiley(WayPoints[ModelActive][(int)data].p_lat, mapdata->zoom) - 1;
+		int tile_x = long2tilex(WayPoints[ModelActive][(int)data].p_long, mapdata->zoom) - 1;
 		lat = tiley2lat(tile_y, mapdata->zoom);
 		lon = tilex2long(tile_x, mapdata->zoom);
 	}
@@ -395,9 +395,9 @@ uint8_t map_goto (char *name, float x, float y, int8_t button, float data, uint8
 }
 
 uint8_t map_uav2home (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	ModelData[ModelActive].p_lat = WayPoints[0].p_lat;
-	ModelData[ModelActive].p_long = WayPoints[0].p_long;
-	ModelData[ModelActive].p_alt = WayPoints[0].p_alt;
+	ModelData[ModelActive].p_lat = WayPoints[ModelActive][0].p_lat;
+	ModelData[ModelActive].p_long = WayPoints[ModelActive][0].p_long;
+	ModelData[ModelActive].p_alt = WayPoints[ModelActive][0].p_alt;
 	return 0;
 }
 
@@ -428,18 +428,18 @@ uint8_t map_addmode_change (char *name, float x, float y, int8_t button, float d
 	int n = 0;
 	if ((int)data == 1) {
 		for (n = 0; n < MAX_WAYPOINTS; n++) {
-			if (WayPoints[n].p_lat == 0.0) {
-				WayPoints[n].p_lat = 1.0;
-				WayPoints[n].p_long = 0.0;
-				WayPoints[n].p_alt = 0.0;
-				WayPoints[n].param1 = 0.0;
-				WayPoints[n].param2 = 0.0;
-				WayPoints[n].param3 = 0.0;
-				WayPoints[n].param4 = 0.0;
-				WayPoints[n].type = 0;
-				WayPoints[n].frametype = 0;
-				strcpy(WayPoints[n].name, "SHUTTER");
-				strcpy(WayPoints[n].command, "SHUTTER");
+			if (WayPoints[ModelActive][n].p_lat == 0.0) {
+				WayPoints[ModelActive][n].p_lat = 1.0;
+				WayPoints[ModelActive][n].p_long = 0.0;
+				WayPoints[ModelActive][n].p_alt = 0.0;
+				WayPoints[ModelActive][n].param1 = 0.0;
+				WayPoints[ModelActive][n].param2 = 0.0;
+				WayPoints[ModelActive][n].param3 = 0.0;
+				WayPoints[ModelActive][n].param4 = 0.0;
+				WayPoints[ModelActive][n].type = 0;
+				WayPoints[ModelActive][n].frametype = 0;
+				strcpy(WayPoints[ModelActive][n].name, "SHUTTER");
+				strcpy(WayPoints[ModelActive][n].command, "SHUTTER");
 				break;
 			}
 		}
@@ -463,18 +463,18 @@ uint8_t map_del (char *name, float x, float y, int8_t button, float data, uint8_
 	uint16_t n = 0;
 	uint16_t n2 = waypoint_active + 1;
 	for (n = waypoint_active; n < MAX_WAYPOINTS; n++) {
-		if (WayPoints[n].p_lat != 0.0) {
-			WayPoints[n].p_lat = WayPoints[n2].p_lat;
-			WayPoints[n].p_long = WayPoints[n2].p_long;
-			WayPoints[n].p_alt = WayPoints[n2].p_alt;
-			WayPoints[n].param1 = WayPoints[n2].param1;
-			WayPoints[n].param2 = WayPoints[n2].param2;
-			WayPoints[n].param3 = WayPoints[n2].param3;
-			WayPoints[n].param4 = WayPoints[n2].param4;
-			WayPoints[n].type = WayPoints[n2].type;
-			WayPoints[n].frametype = WayPoints[n2].frametype;
-			strncpy(WayPoints[n].name, WayPoints[n2].name, 127);
-			strncpy(WayPoints[n].command, WayPoints[n2].command, 127);
+		if (WayPoints[ModelActive][n].p_lat != 0.0) {
+			WayPoints[ModelActive][n].p_lat = WayPoints[ModelActive][n2].p_lat;
+			WayPoints[ModelActive][n].p_long = WayPoints[ModelActive][n2].p_long;
+			WayPoints[ModelActive][n].p_alt = WayPoints[ModelActive][n2].p_alt;
+			WayPoints[ModelActive][n].param1 = WayPoints[ModelActive][n2].param1;
+			WayPoints[ModelActive][n].param2 = WayPoints[ModelActive][n2].param2;
+			WayPoints[ModelActive][n].param3 = WayPoints[ModelActive][n2].param3;
+			WayPoints[ModelActive][n].param4 = WayPoints[ModelActive][n2].param4;
+			WayPoints[ModelActive][n].type = WayPoints[ModelActive][n2].type;
+			WayPoints[ModelActive][n].frametype = WayPoints[ModelActive][n2].frametype;
+			strncpy(WayPoints[ModelActive][n].name, WayPoints[ModelActive][n2].name, 127);
+			strncpy(WayPoints[ModelActive][n].command, WayPoints[ModelActive][n2].command, 127);
 			n2++;
 		}
 	}
@@ -1465,7 +1465,7 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 		int n = 0;
 		// clear Waypoints
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
-			WayPoints[n].p_lat = 0.0;
+			WayPoints[ModelActive][n].p_lat = 0.0;
 		}
 		// add Waypoints
 		int pmark_x = long2x(PolyPoints[1].p_long, lon, zoom);
@@ -1523,16 +1523,16 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 		n = 1;
 
 		if (SurveySetup.triggermode == 2) {
-			WayPoints[n].p_lat = 1.0;
-			WayPoints[n].p_long = 0.0;
-			WayPoints[n].p_alt = 0.0;
-			WayPoints[n].frametype = 0;
-			sprintf(WayPoints[n].name, "SHUTTER");
-			strcpy(WayPoints[n].command, "SHUTTER_INT");
-			WayPoints[n].param1 = (float)SurveySetup.interval;
-			WayPoints[n].param2 = (float)0;
-			WayPoints[n].param3 = (float)0;
-			WayPoints[n].param4 = (float)0;
+			WayPoints[ModelActive][n].p_lat = 1.0;
+			WayPoints[ModelActive][n].p_long = 0.0;
+			WayPoints[ModelActive][n].p_alt = 0.0;
+			WayPoints[ModelActive][n].frametype = 0;
+			sprintf(WayPoints[ModelActive][n].name, "SHUTTER");
+			strcpy(WayPoints[ModelActive][n].command, "SHUTTER_INT");
+			WayPoints[ModelActive][n].param1 = (float)SurveySetup.interval;
+			WayPoints[ModelActive][n].param2 = (float)0;
+			WayPoints[ModelActive][n].param3 = (float)0;
+			WayPoints[ModelActive][n].param4 = (float)0;
 			n++;
 		}
 
@@ -1576,39 +1576,39 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 					}
 					alt = SurveySetup.alt;
 				}
-				WayPoints[n].p_lat = np_lat;
-				WayPoints[n].p_long = np_long;
-				WayPoints[n].p_alt = alt;
-				WayPoints[n].param1 = 0.0;
-				WayPoints[n].param2 = 0.0;
-				WayPoints[n].param3 = 0.0;
-				WayPoints[n].param4 = 0.0;
-				WayPoints[n].type = 0;
-				WayPoints[n].frametype = 0;
-				sprintf(WayPoints[n].name, "PIC%i", n);
-				strcpy(WayPoints[n].command, "WAYPOINT");
+				WayPoints[ModelActive][n].p_lat = np_lat;
+				WayPoints[ModelActive][n].p_long = np_long;
+				WayPoints[ModelActive][n].p_alt = alt;
+				WayPoints[ModelActive][n].param1 = 0.0;
+				WayPoints[ModelActive][n].param2 = 0.0;
+				WayPoints[ModelActive][n].param3 = 0.0;
+				WayPoints[ModelActive][n].param4 = 0.0;
+				WayPoints[ModelActive][n].type = 0;
+				WayPoints[ModelActive][n].frametype = 0;
+				sprintf(WayPoints[ModelActive][n].name, "PIC%i", n);
+				strcpy(WayPoints[ModelActive][n].command, "WAYPOINT");
 				n++;
 				if (SurveySetup.triggermode == 1) {
-					WayPoints[n].p_lat = 1.0;
-					WayPoints[n].p_long = 0.0;
-					WayPoints[n].p_alt = 0.0;
-					WayPoints[n].frametype = 0;
+					WayPoints[ModelActive][n].p_lat = 1.0;
+					WayPoints[ModelActive][n].p_long = 0.0;
+					WayPoints[ModelActive][n].p_alt = 0.0;
+					WayPoints[ModelActive][n].frametype = 0;
 					if (SurveySetup.type == 1) {
-						sprintf(WayPoints[n].name, "RELAY%i", SurveySetup.num);
-						strcpy(WayPoints[n].command, "RELAY_REP");
-						WayPoints[n].param1 = (float)SurveySetup.num;
-						WayPoints[n].param2 = (float)2;
-						WayPoints[n].param3 = (float)1;
+						sprintf(WayPoints[ModelActive][n].name, "RELAY%i", SurveySetup.num);
+						strcpy(WayPoints[ModelActive][n].command, "RELAY_REP");
+						WayPoints[ModelActive][n].param1 = (float)SurveySetup.num;
+						WayPoints[ModelActive][n].param2 = (float)2;
+						WayPoints[ModelActive][n].param3 = (float)1;
 					} else if (SurveySetup.type == 2) {
-						sprintf(WayPoints[n].name, "SERVO%i", SurveySetup.num);
-						strcpy(WayPoints[n].command, "SERVO_REP");
-						WayPoints[n].param1 = (float)SurveySetup.num;
-						WayPoints[n].param2 = (float)SurveySetup.pos;
-						WayPoints[n].param3 = (float)1;
-						WayPoints[n].param4 = (float)500;
+						sprintf(WayPoints[ModelActive][n].name, "SERVO%i", SurveySetup.num);
+						strcpy(WayPoints[ModelActive][n].command, "SERVO_REP");
+						WayPoints[ModelActive][n].param1 = (float)SurveySetup.num;
+						WayPoints[ModelActive][n].param2 = (float)SurveySetup.pos;
+						WayPoints[ModelActive][n].param3 = (float)1;
+						WayPoints[ModelActive][n].param4 = (float)500;
 					} else {
-						sprintf(WayPoints[n].name, "SHUTTER%i", n);
-						strcpy(WayPoints[n].command, "SHUTTER");
+						sprintf(WayPoints[ModelActive][n].name, "SHUTTER%i", n);
+						strcpy(WayPoints[ModelActive][n].command, "SHUTTER");
 					}
 					n++;
 				}
@@ -1643,39 +1643,39 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 					}
 					alt = SurveySetup.alt;
 				}
-				WayPoints[n].p_lat = np_lat;
-				WayPoints[n].p_long = np_long;
-				WayPoints[n].p_alt = alt;
-				WayPoints[n].param1 = 0.0;
-				WayPoints[n].param2 = 0.0;
-				WayPoints[n].param3 = 0.0;
-				WayPoints[n].param4 = 0.0;
-				WayPoints[n].type = 0;
-				WayPoints[n].frametype = 0;
-				sprintf(WayPoints[n].name, "PIC%i", n);
-				strcpy(WayPoints[n].command, "WAYPOINT");
+				WayPoints[ModelActive][n].p_lat = np_lat;
+				WayPoints[ModelActive][n].p_long = np_long;
+				WayPoints[ModelActive][n].p_alt = alt;
+				WayPoints[ModelActive][n].param1 = 0.0;
+				WayPoints[ModelActive][n].param2 = 0.0;
+				WayPoints[ModelActive][n].param3 = 0.0;
+				WayPoints[ModelActive][n].param4 = 0.0;
+				WayPoints[ModelActive][n].type = 0;
+				WayPoints[ModelActive][n].frametype = 0;
+				sprintf(WayPoints[ModelActive][n].name, "PIC%i", n);
+				strcpy(WayPoints[ModelActive][n].command, "WAYPOINT");
 				n++;
 				if (SurveySetup.triggermode == 1) {
-					WayPoints[n].p_lat = 1.0;
-					WayPoints[n].p_long = 0.0;
-					WayPoints[n].p_alt = 0.0;
-					WayPoints[n].frametype = 0;
+					WayPoints[ModelActive][n].p_lat = 1.0;
+					WayPoints[ModelActive][n].p_long = 0.0;
+					WayPoints[ModelActive][n].p_alt = 0.0;
+					WayPoints[ModelActive][n].frametype = 0;
 					if (SurveySetup.type == 1) {
-						sprintf(WayPoints[n].name, "RELAY%i", SurveySetup.num);
-						strcpy(WayPoints[n].command, "RELAY_REP");
-						WayPoints[n].param1 = (float)SurveySetup.num;
-						WayPoints[n].param2 = (float)2;
-						WayPoints[n].param3 = (float)1;
+						sprintf(WayPoints[ModelActive][n].name, "RELAY%i", SurveySetup.num);
+						strcpy(WayPoints[ModelActive][n].command, "RELAY_REP");
+						WayPoints[ModelActive][n].param1 = (float)SurveySetup.num;
+						WayPoints[ModelActive][n].param2 = (float)2;
+						WayPoints[ModelActive][n].param3 = (float)1;
 					} else if (SurveySetup.type == 2) {
-						sprintf(WayPoints[n].name, "SERVO%i", SurveySetup.num);
-						strcpy(WayPoints[n].command, "SERVO_REP");
-						WayPoints[n].param1 = (float)SurveySetup.num;
-						WayPoints[n].param2 = (float)SurveySetup.pos;
-						WayPoints[n].param3 = (float)1;
-						WayPoints[n].param4 = (float)500;
+						sprintf(WayPoints[ModelActive][n].name, "SERVO%i", SurveySetup.num);
+						strcpy(WayPoints[ModelActive][n].command, "SERVO_REP");
+						WayPoints[ModelActive][n].param1 = (float)SurveySetup.num;
+						WayPoints[ModelActive][n].param2 = (float)SurveySetup.pos;
+						WayPoints[ModelActive][n].param3 = (float)1;
+						WayPoints[ModelActive][n].param4 = (float)500;
 					} else {
-						sprintf(WayPoints[n].name, "SHUTTER%i", n);
-						strcpy(WayPoints[n].command, "SHUTTER");
+						sprintf(WayPoints[ModelActive][n].name, "SHUTTER%i", n);
+						strcpy(WayPoints[ModelActive][n].command, "SHUTTER");
 					}
 					n++;
 				}
@@ -1683,16 +1683,16 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 		}
 
 		if (SurveySetup.triggermode == 2) {
-			WayPoints[n].p_lat = 1.0;
-			WayPoints[n].p_long = 0.0;
-			WayPoints[n].p_alt = 0.0;
-			WayPoints[n].frametype = 0;
-			sprintf(WayPoints[n].name, "SHUTTER");
-			strcpy(WayPoints[n].command, "SHUTTER_INT");
-			WayPoints[n].param1 = (float)0;
-			WayPoints[n].param2 = (float)0;
-			WayPoints[n].param3 = (float)0;
-			WayPoints[n].param4 = (float)0;
+			WayPoints[ModelActive][n].p_lat = 1.0;
+			WayPoints[ModelActive][n].p_long = 0.0;
+			WayPoints[ModelActive][n].p_alt = 0.0;
+			WayPoints[ModelActive][n].frametype = 0;
+			sprintf(WayPoints[ModelActive][n].name, "SHUTTER");
+			strcpy(WayPoints[ModelActive][n].command, "SHUTTER_INT");
+			WayPoints[ModelActive][n].param1 = (float)0;
+			WayPoints[ModelActive][n].param2 = (float)0;
+			WayPoints[ModelActive][n].param3 = (float)0;
+			WayPoints[ModelActive][n].param4 = (float)0;
 			n++;
 		}
 
@@ -2759,7 +2759,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	}
 
 	// drawing Home(Launchpoint)
-	mark_point(esContext, WayPoints[0].p_lat, WayPoints[0].p_long, WayPoints[0].p_alt, WayPoints[0].name, "", 0, 0.0, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
+	mark_point(esContext, WayPoints[ModelActive][0].p_lat, WayPoints[ModelActive][0].p_long, WayPoints[ModelActive][0].p_alt, WayPoints[ModelActive][0].name, "", 0, 0.0, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
 
 	// drawing Waypoint-Route
 	float last_lat = ModelData[ModelActive].p_lat;
@@ -2768,50 +2768,50 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	int flag = 0;
 	if (map_show_wp == 1) {
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
-			if (WayPoints[n].p_lat != 0.0) {
+			if (WayPoints[ModelActive][n].p_lat != 0.0) {
 				if (n == uav_active_waypoint && n == waypoint_active) {
-					mark_point(esContext, WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].p_alt, WayPoints[n].name, WayPoints[n].command, 3, WayPoints[n].param1, WayPoints[n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
+					mark_point(esContext, WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long, WayPoints[ModelActive][n].p_alt, WayPoints[ModelActive][n].name, WayPoints[ModelActive][n].command, 3, WayPoints[ModelActive][n].param1, WayPoints[ModelActive][n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
 				} else if (n == uav_active_waypoint) {
-					mark_point(esContext, WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].p_alt, WayPoints[n].name, WayPoints[n].command, 2, WayPoints[n].param1, WayPoints[n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
+					mark_point(esContext, WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long, WayPoints[ModelActive][n].p_alt, WayPoints[ModelActive][n].name, WayPoints[ModelActive][n].command, 2, WayPoints[ModelActive][n].param1, WayPoints[ModelActive][n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
 				} else if (n == waypoint_active) {
-					mark_point(esContext, WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].p_alt, WayPoints[n].name, WayPoints[n].command, 1, WayPoints[n].param1, WayPoints[n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
+					mark_point(esContext, WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long, WayPoints[ModelActive][n].p_alt, WayPoints[ModelActive][n].name, WayPoints[ModelActive][n].command, 1, WayPoints[ModelActive][n].param1, WayPoints[ModelActive][n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
 				} else {
-					mark_point(esContext, WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].p_alt, WayPoints[n].name, WayPoints[n].command, 0, WayPoints[n].param1, WayPoints[n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
+					mark_point(esContext, WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long, WayPoints[ModelActive][n].p_alt, WayPoints[ModelActive][n].name, WayPoints[ModelActive][n].command, 0, WayPoints[ModelActive][n].param1, WayPoints[ModelActive][n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
 				}
 			}
 		}
 		if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
 			if (setup.hud_view_tunnel == 1) {
-				mark_tunnel(esContext, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) + 10.6, WayPoints[waypoint_active].p_lat, WayPoints[waypoint_active].p_long, WayPoints[waypoint_active].p_alt, 5, mapdata->lat, mapdata->lon, mapdata->zoom);
+				mark_tunnel(esContext, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) + 10.6, WayPoints[ModelActive][waypoint_active].p_lat, WayPoints[ModelActive][waypoint_active].p_long, WayPoints[ModelActive][waypoint_active].p_alt, 5, mapdata->lat, mapdata->lon, mapdata->zoom);
 			}
 		}
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
-			if (WayPoints[n].p_lat != 0.0) {
-				if (strcmp(WayPoints[n].command, "SHUTTER") == 0 || strcmp(WayPoints[n].command, "SHUTTER_INT") == 0 || strcmp(WayPoints[n].command, "RELAY") == 0 || strcmp(WayPoints[n].command, "RELAY_REP") == 0 || strcmp(WayPoints[n].command, "SERVO") == 0 || strcmp(WayPoints[n].command, "SERVO_REP") == 0) {
+			if (WayPoints[ModelActive][n].p_lat != 0.0) {
+				if (strcmp(WayPoints[ModelActive][n].command, "SHUTTER") == 0 || strcmp(WayPoints[ModelActive][n].command, "SHUTTER_INT") == 0 || strcmp(WayPoints[ModelActive][n].command, "RELAY") == 0 || strcmp(WayPoints[ModelActive][n].command, "RELAY_REP") == 0 || strcmp(WayPoints[ModelActive][n].command, "SERVO") == 0 || strcmp(WayPoints[ModelActive][n].command, "SERVO_REP") == 0) {
 					if (flag != 0) {
-						mark_point(esContext, last_lat, last_lon, last_alt, WayPoints[n].name, WayPoints[n].command, 6, WayPoints[n].param1, WayPoints[n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
+						mark_point(esContext, last_lat, last_lon, last_alt, WayPoints[ModelActive][n].name, WayPoints[ModelActive][n].command, 6, WayPoints[ModelActive][n].param1, WayPoints[ModelActive][n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
 					}
-				} else if (strcmp(WayPoints[n].command, "SET_ROI") == 0) {
+				} else if (strcmp(WayPoints[ModelActive][n].command, "SET_ROI") == 0) {
 					if (flag != 0) {
-						mark_route(esContext, last_lat, last_lon, last_alt, WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].p_alt, 1, mapdata->lat, mapdata->lon, mapdata->zoom);
-						mark_point(esContext, WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].p_alt, WayPoints[n].name, WayPoints[n].command, 7, WayPoints[n].param1, WayPoints[n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
+						mark_route(esContext, last_lat, last_lon, last_alt, WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long, WayPoints[ModelActive][n].p_alt, 1, mapdata->lat, mapdata->lon, mapdata->zoom);
+						mark_point(esContext, WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long, WayPoints[ModelActive][n].p_alt, WayPoints[ModelActive][n].name, WayPoints[ModelActive][n].command, 7, WayPoints[ModelActive][n].param1, WayPoints[ModelActive][n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
 					}
 				} else {
 					if (flag != 0) {
-						mark_route(esContext, last_lat, last_lon, last_alt, WayPoints[n].p_lat, WayPoints[n].p_long, WayPoints[n].p_alt, 0, mapdata->lat, mapdata->lon, mapdata->zoom);
+						mark_route(esContext, last_lat, last_lon, last_alt, WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long, WayPoints[ModelActive][n].p_alt, 0, mapdata->lat, mapdata->lon, mapdata->zoom);
 					}
 					flag = 1;
-					last_lat = WayPoints[n].p_lat;
-					last_lon = WayPoints[n].p_long;
-					last_alt = WayPoints[n].p_alt;
+					last_lat = WayPoints[ModelActive][n].p_lat;
+					last_lon = WayPoints[ModelActive][n].p_long;
+					last_alt = WayPoints[ModelActive][n].p_alt;
 				}
 			}
 		}
-//		mark_route(esContext, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset), WayPoints[uav_active_waypoint + 1].p_lat, WayPoints[uav_active_waypoint + 1].p_long, WayPoints[uav_active_waypoint + 1].p_alt, 1, mapdata->lat, mapdata->lon, mapdata->zoom);
+//		mark_route(esContext, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset), WayPoints[ModelActive][uav_active_waypoint + 1].p_lat, WayPoints[ModelActive][uav_active_waypoint + 1].p_long, WayPoints[ModelActive][uav_active_waypoint + 1].p_alt, 1, mapdata->lat, mapdata->lon, mapdata->zoom);
 	} else {
 		if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
 			if (setup.hud_view_tunnel == 1) {
-				mark_tunnel(esContext, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) + 10.6, WayPoints[waypoint_active].p_lat, WayPoints[waypoint_active].p_long, WayPoints[waypoint_active].p_alt, 5, mapdata->lat, mapdata->lon, mapdata->zoom);
+				mark_tunnel(esContext, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) + 10.6, WayPoints[ModelActive][waypoint_active].p_lat, WayPoints[ModelActive][waypoint_active].p_long, WayPoints[ModelActive][waypoint_active].p_alt, 5, mapdata->lat, mapdata->lon, mapdata->zoom);
 			}
 		}
 	}
@@ -3068,13 +3068,13 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		if (setup.hud_view_mark == 1) {
 			setup.hud_view_mark = 0;
 			for (n = 0; n < MAX_WAYPOINTS; n++) {
-				if (WayPoints[n].p_lat == 0.0) {
-					WayPoints[n].p_lat = ny2;
-					WayPoints[n].p_long = nx2;
-					WayPoints[n].p_alt = mark_alt;
-					WayPoints[n].param4 = ModelData[ModelActive].yaw;
-					sprintf(WayPoints[n].name, "MARK%i", n);
-					strcpy(WayPoints[n].command, "WAYPOINT");
+				if (WayPoints[ModelActive][n].p_lat == 0.0) {
+					WayPoints[ModelActive][n].p_lat = ny2;
+					WayPoints[ModelActive][n].p_long = nx2;
+					WayPoints[ModelActive][n].p_alt = mark_alt;
+					WayPoints[ModelActive][n].param4 = ModelData[ModelActive].yaw;
+					sprintf(WayPoints[ModelActive][n].name, "MARK%i", n);
+					strcpy(WayPoints[ModelActive][n].command, "WAYPOINT");
 					break;
 				}
 			}

@@ -100,7 +100,7 @@ void gps_update (void) {
 				}
 /*
 				SDL_Log("#%f - %f (%0.1fm)#\n", hlat, hlon, alt1);
-				SDL_Log("Lat:  %f\n", WayPoints[0].p_lat);
+				SDL_Log("Lat:  %f\n", WayPoints[ModelActive][0].p_lat);
 				SDL_Log("Lon:  %f\n", hlon);
 				SDL_Log("Alt:  %0.1fm (%0.1fm)\n", alt1, alt2);
 				SDL_Log("Sats: %i\n", num_sat);
@@ -200,7 +200,7 @@ int gcs_thread_serial_gps (void *unused) {
 					}
 /*
 					SDL_Log("#%f - %f (%0.1fm)#\n", hlat, hlon, alt1);
-					SDL_Log("Lat:  %f\n", WayPoints[0].p_lat);
+					SDL_Log("Lat:  %f\n", WayPoints[ModelActive][0].p_lat);
 					SDL_Log("Lon:  %f\n", hlon);
 					SDL_Log("Alt:  %0.1fm (%0.1fm)\n", alt1, alt2);
 					SDL_Log("Sats: %i\n", num_sat);

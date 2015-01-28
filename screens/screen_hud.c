@@ -1076,12 +1076,12 @@ void screen_hud_internal (ESContext *esContext) {
 	float angle2 = 0.0;
 	float angle_home = 0.0;
 
-	get_dir(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].p_alt, WayPoints[waypoint_active].p_lat, WayPoints[waypoint_active].p_long, WayPoints[waypoint_active].p_alt, &angle_wp, &dist1, &angle_up, &dist2);
+	get_dir(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].p_alt, WayPoints[ModelActive][waypoint_active].p_lat, WayPoints[ModelActive][waypoint_active].p_long, WayPoints[ModelActive][waypoint_active].p_alt, &angle_wp, &dist1, &angle_up, &dist2);
 	angle2 = angle_wp - ModelData[ModelActive].yaw;
 	if (angle2 > 180.0) {
 		angle2 = angle2 - 360.0;
 	}
-	get_dir(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].p_alt, WayPoints[0].p_lat, WayPoints[0].p_long, WayPoints[0].p_alt, &angle, &dist1, &angle_up, &dist2);
+	get_dir(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].p_alt, WayPoints[ModelActive][0].p_lat, WayPoints[ModelActive][0].p_long, WayPoints[ModelActive][0].p_alt, &angle, &dist1, &angle_up, &dist2);
 	angle_home = angle - ModelData[ModelActive].yaw;
 	if (angle_home > 180.0) {
 		angle_home = angle_home - 360.0;

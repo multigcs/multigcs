@@ -205,7 +205,7 @@ typedef struct {
 
 extern Survey SurveySetup;
 extern Button Buttons[MAX_BUTTONS + 1];
-extern WayPoint WayPoints[MAX_WAYPOINTS + 1];
+extern WayPoint WayPoints[MODELS_MAX][MAX_WAYPOINTS + 1];
 extern PolyPoint PolyPoints[MAX_WAYPOINTS + 1];
 extern GcsSetup setup;
 

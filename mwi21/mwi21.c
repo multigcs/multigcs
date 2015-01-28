@@ -291,10 +291,10 @@ void mwi21_get_new (void) {
 		mwi21_get_req8(MSP_WP, 16); // Hold
 		mwi21_rn++;
 	} else if (mwi21_rn == 9) {
-		mwi21_send_wp(0, WayPoints[0].p_lat, WayPoints[0].p_long, WayPoints[0].p_alt);
+		mwi21_send_wp(0, WayPoints[ModelActive][0].p_lat, WayPoints[ModelActive][0].p_long, WayPoints[ModelActive][0].p_alt);
 		mwi21_rn++;
 	} else if (mwi21_rn == 10) {
-		mwi21_send_wp(16, WayPoints[1].p_lat, WayPoints[1].p_long, WayPoints[1].p_alt);
+		mwi21_send_wp(16, WayPoints[ModelActive][1].p_lat, WayPoints[ModelActive][1].p_long, WayPoints[ModelActive][1].p_alt);
 		mwi21_rn++;
 	} else {
 		mwi21_rn = 1;
@@ -542,25 +542,25 @@ void mwi21_update (void) {
 					if (mwi_wp_num == 0) {
 						SDL_Log("# home # %i %f %f %i %i ###\n", mwi_wp_num, mwi_wp_lat, mwi_wp_lon, mwi_wp_alt, mwi_wp_flag);
 						if (mwi_wp_lat != 0.0 || mwi_wp_lon != 0.0) {
-							WayPoints[0].p_lat = mwi_wp_lat;
-							WayPoints[0].p_long = mwi_wp_lon;
-							WayPoints[0].p_alt = mwi_wp_alt;
-							WayPoints[0].frametype = MAV_FRAME_GLOBAL;
+							WayPoints[ModelActive][0].p_lat = mwi_wp_lat;
+							WayPoints[ModelActive][0].p_long = mwi_wp_lon;
+							WayPoints[ModelActive][0].p_alt = mwi_wp_alt;
+							WayPoints[ModelActive][0].frametype = MAV_FRAME_GLOBAL;
 						}
 					} else {
 						SDL_Log("# hold # %i %f %f %i %i ###\n", mwi_wp_num, mwi_wp_lat, mwi_wp_lon, mwi_wp_alt, mwi_wp_flag);
 						if (mwi_wp_lat != 0.0 || mwi_wp_lon != 0.0) {
-							strcpy(WayPoints[1].name, "HOLD");
-							strcpy(WayPoints[1].command, "WAYPOINT");
-							WayPoints[1].p_lat = mwi_wp_lat;
-							WayPoints[1].p_long = mwi_wp_lon;
-							WayPoints[1].p_alt = mwi_wp_alt;
-							WayPoints[1].frametype = MAV_FRAME_GLOBAL;
-							WayPoints[2].name[0] = 0;
-							WayPoints[2].p_lat = 0.0;
-							WayPoints[2].p_long = 0.0;
-							WayPoints[2].p_alt = 0.0;
-							WayPoints[2].frametype = MAV_FRAME_GLOBAL;
+							strcpy(WayPoints[ModelActive][1].name, "HOLD");
+							strcpy(WayPoints[ModelActive][1].command, "WAYPOINT");
+							WayPoints[ModelActive][1].p_lat = mwi_wp_lat;
+							WayPoints[ModelActive][1].p_long = mwi_wp_lon;
+							WayPoints[ModelActive][1].p_alt = mwi_wp_alt;
+							WayPoints[ModelActive][1].frametype = MAV_FRAME_GLOBAL;
+							WayPoints[ModelActive][2].name[0] = 0;
+							WayPoints[ModelActive][2].p_lat = 0.0;
+							WayPoints[ModelActive][2].p_long = 0.0;
+							WayPoints[ModelActive][2].p_alt = 0.0;
+							WayPoints[ModelActive][2].frametype = MAV_FRAME_GLOBAL;
 						}
 					}
 				break;
