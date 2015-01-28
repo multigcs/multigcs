@@ -305,6 +305,7 @@ void reset_telemetry (uint8_t modelid) {
 		baseflightcli_init(ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
 	} else if (ModelData[modelid].teletype == TELETYPE_FRSKY) {
 		frsky_mode(1);
+	} else if (ModelData[modelid].teletype == 255) {
 	} else {
 		mavlink_init(modelid, ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
 	}
@@ -646,11 +647,12 @@ void setup_load (void) {
 	setup.videocapture_height = 480;
 
 	for (model_n = 0; model_n < MODELS_MAX; model_n++) {
-		sprintf(ModelData[model_n].name, "Model%i", model_n);
+		sprintf(ModelData[model_n].name, "Model%i", model_n + 1);
 		strcpy(ModelData[model_n].sysstr, "");
 		ModelData[model_n].chancount = 8;
-		strcpy(ModelData[model_n].telemetry_port, "UNSET");
+		strcpy(ModelData[model_n].telemetry_port, "");
 		ModelData[model_n].telemetry_baud = 115200;
+		ModelData[model_n].teletype = 255;
 		ModelData[model_n].serial_fd = -1;
 		ModelData[model_n].dronetype = 250;
 		ModelData[model_n].pilottype = 250;
@@ -1592,6 +1594,7 @@ int telemetry_thread (void *data) {
 				baseflightcli_update();
 			} else if (ModelData[modelid].teletype == TELETYPE_CLI) {
 				cli_update();
+			} else if (ModelData[modelid].teletype == 255) {
 			} else {
 				mavlink_update(modelid);
 			}
@@ -2097,6 +2100,7 @@ void Draw (ESContext *esContext) {
 			screen_brugi(esContext);
 		} else if (ModelData[ModelActive].teletype == TELETYPE_SIMPLEBGC) {
 			screen_simplebgc(esContext);
+		} else if (ModelData[ModelActive].teletype == 255) {
 		} else {
 			screen_mavlink_menu(esContext);
 		}
@@ -2186,9 +2190,9 @@ void Draw (ESContext *esContext) {
 					sprintf(tmp_str2, "UNKNOWN_UAV(%i)", ModelData[n].dronetype);
 					strcpy(tmp_str3, "");
 				}
-				if (tmp_str3[0] != 0) {
-					draw_image_f3(esContext, 0.8 - 0.04, -0.84 + n * 0.1 - 0.04, 0.8 + 0.04, -0.84 + n * 0.1 + 0.04, 0.003, tmp_str3);
-				}
+//				if (tmp_str3[0] != 0) {
+//					draw_image_f3(esContext, 0.8 - 0.04, -0.84 + n * 0.1 - 0.04, 0.8 + 0.04, -0.84 + n * 0.1 + 0.04, 0.003, tmp_str3);
+//				}
 
 				strcpy(tmp_str2, ModelData[n].sysstr);
 

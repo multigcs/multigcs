@@ -301,6 +301,9 @@ int serial_close (int fd) {
 
 
 int serial_open (char *mdevice, uint32_t baud) {
+	if (mdevice[0] == 0) {
+		return -1;
+	}
 #ifdef ANDROID
 	return 1;
 #endif

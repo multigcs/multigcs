@@ -468,7 +468,7 @@ void screen_model (ESContext *esContext) {
 		n++;
 		draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "USEID:");
 		sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].use_deviceid);
-		draw_text_button(esContext, "rc_baud", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
+		draw_text_button(esContext, "rc_useid", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
 		if (ModelData[ModelActive].use_deviceid == 1) {
 			n++;
 			draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "ID:");
@@ -479,7 +479,7 @@ void screen_model (ESContext *esContext) {
 			n++;
 			draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "USEID:");
 			sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].use_deviceid);
-			draw_text_button(esContext, "rc_baud", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
+			draw_text_button(esContext, "rc_useid", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
 			if (ModelData[ModelActive].use_deviceid == 1) {
 				n++;
 				draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "SysID:");

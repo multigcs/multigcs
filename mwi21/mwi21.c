@@ -3,6 +3,9 @@
 
 extern uint8_t redraw_flag;
 
+uint8_t last[MODELS_MAX];
+uint16_t tout[MODELS_MAX];
+uint8_t flag[MODELS_MAX];
 uint8_t mwi21_serial_buf[MODELS_MAX][255];
 uint8_t serial_buffer[MODELS_MAX][1024];
 uint8_t mwi21_serial_n[MODELS_MAX];
@@ -43,13 +46,16 @@ uint8_t mwi21_connection_status (uint8_t modelid) {
 
 void mwi21_init (uint8_t modelid, char *port, uint32_t baud) {
 	uint8_t n = 0;
+	last[modelid] = 0;
+	tout[modelid] = 0;
+	flag[modelid] = 0;
 	mwi21_rn[modelid] = 1;
 	mwi21_serial_n[modelid] = 0;
 	for (n = 0; n < 16; n++) {
 		mwi_box_names[modelid][n][0] = 0;
 		mwi_pid_names[modelid][n][0] = 0;
 	}
-	SDL_Log("init multiwii serial port...\n");
+	SDL_Log("init multiwii serial(%i) port...\n", modelid);
 	ModelData[modelid].serial_fd = serial_open(port, baud);
 }
 
@@ -236,9 +242,8 @@ void mwi21_get_values (uint8_t modelid) {
 }
 
 void mwi21_get_new (uint8_t modelid) {
-	static uint8_t flag = 0;
-	flag = 1 - flag;
-	if (flag == 0) {
+	flag[modelid] = 1 - flag[modelid];
+	if (flag[modelid] == 0) {
 		if (mwi_get_pid_flag[modelid] != 0) {
 			mwi21_get_req(modelid, MSP_PID);
 			mwi_get_pid_flag[modelid] = 0;
@@ -306,15 +311,13 @@ void mwi21_update (uint8_t modelid) {
 	uint8_t bn = 0;
 	uint8_t c = 0;
 	uint8_t res = 0;
-	static uint8_t last = 0;
-	static uint16_t tout = 0;
 //	uint8_t n = 0;
 	ModelData[modelid].serial_fd = serial_check(ModelData[modelid].serial_fd);
 	if (ModelData[modelid].serial_fd < 0) {
 		return;
 	}
-	if (tout++ > 20) {
-		tout = 0;
+	if (tout[modelid]++ > 20) {
+		tout[modelid] = 0;
 		mwi21_serial_n[modelid] = 0;
 		mwi21_get_new(modelid);
 //		SDL_Log("mwi21: timeout\n");
@@ -325,17 +328,17 @@ void mwi21_update (uint8_t modelid) {
 		mwi21_serial_buf[modelid][0] = serial_buffer[modelid][i];
 		last_connection[modelid] = time(0);
 		c = mwi21_serial_buf[modelid][0];
-//		SDL_Log("%i: %i (%c)\n", mwi21_serial_n[modelid], c, c);
+//		SDL_Log("model%i: %i: %i (%c)\n", modelid, mwi21_serial_n[modelid], c, c);
 		if (mwi21_serial_n[modelid] < 250) {
 			mwi21_serial_buf[modelid][mwi21_serial_n[modelid]++] = c;
 		} else {
 			mwi21_serial_n[modelid] = 0;
 		}
-		if (c == 'M' && last == '$') {
+		if (c == 'M' && last[modelid] == '$') {
 			mwi21_frame_start[modelid] = mwi21_serial_n[modelid] - 2;
 			mwi21_frame_len[modelid] = 0;
-//			SDL_Log("mwi21_frame_start[modelid]: %i\n", mwi21_frame_start[modelid]);
-			tout = 0;
+//			SDL_Log("mwi21_frame_start(%i): %i\n", modelid, mwi21_frame_start[modelid]);
+			tout[modelid] = 0;
 		}
 		if (mwi21_serial_n[modelid] - mwi21_frame_start[modelid] == 4) {
 			mwi21_frame_len[modelid] = c;
@@ -514,9 +517,9 @@ void mwi21_update (uint8_t modelid) {
 					int8_t GPS_fix = 0;
 					int8_t GPS_numSat = 0;
 					float GPS_speed = 0;
-					static float new_lat = 0.0;
-					static float new_lon = 0.0;
-					static float new_alt = 0.0;
+					float new_lat = 0.0;
+					float new_lon = 0.0;
+					float new_alt = 0.0;
 					GPS_fix = mwi21_read8(modelid);
 					GPS_numSat = mwi21_read8(modelid);
 					new_lat = (float)mwi21_read32(modelid) / 10000000.0;
@@ -540,7 +543,8 @@ void mwi21_update (uint8_t modelid) {
 					float mwi_wp_lat = (float)mwi21_read32(modelid) / 10000000.0;
 					float mwi_wp_lon = (float)mwi21_read32(modelid) / 10000000.0;
 					int16_t mwi_wp_alt = mwi21_read16(modelid);
-					int8_t mwi_wp_flag = mwi21_read8(modelid);
+					//int8_t mwi_wp_flag = mwi21_read8(modelid);
+					mwi21_read8(modelid);
 					if (mwi_wp_num == 0) {
 //						SDL_Log("# home # %i %f %f %i %i ###\n", mwi_wp_num, mwi_wp_lat, mwi_wp_lon, mwi_wp_alt, mwi_wp_flag);
 						if (mwi_wp_lat != 0.0 || mwi_wp_lon != 0.0) {
@@ -569,7 +573,7 @@ void mwi21_update (uint8_t modelid) {
 			}
 			mwi21_serial_n[modelid] = 0;
 		}
-		last = c;
+		last[modelid] = c;
 	    }
 	}
 }
