@@ -1982,7 +1982,6 @@ void Draw (ESContext *esContext) {
 			}
 		}
 	}
-
 #ifndef SDLGL
 	if (redraw_flag == 0) {
 		SDL_Delay(1);
