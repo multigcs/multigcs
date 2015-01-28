@@ -3,7 +3,6 @@
 
 extern uint8_t redraw_flag;
 
-int mwi21_serial_fd = -1;
 uint8_t mwi21_serial_buf[255];
 uint8_t serial_buffer[1024];
 uint8_t mwi21_serial_n = 0;
@@ -35,14 +34,14 @@ char mwi_pid_names[16][12];
 int8_t mwi_get_boxnames_flag = 0;
 int8_t mwi_get_pidnames_flag = 0;
 
-uint8_t mwi21_connection_status (void) {
-	if (mwi21_serial_fd == -1) {
+uint8_t mwi21_connection_status (uint8_t modelid) {
+	if (ModelData[modelid].serial_fd == -1) {
 		return 0;
 	}
 	return last_connection;
 }
 
-void mwi21_init (char *port, uint32_t baud) {
+void mwi21_init (uint8_t modelid, char *port, uint32_t baud) {
 	uint8_t n = 0;
 	mwi21_rn = 1;
 	mwi21_serial_n = 0;
@@ -51,28 +50,28 @@ void mwi21_init (char *port, uint32_t baud) {
 		mwi_pid_names[n][0] = 0;
 	}
 	SDL_Log("init multiwii serial port...\n");
-	mwi21_serial_fd = serial_open(port, baud);
+	ModelData[modelid].serial_fd = serial_open(port, baud);
 }
 
-void mwi21_exit (void) {
-	if (mwi21_serial_fd >= 0) {
-		serial_close(mwi21_serial_fd);
-		mwi21_serial_fd = -1;
+void mwi21_exit (uint8_t modelid) {
+	if (ModelData[modelid].serial_fd >= 0) {
+		serial_close(ModelData[modelid].serial_fd);
+		ModelData[modelid].serial_fd = -1;
 	}
 }
 
-int8_t mwi21_read8 (void) {
+int8_t mwi21_read8 (uint8_t modelid) {
 	int8_t t = mwi21_serial_buf[mwi21_cn++] & 0xff;
 	return t;
 }
 
-int16_t mwi21_read16 (void) {
+int16_t mwi21_read16 (uint8_t modelid) {
 	int16_t t = mwi21_serial_buf[mwi21_cn++] & 0xff;
 	t += mwi21_serial_buf[mwi21_cn++] << 8;
 	return t;
 }
 
-int32_t mwi21_read32 (void) {
+int32_t mwi21_read32 (uint8_t modelid) {
 	int32_t t = mwi21_serial_buf[mwi21_cn++] & 0xff;
 	t += (mwi21_serial_buf[mwi21_cn++] & 0xff) << 8;
 	t += (mwi21_serial_buf[mwi21_cn++] & 0xff) << 16;
@@ -80,7 +79,7 @@ int32_t mwi21_read32 (void) {
 	return t;
 }
 
-void mwi21_get_req (uint8_t id) {
+void mwi21_get_req (uint8_t modelid, uint8_t id) {
 	uint8_t send_buffer[20];
 	send_buffer[0] = '$';
 	send_buffer[1] = 'M';
@@ -88,12 +87,12 @@ void mwi21_get_req (uint8_t id) {
 	send_buffer[3] = 0;
 	send_buffer[4] = id;
 	send_buffer[5] = id;
-	if (mwi21_serial_fd >= 0) {
-		serial_write(mwi21_serial_fd, send_buffer, 6);
+	if (ModelData[modelid].serial_fd >= 0) {
+		serial_write(ModelData[modelid].serial_fd, send_buffer, 6);
 	}
 }
 
-void mwi21_get_req8 (uint8_t id, int8_t data) {
+void mwi21_get_req8 (uint8_t modelid, uint8_t id, int8_t data) {
 	uint8_t send_buffer[20];
 	send_buffer[0] = '$';
 	send_buffer[1] = 'M';
@@ -102,8 +101,8 @@ void mwi21_get_req8 (uint8_t id, int8_t data) {
 	send_buffer[4] = id;
 	send_buffer[5] = data;
 	send_buffer[6] = 1 ^ id ^ data;
-	if (mwi21_serial_fd >= 0) {
-		serial_write(mwi21_serial_fd, send_buffer, 7);
+	if (ModelData[modelid].serial_fd >= 0) {
+		serial_write(ModelData[modelid].serial_fd, send_buffer, 7);
 	}
 }
 
@@ -141,7 +140,7 @@ uint8_t write16 (uint16_t a, uint8_t *send_buffer, uint8_t pos, uint8_t csum) {
 	return csum;
 }
 
-void mwi21_send_wp (uint8_t wpnum, float p_lat, float p_long, float p_alt) {
+void mwi21_send_wp (uint8_t modelid, uint8_t wpnum, float p_lat, float p_long, float p_alt) {
 	uint8_t send_buffer[50];
 	uint32_t mwi_wp_lat = (uint32_t)(p_lat * 10000000.0);
 	uint32_t mwi_wp_lon = (uint32_t)(p_long * 10000000.0);
@@ -168,12 +167,12 @@ void mwi21_send_wp (uint8_t wpnum, float p_lat, float p_long, float p_alt) {
 	send_buffer[5 + len] ^= 0;
 	send_buffer[22] = 0; // 8bit
 	send_buffer[5 + len] ^= 0;
-	if (mwi21_serial_fd >= 0) {
-		serial_write(mwi21_serial_fd, send_buffer, 6 + 32);
+	if (ModelData[modelid].serial_fd >= 0) {
+		serial_write(ModelData[modelid].serial_fd, send_buffer, 6 + 32);
 	}
 }
 
-void mwi21_send_box (void) {
+void mwi21_send_box (uint8_t modelid) {
 	uint8_t send_buffer[50];
 	send_buffer[0] = '$';
 	send_buffer[1] = 'M';
@@ -190,12 +189,12 @@ void mwi21_send_box (void) {
 		send_buffer[5 + 32] ^= d1;
 		send_buffer[5 + 32] ^= d2;
 	}
-	if (mwi21_serial_fd >= 0) {
-		serial_write(mwi21_serial_fd, send_buffer, 6 + 32);
+	if (ModelData[modelid].serial_fd >= 0) {
+		serial_write(ModelData[modelid].serial_fd, send_buffer, 6 + 32);
 	}
 }
 
-void mwi21_send_pid (void) {
+void mwi21_send_pid (uint8_t modelid) {
 	uint8_t send_buffer[50];
 	send_buffer[0] = '$';
 	send_buffer[1] = 'M';
@@ -212,96 +211,96 @@ void mwi21_send_pid (void) {
 		send_buffer[5 + 30] ^= mwi_set_pid[nn][1];
 		send_buffer[5 + 30] ^= mwi_set_pid[nn][2];
 	}
-	if (mwi21_serial_fd >= 0) {
-		serial_write(mwi21_serial_fd, send_buffer, 6 + 30);
+	if (ModelData[modelid].serial_fd >= 0) {
+		serial_write(ModelData[modelid].serial_fd, send_buffer, 6 + 30);
 	}
 }
 
-void mwi21_cal_acc (void) {
+void mwi21_cal_acc (uint8_t modelid) {
 	mwi_req = MSP_ACC_CALIBRATION;
 }
 
-void mwi21_cal_mac (void) {
+void mwi21_cal_mac (uint8_t modelid) {
 	mwi_req = MSP_MAG_CALIBRATION;
 }
 
-void mwi21_write_rom (void) {
+void mwi21_write_rom (uint8_t modelid) {
 	mwi_req = MSP_EEPROM_WRITE;
 }
 
-void mwi21_get_values (void) {
+void mwi21_get_values (uint8_t modelid) {
 	mwi_get_pid_flag = 1;
 	mwi_get_box_flag = 1;
 	mwi_get_boxnames_flag = 1;
 	mwi_get_pidnames_flag = 1;
 }
 
-void mwi21_get_new (void) {
+void mwi21_get_new (uint8_t modelid) {
 	static uint8_t flag = 0;
 	flag = 1 - flag;
 	if (flag == 0) {
 		if (mwi_get_pid_flag != 0) {
-			mwi21_get_req(MSP_PID);
+			mwi21_get_req(modelid, MSP_PID);
 			mwi_get_pid_flag = 0;
 		} else if (mwi_get_box_flag != 0) {
-			mwi21_get_req8(MSP_BOX, 1);
+			mwi21_get_req8(modelid, MSP_BOX, 1);
 			mwi_get_box_flag = 0;
 		} else if (mwi_get_boxnames_flag != 0) {
-			mwi21_get_req(MSP_BOXNAMES);
+			mwi21_get_req(modelid, MSP_BOXNAMES);
 			mwi_get_boxnames_flag = 0;
 		} else if (mwi_get_pidnames_flag != 0) {
-			mwi21_get_req(MSP_PIDNAMES);
+			mwi21_get_req(modelid, MSP_PIDNAMES);
 			mwi_get_pidnames_flag = 0;
 		} else if (mwi_set_pid_flag == 1) {
-			mwi21_send_pid();
+			mwi21_send_pid(modelid);
 			mwi_set_pid_flag = 0;
 			mwi_get_pid_flag = 1;
 		} else if (mwi_set_box_flag == 1) {
-			mwi21_send_box();
+			mwi21_send_box(modelid);
 			mwi_set_box_flag = 0;
 			mwi_get_box_flag = 1;
 		} else if (mwi_req != 0) {
-			mwi21_get_req(mwi_req);
+			mwi21_get_req(modelid, mwi_req);
 			mwi_req = 0;
 		} else {
-			mwi21_get_req(MSP_ATTITUDE);
+			mwi21_get_req(modelid, MSP_ATTITUDE);
 		}
 	} else if (mwi21_rn == 1) {
-		mwi21_get_req(MSP_RC);
+		mwi21_get_req(modelid, MSP_RC);
 		mwi21_rn++;
 	} else if (mwi21_rn == 2) {
-		mwi21_get_req(MSP_ALTITUDE);
+		mwi21_get_req(modelid, MSP_ALTITUDE);
 		mwi21_rn++;
 	} else if (mwi21_rn == 3) {
-		mwi21_get_req(MSP_BAT);
+		mwi21_get_req(modelid, MSP_BAT);
 		mwi21_rn++;
 	} else if (mwi21_rn == 4) {
-		mwi21_get_req(MSP_RAW_GPS);
+		mwi21_get_req(modelid, MSP_RAW_GPS);
 		mwi21_rn++;
 	} else if (mwi21_rn == 5) {
-		mwi21_get_req(MSP_STATUS);
+		mwi21_get_req(modelid, MSP_STATUS);
 		mwi21_rn++;
 	} else if (mwi21_rn == 6) {
-		mwi21_get_req(MSP_RAW_IMU);
+		mwi21_get_req(modelid, MSP_RAW_IMU);
 		mwi21_rn++;
 	} else if (mwi21_rn == 7) {
-		mwi21_get_req8(MSP_WP, 0); // Home
+		mwi21_get_req8(modelid, MSP_WP, 0); // Home
 		mwi21_rn++;
 	} else if (mwi21_rn == 8) {
-		mwi21_get_req8(MSP_WP, 16); // Hold
+		mwi21_get_req8(modelid, MSP_WP, 16); // Hold
 		mwi21_rn++;
 	} else if (mwi21_rn == 9) {
-		mwi21_send_wp(0, WayPoints[ModelActive][0].p_lat, WayPoints[ModelActive][0].p_long, WayPoints[ModelActive][0].p_alt);
+		mwi21_send_wp(modelid, 0, WayPoints[modelid][0].p_lat, WayPoints[modelid][0].p_long, WayPoints[modelid][0].p_alt);
 		mwi21_rn++;
 	} else if (mwi21_rn == 10) {
-		mwi21_send_wp(16, WayPoints[ModelActive][1].p_lat, WayPoints[ModelActive][1].p_long, WayPoints[ModelActive][1].p_alt);
+		mwi21_send_wp(modelid, 16, WayPoints[modelid][1].p_lat, WayPoints[modelid][1].p_long, WayPoints[modelid][1].p_alt);
 		mwi21_rn++;
 	} else {
 		mwi21_rn = 1;
 	}
 }
 
-void mwi21_update (void) {
+void mwi21_update (uint8_t modelid) {
 	uint8_t nn2 = 0;
 	uint8_t cp = 0;
 	uint8_t bn = 0;
@@ -310,16 +309,16 @@ void mwi21_update (void) {
 	static uint8_t last = 0;
 	static uint16_t tout = 0;
 //	uint8_t n = 0;
-	if (mwi21_serial_fd < 0) {
+	if (ModelData[modelid].serial_fd < 0) {
 		return;
 	}
 	if (tout++ > 20) {
 		tout = 0;
 		mwi21_serial_n = 0;
-		mwi21_get_new();
+		mwi21_get_new(modelid);
 //		SDL_Log("mwi21: timeout\n");
 	}
-	while ((res = serial_read(mwi21_serial_fd, serial_buffer, 1023)) > 0) {
+	while ((res = serial_read(ModelData[modelid].serial_fd, serial_buffer, 1023)) > 0) {
 	    int i = 0;
 	    for (i = 0; i < res; i++) {
 		mwi21_serial_buf[0] = serial_buffer[i];
@@ -374,13 +373,13 @@ void mwi21_update (void) {
 				mwi21_serial_n = 0;
 			}
 //			SDL_Log("CSUM %i(%i):  %i %i\n", cmd, mwi21_frame_len, mwi21_serial_buf[mwi21_frame_len + 5 + mwi21_frame_start], chksum);
-			mwi21_get_new();
+			mwi21_get_new(modelid);
 
 			switch (cmd) {
 				case MSP_BOXNAMES:
 					mwi21_cn = 5 + mwi21_frame_start;
 					for (nn2 = 0; nn2 < mwi21_frame_len; nn2++) {
-						char c = mwi21_read8();
+						char c = mwi21_read8(modelid);
 
 						if (c == ';') {
 							bn++;
@@ -397,7 +396,7 @@ void mwi21_update (void) {
 				case MSP_PIDNAMES:
 					mwi21_cn = 5 + mwi21_frame_start;
 					for (nn2 = 0; nn2 < mwi21_frame_len; nn2++) {
-						char c = mwi21_read8();
+						char c = mwi21_read8(modelid);
 						if (c == ';') {
 							bn++;
 							cp = 0;
@@ -411,41 +410,43 @@ void mwi21_update (void) {
 				break;
 				case MSP_ATTITUDE:
 					mwi21_cn = 5 + mwi21_frame_start;
-					ModelData[ModelActive].roll = (float)mwi21_read16() / 10.0;
-					ModelData[ModelActive].pitch = (float)mwi21_read16() / -10.0;
-					ModelData[ModelActive].yaw = (float)mwi21_read16();
-					ModelData[ModelActive].heartbeat = 100;
+					ModelData[modelid].roll = (float)mwi21_read16(modelid) / 10.0;
+					ModelData[modelid].pitch = (float)mwi21_read16(modelid) / -10.0;
+					ModelData[modelid].yaw = (float)mwi21_read16(modelid);
+					ModelData[modelid].heartbeat = 100;
+					ModelData[modelid].dronetype = MAV_TYPE_GENERIC;
+					strcpy(ModelData[modelid].sysstr, "Multiwii");
 					if (mwi_startup == 0) {
-						mwi21_get_values();
+						mwi21_get_values(modelid);
 					}
 					redraw_flag = 1;
 				break;
 				case MSP_RC:
 					mwi21_cn = 5 + mwi21_frame_start;
-					ModelData[ModelActive].radio[0] = (mwi21_read16() - 1500) / 5;
-					ModelData[ModelActive].radio[1] = (mwi21_read16() - 1500) / 5;
-					ModelData[ModelActive].radio[2] = (mwi21_read16() - 1500) / 5;
-					ModelData[ModelActive].radio[3] = (mwi21_read16() - 1500) / 5;
-					ModelData[ModelActive].radio[4] = (mwi21_read16() - 1500) / 5;
-					ModelData[ModelActive].radio[5] = (mwi21_read16() - 1500) / 5;
-					ModelData[ModelActive].radio[6] = (mwi21_read16() - 1500) / 5;
-					ModelData[ModelActive].radio[7] = (mwi21_read16() - 1500) / 5;
-					ModelData[ModelActive].chancount = 8;
+					ModelData[modelid].radio[0] = (mwi21_read16(modelid) - 1500) / 5;
+					ModelData[modelid].radio[1] = (mwi21_read16(modelid) - 1500) / 5;
+					ModelData[modelid].radio[2] = (mwi21_read16(modelid) - 1500) / 5;
+					ModelData[modelid].radio[3] = (mwi21_read16(modelid) - 1500) / 5;
+					ModelData[modelid].radio[4] = (mwi21_read16(modelid) - 1500) / 5;
+					ModelData[modelid].radio[5] = (mwi21_read16(modelid) - 1500) / 5;
+					ModelData[modelid].radio[6] = (mwi21_read16(modelid) - 1500) / 5;
+					ModelData[modelid].radio[7] = (mwi21_read16(modelid) - 1500) / 5;
+					ModelData[modelid].chancount = 8;
 					redraw_flag = 1;
 				break;
 				case MSP_BAT:
 					mwi21_cn = 5 + mwi21_frame_start;
-					ModelData[ModelActive].voltage = (float)mwi21_read8() / 10.0;
+					ModelData[modelid].voltage = (float)mwi21_read8(modelid) / 10.0;
 					redraw_flag = 1;
 				break;
 				case MSP_ALTITUDE:
 					mwi21_cn = 5 + mwi21_frame_start;
-					ModelData[ModelActive].baro = (float)mwi21_read32() / 100.0;
-					ModelData[ModelActive].heartbeat = 100;
+					ModelData[modelid].baro = (float)mwi21_read32(modelid) / 100.0;
+					ModelData[modelid].heartbeat = 100;
 					if (GPS_found == 0) {
-						ModelData[ModelActive].p_alt = (float)mwi21_read32() / 100.0;
-						if (ModelData[ModelActive].p_alt > 8000.0) {
-							ModelData[ModelActive].p_alt = ModelData[ModelActive].baro;
+						ModelData[modelid].p_alt = (float)mwi21_read32(modelid) / 100.0;
+						if (ModelData[modelid].p_alt > 8000.0) {
+							ModelData[modelid].p_alt = ModelData[modelid].baro;
 						}
 					}
 					redraw_flag = 1;
@@ -456,30 +457,30 @@ void mwi21_update (void) {
 					uint8_t len1 = mwi21_serial_buf[3 + mwi21_frame_start];
 					uint8_t nn1 = 0;
 					for (nn1 = 0; nn1 < len1 / 3; nn1++) {
-						mwi_pid[nn1][0] = mwi21_read8();
-						mwi_pid[nn1][1] = mwi21_read8();
-						mwi_pid[nn1][2] = mwi21_read8();
+						mwi_pid[nn1][0] = mwi21_read8(modelid);
+						mwi_pid[nn1][1] = mwi21_read8(modelid);
+						mwi_pid[nn1][2] = mwi21_read8(modelid);
 					}
 					mwi_get_pid_flag = 0;
 					mwi_get_box_flag = 1;
 				break;
 				case MSP_STATUS:
 					mwi21_cn = 5 + mwi21_frame_start;
-					cycleTime = mwi21_read16();
-					mwi_i2cErrors = mwi21_read16();
-					mwi_sensors = mwi21_read16();
-					mwi_status = mwi21_read32();
+					cycleTime = mwi21_read16(modelid);
+					mwi_i2cErrors = mwi21_read16(modelid);
+					mwi_sensors = mwi21_read16(modelid);
+					mwi_status = mwi21_read32(modelid);
 					if (mwi_status & (1<<BOXARM)) {
-						ModelData[ModelActive].armed = MODEL_ARMED;
+						ModelData[modelid].armed = MODEL_ARMED;
 					} else {
-						ModelData[ModelActive].armed = MODEL_DISARMED;
+						ModelData[modelid].armed = MODEL_DISARMED;
 					}
 					if (mwi_status & (1<<BOXGPSHOLD)) {
-						ModelData[ModelActive].mode = MODEL_MODE_POSHOLD;
+						ModelData[modelid].mode = MODEL_MODE_POSHOLD;
 					} else if (mwi_status & (1<<BOXGPSHOME)) {
-						ModelData[ModelActive].mode = MODEL_MODE_RTL;
+						ModelData[modelid].mode = MODEL_MODE_RTL;
 					} else {
-						ModelData[ModelActive].mode = MODEL_MODE_MANUAL;
+						ModelData[modelid].mode = MODEL_MODE_MANUAL;
 					}
 					redraw_flag = 1;
 				break;
@@ -488,23 +489,23 @@ void mwi21_update (void) {
 					uint8_t len = mwi21_serial_buf[3 + mwi21_frame_start];
 					uint8_t nn = 0;
 					for (nn = 0; nn < len; nn++) {
-//						mwi_box[nn] = mwi21_read16();
-						mwi_set_box[nn] = mwi21_read16();
+//						mwi_box[nn] = mwi21_read16(modelid);
+						mwi_set_box[nn] = mwi21_read16(modelid);
 					}
 					mwi_get_box_flag = 0;
 					mwi_get_boxnames_flag = 1;
 				break;
 				case MSP_RAW_IMU:
 					mwi21_cn = 5 + mwi21_frame_start;
-					ModelData[ModelActive].acc_x = mwi21_read16();
-					ModelData[ModelActive].acc_y = mwi21_read16();
-					ModelData[ModelActive].acc_z = mwi21_read16();
-					ModelData[ModelActive].gyro_x = mwi21_read16();
-					ModelData[ModelActive].gyro_y = mwi21_read16();
-					ModelData[ModelActive].gyro_z = mwi21_read16();
-					mwi_mag_x = mwi21_read16();
-					mwi_mag_y = mwi21_read16();
-					mwi_mag_z = mwi21_read16();
+					ModelData[modelid].acc_x = mwi21_read16(modelid);
+					ModelData[modelid].acc_y = mwi21_read16(modelid);
+					ModelData[modelid].acc_z = mwi21_read16(modelid);
+					ModelData[modelid].gyro_x = mwi21_read16(modelid);
+					ModelData[modelid].gyro_y = mwi21_read16(modelid);
+					ModelData[modelid].gyro_z = mwi21_read16(modelid);
+					mwi_mag_x = mwi21_read16(modelid);
+					mwi_mag_y = mwi21_read16(modelid);
+					mwi_mag_z = mwi21_read16(modelid);
 					redraw_flag = 1;
 				break;
 				case MSP_RAW_GPS:
@@ -515,52 +516,52 @@ void mwi21_update (void) {
 					static float new_lat = 0.0;
 					static float new_lon = 0.0;
 					static float new_alt = 0.0;
-					GPS_fix = mwi21_read8();
-					GPS_numSat = mwi21_read8();
-					new_lat = (float)mwi21_read32() / 10000000.0;
-					new_lon = (float)mwi21_read32() / 10000000.0;
-					new_alt = (float)mwi21_read16();
-					GPS_speed = (float)mwi21_read16();
-					ModelData[ModelActive].speed = GPS_speed;
-					ModelData[ModelActive].gpsfix = GPS_fix;
-					ModelData[ModelActive].numSat = GPS_numSat;
+					GPS_fix = mwi21_read8(modelid);
+					GPS_numSat = mwi21_read8(modelid);
+					new_lat = (float)mwi21_read32(modelid) / 10000000.0;
+					new_lon = (float)mwi21_read32(modelid) / 10000000.0;
+					new_alt = (float)mwi21_read16(modelid);
+					GPS_speed = (float)mwi21_read16(modelid);
+					ModelData[modelid].speed = GPS_speed;
+					ModelData[modelid].gpsfix = GPS_fix;
+					ModelData[modelid].numSat = GPS_numSat;
 					if (new_lat > 0.0 && new_lon > 0.0) {
-						ModelData[ModelActive].p_lat = new_lat;
-						ModelData[ModelActive].p_long = new_lon;
-						ModelData[ModelActive].p_alt = new_alt;
+						ModelData[modelid].p_lat = new_lat;
+						ModelData[modelid].p_long = new_lon;
+						ModelData[modelid].p_alt = new_alt;
 						GPS_found = 1;
 						redraw_flag = 1;
 					}
 				break;
 				case MSP_WP:
 					mwi21_cn = 5 + mwi21_frame_start;
-					int8_t mwi_wp_num = mwi21_read8();
-					float mwi_wp_lat = (float)mwi21_read32() / 10000000.0;
-					float mwi_wp_lon = (float)mwi21_read32() / 10000000.0;
-					int16_t mwi_wp_alt = mwi21_read16();
-					int8_t mwi_wp_flag = mwi21_read8();
+					int8_t mwi_wp_num = mwi21_read8(modelid);
+					float mwi_wp_lat = (float)mwi21_read32(modelid) / 10000000.0;
+					float mwi_wp_lon = (float)mwi21_read32(modelid) / 10000000.0;
+					int16_t mwi_wp_alt = mwi21_read16(modelid);
+					int8_t mwi_wp_flag = mwi21_read8(modelid);
 					if (mwi_wp_num == 0) {
 						SDL_Log("# home # %i %f %f %i %i ###\n", mwi_wp_num, mwi_wp_lat, mwi_wp_lon, mwi_wp_alt, mwi_wp_flag);
 						if (mwi_wp_lat != 0.0 || mwi_wp_lon != 0.0) {
-							WayPoints[ModelActive][0].p_lat = mwi_wp_lat;
-							WayPoints[ModelActive][0].p_long = mwi_wp_lon;
-							WayPoints[ModelActive][0].p_alt = mwi_wp_alt;
-							WayPoints[ModelActive][0].frametype = MAV_FRAME_GLOBAL;
+							WayPoints[modelid][0].p_lat = mwi_wp_lat;
+							WayPoints[modelid][0].p_long = mwi_wp_lon;
+							WayPoints[modelid][0].p_alt = mwi_wp_alt;
+							WayPoints[modelid][0].frametype = MAV_FRAME_GLOBAL;
 						}
 					} else {
 						SDL_Log("# hold # %i %f %f %i %i ###\n", mwi_wp_num, mwi_wp_lat, mwi_wp_lon, mwi_wp_alt, mwi_wp_flag);
 						if (mwi_wp_lat != 0.0 || mwi_wp_lon != 0.0) {
-							strcpy(WayPoints[ModelActive][1].name, "HOLD");
-							strcpy(WayPoints[ModelActive][1].command, "WAYPOINT");
-							WayPoints[ModelActive][1].p_lat = mwi_wp_lat;
-							WayPoints[ModelActive][1].p_long = mwi_wp_lon;
-							WayPoints[ModelActive][1].p_alt = mwi_wp_alt;
-							WayPoints[ModelActive][1].frametype = MAV_FRAME_GLOBAL;
-							WayPoints[ModelActive][2].name[0] = 0;
-							WayPoints[ModelActive][2].p_lat = 0.0;
-							WayPoints[ModelActive][2].p_long = 0.0;
-							WayPoints[ModelActive][2].p_alt = 0.0;
-							WayPoints[ModelActive][2].frametype = MAV_FRAME_GLOBAL;
+							strcpy(WayPoints[modelid][1].name, "HOLD");
+							strcpy(WayPoints[modelid][1].command, "WAYPOINT");
+							WayPoints[modelid][1].p_lat = mwi_wp_lat;
+							WayPoints[modelid][1].p_long = mwi_wp_lon;
+							WayPoints[modelid][1].p_alt = mwi_wp_alt;
+							WayPoints[modelid][1].frametype = MAV_FRAME_GLOBAL;
+							WayPoints[modelid][2].name[0] = 0;
+							WayPoints[modelid][2].p_lat = 0.0;
+							WayPoints[modelid][2].p_long = 0.0;
+							WayPoints[modelid][2].p_alt = 0.0;
+							WayPoints[modelid][2].frametype = MAV_FRAME_GLOBAL;
 						}
 					}
 				break;
@@ -573,7 +574,7 @@ void mwi21_update (void) {
 }
 
 
-static void model_parseMWI21Pid (xmlDocPtr doc, xmlNodePtr cur, uint16_t pid) { 
+static void model_parseMWI21Pid (uint8_t modelid, xmlDocPtr doc, xmlNodePtr cur, uint16_t pid) { 
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
@@ -601,7 +602,7 @@ static void model_parseMWI21Pid (xmlDocPtr doc, xmlNodePtr cur, uint16_t pid) {
 	return;
 }
 
-static void model_parseMWI21Box (xmlDocPtr doc, xmlNodePtr cur, uint16_t box) { 
+static void model_parseMWI21Box (uint8_t modelid, xmlDocPtr doc, xmlNodePtr cur, uint16_t box) { 
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
@@ -617,22 +618,22 @@ static void model_parseMWI21Box (xmlDocPtr doc, xmlNodePtr cur, uint16_t box) {
 	return;
 }
 
-void mwi21_xml_load (xmlDocPtr doc, xmlNodePtr cur) { 
+void mwi21_xml_load (uint8_t modelid, xmlDocPtr doc, xmlNodePtr cur) { 
 	uint16_t pid = 0;
 	uint16_t box = 0;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
 		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"pid"))) {
-			model_parseMWI21Pid (doc, cur, pid++);
+			model_parseMWI21Pid (modelid, doc, cur, pid++);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"box"))) {
-			model_parseMWI21Box (doc, cur, box++);
+			model_parseMWI21Box (modelid, doc, cur, box++);
 		}
 		cur = cur->next;
 	}
 	return;
 }
 
-void mwi21_xml_save (FILE *fr) {
+void mwi21_xml_save (uint8_t modelid, FILE *fr) {
 	int16_t n = 0;
 	fprintf(fr, " <mwi21>\n");
 	for (n = 0; n < 16; n++) {
@@ -644,7 +645,7 @@ void mwi21_xml_save (FILE *fr) {
 	fprintf(fr, " </mwi21>\n");
 }
 
-static void mwi21_html_page (char *content, uint8_t mode) {
+static void mwi21_html_page (uint8_t modelid, char *content, uint8_t mode) {
 	char tmp_str[512];
 	int n3 = 0;
 	int lc = 0;
@@ -727,12 +728,12 @@ static void mwi21_html_page (char *content, uint8_t mode) {
 	webserv_html_stop(content);
 }
 
-void mwi21_web_get (char *url, char *content, char *type) {
+void mwi21_web_get (uint8_t modelid, char *url, char *content, char *type) {
 	if (strncmp(url, "/mwii.html", 10) == 0) {
-		mwi21_html_page(content, 0);
+		mwi21_html_page(modelid, content, 0);
 		strcpy(type, "text/html");
 	} else if (strncmp(url, "/mwii_box.html", 14) == 0) {
-		mwi21_html_page(content, 1);
+		mwi21_html_page(modelid, content, 1);
 		strcpy(type, "text/html");
 	} else if (strncmp(url, "/mwii_pid.html?", 14) == 0) {
 		int n = 0;
@@ -780,8 +781,5 @@ void mwi21_web_get (char *url, char *content, char *type) {
 		strcpy(type, "text/html");
 	}
 }
-
-
-
 
 

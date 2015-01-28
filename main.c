@@ -270,7 +270,7 @@ uint8_t need_bluetooth (void) {
 }
 
 void stop_telemetry (uint8_t modelid) {
-	mwi21_exit();
+	mwi21_exit(modelid);
 	mavlink_exit(modelid);
 	baseflightcli_exit();
 	cli_exit();
@@ -290,7 +290,7 @@ void reset_telemetry (uint8_t modelid) {
 	Android_JNI_ConnectUsbSerial(ModelData[ModelActive].telemetry_baud);
 #endif
 	if (ModelData[ModelActive].teletype == TELETYPE_MULTIWII_21 || ModelData[ModelActive].teletype == TELETYPE_BASEFLIGHT) {
-		mwi21_init(ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud);
+		mwi21_init(modelid, ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud);
 	} else if (ModelData[ModelActive].teletype == TELETYPE_SIMPLEBGC) {
 		simplebgc_init(ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud);
 	} else if (ModelData[ModelActive].teletype == TELETYPE_BRUGI) {
@@ -1562,7 +1562,7 @@ int telemetry_thread (void *data) {
 				webclient_update(clientmode_server, clientmode_port);
 				SDL_Delay(90);
 			} else if (ModelData[modelid].teletype == TELETYPE_MULTIWII_21 || ModelData[modelid].teletype == TELETYPE_BASEFLIGHT) {
-				mwi21_update();
+				mwi21_update(modelid);
 			} else if (ModelData[modelid].teletype == TELETYPE_SIMPLEBGC) {
 				simplebgc_update();
 			} else if (ModelData[modelid].teletype == TELETYPE_BRUGI) {

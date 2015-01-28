@@ -10,22 +10,22 @@ uint8_t mwi_null (char *name, float x, float y, int8_t button, float data, uint8
 }
 
 uint8_t mwi_cal_acc (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	mwi21_cal_acc();
+	mwi21_cal_acc(ModelActive);
 	return 0;
 }
 
 uint8_t mwi_cal_mac (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	mwi21_cal_mac();
+	mwi21_cal_mac(ModelActive);
 	return 0;
 }
 
 uint8_t mwi_write_rom (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	mwi21_write_rom();
+	mwi21_write_rom(ModelActive);
 	return 0;
 }
 
 uint8_t mwi_get_values (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	mwi21_get_values();
+	mwi21_get_values(ModelActive);
 	return 0;
 }
 
@@ -125,11 +125,8 @@ void screen_mwi_menu (ESContext *esContext) {
 	int16_t n3 = 0;
 	char tmp_str[100];
 	char tmp_str2[100];
-
 	draw_title(esContext, "MultiWii");
-
 	if (mwi_view == 1) {
-
 		for (n3 = 0; n3 < 4; n3++) {
 			if (n3 < 4) {
 				float val = (float)ModelData[ModelActive].radio[4 + n3] / 2.0 + 50.0;

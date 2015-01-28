@@ -126,7 +126,7 @@ static uint8_t model_save_xml (char *name, float x, float y, int8_t button, floa
 		}
 		fprintf(fr, " </telemetry>\n");
 		mavlink_xml_save(ModelActive, fr);
-		mwi21_xml_save(fr);
+		mwi21_xml_save(ModelActive, fr);
 		openpilot_xml_save(fr);
 		fprintf(fr, "</rcflow>\n");
 	        fclose(fr);
@@ -259,7 +259,7 @@ static void model_parseDoc (char *docname) {
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"mavlink"))) {
 			mavlink_xml_load(ModelActive, doc, cur);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"mwi21"))) {
-			mwi21_xml_load(doc, cur);
+			mwi21_xml_load(ModelActive, doc, cur);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"OpenPilot"))) {
 			openpilot_xml_load(doc, cur);
 
