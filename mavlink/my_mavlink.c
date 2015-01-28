@@ -1159,6 +1159,7 @@ uint8_t mavlink_connection_status (uint8_t modelid) {
 }
 
 void mavlink_update (uint8_t modelid) {
+	ModelData[modelid].serial_fd = serial_check(ModelData[modelid].serial_fd);
 	if (ModelData[modelid].serial_fd == -1) {
 		return;
 	}
@@ -1774,9 +1775,7 @@ int mavlink_tcp_send (uint8_t *buf, uint16_t len) {
 }
 
 int mavlink_tcp (void *data) {
-
 	uint8_t modelid = ModelActive;
-
     struct sockaddr_in server;
 	mavlink_message_t msg;
 	mavlink_status_t status;
@@ -1836,9 +1835,7 @@ int mavlink_tcp (void *data) {
 }
 
 int mavlink_udp (void *data) {
-
 	uint8_t modelid = ModelActive;
-
 	mavlink_message_t msg;
 	mavlink_status_t status;
 	char buf[UDP_BUFLEN];

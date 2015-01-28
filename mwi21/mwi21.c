@@ -309,6 +309,7 @@ void mwi21_update (uint8_t modelid) {
 	static uint8_t last = 0;
 	static uint16_t tout = 0;
 //	uint8_t n = 0;
+	ModelData[modelid].serial_fd = serial_check(ModelData[modelid].serial_fd);
 	if (ModelData[modelid].serial_fd < 0) {
 		return;
 	}
@@ -541,7 +542,7 @@ void mwi21_update (uint8_t modelid) {
 					int16_t mwi_wp_alt = mwi21_read16(modelid);
 					int8_t mwi_wp_flag = mwi21_read8(modelid);
 					if (mwi_wp_num == 0) {
-						SDL_Log("# home # %i %f %f %i %i ###\n", mwi_wp_num, mwi_wp_lat, mwi_wp_lon, mwi_wp_alt, mwi_wp_flag);
+//						SDL_Log("# home # %i %f %f %i %i ###\n", mwi_wp_num, mwi_wp_lat, mwi_wp_lon, mwi_wp_alt, mwi_wp_flag);
 						if (mwi_wp_lat != 0.0 || mwi_wp_lon != 0.0) {
 							WayPoints[modelid][0].p_lat = mwi_wp_lat;
 							WayPoints[modelid][0].p_long = mwi_wp_lon;
@@ -549,7 +550,7 @@ void mwi21_update (uint8_t modelid) {
 							WayPoints[modelid][0].frametype = MAV_FRAME_GLOBAL;
 						}
 					} else {
-						SDL_Log("# hold # %i %f %f %i %i ###\n", mwi_wp_num, mwi_wp_lat, mwi_wp_lon, mwi_wp_alt, mwi_wp_flag);
+//						SDL_Log("# hold # %i %f %f %i %i ###\n", mwi_wp_num, mwi_wp_lat, mwi_wp_lon, mwi_wp_alt, mwi_wp_flag);
 						if (mwi_wp_lat != 0.0 || mwi_wp_lon != 0.0) {
 							strcpy(WayPoints[modelid][1].name, "HOLD");
 							strcpy(WayPoints[modelid][1].command, "WAYPOINT");

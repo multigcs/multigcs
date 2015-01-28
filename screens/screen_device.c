@@ -68,6 +68,10 @@ uint8_t device_name_cancel (char *name, float x, float y, int8_t button, float d
 	return 0;
 }
 
+uint8_t device_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	return 0;
+}
+
 uint8_t device_name_save (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	show_device = 0;
 	(*save_callback)(name, x, y, button, 1.0, 0);
@@ -107,6 +111,9 @@ void screen_device (ESContext *esContext) {
 						if (device_page == n2) {
 							sprintf(tmp_str, "%s", dir_entry->d_name);
 							draw_text_button(esContext, new_path, setup.view_mode, tmp_str, FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, device_name_save, 0.0);
+							if (serial_info_get(new_path, tmp_str) == 0) {
+								draw_text_button(esContext, "--", setup.view_mode, tmp_str, FONT_WHITE, -1.0 + 0.05, -0.8 + n * 0.1 + 0.05, 0.002, 0.04, 0, 0, device_null, 0.0);
+							}
 						}
 						n++;
 					}

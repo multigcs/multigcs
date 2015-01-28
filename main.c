@@ -287,23 +287,23 @@ void reset_telemetry (uint8_t modelid) {
 		return;
 	}
 #ifdef ANDROID
-	Android_JNI_ConnectUsbSerial(ModelData[ModelActive].telemetry_baud);
+	Android_JNI_ConnectUsbSerial(ModelData[modelid].telemetry_baud);
 #endif
-	if (ModelData[ModelActive].teletype == TELETYPE_MULTIWII_21 || ModelData[ModelActive].teletype == TELETYPE_BASEFLIGHT) {
-		mwi21_init(modelid, ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud);
-	} else if (ModelData[ModelActive].teletype == TELETYPE_SIMPLEBGC) {
-		simplebgc_init(ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud);
-	} else if (ModelData[ModelActive].teletype == TELETYPE_BRUGI) {
-		brugi_init(ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud);
-	} else if (ModelData[ModelActive].teletype == TELETYPE_GPS_NMEA) {
-		gps_init(ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud);
-	} else if (ModelData[ModelActive].teletype == TELETYPE_OPENPILOT) {
-		openpilot_init(ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud);
-	} else if (ModelData[ModelActive].teletype == TELETYPE_CLI) {
-		cli_init(ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud);
-	} else if (ModelData[ModelActive].teletype == TELETYPE_BASEFLIGHTCLI) {
-		baseflightcli_init(ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud);
-	} else if (ModelData[ModelActive].teletype == TELETYPE_FRSKY) {
+	if (ModelData[modelid].teletype == TELETYPE_MULTIWII_21 || ModelData[modelid].teletype == TELETYPE_BASEFLIGHT) {
+		mwi21_init(modelid, ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
+	} else if (ModelData[modelid].teletype == TELETYPE_SIMPLEBGC) {
+		simplebgc_init(ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
+	} else if (ModelData[modelid].teletype == TELETYPE_BRUGI) {
+		brugi_init(ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
+	} else if (ModelData[modelid].teletype == TELETYPE_GPS_NMEA) {
+		gps_init(ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
+	} else if (ModelData[modelid].teletype == TELETYPE_OPENPILOT) {
+		openpilot_init(ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
+	} else if (ModelData[modelid].teletype == TELETYPE_CLI) {
+		cli_init(ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
+	} else if (ModelData[modelid].teletype == TELETYPE_BASEFLIGHTCLI) {
+		baseflightcli_init(ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
+	} else if (ModelData[modelid].teletype == TELETYPE_FRSKY) {
 		frsky_mode(1);
 	} else {
 		mavlink_init(modelid, ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
@@ -314,8 +314,8 @@ void set_telemetry (uint8_t modelid, char *device, uint32_t baud) {
 	if (clientmode == 1) {
 		return;
 	}
-	strncpy(ModelData[modelid].telemetry_port, device, 1023);
-	ModelData[modelid].telemetry_baud = baud;
+//	strncpy(ModelData[modelid].telemetry_port, device, 1023);
+//	ModelData[modelid].telemetry_baud = baud;
 
 #ifdef ANDROID
 	if (strncmp(ModelData[modelid].telemetry_port, "bt:", 3) == 0) {
@@ -521,6 +521,8 @@ void setup_save (void) {
 				fprintf(fr, "[%i]\n", n);
 				fprintf(fr, "telemetry_port		%s\n", ModelData[n].telemetry_port);
 				fprintf(fr, "telemetry_baud		%i\n", ModelData[n].telemetry_baud);
+				fprintf(fr, "deviceid		%s\n", ModelData[n].deviceid);
+				fprintf(fr, "use_deviceid		%i\n", ModelData[n].use_deviceid);
 				fprintf(fr, "model_name		%s\n", ModelData[n].name);
 				fprintf(fr, "model_sysstr		%s\n", ModelData[n].sysstr);
 				fprintf(fr, "telemetry_type		%i\n", ModelData[n].teletype);
@@ -650,6 +652,8 @@ void setup_load (void) {
 		ModelData[model_n].serial_fd = -1;
 		ModelData[model_n].dronetype = 250;
 		ModelData[model_n].pilottype = 250;
+		strcpy(ModelData[model_n].deviceid, "");
+		ModelData[model_n].use_deviceid = 0;
 	}
 	model_n = 0;
 	char filename[1024];
@@ -829,7 +833,6 @@ void setup_load (void) {
 	                                SurveySetup.alt = atof(val);
 	                        } else if (strcmp(var, "SurveySetup.alt_abs") == 0) {
 	                                SurveySetup.alt_abs = atoi(val);
-
 	                        } else if (strcmp(var, "ModelActive") == 0) {
 	                                ModelActive = atoi(val);
 
@@ -843,6 +846,10 @@ void setup_load (void) {
 	                                ModelData[model_n].telemetry_baud = atoi(val);
 	                        } else if (strcmp(var, "telemetry_type") == 0) {
 	                                ModelData[model_n].teletype = atoi(val);
+	                        } else if (strcmp(var, "deviceid") == 0) {
+	                                strcpy(ModelData[model_n].deviceid, val);
+	                        } else if (strcmp(var, "use_deviceid") == 0) {
+	                                ModelData[model_n].use_deviceid = atoi(val);
 	                        } else if (strcmp(var, "Model_lat") == 0) {
 	                                ModelData[model_n].p_lat = atof(val);
 	                        } else if (strcmp(var, "Model_long") == 0) {
@@ -951,14 +958,16 @@ void setup_load (void) {
 		setup.calibration_mode = 1;
 	}
 	strncpy(WayPoints[ModelActive][0].name, "HOME", 127);
+	serial_info_update();
 	for (model_n = 0; model_n < MODELS_MAX; model_n++) {
 		if (ModelData[model_n].p_lat == 0.0) {
 			ModelData[model_n].p_lat = WayPoints[ModelActive][0].p_lat;
 			ModelData[model_n].p_long = WayPoints[ModelActive][0].p_long;
 			ModelData[model_n].p_alt = WayPoints[ModelActive][0].p_alt;
 		}
-		strncpy(ModelData[model_n].teledevice, ModelData[ModelActive].telemetry_port, 199);
-		ModelData[model_n].telebaud = ModelData[ModelActive].telemetry_baud;
+		if (ModelData[ModelActive].use_deviceid == 1) {
+			serial_get_device_by_id(ModelData[model_n].deviceid, ModelData[model_n].telemetry_port);
+		}
 	}
 }
 
@@ -2255,6 +2264,8 @@ void ShutDown ( ESContext *esContext ) {
 #ifdef USE_OPENCV
 	openvc_exit();
 #endif
+	serial_monitor_exit();
+
 	SDL_Log("Shutdown\n");
 	gui_running = 0;
 	SDL_Delay(600);
@@ -2475,6 +2486,8 @@ int main ( int argc, char *argv[] ) {
 	if (setup.weather_enable == 1) {
 		weather_init();
 	}
+
+	serial_monitor_init();
 
 	SDL_Log("telemetry: init thread\n");
 	for (n = 0; n < MODELS_MAX; n++) {

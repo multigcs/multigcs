@@ -33,7 +33,8 @@ static uint8_t model_null (char *name, float x, float y, int8_t button, float da
 }
 
 static uint8_t model_reconnect (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	set_telemetry(ModelActive, ModelData[ModelActive].teledevice, ModelData[ModelActive].telebaud);
+//	set_telemetry(ModelActive, ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud);
+	reset_telemetry(ModelActive);
 	return 0;
 }
 
@@ -44,6 +45,11 @@ uint8_t model_teletype_set (char *name, float x, float y, int8_t button, float d
 	}
 	select_teletype = 0;
 	reset_telemetry(ModelActive);
+	return 0;
+}
+
+static uint8_t model_use_deviceid_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	ModelData[ModelActive].use_deviceid = 1 - ModelData[ModelActive].use_deviceid;
 	return 0;
 }
 
@@ -64,7 +70,7 @@ static uint8_t model_teletype_change (char *name, float x, float y, int8_t butto
 
 
 static uint8_t model_baud_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	ModelData[ModelActive].telebaud = atoi(name);
+	ModelData[ModelActive].telemetry_baud = atoi(name);
 	return 0;
 }
 
@@ -76,7 +82,8 @@ static uint8_t model_baud_change (char *name, float x, float y, int8_t button, f
 
 
 static uint8_t model_device_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	strncpy(ModelData[ModelActive].teledevice, name, 199);
+	strncpy(ModelData[ModelActive].telemetry_port, name, 199);
+	serial_info_get(ModelData[ModelActive].telemetry_port, ModelData[ModelActive].deviceid);
 	return 0;
 }
 
@@ -105,7 +112,7 @@ static uint8_t model_name_edit (char *name, float x, float y, int8_t button, flo
 
 static uint8_t model_save_xml (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	reset_buttons();
-        FILE *fr;
+	FILE *fr;
 	char tmp_str[128];
 	sprintf(tmp_str, "mkdir -p %s/models", get_datadirectory());
 	system(tmp_str);
@@ -118,9 +125,9 @@ static uint8_t model_save_xml (char *name, float x, float y, int8_t button, floa
 		fprintf(fr, " <type>%s</type>\n", modeltypes[ModelData[ModelActive].modeltype]);
 		fprintf(fr, " <telemetry>\n");
 		fprintf(fr, "  <type>%s</type>\n", teletypes[ModelData[ModelActive].teletype]);
-		fprintf(fr, "  <device>%s</device>\n", ModelData[ModelActive].teledevice);
-		fprintf(fr, "  <baud>%i</baud>\n", ModelData[ModelActive].telebaud);
-		if (strstr(ModelData[ModelActive].teledevice, "rfcomm") > 0) {
+		fprintf(fr, "  <device>%s</device>\n", ModelData[ModelActive].telemetry_port);
+		fprintf(fr, "  <baud>%i</baud>\n", ModelData[ModelActive].telemetry_baud);
+		if (strstr(ModelData[ModelActive].telemetry_port, "rfcomm") > 0) {
 			fprintf(fr, "  <bluetooth_addr>%s</bluetooth_addr>\n", ModelData[ModelActive].telebtaddr);
 			fprintf(fr, "  <bluetooth_pin>%s</bluetooth_pin>\n", ModelData[ModelActive].telebtpin);
 		}
@@ -168,13 +175,13 @@ static void model_parseTelemetry (xmlDocPtr doc, xmlNodePtr cur) {
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"device"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
-				strncpy(ModelData[ModelActive].teledevice, (char *)key, 199);
+				strncpy(ModelData[ModelActive].telemetry_port, (char *)key, 199);
 			}
 			xmlFree(key);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"baud"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
-				ModelData[ModelActive].telebaud = atoi((char *)key);
+				ModelData[ModelActive].telemetry_baud = atoi((char *)key);
 			}
 			xmlFree(key);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"bluetooth_addr"))) {
@@ -428,18 +435,27 @@ void screen_model (ESContext *esContext) {
 
 
 	draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "DEVICE:");
-	if (ModelData[ModelActive].teledevice[0] == 0) {
-		strcpy(ModelData[ModelActive].teledevice, "/dev/rfcomm0");
+	if (ModelData[ModelActive].telemetry_port[0] == 0) {
+//		strcpy(ModelData[ModelActive].telemetry_port, "/dev/rfcomm0");
 	}
-	sprintf(tmp_str, "%s [SELECT]", ModelData[ModelActive].teledevice);
+	sprintf(tmp_str, "%s [SELECT]", ModelData[ModelActive].telemetry_port);
 	draw_text_button(esContext, "device_select", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_device_change, 0);
 
 	n++;
 	draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "BAUD:");
-	sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].telebaud);
+	sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].telemetry_baud);
 	draw_text_button(esContext, "rc_baud", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_baud_change, n);
 
-	if (strstr(ModelData[ModelActive].teledevice, "rfcomm") > 0) {
+	n++;
+	draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "ID:");
+	draw_text_button(esContext, "rc_deviceid", VIEW_MODE_MODEL, ModelData[ModelActive].deviceid, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_null, n);
+
+	n++;
+	draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "USEID:");
+	sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].use_deviceid);
+	draw_text_button(esContext, "rc_baud", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
+
+	if (strstr(ModelData[ModelActive].telemetry_port, "rfcomm") > 0) {
 		n++;
 		draw_text_f3(esContext, -1.1 + 0.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "BLUETOOTH_DEVICE:");
 		if (ModelData[ModelActive].telebtaddr[0] == 0) {
@@ -459,8 +475,7 @@ void screen_model (ESContext *esContext) {
 		n++;
 		n++;
 	}
-	n++;
-	n++;
+
 	n++;
 	draw_text_button(esContext, "model_reconnect", VIEW_MODE_MODEL, "[RECONNECT]", FONT_WHITE, 0.0, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, model_reconnect, n);
 	n++;

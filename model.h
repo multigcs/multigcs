@@ -51,8 +51,6 @@ typedef struct {
 	uint8_t teletype;
 	uint8_t dronetype;
 	uint8_t pilottype;
-	char teledevice[200];
-	uint32_t telebaud;
 	char telebtaddr[200];
 	char telebtpin[200];
 	uint8_t mode;
@@ -103,11 +101,11 @@ typedef struct {
 	uint8_t sysid;
 	uint8_t compid;
 	uint32_t mavlink_update;
-
 	char telemetry_port[1024];
 	uint32_t telemetry_baud;
+	char deviceid[1024];
+	uint8_t use_deviceid;
 	int serial_fd;
-
 } Model;
 
 typedef struct {

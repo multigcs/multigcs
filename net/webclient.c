@@ -101,10 +101,10 @@ void webclient_update (char *server, uint16_t port) {
 				ModelData[ModelActive].modeltype = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "teletype") == 0) {
 				ModelData[ModelActive].teletype = atoi(tmp_str + start);
-			} else if (strcmp(tmp_str, "teledevice") == 0) {
-				strncpy(ModelData[ModelActive].teledevice, tmp_str + start, 199);
-			} else if (strcmp(tmp_str, "telebaud") == 0) {
-				ModelData[ModelActive].telebaud = atoi(tmp_str + start);
+			} else if (strcmp(tmp_str, "telemetry_port") == 0) {
+				strncpy(ModelData[ModelActive].telemetry_port, tmp_str + start, 199);
+			} else if (strcmp(tmp_str, "telemetry_baud") == 0) {
+				ModelData[ModelActive].telemetry_baud = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "telebtaddr") == 0) {
 				strncpy(ModelData[ModelActive].telebtaddr, tmp_str + start, 199);
 			} else if (strcmp(tmp_str, "telebtpin") == 0) {

@@ -156,9 +156,9 @@ void webserv_child_dump_modeldata (int fd) {
 	strcat(content, tmp_str);
 	sprintf(tmp_str, "teletype=%i\n", ModelData[ModelActive].teletype);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "teledevice=%s\n", ModelData[ModelActive].teledevice);
+	sprintf(tmp_str, "telemetry_port=%s\n", ModelData[ModelActive].telemetry_port);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "telebaud=%i\n", ModelData[ModelActive].telebaud);
+	sprintf(tmp_str, "telemetry_baud=%i\n", ModelData[ModelActive].telemetry_baud);
 	strcat(content, tmp_str);
 	sprintf(tmp_str, "telebtaddr=%s\n", ModelData[ModelActive].telebtaddr);
 	strcat(content, tmp_str);
@@ -2642,10 +2642,10 @@ void webserv_child (int fd) {
 						ModelData[ModelActive].modeltype = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "teletype") == 0) {
 						ModelData[ModelActive].teletype = atoi(tmp_str + start);
-					} else if (strcmp(tmp_str, "teledevice") == 0) {
-						strncpy(ModelData[ModelActive].teledevice, tmp_str + start, 199);
-					} else if (strcmp(tmp_str, "telebaud") == 0) {
-						ModelData[ModelActive].telebaud = atoi(tmp_str + start);
+					} else if (strcmp(tmp_str, "telemetry_port") == 0) {
+						strncpy(ModelData[ModelActive].telemetry_port, tmp_str + start, 199);
+					} else if (strcmp(tmp_str, "telemetry_baud") == 0) {
+						ModelData[ModelActive].telemetry_baud = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "telebtaddr") == 0) {
 						strncpy(ModelData[ModelActive].telebtaddr, tmp_str + start, 199);
 					} else if (strcmp(tmp_str, "telebtpin") == 0) {
