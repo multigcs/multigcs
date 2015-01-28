@@ -523,6 +523,8 @@ void setup_save (void) {
 				fprintf(fr, "telemetry_baud		%i\n", ModelData[n].telemetry_baud);
 				fprintf(fr, "deviceid		%s\n", ModelData[n].deviceid);
 				fprintf(fr, "use_deviceid		%i\n", ModelData[n].use_deviceid);
+				fprintf(fr, "mavlink_sysid		%i\n", ModelData[n].mavlink_sysid);
+//				fprintf(fr, "mavlink_compid		%i\n", ModelData[n].mavlink_compid);
 				fprintf(fr, "model_name		%s\n", ModelData[n].name);
 				fprintf(fr, "model_sysstr		%s\n", ModelData[n].sysstr);
 				fprintf(fr, "telemetry_type		%i\n", ModelData[n].teletype);
@@ -654,6 +656,8 @@ void setup_load (void) {
 		ModelData[model_n].pilottype = 250;
 		strcpy(ModelData[model_n].deviceid, "");
 		ModelData[model_n].use_deviceid = 0;
+		ModelData[model_n].mavlink_sysid = 0;
+//		ModelData[model_n].mavlink_compid = 0;
 	}
 	model_n = 0;
 	char filename[1024];
@@ -850,6 +854,10 @@ void setup_load (void) {
 	                                strcpy(ModelData[model_n].deviceid, val);
 	                        } else if (strcmp(var, "use_deviceid") == 0) {
 	                                ModelData[model_n].use_deviceid = atoi(val);
+	                        } else if (strcmp(var, "mavlink_sysid") == 0) {
+	                                ModelData[model_n].mavlink_sysid = atoi(val);
+//	                        } else if (strcmp(var, "mavlink_compid") == 0) {
+//	                                ModelData[model_n].mavlink_compid = atoi(val);
 	                        } else if (strcmp(var, "Model_lat") == 0) {
 	                                ModelData[model_n].p_lat = atof(val);
 	                        } else if (strcmp(var, "Model_long") == 0) {
@@ -965,7 +973,7 @@ void setup_load (void) {
 			ModelData[model_n].p_long = WayPoints[ModelActive][0].p_long;
 			ModelData[model_n].p_alt = WayPoints[ModelActive][0].p_alt;
 		}
-		if (ModelData[ModelActive].use_deviceid == 1) {
+		if (ModelData[ModelActive].use_deviceid == 1 && strcmp(ModelData[ModelActive].telemetry_port, "UDP") != 0 && strcmp(ModelData[ModelActive].telemetry_port, "TCP") != 0) {
 			serial_get_device_by_id(ModelData[model_n].deviceid, ModelData[model_n].telemetry_port);
 		}
 	}
@@ -2275,6 +2283,9 @@ void ShutDown ( ESContext *esContext ) {
 		stop_telemetry(n);
 	}
 
+	mavlink_exit_udp();
+	mavlink_exit_tcp();
+
 	frsky_exit();
 	tracker_exit();
 	jeti_exit();
@@ -2476,6 +2487,9 @@ int main ( int argc, char *argv[] ) {
 	if (ModelData[ModelActive].p_alt < zz + 10) {
 		ModelData[ModelActive].p_alt = zz + 10;
 	}
+
+	mavlink_init_udp();
+	mavlink_init_tcp();
 
 	frsky_init(setup.frsky_port, setup.frsky_baud);
 	jeti_init(setup.jeti_port, setup.jeti_baud);

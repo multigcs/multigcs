@@ -32,6 +32,24 @@ static uint8_t model_null (char *name, float x, float y, int8_t button, float da
 	return 0;
 }
 
+static uint8_t model_mavlink_sysid_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (button == 4) {
+		ModelData[ModelActive].mavlink_sysid++;
+	} else if (button == 5) {
+		ModelData[ModelActive].mavlink_sysid--;
+	}
+	return 0;
+}
+
+//static uint8_t model_mavlink_compid_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+//	if (button == 4) {
+//		ModelData[ModelActive].mavlink_compid++;
+//	} else if (button == 5) {
+//		ModelData[ModelActive].mavlink_compid--;
+//	}
+//	return 0;
+//}
+
 static uint8_t model_reconnect (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 //	set_telemetry(ModelActive, ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud);
 	reset_telemetry(ModelActive);
@@ -441,19 +459,37 @@ void screen_model (ESContext *esContext) {
 	sprintf(tmp_str, "%s [SELECT]", ModelData[ModelActive].telemetry_port);
 	draw_text_button(esContext, "device_select", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_device_change, 0);
 
-	n++;
-	draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "BAUD:");
-	sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].telemetry_baud);
-	draw_text_button(esContext, "rc_baud", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_baud_change, n);
+	if (strcmp(ModelData[ModelActive].telemetry_port, "UDP") != 0 && strcmp(ModelData[ModelActive].telemetry_port, "TCP") != 0) {
+		n++;
+		draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "BAUD:");
+		sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].telemetry_baud);
+		draw_text_button(esContext, "rc_baud", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_baud_change, n);
 
-	n++;
-	draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "ID:");
-	draw_text_button(esContext, "rc_deviceid", VIEW_MODE_MODEL, ModelData[ModelActive].deviceid, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_null, n);
+		n++;
+		draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "USEID:");
+		sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].use_deviceid);
+		draw_text_button(esContext, "rc_baud", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
+		if (ModelData[ModelActive].use_deviceid == 1) {
+			n++;
+			draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "ID:");
+			draw_text_button(esContext, "rc_deviceid", VIEW_MODE_MODEL, ModelData[ModelActive].deviceid, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_null, n);
+		}
+	} else {
+		if (ModelData[ModelActive].teletype == TELETYPE_ARDUPILOT) {
+			n++;
+			draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "USEID:");
+			sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].use_deviceid);
+			draw_text_button(esContext, "rc_baud", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
+			if (ModelData[ModelActive].use_deviceid == 1) {
+				n++;
+				draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "SysID:");
+				sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].mavlink_sysid);
+				draw_text_button(esContext, "rc_mavlink_sysid", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_mavlink_sysid_change, n);
+			}
+		}
+	}
 
-	n++;
-	draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "USEID:");
-	sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].use_deviceid);
-	draw_text_button(esContext, "rc_baud", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
+
 
 	if (strstr(ModelData[ModelActive].telemetry_port, "rfcomm") > 0) {
 		n++;
@@ -476,7 +512,7 @@ void screen_model (ESContext *esContext) {
 		n++;
 	}
 
-	n++;
+	n = 13;
 	draw_text_button(esContext, "model_reconnect", VIEW_MODE_MODEL, "[RECONNECT]", FONT_WHITE, 0.0, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, model_reconnect, n);
 	n++;
 	draw_text_button(esContext, "model_save", VIEW_MODE_MODEL, "[SAVE]", FONT_WHITE, 0.0, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, model_save, n);

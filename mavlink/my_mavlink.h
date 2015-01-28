@@ -120,6 +120,11 @@ void mavlink_send_cmd_calibration (uint8_t modelid);
 void mavlink_send_cmd_calibration_ack (uint8_t modelid);
 void mavlink_send_cmd_follow (uint8_t modelid, float p_lat, float p_long, float p_alt, float radius);
 
+void mavlink_init_udp (void);
+void mavlink_exit_udp (void);
+void mavlink_init_tcp (void);
+void mavlink_exit_tcp (void);
+
 uint8_t mavlink_init (uint8_t modelid, char *port, uint32_t baud);
 void mavlink_exit (uint8_t modelid);
 void mavlink_update (uint8_t modelid);

@@ -124,6 +124,10 @@ void screen_device (ESContext *esContext) {
 				n = 0;
 			}
 		}
+		draw_text_button(esContext, "TCP", setup.view_mode, "TCP", FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, device_name_save, 0.0);
+		n++;
+		draw_text_button(esContext, "UDP", setup.view_mode, "UDP", FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, device_name_save, 0.0);
+		n++;
 		closedir(dir);
 		dir = NULL;
 	}
