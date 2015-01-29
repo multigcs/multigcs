@@ -23,6 +23,8 @@ uint8_t mavlink_view_rccal = 0;
 uint8_t acccal_step = 0;
 uint8_t mavlink_channel_select = 0;
 uint8_t mavlink_channel_select_num = 0;
+uint8_t mavlink_magcal = 0;
+uint8_t mavlink_magcal_set = 0;
 
 static char select_section[1024];
 static int option_menu = -1;
@@ -841,6 +843,26 @@ void screen_mavlink_rccal (ESContext *esContext) {
 	}
 }
 
+uint8_t mavlink_magcal_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (data < 0.0) {
+		mavlink_magcal = 0;
+		mavlink_magcal_set = 0;
+	} else if (data > 0.0) {
+		mavlink_magcal = (uint8_t)data;
+		mavlink_magcal_set = 0;
+		if (mavlink_magcal == 1) {
+			SDL_Log("magcal: reset offesets\n");
+			mavlink_send_value(ModelActive, "COMPASS_OFS_X", 0.0, 9);
+			mavlink_send_value(ModelActive, "COMPASS_OFS_Y", 0.0, 9);
+			mavlink_send_value(ModelActive, "COMPASS_OFS_Z", 0.0, 9);
+		}
+	} else {
+		mavlink_magcal_set = 1;
+	}
+	reset_buttons();
+	return 0;
+}
+
 void screen_mavlink_magcal (ESContext *esContext) {
 	paralist plist[] = {
 		{"MAG_ENABLE", ""},
@@ -858,7 +880,199 @@ void screen_mavlink_magcal (ESContext *esContext) {
 		{"COMPASS_EXTERNAL", ""},
 	};
 	draw_title(esContext, "Compass-Calibration");
-	screen_mavlink_list(esContext, plist, sizeof(plist) / sizeof(paralist));
+
+	static int mag_pos = 0;
+	static float mag_data[500][3];
+	if (mavlink_magcal > 0) {
+		static float last_x = 0.0;
+		static float last_y = 0.0;
+		static float last_z = 0.0;
+		float minX = 0.0;
+		float minY = 0.0;
+		float minZ = 0.0;
+		float maxX = 0.0;
+		float maxY = 0.0;
+		float maxZ = 0.0;
+		int n = 0;
+		if (last_x != ModelData[ModelActive].mag_x || last_y != ModelData[ModelActive].mag_y || last_z != ModelData[ModelActive].mag_z) {
+			if (mag_pos < 500) {
+				mag_data[mag_pos][0] = ModelData[ModelActive].mag_x;
+				mag_data[mag_pos][1] = ModelData[ModelActive].mag_y;
+				mag_data[mag_pos][2] = ModelData[ModelActive].mag_z;
+				mag_pos++;
+			}
+			last_x = ModelData[ModelActive].mag_x;
+			last_y = ModelData[ModelActive].mag_y;
+			last_z = ModelData[ModelActive].mag_z;
+		}
+		static float rot_x = 20.0;
+		static float rot_y = 20.0;
+		static float rot_z = 20.0;
+//		rot_x += 0.14;
+		rot_y += 0.23;
+//		rot_z += 0.11;
+#ifdef SDLGL
+		glPushMatrix();
+		glRotatef(rot_x, 1.0, 0.0, 0.0);
+		glRotatef(rot_y, 0.0, 1.0, 0.0);
+		glRotatef(rot_z, 0.0, 0.0, 1.0);
+		glLineWidth(1);
+		glColor4f(1.0, 0.0, 0.0, 0.3);
+		glBegin(GL_LINES);
+#endif
+		for (n = 0; n < mag_pos; n++) {
+#ifdef SDLGL
+			glVertex3f(0.0, 0.0, 0.0);
+			glVertex3f(mag_data[n][0] / 500.0, mag_data[n][1] / 500.0, mag_data[n][2] / 500.0);
+#endif
+			if (minX > mag_data[n][0]) {
+				minX = mag_data[n][0];
+			}
+			if (minY > mag_data[n][1]) {
+				minY = mag_data[n][1];
+			}
+			if (minZ > mag_data[n][2]) {
+				minZ = mag_data[n][2];
+			}
+			if (maxX < mag_data[n][0]) {
+				maxX = mag_data[n][0];
+			}
+			if (maxY < mag_data[n][1]) {
+				maxY = mag_data[n][1];
+			}
+			if (maxZ < mag_data[n][2]) {
+				maxZ = mag_data[n][2];
+			}
+		}
+		glEnd();
+		float offsetX = maxX - (maxX - minX) / 2.0;
+		float offsetY = maxY - (maxY - minY) / 2.0;
+		float offsetZ = maxZ - (maxZ - minZ) / 2.0;
+		float scaleX = 600.0 / (maxX - minX);
+		float scaleY = 600.0 / (maxY - minY);
+		float scaleZ = 600.0 / (maxZ - minZ);
+		if (mavlink_magcal == 2) {
+			offsetX = 0.0;
+			offsetY = 0.0;
+			offsetZ = 0.0;
+		}
+#ifdef SDLGL
+		glLineWidth(5);
+		glBegin(GL_LINES);
+		for (n = 0; n < mag_pos; n++) {
+			glColor4f(0.0, 1.0, 0.0, 0.3);
+			glVertex3f(0.0, 0.0, 0.0);
+			glVertex3f((mag_data[n][0] - offsetX) / 500.0 * scaleX, (mag_data[n][1] - offsetY) / 500.0 * scaleY, (mag_data[n][2] - offsetZ) / 500.0 * scaleZ);
+			glColor4f(0.0, 1.0, 0.0, 1.0);
+			glVertex3f((mag_data[n][0] - offsetX) / 500.0 * scaleX - 0.01, (mag_data[n][1] - offsetY) / 500.0 * scaleY, (mag_data[n][2] - offsetZ) / 500.0 * scaleZ);
+			glVertex3f((mag_data[n][0] - offsetX) / 500.0 * scaleX + 0.01, (mag_data[n][1] - offsetY) / 500.0 * scaleY, (mag_data[n][2] - offsetZ) / 500.0 * scaleZ);
+			glVertex3f((mag_data[n][0] - offsetX) / 500.0 * scaleX, (mag_data[n][1] - offsetY) / 500.0 * scaleY - 0.01, (mag_data[n][2] - offsetZ) / 500.0 * scaleZ);
+			glVertex3f((mag_data[n][0] - offsetX) / 500.0 * scaleX, (mag_data[n][1] - offsetY) / 500.0 * scaleY + 0.01, (mag_data[n][2] - offsetZ) / 500.0 * scaleZ);
+			glVertex3f((mag_data[n][0] - offsetX) / 500.0 * scaleX, (mag_data[n][1] - offsetY) / 500.0 * scaleY, (mag_data[n][2] - offsetZ) / 500.0 * scaleZ - 0.01);
+			glVertex3f((mag_data[n][0] - offsetX) / 500.0 * scaleX, (mag_data[n][1] - offsetY) / 500.0 * scaleY, (mag_data[n][2] - offsetZ) / 500.0 * scaleZ + 0.01);
+		}
+
+		glColor4f(1.0, 1.0, 1.0, 1.0);
+		glVertex3f(0.0, 0.0, 0.0);
+		glVertex3f((last_x - offsetX) / 500.0 * scaleX, (last_y - offsetY) / 500.0 * scaleY, (last_z - offsetZ) / 500.0 * scaleZ);
+
+		glEnd();
+		glLineWidth(1);
+		glColor4f(1.0, 1.0, 0.0, 0.7);
+		float angleA = 0.0;
+		float angleB = 0.0;
+		float step = 9.0;
+		float v[10000][3];
+		glBegin(GL_LINE_STRIP);
+		for (angleA = -90.0f; angleA <90.0f; angleA += step) {
+			int	n = 0;
+			float r1 = (float)cos(angleA * PI / 180.0);
+			float r2 = (float)cos((angleA + step) * PI / 180.0);
+			float h1 = (float)sin(angleA * PI / 180.0);
+			float h2 = (float)sin((angleA + step) * PI / 180.0);
+			for (angleB = 0.0f; angleB <= 360.0f; angleB += step) {
+				float fcos = (float)cos(angleB * PI / 180.0);
+				float fsin = -(float)sin(angleB * PI / 180.0);
+				v[n][0] = (r2 * fcos) * 0.6;
+				v[n][1] = (h2) * 0.6;
+				v[n][2] = (r2 * fsin) * 0.6;
+				v[n + 1][0] = (r1 * fcos) * 0.6;
+				v[n + 1][1] = (h1) * 0.6;
+				v[n + 1][2] = (r1 * fsin) * 0.6;
+				glVertex3f(v[n][0], v[n][1], v[n][2]);
+				glVertex3f(v[n + 1][0], v[n + 1][1], v[n + 1][2]);
+				n += 2;  
+				if (n>31){
+					n = 0;
+					angleB -= step;
+				}
+			}
+		}
+		glEnd();
+		glPopMatrix();
+		float diff_x = 1.0;
+		float diff_y = 0.6;
+		glBegin(GL_LINES);
+		for (n = 0; n < mag_pos; n++) {
+			glColor4f(0.0, 1.0, 0.0, 0.3);
+			glVertex3f(-diff_x, -diff_y, 0.0);
+			glVertex3f((mag_data[n][0] - offsetX) / 1000.0 * scaleX - diff_x, (mag_data[n][1] - offsetY) / 1000.0 * scaleY - diff_y, 0.0);
+			glVertex3f(-diff_x, diff_y, 0.0);
+			glVertex3f((mag_data[n][0] - offsetX) / 1000.0 * scaleX - diff_x, (mag_data[n][2] - offsetZ) / 1000.0 * scaleZ + diff_y, 0.0);
+			glVertex3f(diff_x, -diff_y, 0.0);
+			glVertex3f((mag_data[n][2] - offsetZ) / 1000.0 * scaleZ + diff_x, (mag_data[n][1] - offsetY) / 1000.0 * scaleY - diff_y, 0.0);
+			glColor4f(1.0, 0.0, 0.0, 0.3);
+			glVertex3f(-diff_x, -diff_y, 0.0);
+			glVertex3f((mag_data[n][0]) / 1000.0 - diff_x, (mag_data[n][1]) / 1000.0 - diff_y, 0.0);
+			glVertex3f(-diff_x, diff_y, 0.0);
+			glVertex3f((mag_data[n][0]) / 1000.0 - diff_x, (mag_data[n][2]) / 1000.0 + diff_y, 0.0);
+			glVertex3f(diff_x, -diff_y, 0.0);
+			glVertex3f((mag_data[n][2]) / 1000.0 + diff_x, (mag_data[n][1]) / 1000.0 - diff_y, 0.0);
+		}
+		glColor4f(1.0, 1.0, 1.0, 1.0);
+		glVertex3f(-diff_x, -diff_y, 0.0);
+		glVertex3f((last_x - offsetX) / 1000.0 * scaleX - diff_x, (last_y - offsetY) / 1000.0 * scaleY - diff_y, 0.0);
+		glVertex3f(-diff_x, diff_y, 0.0);
+		glVertex3f((last_x - offsetX) / 1000.0 * scaleX - diff_x, (last_z - offsetZ) / 1000.0 * scaleZ + diff_y, 0.0);
+		glVertex3f(diff_x, -diff_y, 0.0);
+		glVertex3f((last_z - offsetZ) / 1000.0 * scaleZ + diff_x, (last_y - offsetY) / 1000.0 * scaleY - diff_y, 0.0);
+		glEnd();
+#endif
+		draw_circle_f3(esContext, -diff_x, -diff_y, 0.0002, 0.3, 255, 255, 255, 255);
+		draw_circle_f3(esContext, -diff_x, diff_y, 0.0002, 0.3, 255, 255, 255, 255);
+		draw_circle_f3(esContext, diff_x, diff_y, 0.0002, 0.3, 255, 255, 255, 255);
+
+		if (mavlink_magcal == 1) {
+			char tmp_str[1024];
+			sprintf(tmp_str, "# %i", mag_pos);
+			draw_text_f(esContext, diff_x - 0.2, -diff_y - 0.2, 0.08, 0.08, FONT_WHITE, tmp_str);
+			sprintf(tmp_str, "X %0.2f", offsetX);
+			draw_text_f(esContext, diff_x - 0.2, -diff_y - 0.1, 0.08, 0.08, FONT_WHITE, tmp_str);
+			sprintf(tmp_str, "Y %0.2f", offsetY);
+			draw_text_f(esContext, diff_x - 0.2, -diff_y, 0.08, 0.08, FONT_WHITE, tmp_str);
+			sprintf(tmp_str, "Z %0.2f", offsetZ);
+			draw_text_f(esContext, diff_x - 0.2, -diff_y + 0.1, 0.08, 0.08, FONT_WHITE, tmp_str);
+		}
+		if (mavlink_magcal_set == 1) {
+			if (mavlink_magcal == 1) {
+				SDL_Log("magcal: save offesets\n");
+				mavlink_send_value(ModelActive, "COMPASS_OFS_X", -offsetX, 9);
+				mavlink_send_value(ModelActive, "COMPASS_OFS_Y", -offsetY, 9);
+				mavlink_send_value(ModelActive, "COMPASS_OFS_Z", -offsetZ, 9);
+			}
+			mavlink_magcal_set = 0;
+			mavlink_magcal = 0;
+		}
+		if (mavlink_magcal == 1) {
+			draw_text_button(esContext, "save_cal", VIEW_MODE_FCMENU, "[SAVE]", FONT_GREEN, 0.0, 0.7, 0.005, 0.08, 1, 0, mavlink_magcal_change, 0.0);
+		}
+		draw_text_button(esContext, "cancle_cal", VIEW_MODE_FCMENU, "[CANCEL]", FONT_GREEN, 0.0, 0.8, 0.005, 0.08, 1, 0, mavlink_magcal_change, -1.0);
+	} else {
+		screen_mavlink_list(esContext, plist, sizeof(plist) / sizeof(paralist));
+		draw_text_button(esContext, "start_test", VIEW_MODE_FCMENU, "[TEST]", FONT_WHITE, 0.0, 0.7, 0.005, 0.08, 1, 0, mavlink_magcal_change, 2.0);
+		draw_text_button(esContext, "start_cal", VIEW_MODE_FCMENU, "[Calibration]", FONT_WHITE, 0.0, 0.8, 0.005, 0.08, 1, 0, mavlink_magcal_change, 1.0);
+		mag_pos = 0;
+	}
 }
 
 void screen_mavlink_camrelay (ESContext *esContext) {
@@ -1080,10 +1294,10 @@ void screen_mavlink_menu (ESContext *esContext) {
 			screen_mavlink_rccal(esContext);
 			return;
 		} else if (mavlink_view_screen == 7) {
-			screen_mavlink_magcal(esContext);
+			screen_mavlink_acccal(esContext);
 			return;
 		} else if (mavlink_view_screen == 8) {
-			screen_mavlink_acccal(esContext);
+			screen_mavlink_magcal(esContext);
 			return;
 		} else if (mavlink_view_screen == 9) {
 			screen_mavlink_camrelay(esContext);
@@ -1105,9 +1319,9 @@ void screen_mavlink_menu (ESContext *esContext) {
 			row++;
 			draw_text_button(esContext, "mlscreen6", VIEW_MODE_FCMENU, "RC-Calibration", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(6));
 			row++;
-			draw_text_button(esContext, "mlscreen7", VIEW_MODE_FCMENU, "Compass-Calibration", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(7));
+			draw_text_button(esContext, "mlscreen8", VIEW_MODE_FCMENU, "ACC-Calibration", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(7));
 			row++;
-			draw_text_button(esContext, "mlscreen8", VIEW_MODE_FCMENU, "ACC-Calibration", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(8));
+			draw_text_button(esContext, "mlscreen7", VIEW_MODE_FCMENU, "Compass-Calibration", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(8));
 			row++;
 			draw_text_button(esContext, "mlscreen9", VIEW_MODE_FCMENU, "Camera/Gimbal/Relay", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(9));
 			row++;

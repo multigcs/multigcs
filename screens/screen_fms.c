@@ -232,6 +232,5 @@ void screen_fms (ESContext *esContext) {
 	draw_text_button(esContext, "fms_read_wp", VIEW_MODE_FMS, "READ_WP", FONT_GREEN_BG, -0.2, 0.9, 0.002, 0.06, 1, 0, read_wp, 0.0);
 	draw_text_button(esContext, "fms_write_wp", VIEW_MODE_FMS, "WRITE_WP", FONT_GREEN_BG, 0.2, 0.9, 0.002, 0.06, 1, 0, write_wp, 0.0);
 	draw_text_button(esContext, "fms_goto", VIEW_MODE_FMS, "GOTO", FONT_GREEN_BG, 0.7, 0.9, 0.002, 0.06, 1, 0, map_goto, (float)waypoint_active);
-
 }
 

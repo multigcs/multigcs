@@ -750,9 +750,12 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			ModelData[modelid].acc_x = (float)packet.xacc / 1000.0;
 			ModelData[modelid].acc_y = (float)packet.yacc / 1000.0;
 			ModelData[modelid].acc_z = (float)packet.zacc / 1000.0;
-			ModelData[modelid].gyro_x = (float)packet.zgyro;
-			ModelData[modelid].gyro_y = (float)packet.zgyro;
+			ModelData[modelid].gyro_x = (float)packet.xgyro;
+			ModelData[modelid].gyro_y = (float)packet.ygyro;
 			ModelData[modelid].gyro_z = (float)packet.zgyro;
+			ModelData[modelid].mag_x = (float)packet.xmag;
+			ModelData[modelid].mag_y = (float)packet.ymag;
+			ModelData[modelid].mag_z = (float)packet.zmag;
 			break;
 		}
 		case MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT: {

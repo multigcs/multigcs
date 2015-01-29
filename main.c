@@ -2366,6 +2366,9 @@ void glut_timer (int t) {
 
 
 int main ( int argc, char *argv[] ) {
+
+//glutInit (&argc, argv);
+
 	int n = 0;
 	char dir[1024];
 	char tmp_name[201];

@@ -82,6 +82,9 @@ typedef struct {
 	float gyro_x;
 	float gyro_y;
 	float gyro_z;
+	float mag_x;
+	float mag_y;
+	float mag_z;
 	float mnt_pitch;
 	float mnt_roll;
 	float mnt_yaw;
