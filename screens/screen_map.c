@@ -1326,18 +1326,24 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 			SurveySetup.pos += 10.0;
 		} else if (button == 5 && SurveySetup.pos > 1000) {
 			SurveySetup.pos -= 10.0;
+		} else {
+			edit_number(setup.view_mode, NUMBER_TYPE_UINT16, &SurveySetup.pos, 1.0, 10000.0);
 		}
 	} else if (strcmp(name, "SurveySetup.num") == 0) {
 		if (button == 4 && SurveySetup.num < 10) {
 			SurveySetup.num += 1.0;
 		} else if (button == 5 && SurveySetup.num > 1) {
 			SurveySetup.num -= 1.0;
+		} else {
+			edit_number(setup.view_mode, NUMBER_TYPE_UINT8, &SurveySetup.num, 1.0, 10000.0);
 		}
 	} else if (strcmp(name, "SurveySetup.interval") == 0) {
 		if (button == 4) {
 			SurveySetup.interval += 1.0;
 		} else if (button == 5 && SurveySetup.interval > 1) {
 			SurveySetup.interval -= 1.0;
+		} else {
+			edit_number(setup.view_mode, NUMBER_TYPE_UINT16, &SurveySetup.interval, 1.0, 10000.0);
 		}
 	} else if (strcmp(name, "SurveySetup.triggermode") == 0) {
 		SurveySetup.triggermode++;

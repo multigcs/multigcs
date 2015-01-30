@@ -998,6 +998,9 @@ void setup_load (void) {
 	strncpy(WayPoints[ModelActive][0].name, "HOME", 127);
 	serial_info_update();
 	for (model_n = 0; model_n < MODELS_MAX; model_n++) {
+		if (ModelData[model_n].use_deviceid == 1) {
+			ModelData[model_n].telemetry_port[0] = 0;
+		}
 		if (ModelData[model_n].use_deviceid == 1 && strcmp(ModelData[model_n].telemetry_port, "UDP") != 0 && strcmp(ModelData[model_n].telemetry_port, "TCP") != 0) {
 			serial_get_device_by_id(ModelData[model_n].deviceid, ModelData[model_n].telemetry_port);
 		}

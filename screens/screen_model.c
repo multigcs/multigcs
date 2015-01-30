@@ -472,23 +472,27 @@ void screen_model (ESContext *esContext) {
 		n++;
 		draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "USEID:");
 		sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].use_deviceid);
-		draw_text_button(esContext, "rc_useid", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
 		if (ModelData[ModelActive].use_deviceid == 1) {
+			draw_text_button(esContext, "rc_useid", VIEW_MODE_MODEL, tmp_str, FONT_GREEN, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
 			n++;
 			draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "ID:");
 			draw_text_button(esContext, "rc_deviceid", VIEW_MODE_MODEL, ModelData[ModelActive].deviceid, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_null, n);
+		} else {
+			draw_text_button(esContext, "rc_useid", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
 		}
 	} else {
 		if (ModelData[ModelActive].teletype == TELETYPE_ARDUPILOT) {
 			n++;
 			draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "USEID:");
 			sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].use_deviceid);
-			draw_text_button(esContext, "rc_useid", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
 			if (ModelData[ModelActive].use_deviceid == 1) {
+				draw_text_button(esContext, "rc_useid", VIEW_MODE_MODEL, tmp_str, FONT_GREEN, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
 				n++;
 				draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "SysID:");
 				sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].mavlink_sysid);
 				draw_text_button(esContext, "rc_mavlink_sysid", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_mavlink_sysid_change, n);
+			} else {
+				draw_text_button(esContext, "rc_useid", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
 			}
 		}
 	}

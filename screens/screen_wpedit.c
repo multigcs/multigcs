@@ -174,7 +174,6 @@ uint8_t wpedit_waypoint_type_select (char *name, float x, float y, int8_t button
 		strcpy(WayPoints[ModelActive][waypoint_active].command, "SERVO");
 	} else if (strcmp(WayPoints[ModelActive][waypoint_active].command, "SERVO") == 0) {
 		strcpy(WayPoints[ModelActive][waypoint_active].command, "SERVO_REP");
-
 	} else {
 		strcpy(WayPoints[ModelActive][waypoint_active].command, "WAYPOINT");
 	}
@@ -196,6 +195,7 @@ void screen_wpedit (ESContext *esContext) {
 	float step_y = 0.16;
 	uint16_t n = 0;
 	uint16_t num_waypoints = 0;
+	reset_buttons();
 
 	for (n = 1; n < MAX_WAYPOINTS; n++) {
 		if (WayPoints[ModelActive][n].p_lat == 0.0) {
