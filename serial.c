@@ -40,7 +40,7 @@ uint8_t thread_sermon_running = 0;
 
 int serial_info_get (char *device, char *deviceid) {
 	int n = 0;
-	if (device[0] == 0) {
+	if (device[0] != '/' && strncmp(device, "COM", 3)!= 0) {
 		return -1;
 	}
 	deviceid[0] = 0;
@@ -307,7 +307,7 @@ int serial_close (int fd) {
 
 
 int serial_open (char *mdevice, uint32_t baud) {
-	if (mdevice[0] == 0) {
+	if (mdevice[0] != '/' && strncmp(mdevice, "COM", 3)!= 0) {
 		return -1;
 	}
 #ifdef ANDROID

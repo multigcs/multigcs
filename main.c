@@ -1802,7 +1802,21 @@ static uint8_t model_select (char *name, float x, float y, int8_t button, float 
 			}
 		}
 	} else if (data == -1.0) {
-		view_modellist = 1 - view_modellist;
+		if (button == 5) {
+			if (ModelActive > 0) {
+				ModelActive--;
+			} else {
+				ModelActive = MODELS_MAX - 1;
+			}
+		} else if (button == 4) {
+			if (ModelActive < MODELS_MAX - 1) {
+				ModelActive++;
+			} else {
+				ModelActive = 0;
+			}
+		} else {
+			view_modellist = 1 - view_modellist;
+		}
 	} else {
 		ModelActive = (uint8_t)data - 1;
 	}

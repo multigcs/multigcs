@@ -79,6 +79,9 @@ void mavlink_init_tcp (void) {
 
 uint8_t mavlink_init (uint8_t modelid, char *port, uint32_t baud) {
 	int n = 0;
+	if (port[0] != '/' && strncmp(port, "COM", 3)!= 0) {
+		return -1;
+	}
 	mavlink_maxparam[modelid] = 0;
 	mavlink_foundparam[modelid] = 0;
 	SDL_Log("mavlink(%i): init serial port...\n", modelid);

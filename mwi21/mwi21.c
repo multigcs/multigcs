@@ -46,6 +46,9 @@ uint8_t mwi21_connection_status (uint8_t modelid) {
 
 void mwi21_init (uint8_t modelid, char *port, uint32_t baud) {
 	uint8_t n = 0;
+	if (port[0] != '/' && strncmp(port, "COM", 3)!= 0) {
+		return;
+	}
 	last[modelid] = 0;
 	tout[modelid] = 0;
 	flag[modelid] = 0;
