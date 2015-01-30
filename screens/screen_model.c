@@ -430,7 +430,11 @@ void screen_model (ESContext *esContext) {
 
 
 #ifdef SDLGL
-	sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, teletypes[ModelData[ModelActive].teletype]);
+	if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_PIXHAWK) {
+		sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, "PIXHAWK");
+	} else {
+		sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, modeltypes[ModelData[ModelActive].teletype]);
+	}
 	if (file_exists(tmp_str) != 0) {
 		static uint8_t startup = 0;
 		static float rotate = 0.0;

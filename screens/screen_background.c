@@ -15,6 +15,11 @@ uint8_t get_background_model (char *filename) {
 		strncpy(filename, tmp_str, 1023);
 		return 0;
 	}
+	sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, pilottypes[ModelData[ModelActive].pilottype]);
+	if (file_exists(tmp_str) != 0) {
+		strncpy(filename, tmp_str, 1023);
+		return 0;
+	}
 	sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, teletypes[ModelData[ModelActive].teletype]);
 	if (file_exists(tmp_str) != 0) {
 		strncpy(filename, tmp_str, 1023);

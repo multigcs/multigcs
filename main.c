@@ -16,6 +16,26 @@ char modeltypes[5][15] = {
 	"CAR",
 	"BOAT",
 };
+char pilottypes[18][64] = {
+	"GENERIC",
+	"PIXHAWK",
+	"SLUGS",
+	"ARDUPILOTMEGA",
+	"OPENPILOT",
+	"GENERIC_WAYPOINTS_ONLY",
+	"GENERIC_WAYPOINTS_AND_SIMPLE_NAVIGATION_ONLY",
+	"GENERIC_MISSION_FULL",
+	"INVALID",
+	"PPZ",
+	"UDB",
+	"FP",
+	"PX4",
+	"SMACCMPILOT",
+	"AUTOQUAD",
+	"ARMAZILA",
+	"AEROB",
+	"ASLUAV",
+};
 
 GcsSetup setup;
 
@@ -529,6 +549,7 @@ void setup_save (void) {
 				fprintf(fr, "model_name		%s\n", ModelData[n].name);
 				fprintf(fr, "model_sysstr		%s\n", ModelData[n].sysstr);
 				fprintf(fr, "telemetry_type		%i\n", ModelData[n].teletype);
+				fprintf(fr, "pilottype		%i\n", ModelData[n].pilottype);
 				fprintf(fr, "Model_lat		%f\n", ModelData[n].p_lat);
 				fprintf(fr, "Model_long		%f\n", ModelData[n].p_long);
 				fprintf(fr, "Model_alt		%f\n", ModelData[n].p_alt);
@@ -851,6 +872,8 @@ void setup_load (void) {
 	                                ModelData[model_n].telemetry_baud = atoi(val);
 	                        } else if (strcmp(var, "telemetry_type") == 0) {
 	                                ModelData[model_n].teletype = atoi(val);
+	                        } else if (strcmp(var, "pilottype") == 0) {
+	                                ModelData[model_n].pilottype = atoi(val);
 	                        } else if (strcmp(var, "deviceid") == 0) {
 	                                strcpy(ModelData[model_n].deviceid, val);
 	                        } else if (strcmp(var, "use_deviceid") == 0) {

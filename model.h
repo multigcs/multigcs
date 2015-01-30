@@ -134,5 +134,6 @@ extern Model ModelData[MODELS_MAX];
 extern Ground GroundData;
 extern char teletypes[16][16];
 extern char modeltypes[5][15];
+extern char pilottypes[18][64];
 
 #endif
