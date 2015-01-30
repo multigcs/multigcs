@@ -853,8 +853,17 @@ uint8_t mavlink_magcal_change (char *name, float x, float y, int8_t button, floa
 		if (mavlink_magcal == 1) {
 			SDL_Log("magcal: reset offesets\n");
 			mavlink_send_value(ModelActive, "COMPASS_OFS_X", 0.0, 9);
+			SDL_Delay(100);
 			mavlink_send_value(ModelActive, "COMPASS_OFS_Y", 0.0, 9);
+			SDL_Delay(100);
 			mavlink_send_value(ModelActive, "COMPASS_OFS_Z", 0.0, 9);
+			SDL_Delay(100);
+			mavlink_send_value(ModelActive, "COMPASS_OFS2_X", 0.0, 9);
+			SDL_Delay(100);
+			mavlink_send_value(ModelActive, "COMPASS_OFS2_Y", 0.0, 9);
+			SDL_Delay(100);
+			mavlink_send_value(ModelActive, "COMPASS_OFS2_Z", 0.0, 9);
+			SDL_Delay(100);
 		}
 	} else {
 		mavlink_magcal_set = 1;
@@ -876,14 +885,21 @@ void screen_mavlink_magcal (ESContext *esContext) {
 		{"COMPASS_OFS_Y", "Y-Axis"},
 		{"COMPASS_OFS_Z", "Z-Axis"},
 		{"---", "---"},
-		{"COMPASS_LEARN", ""},
-		{"COMPASS_EXTERNAL", ""},
+		{"COMPASS_OFS2_X", "X2-Axis"},
+		{"COMPASS_OFS2_Y", "Y2-Axis"},
+		{"COMPASS_OFS2_Z", "Z2-Axis"},
+//		{"---", "---"},
+//		{"COMPASS_LEARN", ""},
+//		{"COMPASS_EXTERNAL", ""},
 	};
 	draw_title(esContext, "Compass-Calibration");
 
 	static int mag_pos = 0;
 	static float mag_data[500][3];
+	static int mag2_pos = 0;
+	static float mag2_data[500][3];
 	if (mavlink_magcal > 0) {
+		int n = 0;
 		static float last_x = 0.0;
 		static float last_y = 0.0;
 		static float last_z = 0.0;
@@ -893,7 +909,6 @@ void screen_mavlink_magcal (ESContext *esContext) {
 		float maxX = 0.0;
 		float maxY = 0.0;
 		float maxZ = 0.0;
-		int n = 0;
 		if (last_x != ModelData[ModelActive].mag_x || last_y != ModelData[ModelActive].mag_y || last_z != ModelData[ModelActive].mag_z) {
 			if (mag_pos < 500) {
 				mag_data[mag_pos][0] = ModelData[ModelActive].mag_x;
@@ -905,6 +920,28 @@ void screen_mavlink_magcal (ESContext *esContext) {
 			last_y = ModelData[ModelActive].mag_y;
 			last_z = ModelData[ModelActive].mag_z;
 		}
+
+		static float last2_x = 0.0;
+		static float last2_y = 0.0;
+		static float last2_z = 0.0;
+		float min2X = 0.0;
+		float min2Y = 0.0;
+		float min2Z = 0.0;
+		float max2X = 0.0;
+		float max2Y = 0.0;
+		float max2Z = 0.0;
+		if (last2_x != ModelData[ModelActive].mag2_x || last2_y != ModelData[ModelActive].mag2_y || last2_z != ModelData[ModelActive].mag2_z) {
+			if (mag2_pos < 500) {
+				mag2_data[mag2_pos][0] = ModelData[ModelActive].mag2_x;
+				mag2_data[mag2_pos][1] = ModelData[ModelActive].mag2_y;
+				mag2_data[mag2_pos][2] = ModelData[ModelActive].mag2_z;
+				mag2_pos++;
+			}
+			last2_x = ModelData[ModelActive].mag2_x;
+			last2_y = ModelData[ModelActive].mag2_y;
+			last2_z = ModelData[ModelActive].mag2_z;
+		}
+
 		static float rot_x = 20.0;
 		static float rot_y = 20.0;
 		static float rot_z = 20.0;
@@ -917,11 +954,11 @@ void screen_mavlink_magcal (ESContext *esContext) {
 		glRotatef(rot_y, 0.0, 1.0, 0.0);
 		glRotatef(rot_z, 0.0, 0.0, 1.0);
 		glLineWidth(1);
-		glColor4f(1.0, 0.0, 0.0, 0.3);
 		glBegin(GL_LINES);
 #endif
 		for (n = 0; n < mag_pos; n++) {
 #ifdef SDLGL
+			glColor4f(1.0, 0.0, 0.0, 0.3);
 			glVertex3f(0.0, 0.0, 0.0);
 			glVertex3f(mag_data[n][0] / 500.0, mag_data[n][1] / 500.0, mag_data[n][2] / 500.0);
 #endif
@@ -944,6 +981,31 @@ void screen_mavlink_magcal (ESContext *esContext) {
 				maxZ = mag_data[n][2];
 			}
 		}
+		for (n = 0; n < mag2_pos; n++) {
+#ifdef SDLGL
+			glColor4f(1.0, 0.0, 1.0, 0.3);
+			glVertex3f(0.0, 0.0, 0.0);
+			glVertex3f(mag2_data[n][0] / 500.0, mag2_data[n][1] / 500.0, mag2_data[n][2] / 500.0);
+#endif
+			if (min2X > mag2_data[n][0]) {
+				min2X = mag2_data[n][0];
+			}
+			if (min2Y > mag2_data[n][1]) {
+				min2Y = mag2_data[n][1];
+			}
+			if (min2Z > mag2_data[n][2]) {
+				min2Z = mag2_data[n][2];
+			}
+			if (max2X < mag2_data[n][0]) {
+				max2X = mag2_data[n][0];
+			}
+			if (max2Y < mag2_data[n][1]) {
+				max2Y = mag2_data[n][1];
+			}
+			if (max2Z < mag2_data[n][2]) {
+				max2Z = mag2_data[n][2];
+			}
+		}
 		glEnd();
 		float offsetX = maxX - (maxX - minX) / 2.0;
 		float offsetY = maxY - (maxY - minY) / 2.0;
@@ -956,6 +1018,18 @@ void screen_mavlink_magcal (ESContext *esContext) {
 			offsetY = 0.0;
 			offsetZ = 0.0;
 		}
+		float offset2X = max2X - (max2X - min2X) / 2.0;
+		float offset2Y = max2Y - (max2Y - min2Y) / 2.0;
+		float offset2Z = max2Z - (max2Z - min2Z) / 2.0;
+		float scale2X = 600.0 / (max2X - min2X);
+		float scale2Y = 600.0 / (max2Y - min2Y);
+		float scale2Z = 600.0 / (max2Z - min2Z);
+		if (mavlink_magcal == 2) {
+			offset2X = 0.0;
+			offset2Y = 0.0;
+			offset2Z = 0.0;
+		}
+
 #ifdef SDLGL
 		glLineWidth(5);
 		glBegin(GL_LINES);
@@ -971,10 +1045,27 @@ void screen_mavlink_magcal (ESContext *esContext) {
 			glVertex3f((mag_data[n][0] - offsetX) / 500.0 * scaleX, (mag_data[n][1] - offsetY) / 500.0 * scaleY, (mag_data[n][2] - offsetZ) / 500.0 * scaleZ - 0.01);
 			glVertex3f((mag_data[n][0] - offsetX) / 500.0 * scaleX, (mag_data[n][1] - offsetY) / 500.0 * scaleY, (mag_data[n][2] - offsetZ) / 500.0 * scaleZ + 0.01);
 		}
-
 		glColor4f(1.0, 1.0, 1.0, 1.0);
 		glVertex3f(0.0, 0.0, 0.0);
 		glVertex3f((last_x - offsetX) / 500.0 * scaleX, (last_y - offsetY) / 500.0 * scaleY, (last_z - offsetZ) / 500.0 * scaleZ);
+
+		if (mag2_pos > 1) {
+			for (n = 0; n < mag2_pos; n++) {
+				glColor4f(0.0, 1.0, 1.0, 0.3);
+				glVertex3f(0.0, 0.0, 0.0);
+				glVertex3f((mag2_data[n][0] - offset2X) / 500.0 * scale2X, (mag2_data[n][1] - offset2Y) / 500.0 * scale2Y, (mag2_data[n][2] - offset2Z) / 500.0 * scale2Z);
+				glColor4f(0.0, 1.0, 1.0, 1.0);
+				glVertex3f((mag2_data[n][0] - offset2X) / 500.0 * scale2X - 0.01, (mag2_data[n][1] - offset2Y) / 500.0 * scale2Y, (mag2_data[n][2] - offset2Z) / 500.0 * scale2Z);
+				glVertex3f((mag2_data[n][0] - offset2X) / 500.0 * scale2X + 0.01, (mag2_data[n][1] - offset2Y) / 500.0 * scale2Y, (mag2_data[n][2] - offset2Z) / 500.0 * scale2Z);
+				glVertex3f((mag2_data[n][0] - offset2X) / 500.0 * scale2X, (mag2_data[n][1] - offset2Y) / 500.0 * scale2Y - 0.01, (mag2_data[n][2] - offset2Z) / 500.0 * scale2Z);
+				glVertex3f((mag2_data[n][0] - offset2X) / 500.0 * scale2X, (mag2_data[n][1] - offset2Y) / 500.0 * scale2Y + 0.01, (mag2_data[n][2] - offset2Z) / 500.0 * scale2Z);
+				glVertex3f((mag2_data[n][0] - offset2X) / 500.0 * scale2X, (mag2_data[n][1] - offset2Y) / 500.0 * scale2Y, (mag2_data[n][2] - offset2Z) / 500.0 * scale2Z - 0.01);
+				glVertex3f((mag2_data[n][0] - offset2X) / 500.0 * scale2X, (mag2_data[n][1] - offset2Y) / 500.0 * scale2Y, (mag2_data[n][2] - offset2Z) / 500.0 * scale2Z + 0.01);
+			}
+			glColor4f(0.5, 0.5, 0.5, 1.0);
+			glVertex3f(0.0, 0.0, 0.0);
+			glVertex3f((last2_x - offset2X) / 500.0 * scale2X, (last2_y - offset2Y) / 500.0 * scale2Y, (last2_z - offset2Z) / 500.0 * scale2Z);
+		}
 
 		glEnd();
 		glLineWidth(1);
@@ -1036,6 +1127,31 @@ void screen_mavlink_magcal (ESContext *esContext) {
 		glVertex3f((last_x - offsetX) / 1000.0 * scaleX - diff_x, (last_z - offsetZ) / 1000.0 * scaleZ + diff_y, 0.0);
 		glVertex3f(diff_x, -diff_y, 0.0);
 		glVertex3f((last_z - offsetZ) / 1000.0 * scaleZ + diff_x, (last_y - offsetY) / 1000.0 * scaleY - diff_y, 0.0);
+		if (mag2_pos > 1) {
+			for (n = 0; n < mag2_pos; n++) {
+				glColor4f(0.0, 1.0, 1.0, 0.3);
+				glVertex3f(-diff_x, -diff_y, 0.0);
+				glVertex3f((mag2_data[n][0] - offset2X) / 1000.0 * scale2X - diff_x, (mag2_data[n][1] - offset2Y) / 1000.0 * scale2Y - diff_y, 0.0);
+				glVertex3f(-diff_x, diff_y, 0.0);
+				glVertex3f((mag2_data[n][0] - offset2X) / 1000.0 * scale2X - diff_x, (mag2_data[n][2] - offset2Z) / 1000.0 * scale2Z + diff_y, 0.0);
+				glVertex3f(diff_x, -diff_y, 0.0);
+				glVertex3f((mag2_data[n][2] - offset2Z) / 1000.0 * scale2Z + diff_x, (mag2_data[n][1] - offset2Y) / 1000.0 * scale2Y - diff_y, 0.0);
+				glColor4f(1.0, 0.0, 1.0, 0.3);
+				glVertex3f(-diff_x, -diff_y, 0.0);
+				glVertex3f((mag2_data[n][0]) / 1000.0 - diff_x, (mag2_data[n][1]) / 1000.0 - diff_y, 0.0);
+				glVertex3f(-diff_x, diff_y, 0.0);
+				glVertex3f((mag2_data[n][0]) / 1000.0 - diff_x, (mag2_data[n][2]) / 1000.0 + diff_y, 0.0);
+				glVertex3f(diff_x, -diff_y, 0.0);
+				glVertex3f((mag2_data[n][2]) / 1000.0 + diff_x, (mag2_data[n][1]) / 1000.0 - diff_y, 0.0);
+			}
+			glColor4f(0.5, 0.5, 0.5, 1.0);
+			glVertex3f(-diff_x, -diff_y, 0.0);
+			glVertex3f((last2_x - offset2X) / 1000.0 * scale2X - diff_x, (last2_y - offset2Y) / 1000.0 * scale2Y - diff_y, 0.0);
+			glVertex3f(-diff_x, diff_y, 0.0);
+			glVertex3f((last2_x - offset2X) / 1000.0 * scale2X - diff_x, (last2_z - offset2Z) / 1000.0 * scale2Z + diff_y, 0.0);
+			glVertex3f(diff_x, -diff_y, 0.0);
+			glVertex3f((last2_z - offset2Z) / 1000.0 * scale2Z + diff_x, (last2_y - offset2Y) / 1000.0 * scale2Y - diff_y, 0.0);
+		}
 		glEnd();
 #endif
 		draw_circle_f3(esContext, -diff_x, -diff_y, 0.0002, 0.3, 255, 255, 255, 255);
@@ -1046,24 +1162,48 @@ void screen_mavlink_magcal (ESContext *esContext) {
 			char tmp_str[1024];
 			sprintf(tmp_str, "# %i", mag_pos);
 			draw_text_f(esContext, diff_x - 0.2, -diff_y - 0.2, 0.08, 0.08, FONT_WHITE, tmp_str);
-			sprintf(tmp_str, "X %0.2f", offsetX);
+			sprintf(tmp_str, "X %0.2f", -offsetX);
 			draw_text_f(esContext, diff_x - 0.2, -diff_y - 0.1, 0.08, 0.08, FONT_WHITE, tmp_str);
-			sprintf(tmp_str, "Y %0.2f", offsetY);
+			sprintf(tmp_str, "Y %0.2f", -offsetY);
 			draw_text_f(esContext, diff_x - 0.2, -diff_y, 0.08, 0.08, FONT_WHITE, tmp_str);
-			sprintf(tmp_str, "Z %0.2f", offsetZ);
+			sprintf(tmp_str, "Z %0.2f", -offsetZ);
 			draw_text_f(esContext, diff_x - 0.2, -diff_y + 0.1, 0.08, 0.08, FONT_WHITE, tmp_str);
+			if (mag2_pos > 1) {
+				sprintf(tmp_str, "# %i", mag2_pos);
+				draw_text_f(esContext, diff_x - 0.2, -diff_y + 0.3, 0.08, 0.08, FONT_WHITE, tmp_str);
+				sprintf(tmp_str, "X2 %0.2f", -offset2X);
+				draw_text_f(esContext, diff_x - 0.2, -diff_y + 0.4, 0.08, 0.08, FONT_WHITE, tmp_str);
+				sprintf(tmp_str, "Y2 %0.2f", -offset2Y);
+				draw_text_f(esContext, diff_x - 0.2, -diff_y + 0.5, 0.08, 0.08, FONT_WHITE, tmp_str);
+				sprintf(tmp_str, "Z2 %0.2f", -offset2Z);
+				draw_text_f(esContext, diff_x - 0.2, -diff_y + 0.6, 0.08, 0.08, FONT_WHITE, tmp_str);
+			}
 		}
 		if (mavlink_magcal_set == 1) {
 			if (mavlink_magcal == 1) {
 				SDL_Log("magcal: save offesets\n");
-				mavlink_send_value(ModelActive, "COMPASS_OFS_X", -offsetX, 9);
-				mavlink_send_value(ModelActive, "COMPASS_OFS_Y", -offsetY, 9);
-				mavlink_send_value(ModelActive, "COMPASS_OFS_Z", -offsetZ, 9);
+				if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_PIXHAWK)
+					mavlink_send_value(ModelActive, "COMPASS_OFS_X", -offsetX, 9);
+					mavlink_send_value(ModelActive, "COMPASS_OFS_Y", offsetZ, 9);
+					mavlink_send_value(ModelActive, "COMPASS_OFS_Z", offsetY, 9);
+					mavlink_send_magcal(ModelActive, -offsetX, offsetZ, offsetY);
+				} else {
+					mavlink_send_value(ModelActive, "COMPASS_OFS_X", -offsetX, 9);
+					mavlink_send_value(ModelActive, "COMPASS_OFS_Y", -offsetY, 9);
+					mavlink_send_value(ModelActive, "COMPASS_OFS_Z", -offsetZ, 9);
+					mavlink_send_magcal(ModelActive, -offsetX, -offsetY, -offsetZ);
+				}
+				if (mag2_pos > 1) {
+					mavlink_send_value(ModelActive, "COMPASS_OFS2_X", -offset2X, 9);
+					mavlink_send_value(ModelActive, "COMPASS_OFS2_Y", -offset2Y, 9);
+					mavlink_send_value(ModelActive, "COMPASS_OFS2_Z", -offset2Z, 9);
+					mavlink_send_magcal2(ModelActive, -offset2X, -offset2Y, -offset2Z);
+				}
 			}
 			mavlink_magcal_set = 0;
 			mavlink_magcal = 0;
 		}
-		if (mavlink_magcal == 1) {
+		if (mavlink_magcal == 1 && mag_pos > 100) {
 			draw_text_button(esContext, "save_cal", VIEW_MODE_FCMENU, "[SAVE]", FONT_GREEN, 0.0, 0.7, 0.005, 0.08, 1, 0, mavlink_magcal_change, 0.0);
 		}
 		draw_text_button(esContext, "cancle_cal", VIEW_MODE_FCMENU, "[CANCEL]", FONT_GREEN, 0.0, 0.8, 0.005, 0.08, 1, 0, mavlink_magcal_change, -1.0);

@@ -19,7 +19,7 @@ int16_t mission_max[MODELS_MAX];
 ValueList MavLinkVars[MODELS_MAX][MAVLINK_PARAMETER_MAX];
 uint8_t mavlink_update_yaw = 0;
 int c, res;
-char serial_buf[255];
+char serial_buf[1024];
 static uint32_t last_connection[MODELS_MAX];
 static int8_t GPS_found[MODELS_MAX];
 uint8_t mavlink_loghbeat = 0;
@@ -267,9 +267,10 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 		if (param_timeout[modelid] > 1) {
 			param_timeout[modelid]--;
 		} else if (param_timeout[modelid] == 1) {
-			param_timeout[modelid] = 10;
+			param_timeout[modelid] = 20;
 			int n = 0;
 			int n2 = 0;
+			int n3 = 0;
 			int flag2 = 0;
 			for (n2 = 0; n2 < mavlink_maxparam[modelid]; n2++) {
 				int flag = 0;
@@ -280,10 +281,13 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 					}
 				}
 				if (flag == 0) {
-					SDL_Log("mavlink(%i): param %i not found #\n", modelid, n2);
+//					SDL_Log("mavlink(%i): param %i not found #\n", modelid, n2);
 					mavlink_param_get_id(modelid, n2);
 					flag2 = 1;
-					break;
+					n3++;
+					if (n3 > 10) {
+						break;
+					}
 				}
 			}
 			if (flag2 == 0) {
@@ -394,7 +398,34 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 			redraw_flag = 1;
 			break;
 		}
+		case MAVLINK_MSG_ID_RAW_IMU: {
+			mavlink_raw_imu_t packet;
+			mavlink_msg_raw_imu_decode(msg, &packet);
+			ModelData[modelid].acc_x = (float)packet.xacc / 1000.0;
+			ModelData[modelid].acc_y = (float)packet.yacc / 1000.0;
+			ModelData[modelid].acc_z = (float)packet.zacc / 1000.0;
+			ModelData[modelid].gyro_x = (float)packet.xgyro;
+			ModelData[modelid].gyro_y = (float)packet.ygyro;
+			ModelData[modelid].gyro_z = (float)packet.zgyro;
+			ModelData[modelid].mag_x = (float)packet.xmag;
+			ModelData[modelid].mag_y = (float)packet.ymag;
+			ModelData[modelid].mag_z = (float)packet.zmag;
+//printf("IMU1_RAW %f %f %f\n", (float)packet.xmag, (float)packet.ymag, (float)packet.zmag);
+			break;
+		}
 		case MAVLINK_MSG_ID_SCALED_IMU: {
+			mavlink_scaled_imu_t packet;
+			mavlink_msg_scaled_imu_decode(msg, &packet);
+//printf("IMU1_SCL %f %f %f\n", (float)packet.xmag, (float)packet.ymag, (float)packet.zmag);
+			break;
+		}
+		case MAVLINK_MSG_ID_SCALED_IMU2: {
+			mavlink_scaled_imu2_t packet;
+			mavlink_msg_scaled_imu2_decode(msg, &packet);
+			ModelData[modelid].mag2_x = (float)packet.xmag;
+			ModelData[modelid].mag2_y = (float)packet.ymag;
+			ModelData[modelid].mag2_z = (float)packet.zmag;
+//printf("IMU2_SCL %f %f %f\n", (float)packet.xmag, (float)packet.ymag, (float)packet.zmag);
 			break;
 		}
 		case MAVLINK_MSG_ID_GPS_RAW_INT: {
@@ -471,15 +502,6 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 				}
 			}
 			var[n2++] = 0;
-//strcpy(var, packet.param_id);
-//	MAV_VAR_FLOAT=0, /* 32 bit float | */
-//	MAV_VAR_UINT8=1, /* 8 bit unsigned integer | */
-//	MAV_VAR_INT8=2, /* 8 bit signed integer | */
-//	MAV_VAR_UINT16=3, /* 16 bit unsigned integer | */
-//	MAV_VAR_INT16=4, /* 16 bit signed integer | */
-//	MAV_VAR_UINT32=5, /* 32 bit unsigned integer | */
-//	MAV_VAR_INT32=6, /* 32 bit signed integer | */
-//mavlink_param_get_id (uint16_t id);
 			mavlink_maxparam[modelid] = packet.param_count;
 			mavlink_timeout[modelid] = 0;
 			mavlink_set_value(modelid, var, packet.param_value, packet.param_type, packet.param_index);
@@ -498,7 +520,7 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 				sysmsg_str[n1 + 1] = 0;
 			}
 			sys_message(sysmsg_str);
-			param_timeout[modelid] = 10;
+			param_timeout[modelid] = 20;
 			break;
 		}
 		case MAVLINK_MSG_ID_MISSION_COUNT: {
@@ -571,19 +593,6 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 
 			sprintf(sysmsg_str, "SENDING MISSION_ITEM: %i: %f, %f, %f\n", id, WayPoints[modelid][id2 + 1].p_lat, WayPoints[modelid][id2 + 1].p_long, WayPoints[modelid][id2 + 1].p_alt);
 			SDL_Log("mavlink(%i): %s\n", modelid, sysmsg_str);
-//	MAV_FRAME_GLOBAL=0, /* Global coordinate frame, WGS84 coordinate system. First value / x: latitude, second value / y: longitude, third value / z: positive altitude over mean sea level (MSL) | */
-//	MAV_FRAME_LOCAL_NED=1, /* Local coordinate frame, Z-up (x: north, y: east, z: down). | */
-//	MAV_FRAME_MISSION=2, /* NOT a coordinate frame, indicates a mission command. | */
-//	MAV_FRAME_GLOBAL_RELATIVE_ALT=3, /* Global coordinate frame, WGS84 coordinate system, relative altitude over ground with respect to the home position. First value / x: latitude, second value / y: longitude, third value / z: positive altitude with 0 being at the altitude of the home location. | */
-//	MAV_FRAME_LOCAL_ENU=4, /* Local coordinate frame, Z-down (x: east, y: north, z: up) | */
-//	MAV_FRAME_GLOBAL_INT=5, /* Global coordinate frame, WGS84 coordinate system. First value / x: latitude in degrees*1.0e-7, second value / y: longitude in degrees*1.0e-7, third value / z: positive altitude over mean sea level (MSL) | */
-//	MAV_FRAME_GLOBAL_RELATIVE_ALT_INT=6, /* Global coordinate frame, WGS84 coordinate system, relative altitude over ground with respect to the home position. First value / x: latitude in degrees*10e-7, second value / y: longitude in degrees*10e-7, third value / z: positive altitude with 0 being at the altitude of the home location. | */
-//	MAV_FRAME_LOCAL_OFFSET_NED=7, /* Offset to the current local frame. Anything expressed in this frame should be added to the current local frame position. | */
-//	MAV_FRAME_BODY_NED=8, /* Setpoint in body NED frame. This makes sense if all position control is externalized - e.g. useful to command 2 m/s^2 acceleration to the right. | */
-//	MAV_FRAME_BODY_OFFSET_NED=9, /* Offset in body NED frame. This makes sense if adding setpoints to the current flight path, to avoid an obstacle - e.g. useful to command 2 m/s^2 acceleration to the east. | */
-//	MAV_FRAME_GLOBAL_TERRAIN_ALT=10, /* Global coordinate frame with above terrain level altitude. WGS84 coordinate system, relative altitude over terrain with respect to the waypoint coordinate. First value / x: latitude in degrees, second value / y: longitude in degrees, third value / z: positive altitude in meters with 0 being at ground level in terrain model. | */
-//	MAV_FRAME_GLOBAL_TERRAIN_ALT_INT=11, /* Global coordinate frame with above terrain level altitude. WGS84 coordinate system, relative altitude over terrain with respect to the waypoint coordinate. First value / x: latitude in degrees*10e-7, second value / y: longitude in degrees*10e-7, third value / z: positive altitude in meters with 0 being at ground level in terrain model. | */
-
 			if (ModelData[modelid].dronetype != MAV_TYPE_FIXED_WING && WayPoints[modelid][id2 + 1].frametype == MAV_FRAME_GLOBAL) {
 				SDL_Log("mavlink(%i): copter absolut alt workaround", modelid);
 				mavlink_msg_mission_item_pack(127, 0, &msg2, ModelData[modelid].sysid, ModelData[modelid].compid, id, WayPoints[modelid][id2 + 1].frametype, type, 0, 1, WayPoints[modelid][id2 + 1].param1, WayPoints[modelid][id2 + 1].param2, WayPoints[modelid][id2 + 1].param3, WayPoints[modelid][id2 + 1].param4, WayPoints[modelid][id2 + 1].p_lat, WayPoints[modelid][id2 + 1].p_long, WayPoints[modelid][id2 + 1].p_alt - WayPoints[modelid][0].p_alt);
@@ -591,23 +600,6 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 				mavlink_msg_mission_item_pack(127, 0, &msg2, ModelData[modelid].sysid, ModelData[modelid].compid, id, WayPoints[modelid][id2 + 1].frametype, type, 0, 1, WayPoints[modelid][id2 + 1].param1, WayPoints[modelid][id2 + 1].param2, WayPoints[modelid][id2 + 1].param3, WayPoints[modelid][id2 + 1].param4, WayPoints[modelid][id2 + 1].p_lat, WayPoints[modelid][id2 + 1].p_long, WayPoints[modelid][id2 + 1].p_alt);
 			}
 			mavlink_send_message(modelid, &msg2);
-/*
-mavlink_msg_mission_item_pack(system_id, component_id, &msg , packet1.target_system , packet1.target_component , packet1.seq , packet1.frame , packet1.command , packet1.current , packet1.autocontinue , packet1.param1 , packet1.param2 , packet1.param3 , packet1.param4 , packet1.x , packet1.y , packet1.z );
-float param1; ///< PARAM1 / For NAV command MISSIONs: Radius in which the MISSION is accepted as reached, in meters
-float param2; ///< PARAM2 / For NAV command MISSIONs: Time that the MAV should stay inside the PARAM1 radius before advancing, in milliseconds
-float param3; ///< PARAM3 / For LOITER command MISSIONs: Orbit to circle around the MISSION, in meters. If positive the orbit direction should be clockwise, if negative the orbit direction should be counter-clockwise.
-float param4; ///< PARAM4 / For NAV and LOITER command MISSIONs: Yaw orientation in degrees, [0..360] 0 = NORTH
-float x; ///< PARAM5 / local: x position, global: latitude
-float y; ///< PARAM6 / y position: global: longitude
-float z; ///< PARAM7 / z position: global: altitude
-uint16_t seq; ///< Sequence
-uint16_t command; ///< The scheduled action for the MISSION. see MAV_CMD in common.xml MAVLink specs
-uint8_t target_system; ///< System ID
-uint8_t target_component; ///< Component ID
-uint8_t frame; ///< The coordinate system of the MISSION. see MAV_FRAME in mavlink_types.h
-uint8_t current; ///< false:0, true:1
-uint8_t autocontinue; ///< autocontinue to next wp
-*/
 			break;
 		}
 		case MAVLINK_MSG_ID_MISSION_ITEM: {
@@ -744,20 +736,6 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			uav_active_waypoint = (uint8_t)packet.seq;
 			break;
 		}
-		case MAVLINK_MSG_ID_RAW_IMU: {
-			mavlink_raw_imu_t packet;
-			mavlink_msg_raw_imu_decode(msg, &packet);
-			ModelData[modelid].acc_x = (float)packet.xacc / 1000.0;
-			ModelData[modelid].acc_y = (float)packet.yacc / 1000.0;
-			ModelData[modelid].acc_z = (float)packet.zacc / 1000.0;
-			ModelData[modelid].gyro_x = (float)packet.xgyro;
-			ModelData[modelid].gyro_y = (float)packet.ygyro;
-			ModelData[modelid].gyro_z = (float)packet.zgyro;
-			ModelData[modelid].mag_x = (float)packet.xmag;
-			ModelData[modelid].mag_y = (float)packet.ymag;
-			ModelData[modelid].mag_z = (float)packet.zmag;
-			break;
-		}
 		case MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT: {
 			mavlink_nav_controller_output_t packet;
 			mavlink_msg_nav_controller_output_decode(msg, &packet);
@@ -850,11 +828,6 @@ uint8_t autocontinue; ///< autocontinue to next wp
 			mavlink_msg_hwstatus_decode(msg, &packet);
 			ModelData[modelid].fc_voltage1 = (float)packet.Vcc / 1000.0;
 			ModelData[modelid].fc_i2c_errors = packet.I2Cerr;
-			break;
-		}
-		case MAVLINK_MSG_ID_SCALED_IMU2: {
-			mavlink_scaled_imu2_t packet;
-			mavlink_msg_scaled_imu2_decode(msg, &packet);
 			break;
 		}
 		case MAVLINK_MSG_ID_POWER_STATUS: {
@@ -1013,6 +986,20 @@ void mavlink_send_terrain_data (uint8_t modelid, int32_t lat, int32_t lon, uint1
 	SDL_Log("mavlink(%i): sending terrain_data\n", modelid);
 	mavlink_message_t msg;
 	mavlink_msg_terrain_data_pack(127, 0, &msg, lat, lon, grid_spacing, gridbit, data);
+	mavlink_send_message(modelid, &msg);
+}
+
+void mavlink_send_magcal (uint8_t modelid, float x, float y, float z) {
+	SDL_Log("mavlink(%i): save magcal (%f,%f,%f)\n", modelid, x, y, z);
+	mavlink_message_t msg;
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_CMD_PREFLIGHT_SET_SENSOR_OFFSETS, 1, 2.0, x, y, z, 0.0, 0.0, 0.0);
+	mavlink_send_message(modelid, &msg);
+}
+
+void mavlink_send_magcal2 (uint8_t modelid, float x, float y, float z) {
+	SDL_Log("mavlink(%i): save magcal (%f,%f,%f)\n", modelid, x, y, z);
+	mavlink_message_t msg;
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_CMD_PREFLIGHT_SET_SENSOR_OFFSETS, 1, 5.0, x, y, z, 0.0, 0.0, 0.0);
 	mavlink_send_message(modelid, &msg);
 }
 
@@ -1201,7 +1188,7 @@ void mavlink_update (uint8_t modelid) {
 	uint16_t n = 0;
 	mavlink_message_t msg;
 	mavlink_status_t status;
-	while ((res = serial_read(ModelData[modelid].serial_fd, serial_buf, 250)) > 0) {
+	while ((res = serial_read(ModelData[modelid].serial_fd, serial_buf, 1000)) > 0) {
 		last_connection[modelid] = time(0);
 		for (n = 0; n < res; n++) {
 			c = serial_buf[n];
@@ -1220,6 +1207,7 @@ void mavlink_param_get_id (uint8_t modelid, uint16_t id) {
 }
 
 void mavlink_start_feeds (uint8_t modelid) {
+
 	mavlink_message_t msg;
 	mavlink_timeout[modelid] = 0;
 	param_complete[modelid] = 0;

@@ -73,7 +73,7 @@ extern uint8_t droneType;
 extern uint8_t autoPilot;
 extern int c;
 extern int res;
-extern char serial_buf[255];
+extern char serial_buf[1024];
 extern uint16_t mavlink_timeout[MODELS_MAX];
 extern uint16_t mavlink_maxparam[MODELS_MAX];
 extern uint8_t mavlink_update_yaw;
@@ -119,7 +119,8 @@ void mavlink_send_cmd_guided (uint8_t modelid);
 void mavlink_send_cmd_calibration (uint8_t modelid);
 void mavlink_send_cmd_calibration_ack (uint8_t modelid);
 void mavlink_send_cmd_follow (uint8_t modelid, float p_lat, float p_long, float p_alt, float radius);
-
+void mavlink_send_magcal (uint8_t modelid, float x, float y, float z);
+void mavlink_send_magcal2 (uint8_t modelid, float x, float y, float z);
 void mavlink_init_udp (void);
 void mavlink_exit_udp (void);
 void mavlink_init_tcp (void);
