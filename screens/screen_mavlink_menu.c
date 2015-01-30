@@ -1182,7 +1182,7 @@ void screen_mavlink_magcal (ESContext *esContext) {
 		if (mavlink_magcal_set == 1) {
 			if (mavlink_magcal == 1) {
 				SDL_Log("magcal: save offesets\n");
-				if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_PIXHAWK)
+				if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_PIXHAWK) {
 					mavlink_send_value(ModelActive, "COMPASS_OFS_X", -offsetX, 9);
 					mavlink_send_value(ModelActive, "COMPASS_OFS_Y", offsetZ, 9);
 					mavlink_send_value(ModelActive, "COMPASS_OFS_Z", offsetY, 9);
