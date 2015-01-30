@@ -1359,20 +1359,22 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 			} else {
 				SurveySetup.angle = 0.0;
 			}
-		}
-		if (button == 5) {
+		} else if (button == 5) {
 			if (SurveySetup.angle > 0.0) {
 				SurveySetup.angle -= 1.0;
 			} else {
 				SurveySetup.angle = 359.0;
 			}
+		} else {
+			edit_number(setup.view_mode, NUMBER_TYPE_FLOAT, &SurveySetup.angle, 0.0, 360.0);
 		}
 	} else if (strcmp(name, "SurveySetup.grid_x") == 0) {
 		if (button == 4) {
 			SurveySetup.grid_x += 1.0;
-		}
-		if (button == 5) {
+		} else if (button == 5) {
 			SurveySetup.grid_x -= 1.0;
+		} else {
+			edit_number(setup.view_mode, NUMBER_TYPE_FLOAT, &SurveySetup.grid_x, 1.0, 10000.0);
 		}
 		if (SurveySetup.grid_x < 1.0) {
 			SurveySetup.grid_x = 1.0;
@@ -1380,9 +1382,10 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 	} else if (strcmp(name, "SurveySetup.grid_y") == 0) {
 		if (button == 4) {
 			SurveySetup.grid_y += 1.0;
-		}
-		if (button == 5) {
+		} else if (button == 5) {
 			SurveySetup.grid_y -= 1.0;
+		} else {
+			edit_number(setup.view_mode, NUMBER_TYPE_FLOAT, &SurveySetup.grid_y, 1.0, 10000.0);
 		}
 		if (SurveySetup.grid_y < 1.0) {
 			SurveySetup.grid_y = 1.0;
@@ -1390,44 +1393,50 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 	} else if (strcmp(name, "SurveySetup.lense") == 0) {
 		if (button == 4) {
 			SurveySetup.lense += 1.0;
-		}
-		if (button == 5) {
+		} else if (button == 5) {
 			SurveySetup.lense -= 1.0;
+		} else {
+			edit_number(setup.view_mode, NUMBER_TYPE_FLOAT, &SurveySetup.lense, 1.0, 10000.0);
 		}
 	} else if (strcmp(name, "SurveySetup.film_width") == 0) {
 		if (button == 4) {
 			SurveySetup.film_width += 1.0;
-		}
-		if (button == 5) {
+		} else if (button == 5) {
 			SurveySetup.film_width -= 1.0;
+		} else {
+			edit_number(setup.view_mode, NUMBER_TYPE_FLOAT, &SurveySetup.film_width, 1.0, 10000.0);
 		}
 	} else if (strcmp(name, "SurveySetup.film_height") == 0) {
 		if (button == 4) {
 			SurveySetup.film_height += 1.0;
-		}
-		if (button == 5) {
+		} else if (button == 5) {
 			SurveySetup.film_height -= 1.0;
+		} else {
+			edit_number(setup.view_mode, NUMBER_TYPE_FLOAT, &SurveySetup.film_height, 1.0, 10000.0);
 		}
 	} else if (strcmp(name, "SurveySetup.sensor_mult") == 0) {
 		if (button == 4) {
 			SurveySetup.sensor_mult += 0.01;
-		}
-		if (button == 5) {
+		} else if (button == 5) {
 			SurveySetup.sensor_mult -= 0.01;
+		} else {
+			edit_number(setup.view_mode, NUMBER_TYPE_FLOAT, &SurveySetup.sensor_mult, 1.0, 10000.0);
 		}
 	} else if (strcmp(name, "SurveySetup.overlap") == 0) {
 		if (button == 4) {
 			SurveySetup.overlap += 0.01;
-		}
-		if (button == 5) {
+		} else if (button == 5) {
 			SurveySetup.overlap -= 0.01;
+		} else {
+			edit_number(setup.view_mode, NUMBER_TYPE_FLOAT, &SurveySetup.overlap, 1.0, 10000.0);
 		}
 	} else if (strcmp(name, "SurveySetup.alt") == 0) {
 		if (button == 4) {
 			SurveySetup.alt += 1.0;
-		}
-		if (button == 5) {
+		} else if (button == 5) {
 			SurveySetup.alt -= 1.0;
+		} else {
+			edit_number(setup.view_mode, NUMBER_TYPE_FLOAT, &SurveySetup.alt, 1.0, 10000.0);
 		}
 		if (SurveySetup.alt_abs == 0) {
 			if (SurveySetup.alt < 1.0) {
@@ -1718,6 +1727,7 @@ void map_draw_cam_setup (ESContext *esContext) {
 	float py1 = -0.9;
 	float px2 = 0.8;
 	float py2 = -0.0;
+	reset_buttons();
 	draw_box_f3(esContext, px1, py1, 0.002, px2, py2, 0.002, 0, 0, 0, 127);
 	draw_box_f3(esContext, px1, py1, 0.005, px2, py1 + 0.06, 0.005, 255, 255, 255, 127);
 	draw_rect_f3(esContext, px1, py1, 0.005, px2, py1 + 0.06, 0.005, 255, 255, 255, 255);
@@ -3245,6 +3255,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 
 void screen_map (ESContext *esContext, float lat, float lon, uint8_t zoom) {
 	display_map(esContext, lat, lon, zoom, map_view, 1, 1.0, 0.0, 0.0, 0.0);
+	screen_number(esContext);
 }
 
 

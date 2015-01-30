@@ -225,12 +225,12 @@ void screen_fms (ESContext *esContext) {
 		fms_pos = (num_waypoints + 1) / 7;
 	}
 
-	draw_text_button(esContext, "fms_mission", VIEW_MODE_FMS, "START", FONT_GREEN_BG, -1.0, 0.9, 0.002, 0.06, 1, 0, fms_start_mission, 0.0);
-	draw_text_button(esContext, "fms_edit", VIEW_MODE_FMS, "EDIT", FONT_GREEN_BG, -0.7, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, wpedit_waypoint_edit, (float)VIEW_MODE_FMS);
-	draw_text_button(esContext, "fms_add", VIEW_MODE_FMS, "ADD", FONT_GREEN_BG, -0.5, 0.9, 0.002, 0.06, 1, 0, fms_add, 0.0);
-	draw_text_button(esContext, "fms_del", VIEW_MODE_FMS, "DEL", FONT_GREEN_BG, 0.5, 0.9, 0.002, 0.06, 1, 0, fms_del, 0.0);
-	draw_text_button(esContext, "fms_read_wp", VIEW_MODE_FMS, "READ_WP", FONT_GREEN_BG, -0.2, 0.9, 0.002, 0.06, 1, 0, read_wp, 0.0);
-	draw_text_button(esContext, "fms_write_wp", VIEW_MODE_FMS, "WRITE_WP", FONT_GREEN_BG, 0.2, 0.9, 0.002, 0.06, 1, 0, write_wp, 0.0);
-	draw_text_button(esContext, "fms_goto", VIEW_MODE_FMS, "GOTO", FONT_GREEN_BG, 0.7, 0.9, 0.002, 0.06, 1, 0, map_goto, (float)waypoint_active);
+	draw_text_button(esContext, "fms_mission", VIEW_MODE_FMS, "START", FONT_GREEN_BG, -1.0, 0.9, 0.005, 0.06, 1, 0, fms_start_mission, 0.0);
+	draw_text_button(esContext, "fms_edit", VIEW_MODE_FMS, "EDIT", FONT_GREEN_BG, -0.7, 0.9, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, wpedit_waypoint_edit, (float)VIEW_MODE_FMS);
+	draw_text_button(esContext, "fms_add", VIEW_MODE_FMS, "ADD", FONT_GREEN_BG, -0.5, 0.9, 0.005, 0.06, 1, 0, fms_add, 0.0);
+	draw_text_button(esContext, "fms_del", VIEW_MODE_FMS, "DEL", FONT_GREEN_BG, 0.5, 0.9, 0.005, 0.06, 1, 0, fms_del, 0.0);
+	draw_text_button(esContext, "fms_read_wp", VIEW_MODE_FMS, "READ_WP", FONT_GREEN_BG, -0.2, 0.9, 0.005, 0.06, 1, 0, read_wp, 0.0);
+	draw_text_button(esContext, "fms_write_wp", VIEW_MODE_FMS, "WRITE_WP", FONT_GREEN_BG, 0.2, 0.9, 0.005, 0.06, 1, 0, write_wp, 0.0);
+	draw_text_button(esContext, "fms_goto", VIEW_MODE_FMS, "GOTO", FONT_GREEN_BG, 0.7, 0.9, 0.005, 0.06, 1, 0, map_goto, (float)waypoint_active);
 }
 
