@@ -6,7 +6,7 @@ void tcl_update_modeldata (void) {
 	TclUpdateVarString("ModelData(name)", ModelData[ModelActive].name);
 	TclUpdateVarString("ModelData(sysstr)", ModelData[ModelActive].sysstr);
 	TclUpdateVarString("ModelData(image)", ModelData[ModelActive].image);
-	TclUpdateVarInt("ModelData(modeltype)", ModelData[ModelActive].modeltype);
+	TclUpdateVarInt("ModelData(dronetype)", ModelData[ModelActive].dronetype);
 	TclUpdateVarInt("ModelData(teletype)", ModelData[ModelActive].teletype);
 	TclUpdateVarInt("ModelData(dronetype)", ModelData[ModelActive].dronetype);
 	TclUpdateVarInt("ModelData(pilottype)", ModelData[ModelActive].pilottype);

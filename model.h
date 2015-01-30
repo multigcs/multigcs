@@ -22,15 +22,6 @@ enum {
 };
 
 enum {
-	MODELTYPE_MULTICOPTER,
-	MODELTYPE_HELICOPTER,
-	MODELTYPE_PLANE,
-	MODELTYPE_CAR,
-	MODELTYPE_BOAT,
-	MODELTYPE_LAST,
-};
-
-enum {
 	MODEL_MODE_MANUAL,
 	MODEL_MODE_POSHOLD,
 	MODEL_MODE_MISSION,
@@ -47,7 +38,6 @@ typedef struct {
 	char name[200];
 	char sysstr[200];
 	char image[512];
-	uint8_t modeltype;
 	uint8_t teletype;
 	uint8_t dronetype;
 	uint8_t pilottype;
@@ -132,8 +122,5 @@ typedef struct {
 extern uint8_t ModelActive;
 extern Model ModelData[MODELS_MAX];
 extern Ground GroundData;
-extern char teletypes[16][16];
-extern char modeltypes[5][15];
-extern char pilottypes[18][64];
 
 #endif

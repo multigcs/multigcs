@@ -881,7 +881,7 @@ void Logging (void) {
 		static uint8_t last_mode = 0;
 		static uint8_t last_armed = 0;
 		static uint8_t last_status = 0;
-		static uint8_t last_modeltype = 0;
+		static uint8_t last_dronetype = 0;
 		static uint8_t last_teletype = 0;
 		static uint8_t last_heartbeat = 0;
 		uint8_t n= 0;
@@ -936,10 +936,10 @@ void Logging (void) {
 			last_armed = ModelData[ModelActive].armed;
 			last_status = ModelData[ModelActive].status;
 		}
-		if (last_modeltype != ModelData[ModelActive].modeltype || last_teletype != ModelData[ModelActive].teletype) {
-			sprintf(line, "MT0;%i.%03i;%i;%i", sec, micros, ModelData[ModelActive].modeltype, ModelData[ModelActive].teletype);
+		if (last_dronetype != ModelData[ModelActive].dronetype || last_teletype != ModelData[ModelActive].teletype) {
+			sprintf(line, "MT0;%i.%03i;%i;%i", sec, micros, ModelData[ModelActive].dronetype, ModelData[ModelActive].teletype);
 			LogAppend(line);
-			last_modeltype = ModelData[ModelActive].modeltype;
+			last_dronetype = ModelData[ModelActive].dronetype;
 			last_teletype = ModelData[ModelActive].teletype;
 		}
 		if (last_heartbeat == 0 && ModelData[ModelActive].heartbeat > 0) {

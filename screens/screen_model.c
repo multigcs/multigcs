@@ -17,10 +17,10 @@ uint8_t model_get_teletype_by_name (char *name) {
 	return 0;
 }
 
-uint8_t model_get_modeltype_by_name (char *name) {
-	int16_t type = MODELTYPE_LAST - 1;
+uint8_t model_get_dronetype_by_name (char *name) {
+	int16_t type = MAV_TYPE_ENUM_END - 1;
 	while (type >= 0) {
-		if (strcmp(name, modeltypes[type]) == 0) {
+		if (strcmp(name, dronetypes[type]) == 0) {
 			return type;
 		}
 		type--;
@@ -71,11 +71,11 @@ static uint8_t model_use_deviceid_change (char *name, float x, float y, int8_t b
 	return 0;
 }
 
-static uint8_t model_modeltype_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	if (ModelData[ModelActive].modeltype < MODELTYPE_LAST - 1) {
-		ModelData[ModelActive].modeltype++;
+static uint8_t model_dronetype_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (ModelData[ModelActive].dronetype < MAV_TYPE_ENUM_END - 1) {
+		ModelData[ModelActive].dronetype++;
 	} else {
-		ModelData[ModelActive].modeltype = 0;
+		ModelData[ModelActive].dronetype = 0;
 	}
 	return 0;
 }
@@ -140,7 +140,7 @@ static uint8_t model_save_xml (char *name, float x, float y, int8_t button, floa
 		fprintf(fr, "<rcflow>\n");
 		fprintf(fr, " <name>%s</name>\n", ModelData[ModelActive].name);
 		fprintf(fr, " <image>%s</image>\n", ModelData[ModelActive].image);
-		fprintf(fr, " <type>%s</type>\n", modeltypes[ModelData[ModelActive].modeltype]);
+		fprintf(fr, " <type>%s</type>\n", dronetypes[ModelData[ModelActive].dronetype]);
 		fprintf(fr, " <telemetry>\n");
 		fprintf(fr, "  <type>%s</type>\n", teletypes[ModelData[ModelActive].teletype]);
 		fprintf(fr, "  <device>%s</device>\n", ModelData[ModelActive].telemetry_port);
@@ -275,7 +275,7 @@ static void model_parseDoc (char *docname) {
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"type"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
-				ModelData[ModelActive].modeltype = model_get_modeltype_by_name((char *)key);
+				ModelData[ModelActive].dronetype = model_get_dronetype_by_name((char *)key);
 			}
 			xmlFree(key);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"telemetry"))) {
@@ -332,7 +332,7 @@ static uint8_t model_image_change (char *name, float x, float y, int8_t button, 
 }
 
 #ifdef SDLGL
-Object3d obj3d_modeltype;
+Object3d obj3d_dronetype;
 Object3d obj3d_teletype;
 #endif
 
@@ -380,35 +380,43 @@ void screen_model (ESContext *esContext) {
 	draw_text_button(esContext, "model_name_edit", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_name_edit, 0);
 	n++;
 
-	draw_text_button(esContext, "model_type", VIEW_MODE_MODEL, "TYPE:", FONT_WHITE, -1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_modeltype_change, 0);
-	draw_text_button(esContext, "modeltype_change", VIEW_MODE_MODEL, modeltypes[ModelData[ModelActive].modeltype], FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_modeltype_change, 0);
+	draw_text_button(esContext, "model_type", VIEW_MODE_MODEL, "TYPE:", FONT_WHITE, -1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_dronetype_change, 0);
+	draw_text_button(esContext, "dronetype_change", VIEW_MODE_MODEL, dronetypes[ModelData[ModelActive].dronetype], FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_dronetype_change, 0);
 
 
 #ifdef SDLGL
-	sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, modeltypes[ModelData[ModelActive].modeltype]);
+//	get_background_model(tmp_str);
+	sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, dronetypes[ModelData[ModelActive].dronetype]);
 	if (file_exists(tmp_str) != 0) {
 		static uint8_t startup = 0;
 		static float rotate = 0.0;
 		rotate += 0.5;
-		if (startup == 0 || strcmp(obj3d_modeltype.name, tmp_str) != 0) {
+		if (startup == 0 || strcmp(obj3d_dronetype.name, tmp_str) != 0) {
 			startup = 1;
-			if (obj3d_modeltype.faces_num != 0) {
-				object3d_free(&obj3d_modeltype);
+			if (obj3d_dronetype.faces_num != 0) {
+				object3d_free(&obj3d_dronetype);
 			}
-			object3d_load(&obj3d_modeltype, tmp_str);
+			object3d_load(&obj3d_dronetype, tmp_str);
 		}
+		glPushMatrix();
 		glTranslatef(0.5, (-0.8 + n * 0.12 + 0.2) * -1.0, -2.0);
-		glRotatef(rotate, 0.2, 1.0, 0.3);
+		if (ModelData[ModelActive].heartbeat == 0) {
+			glRotatef(rotate, 0.2, 1.0, 0.3);
+		} else {
+			glRotatef(-90.0, 1.0, 0.0, 0.0);
+//			glRotatef(ModelData[ModelActive].yaw, 0.0, 0.0, -1.0);
+			glRotatef(ModelData[ModelActive].pitch, 1.0, 0.0, 0.0);
+			glRotatef(ModelData[ModelActive].roll, 0.0, 1.0, 0.0);
+		}
 		glScalef(0.25, 0.25, 0.25);
-		object3d_draw(&obj3d_modeltype, 255, 255, 255, 100);
-		glMatrixMode( GL_MODELVIEW );
-		glLoadIdentity();
+		object3d_draw(&obj3d_dronetype, 255, 255, 255, 100);
+		glPopMatrix();
 	} else {
-		sprintf(tmp_str, "%s/textures/%s.png", BASE_DIR, modeltypes[ModelData[ModelActive].modeltype]);
+		sprintf(tmp_str, "%s/textures/%s.png", BASE_DIR, dronetypes[ModelData[ModelActive].dronetype]);
 		draw_image_f3(esContext, -1.1 + 1.0, -0.8 + n * 0.12 - 0.02, -1.1 + 1.0 + 0.1, -0.8 + n * 0.12 + 0.1 - 0.02, 0.002, tmp_str);
 	}
 #else
-	sprintf(tmp_str, "%s/textures/%s.png", BASE_DIR, modeltypes[ModelData[ModelActive].modeltype]);
+	sprintf(tmp_str, "%s/textures/%s.png", BASE_DIR, dronetypes[ModelData[ModelActive].dronetype]);
 	draw_image_f3(esContext, -1.1 + 1.0, -0.8 + n * 0.12 - 0.02, -1.1 + 1.0 + 0.1, -0.8 + n * 0.12 + 0.1 - 0.02, 0.002, tmp_str);
 #endif
 
@@ -433,7 +441,7 @@ void screen_model (ESContext *esContext) {
 	if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_PIXHAWK) {
 		sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, "PIXHAWK");
 	} else {
-		sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, modeltypes[ModelData[ModelActive].teletype]);
+		sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, teletypes[ModelData[ModelActive].teletype]);
 	}
 	if (file_exists(tmp_str) != 0) {
 		static uint8_t startup = 0;

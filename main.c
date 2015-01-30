@@ -9,14 +9,7 @@ char teletypes[16][16] = {
 	"OPENPILOT", "GPS_NMEA", "FRSKY", "BASEFLIGHT", "BASEFLIGHTCLI", 
 	"HARAKIRI_ML", "CLI", "SIMPLEBGC", "BRUGI", "---", "---", "---",
 };
-char modeltypes[5][15] = {
-	"MULTICOPTER",
-	"HELICOPTER",
-	"PLANE",
-	"CAR",
-	"BOAT",
-};
-char pilottypes[18][64] = {
+char pilottypes[MAV_AUTOPILOT_ENUM_END][64] = {
 	"GENERIC",
 	"PIXHAWK",
 	"SLUGS",
@@ -35,6 +28,30 @@ char pilottypes[18][64] = {
 	"ARMAZILA",
 	"AEROB",
 	"ASLUAV",
+};
+
+char dronetypes[MAV_TYPE_ENUM_END][32] = {
+	"GENERIC",
+	"FIXED_WING",
+	"QUADROTOR",
+	"COAXIAL",
+	"HELICOPTER",
+	"ANTENNA_TRACKER",
+	"GCS",
+	"AIRSHIP",
+	"FREE_BALLOON",
+	"ROCKET",
+	"GROUND_ROVER",
+	"SURFACE_BOAT",
+	"SUBMARINE",
+	"HEXAROTOR",
+	"OCTOROTOR",
+	"TRICOPTER",
+	"FLAPPING_WING",
+	"KITE",
+	"ONBOARD_CONTROLLER",
+	"VTOL_DUOROTOR",
+	"VTOL_QUADROTOR"
 };
 
 GcsSetup setup;
@@ -550,6 +567,7 @@ void setup_save (void) {
 				fprintf(fr, "model_sysstr		%s\n", ModelData[n].sysstr);
 				fprintf(fr, "telemetry_type		%i\n", ModelData[n].teletype);
 				fprintf(fr, "pilottype		%i\n", ModelData[n].pilottype);
+				fprintf(fr, "dronetype		%i\n", ModelData[n].dronetype);
 				fprintf(fr, "Model_lat		%f\n", ModelData[n].p_lat);
 				fprintf(fr, "Model_long		%f\n", ModelData[n].p_long);
 				fprintf(fr, "Model_alt		%f\n", ModelData[n].p_alt);
@@ -874,6 +892,8 @@ void setup_load (void) {
 	                                ModelData[model_n].teletype = atoi(val);
 	                        } else if (strcmp(var, "pilottype") == 0) {
 	                                ModelData[model_n].pilottype = atoi(val);
+	                        } else if (strcmp(var, "dronetype") == 0) {
+	                                ModelData[model_n].dronetype = atoi(val);
 	                        } else if (strcmp(var, "deviceid") == 0) {
 	                                strcpy(ModelData[model_n].deviceid, val);
 	                        } else if (strcmp(var, "use_deviceid") == 0) {

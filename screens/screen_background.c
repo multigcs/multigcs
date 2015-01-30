@@ -10,15 +10,20 @@ Object3d obj3d;
 
 uint8_t get_background_model (char *filename) {
 	char tmp_str[1024];
-	sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, modeltypes[ModelData[ModelActive].modeltype]);
-	if (file_exists(tmp_str) != 0) {
-		strncpy(filename, tmp_str, 1023);
-		return 0;
+	filename[0] = 0;
+	if (ModelData[ModelActive].dronetype < MAV_TYPE_ENUM_END) {
+		sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, dronetypes[ModelData[ModelActive].dronetype]);
+		if (file_exists(tmp_str) != 0) {
+			strncpy(filename, tmp_str, 1023);
+			return 0;
+		}
 	}
-	sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, pilottypes[ModelData[ModelActive].pilottype]);
-	if (file_exists(tmp_str) != 0) {
-		strncpy(filename, tmp_str, 1023);
-		return 0;
+	if (ModelData[ModelActive].pilottype < MAV_AUTOPILOT_ENUM_END) {
+		sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, pilottypes[ModelData[ModelActive].pilottype]);
+		if (file_exists(tmp_str) != 0) {
+			strncpy(filename, tmp_str, 1023);
+			return 0;
+		}
 	}
 	sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, teletypes[ModelData[ModelActive].teletype]);
 	if (file_exists(tmp_str) != 0) {
@@ -38,7 +43,6 @@ void screen_background (ESContext *esContext) {
 	char tmp_str[1024];
 	static float rotate = 0.0;
 	rotate += 0.3;
-
 #ifndef ANDROID
 #ifdef SDLGL
 	if (get_background_model(tmp_str) == 0) {
@@ -50,20 +54,18 @@ void screen_background (ESContext *esContext) {
 			}
 			object3d_load(&obj3d, tmp_str);
 		}
+		glPushMatrix();
 		glTranslatef(0.0, 0.0, -3.2);
-
 		if (ModelData[ModelActive].heartbeat == 0) {
 			glRotatef(rotate, 1.0, 0.2, 0.3);
 		} else {
-			glRotatef(ModelData[ModelActive].pitch + 90.0, 1.0, 0.0, 0.0);
+			glRotatef(-90.0, 1.0, 0.0, 0.0);
+			glRotatef(ModelData[ModelActive].yaw, 0.0, 0.0, -1.0);
+			glRotatef(ModelData[ModelActive].pitch, 1.0, 0.0, 0.0);
 			glRotatef(ModelData[ModelActive].roll, 0.0, 1.0, 0.0);
 		}
-
-
 		object3d_draw(&obj3d, 155, 155, 255, 10);
-
-		glMatrixMode( GL_MODELVIEW );
-		glLoadIdentity();
+		glPopMatrix();
 	} else {
 		if (setup.contrast == 1) {
 			draw_box_f3(esContext, -1.5, -1.0, 0.0, 1.5, 1.0, 0.0, 0, 0, 0, 255);

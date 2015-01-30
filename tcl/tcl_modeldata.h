@@ -8,7 +8,7 @@ static int ModelData_Cmd (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Ob
 	sprintf(tmp_str, "{{name} {%s}} ", ModelData[ModelActive].name); strcat(data, tmp_str);
 	sprintf(tmp_str, "{{sysstr} {%s}} ", ModelData[ModelActive].sysstr); strcat(data, tmp_str);
 	sprintf(tmp_str, "{{image} {%s}} ", ModelData[ModelActive].image); strcat(data, tmp_str);
-	sprintf(tmp_str, "{{modeltype} {%i}} ", ModelData[ModelActive].modeltype); strcat(data, tmp_str);
+	sprintf(tmp_str, "{{dronetype} {%i}} ", ModelData[ModelActive].dronetype); strcat(data, tmp_str);
 	sprintf(tmp_str, "{{teletype} {%i}} ", ModelData[ModelActive].teletype); strcat(data, tmp_str);
 	sprintf(tmp_str, "{{dronetype} {%i}} ", ModelData[ModelActive].dronetype); strcat(data, tmp_str);
 	sprintf(tmp_str, "{{pilottype} {%i}} ", ModelData[ModelActive].pilottype); strcat(data, tmp_str);

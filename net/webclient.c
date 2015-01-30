@@ -97,8 +97,8 @@ void webclient_update (char *server, uint16_t port) {
 				strncpy(ModelData[ModelActive].name, tmp_str + start, 199);
 			} else if (strcmp(tmp_str, "image") == 0) {
 				strncpy(ModelData[ModelActive].image, tmp_str + start, 511);
-			} else if (strcmp(tmp_str, "modeltype") == 0) {
-				ModelData[ModelActive].modeltype = atoi(tmp_str + start);
+			} else if (strcmp(tmp_str, "dronetype") == 0) {
+				ModelData[ModelActive].dronetype = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "teletype") == 0) {
 				ModelData[ModelActive].teletype = atoi(tmp_str + start);
 			} else if (strcmp(tmp_str, "telemetry_port") == 0) {

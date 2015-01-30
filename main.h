@@ -233,6 +233,10 @@ extern char display_html[HTML_MAX];
 extern char display_html2[HTML_MAX];
 #endif
 
+extern char teletypes[16][16];
+extern char dronetypes[MAV_TYPE_ENUM_END][32];
+extern char pilottypes[MAV_AUTOPILOT_ENUM_END][64];
+
 extern ESContext *GlobalesContext;
 
 void draw_text_f (ESContext *esContext, float x1, float y1, float w, float h, char *file, char *text);

@@ -52,7 +52,6 @@ void object3d_load_data (Object3d *o3d, char *filename) {
 	o3d->faces = malloc(sizeof(Object3dFace));
 	o3d->cords_num = 0;
 	o3d->faces_num = 0;
-	o3d->scale = 0.0;
 	fr = fopen (filename, "rb");
 	if (fr != 0) {
 		strncpy(o3d->name, filename, 1023);
@@ -61,21 +60,12 @@ void object3d_load_data (Object3d *o3d, char *filename) {
 				float px = 0.0;
 				float py = 0.0;
 				float pz = 0.0;
-		                sscanf (line + 2, "%f %f %f", &px, &py, &pz);
+				sscanf (line + 2, "%f %f %f", &px, &py, &pz);
 				o3d->cords = realloc(o3d->cords, sizeof(Object3dCord) * (o3d->cords_num + 1));
 				o3d->cords[o3d->cords_num].x = px;
 				o3d->cords[o3d->cords_num].y = py;
 				o3d->cords[o3d->cords_num].z = pz;
 				o3d->cords_num++;
-				if (px > o3d->scale) {
-					o3d->scale = px;
-				}
-				if (py > o3d->scale) {
-					o3d->scale = py;
-				}
-				if (pz > o3d->scale) {
-					o3d->scale = pz;
-				}
 			} else if (strncmp(line, "f ", 2) == 0) {
 				int p1v = 0;
 				int p1t = 0;
@@ -89,18 +79,15 @@ void object3d_load_data (Object3d *o3d, char *filename) {
 				int p4v = 0;
 				int p4t = 0;
 				int p4n = 0;
-
 				if (sscanf(line + 2, "%i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i", &p1v, &p1t, &p1n, &p2v, &p2t, &p2n, &p3v, &p3t, &p3n, &p4v, &p4t, &p4n) >= 9) {
 				} else if (sscanf(line + 2, "%i//%i %i//%i %i//%i %i//%i", &p1v, &p1t, &p2v, &p2t, &p3v, &p3t, &p4v, &p4t) >= 6) {
 				} else if (sscanf(line + 2, "%i/%i %i/%i %i/%i %i/%i", &p1v, &p1t, &p2v, &p2t, &p3v, &p3t, &p4v, &p4t) >= 6) {
 				} else if (sscanf(line + 2, "%i %i %i %i", &p1v, &p2v, &p3v, &p4v) >= 3) {
 				}
-
 				o3d->faces = realloc(o3d->faces, sizeof(Object3dFace) * (o3d->faces_num + 1));
 				o3d->faces[o3d->faces_num].a = p1v - 1;
 				o3d->faces[o3d->faces_num].b = p2v - 1;
 				o3d->faces[o3d->faces_num].c = p3v - 1;
-
 				if (p4v != 0) {
 					o3d->faces_num++;
 					o3d->faces = realloc(o3d->faces, sizeof(Object3dFace) * (o3d->faces_num + 1));
@@ -112,8 +99,6 @@ void object3d_load_data (Object3d *o3d, char *filename) {
 			}
 		}
 		fclose(fr);
-//		o3d->scale *= 2.0;
-//		o3d->scale /= 2.0;
 	}
 }
 
@@ -124,7 +109,6 @@ void object3d_load (Object3d *o3d, char *filename) {
 	o3d->faces = malloc(sizeof(Object3dFace));
 	o3d->cords_num = 0;
 	o3d->faces_num = 0;
-	o3d->scale = 0.0;
 	fr = fopen (filename, "rb");
 	if (fr != 0) {
 		strncpy(o3d->name, filename, 1023);
@@ -133,21 +117,12 @@ void object3d_load (Object3d *o3d, char *filename) {
 				float px = 0.0;
 				float py = 0.0;
 				float pz = 0.0;
-		                sscanf (line + 2, "%f %f %f", &px, &py, &pz);
+				sscanf (line + 2, "%f %f %f", &px, &py, &pz);
 				o3d->cords = realloc(o3d->cords, sizeof(Object3dCord) * (o3d->cords_num + 1));
 				o3d->cords[o3d->cords_num].x = px;
 				o3d->cords[o3d->cords_num].y = py;
 				o3d->cords[o3d->cords_num].z = pz;
 				o3d->cords_num++;
-				if (px > o3d->scale) {
-					o3d->scale = px;
-				}
-				if (py > o3d->scale) {
-					o3d->scale = py;
-				}
-				if (pz > o3d->scale) {
-					o3d->scale = pz;
-				}
 			} else if (strncmp(line, "f ", 2) == 0) {
 				int p1v = 0;
 				int p1t = 0;
@@ -161,13 +136,11 @@ void object3d_load (Object3d *o3d, char *filename) {
 				int p4v = 0;
 				int p4t = 0;
 				int p4n = 0;
-
 				if (sscanf(line + 2, "%i/%i/%i %i/%i/%i %i/%i/%i %i/%i/%i", &p1v, &p1t, &p1n, &p2v, &p2t, &p2n, &p3v, &p3t, &p3n, &p4v, &p4t, &p4n) >= 9) {
 				} else if (sscanf(line + 2, "%i//%i %i//%i %i//%i %i//%i", &p1v, &p1t, &p2v, &p2t, &p3v, &p3t, &p4v, &p4t) >= 6) {
 				} else if (sscanf(line + 2, "%i/%i %i/%i %i/%i %i/%i", &p1v, &p1t, &p2v, &p2t, &p3v, &p3t, &p4v, &p4t) >= 6) {
 				} else if (sscanf(line + 2, "%i %i %i %i", &p1v, &p2v, &p3v, &p4v) >= 3) {
 				}
-
 				o3d->faces = realloc(o3d->faces, sizeof(Object3dFace) * (o3d->faces_num + 1));
 				o3d->faces[o3d->faces_num].a = p1v - 1;
 				o3d->faces[o3d->faces_num].b = p2v - 1;
@@ -183,8 +156,63 @@ void object3d_load (Object3d *o3d, char *filename) {
 			}
 		}
 		fclose(fr);
-//		o3d->scale *= 2.0;
-//		o3d->scale /= 2.0;
+
+		int num = 0;
+		float minx = 0.0;
+		float maxx = 0.0;
+		float miny = 0.0;
+		float maxy = 0.0;
+		float minz = 0.0;
+		float maxz = 0.0;
+		for (num = 0; num < o3d->cords_num; num++) {
+			if (minx > o3d->cords[num].x) {
+				minx = o3d->cords[num].x;
+			}
+			if (maxx < o3d->cords[num].x) {
+				maxx = o3d->cords[num].x;
+			}
+			if (miny > o3d->cords[num].y) {
+				miny = o3d->cords[num].y;
+			}
+			if (maxy < o3d->cords[num].y) {
+				maxy = o3d->cords[num].y;
+			}
+			if (minz > o3d->cords[num].z) {
+				minz = o3d->cords[num].z;
+			}
+			if (maxz < o3d->cords[num].z) {
+				maxz = o3d->cords[num].z;
+			}
+		}
+
+		float diffx = maxx - minx;
+		float diffy = maxy - miny;
+		float diffz = maxz - minz;
+
+		float offx = minx + (diffx / 2.0);
+		float offy = miny + (diffy / 2.0);
+		float offz = minz + (diffz / 2.0);
+
+		float scalex = diffx;
+		float scaley = diffy;
+		float scalez = diffz;
+
+		float scale = scalex;
+		if (scale < scaley) {
+			scale = scaley;
+		}
+		if (scale < scalez) {
+			scale = scalez;
+		}
+		for (num = 0; num < o3d->cords_num; num++) {
+			o3d->cords[num].x -= offx;
+			o3d->cords[num].y -= offy;
+			o3d->cords[num].z -= offz;
+			o3d->cords[num].x /= scale;
+			o3d->cords[num].y /= scale;
+			o3d->cords[num].z /= scale;
+		}
+
 #ifdef GL_OBJECT_USING_BUFFER
 		glGenBuffersARB(1, &o3d->cordsID);
 		glBindBufferARB(GL_ARRAY_BUFFER_ARB, o3d->cordsID);
@@ -247,7 +275,7 @@ void object3d_save_as_collada (Object3d *o3d, char *filename) {
 	fprintf(fr2, "                    <float_array id=\"CORDS1\" count=\"%i\">", (o3d->cords_num) * 3);
 	uint32_t num = 1;
 	for (num = 0; num < o3d->cords_num; num++) {
-		fprintf(fr2, "%f %f %f ", o3d->cords[num].x / o3d->scale * collada_scale, o3d->cords[num].y / o3d->scale * collada_scale, o3d->cords[num].z / o3d->scale * collada_scale);
+		fprintf(fr2, "%f %f %f ", o3d->cords[num].x * collada_scale, o3d->cords[num].y * collada_scale, o3d->cords[num].z * collada_scale);
 	}
 	fprintf(fr2, "</float_array>\n");
 	fprintf(fr2, "                    <technique_common>\n");
@@ -311,7 +339,6 @@ void object3d_free (Object3d *o3d) {
 	free(o3d->faces);
 	o3d->faces_num = 0;
 	o3d->cords_num = 0;
-	o3d->scale = 0.0;
 	o3d->name[0] = 0;
 }
 
@@ -324,7 +351,7 @@ void object3d_draw (Object3d *o3d, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glVertexPointer(3, GL_FLOAT, 0, 0);
 		glPushMatrix();
-		glScalef(1.0 / o3d->scale, 1.0 / o3d->scale, 1.0 / o3d->scale);
+		glScalef(1.0, 1.0, 1.0);
 		glDrawElements(GL_TRIANGLES, o3d->faces_num * 3, GL_UNSIGNED_INT, 0);
 		glPopMatrix();
 		glDisableClientState(GL_VERTEX_ARRAY);
@@ -335,9 +362,9 @@ void object3d_draw (Object3d *o3d, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	uint32_t num = 1;
 	for (num = 0; num < o3d->faces_num; num++) {
 		glBegin(GL_TRIANGLES);
-		glVertex3f(o3d->cords[o3d->faces[num].a].x / o3d->scale, o3d->cords[o3d->faces[num].a].y / o3d->scale, o3d->cords[o3d->faces[num].a].z / o3d->scale);
-		glVertex3f(o3d->cords[o3d->faces[num].b].x / o3d->scale, o3d->cords[o3d->faces[num].b].y / o3d->scale, o3d->cords[o3d->faces[num].b].z / o3d->scale);
-		glVertex3f(o3d->cords[o3d->faces[num].c].x / o3d->scale, o3d->cords[o3d->faces[num].c].y / o3d->scale, o3d->cords[o3d->faces[num].c].z / o3d->scale);
+		glVertex3f(o3d->cords[o3d->faces[num].a].x, o3d->cords[o3d->faces[num].a].y, o3d->cords[o3d->faces[num].a].z);
+		glVertex3f(o3d->cords[o3d->faces[num].b].x, o3d->cords[o3d->faces[num].b].y, o3d->cords[o3d->faces[num].b].z);
+		glVertex3f(o3d->cords[o3d->faces[num].c].x, o3d->cords[o3d->faces[num].c].y, o3d->cords[o3d->faces[num].c].z);
 		glEnd();
 	}
 #endif

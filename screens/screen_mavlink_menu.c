@@ -1182,6 +1182,7 @@ void screen_mavlink_magcal (ESContext *esContext) {
 		if (mavlink_magcal_set == 1) {
 			if (mavlink_magcal == 1) {
 				SDL_Log("magcal: save offesets\n");
+/*
 				if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_PIXHAWK) {
 					mavlink_send_value(ModelActive, "COMPASS_OFS_X", -offsetX, 9);
 					mavlink_send_value(ModelActive, "COMPASS_OFS_Y", offsetZ, 9);
@@ -1189,9 +1190,9 @@ void screen_mavlink_magcal (ESContext *esContext) {
 					mavlink_send_magcal(ModelActive, -offsetX, offsetZ, offsetY);
 				} else {
 					mavlink_send_value(ModelActive, "COMPASS_OFS_X", -offsetX, 9);
-					mavlink_send_value(ModelActive, "COMPASS_OFS_Y", -offsetY, 9);
-					mavlink_send_value(ModelActive, "COMPASS_OFS_Z", -offsetZ, 9);
-					mavlink_send_magcal(ModelActive, -offsetX, -offsetY, -offsetZ);
+					mavlink_send_value(ModelActive, "COMPASS_OFS_Y", offsetZ, 9);
+					mavlink_send_value(ModelActive, "COMPASS_OFS_Z", offsetY, 9);
+					mavlink_send_magcal(ModelActive, -offsetX, offsetZ, offsetY);
 				}
 				if (mag2_pos > 1) {
 					mavlink_send_value(ModelActive, "COMPASS_OFS2_X", -offset2X, 9);
@@ -1199,6 +1200,7 @@ void screen_mavlink_magcal (ESContext *esContext) {
 					mavlink_send_value(ModelActive, "COMPASS_OFS2_Z", -offset2Z, 9);
 					mavlink_send_magcal2(ModelActive, -offset2X, -offset2Y, -offset2Z);
 				}
+* */
 			}
 			mavlink_magcal_set = 0;
 			mavlink_magcal = 0;

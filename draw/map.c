@@ -647,10 +647,26 @@ void draw_quad (ESContext *esContext, float mark_lat, float mark_long, float mar
 	// View-Line
 	draw_line_f3(esContext, x1, y1 - 10.0, mark_z, x1, y1, mark_z, 255, 255, 255, alpha / 2);
 
+#ifdef SDLGL
+	static Object3d obj3d;
+	char tmp_str[1024];
+	get_background_model(tmp_str);
+	if (tmp_str[0] != 0) {
+		if (strcmp(obj3d.name, tmp_str) != 0) {
+			if (obj3d.faces_num != 0) {
+				object3d_free(&obj3d);
+			}
+			object3d_load(&obj3d, tmp_str);
+		}
+		esTranslate( &modelview, x1, -y1, -2.0 + mark_z);
+		glScalef(0.1, 0.1, 0.1);
+		object3d_draw(&obj3d, 255, 255, 255, 100);
+		esTranslate( &modelview, -x1, y1, 2.0 - mark_z);
+	} else
+#endif
 	if (type == MAV_TYPE_FIXED_WING) {
 		// Airplane
 		float size = 0.09;
-		char tmp_str[1024];
 		sprintf(tmp_str, "%s/textures/plane.png", BASE_DIR);
 		draw_image_f3(esContext, x1 - size, y1 - size, x1 + size, y1 + size, mark_z, tmp_str);
 //	} else if (type == MAV_TYPE_COAXIAL) {

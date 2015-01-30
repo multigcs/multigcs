@@ -152,7 +152,7 @@ void webserv_child_dump_modeldata (int fd) {
 	strcat(content, tmp_str);
 	sprintf(tmp_str, "image=%s\n", ModelData[ModelActive].image);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "modeltype=%i\n", ModelData[ModelActive].modeltype);
+	sprintf(tmp_str, "dronetype=%i\n", ModelData[ModelActive].dronetype);
 	strcat(content, tmp_str);
 	sprintf(tmp_str, "teletype=%i\n", ModelData[ModelActive].teletype);
 	strcat(content, tmp_str);
@@ -2638,8 +2638,8 @@ void webserv_child (int fd) {
 						strncpy(ModelData[ModelActive].name, tmp_str + start, 199);
 					} else if (strcmp(tmp_str, "image") == 0) {
 						strncpy(ModelData[ModelActive].image, tmp_str + start, 511);
-					} else if (strcmp(tmp_str, "modeltype") == 0) {
-						ModelData[ModelActive].modeltype = atoi(tmp_str + start);
+					} else if (strcmp(tmp_str, "dronetype") == 0) {
+						ModelData[ModelActive].dronetype = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "teletype") == 0) {
 						ModelData[ModelActive].teletype = atoi(tmp_str + start);
 					} else if (strcmp(tmp_str, "telemetry_port") == 0) {
@@ -3034,7 +3034,7 @@ void webserv_child (int fd) {
 			sprintf(tmp_str, "%s/webserv/marker.png", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "image/png");
 		} else if (strncmp(buffer + 4,"/model.png", 10) == 0) {
-			sprintf(tmp_str, "%s/textures/%s.png", BASE_DIR, modeltypes[ModelData[ModelActive].modeltype]);
+			sprintf(tmp_str, "%s/textures/%s.png", BASE_DIR, dronetypes[ModelData[ModelActive].dronetype]);
 			webserv_child_dump_file(fd, tmp_str, "image/png");
 		} else if (strncmp(buffer + 4,"/img/marker.png", 15) == 0) {
 			sprintf(tmp_str, "%s/webserv/marker.png", BASE_DIR);
