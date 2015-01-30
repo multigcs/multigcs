@@ -46,6 +46,7 @@ install:
 	cp -a utils/clean-badmaps.sh $(BASE_DIR)/clean-badmaps.sh
 	mkdir -p $(BASE_DIR)/obj3d
 	cp -a models3d/*.obj $(BASE_DIR)/obj3d/
+	cp -a models3d/*.txt $(BASE_DIR)/obj3d/
 	mkdir -p $(BASE_DIR)/textures
 	cp -a textures/* $(BASE_DIR)/textures/
 	mkdir -p $(BASE_DIR)/fonts

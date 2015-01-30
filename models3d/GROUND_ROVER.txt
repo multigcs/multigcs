@@ -1,0 +1,6 @@
+http://www.thingiverse.com/thing:59502/#files
+
+
+
+
+<div xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/" about="http://www.thingiverse.com/thing:59502"><span property="dct:title">Mars Rover : Sojourner</span> (<a rel="cc:attributionURL" property="cc:attributionName" href="http://www.thingiverse.com/moriza">moriza</a>) / <a rel="license" href="http://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a></div>

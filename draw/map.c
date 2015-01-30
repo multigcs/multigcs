@@ -659,7 +659,7 @@ void draw_quad (ESContext *esContext, float mark_lat, float mark_long, float mar
 			object3d_load(&obj3d, tmp_str);
 		}
 		esTranslate( &modelview, x1, -y1, -2.0 + mark_z);
-		glScalef(0.1, 0.1, 0.1);
+		glScalef(0.15, 0.15, 0.15);
 		object3d_draw(&obj3d, 255, 255, 255, 100);
 		esTranslate( &modelview, -x1, y1, 2.0 - mark_z);
 	} else
