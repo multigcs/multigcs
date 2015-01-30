@@ -154,6 +154,7 @@ void mavlink_set_value (uint8_t modelid, char *name, float value, int8_t type, i
 	uint8_t flag = 0;
 	float min = 999999.0;
 	float max = 999999.0;
+	name[16] = 0;
 	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
 		if (strcmp(MavLinkVars[modelid][n].name, name) == 0 && (MavLinkVars[modelid][n].id == id || MavLinkVars[modelid][n].id == -1 || id > MAVLINK_PARAMETER_MAX || id == -1)) {
 			MavLinkVars[modelid][n].value = value;
@@ -505,6 +506,7 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 				}
 			}
 			var[n2++] = 0;
+			var[16] = 0;
 			mavlink_maxparam[modelid] = packet.param_count;
 			mavlink_timeout[modelid] = 0;
 			mavlink_set_value(modelid, var, packet.param_value, packet.param_type, packet.param_index);
