@@ -184,6 +184,7 @@ typedef struct {
 } GcsSetup;
 
 typedef struct {
+	char name[1024];
 	uint16_t interval;
 	uint16_t pos;
 	uint8_t type;

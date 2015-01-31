@@ -417,7 +417,7 @@ void setup_waypoints (void) {
 	GroundData.sp_alt = 15.0;
 	GroundData.sp_radius = 2.0;
 
-
+	SurveySetup.name[0] = 0;
 	SurveySetup.interval = 10;
 	SurveySetup.pos = 1900;
 	SurveySetup.type = 0;
@@ -535,6 +535,7 @@ void setup_save (void) {
 	        fprintf(fr, "Ground_sp_alt	%f\n", GroundData.sp_alt);
 	        fprintf(fr, "Ground_sp_radius	%f\n", GroundData.sp_radius);
 	        fprintf(fr, "\n");
+	        fprintf(fr, "SurveySetup.name	%s\n", SurveySetup.name);
 	        fprintf(fr, "SurveySetup.interval	%i\n", SurveySetup.interval);
 	        fprintf(fr, "SurveySetup.pos	%i\n", SurveySetup.pos);
 	        fprintf(fr, "SurveySetup.type	%i\n", SurveySetup.type);
@@ -843,6 +844,8 @@ void setup_load (void) {
 	                        } else if (strcmp(var, "aprs_enable") == 0) {
 	                                setup.aprs_enable = atoi(val);
 #endif
+	                        } else if (strcmp(var, "SurveySetup.name") == 0) {
+	                                strncpy(SurveySetup.name, val, 1000);
 	                        } else if (strcmp(var, "SurveySetup.interval") == 0) {
 	                               SurveySetup.interval  = atoi(val);
 	                        } else if (strcmp(var, "SurveySetup.pos") == 0) {

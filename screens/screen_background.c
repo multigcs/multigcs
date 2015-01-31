@@ -8,24 +8,24 @@ Object3d obj3d;
 #endif
 
 
-uint8_t get_background_model (char *filename) {
+uint8_t get_background_model (uint8_t modelid, char *filename) {
 	char tmp_str[1024];
 	filename[0] = 0;
-	if (ModelData[ModelActive].dronetype < MAV_TYPE_ENUM_END) {
-		sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, dronetypes[ModelData[ModelActive].dronetype]);
+	if (ModelData[modelid].dronetype < MAV_TYPE_ENUM_END) {
+		sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, dronetypes[ModelData[modelid].dronetype]);
 		if (file_exists(tmp_str) != 0) {
 			strncpy(filename, tmp_str, 1023);
 			return 0;
 		}
 	}
-	if (ModelData[ModelActive].pilottype < MAV_AUTOPILOT_ENUM_END) {
-		sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, pilottypes[ModelData[ModelActive].pilottype]);
+	if (ModelData[modelid].pilottype < MAV_AUTOPILOT_ENUM_END) {
+		sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, pilottypes[ModelData[modelid].pilottype]);
 		if (file_exists(tmp_str) != 0) {
 			strncpy(filename, tmp_str, 1023);
 			return 0;
 		}
 	}
-	sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, teletypes[ModelData[ModelActive].teletype]);
+	sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, teletypes[ModelData[modelid].teletype]);
 	if (file_exists(tmp_str) != 0) {
 		strncpy(filename, tmp_str, 1023);
 		return 0;
@@ -45,7 +45,7 @@ void screen_background (ESContext *esContext) {
 	rotate += 0.3;
 #ifndef ANDROID
 #ifdef SDLGL
-	if (get_background_model(tmp_str) == 0) {
+	if (get_background_model(ModelActive, tmp_str) == 0) {
 		static uint8_t startup = 0;
 		if (startup == 0 || strcmp(obj3d.name, tmp_str) != 0) {
 			startup = 1;

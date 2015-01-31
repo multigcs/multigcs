@@ -588,7 +588,7 @@ int thread_get_maps2 (void *data) {
 	return 0;
 }
 
-void draw_quad (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, float roll, float pitch, float yaw, uint8_t type, uint8_t mode, float lat, float lon, uint8_t zoom) {
+void draw_model (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, float roll, float pitch, float yaw, uint8_t modelid, uint8_t mode, float lat, float lon, uint8_t zoom) {
 	ESMatrix modelview;
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
@@ -648,63 +648,23 @@ void draw_quad (ESContext *esContext, float mark_lat, float mark_long, float mar
 	draw_line_f3(esContext, x1, y1 - 10.0, mark_z, x1, y1, mark_z, 255, 255, 255, alpha / 2);
 
 #ifdef SDLGL
-	static Object3d obj3d;
+	static Object3d obj3d[MAV_TYPE_ENUM_END];
 	char tmp_str[1024];
-	get_background_model(tmp_str);
+	get_background_model(modelid, tmp_str);
 	if (tmp_str[0] != 0) {
-		if (strcmp(obj3d.name, tmp_str) != 0) {
-			if (obj3d.faces_num != 0) {
-				object3d_free(&obj3d);
+		if (strcmp(obj3d[modelid].name, tmp_str) != 0) {
+			if (obj3d[modelid].faces_num != 0) {
+				object3d_free(&obj3d[modelid]);
 			}
-			object3d_load(&obj3d, tmp_str);
+			object3d_load(&obj3d[modelid], tmp_str);
 		}
 		esTranslate( &modelview, x1, -y1, -2.0 + mark_z);
 		glScalef(0.15, 0.15, 0.15);
-		object3d_draw(&obj3d, 255, 255, 255, 100);
+		object3d_draw(&obj3d[modelid], 255, 255, 255, 100);
 		esTranslate( &modelview, -x1, y1, 2.0 - mark_z);
 	} else
 #endif
-	if (type == MAV_TYPE_FIXED_WING) {
-		// Airplane
-		float size = 0.09;
-		sprintf(tmp_str, "%s/textures/plane.png", BASE_DIR);
-		draw_image_f3(esContext, x1 - size, y1 - size, x1 + size, y1 + size, mark_z, tmp_str);
-//	} else if (type == MAV_TYPE_COAXIAL) {
-//	} else if (type == MAV_TYPE_HELICOPTER) {
-//	} else if (type == MAV_TYPE_ANTENNA_TRACKER) {
-//	} else if (type == MAV_TYPE_GCS) {
-//	} else if (type == MAV_TYPE_AIRSHIP) {
-//	} else if (type == MAV_TYPE_FREE_BALLOON) {
-//	} else if (type == MAV_TYPE_ROCKET) {
-//	} else if (type == MAV_TYPE_GROUND_ROVER) {
-//	} else if (type == MAV_TYPE_SURFACE_BOAT) {
-//	} else if (type == MAV_TYPE_SUBMARINE) {
-//	} else if (type == MAV_TYPE_GENERIC) {
-	} else if (type == MAV_TYPE_HEXAROTOR) {
-		// Hexa
-		float size = 0.03;
-		glLineWidth(3);
-		draw_line_f3(esContext, x1 - size * 0.6, y1 - size, mark_z, x1 + size * 0.6, y1 + size, mark_z, 0, 0, 0, alpha);
-		draw_line_f3(esContext, x1 - size * 0.6, y1 + size, mark_z, x1 + size * 0.6, y1 - size, mark_z, 0, 0, 0, alpha);
-		draw_line_f3(esContext, x1 - size * 1.2, y1, mark_z, x1 + size * 1.2, y1, mark_z, 0, 0, 0, alpha);
-		glLineWidth(1);
-		draw_circleFilled_f3(esContext, x1 + size * 0.6, y1 + size, mark_z, 0.012, 255, 0, 0, alpha);
-		draw_circleFilled_f3(esContext, x1 - size * 0.6, y1 + size, mark_z, 0.012, 255, 0, 0, alpha);
-		draw_circleFilled_f3(esContext, x1 + size * 0.6, y1 - size, mark_z, 0.012, 0, 255, 0, alpha);
-		draw_circleFilled_f3(esContext, x1 - size * 0.6, y1 - size, mark_z, 0.012, 0, 255, 0, alpha);
-		draw_circleFilled_f3(esContext, x1 + size * 1.2, y1, mark_z, 0.012, 0, 255, 0, alpha);
-		draw_circleFilled_f3(esContext, x1 - size * 1.2, y1, mark_z, 0.012, 0, 255, 0, alpha);
-		draw_circle_f3(esContext, x1 + size * 0.6, y1 + size, mark_z, 0.012, 0, 0, 0, alpha);
-		draw_circle_f3(esContext, x1 - size * 0.6, y1 + size, mark_z, 0.012, 0, 0, 0, alpha);
-		draw_circle_f3(esContext, x1 + size * 0.6, y1 - size, mark_z, 0.012, 0, 0, 0, alpha);
-		draw_circle_f3(esContext, x1 - size * 0.6, y1 - size, mark_z, 0.012, 0, 0, 0, alpha);
-		draw_circle_f3(esContext, x1 + size * 1.2, y1, mark_z, 0.012, 0, 0, 0, alpha);
-		draw_circle_f3(esContext, x1 - size * 1.2, y1, mark_z, 0.012, 0, 0, 0, alpha);
-//	} else if (type == MAV_TYPE_OCTOROTOR) {
-//	} else if (type == MAV_TYPE_TRICOPTER) {
-//	} else if (type == MAV_TYPE_FLAPPING_WING) {
-//	} else if (type == MAV_TYPE_KITE) {
-	} else {
+	{
 		// Quad
 		float size = 0.03;
 		glLineWidth(3);

@@ -135,7 +135,7 @@ static uint8_t model_save_xml (char *name, float x, float y, int8_t button, floa
 	sprintf(tmp_str, "mkdir -p %s/models", get_datadirectory());
 	system(tmp_str);
 	sprintf(tmp_str, "%s/models/%s", get_datadirectory(), name);
-        fr = fopen(tmp_str, "wb");
+	fr = fopen(tmp_str, "wb");
 	if (fr != 0) {
 		fprintf(fr, "<rcflow>\n");
 		fprintf(fr, " <name>%s</name>\n", ModelData[ModelActive].name);
@@ -154,7 +154,7 @@ static uint8_t model_save_xml (char *name, float x, float y, int8_t button, floa
 		mwi21_xml_save(ModelActive, fr);
 		openpilot_xml_save(fr);
 		fprintf(fr, "</rcflow>\n");
-	        fclose(fr);
+		fclose(fr);
 	}
 	return 0;
 }
@@ -172,8 +172,6 @@ uint8_t model_save (char *name, float x, float y, int8_t button, float data, uin
 	keyboard_set_mode(setup.view_mode);
 	return 0;
 }
-
-
 
 static void die(char *msg) {
 	SDL_Log("%s", msg);
@@ -385,7 +383,7 @@ void screen_model (ESContext *esContext) {
 
 
 #ifdef SDLGL
-//	get_background_model(tmp_str);
+//	get_background_model(ModelActive, tmp_str);
 	sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, dronetypes[ModelData[ModelActive].dronetype]);
 	if (file_exists(tmp_str) != 0) {
 		static uint8_t startup = 0;

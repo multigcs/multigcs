@@ -5,7 +5,6 @@
 
 extern void save_screenshot2 (void);
 extern volatile uint8_t zoom;
-extern uint8_t get_background_model (char *filename);
 
 #define BUFSIZE 298096
 #define PI 3.14159265
@@ -2870,7 +2869,7 @@ void webserv_child (int fd) {
 #endif
 		} else if (strncmp(buffer + 4,"/plane.dae", 10) == 0) {
 #ifdef SDLGL
-			if (get_background_model(tmp_str) == 0) {
+			if (get_background_model(ModelActive, tmp_str) == 0) {
 				if (obj3d_collada.name[0] == 0) {
 					SDL_Log("webserv: convert '%s' to collada-format\n", tmp_str);
 					object3d_load_data(&obj3d_collada, tmp_str);

@@ -52,8 +52,304 @@ uint8_t map_show_cam_setup = 0;
 uint8_t map_show_profile = 0;
 Survey SurveySetup;
 
-
 //#define HTTP_USE_WGET 1
+
+
+
+void survey_parsePolypoint (xmlDocPtr doc, xmlNodePtr cur, int n) { 
+	xmlChar *key;
+	cur = cur->xmlChildrenNode;
+	while (cur != NULL) {
+		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"name"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				strcpy(PolyPoints[n].name, (char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"command"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				strcpy(PolyPoints[n].command, (char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"lat"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				PolyPoints[n].p_lat = atof((char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"lon"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				PolyPoints[n].p_long = atof((char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"alt"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				PolyPoints[n].p_alt = atof((char *)key);
+			}
+			xmlFree(key);
+		}
+		cur = cur->next;
+	}
+	return;
+}
+
+void survey_parseDoc (char *docname) {
+	xmlDocPtr doc;
+	xmlNodePtr cur;
+	xmlChar *key;
+	if (strncmp(docname, "./", 2) == 0) {
+		docname += 2;
+	}
+	char *buffer = NULL;
+	int len = 0;
+	SDL_RWops *ops_file = SDL_RWFromFile(docname, "r");
+	if (ops_file == NULL) {
+		SDL_Log("map: Document open failed: %s\n", docname);
+		return;
+	}
+	len = SDL_RWseek(ops_file, 0, SEEK_END);
+	SDL_RWseek(ops_file, 0, SEEK_SET);
+	buffer = malloc(len);
+	SDL_RWread(ops_file, buffer, 1, len);
+	doc = xmlParseMemory(buffer, len);
+	SDL_RWclose(ops_file);
+	free(buffer);
+	if (doc == NULL) {
+		SDL_Log("Document parsing failed: %s\n", docname);
+		return;
+	}
+	cur = xmlDocGetRootElement(doc);
+	if (cur == NULL) {
+		xmlFreeDoc(doc);
+		SDL_Log("Document is Empty!!!\n");
+		return;
+	}
+	int n = 0;
+	for (n = 0; n < MAX_WAYPOINTS; n++) {
+		PolyPoints[n].name[0] = 0;
+		PolyPoints[n].command[0] = 0;
+		PolyPoints[n].p_lat = 0.0;
+		PolyPoints[n].p_long = 0.0;
+	}
+	n = 1;
+	cur = cur->xmlChildrenNode;
+	while (cur != NULL) {
+		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"name"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				strncpy(SurveySetup.name, (char *)key, 1000);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"interval"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				SurveySetup.interval = atoi((char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"pos"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				SurveySetup.pos = atoi((char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"type"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				SurveySetup.type = atoi((char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"num"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				SurveySetup.num = atoi((char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"triggermode"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				SurveySetup.triggermode = atoi((char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"options"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				SurveySetup.options = atoi((char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"mode"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				SurveySetup.mode = atoi((char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"alt_abs"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				SurveySetup.alt_abs = atoi((char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"angle"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				SurveySetup.angle = atof((char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"grid_x"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				SurveySetup.grid_x = atof((char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"grid_y"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				SurveySetup.grid_y = atof((char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"film_width"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				SurveySetup.film_width = atof((char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"film_height"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				SurveySetup.film_height = atof((char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"sensor_mult"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				SurveySetup.sensor_mult = atof((char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"lense"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				SurveySetup.lense = atof((char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"overlap"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				SurveySetup.overlap = atof((char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"alt"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				SurveySetup.alt = atof((char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"angle"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				SurveySetup.angle = atoi((char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"polypoint"))) {
+			survey_parsePolypoint(doc, cur, n);
+			n++;
+		}
+		cur = cur->next;
+	}
+	xmlFreeDoc(doc);
+	return;
+}
+
+uint8_t map_load_xml (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	survey_parseDoc(name);
+	reset_buttons();
+	return 0;
+}
+
+uint8_t survey_load (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	reset_buttons();
+	char tmp_str[128];
+	sprintf(tmp_str, "%s/survey", get_datadirectory());
+	filesystem_set_dir(tmp_str);
+	filesystem_set_callback(map_load_xml);
+	filesystem_reset_filter();
+	filesystem_add_filter(".xml\0");
+	filesystem_set_mode(setup.view_mode);
+	return 0;
+}
+
+static uint8_t survey_save_xml (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	FILE *fr;
+	int n = 0;
+	char tmp_str[128];
+	reset_buttons();
+	sprintf(tmp_str, "mkdir -p %s/survey", get_datadirectory());
+	system(tmp_str);
+	sprintf(tmp_str, "%s/survey/%s", get_datadirectory(), name);
+	fr = fopen(tmp_str, "wb");
+	if (fr != 0) {
+		fprintf(fr, "<survey>\n");
+		fprintf(fr, " <name>%s</name>\n", SurveySetup.name);
+		fprintf(fr, " <interval>%i</interval>\n", SurveySetup.interval);
+		fprintf(fr, " <pos>%i</pos>\n", SurveySetup.pos);
+		fprintf(fr, " <type>%i</type>\n", SurveySetup.type);
+		fprintf(fr, " <num>%i</num>\n", SurveySetup.num);
+		fprintf(fr, " <triggermode>%i</triggermode>\n", SurveySetup.triggermode);
+		fprintf(fr, " <options>%i</options>\n", SurveySetup.options);
+		fprintf(fr, " <mode>%i</mode>\n", SurveySetup.mode);
+		fprintf(fr, " <angle>%f</angle>\n", SurveySetup.angle);
+		fprintf(fr, " <grid_x>%f</grid_x>\n", SurveySetup.grid_x);
+		fprintf(fr, " <grid_y>%f</grid_y>\n", SurveySetup.grid_y);
+		fprintf(fr, " <film_width>%f</film_width>\n", SurveySetup.film_width);
+		fprintf(fr, " <film_height>%f</film_height>\n", SurveySetup.film_height);
+		fprintf(fr, " <sensor_mult>%f</sensor_mult>\n", SurveySetup.sensor_mult);
+		fprintf(fr, " <lense>%f</lense>\n", SurveySetup.lense);
+		fprintf(fr, " <overlap>%f</overlap>\n", SurveySetup.overlap);
+		fprintf(fr, " <alt>%f</alt>\n", SurveySetup.alt);
+		fprintf(fr, " <alt_abs>%i</alt_abs>\n", SurveySetup.alt_abs);
+		for (n = 0; n < MAX_WAYPOINTS; n++) {
+			if (PolyPoints[n].p_lat != 0.0) {
+				fprintf(fr, " <polypoint>\n");
+				fprintf(fr, "  <name>%s</name>\n", PolyPoints[n].name);
+				fprintf(fr, "  <command>%s</command>\n", PolyPoints[n].command);
+				fprintf(fr, "  <lat>%0.8f</lat>\n", PolyPoints[n].p_lat);
+				fprintf(fr, "  <lon>%0.8f</lon>\n", PolyPoints[n].p_long);
+				fprintf(fr, "  <alt>%f</alt>\n", PolyPoints[n].p_alt);
+				fprintf(fr, " </polypoint>\n");
+			}
+		}
+		fprintf(fr, "</survey>\n");
+		fclose(fr);
+	}
+	return 0;
+}
+
+uint8_t survey_save (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	char tmp_str[200];
+	reset_buttons();
+	keyboard_set_callback(survey_save_xml);
+	if (strstr(SurveySetup.name, ".xml\0") > 0) {
+		strncpy(tmp_str, SurveySetup.name, 199);
+	} else {
+		sprintf(tmp_str, "%s.xml", SurveySetup.name);
+	}
+	keyboard_set_text(tmp_str);
+	keyboard_set_mode(setup.view_mode);
+	return 0;
+}
+
+static uint8_t survey_name_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	strncpy(SurveySetup.name, name, 1000);
+	return 0;
+}
+
+static uint8_t survey_name_edit (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	keyboard_set_callback(survey_name_set);
+	keyboard_set_text(SurveySetup.name);
+	keyboard_set_mode(setup.view_mode);
+	return 0;
+}
 
 uint8_t map_goto_screen (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	setup.view_mode = (int)data;
@@ -1550,7 +1846,6 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 			WayPoints[ModelActive][n].param4 = (float)0;
 			n++;
 		}
-
 		float n_x = 0.0;
 		float n_y = 0.0;
 		float center_x = min_x + (max_x - min_x) / 2.0;
@@ -1745,7 +2040,11 @@ void map_draw_cam_setup (ESContext *esContext) {
 		draw_text_button(esContext, "SurveySetup.options1", setup.view_mode, "[GRID]", FONT_WHITE, px1 + 0.95, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		draw_text_button(esContext, "SurveySetup.options2", setup.view_mode, "[TRIGGER]", FONT_GREEN, px1 + 1.25, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 1.0);
 	}
+
+	sprintf(tmp_str, "Name: %s", SurveySetup.name);
+	draw_text_button(esContext, "survey_name", setup.view_mode, tmp_str, FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_name_edit, 0.0);
 	ny++;
+
 	if (SurveySetup.options == 1) {
 		draw_text_button(esContext, "trigger_title", setup.view_mode, "Trigger:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		ny++;
@@ -1852,6 +2151,9 @@ void map_draw_cam_setup (ESContext *esContext) {
 		draw_text_button(esContext, "SurveySetup.angle", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, map_cam_set, 0.0);
 		ny++;
 	}
+
+	draw_text_button(esContext, "survey_load", setup.view_mode, "[LOAD]", FONT_GREEN, px1 + 0.02, py2 - 0.075, 0.005, 0.07, ALIGN_LEFT, ALIGN_TOP, survey_load, 0.0);
+	draw_text_button(esContext, "survey_save", setup.view_mode, "[SAVE]", FONT_GREEN, px1 + 0.32, py2 - 0.075, 0.005, 0.07, ALIGN_LEFT, ALIGN_TOP, survey_save, 0.0);
 	draw_text_button(esContext, "cam_export_kml", setup.view_mode, "[KML]", FONT_GREEN, px2 - 0.62, py2 - 0.075, 0.005, 0.07, ALIGN_RIGHT, ALIGN_TOP, map_cam_export_kml, 0.0);
 	draw_text_button(esContext, "cam_setup_write", setup.view_mode, "[WRITE]", FONT_GREEN, px2 - 0.32, py2 - 0.075, 0.005, 0.07, ALIGN_RIGHT, ALIGN_TOP, map_cam_set, 0.0);
 	draw_text_button(esContext, "cam_setup_done", setup.view_mode, "[CLOSE]", FONT_GREEN, px2 - 0.02, py2 - 0.075, 0.005, 0.07, ALIGN_RIGHT, ALIGN_TOP, map_cam_set, 0.0);
@@ -2840,7 +3142,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				if (n == ModelActive) {
 					mode = 0;
 				}
-				draw_quad(esContext, ModelData[n].p_lat, ModelData[n].p_long, (ModelData[n].p_alt - ModelData[n].alt_offset), ModelData[n].roll, ModelData[n].pitch, ModelData[n].yaw, ModelData[n].dronetype, mode, mapdata->lat, mapdata->lon, mapdata->zoom);
+				draw_model(esContext, ModelData[n].p_lat, ModelData[n].p_long, (ModelData[n].p_alt - ModelData[n].alt_offset), ModelData[n].roll, ModelData[n].pitch, ModelData[n].yaw, n, mode, mapdata->lat, mapdata->lon, mapdata->zoom);
 			}
 		}
 	}
@@ -3262,6 +3564,8 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 void screen_map (ESContext *esContext, float lat, float lon, uint8_t zoom) {
 	display_map(esContext, lat, lon, zoom, map_view, 1, 1.0, 0.0, 0.0, 0.0);
 	screen_number(esContext);
+	screen_filesystem(esContext);
+	screen_keyboard(esContext);
 }
 
 
