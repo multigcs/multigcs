@@ -60,19 +60,7 @@ void survey_parsePolypoint (xmlDocPtr doc, xmlNodePtr cur, int n) {
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
-		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"name"))) {
-			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			if ((char *)key != NULL) {
-				strcpy(PolyPoints[n].name, (char *)key);
-			}
-			xmlFree(key);
-		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"command"))) {
-			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			if ((char *)key != NULL) {
-				strcpy(PolyPoints[n].command, (char *)key);
-			}
-			xmlFree(key);
-		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"lat"))) {
+		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"lat"))) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				PolyPoints[n].p_lat = atof((char *)key);
@@ -82,12 +70,6 @@ void survey_parsePolypoint (xmlDocPtr doc, xmlNodePtr cur, int n) {
 			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
 			if ((char *)key != NULL) {
 				PolyPoints[n].p_long = atof((char *)key);
-			}
-			xmlFree(key);
-		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"alt"))) {
-			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-			if ((char *)key != NULL) {
-				PolyPoints[n].p_alt = atof((char *)key);
 			}
 			xmlFree(key);
 		}
@@ -128,9 +110,7 @@ void survey_parseDoc (char *docname) {
 		return;
 	}
 	int n = 0;
-	for (n = 0; n < MAX_WAYPOINTS; n++) {
-		PolyPoints[n].name[0] = 0;
-		PolyPoints[n].command[0] = 0;
+	for (n = 0; n < MAX_POLYPOINTS; n++) {
 		PolyPoints[n].p_lat = 0.0;
 		PolyPoints[n].p_long = 0.0;
 	}
@@ -308,14 +288,11 @@ static uint8_t survey_save_xml (char *name, float x, float y, int8_t button, flo
 		fprintf(fr, " <overlap>%f</overlap>\n", SurveySetup.overlap);
 		fprintf(fr, " <alt>%f</alt>\n", SurveySetup.alt);
 		fprintf(fr, " <alt_abs>%i</alt_abs>\n", SurveySetup.alt_abs);
-		for (n = 0; n < MAX_WAYPOINTS; n++) {
+		for (n = 0; n < MAX_POLYPOINTS; n++) {
 			if (PolyPoints[n].p_lat != 0.0) {
 				fprintf(fr, " <polypoint>\n");
-				fprintf(fr, "  <name>%s</name>\n", PolyPoints[n].name);
-				fprintf(fr, "  <command>%s</command>\n", PolyPoints[n].command);
 				fprintf(fr, "  <lat>%0.8f</lat>\n", PolyPoints[n].p_lat);
 				fprintf(fr, "  <lon>%0.8f</lon>\n", PolyPoints[n].p_long);
-				fprintf(fr, "  <alt>%f</alt>\n", PolyPoints[n].p_alt);
 				fprintf(fr, " </polypoint>\n");
 			}
 		}
@@ -422,7 +399,7 @@ int point_in_poly (float testx, float testy) {
 	float pmark_y = 0.0;
 	float last_x = 0.0;
 	float last_y = 0.0;
-	for (num = 1; num < MAX_WAYPOINTS; num++) {
+	for (num = 1; num < MAX_POLYPOINTS; num++) {
 		if (PolyPoints[num].p_lat != 0.0) {
 			pmark_x = long2x(PolyPoints[num].p_long, lon, zoom);
 			pmark_y = lat2y(PolyPoints[num].p_lat, lat, zoom);
@@ -853,14 +830,6 @@ uint8_t map_polypoint_del (char *name, float x, float y, int8_t button, float da
 		if (PolyPoints[n].p_lat != 0.0) {
 			PolyPoints[n].p_lat = PolyPoints[n2].p_lat;
 			PolyPoints[n].p_long = PolyPoints[n2].p_long;
-			PolyPoints[n].p_alt = PolyPoints[n2].p_alt;
-			PolyPoints[n].param1 = PolyPoints[n2].param1;
-			PolyPoints[n].param2 = PolyPoints[n2].param2;
-			PolyPoints[n].param3 = PolyPoints[n2].param3;
-			PolyPoints[n].param4 = PolyPoints[n2].param4;
-			PolyPoints[n].type = PolyPoints[n2].type;
-			strncpy(PolyPoints[n].name, PolyPoints[n2].name, 127);
-			strncpy(PolyPoints[n].command, PolyPoints[n2].command, 127);
 			n2++;
 		}
 	}
@@ -1802,7 +1771,7 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 			fprintf(fr, "#overlap: %f\n", SurveySetup.overlap);
 			fprintf(fr, "#alt: %f\n", SurveySetup.alt);
 			fprintf(fr, "#alt_abs: %i\n", SurveySetup.alt_abs);
-			for (n = 0; n < MAX_WAYPOINTS; n++) {
+			for (n = 0; n < MAX_POLYPOINTS; n++) {
 				if (PolyPoints[n].p_lat != 0.0) {
 					fprintf(fr, "#polypoint:%0.8f,%0.8f\n", PolyPoints[n].p_lat, PolyPoints[n].p_long);
 				}
@@ -1822,7 +1791,7 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 		float max_y = pmark_y;
 		float pos_alt_max = -999999.0;
 		// check box
-		for (n = 1; n < MAX_WAYPOINTS; n++) {
+		for (n = 1; n < MAX_POLYPOINTS; n++) {
 			if (PolyPoints[n].p_lat != 0.0) {
 				pmark_x = long2x(PolyPoints[n].p_long, lon, zoom);
 				pmark_y = lat2y(PolyPoints[n].p_lat, lat, zoom);
@@ -3217,7 +3186,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	// drawing Polygon-Points
 	flag = 0;
 	if (map_show_poly == 1) {
-		for (n = 1; n < MAX_WAYPOINTS; n++) {
+		for (n = 1; n < MAX_POLYPOINTS; n++) {
 			if (PolyPoints[n].p_lat != 0.0) {
 				float pos_alt = get_altitude(PolyPoints[n].p_lat, PolyPoints[n].p_long);
 				float alt = SurveySetup.alt + pos_alt;
@@ -3228,13 +3197,13 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 					alt = SurveySetup.alt;
 				}
 				if (n == polypoint_active) {
-					mark_point(esContext, PolyPoints[n].p_lat, PolyPoints[n].p_long, alt, PolyPoints[n].name, PolyPoints[n].command, 1, PolyPoints[n].param1, PolyPoints[n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
+					mark_point(esContext, PolyPoints[n].p_lat, PolyPoints[n].p_long, alt, "", "", 1, 0.0, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
 				} else {
-					mark_point(esContext, PolyPoints[n].p_lat, PolyPoints[n].p_long, alt, PolyPoints[n].name, PolyPoints[n].command, 0, PolyPoints[n].param1, PolyPoints[n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
+					mark_point(esContext, PolyPoints[n].p_lat, PolyPoints[n].p_long, alt, "", "", 0, 0.0, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
 				}
 			}
 		}
-		for (n = 1; n < MAX_WAYPOINTS; n++) {
+		for (n = 1; n < MAX_POLYPOINTS; n++) {
 			if (PolyPoints[n].p_lat != 0.0) {
 				float pos_alt = get_altitude(PolyPoints[n].p_lat, PolyPoints[n].p_long);
 				float alt = SurveySetup.alt + pos_alt;

@@ -78,17 +78,10 @@ typedef struct {
 	uint8_t frametype;
 } WayPoint;
 
+#define MAX_POLYPOINTS 250
 typedef struct {
 	float p_lat;
 	float p_long;
-	float p_alt;
-	float param1; // radius
-	float param2; // wait
-	float param3; // orbit
-	float param4; // yaw
-	char name[128];
-	char command[128];
-	uint8_t type;
 } PolyPoint;
 
 enum {
@@ -207,7 +200,7 @@ typedef struct {
 extern Survey SurveySetup;
 extern Button Buttons[MAX_BUTTONS + 1];
 extern WayPoint WayPoints[MODELS_MAX][MAX_WAYPOINTS + 1];
-extern PolyPoint PolyPoints[MAX_WAYPOINTS + 1];
+extern PolyPoint PolyPoints[MAX_POLYPOINTS + 1];
 extern GcsSetup setup;
 
 extern volatile uint8_t gui_running;

@@ -78,7 +78,7 @@ uint16_t mouse_y = 0;
 uint8_t message = 0;
 char message_txt[1024];
 WayPoint WayPoints[MODELS_MAX][MAX_WAYPOINTS + 1];
-PolyPoint PolyPoints[MAX_WAYPOINTS + 1];
+PolyPoint PolyPoints[MAX_POLYPOINTS + 1];
 int8_t waypoint_active = 0;
 int8_t polypoint_active = 0;
 uint8_t view_mode_last = 255;
@@ -366,17 +366,9 @@ void set_telemetry (uint8_t modelid, char *device, uint32_t baud) {
 void setup_waypoints (void) {
 	int n = 0;
 	int modeln = 0;
-	for (n = 0; n < MAX_WAYPOINTS; n++) {
+	for (n = 0; n < MAX_POLYPOINTS; n++) {
 		PolyPoints[n].p_lat = 0.0;
 		PolyPoints[n].p_long = 0.0;
-		PolyPoints[n].p_alt = 0.0;
-		PolyPoints[n].param1 = 0.0;
-		PolyPoints[n].param2 = 2.0;
-		PolyPoints[n].param3 = 0.0;
-		PolyPoints[n].param4 = 0.0;
-		PolyPoints[n].name[0] = 0;
-		PolyPoints[n].command[0] = 0;
-		PolyPoints[n].type = 0;
 	}
 	for (modeln = 0; modeln < MODELS_MAX; modeln++) {
 		for (n = 0; n < MAX_WAYPOINTS; n++) {
@@ -593,18 +585,10 @@ void setup_save (void) {
 			}
 	        fprintf(fr, "\n");
 	        fprintf(fr, "[polypoints]\n");
-	        for (n = 0; n < MAX_WAYPOINTS; n++) {
+	        for (n = 0; n < MAX_POLYPOINTS; n++) {
 	                if (PolyPoints[n].p_lat != 0.0) {
-	                        fprintf(fr, "name	%s\n", PolyPoints[n].name);
-	                        fprintf(fr, "command	%s\n", PolyPoints[n].command);
 	                        fprintf(fr, "lat	%0.8f\n", PolyPoints[n].p_lat);
 	                        fprintf(fr, "lon	%0.8f\n", PolyPoints[n].p_long);
-	                        fprintf(fr, "alt	%f\n", PolyPoints[n].p_alt);
-	                        fprintf(fr, "param1	%f\n", PolyPoints[n].param1);
-	                        fprintf(fr, "param2	%f\n", PolyPoints[n].param2);
-	                        fprintf(fr, "param3	%f\n", PolyPoints[n].param3);
-	                        fprintf(fr, "param4	%f\n", PolyPoints[n].param4);
-	                        fprintf(fr, "type	%i\n", PolyPoints[n].type);
 	                        fprintf(fr, "\n");
 	                }
 	        }
@@ -971,35 +955,11 @@ void setup_load (void) {
 	                                        pp_num++;
 	                                        PolyPoints[pp_num].p_lat = 0.0;
 	                                        PolyPoints[pp_num].p_long = 0.0;
-	                                        PolyPoints[pp_num].p_alt = 0.0;
-	                                        PolyPoints[pp_num].param1 = 0.0;
-	                                        PolyPoints[pp_num].param2 = 0.0;
-	                                        PolyPoints[pp_num].param3 = 0.0;
-	                                        PolyPoints[pp_num].param4 = 0.0;
-	                                        PolyPoints[pp_num].name[0] = 0;
-	                                        PolyPoints[pp_num].command[0] = 0;
-	                                        PolyPoints[pp_num].type = 0;
 	                                }
-	                        } else if (strcmp(var, "name") == 0) {
-	                                strncpy(PolyPoints[pp_num].name, val, 127);
-	                        } else if (strcmp(var, "command") == 0) {
-	                                strncpy(PolyPoints[pp_num].command, val, 127);
 	                        } else if (strcmp(var, "lat") == 0) {
 	                                PolyPoints[pp_num].p_lat = atof(val);
 	                        } else if (strcmp(var, "lon") == 0) {
 	                                PolyPoints[pp_num].p_long = atof(val);
-	                        } else if (strcmp(var, "alt") == 0) {
-	                                PolyPoints[pp_num].p_alt = atof(val);
-	                        } else if (strcmp(var, "param1") == 0) {
-	                                PolyPoints[wp_num].param1 = atof(val);
-	                        } else if (strcmp(var, "param2") == 0) {
-	                                PolyPoints[wp_num].param2 = atof(val);
-	                        } else if (strcmp(var, "param3") == 0) {
-	                                PolyPoints[wp_num].param3 = atof(val);
-	                        } else if (strcmp(var, "param4") == 0) {
-	                                PolyPoints[wp_num].param4 = atof(val);
-	                        } else if (strcmp(var, "type") == 0) {
-	                                PolyPoints[pp_num].type = atoi(val);
 	                        } else if (strcmp(var, "[polypoints]") == 0) {
 	                                mode = 2;
 	                        } else if (strcmp(var, "[waypoints]") == 0) {
@@ -1260,14 +1220,6 @@ void check_events (ESContext *esContext, SDL_Event event) {
 				WayPoints[ModelActive][waypoint_active].p_lat = mouse_lat;
 				WayPoints[ModelActive][waypoint_active].p_long = mouse_long;
 			} else if (polypoint_active >= 0) {
-				if (polypoint_active == 0) {
-					PolyPoints[polypoint_active].p_alt = get_altitude(mouse_lat, mouse_long);
-				} else {
-					int16_t zz = get_altitude(mouse_lat, mouse_long);
-					if (PolyPoints[polypoint_active].p_alt < zz) {
-						PolyPoints[polypoint_active].p_alt = zz;
-					}
-				}
 				PolyPoints[polypoint_active].p_lat = mouse_lat;
 				PolyPoints[polypoint_active].p_long = mouse_long;
 			} else {
@@ -1479,24 +1431,10 @@ void check_events (ESContext *esContext, SDL_Event event) {
 					map_poimode = 0;
 				} else if (map_poly_addmode == 1) {
 					uint16_t n = 0;
-					int16_t nz = get_altitude(mouse_lat, mouse_long);
-					if (ModelData[ModelActive].p_alt > nz) {
-						nz = ModelData[ModelActive].p_alt;
-					}
-					if (PolyPoints[0].p_alt > nz) {
-						nz = PolyPoints[0].p_alt;
-					}
-					for (n = 1; n < MAX_WAYPOINTS; n++) {
+					for (n = 1; n < MAX_POLYPOINTS; n++) {
 						if (PolyPoints[n].p_lat == 0.0) {
 							PolyPoints[n].p_lat = mouse_lat;
 							PolyPoints[n].p_long = mouse_long;
-							PolyPoints[n].p_alt = nz;
-							PolyPoints[n].param1 = 0.0;
-							PolyPoints[n].param2 = 0.0;
-							PolyPoints[n].param3 = 0.0;
-							PolyPoints[n].param4 = 0.0;
-							sprintf(PolyPoints[n].name, "POINT%i", n);
-							strncpy(PolyPoints[n].command, "", 127);
 							break;
 						}
 					}
@@ -1535,7 +1473,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 							}
 						}
 					}
-					for (n = 0; n < MAX_WAYPOINTS; n++) {
+					for (n = 0; n < MAX_POLYPOINTS; n++) {
 						if (PolyPoints[n].p_lat != 0.0) {
 							int16_t mark_x = long2x(PolyPoints[n].p_long, lon, zoom);
 							int16_t mark_y = lat2y(PolyPoints[n].p_lat, lat, zoom);
