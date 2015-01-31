@@ -452,7 +452,7 @@ void screen_model (ESContext *esContext) {
 			}
 			object3d_load(&obj3d_teletype, tmp_str);
 		}
-		glTranslatef(0.5, (-0.8 + n * 0.12 + 0.3) * -1.0, -2.0);
+		glTranslatef(0.5, -0.15, -2.0);
 		glRotatef(rotate, -1.0, -1.0, 0.2);
 		glScalef(0.25, 0.25, 0.25);
 		object3d_draw(&obj3d_teletype, 255, 255, 255, 100);
