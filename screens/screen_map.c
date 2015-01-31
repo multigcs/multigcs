@@ -1327,13 +1327,15 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 	float max_x = pmark_x;
 	float max_y = pmark_y;
 	float pos_alt_max = -999999.0;
-
-	FILE *kmlout = fopen("/tmp/mission.kml", "w");
+	char filename[1024];
+	char ge_command[1024];
+	sprintf(filename, "%s/survey/%s.kml", get_datadirectory(), SurveySetup.name);
+	FILE *kmlout = fopen(filename, "w");
 	fprintf(kmlout, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 	fprintf(kmlout, "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
 	fprintf(kmlout, "  <Document>\n");
-	fprintf(kmlout, "    <name>Mission</name>\n");
-	fprintf(kmlout, "    <description>MultiGCS - Mission\n");
+	fprintf(kmlout, "    <name>Mission: %s</name>\n", SurveySetup.name);
+	fprintf(kmlout, "    <description>MultiGCS - Survey-Mission\n");
 	if (SurveySetup.mode == 1) {
 		fprintf(kmlout, "    grid_x: %0.0f m\n", SurveySetup.grid_x);
 		fprintf(kmlout, "    grid_y: %0.0f m\n", SurveySetup.grid_y);
@@ -1604,6 +1606,10 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 	fprintf(kmlout, "  </Document>\n");
 	fprintf(kmlout, "</kml>\n");
 	fclose(kmlout);
+
+	sprintf(ge_command, "googleearth \"%s\" &", filename);
+	system(ge_command);
+
 	return 0;
 }
 
@@ -1772,8 +1778,37 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 	} else if (strcmp(name, "cam_setup_done") == 0) {
 		map_show_cam_setup = 1 - map_show_cam_setup;
 	} else if (strcmp(name, "cam_setup_write") == 0) {
-		map_show_cam_setup = 1 - map_show_cam_setup;
+		char tmp_str[1024];
 		int n = 0;
+		FILE *fr;
+		sprintf(tmp_str, "%s/survey/%s.pln", get_datadirectory(), SurveySetup.name);
+		fr = fopen(tmp_str, "wb");
+		if (fr != NULL) {
+			fprintf(fr, "#name: %s\n", SurveySetup.name);
+			fprintf(fr, "#interval: %i\n", SurveySetup.interval);
+			fprintf(fr, "#pos: %i\n", SurveySetup.pos);
+			fprintf(fr, "#type: %i\n", SurveySetup.type);
+			fprintf(fr, "#num: %i\n", SurveySetup.num);
+			fprintf(fr, "#triggermode: %i\n", SurveySetup.triggermode);
+			fprintf(fr, "#options: %i\n", SurveySetup.options);
+			fprintf(fr, "#mode: %i\n", SurveySetup.mode);
+			fprintf(fr, "#angle: %f\n", SurveySetup.angle);
+			fprintf(fr, "#grid_x: %f\n", SurveySetup.grid_x);
+			fprintf(fr, "#grid_y: %f\n", SurveySetup.grid_y);
+			fprintf(fr, "#film_width: %f\n", SurveySetup.film_width);
+			fprintf(fr, "#film_height: %f\n", SurveySetup.film_height);
+			fprintf(fr, "#sensor_mult: %f\n", SurveySetup.sensor_mult);
+			fprintf(fr, "#lense: %f\n", SurveySetup.lense);
+			fprintf(fr, "#overlap: %f\n", SurveySetup.overlap);
+			fprintf(fr, "#alt: %f\n", SurveySetup.alt);
+			fprintf(fr, "#alt_abs: %i\n", SurveySetup.alt_abs);
+			for (n = 0; n < MAX_WAYPOINTS; n++) {
+				if (PolyPoints[n].p_lat != 0.0) {
+					fprintf(fr, "#polypoint:%0.8f,%0.8f\n", PolyPoints[n].p_lat, PolyPoints[n].p_long);
+				}
+			}
+		}
+		map_show_cam_setup = 1 - map_show_cam_setup;
 		// clear Waypoints
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
 			WayPoints[ModelActive][n].p_lat = 0.0;
@@ -1832,7 +1867,6 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 			grid_y = h / mpp / SurveySetup.overlap;
 		}
 		n = 1;
-
 		if (SurveySetup.triggermode == 2) {
 			WayPoints[ModelActive][n].p_lat = 1.0;
 			WayPoints[ModelActive][n].p_long = 0.0;
@@ -1844,6 +1878,9 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 			WayPoints[ModelActive][n].param2 = (float)0;
 			WayPoints[ModelActive][n].param3 = (float)0;
 			WayPoints[ModelActive][n].param4 = (float)0;
+			if (fr != NULL) {
+				fprintf(fr, "SHUTTER_DIST;%i\n", SurveySetup.interval);
+			}
 			n++;
 		}
 		float n_x = 0.0;
@@ -1895,8 +1932,11 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 				WayPoints[ModelActive][n].param4 = 0.0;
 				WayPoints[ModelActive][n].type = 0;
 				WayPoints[ModelActive][n].frametype = 0;
-				sprintf(WayPoints[ModelActive][n].name, "PIC%i", n);
+				sprintf(WayPoints[ModelActive][n].name, "WP%i", n);
 				strcpy(WayPoints[ModelActive][n].command, "WAYPOINT");
+				if (fr != NULL) {
+					fprintf(fr, "WAYPOINT;%f;%f;%f\n", np_lat, np_long, alt);
+				}
 				n++;
 				if (SurveySetup.triggermode == 1) {
 					WayPoints[ModelActive][n].p_lat = 1.0;
@@ -1909,6 +1949,9 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 						WayPoints[ModelActive][n].param1 = (float)SurveySetup.num;
 						WayPoints[ModelActive][n].param2 = (float)2;
 						WayPoints[ModelActive][n].param3 = (float)1;
+						if (fr != NULL) {
+							fprintf(fr, "RELAY_TOGGLE;%i\n", SurveySetup.num);
+						}
 					} else if (SurveySetup.type == 2) {
 						sprintf(WayPoints[ModelActive][n].name, "SERVO%i", SurveySetup.num);
 						strcpy(WayPoints[ModelActive][n].command, "SERVO_REP");
@@ -1916,9 +1959,15 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 						WayPoints[ModelActive][n].param2 = (float)SurveySetup.pos;
 						WayPoints[ModelActive][n].param3 = (float)1;
 						WayPoints[ModelActive][n].param4 = (float)500;
+						if (fr != NULL) {
+							fprintf(fr, "SERVO_TOGGLE;%i;%i\n", SurveySetup.num, SurveySetup.pos);
+						}
 					} else {
 						sprintf(WayPoints[ModelActive][n].name, "SHUTTER%i", n);
 						strcpy(WayPoints[ModelActive][n].command, "SHUTTER");
+						if (fr != NULL) {
+							fprintf(fr, "SHUTTER\n");
+						}
 					}
 					n++;
 				}
@@ -1962,8 +2011,13 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 				WayPoints[ModelActive][n].param4 = 0.0;
 				WayPoints[ModelActive][n].type = 0;
 				WayPoints[ModelActive][n].frametype = 0;
-				sprintf(WayPoints[ModelActive][n].name, "PIC%i", n);
+				sprintf(WayPoints[ModelActive][n].name, "WP%i", n);
 				strcpy(WayPoints[ModelActive][n].command, "WAYPOINT");
+
+				if (fr != NULL) {
+					fprintf(fr, "WAYPOINT;%f;%f;%f\n", np_lat, np_long, alt);
+				}
+
 				n++;
 				if (SurveySetup.triggermode == 1) {
 					WayPoints[ModelActive][n].p_lat = 1.0;
@@ -1976,6 +2030,9 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 						WayPoints[ModelActive][n].param1 = (float)SurveySetup.num;
 						WayPoints[ModelActive][n].param2 = (float)2;
 						WayPoints[ModelActive][n].param3 = (float)1;
+						if (fr != NULL) {
+							fprintf(fr, "RELAY_TOGGLE;%i\n", SurveySetup.num);
+						}
 					} else if (SurveySetup.type == 2) {
 						sprintf(WayPoints[ModelActive][n].name, "SERVO%i", SurveySetup.num);
 						strcpy(WayPoints[ModelActive][n].command, "SERVO_REP");
@@ -1983,15 +2040,20 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 						WayPoints[ModelActive][n].param2 = (float)SurveySetup.pos;
 						WayPoints[ModelActive][n].param3 = (float)1;
 						WayPoints[ModelActive][n].param4 = (float)500;
+						if (fr != NULL) {
+							fprintf(fr, "SERVO_TOGGLE;%i;%i\n", SurveySetup.num, SurveySetup.pos);
+						}
 					} else {
 						sprintf(WayPoints[ModelActive][n].name, "SHUTTER%i", n);
 						strcpy(WayPoints[ModelActive][n].command, "SHUTTER");
+						if (fr != NULL) {
+							fprintf(fr, "SHUTTER\n");
+						}
 					}
 					n++;
 				}
 			}
 		}
-
 		if (SurveySetup.triggermode == 2) {
 			WayPoints[ModelActive][n].p_lat = 1.0;
 			WayPoints[ModelActive][n].p_long = 0.0;
@@ -2003,9 +2065,14 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 			WayPoints[ModelActive][n].param2 = (float)0;
 			WayPoints[ModelActive][n].param3 = (float)0;
 			WayPoints[ModelActive][n].param4 = (float)0;
+			if (fr != NULL) {
+				fprintf(fr, "SHUTTER_DIST;%i\n", 0);
+			}
 			n++;
 		}
-
+		if (fr != NULL) {
+			fclose(fr);
+		}
 		map_show_poly = 0;
 		map_show_wp = 1;
 	}
