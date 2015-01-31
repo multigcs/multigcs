@@ -1879,7 +1879,7 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 			WayPoints[ModelActive][n].param3 = (float)0;
 			WayPoints[ModelActive][n].param4 = (float)0;
 			if (fr != NULL) {
-				fprintf(fr, "SHUTTER_DIST;%i\n", SurveySetup.interval);
+				fprintf(fr, "CMD;SHUTTER_DIST;%i\n", SurveySetup.interval);
 			}
 			n++;
 		}
@@ -1950,7 +1950,7 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 						WayPoints[ModelActive][n].param2 = (float)2;
 						WayPoints[ModelActive][n].param3 = (float)1;
 						if (fr != NULL) {
-							fprintf(fr, "RELAY_TOGGLE;%i\n", SurveySetup.num);
+							fprintf(fr, "CMD;RELAY_TOGGLE;%i\n", SurveySetup.num);
 						}
 					} else if (SurveySetup.type == 2) {
 						sprintf(WayPoints[ModelActive][n].name, "SERVO%i", SurveySetup.num);
@@ -1960,13 +1960,13 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 						WayPoints[ModelActive][n].param3 = (float)1;
 						WayPoints[ModelActive][n].param4 = (float)500;
 						if (fr != NULL) {
-							fprintf(fr, "SERVO_TOGGLE;%i;%i\n", SurveySetup.num, SurveySetup.pos);
+							fprintf(fr, "CMD;SERVO_TOGGLE;%i;%i\n", SurveySetup.num, SurveySetup.pos);
 						}
 					} else {
 						sprintf(WayPoints[ModelActive][n].name, "SHUTTER%i", n);
 						strcpy(WayPoints[ModelActive][n].command, "SHUTTER");
 						if (fr != NULL) {
-							fprintf(fr, "SHUTTER\n");
+							fprintf(fr, "CMD;SHUTTER\n");
 						}
 					}
 					n++;
@@ -2031,7 +2031,7 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 						WayPoints[ModelActive][n].param2 = (float)2;
 						WayPoints[ModelActive][n].param3 = (float)1;
 						if (fr != NULL) {
-							fprintf(fr, "RELAY_TOGGLE;%i\n", SurveySetup.num);
+							fprintf(fr, "CMD;RELAY_TOGGLE;%i\n", SurveySetup.num);
 						}
 					} else if (SurveySetup.type == 2) {
 						sprintf(WayPoints[ModelActive][n].name, "SERVO%i", SurveySetup.num);
@@ -2041,13 +2041,13 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 						WayPoints[ModelActive][n].param3 = (float)1;
 						WayPoints[ModelActive][n].param4 = (float)500;
 						if (fr != NULL) {
-							fprintf(fr, "SERVO_TOGGLE;%i;%i\n", SurveySetup.num, SurveySetup.pos);
+							fprintf(fr, "CMD;SERVO_TOGGLE;%i;%i\n", SurveySetup.num, SurveySetup.pos);
 						}
 					} else {
 						sprintf(WayPoints[ModelActive][n].name, "SHUTTER%i", n);
 						strcpy(WayPoints[ModelActive][n].command, "SHUTTER");
 						if (fr != NULL) {
-							fprintf(fr, "SHUTTER\n");
+							fprintf(fr, "CMD;SHUTTER\n");
 						}
 					}
 					n++;
@@ -2066,7 +2066,7 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 			WayPoints[ModelActive][n].param3 = (float)0;
 			WayPoints[ModelActive][n].param4 = (float)0;
 			if (fr != NULL) {
-				fprintf(fr, "SHUTTER_DIST;%i\n", 0);
+				fprintf(fr, "CMD;SHUTTER_DIST;%i\n", 0);
 			}
 			n++;
 		}
