@@ -840,7 +840,9 @@ void mark_route (ESContext *esContext, float last_lat, float last_long, float la
 		draw_triaFilled_f3(esContext, x1, y1, last_z, x1, y1, z1, x2, y2, mark_z, 255, 255, 255, 127);
 	}
 	if (type == 1) {
-		draw_line_f3(esContext, x1, y1, z1, x2, y2, z2, 255, 0, 0, 128);
+		draw_line_f3(esContext, x1, y1, z1, x2, y2, z2, 255, 0, 0, 255);
+	} else if (type == 2) {
+		draw_line_f3(esContext, x1, y1, z1, x2, y2, z2, 255, 0, 255, 128);
 	} else if (type == 4) {
 	} else if (type == 6) {
 		draw_line_f3(esContext, x1, y1, z1, x2, y2, z2, 255, 0, 0, 255);

@@ -24,6 +24,8 @@ uint8_t map_add = 0;
 uint8_t map_addmode = 0;
 uint8_t map_poimode = 0;
 uint8_t map_poly_addmode = 0;
+uint8_t map_polynf_addmode = 0;
+uint8_t map_polynf_num = 0;
 uint8_t map_start_addmode = 0;
 uint8_t map_wp_mopen = 0;
 uint8_t map_poly_mopen = 0;
@@ -53,6 +55,296 @@ uint8_t map_show_profile = 0;
 Survey SurveySetup;
 
 //#define HTTP_USE_WGET 1
+
+float f_max (float a, float b) {
+	if (a > b) {
+		return a;
+	}
+	return b;
+}
+
+float f_min (float a, float b) {
+	if (a < b) {
+		return a;
+	}
+	return b;
+}
+
+uint8_t onSegment (float px, float py, float qx, float qy, float rx, float ry) {
+	if (qx <= f_max(px, rx) && qx >= f_min(px, rx) && qy <= f_max(py, ry) && qy >= f_min(py, ry)) {
+		return 1;
+	}
+	return 0;
+}
+
+int orientation (float px, float py, float qx, float qy, float rx, float ry) {
+	float val = (qy - py) * (rx - qx) - (qx - px) * (ry - qy);
+    if (val == 0.0) {
+		return 0;
+	}
+    return (val > 0.0) ? 1: 2;
+}
+ 
+uint8_t intersect_check (float p1x, float p1y, float q1x, float q1y, float p2x, float p2y, float q2x, float q2y) {
+    int o1 = orientation(p1x, p1y, q1x, q1y, p2x, p2y);
+    int o2 = orientation(p1x, p1y, q1x, q1y, q2x, q2y);
+    int o3 = orientation(p2x, p2y, q2x, q2y, p1x, p1y);
+    int o4 = orientation(p2x, p2y, q2x, q2y, q1x, q1y);
+    if (o1 != o2 && o3 != o4) {
+        return 1;
+	}
+    if (o1 == 0 && onSegment(p1x, p1y, p2x, p2y, q1x, q1y))  {
+		return 1;
+	}
+    if (o2 == 0 && onSegment(p1x, p1y, q2x, q2y, q1x, q1y)) {
+		return 1;
+	}
+    if (o3 == 0 && onSegment(p2x, p2y, p1x, p1y, q2x, q2y)) {
+		return 1;
+	}
+    if (o4 == 0 && onSegment(p2x, p2y, q1x, q1y, q2x, q2y)) {
+		return 1;
+	}
+    return 0;
+}
+
+int8_t check_intersect_nofly (ESContext *esContext, float lastn_x, float lastn_y, float px1, float py1) {
+	int nfn = 0;
+	for (nfn = 0; nfn < 255; nfn++) {
+		int num = 0;
+		float pmark_x = 0.0;
+		float pmark_y = 0.0;
+		float last_x = 0.0;
+		float last_y = 0.0;
+		for (num = 1; num < MAX_POLYPOINTS; num++) {
+			if (PolyPointsNoFly[num].num == nfn && PolyPointsNoFly[num].p_lat != 0.0) {
+				pmark_x = long2x(PolyPointsNoFly[num].p_long, lon, zoom);
+				pmark_y = lat2y(PolyPointsNoFly[num].p_lat, lat, zoom);
+				float px2 = (float)(pmark_x) / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
+				float py2 = (float)(pmark_y) / (float)esContext->height * 2.0 - 1.0;
+				if (last_x != 0.0 && last_y != 0.0) {
+					if (intersect_check(lastn_x, lastn_y, px1, py1, last_x, last_y, px2, py2) == 1) {
+						return nfn;
+					}
+				}
+				last_x = px2;
+				last_y = py2;
+			}
+		}
+	}
+	return -1;
+}
+
+int8_t check_intersect_nofly2point (ESContext *esContext, int nfn, float px, float py, float px2, float py2) {
+	int num = 0;
+	float pmark_x = 0.0;
+	float pmark_y = 0.0;
+	float last_x = 0.0;
+	float last_y = 0.0;
+	for (num = 1; num < MAX_POLYPOINTS; num++) {
+		if (PolyPointsNoFly[num].num == nfn && PolyPointsNoFly[num].p_lat != 0.0) {
+			pmark_x = long2x(PolyPointsNoFly[num].p_long, lon, zoom);
+			pmark_y = lat2y(PolyPointsNoFly[num].p_lat, lat, zoom);
+			float px1 = (float)(pmark_x) / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
+			float py1 = (float)(pmark_y) / (float)esContext->height * 2.0 - 1.0;
+			if (last_x != 0.0 && last_y != 0.0) {
+				if (px2 == px1 && py2 == py1) {
+				} else if (px2 == last_x && py2 == last_y) {
+				} else if (intersect_check(px, py, px2, py2, last_x, last_y, px1, py1) == 1) {
+					return 1;
+				}
+			}
+			last_x = px1;
+			last_y = py1;
+		}
+	}
+	return 0;
+}
+
+
+
+#define PMAX 255
+enum {
+	UNSET,
+	IN_OPEN,
+	IN_CLOSE
+};
+
+typedef struct {
+	float x;
+	float y;
+	int type;
+} Point2D;
+
+typedef struct {
+	Point2D p;
+	Point2D from;
+	float f;
+	int t;
+} alist;
+
+alist list[100];
+
+float dist (Point2D p1, Point2D p2) {
+	float dx = p1.x - p2.x;
+	float dy = p1.y - p2.y;
+	if (dx < 0.0) {
+		dx *= -1;
+	}
+	if (dy < 0.0) {
+		dy *= -1;
+	}
+	return sqrt((dx * dx) + (dy * dy));
+}
+
+void olist_add (Point2D p, Point2D from, int f) {
+	int n = 0;
+	for (n = 0; n < 100; n++) {
+		if (list[n].p.x == p.x && list[n].p.y == p.y) {
+			if (list[n].t == IN_OPEN && list[n].f > f) {
+				list[n].from.x = from.x;
+				list[n].from.y = from.y;
+				list[n].f = f;
+			}
+			break;
+		} else if (list[n].t == UNSET) {
+			list[n].p.x = p.x;
+			list[n].p.y = p.y;
+			list[n].from.x = from.x;
+			list[n].from.y = from.y;
+			list[n].f = f;
+			list[n].t = IN_OPEN;
+			break;
+		}
+	}
+}
+
+void olist_mv2close (Point2D p, Point2D from, int f) {
+	int n = 0;
+	for (n = 0; n < 100; n++) {
+		if (list[n].p.x == p.x && list[n].p.y == p.y && list[n].t != IN_CLOSE) {
+			list[n].from.x = from.x;
+			list[n].from.y = from.y;
+			list[n].f = f;
+			list[n].t = IN_CLOSE;
+			break;
+		}
+	}
+}
+
+void reroute (ESContext *esContext, float x1, float y1, float x2, float y2, float alt, int nfzone) {
+	Point2D active;
+	Point2D mypoly[PMAX];
+	Point2D start;
+	Point2D stop;
+	float active_dist = 0;
+	int num = 0;
+	int n = 0;
+	start.x = x1;
+	start.y = y1;
+	stop.x = x2;
+	stop.y = y2;
+	int polypoints = 0;
+	for (num = 1; num < MAX_POLYPOINTS; num++) {
+		if (PolyPointsNoFly[num].num == nfzone && PolyPointsNoFly[num].p_lat != 0.0) {
+			float pmark_x = long2x(PolyPointsNoFly[num].p_long, lon, zoom);
+			float pmark_y = lat2y(PolyPointsNoFly[num].p_lat, lat, zoom);
+			float px2 = (float)(pmark_x) / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
+			float py2 = (float)(pmark_y) / (float)esContext->height * 2.0 - 1.0;
+			mypoly[polypoints].x = px2;
+			mypoly[polypoints].y = py2;
+			mypoly[polypoints].type = 0;
+			if (check_intersect_nofly2point(esContext, nfzone, x1, y1, px2, py2) == 0) {
+				mypoly[polypoints].type |= 1;
+			}
+			if (check_intersect_nofly2point(esContext, nfzone, x2, y2, px2, py2) == 0) {
+				mypoly[polypoints].type |= 2;
+			}
+			polypoints++;
+		}
+	}
+	for (n = 0; n < 100; n++) {
+		list[n].p.x = -1;
+		list[n].p.y = -1;
+		list[n].from.x = -1;
+		list[n].from.y = -1;
+		list[n].f = -1;
+		list[n].t = UNSET;
+	}
+	olist_add(start, start, 0);
+	olist_mv2close(start, start, 0);
+	active = start;
+	for (n = 0; n < polypoints; n++) {
+		if (mypoly[n].type & 1) {
+			olist_add(mypoly[n], start, dist(mypoly[n], stop));
+		}
+	}
+	while (1) {
+		int min_n = -1;
+		float min_dist = 9999;
+		for (n = 0; n < 100; n++) {
+			if (list[n].t == IN_OPEN) {
+				float ndist = dist(active, list[n].p) + dist(list[n].p, stop);
+				if (min_dist > ndist) {
+					min_dist = ndist;
+					min_n = n;
+				}
+			}
+		}
+		if (min_n != -1) {
+			active_dist += min_dist;
+			olist_mv2close(list[min_n].p, active, active_dist);
+			active = list[min_n].p;
+			for (n = 0; n < polypoints; n++) {
+				if (active.x == mypoly[n].x && active.y == mypoly[n].y) {
+					if (n > 0) {
+						olist_add(mypoly[n - 1], active, dist(active, mypoly[n - 1]) + dist(mypoly[n - 1], stop));
+					} else {
+						olist_add(mypoly[polypoints - 1], active, dist(active, mypoly[polypoints - 1]) + dist(mypoly[polypoints - 1], stop));
+					}
+					if (n < polypoints - 1) {
+						olist_add(mypoly[n + 1], active, dist(active, mypoly[n + 1]) + dist(mypoly[n + 1], stop));
+					} else {
+						olist_add(mypoly[0], active, dist(active, mypoly[0]) + dist(mypoly[0], stop));
+					}
+					if (mypoly[n].type & 2) {
+						olist_add(stop, active, dist(active, stop));
+					}
+				}
+			}
+		} else {
+			break;
+		}
+	}
+
+	active = stop;
+	while (1) {
+		int flag = 0;
+		for (n = 0; n < 100; n++) {
+			if (active.x == list[n].p.x && active.y == list[n].p.y) {
+
+				draw_line_f3(esContext, list[n].p.x, list[n].p.y, 0.0, list[n].from.x, list[n].from.y, 0.0, 255, 255, 255, 255);
+
+				active = list[n].from;
+				if (list[n].from.x == start.x && list[n].from.y == start.y) {
+				} else {
+					flag = 1;
+				}
+				break;
+			}
+		}
+		if (flag == 0) {
+			break;
+		}
+	}
+
+
+}
+
+
+
+
+
 
 
 
@@ -407,7 +699,7 @@ int point_in_poly (float testx, float testy) {
 			last_y = pmark_y;
 		}
 	}
-	for (num = 1; num < MAX_WAYPOINTS; num++) {
+	for (num = 1; num < MAX_POLYPOINTS; num++) {
 		if (PolyPoints[num].p_lat != 0.0) {
 			pmark_x = long2x(PolyPoints[num].p_long, lon, zoom);
 			pmark_y = lat2y(PolyPoints[num].p_lat, lat, zoom);
@@ -449,6 +741,71 @@ int point_in_poly (float testx, float testy) {
 		}
 		last_x = pmark_x;
 		last_y = pmark_y;
+	}
+	return result;
+}
+
+int point_in_polynf (float testx, float testy) {
+	int result = 0;
+	int num = 0;
+	float pmark_x = 0.0;
+	float pmark_y = 0.0;
+	float last_x = 0.0;
+	float last_y = 0.0;
+
+	int nfn = 0;
+	for (nfn = 0; nfn < 255; nfn++) {
+		for (num = 1; num < MAX_POLYPOINTS; num++) {
+			if (PolyPointsNoFly[num].num == nfn && PolyPointsNoFly[num].p_lat != 0.0) {
+				pmark_x = long2x(PolyPointsNoFly[num].p_long, lon, zoom);
+				pmark_y = lat2y(PolyPointsNoFly[num].p_lat, lat, zoom);
+				last_x = pmark_x;
+				last_y = pmark_y;
+			}
+		}
+		for (num = 1; num < MAX_POLYPOINTS; num++) {
+			if (PolyPointsNoFly[num].num == nfn && PolyPointsNoFly[num].p_lat != 0.0) {
+				pmark_x = long2x(PolyPointsNoFly[num].p_long, lon, zoom);
+				pmark_y = lat2y(PolyPointsNoFly[num].p_lat, lat, zoom);
+				float x1 = last_x;
+				float y1 = last_y;
+				float x2 = pmark_x;
+				float y2 = pmark_y;
+				if (y2 == testy) {
+					if ((x2 == testx) || (y1 == testy && ((x2 > testx) == (x1 < testx)))) {
+//						fprintf(stderr, "Point on line\n");
+						return 1;
+					}
+				}
+				if ((y1 < testy) != (y2 < testy)) {
+					if (x1 >= testx) {
+						if (x2 > testx) {
+							result = 1 - result;
+						} else {
+							float d = (float)(x1 - testx) * (y2 - testy) - (float)(x2 - testx) * (y1 - testy);
+							if (!d) {
+								return 1;
+							}
+							if ((d > 0) == (y2 > y1)) {
+								result = 1 - result;
+							}
+						}
+					} else {
+						if (x2 > testx) {
+							float d = (float)(x1 - testx) * (y2 - testy) - (float)(x2 - testx) * (y1 - testy);
+							if (!d) {
+								return 1;
+							}
+							if ((d > 0) == (y2 > y1)) {
+								result = 1 - result;
+							}
+						}
+					}
+				}
+			}
+			last_x = pmark_x;
+			last_y = pmark_y;
+		}
 	}
 	return result;
 }
@@ -761,6 +1118,12 @@ uint8_t map_polypoint_add (char *name, float x, float y, int8_t button, float da
 	return 0;
 }
 
+uint8_t map_polypointnf_add (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	map_polynf_addmode = 1 - map_polynf_addmode;
+	map_show_poly = 1;
+	return 0;
+}
+
 uint8_t map_setpos_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	map_setpos = 1 - map_setpos;
 	GroundData.followme = 0;
@@ -826,7 +1189,7 @@ uint8_t map_sp_radius_change (char *name, float x, float y, int8_t button, float
 uint8_t map_polypoint_del (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	uint16_t n = 0;
 	uint16_t n2 = polypoint_active + 1;
-	for (n = polypoint_active; n < MAX_WAYPOINTS; n++) {
+	for (n = 0; n < MAX_POLYPOINTS; n++) {
 		if (PolyPoints[n].p_lat != 0.0) {
 			PolyPoints[n].p_lat = PolyPoints[n2].p_lat;
 			PolyPoints[n].p_long = PolyPoints[n2].p_long;
@@ -1479,6 +1842,9 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 			if (point_in_poly(nx, ny) == 0) {
 				continue;
 			}
+			if (point_in_polynf(nx, ny) != 0) {
+				continue;
+			}
 			float np_long = x2long(nx, lon, mapdata->zoom);
 			float np_lat = y2lat(ny, lat, mapdata->zoom);
 			float pos_alt = get_altitude(np_lat, np_long);
@@ -1498,6 +1864,9 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 			float nx = lnx + cos((SurveySetup.angle) * DEG2RAD) * n_x;
 			float ny = lny + sin((SurveySetup.angle) * DEG2RAD) * n_x;
 			if (point_in_poly(nx, ny) == 0) {
+				continue;
+			}
+			if (point_in_polynf(nx, ny) != 0) {
 				continue;
 			}
 			float np_long = x2long(nx, lon, mapdata->zoom);
@@ -1526,6 +1895,9 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 			if (point_in_poly(nx, ny) == 0) {
 				continue;
 			}
+			if (point_in_polynf(nx, ny) != 0) {
+				continue;
+			}
 			float np_long = x2long(nx, lon, mapdata->zoom);
 			float np_lat = y2lat(ny, lat, mapdata->zoom);
 			float pos_alt = get_altitude(np_lat, np_long);
@@ -1551,6 +1923,9 @@ uint8_t map_cam_export_kml (char *name, float x, float y, int8_t button, float d
 			float nx = lnx + cos((SurveySetup.angle) * DEG2RAD) * n_x;
 			float ny = lny + sin((SurveySetup.angle) * DEG2RAD) * n_x;
 			if (point_in_poly(nx, ny) == 0) {
+				continue;
+			}
+			if (point_in_polynf(nx, ny) != 0) {
 				continue;
 			}
 			float np_long = x2long(nx, lon, mapdata->zoom);
@@ -1623,9 +1998,13 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 		}
 	} else if (strcmp(name, "cam_del") == 0) {
 		int n = 0;
-		for (n = 1; n < MAX_WAYPOINTS; n++) {
+		for (n = 1; n < MAX_POLYPOINTS; n++) {
 			PolyPoints[n].p_lat = 0.0;
 			PolyPoints[n].p_long = 0.0;
+		}
+		for (n = 1; n < MAX_POLYPOINTS; n++) {
+			PolyPointsNoFly[n].p_lat = 0.0;
+			PolyPointsNoFly[n].p_long = 0.0;
 		}
 	} else if (strcmp(name, "SurveySetup.mode") == 0) {
 		SurveySetup.mode = 1 - SurveySetup.mode;
@@ -1881,6 +2260,9 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 					if (point_in_poly(nx, ny) == 0) {
 						continue;
 					}
+					if (point_in_polynf(nx, ny) != 0) {
+						continue;
+					}
 				}
 				float np_long = x2long(nx, lon, mapdata->zoom);
 				float np_lat = y2lat(ny, lat, mapdata->zoom);
@@ -1958,6 +2340,9 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 					}
 				} else {
 					if (point_in_poly(nx, ny) == 0) {
+						continue;
+					}
+					if (point_in_polynf(nx, ny) != 0) {
 						continue;
 					}
 				}
@@ -2588,6 +2973,7 @@ void map_draw_buttons (ESContext *esContext) {
 	if (map_poly_mopen == 0) {
 		draw_button(esContext, "map_poly_mopen", setup.view_mode, "POLY", FONT_WHITE, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_poly_mopen_change, 0.0);
 		map_poly_addmode = 0;
+		map_polynf_addmode = 0;
 	} else {
 		draw_button(esContext, "map_poly_mopen", setup.view_mode, "POLY", FONT_GREEN, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_poly_mopen_change, 0.0);
 		ny2 = ny;
@@ -2596,6 +2982,7 @@ void map_draw_buttons (ESContext *esContext) {
 		if (map_show_poly == 0) {
 			draw_button(esContext, "poly_setup", setup.view_mode, "SHOW", FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_poly_set, 0.0);
 			map_poly_addmode = 0;
+			map_polynf_addmode = 0;
 		} else {
 			draw_button(esContext, "poly_setup", setup.view_mode, "SHOW", FONT_GREEN, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_poly_set, 0.0);
 		}
@@ -2609,6 +2996,15 @@ void map_draw_buttons (ESContext *esContext) {
 			draw_button(esContext, "map_poly_addmode", setup.view_mode, "ADD", FONT_GREEN, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_polypoint_add, 0.0);
 		}
 		draw_text_button(esContext, "map_poly_addmode_", setup.view_mode, "add point", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_polypoint_add, 0.0);
+		ny2++;
+		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
+		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
+		if (map_polynf_addmode == 0) {
+			draw_button(esContext, "map_polynf_addmode", setup.view_mode, "ADD NF", FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_polypointnf_add, 0.0);
+		} else {
+			draw_button(esContext, "map_polynf_addmode", setup.view_mode, "ADD NF", FONT_GREEN, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_polypointnf_add, 0.0);
+		}
+		draw_text_button(esContext, "map_polynf_addmode_", setup.view_mode, "add nfpoint", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_polypointnf_add, 0.0);
 		ny2++;
 		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
 		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
@@ -3201,24 +3597,12 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				} else {
 					mark_point(esContext, PolyPoints[n].p_lat, PolyPoints[n].p_long, alt, "", "", 0, 0.0, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
 				}
-			}
-		}
-		for (n = 1; n < MAX_POLYPOINTS; n++) {
-			if (PolyPoints[n].p_lat != 0.0) {
-				float pos_alt = get_altitude(PolyPoints[n].p_lat, PolyPoints[n].p_long);
-				float alt = SurveySetup.alt + pos_alt;
-				if (SurveySetup.alt_abs == 1) {
-					if (SurveySetup.alt < pos_alt + 1.0) {
-						SurveySetup.alt = pos_alt + 1.0;
-					}
-					alt = SurveySetup.alt;
-				}
 				last_lat = PolyPoints[n].p_lat;
 				last_lon = PolyPoints[n].p_long;
 				last_alt = alt;
 			}
 		}
-		for (n = 1; n < MAX_WAYPOINTS; n++) {
+		for (n = 1; n < MAX_POLYPOINTS; n++) {
 			if (PolyPoints[n].p_lat != 0.0) {
 				float pos_alt = get_altitude(PolyPoints[n].p_lat, PolyPoints[n].p_long);
 				float alt = SurveySetup.alt + pos_alt;
@@ -3232,6 +3616,79 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				last_lat = PolyPoints[n].p_lat;
 				last_lon = PolyPoints[n].p_long;
 				last_alt = alt;
+			}
+		}
+
+
+		int nfn = 0;
+		for (nfn = 0; nfn < 255; nfn++) {
+#ifdef SDLGL
+			glColor4f(1.0, 0.0, 0.0, 0.5);
+			glBegin(GL_POLYGON);
+			for (n = 1; n < MAX_POLYPOINTS; n++) {
+				if (PolyPointsNoFly[n].num == nfn && PolyPointsNoFly[n].p_lat != 0.0) {
+					float pos_alt = get_altitude(PolyPointsNoFly[n].p_lat, PolyPointsNoFly[n].p_long);
+					float alt = SurveySetup.alt + pos_alt;
+					if (SurveySetup.alt_abs == 1) {
+						if (SurveySetup.alt < pos_alt + 1.0) {
+							SurveySetup.alt = pos_alt + 1.0;
+						}
+						alt = SurveySetup.alt;
+					}
+					float pmark_x = long2x(PolyPointsNoFly[n].p_long, lon, zoom);
+					float pmark_y = lat2y(PolyPointsNoFly[n].p_lat, lat, zoom);
+					float px2 = (float)(pmark_x) / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
+					float py2 = (float)(pmark_y) / (float)esContext->height * 2.0 - 1.0;
+					glVertex3f(px2, py2 * -1, 0.0);
+				}
+			}
+			glEnd();
+#endif
+			last_lat = 0.0;
+			last_lon = 0.0;
+			last_alt = 0.0;
+			for (n = 1; n < MAX_POLYPOINTS; n++) {
+				if (PolyPointsNoFly[n].num == nfn && PolyPointsNoFly[n].p_lat != 0.0) {
+					float pos_alt = get_altitude(PolyPointsNoFly[n].p_lat, PolyPointsNoFly[n].p_long);
+					float alt = SurveySetup.alt + pos_alt;
+					if (SurveySetup.alt_abs == 1) {
+						if (SurveySetup.alt < pos_alt + 1.0) {
+							SurveySetup.alt = pos_alt + 1.0;
+						}
+						alt = SurveySetup.alt;
+					}
+					if (n == polypoint_active) {
+						mark_point(esContext, PolyPointsNoFly[n].p_lat, PolyPointsNoFly[n].p_long, alt, "", "", 1, 0.0, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
+					} else {
+						mark_point(esContext, PolyPointsNoFly[n].p_lat, PolyPointsNoFly[n].p_long, alt, "", "", 0, 0.0, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
+					}
+					last_lat = PolyPointsNoFly[n].p_lat;
+					last_lon = PolyPointsNoFly[n].p_long;
+					last_alt = alt;
+				}
+			}
+
+			int flag = 0;
+			for (n = 1; n < MAX_POLYPOINTS; n++) {
+				if (PolyPointsNoFly[n].num == nfn && PolyPointsNoFly[n].p_lat != 0.0) {
+					float pos_alt = get_altitude(PolyPointsNoFly[n].p_lat, PolyPointsNoFly[n].p_long);
+					float alt = SurveySetup.alt + pos_alt;
+					if (SurveySetup.alt_abs == 1) {
+						if (SurveySetup.alt < pos_alt + 1.0) {
+							SurveySetup.alt = pos_alt + 1.0;
+						}
+						alt = SurveySetup.alt;
+					}
+					if (flag == 1 || PolyPointsNoFly[n].num < map_polynf_num) {
+						mark_route(esContext, last_lat, last_lon, last_alt, PolyPointsNoFly[n].p_lat, PolyPointsNoFly[n].p_long, alt, 2, mapdata->lat, mapdata->lon, mapdata->zoom);
+					} else {
+						mark_route(esContext, last_lat, last_lon, last_alt, PolyPointsNoFly[n].p_lat, PolyPointsNoFly[n].p_long, alt, 1, mapdata->lat, mapdata->lon, mapdata->zoom);
+						flag = 1;
+					}
+					last_lat = PolyPointsNoFly[n].p_lat;
+					last_lon = PolyPointsNoFly[n].p_long;
+					last_alt = alt;
+				}
 			}
 		}
 
@@ -3322,40 +3779,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				if (point_in_poly(nx, ny) == 0) {
 					continue;
 				}
-				px1 = (float)(nx) / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
-				py1 = (float)(ny) / (float)esContext->height * 2.0 - 1.0;
-				float np_long = x2long(nx, lon, mapdata->zoom);
-				float np_lat = y2lat(ny, lat, mapdata->zoom);
-				float pos_alt = get_altitude(np_lat, np_long);
-				float alt = SurveySetup.alt + pos_alt;
-				if (SurveySetup.alt_abs == 1) {
-					if (SurveySetup.alt < pos_alt + 1.0) {
-						SurveySetup.alt = pos_alt + 1.0;
-					}
-					alt = SurveySetup.alt;
-				}
-				if (SurveySetup.mode == 0) {
-					draw_fov(esContext, np_lat, np_long, alt, SurveySetup.angle + 90.0);
-				}
-				draw_line_f3(esContext, px1 + 0.01, py1 + 0.01, (alt / alt_zoom), px1 - 0.01, py1 - 0.01, (alt / alt_zoom), 0, 255, 255, 255);
-				draw_line_f3(esContext, px1 + 0.01, py1 - 0.01, (alt / alt_zoom), px1 - 0.01, py1 + 0.01, (alt / alt_zoom), 0, 255, 255, 255);
-				draw_line_f3(esContext, px1 + 0.01, py1 + 0.01, (pos_alt / alt_zoom), px1 - 0.01, py1 - 0.01, (pos_alt / alt_zoom), 0, 255, 255, 255);
-				draw_line_f3(esContext, px1 + 0.01, py1 - 0.01, (pos_alt / alt_zoom), px1 - 0.01, py1 + 0.01, (pos_alt / alt_zoom), 0, 255, 255, 255);
-				draw_line_f3(esContext, px1, py1, (alt / alt_zoom), px1, py1, (pos_alt / alt_zoom), 0, 255, 255, 127);
-				if (lastn_x != 0.0 || lastn_y != 0.0) {
-					draw_line_f3(esContext, lastn_x, lastn_y, (lastn_alt / alt_zoom), px1, py1, (alt / alt_zoom), 255, 255, 255, 255);
-				}
-				lastn_x = px1;
-				lastn_y = py1;
-				lastn_alt = alt;
-			}
-			n_y += grid_y;
-			lnx = ltx + cos((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
-			lny = lty + sin((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
-			for (n_x = n_x - grid_x; n_x > -grid_x; n_x -= grid_x) {
-				float nx = lnx + cos((SurveySetup.angle) * DEG2RAD) * n_x;
-				float ny = lny + sin((SurveySetup.angle) * DEG2RAD) * n_x;
-				if (point_in_poly(nx, ny) == 0) {
+				if (point_in_polynf(nx, ny) != 0) {
 					continue;
 				}
 				px1 = (float)(nx) / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
@@ -3379,7 +3803,62 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				draw_line_f3(esContext, px1 + 0.01, py1 - 0.01, (pos_alt / alt_zoom), px1 - 0.01, py1 + 0.01, (pos_alt / alt_zoom), 0, 255, 255, 255);
 				draw_line_f3(esContext, px1, py1, (alt / alt_zoom), px1, py1, (pos_alt / alt_zoom), 0, 255, 255, 127);
 				if (lastn_x != 0.0 || lastn_y != 0.0) {
-					draw_line_f3(esContext, lastn_x, lastn_y, (lastn_alt / alt_zoom), px1, py1, (alt / alt_zoom), 255, 255, 255, 255);
+					int nfzone = 0;
+					if ((nfzone = check_intersect_nofly(esContext, lastn_x, lastn_y, px1, py1)) >= 0) {
+
+reroute(esContext, lastn_x, lastn_y, px1, py1, alt, nfzone);
+
+						draw_line_f3(esContext, lastn_x, lastn_y, (lastn_alt / alt_zoom), px1, py1, (alt / alt_zoom), 255, 0, 0, 255);
+					} else {
+						draw_line_f3(esContext, lastn_x, lastn_y, (lastn_alt / alt_zoom), px1, py1, (alt / alt_zoom), 255, 255, 255, 100);
+					}
+				}
+				lastn_x = px1;
+				lastn_y = py1;
+				lastn_alt = alt;
+			}
+			n_y += grid_y;
+			lnx = ltx + cos((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
+			lny = lty + sin((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
+			for (n_x = n_x - grid_x; n_x > -grid_x; n_x -= grid_x) {
+				float nx = lnx + cos((SurveySetup.angle) * DEG2RAD) * n_x;
+				float ny = lny + sin((SurveySetup.angle) * DEG2RAD) * n_x;
+				if (point_in_poly(nx, ny) == 0) {
+					continue;
+				}
+				if (point_in_polynf(nx, ny) != 0) {
+					continue;
+				}
+				px1 = (float)(nx) / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
+				py1 = (float)(ny) / (float)esContext->height * 2.0 - 1.0;
+				float np_long = x2long(nx, lon, mapdata->zoom);
+				float np_lat = y2lat(ny, lat, mapdata->zoom);
+				float pos_alt = get_altitude(np_lat, np_long);
+				float alt = SurveySetup.alt + pos_alt;
+				if (SurveySetup.alt_abs == 1) {
+					if (SurveySetup.alt < pos_alt + 1.0) {
+						SurveySetup.alt = pos_alt + 1.0;
+					}
+					alt = SurveySetup.alt;
+				}
+				if (SurveySetup.mode == 0) {
+					draw_fov(esContext, np_lat, np_long, alt, SurveySetup.angle + 90.0);
+				}
+				draw_line_f3(esContext, px1 + 0.01, py1 + 0.01, (alt / alt_zoom), px1 - 0.01, py1 - 0.01, (alt / alt_zoom), 0, 255, 255, 255);
+				draw_line_f3(esContext, px1 + 0.01, py1 - 0.01, (alt / alt_zoom), px1 - 0.01, py1 + 0.01, (alt / alt_zoom), 0, 255, 255, 255);
+				draw_line_f3(esContext, px1 + 0.01, py1 + 0.01, (pos_alt / alt_zoom), px1 - 0.01, py1 - 0.01, (pos_alt / alt_zoom), 0, 255, 255, 255);
+				draw_line_f3(esContext, px1 + 0.01, py1 - 0.01, (pos_alt / alt_zoom), px1 - 0.01, py1 + 0.01, (pos_alt / alt_zoom), 0, 255, 255, 255);
+				draw_line_f3(esContext, px1, py1, (alt / alt_zoom), px1, py1, (pos_alt / alt_zoom), 0, 255, 255, 127);
+				if (lastn_x != 0.0 || lastn_y != 0.0) {
+					int nfzone = 0;
+					if ((nfzone = check_intersect_nofly(esContext, lastn_x, lastn_y, px1, py1)) >= 0) {
+
+reroute(esContext, lastn_x, lastn_y, px1, py1, alt, nfzone);
+
+						draw_line_f3(esContext, lastn_x, lastn_y, (lastn_alt / alt_zoom), px1, py1, (alt / alt_zoom), 255, 0, 0, 255);
+					} else {
+						draw_line_f3(esContext, lastn_x, lastn_y, (lastn_alt / alt_zoom), px1, py1, (alt / alt_zoom), 255, 255, 255, 100);
+					}
 				}
 				lastn_x = px1;
 				lastn_y = py1;

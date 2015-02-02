@@ -84,6 +84,14 @@ typedef struct {
 	float p_long;
 } PolyPoint;
 
+typedef struct {
+	float p_lat;
+	float p_long;
+	float p_alt;
+	uint8_t mode;
+	uint8_t num;
+} PolyPointNoFly;
+
 enum {
 	BUTTON_RELEASE,
 	BUTTON_PRESS,
@@ -124,6 +132,7 @@ typedef struct {
 	uint32_t tracker_baud;
 	int8_t waypoint_active;
 	int8_t polypoint_active;
+	int8_t polypointnf_active;
 	uint8_t fullscreen;
 	uint8_t borderless;
 	uint8_t view_mode;
@@ -201,6 +210,7 @@ extern Survey SurveySetup;
 extern Button Buttons[MAX_BUTTONS + 1];
 extern WayPoint WayPoints[MODELS_MAX][MAX_WAYPOINTS + 1];
 extern PolyPoint PolyPoints[MAX_POLYPOINTS + 1];
+extern PolyPointNoFly PolyPointsNoFly[MAX_POLYPOINTS + 1];
 extern GcsSetup setup;
 
 extern volatile uint8_t gui_running;
