@@ -2119,6 +2119,7 @@ void Draw (ESContext *esContext) {
 	}
 #endif
 #endif
+#ifndef ANDROID
 #ifdef SDLGL
 	if (trans_count > 0.0) {
 		trans_count += 10.0;
@@ -2131,6 +2132,9 @@ void Draw (ESContext *esContext) {
 			trans_count = 0.0;
 		}
 	}
+#else
+	setup.view_mode = view_mode_next;
+#endif
 #else
 	setup.view_mode = view_mode_next;
 #endif

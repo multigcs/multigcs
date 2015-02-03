@@ -61,6 +61,7 @@ void draw_value_bar (ESContext *esContext, float x1, float y1, float x2, float y
 	for (step = 0; step <= steps; step++) {
 		draw_line_f(esContext, x1 + x_diff / 6.0 * 3.0, y2 - (y_diff * (float)step / steps), x1 + x_diff / 6.0 * 3.0 - x_diff / 20.0, y2 - (y_diff * (float)step / steps), 200, 200, 200, 255);
 	}
+#ifndef ANDROID
 
 	sprintf(tmp_str, "%0.1f", value);
 
@@ -80,7 +81,7 @@ void draw_value_bar (ESContext *esContext, float x1, float y1, float x2, float y
 		draw_triaFilled_f(esContext, x1 + x_diff / 6.0 * 3.4, y_value, x1 + x_diff / 6.0 * 4.0 + x_diff / 15.0, y_value - x_diff / 15.0, x1 + x_diff / 6.0 * 4.0 + x_diff / 15.0, y_value + x_diff / 15.0, 255, 255, 255, 255);
 		draw_tria_f(esContext, x1 + x_diff / 6.0 * 3.4, y_value, x1 + x_diff / 6.0 * 4.0 + x_diff / 15.0, y_value - x_diff / 15.0, x1 + x_diff / 6.0 * 4.0 + x_diff / 15.0, y_value + x_diff / 15.0, 0, 0, 0, 255);
 	}
-
+#endif
 }
 
 void draw_value_bar_duo (ESContext *esContext, float x1, float y1, float x2, float y2, uint8_t type, float min, float max, float warning, float critical, float value, float value2) {
@@ -124,7 +125,7 @@ void draw_value_bar_duo (ESContext *esContext, float x1, float y1, float x2, flo
 	}
 
 	sprintf(tmp_str, "%0.1f/%0.1f", value, value2);
-
+#ifndef ANDROID
 	if (value < min || value > max) {
 		if (value < min) {
 			y_value = y2;
@@ -157,7 +158,7 @@ void draw_value_bar_duo (ESContext *esContext, float x1, float y1, float x2, flo
 		draw_triaFilled_f(esContext, 0.03 + x1 + x_diff / 6.0 * 3.4, y_value2, 0.03 + x1 + x_diff / 6.0 * 4.0 + x_diff / 15.0, y_value2 - x_diff / 15.0, 0.03 + x1 + x_diff / 6.0 * 4.0 + x_diff / 15.0, y_value2 + x_diff / 15.0, 255, 255, 255, 255);
 		draw_tria_f(esContext, 0.03 + x1 + x_diff / 6.0 * 3.4, y_value2, 0.03 + x1 + x_diff / 6.0 * 4.0 + x_diff / 15.0, y_value2 - x_diff / 15.0, 0.03 + x1 + x_diff / 6.0 * 4.0 + x_diff / 15.0, y_value2 + x_diff / 15.0, 0, 0, 0, 255);
 	}
-
+#endif
 }
 
 
@@ -221,13 +222,13 @@ void draw_value_barmeter_duo (ESContext *esContext, float x1, float y1, float x2
 void screen_telemetry (ESContext *esContext) {
 #ifndef ANDROID
 	glDisable( GL_DEPTH_TEST );
-
 #ifdef SDLGL
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 #else
 	ESMatrix modelview;
 	esMatrixLoadIdentity(&modelview);
+#endif
 #endif
 
 	draw_title(esContext, "Telemetry");
@@ -240,6 +241,8 @@ void screen_telemetry (ESContext *esContext) {
 		draw_value_barmeter(esContext, -0.2, -0.8, 0.1, 0.0, "VOLTS", "V", 0, 8.0, 14.0, 11.0, 10.0, ModelData[ModelActive].voltage);
 	}
 	draw_value_barmeter(esContext, 0.3, -0.8, 0.6, 0.0, "AMPS", "A", 0, 0.0, 100.0, 75.0, 50.0, ModelData[ModelActive].ampere);
+
+
 
 	if (ModelData[ModelActive].voltage_rx == 0) {
 		draw_value_barmeter_duo(esContext, 0.8, -0.8, 1.1, 0.0, "VOLTS(FC)", "V", 0, 3.0, 6.0, 4.8, 4.2, ModelData[ModelActive].fc_voltage1, ModelData[ModelActive].fc_voltage2);
@@ -260,10 +263,10 @@ void screen_telemetry (ESContext *esContext) {
 	draw_value_barmeter(esContext, 0.3, 0.0, 0.6, 0.8, "SATS", "", 0, 0.0, 18.0, 6.0, 4.0, ModelData[ModelActive].numSat);
 	draw_value_barmeter(esContext, 0.8, 0.0, 1.1, 0.8, "HEART", "", 0, 0.0, 100.0, 40.0, 20.0, ModelData[ModelActive].heartbeat);
 
+#ifndef ANDROID
 #ifdef SDLGL
 	glPopMatrix();
 #endif
-
 	glEnable( GL_DEPTH_TEST );
 #endif
 }
