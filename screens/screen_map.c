@@ -54,6 +54,8 @@ uint8_t map_show_cam_setup = 0;
 uint8_t map_show_profile = 0;
 Survey SurveySetup;
 
+alist list[PMAX + 2];
+
 //#define HTTP_USE_WGET 1
 
 float f_max (float a, float b) {
@@ -147,6 +149,16 @@ int8_t check_intersect_nofly2point (ESContext *esContext, int nfn, float px, flo
 			pmark_y = lat2y(PolyPointsNoFly[num].p_lat, lat, zoom);
 			float px1 = (float)(pmark_x) / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 			float py1 = (float)(pmark_y) / (float)esContext->height * 2.0 - 1.0;
+			last_x = px1;
+			last_y = py1;
+		}
+	}
+	for (num = 1; num < MAX_POLYPOINTS; num++) {
+		if (PolyPointsNoFly[num].num == nfn && PolyPointsNoFly[num].p_lat != 0.0) {
+			pmark_x = long2x(PolyPointsNoFly[num].p_long, lon, zoom);
+			pmark_y = lat2y(PolyPointsNoFly[num].p_lat, lat, zoom);
+			float px1 = (float)(pmark_x) / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
+			float py1 = (float)(pmark_y) / (float)esContext->height * 2.0 - 1.0;
 			if (last_x != 0.0 && last_y != 0.0) {
 				if (px2 == px1 && py2 == py1) {
 				} else if (px2 == last_x && py2 == last_y) {
@@ -160,30 +172,6 @@ int8_t check_intersect_nofly2point (ESContext *esContext, int nfn, float px, flo
 	}
 	return 0;
 }
-
-
-
-#define PMAX 255
-enum {
-	UNSET,
-	IN_OPEN,
-	IN_CLOSE
-};
-
-typedef struct {
-	float x;
-	float y;
-	int type;
-} Point2D;
-
-typedef struct {
-	Point2D p;
-	Point2D from;
-	float f;
-	int t;
-} alist;
-
-alist list[100];
 
 float dist (Point2D p1, Point2D p2) {
 	float dx = p1.x - p2.x;
@@ -256,9 +244,11 @@ void reroute (ESContext *esContext, float x1, float y1, float x2, float y2, floa
 			mypoly[polypoints].type = 0;
 			if (check_intersect_nofly2point(esContext, nfzone, x1, y1, px2, py2) == 0) {
 				mypoly[polypoints].type |= 1;
+				draw_circleFilled_f3(esContext, px2, py2, 0.0, 0.02, 255, 0, 0, 127);
 			}
 			if (check_intersect_nofly2point(esContext, nfzone, x2, y2, px2, py2) == 0) {
 				mypoly[polypoints].type |= 2;
+				draw_circleFilled_f3(esContext, px2, py2, 0.0, 0.015, 0, 255, 0, 127);
 			}
 			polypoints++;
 		}
@@ -337,16 +327,7 @@ void reroute (ESContext *esContext, float x1, float y1, float x2, float y2, floa
 			break;
 		}
 	}
-
-
 }
-
-
-
-
-
-
-
 
 void survey_parsePolypoint (xmlDocPtr doc, xmlNodePtr cur, int n) { 
 	xmlChar *key;
@@ -370,7 +351,31 @@ void survey_parsePolypoint (xmlDocPtr doc, xmlNodePtr cur, int n) {
 	return;
 }
 
+void survey_parsePolypointNoFly (xmlDocPtr doc, xmlNodePtr cur, int n) { 
+	xmlChar *key;
+	cur = cur->xmlChildrenNode;
+	while (cur != NULL) {
+		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"lat"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				PolyPointsNoFly[n].p_lat = atof((char *)key);
+			}
+			xmlFree(key);
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"lon"))) {
+			key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+			if ((char *)key != NULL) {
+				PolyPointsNoFly[n].p_long = atof((char *)key);
+			}
+			xmlFree(key);
+		}
+		cur = cur->next;
+	}
+	return;
+}
+
 void survey_parseDoc (char *docname) {
+	int n = 0;
+	int nnf = 0;
 	xmlDocPtr doc;
 	xmlNodePtr cur;
 	xmlChar *key;
@@ -401,12 +406,12 @@ void survey_parseDoc (char *docname) {
 		SDL_Log("Document is Empty!!!\n");
 		return;
 	}
-	int n = 0;
 	for (n = 0; n < MAX_POLYPOINTS; n++) {
 		PolyPoints[n].p_lat = 0.0;
 		PolyPoints[n].p_long = 0.0;
 	}
 	n = 1;
+	nnf = 1;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
 		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"name"))) {
@@ -526,6 +531,9 @@ void survey_parseDoc (char *docname) {
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"polypoint"))) {
 			survey_parsePolypoint(doc, cur, n);
 			n++;
+		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"polypoint_nf"))) {
+			survey_parsePolypoint(doc, cur, n);
+			nnf++;
 		}
 		cur = cur->next;
 	}
@@ -586,6 +594,14 @@ static uint8_t survey_save_xml (char *name, float x, float y, int8_t button, flo
 				fprintf(fr, "  <lat>%0.8f</lat>\n", PolyPoints[n].p_lat);
 				fprintf(fr, "  <lon>%0.8f</lon>\n", PolyPoints[n].p_long);
 				fprintf(fr, " </polypoint>\n");
+			}
+		}
+		for (n = 0; n < MAX_POLYPOINTS; n++) {
+			if (PolyPointsNoFly[n].p_lat != 0.0) {
+				fprintf(fr, " <polypoint_nf>\n");
+				fprintf(fr, "  <lat>%0.8f</lat>\n", PolyPointsNoFly[n].p_lat);
+				fprintf(fr, "  <lon>%0.8f</lon>\n", PolyPointsNoFly[n].p_long);
+				fprintf(fr, " </polypoint_nf>\n");
 			}
 		}
 		fprintf(fr, "</survey>\n");
@@ -1076,9 +1092,11 @@ uint8_t map_addmode_change (char *name, float x, float y, int8_t button, float d
 	} else if ((int)data == 2) {
 		map_poimode = 1 - map_poimode;
 		map_addmode = 0;
+		map_poly_addmode = 0;
 	} else {
 		map_addmode = 1 - map_addmode;
 		map_poimode = 0;
+		map_poly_addmode = 0;
 	}
 	map_show_wp = 1;
 	return 0;
@@ -1086,6 +1104,25 @@ uint8_t map_addmode_change (char *name, float x, float y, int8_t button, float d
 
 uint8_t map_start_addmode_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	map_start_addmode = 1 - map_start_addmode;
+	return 0;
+}
+
+uint8_t map_delall (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	uint16_t n = 0;
+	for (n = waypoint_active; n < MAX_WAYPOINTS; n++) {
+		WayPoints[ModelActive][n].p_lat = 0.0;
+		WayPoints[ModelActive][n].p_long = 0.0;
+		WayPoints[ModelActive][n].p_alt = 0.0;
+		WayPoints[ModelActive][n].param1 = 0.0;
+		WayPoints[ModelActive][n].param2 = 0.0;
+		WayPoints[ModelActive][n].param3 = 0.0;
+		WayPoints[ModelActive][n].param4 = 0.0;
+		WayPoints[ModelActive][n].type = 0;
+		WayPoints[ModelActive][n].frametype = 0;
+		WayPoints[ModelActive][n].name[0] = 0;
+		WayPoints[ModelActive][n].command[0] = 0;
+	}
+	waypoint_active = -1;
 	return 0;
 }
 
@@ -1115,12 +1152,16 @@ uint8_t map_del (char *name, float x, float y, int8_t button, float data, uint8_
 uint8_t map_polypoint_add (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	map_poly_addmode = 1 - map_poly_addmode;
 	map_show_poly = 1;
+	map_addmode = 0;
+	map_polynf_addmode = 0;
 	return 0;
 }
 
 uint8_t map_polypointnf_add (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	map_polynf_addmode = 1 - map_polynf_addmode;
 	map_show_poly = 1;
+	map_poly_addmode = 0;
+	map_addmode = 0;
 	return 0;
 }
 
@@ -2002,6 +2043,8 @@ uint8_t map_cam_set (char *name, float x, float y, int8_t button, float data, ui
 			PolyPoints[n].p_lat = 0.0;
 			PolyPoints[n].p_long = 0.0;
 		}
+	} else if (strcmp(name, "cam_delnf") == 0) {
+		int n = 0;
 		for (n = 1; n < MAX_POLYPOINTS; n++) {
 			PolyPointsNoFly[n].p_lat = 0.0;
 			PolyPointsNoFly[n].p_long = 0.0;
@@ -2942,6 +2985,11 @@ void map_draw_buttons (ESContext *esContext) {
 		ny2++;
 		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
 		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
+		draw_button(esContext, "map_wp_delall", setup.view_mode, "DEL ALL", FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_delall, 0.0);
+		draw_text_button(esContext, "map_wp_delall_", setup.view_mode, "delete all", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_delall, 0.0);
+		ny2++;
+		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
+		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
 		draw_button(esContext, "fms_edit", setup.view_mode, "EDIT", FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, wpedit_waypoint_edit, (float)setup.view_mode);
 		draw_text_button(esContext, "fms_edit_", setup.view_mode, "edit selected", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, wpedit_waypoint_edit, (float)setup.view_mode);
 		ny2++;
@@ -3008,9 +3056,16 @@ void map_draw_buttons (ESContext *esContext) {
 		ny2++;
 		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
 		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
-		draw_button(esContext, "cam_del", setup.view_mode, "DEL", FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_cam_set, 0.0);
+		draw_button(esContext, "cam_del", setup.view_mode, "DEL ALL", FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_cam_set, 0.0);
 		draw_text_button(esContext, "cam_del_", setup.view_mode, "clear polygon", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
 		ny2++;
+
+		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
+		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
+		draw_button(esContext, "cam_delnf", setup.view_mode, "DEL NF", FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_cam_set, 0.0);
+		draw_text_button(esContext, "cam_delnf_", setup.view_mode, "clear nofly", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_cam_set, 0.0);
+		ny2++;
+
 		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
 		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
 		if (map_show_cam_setup == 0) {
@@ -3623,6 +3678,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		int nfn = 0;
 		for (nfn = 0; nfn < 255; nfn++) {
 #ifdef SDLGL
+#ifndef ANDROID
 			glColor4f(1.0, 0.0, 0.0, 0.5);
 			glBegin(GL_POLYGON);
 			for (n = 1; n < MAX_POLYPOINTS; n++) {
@@ -3643,6 +3699,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				}
 			}
 			glEnd();
+#endif
 #endif
 			last_lat = 0.0;
 			last_lon = 0.0;

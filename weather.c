@@ -2,6 +2,7 @@
 #include <all.h>
 
 Weather weather;
+SpaceWeather spaceweather;
 
 SDL_Thread *thread_weather = NULL;
 
@@ -99,6 +100,131 @@ void weather_parseDoc (char *docname) {
 	return;
 }
 
+void weatherfc_parseDoc (char *docname) {
+	xmlDocPtr doc;
+	xmlNodePtr cur;
+	xmlNodePtr wcur;
+	xmlNodePtr tcur;
+	xmlChar *key;
+	if (strncmp(docname, "./", 2) == 0) {
+		docname += 2;
+	}
+	char *buffer = NULL;
+	int len = 0;
+	SDL_RWops *ops_file = SDL_RWFromFile(docname, "r");
+	if (ops_file == NULL) {
+		SDL_Log("map: Document open failed: %s\n", docname);
+		return;
+	}
+	len = SDL_RWseek(ops_file, 0, SEEK_END);
+	SDL_RWseek(ops_file, 0, SEEK_SET);
+	buffer = malloc(len);
+	SDL_RWread(ops_file, buffer, 1, len);
+	doc = xmlParseMemory(buffer, len);
+	SDL_RWclose(ops_file);
+	free(buffer);
+	if (doc == NULL) {
+		SDL_Log("map: Document parsing failed: %s\n", docname);
+		return;
+	}
+	cur = xmlDocGetRootElement(doc);
+	if (cur == NULL) {
+		xmlFreeDoc(doc);
+		SDL_Log("Document is Empty!!!\n");
+		return;
+	}
+	cur = cur->xmlChildrenNode;
+	while (cur != NULL) {
+		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"forecast"))) {
+			wcur = cur->xmlChildrenNode;
+			while (wcur != NULL) {
+				if ((!xmlStrcasecmp(wcur->name, (const xmlChar *)"time"))) {
+					if ((key = xmlGetProp(wcur, (const xmlChar *)"from")) != NULL) {
+						printf("##FROM %s ##\n", (char *)key);
+						xmlFree(key);
+					}
+					if ((key = xmlGetProp(wcur, (const xmlChar *)"to")) != NULL) {
+						printf("##TO %s ##\n", (char *)key);
+						xmlFree(key);
+					}
+					tcur = wcur->xmlChildrenNode;
+					while (tcur != NULL) {
+						if ((!xmlStrcasecmp(tcur->name, (const xmlChar *)"windDirection"))) {
+							if ((key = xmlGetProp(tcur, (const xmlChar *)"deg")) != NULL) {
+								printf("##WDIR %s ##\n", (char *)key);
+								xmlFree(key);
+							}
+						}
+						if ((!xmlStrcasecmp(tcur->name, (const xmlChar *)"windSpeed"))) {
+							if ((key = xmlGetProp(tcur, (const xmlChar *)"mps")) != NULL) {
+								printf("##WMPS %s ##\n", (char *)key);
+								xmlFree(key);
+							}
+						}
+						if ((!xmlStrcasecmp(tcur->name, (const xmlChar *)"temperature"))) {
+							if ((key = xmlGetProp(tcur, (const xmlChar *)"value")) != NULL) {
+								printf("##TEMP %s ##\n", (char *)key);
+								xmlFree(key);
+							}
+						}
+						if ((!xmlStrcasecmp(tcur->name, (const xmlChar *)"pressure"))) {
+							if ((key = xmlGetProp(tcur, (const xmlChar *)"value")) != NULL) {
+								printf("##HPA %s ##\n", (char *)key);
+								xmlFree(key);
+							}
+						}
+						if ((!xmlStrcasecmp(tcur->name, (const xmlChar *)"humidity"))) {
+							if ((key = xmlGetProp(tcur, (const xmlChar *)"value")) != NULL) {
+								printf("##HUM %s ##\n", (char *)key);
+								xmlFree(key);
+							}
+						}
+						if ((!xmlStrcasecmp(tcur->name, (const xmlChar *)"clouds"))) {
+							if ((key = xmlGetProp(tcur, (const xmlChar *)"value")) != NULL) {
+								printf("##HUM %s ##\n", (char *)key);
+								xmlFree(key);
+							}
+						}
+						tcur = tcur->next;
+					}
+				}
+				wcur = wcur->next;
+			}
+		}
+		cur = cur->next;
+	}
+	xmlFreeDoc(doc);
+	return;
+}
+
+void spaceweather_parseTxt (char *filename) {
+	FILE *fr;
+	int n = 0;
+	char line[1024];
+	char last_line[1024];
+	fr = fopen (filename, "r");
+	if (fr != 0) {
+		while(fgets(line, 1000, fr) != NULL) {
+			if (line[0] >= '0' && line[0] <= '9' && strncmp(line + 5, "UT", 2) == 0) {
+//				printf("##%s\n", line);
+				if (n == 0) {
+					strncpy(spaceweather.date[0], last_line + 12, 6);
+					strncpy(spaceweather.date[1], last_line + 23, 6);
+					strncpy(spaceweather.date[2], last_line + 34, 6);
+					printf("%s %s %s\n", spaceweather.date[0], spaceweather.date[1], spaceweather.date[2]);
+				}
+				spaceweather.level[n][0] = atoi(line + 15);
+				spaceweather.level[n][1] = atoi(line + 26);
+				spaceweather.level[n][2] = atoi(line + 37);
+				printf("%i %i %i\n", spaceweather.level[n][0], spaceweather.level[n][1], spaceweather.level[n][2]);
+				n++;
+			}
+			strcpy(last_line, line);
+		}
+		fclose(fr);
+	}
+}
+
 int weather_thread (void *data) {
 	int n = 0;
 	SDL_Log("weather: init thread\n");
@@ -106,8 +232,8 @@ int weather_thread (void *data) {
 		char url[1024];
 		char cmd[1024];
 		sprintf(url, "http://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&mode=xml&APPID=1be90e8af7cce1504db3fdb0a727e06c", ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long);
-//		SDL_Log("weather: get %s\n", url);
-		file_download("/tmp/weather.xml.tmp", url);
+		SDL_Log("weather: get %s\n", url);
+//		file_download("/tmp/weather.xml.tmp", url);
 		sprintf(cmd, "wget -q -O/tmp/weather.xml.tmp \"%s\"", url);
 		system(cmd);
 		weather_parseDoc("/tmp/weather.xml.tmp");
@@ -118,6 +244,25 @@ int weather_thread (void *data) {
 //		SDL_Log("weather: wind_direction %f\n", weather.wind_direction);
 //		SDL_Log("weather: sun_rise %s\n", weather.sun_rise);
 //		SDL_Log("weather: sun_set %s\n", weather.sun_set);
+
+
+
+		sprintf(url, "http://api.openweathermap.org/data/2.5/forecast?lat=%f&lon=%f&mode=xml&APPID=1be90e8af7cce1504db3fdb0a727e06c", ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long);
+		SDL_Log("weather: get %s\n", url);
+//		file_download("/tmp/weatherfc.xml.tmp", url);
+		sprintf(cmd, "wget -q -O/tmp/weatherfc.xml.tmp \"%s\"", url);
+		system(cmd);
+		weatherfc_parseDoc("/tmp/weatherfc.xml.tmp");
+
+
+
+		sprintf(url, "http://services.swpc.noaa.gov/text/3-day-forecast.txt");
+		SDL_Log("spaceweather: get %s\n", url);
+		file_download("/tmp/spaceweather.txt.tmp", url);
+//		sprintf(cmd, "wget -q -O/tmp/spaceweather.txt.tmp \"%s\"", url);
+//		system(cmd);
+		spaceweather_parseTxt("/tmp/spaceweather.txt.tmp");
+
 		for (n = 0; n < 600 && gui_running == 1; n++) {
 			SDL_Delay(1000);
 		}
@@ -127,6 +272,8 @@ int weather_thread (void *data) {
 }
 
 int weather_init (void) {
+#ifndef WINDOWS
+#ifndef ANDROID
 	SDL_Log("weather: Weather-Data copyright by http://www.openweathermap.org\n");
 #ifdef SDL2
 	thread_weather = SDL_CreateThread(weather_thread, NULL, NULL);
@@ -134,6 +281,8 @@ int weather_init (void) {
 	thread_weather = SDL_CreateThread(weather_thread, NULL);
 #endif
 	return 0;
+#endif
+#endif
 }
 
 int weather_exit (void) {

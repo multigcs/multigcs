@@ -219,6 +219,7 @@ void draw_value_barmeter_duo (ESContext *esContext, float x1, float y1, float x2
 
 
 void screen_telemetry (ESContext *esContext) {
+#ifndef ANDROID
 	glDisable( GL_DEPTH_TEST );
 
 #ifdef SDLGL
@@ -264,6 +265,7 @@ void screen_telemetry (ESContext *esContext) {
 #endif
 
 	glEnable( GL_DEPTH_TEST );
+#endif
 }
 
 

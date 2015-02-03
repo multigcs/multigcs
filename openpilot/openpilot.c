@@ -2,10 +2,12 @@
 #include <all.h>
 
 #ifndef WINDOWS
+#ifndef ANDROID
 #include <linux/types.h>
 #include <linux/input.h>
 #include <linux/hidraw.h>
 #include <libudev.h>
+#endif
 #endif
 
 /* http://wiki.openpilot.org/display/Doc/UAVTalk */
@@ -64,6 +66,7 @@ uint8_t openpilot_connection_status (uint8_t modelid) {
 }
 
 #ifndef WINDOWS
+#ifndef ANDROID
 int openpilot_hidraw_find (uint8_t modelid) {
 	char device[1024];
 	int fd = -1;
@@ -117,15 +120,18 @@ void openpilot_hidraw_write (int fd, uint8_t *data, int len) {
 	}
 }
 #endif
+#endif
 
 void openpilot_write (uint8_t modelid, uint8_t *data, int len) {
 	if (ModelData[modelid].serial_fd >= 0) {
 		serial_write(ModelData[modelid].serial_fd, data, len);
 	}
 #ifndef WINDOWS
+#ifndef ANDROID
 	if (hidraw_fd_openpilot[modelid] >= 0) {
 		openpilot_hidraw_write(hidraw_fd_openpilot[modelid], data, len);
 	}
+#endif
 #endif
 }
 
@@ -564,6 +570,7 @@ void openpilot_update (uint8_t modelid) {
 		}
 	}
 #ifndef WINDOWS
+#ifndef ANDROID
 	if (hidraw_fd_openpilot[modelid] >= 0) {
 		while ((res = read(hidraw_fd_openpilot[modelid], buf, 1000)) > 0) {
 			for (n = 0; n < res; n++) {
@@ -571,6 +578,7 @@ void openpilot_update (uint8_t modelid) {
 			}
 		}
 	}
+#endif
 #endif
 }
 
@@ -583,9 +591,11 @@ uint8_t openpilot_init (uint8_t modelid, char *port, uint32_t baud) {
 	SDL_Log("uavtalk: init openpilot serial port...\n");
 	ModelData[modelid].serial_fd = serial_open(port, baud);
 #ifndef WINDOWS
+#ifndef ANDROID
 	if (ModelData[modelid].serial_fd < 0) {
 		hidraw_fd_openpilot[modelid] = openpilot_hidraw_find(modelid);
 	}
+#endif
 #endif
 	return 0;
 }
@@ -603,10 +613,12 @@ void openpilot_exit (uint8_t modelid) {
 		ModelData[modelid].serial_fd = -1;
 	}
 #ifndef WINDOWS
+#ifndef ANDROID
 	if (hidraw_fd_openpilot[modelid] >= 0) {
 		close(hidraw_fd_openpilot[modelid]);
 		hidraw_fd_openpilot[modelid] = -1;
 	}
+#endif
 #endif
 }
 

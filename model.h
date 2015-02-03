@@ -62,8 +62,8 @@ typedef struct {
 	float load;
 	int8_t gpsfix;
 	int8_t numSat;
-	float_t hdop;
-	float_t vdop;
+	float hdop;
+	float vdop;
 	int16_t radio[16];
 	int16_t radio_raw[8];
 	float acc_x;

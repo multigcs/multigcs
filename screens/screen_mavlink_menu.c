@@ -949,6 +949,7 @@ void screen_mavlink_magcal (ESContext *esContext) {
 		rot_y += 0.23;
 //		rot_z += 0.11;
 #ifdef SDLGL
+#ifndef ANDROID
 		glPushMatrix();
 		glRotatef(rot_x, 1.0, 0.0, 0.0);
 		glRotatef(rot_y, 0.0, 1.0, 0.0);
@@ -956,11 +957,14 @@ void screen_mavlink_magcal (ESContext *esContext) {
 		glLineWidth(1);
 		glBegin(GL_LINES);
 #endif
+#endif
 		for (n = 0; n < mag_pos; n++) {
 #ifdef SDLGL
+#ifndef ANDROID
 			glColor4f(1.0, 0.0, 0.0, 0.3);
 			glVertex3f(0.0, 0.0, 0.0);
 			glVertex3f(mag_data[n][0] / 500.0, mag_data[n][1] / 500.0, mag_data[n][2] / 500.0);
+#endif
 #endif
 			if (minX > mag_data[n][0]) {
 				minX = mag_data[n][0];
@@ -983,9 +987,11 @@ void screen_mavlink_magcal (ESContext *esContext) {
 		}
 		for (n = 0; n < mag2_pos; n++) {
 #ifdef SDLGL
+#ifndef ANDROID
 			glColor4f(1.0, 0.0, 1.0, 0.3);
 			glVertex3f(0.0, 0.0, 0.0);
 			glVertex3f(mag2_data[n][0] / 500.0, mag2_data[n][1] / 500.0, mag2_data[n][2] / 500.0);
+#endif
 #endif
 			if (min2X > mag2_data[n][0]) {
 				min2X = mag2_data[n][0];
@@ -1006,7 +1012,9 @@ void screen_mavlink_magcal (ESContext *esContext) {
 				max2Z = mag2_data[n][2];
 			}
 		}
+#ifndef ANDROID
 		glEnd();
+#endif
 		float offsetX = maxX - (maxX - minX) / 2.0;
 		float offsetY = maxY - (maxY - minY) / 2.0;
 		float offsetZ = maxZ - (maxZ - minZ) / 2.0;
@@ -1031,6 +1039,7 @@ void screen_mavlink_magcal (ESContext *esContext) {
 		}
 
 #ifdef SDLGL
+#ifndef ANDROID
 		glLineWidth(5);
 		glBegin(GL_LINES);
 		for (n = 0; n < mag_pos; n++) {
@@ -1153,7 +1162,6 @@ void screen_mavlink_magcal (ESContext *esContext) {
 			glVertex3f((last2_z - offset2Z) / 1000.0 * scale2Z + diff_x, (last2_y - offset2Y) / 1000.0 * scale2Y - diff_y, 0.0);
 		}
 		glEnd();
-#endif
 		draw_circle_f3(esContext, -diff_x, -diff_y, 0.0002, 0.3, 255, 255, 255, 255);
 		draw_circle_f3(esContext, -diff_x, diff_y, 0.0002, 0.3, 255, 255, 255, 255);
 		draw_circle_f3(esContext, diff_x, diff_y, 0.0002, 0.3, 255, 255, 255, 255);
@@ -1179,6 +1187,8 @@ void screen_mavlink_magcal (ESContext *esContext) {
 				draw_text_f(esContext, diff_x - 0.2, -diff_y + 0.6, 0.08, 0.08, FONT_WHITE, tmp_str);
 			}
 		}
+#endif
+#endif
 		if (mavlink_magcal_set == 1) {
 			if (mavlink_magcal == 1) {
 				SDL_Log("magcal: save offesets\n");

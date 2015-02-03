@@ -9,7 +9,13 @@ typedef struct {
 	char sun_set[128];
 } Weather;
 
+typedef struct {
+	char date[3][100];
+	int level[8][3];
+} SpaceWeather;
+
 extern Weather weather;
+extern SpaceWeather spaceweather;
 
 int weather_init (void);
 int weather_exit (void);

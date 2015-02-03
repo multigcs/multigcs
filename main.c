@@ -1,9 +1,6 @@
 
 #include <all.h>
 
-uint8_t ModelActive = 0;
-Model ModelData[MODELS_MAX];
-Ground GroundData;
 char teletypes[16][16] = {
 	"MULTIWII_21", "AUTOQUAD", "ARDUPILOT", "MEGAPIRATE_NG", 
 	"OPENPILOT", "GPS_NMEA", "FRSKY", "BASEFLIGHT", "BASEFLIGHTCLI", 
@@ -55,7 +52,10 @@ char dronetypes[MAV_TYPE_ENUM_END][32] = {
 };
 
 GcsSetup setup;
-
+uint8_t key_pressed = 0;
+uint8_t ModelActive = 0;
+Model ModelData[MODELS_MAX];
+Ground GroundData;
 char keyboard_key[100];
 uint8_t keyboard_shift = 0;
 uint8_t keyboard_altgr = 0;
@@ -403,11 +403,9 @@ void setup_waypoints (void) {
 		WayPoints[modeln][0].param4 = 0.0;
 		WayPoints[modeln][0].frametype = 0;
 		WayPoints[modeln][0].type = 1;
-
 		strncpy(WayPoints[modeln][0].name, "HOME", 127);
 		strncpy(WayPoints[modeln][0].command, "", 127);
 	}
-
 	GroundData.p_lat = WayPoints[ModelActive][0].p_lat;
 	GroundData.p_long = WayPoints[ModelActive][0].p_long;
 	GroundData.p_alt = WayPoints[ModelActive][0].p_alt;
@@ -418,7 +416,6 @@ void setup_waypoints (void) {
 	GroundData.fm_radius = 6.0;
 	GroundData.sp_alt = 15.0;
 	GroundData.sp_radius = 2.0;
-
 	SurveySetup.name[0] = 0;
 	SurveySetup.interval = 10;
 	SurveySetup.pos = 1900;
@@ -437,7 +434,6 @@ void setup_waypoints (void) {
 	SurveySetup.overlap = 1.2;
 	SurveySetup.alt = 30.0;
 	SurveySetup.alt_abs = 0;
-
 	for (modeln = 0; modeln < MODELS_MAX; modeln++) {
 		ModelData[modeln].sysid = 250;
 		ModelData[modeln].compid = 0;
@@ -468,153 +464,151 @@ void setup_save (void) {
 	sprintf(filename, "%s/setup.cfg", get_datadirectory());
 	fr = fopen(filename, "wb");
 	if (fr != 0) {
-	        fprintf(fr, "view_mode		%i\n", setup.view_mode);
-	        fprintf(fr, "contrast		%i\n", setup.contrast);
-	        fprintf(fr, "screen_w		%i\n", setup.screen_w);
-	        fprintf(fr, "screen_h		%i\n", setup.screen_h);
-	        fprintf(fr, "screen_border_x		%i\n", setup.screen_border_x);
-	        fprintf(fr, "screen_border_y		%i\n", setup.screen_border_y);
-	        fprintf(fr, "keep_ratio		%f\n", setup.keep_ratio);
-	        fprintf(fr, "fullscreen		%i\n", setup.fullscreen);
-	        fprintf(fr, "borderless		%i\n", setup.borderless);
-	        fprintf(fr, "lat			%0.8f\n", lat);
-	        fprintf(fr, "lon			%0.8f\n", lon);
-	        fprintf(fr, "zoom			%i\n", zoom);
-	        fprintf(fr, "map_type		%i\n", map_type);
-	        fprintf(fr, "omap_type		%i\n", omap_type);
-	        fprintf(fr, "center_map		%i\n", center_map);
-	        fprintf(fr, "gcs_gps_port		%s\n", setup.gcs_gps_port);
-	        fprintf(fr, "gcs_gps_baud		%i\n", setup.gcs_gps_baud);
-	        fprintf(fr, "rcflow_port		%s\n", setup.rcflow_port);
-	        fprintf(fr, "rcflow_baud		%i\n", setup.rcflow_baud);
-	        fprintf(fr, "jeti_port		%s\n", setup.jeti_port);
-	        fprintf(fr, "jeti_baud		%i\n", setup.jeti_baud);
-	        fprintf(fr, "frsky_port		%s\n", setup.frsky_port);
-	        fprintf(fr, "frsky_baud		%i\n", setup.frsky_baud);
-	        fprintf(fr, "tracker_port		%s\n", setup.tracker_port);
-	        fprintf(fr, "tracker_baud		%i\n", setup.tracker_baud);
-	        fprintf(fr, "volt_min		%0.1f\n", setup.volt_min);
-	        fprintf(fr, "speak			%i\n", setup.speak);
-	        fprintf(fr, "hud_view_screen		%i\n", setup.hud_view_screen);
-	        fprintf(fr, "hud_view_video		%i\n", setup.hud_view_video);
-	        fprintf(fr, "hud_view_map		%i\n", setup.hud_view_map);
-	        fprintf(fr, "hud_view_tunnel		%i\n", setup.hud_view_tunnel);
-	        fprintf(fr, "map_view		%i\n", map_view);
-	        fprintf(fr, "map_show_profile	%i\n", map_show_profile);
-	        fprintf(fr, "webport			%i\n", setup.webport);
-	        fprintf(fr, "gearth_interval		%f\n", setup.gearth_interval);
-	        fprintf(fr, "touchscreen_device	%s\n", setup.touchscreen_device);
+		fprintf(fr, "view_mode		%i\n", setup.view_mode);
+		fprintf(fr, "contrast		%i\n", setup.contrast);
+		fprintf(fr, "screen_w		%i\n", setup.screen_w);
+		fprintf(fr, "screen_h		%i\n", setup.screen_h);
+		fprintf(fr, "screen_border_x		%i\n", setup.screen_border_x);
+		fprintf(fr, "screen_border_y		%i\n", setup.screen_border_y);
+		fprintf(fr, "keep_ratio		%f\n", setup.keep_ratio);
+		fprintf(fr, "fullscreen		%i\n", setup.fullscreen);
+		fprintf(fr, "borderless		%i\n", setup.borderless);
+		fprintf(fr, "lat			%0.8f\n", lat);
+		fprintf(fr, "lon			%0.8f\n", lon);
+		fprintf(fr, "zoom			%i\n", zoom);
+		fprintf(fr, "map_type		%i\n", map_type);
+		fprintf(fr, "omap_type		%i\n", omap_type);
+		fprintf(fr, "center_map		%i\n", center_map);
+		fprintf(fr, "gcs_gps_port		%s\n", setup.gcs_gps_port);
+		fprintf(fr, "gcs_gps_baud		%i\n", setup.gcs_gps_baud);
+		fprintf(fr, "rcflow_port		%s\n", setup.rcflow_port);
+		fprintf(fr, "rcflow_baud		%i\n", setup.rcflow_baud);
+		fprintf(fr, "jeti_port		%s\n", setup.jeti_port);
+		fprintf(fr, "jeti_baud		%i\n", setup.jeti_baud);
+		fprintf(fr, "frsky_port		%s\n", setup.frsky_port);
+		fprintf(fr, "frsky_baud		%i\n", setup.frsky_baud);
+		fprintf(fr, "tracker_port		%s\n", setup.tracker_port);
+		fprintf(fr, "tracker_baud		%i\n", setup.tracker_baud);
+		fprintf(fr, "volt_min		%0.1f\n", setup.volt_min);
+		fprintf(fr, "speak			%i\n", setup.speak);
+		fprintf(fr, "hud_view_screen		%i\n", setup.hud_view_screen);
+		fprintf(fr, "hud_view_video		%i\n", setup.hud_view_video);
+		fprintf(fr, "hud_view_map		%i\n", setup.hud_view_map);
+		fprintf(fr, "hud_view_tunnel		%i\n", setup.hud_view_tunnel);
+		fprintf(fr, "map_view		%i\n", map_view);
+		fprintf(fr, "map_show_profile	%i\n", map_show_profile);
+		fprintf(fr, "webport			%i\n", setup.webport);
+		fprintf(fr, "gearth_interval		%f\n", setup.gearth_interval);
+		fprintf(fr, "touchscreen_device	%s\n", setup.touchscreen_device);
 		fprintf(fr, "calibration_mode	%i\n", setup.calibration_mode);
 		fprintf(fr, "calibration_min_x	%i\n", setup.calibration_min_x);
 		fprintf(fr, "calibration_max_x	%i\n", setup.calibration_max_x);
 		fprintf(fr, "calibration_min_y	%i\n", setup.calibration_min_y);
 		fprintf(fr, "calibration_max_y	%i\n", setup.calibration_max_y);
 		fprintf(fr, "videolist_lastfile	%s\n", videolist_lastfile);
-	        fprintf(fr, "qrcheck			%i\n", setup.qrcheck);
-	        fprintf(fr, "opencv_device		%i\n", setup.opencv_device);
-	        fprintf(fr, "opencv_features		%i\n", setup.opencv_features);
-	        fprintf(fr, "videocapture_device	%s\n", setup.videocapture_device);
-	        fprintf(fr, "videocapture_width	%i\n", setup.videocapture_width);
-	        fprintf(fr, "videocapture_height	%i\n", setup.videocapture_height);
-	        fprintf(fr, "weather_enable	%i\n", setup.weather_enable);
-	        fprintf(fr, "mavlink_tcp_server		%s\n", setup.mavlink_tcp_server);
-	        fprintf(fr, "mavlink_tcp_port		%i\n", setup.mavlink_tcp_port);
-	        fprintf(fr, "mavlink_udp_port		%i\n", setup.mavlink_udp_port);
+		fprintf(fr, "qrcheck			%i\n", setup.qrcheck);
+		fprintf(fr, "opencv_device		%i\n", setup.opencv_device);
+		fprintf(fr, "opencv_features		%i\n", setup.opencv_features);
+		fprintf(fr, "videocapture_device	%s\n", setup.videocapture_device);
+		fprintf(fr, "videocapture_width	%i\n", setup.videocapture_width);
+		fprintf(fr, "videocapture_height	%i\n", setup.videocapture_height);
+		fprintf(fr, "weather_enable	%i\n", setup.weather_enable);
+		fprintf(fr, "mavlink_tcp_server		%s\n", setup.mavlink_tcp_server);
+		fprintf(fr, "mavlink_tcp_port		%i\n", setup.mavlink_tcp_port);
+		fprintf(fr, "mavlink_udp_port		%i\n", setup.mavlink_udp_port);
 #if defined USE_APRS
-	        fprintf(fr, "aprs_server		%s\n", setup.aprs_server);
-	        fprintf(fr, "aprs_port		%i\n", setup.aprs_port);
-	        fprintf(fr, "aprs_filter	%s\n", setup.aprs_filter);
-	        fprintf(fr, "aprs_enable		%i\n", setup.aprs_enable);
+		fprintf(fr, "aprs_server		%s\n", setup.aprs_server);
+		fprintf(fr, "aprs_port		%i\n", setup.aprs_port);
+		fprintf(fr, "aprs_filter	%s\n", setup.aprs_filter);
+		fprintf(fr, "aprs_enable		%i\n", setup.aprs_enable);
 #endif
-	        fprintf(fr, "waypoint_active		%i\n", waypoint_active);
-	        fprintf(fr, "\n");
-	        fprintf(fr, "Ground_lat		%f\n", GroundData.p_lat);
-	        fprintf(fr, "Ground_long		%f\n", GroundData.p_long);
-	        fprintf(fr, "Ground_alt		%f\n", GroundData.p_alt);
-	        fprintf(fr, "Ground_dir		%f\n", GroundData.dir);
-	        fprintf(fr, "Ground_fm_alt	%f\n", GroundData.fm_alt);
-	        fprintf(fr, "Ground_fm_radius	%f\n", GroundData.fm_radius);
-	        fprintf(fr, "Ground_sp_alt	%f\n", GroundData.sp_alt);
-	        fprintf(fr, "Ground_sp_radius	%f\n", GroundData.sp_radius);
-	        fprintf(fr, "\n");
-	        fprintf(fr, "SurveySetup.name	%s\n", SurveySetup.name);
-	        fprintf(fr, "SurveySetup.interval	%i\n", SurveySetup.interval);
-	        fprintf(fr, "SurveySetup.pos	%i\n", SurveySetup.pos);
-	        fprintf(fr, "SurveySetup.type	%i\n", SurveySetup.type);
-	        fprintf(fr, "SurveySetup.num	%i\n", SurveySetup.num);
-	        fprintf(fr, "SurveySetup.triggermode	%i\n", SurveySetup.triggermode);
-	        fprintf(fr, "SurveySetup.options	%i\n", SurveySetup.options);
-	        fprintf(fr, "SurveySetup.mode	%i\n", SurveySetup.mode);
-	        fprintf(fr, "SurveySetup.angle	%f\n", SurveySetup.angle);
-	        fprintf(fr, "SurveySetup.grid_x	%f\n", SurveySetup.grid_x);
-	        fprintf(fr, "SurveySetup.grid_y	%f\n", SurveySetup.grid_y);
-	        fprintf(fr, "SurveySetup.film_width	%f\n", SurveySetup.film_width);
-	        fprintf(fr, "SurveySetup.film_height	%f\n", SurveySetup.film_height);
-	        fprintf(fr, "SurveySetup.sensor_mult	%f\n", SurveySetup.sensor_mult);
-	        fprintf(fr, "SurveySetup.lense	%f\n", SurveySetup.lense);
-	        fprintf(fr, "SurveySetup.overlap	%f\n", SurveySetup.overlap);
-	        fprintf(fr, "SurveySetup.alt		%f\n", SurveySetup.alt);
-	        fprintf(fr, "SurveySetup.alt_abs	%i\n", SurveySetup.alt_abs);
-
-	        fprintf(fr, "ModelActive		%i\n", ModelActive);
-
-	        for (n = 0; n < MODELS_MAX; n++) {
-				fprintf(fr, "\n");
-				fprintf(fr, "[%i]\n", n);
-				fprintf(fr, "telemetry_port		%s\n", ModelData[n].telemetry_port);
-				fprintf(fr, "telemetry_baud		%i\n", ModelData[n].telemetry_baud);
-				fprintf(fr, "deviceid		%s\n", ModelData[n].deviceid);
-				fprintf(fr, "use_deviceid		%i\n", ModelData[n].use_deviceid);
-				fprintf(fr, "mavlink_sysid		%i\n", ModelData[n].mavlink_sysid);
-				fprintf(fr, "model_name		%s\n", ModelData[n].name);
-				fprintf(fr, "model_sysstr		%s\n", ModelData[n].sysstr);
-				fprintf(fr, "telemetry_type		%i\n", ModelData[n].teletype);
-				fprintf(fr, "pilottype		%i\n", ModelData[n].pilottype);
-				fprintf(fr, "dronetype		%i\n", ModelData[n].dronetype);
-				fprintf(fr, "Model_lat		%f\n", ModelData[n].p_lat);
-				fprintf(fr, "Model_long		%f\n", ModelData[n].p_long);
-				fprintf(fr, "Model_alt		%f\n", ModelData[n].p_alt);
-				fprintf(fr, "\n");
-				fprintf(fr, "[waypoints]\n");
-				for (nn = 0; nn < MAX_WAYPOINTS; nn++) {
-						if (WayPoints[ModelActive][nn].p_lat != 0.0) {
-								fprintf(fr, "name	%s\n", WayPoints[n][nn].name);
-								fprintf(fr, "command	%s\n", WayPoints[n][nn].command);
-								fprintf(fr, "lat	%0.8f\n", WayPoints[n][nn].p_lat);
-								fprintf(fr, "lon	%0.8f\n", WayPoints[n][nn].p_long);
-								fprintf(fr, "alt	%f\n", WayPoints[n][nn].p_alt);
-								fprintf(fr, "param1	%f\n", WayPoints[n][nn].param1);
-								fprintf(fr, "param2	%f\n", WayPoints[n][nn].param2);
-								fprintf(fr, "param3	%f\n", WayPoints[n][nn].param3);
-								fprintf(fr, "param4	%f\n", WayPoints[n][nn].param4);
-								fprintf(fr, "type	%i\n", WayPoints[n][nn].type);
-								fprintf(fr, "frametype %i\n", WayPoints[n][nn].frametype);
-								fprintf(fr, "\n");
-						}
+		fprintf(fr, "waypoint_active		%i\n", waypoint_active);
+		fprintf(fr, "\n");
+		fprintf(fr, "Ground_lat		%f\n", GroundData.p_lat);
+		fprintf(fr, "Ground_long		%f\n", GroundData.p_long);
+		fprintf(fr, "Ground_alt		%f\n", GroundData.p_alt);
+		fprintf(fr, "Ground_dir		%f\n", GroundData.dir);
+		fprintf(fr, "Ground_fm_alt	%f\n", GroundData.fm_alt);
+		fprintf(fr, "Ground_fm_radius	%f\n", GroundData.fm_radius);
+		fprintf(fr, "Ground_sp_alt	%f\n", GroundData.sp_alt);
+		fprintf(fr, "Ground_sp_radius	%f\n", GroundData.sp_radius);
+		fprintf(fr, "\n");
+		fprintf(fr, "SurveySetup.name	%s\n", SurveySetup.name);
+		fprintf(fr, "SurveySetup.interval	%i\n", SurveySetup.interval);
+		fprintf(fr, "SurveySetup.pos	%i\n", SurveySetup.pos);
+		fprintf(fr, "SurveySetup.type	%i\n", SurveySetup.type);
+		fprintf(fr, "SurveySetup.num	%i\n", SurveySetup.num);
+		fprintf(fr, "SurveySetup.triggermode	%i\n", SurveySetup.triggermode);
+		fprintf(fr, "SurveySetup.options	%i\n", SurveySetup.options);
+		fprintf(fr, "SurveySetup.mode	%i\n", SurveySetup.mode);
+		fprintf(fr, "SurveySetup.angle	%f\n", SurveySetup.angle);
+		fprintf(fr, "SurveySetup.grid_x	%f\n", SurveySetup.grid_x);
+		fprintf(fr, "SurveySetup.grid_y	%f\n", SurveySetup.grid_y);
+		fprintf(fr, "SurveySetup.film_width	%f\n", SurveySetup.film_width);
+		fprintf(fr, "SurveySetup.film_height	%f\n", SurveySetup.film_height);
+		fprintf(fr, "SurveySetup.sensor_mult	%f\n", SurveySetup.sensor_mult);
+		fprintf(fr, "SurveySetup.lense	%f\n", SurveySetup.lense);
+		fprintf(fr, "SurveySetup.overlap	%f\n", SurveySetup.overlap);
+		fprintf(fr, "SurveySetup.alt		%f\n", SurveySetup.alt);
+		fprintf(fr, "SurveySetup.alt_abs	%i\n", SurveySetup.alt_abs);
+		fprintf(fr, "ModelActive		%i\n", ModelActive);
+		for (n = 0; n < MODELS_MAX; n++) {
+			fprintf(fr, "\n");
+			fprintf(fr, "[%i]\n", n);
+			fprintf(fr, "telemetry_port		%s\n", ModelData[n].telemetry_port);
+			fprintf(fr, "telemetry_baud		%i\n", ModelData[n].telemetry_baud);
+			fprintf(fr, "deviceid		%s\n", ModelData[n].deviceid);
+			fprintf(fr, "use_deviceid		%i\n", ModelData[n].use_deviceid);
+			fprintf(fr, "mavlink_sysid		%i\n", ModelData[n].mavlink_sysid);
+			fprintf(fr, "model_name		%s\n", ModelData[n].name);
+			fprintf(fr, "model_sysstr		%s\n", ModelData[n].sysstr);
+			fprintf(fr, "telemetry_type		%i\n", ModelData[n].teletype);
+			fprintf(fr, "pilottype		%i\n", ModelData[n].pilottype);
+			fprintf(fr, "dronetype		%i\n", ModelData[n].dronetype);
+			fprintf(fr, "Model_lat		%f\n", ModelData[n].p_lat);
+			fprintf(fr, "Model_long		%f\n", ModelData[n].p_long);
+			fprintf(fr, "Model_alt		%f\n", ModelData[n].p_alt);
+			fprintf(fr, "\n");
+			fprintf(fr, "[waypoints]\n");
+			for (nn = 0; nn < MAX_WAYPOINTS; nn++) {
+			if (WayPoints[ModelActive][nn].p_lat != 0.0) {
+					fprintf(fr, "name	%s\n", WayPoints[n][nn].name);
+					fprintf(fr, "command	%s\n", WayPoints[n][nn].command);
+					fprintf(fr, "lat	%0.8f\n", WayPoints[n][nn].p_lat);
+					fprintf(fr, "lon	%0.8f\n", WayPoints[n][nn].p_long);
+					fprintf(fr, "alt	%f\n", WayPoints[n][nn].p_alt);
+					fprintf(fr, "param1	%f\n", WayPoints[n][nn].param1);
+					fprintf(fr, "param2	%f\n", WayPoints[n][nn].param2);
+					fprintf(fr, "param3	%f\n", WayPoints[n][nn].param3);
+					fprintf(fr, "param4	%f\n", WayPoints[n][nn].param4);
+					fprintf(fr, "type	%i\n", WayPoints[n][nn].type);
+					fprintf(fr, "frametype %i\n", WayPoints[n][nn].frametype);
+					fprintf(fr, "\n");
 				}
 			}
-	        fprintf(fr, "\n");
-	        fprintf(fr, "[polypoints]\n");
-	        for (n = 0; n < MAX_POLYPOINTS; n++) {
-	                if (PolyPoints[n].p_lat != 0.0) {
-	                        fprintf(fr, "lat	%0.8f\n", PolyPoints[n].p_lat);
-	                        fprintf(fr, "lon	%0.8f\n", PolyPoints[n].p_long);
-	                        fprintf(fr, "\n");
-	                }
-	        }
-	        fprintf(fr, "\n");
-	        fprintf(fr, "[polypoints_nofly]\n");
-	        for (n = 0; n < MAX_POLYPOINTS; n++) {
-	                if (PolyPointsNoFly[n].p_lat != 0.0) {
-	                        fprintf(fr, "lat	%0.8f\n", PolyPointsNoFly[n].p_lat);
-	                        fprintf(fr, "lon	%0.8f\n", PolyPointsNoFly[n].p_long);
-	                        fprintf(fr, "alt	%0.8f\n", PolyPointsNoFly[n].p_alt);
-	                        fprintf(fr, "mode	%i\n", PolyPointsNoFly[n].mode);
-	                        fprintf(fr, "num	%i\n", PolyPointsNoFly[n].num);
-	                        fprintf(fr, "\n");
-	                }
-	        }
-	        fclose(fr);
+		}
+		fprintf(fr, "\n");
+		fprintf(fr, "[polypoints]\n");
+		for (n = 0; n < MAX_POLYPOINTS; n++) {
+			if (PolyPoints[n].p_lat != 0.0) {
+				fprintf(fr, "lat	%0.8f\n", PolyPoints[n].p_lat);
+				fprintf(fr, "lon	%0.8f\n", PolyPoints[n].p_long);
+				fprintf(fr, "\n");
+			}
+		}
+		fprintf(fr, "\n");
+		fprintf(fr, "[polypoints_nofly]\n");
+		for (n = 0; n < MAX_POLYPOINTS; n++) {
+			if (PolyPointsNoFly[n].p_lat != 0.0) {
+				fprintf(fr, "lat	%0.8f\n", PolyPointsNoFly[n].p_lat);
+				fprintf(fr, "lon	%0.8f\n", PolyPointsNoFly[n].p_long);
+				fprintf(fr, "alt	%0.8f\n", PolyPointsNoFly[n].p_alt);
+				fprintf(fr, "mode	%i\n", PolyPointsNoFly[n].mode);
+				fprintf(fr, "num	%i\n", PolyPointsNoFly[n].num);
+				fprintf(fr, "\n");
+			}
+		}
+		fclose(fr);
 	} else {
 		SDL_Log("Can not save setup-file: %s\n", filename);
 	}
@@ -692,7 +686,6 @@ void setup_load (void) {
 	setup.opencv_features = 0;
 	setup.videocapture_width = 640;
 	setup.videocapture_height = 480;
-
 	for (model_n = 0; model_n < MODELS_MAX; model_n++) {
 		sprintf(ModelData[model_n].name, "Model%i", model_n + 1);
 		strcpy(ModelData[model_n].sysstr, "");
@@ -716,7 +709,6 @@ void setup_load (void) {
 	                var[0] = 0;
 	                val[0] = 0;
 	                sscanf (line, "%s %s", (char *)&var, (char *)&val);
-//	                printf ("       %s      %s\n", var, val);
 	                if (mode == 0) {
 	                        if (strcmp(var, "view_mode") == 0) {
 					setup.view_mode = atoi(val);
@@ -889,7 +881,6 @@ void setup_load (void) {
 	                                SurveySetup.alt_abs = atoi(val);
 	                        } else if (strcmp(var, "ModelActive") == 0) {
 	                                ModelActive = atoi(val);
-
 	                        } else if (strcmp(var, "model_name") == 0) {
 	                                strncpy(ModelData[model_n].name, val, 199);
 	                        } else if (strcmp(var, "model_sysstr") == 0) {
@@ -1075,7 +1066,6 @@ int calc_fov (float film_width, float film_height, float sensor_mult, float lens
 	return 0;
 }
 
-uint8_t key_pressed = 0;
 void check_events (ESContext *esContext, SDL_Event event) {
 	static uint8_t mousemode = 0;
 	static uint8_t mousewheel_flag = 0;
@@ -1438,7 +1428,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 				} else
 */
 
-				if (map_addmode == 1) {
+				if (map_addmode == 1 && map_show_wp == 1) {
 					uint16_t n = 0;
 					int16_t nz = get_altitude(mouse_lat, mouse_long);
 					if (ModelData[ModelActive].p_alt > nz) {
@@ -1483,7 +1473,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 						}
 					}
 					map_poimode = 0;
-				} else if (map_poly_addmode == 1) {
+				} else if (map_poly_addmode == 1 && map_show_poly == 1) {
 					uint16_t n = 0;
 					for (n = 1; n < MAX_POLYPOINTS; n++) {
 						if (PolyPoints[n].p_lat == 0.0) {
@@ -1499,8 +1489,8 @@ void check_events (ESContext *esContext, SDL_Event event) {
 						if (PolyPointsNoFly[n].p_lat != 0.0) {
 							int16_t mark_x = long2x(PolyPointsNoFly[n].p_long, lon, zoom);
 							int16_t mark_y = lat2y(PolyPointsNoFly[n].p_lat, lat, zoom);
-							if (bx + 20 > mark_x && bx - 20 < mark_x) {
-								if (by + 20 > mark_y && by - 20 < mark_y) {
+							if (bx + 10 > mark_x && bx - 10 < mark_x) {
+								if (by + 10 > mark_y && by - 10 < mark_y) {
 									flag = 1;
 									map_polynf_num++;
 									SDL_Log("NEXT POLYNF: %i\n", map_polynf_num);
@@ -1542,44 +1532,48 @@ void check_events (ESContext *esContext, SDL_Event event) {
 					mousestart_y = y1;
 					mousemode = 1;
 					uint16_t n = 0;
-					for (n = 0; n < MAX_WAYPOINTS; n++) {
-						if (WayPoints[ModelActive][n].p_lat != 0.0) {
-							int16_t mark_x = long2x(WayPoints[ModelActive][n].p_long, lon, zoom);
-							int16_t mark_y = lat2y(WayPoints[ModelActive][n].p_lat, lat, zoom);
-							if (bx + 20 > mark_x && bx - 20 < mark_x) {
-								if (by + 20 > mark_y && by - 20 < mark_y) {
-									SDL_Log("WAYPOINT: %i\n", n);
-									waypoint_active = n;
-									mousemode = 1;
-									break;
+					if (map_show_wp == 1) {
+						for (n = 0; n < MAX_WAYPOINTS; n++) {
+							if (WayPoints[ModelActive][n].p_lat != 0.0) {
+								int16_t mark_x = long2x(WayPoints[ModelActive][n].p_long, lon, zoom);
+								int16_t mark_y = lat2y(WayPoints[ModelActive][n].p_lat, lat, zoom);
+								if (bx + 20 > mark_x && bx - 20 < mark_x) {
+									if (by + 20 > mark_y && by - 20 < mark_y) {
+										SDL_Log("WAYPOINT: %i\n", n);
+										waypoint_active = n;
+										mousemode = 1;
+										break;
+									}
 								}
 							}
 						}
 					}
-					for (n = 0; n < MAX_POLYPOINTS; n++) {
-						if (PolyPoints[n].p_lat != 0.0) {
-							int16_t mark_x = long2x(PolyPoints[n].p_long, lon, zoom);
-							int16_t mark_y = lat2y(PolyPoints[n].p_lat, lat, zoom);
-							if (bx + 20 > mark_x && bx - 20 < mark_x) {
-								if (by + 20 > mark_y && by - 20 < mark_y) {
-									SDL_Log("POLYPOINT: %i\n", n);
-									polypoint_active = n;
-									mousemode = 1;
-									break;
+					if (map_show_poly == 1) {
+						for (n = 0; n < MAX_POLYPOINTS; n++) {
+							if (PolyPoints[n].p_lat != 0.0) {
+								int16_t mark_x = long2x(PolyPoints[n].p_long, lon, zoom);
+								int16_t mark_y = lat2y(PolyPoints[n].p_lat, lat, zoom);
+								if (bx + 20 > mark_x && bx - 20 < mark_x) {
+									if (by + 20 > mark_y && by - 20 < mark_y) {
+										SDL_Log("POLYPOINT: %i\n", n);
+										polypoint_active = n;
+										mousemode = 1;
+										break;
+									}
 								}
 							}
 						}
-					}
-					for (n = 0; n < MAX_POLYPOINTS; n++) {
-						if (PolyPointsNoFly[n].p_lat != 0.0) {
-							int16_t mark_x = long2x(PolyPointsNoFly[n].p_long, lon, zoom);
-							int16_t mark_y = lat2y(PolyPointsNoFly[n].p_lat, lat, zoom);
-							if (bx + 20 > mark_x && bx - 20 < mark_x) {
-								if (by + 20 > mark_y && by - 20 < mark_y) {
-									SDL_Log("POLYPOINT_NF: %i\n", n);
-									polypointnf_active = n;
-									mousemode = 1;
-									break;
+						for (n = 0; n < MAX_POLYPOINTS; n++) {
+							if (PolyPointsNoFly[n].p_lat != 0.0) {
+								int16_t mark_x = long2x(PolyPointsNoFly[n].p_long, lon, zoom);
+								int16_t mark_y = lat2y(PolyPointsNoFly[n].p_lat, lat, zoom);
+								if (bx + 20 > mark_x && bx - 20 < mark_x) {
+									if (by + 20 > mark_y && by - 20 < mark_y) {
+										SDL_Log("POLYPOINT_NF: %i\n", n);
+										polypointnf_active = n;
+										mousemode = 1;
+										break;
+									}
 								}
 							}
 						}
@@ -1594,21 +1588,23 @@ void check_events (ESContext *esContext, SDL_Event event) {
 				if (WayPoints[ModelActive][0].p_alt > nz) {
 					nz = WayPoints[ModelActive][0].p_alt;
 				}
-				for (n = 0; n < MAX_WAYPOINTS; n++) {
-					if (WayPoints[ModelActive][n].p_lat == 0.0) {
-						WayPoints[ModelActive][n].p_lat = mouse_lat;
-						WayPoints[ModelActive][n].p_long = mouse_long;
-						WayPoints[ModelActive][n].p_alt = nz;
-						WayPoints[ModelActive][n].param1 = 0.0;
-						WayPoints[ModelActive][n].param2 = 0.0;
-						WayPoints[ModelActive][n].param3 = 0.0;
-						WayPoints[ModelActive][n].param4 = 0.0;
-						WayPoints[ModelActive][n].type = 0;
-						WayPoints[ModelActive][n].frametype = 0;
-						sprintf(WayPoints[ModelActive][n].name, "WP%i", n);
-						strncpy(WayPoints[ModelActive][n].command, "WAYPOINT", 127);
+				if (map_show_wp == 1) {
+					for (n = 0; n < MAX_WAYPOINTS; n++) {
+						if (WayPoints[ModelActive][n].p_lat == 0.0) {
+							WayPoints[ModelActive][n].p_lat = mouse_lat;
+							WayPoints[ModelActive][n].p_long = mouse_long;
+							WayPoints[ModelActive][n].p_alt = nz;
+							WayPoints[ModelActive][n].param1 = 0.0;
+							WayPoints[ModelActive][n].param2 = 0.0;
+							WayPoints[ModelActive][n].param3 = 0.0;
+							WayPoints[ModelActive][n].param4 = 0.0;
+							WayPoints[ModelActive][n].type = 0;
+							WayPoints[ModelActive][n].frametype = 0;
+							sprintf(WayPoints[ModelActive][n].name, "WP%i", n);
+							strncpy(WayPoints[ModelActive][n].command, "WAYPOINT", 127);
 //						SDL_Log("GPS;%i;%f;%f;%0.1f;%0.1f\n", time(0), mouse_lat, mouse_long, 25.0, 10.0);
-						break;
+							break;
+						}
 					}
 				}
 			} else if (event.button.button == 2) {
