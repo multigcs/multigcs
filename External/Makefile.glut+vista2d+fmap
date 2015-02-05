@@ -27,9 +27,11 @@ COMMONHRD =
 #LIBS += -lusb
 #CFLAGS += -DDPF_DISPLAY
 
+LIBS += -ludev
+
 # Vista2D
-//LIBS += -lvd -lglut -lGLU -lpthread
-LIBS +=  -lglut -lGLU -lpthread
+LIBS += -lvd -lglut -lGLU -lpthread
+#LIBS +=  -lglut -lGLU -lpthread
 CFLAGS += -DUSE_VISTA2D -DGLUTINIT -Wno-unknown-pragmas
 INCDIR += -IExternal/vista2d/inc/
 

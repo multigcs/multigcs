@@ -37,27 +37,27 @@ uint8_t vista2d_cmd (char *name, float x, float y, int8_t button, float data, ui
 	} else if (strcmp(name + 1, "VIEW1") == 0) {
 		vdViewStopAnim(vdView);
 		vdViewFree(vdView);
-		vdView = vdViewLoad("./vista2d/views/view1.v");
+		vdView = vdViewLoad("./External/vista2d/views/view1.v");
 		vdViewStartAnim(vdView);
 	} else if (strcmp(name + 1, "VIEW2") == 0) {
 		vdViewStopAnim(vdView);
 		vdViewFree(vdView);
-		vdView = vdViewLoad("./vista2d/views/view2.v");
+		vdView = vdViewLoad("./External/vista2d/views/view2.v");
 		vdViewStartAnim(vdView);
 	} else if (strcmp(name + 1, "VIEW3") == 0) {
 		vdViewStopAnim(vdView);
 		vdViewFree(vdView);
-		vdView = vdViewLoad("./vista2d/views/view3.v");
+		vdView = vdViewLoad("./External/vista2d/views/view3.v");
 		vdViewStartAnim(vdView);
 	} else if (strcmp(name + 1, "VIEW4") == 0) {
 		vdViewStopAnim(vdView);
 		vdViewFree(vdView);
-		vdView = vdViewLoad("./vista2d/views/view4.v");
+		vdView = vdViewLoad("./External/vista2d/views/view4.v");
 		vdViewStartAnim(vdView);
 	} else if (strcmp(name + 1, "VIEW5") == 0) {
 		vdViewStopAnim(vdView);
 		vdViewFree(vdView);
-		vdView = vdViewLoad("./vista2d/views/instruments.v");
+		vdView = vdViewLoad("./External/vista2d/views/instruments.v");
 		vdViewStartAnim(vdView);
 	}
 	return 0;
@@ -67,7 +67,7 @@ void screen_hud_vista2d (ESContext *esContext) {
 	static uint8_t startup = 0;
 	if (startup == 0) {
 		startup = 1;
-		vdView = vdViewLoad ("vista2d/views/view1.v");
+		vdView = vdViewLoad ("External/vista2d/views/view1.v");
 		vdViewStartAnim(vdView);
 	}
 	char tmp_str[128];
