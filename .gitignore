@@ -32,6 +32,8 @@ android/jni/libxml2
 3d-models
 External
 mavlink/sitl-transmitter/joystick
+mavlink/sitl-transmitter/send-center
+APM_SITL/ardupilot
 openpilot/generate_objid
 utils/log2kmlroute
 utils/logdump
