@@ -1108,7 +1108,7 @@ void screen_hud_internal (ESContext *esContext) {
 	//SDL_Log("hud#6\n");
 
 	// Status
-	draw_text_f3(esContext, -1.0 - strlen("ARMED") * 0.07 * 0.6 / 2.0, -0.92, 0.002, 0.07, 0.07, FONT_TRANS, "ARMED");
+	draw_text_f3(esContext, -1.0 - strlen(statetypes[ModelData[ModelActive].armed]) * 0.07 * 0.6 / 2.0, -0.92, 0.002, 0.07, 0.07, FONT_GREEN, statetypes[ModelData[ModelActive].armed]);
 	draw_line_f3(esContext, -0.8, -0.94, 0.002, -0.8, -0.83, 0.002, 255, 255, 255, 255);
 
 	if (ModelData[ModelActive].mode == 0) {
@@ -1144,26 +1144,6 @@ void screen_hud_internal (ESContext *esContext) {
 	}
 	draw_text_f3(esContext, -0.6 - strlen(tmp_str) * 0.07 * 0.6 / 2.0, -0.92, 0.002, 0.07, 0.07, FONT_GREEN, tmp_str);
 	draw_line_f3(esContext, -0.4, -0.94, 0.002, -0.4, -0.83, 0.002, 255, 255, 255, 255);
-
-	static uint8_t last_armed = MODEL_ARMED;
-
-	if (ModelData[ModelActive].armed == MODEL_ARMED) {
-		if (last_armed != ModelData[ModelActive].armed) {
-			system("#espeak -v en \"armed\" > /dev/null 2> /dev/null &");
-		}
-		if (setup.contrast == 1) {
-			draw_text_f(esContext, -1.0 - strlen("ARMED") * 0.07 * 0.6 / 2.0, -0.92, 0.07, 0.07, FONT_WHITE, "ARMED");
-		} else {
-			draw_text_f(esContext, -1.0 - strlen("ARMED") * 0.07 * 0.6 / 2.0, -0.92, 0.07, 0.07, FONT_GREEN, "ARMED");
-		}
-	} else if (ModelData[ModelActive].armed == MODEL_ARMING) {
-		draw_text_f(esContext, -1.0 - strlen("ARMED") * 0.07 * 0.6 / 2.0, -0.92, 0.07, 0.07, FONT_GREEN_BG, "ARMED");
-	} else {
-		if (last_armed != ModelData[ModelActive].armed) {
-			system("#espeak -v en \"disarmed\" > /dev/null 2> /dev/null &");
-		}
-	}
-	last_armed = ModelData[ModelActive].armed;
 
 	// Yaw
 	float compas_r = 0.9;

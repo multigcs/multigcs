@@ -6,6 +6,19 @@ char teletypes[16][16] = {
 	"OPENPILOT", "GPS_NMEA", "FRSKY", "BASEFLIGHT", "BASEFLIGHTCLI", 
 	"HARAKIRI_ML", "CLI", "SIMPLEBGC", "BRUGI", "---", "---", "---",
 };
+
+char statetypes[MAV_STATE_ENUM_END][16] = {
+	"UNINIT",
+	"BOOT",
+	"CALIBRATING",
+	"STANDBY",
+	"ACTIVE",
+	"CRITICAL",
+	"EMERGENCY",
+	"POWEROFF"
+};
+
+
 char pilottypes[MAV_AUTOPILOT_ENUM_END][64] = {
 	"GENERIC",
 	"PIXHAWK",
@@ -434,10 +447,6 @@ void setup_waypoints (void) {
 	SurveySetup.overlap = 1.2;
 	SurveySetup.alt = 30.0;
 	SurveySetup.alt_abs = 0;
-	for (modeln = 0; modeln < MODELS_MAX; modeln++) {
-		ModelData[modeln].sysid = 250;
-		ModelData[modeln].compid = 0;
-	}
 }
 
 void sys_message (char *msg) {
@@ -552,7 +561,6 @@ void setup_save (void) {
 		fprintf(fr, "SurveySetup.alt		%f\n", SurveySetup.alt);
 		fprintf(fr, "SurveySetup.alt_abs	%i\n", SurveySetup.alt_abs);
 		fprintf(fr, "\n");
-		fprintf(fr, "SwarmSetup.active		%i\n", SwarmSetup.active);
 		fprintf(fr, "SwarmSetup.master		%i\n", SwarmSetup.master);
 		for (n = 0; n < 4; n++) {
 			fprintf(fr, "SwarmSetup.slave%i		%i\n", n, SwarmSetup.slave[n]);
@@ -578,6 +586,9 @@ void setup_save (void) {
 			fprintf(fr, "Model_lat		%f\n", ModelData[n].p_lat);
 			fprintf(fr, "Model_long		%f\n", ModelData[n].p_long);
 			fprintf(fr, "Model_alt		%f\n", ModelData[n].p_alt);
+			fprintf(fr, "Model_netip		%s\n", ModelData[n].netip);
+			fprintf(fr, "Model_netport		%i\n", ModelData[n].netport);
+			fprintf(fr, "Model_get_param		%i\n", ModelData[n].get_param);
 			fprintf(fr, "\n");
 			fprintf(fr, "[waypoints]\n");
 			for (nn = 0; nn < MAX_WAYPOINTS; nn++) {
@@ -687,6 +698,7 @@ void setup_load (void) {
 	setup.aprs_port = 10153;
 	setup.aprs_filter[0] = 0;
 	setup.aprs_enable = 0;
+	SwarmSetup.active = 0;
 #endif
 #ifdef ANDROID
 	setup.opencv_device = 0;
@@ -709,6 +721,16 @@ void setup_load (void) {
 		strcpy(ModelData[model_n].deviceid, "");
 		ModelData[model_n].use_deviceid = 0;
 		ModelData[model_n].mavlink_sysid = 0;
+
+		ModelData[model_n].sysid = 250;
+		ModelData[model_n].compid = 0;
+		ModelData[model_n].p_lat = 50.2942581;
+		ModelData[model_n].p_long = 9.1228580;
+		ModelData[model_n].p_alt = 150.0;
+		strcpy(ModelData[model_n].netip, "127.0.0.1");
+		ModelData[model_n].netport = 5760;
+		ModelData[model_n].get_param = 0;
+		ModelData[model_n].heartbeat = 0;
 	}
 	model_n = 0;
 	char filename[1024];
@@ -889,8 +911,6 @@ void setup_load (void) {
 	                                SurveySetup.alt = atof(val);
 	                        } else if (strcmp(var, "SurveySetup.alt_abs") == 0) {
 	                                SurveySetup.alt_abs = atoi(val);
-	                        } else if (strcmp(var, "SwarmSetup.active") == 0) {
-	                                SwarmSetup.active = atoi(val);
 	                        } else if (strcmp(var, "SwarmSetup.master") == 0) {
 	                                SwarmSetup.master = atoi(val);
 	                        } else if (strncmp(var, "SwarmSetup.slave", 16) == 0) {
@@ -927,14 +947,18 @@ void setup_load (void) {
 	                                ModelData[model_n].use_deviceid = atoi(val);
 	                        } else if (strcmp(var, "mavlink_sysid") == 0) {
 	                                ModelData[model_n].mavlink_sysid = atoi(val);
-//	                        } else if (strcmp(var, "mavlink_compid") == 0) {
-//	                                ModelData[model_n].mavlink_compid = atoi(val);
 	                        } else if (strcmp(var, "Model_lat") == 0) {
 	                                ModelData[model_n].p_lat = atof(val);
 	                        } else if (strcmp(var, "Model_long") == 0) {
 	                                ModelData[model_n].p_long = atof(val);
 	                        } else if (strcmp(var, "Model_alt") == 0) {
 	                                ModelData[model_n].p_alt = atof(val);
+	                        } else if (strcmp(var, "Model_netip") == 0) {
+	                                strcpy(ModelData[model_n].netip, val);
+	                        } else if (strcmp(var, "Model_netport") == 0) {
+	                                ModelData[model_n].netport = atoi(val);
+	                        } else if (strcmp(var, "Model_get_param") == 0) {
+	                                ModelData[model_n].get_param = atoi(val);
 	                        } else if (strcmp(var, "[waypoints]") == 0) {
 	                                mode = 1;
 									wp_num = 0;
@@ -1705,11 +1729,25 @@ int telemetry_thread (void *data) {
 				mavlink_update(modelid);
 			}
 		}
-		static uint16_t utimier = 0;
-		if (utimier++ >= 300 && GroundData.active == 1 && GroundData.followme == 1) {
+		static uint16_t utimer = 0;
+		if (utimer >= 300 && GroundData.active == 1 && GroundData.followme == 1) {
+			SwarmSetup.active = 0;
 			mavlink_send_cmd_follow(ModelActive, GroundData.p_lat, GroundData.p_long, GroundData.fm_alt, GroundData.fm_radius);
-			utimier = 0;
+			utimer = 0;
 		}
+		if (utimer >= 300 && SwarmSetup.active == 1 && SwarmSetup.master != -1) {
+			GroundData.followme = 0;
+			int n = 0;
+			for (n = 0; n < 4; n++) {
+				if (SwarmSetup.slave[n] == -1) {
+					continue;
+				}
+				float off_z = SwarmSetup.offset_z[n];
+				mavlink_send_cmd_follow(SwarmSetup.slave[n], ModelData[SwarmSetup.master].p_lat, ModelData[SwarmSetup.master].p_long, ModelData[SwarmSetup.master].p_alt + off_z, 2.0);
+			}
+			utimer = 0;
+		}
+		utimer++;
 		SDL_Delay(1);
 	}
 	SDL_Log("telemetry: exit thread\n");
@@ -2016,7 +2054,7 @@ void Draw (ESContext *esContext) {
 	if (key_pressed & (1<<2)) {
 		float nx1 = 0.0;
 		float ny1 = 0.0;
-		next_point(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].yaw + 180.0, 0.00016, &nx1, &ny1);
+		next_point(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].yaw + 180.0, 0.000016, &nx1, &ny1);
 		ModelData[ModelActive].p_lat = nx1;
 		ModelData[ModelActive].p_long = ny1;
 		int16_t zz = get_altitude(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long);
@@ -2028,7 +2066,7 @@ void Draw (ESContext *esContext) {
 	if (key_pressed & (1<<3)) {
 		float nx1 = 0.0;
 		float ny1 = 0.0;
-		next_point(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].yaw, 0.00016, &nx1, &ny1);
+		next_point(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].yaw, 0.000016, &nx1, &ny1);
 		ModelData[ModelActive].p_lat = nx1;
 		ModelData[ModelActive].p_long = ny1;
 		int16_t zz = get_altitude(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long);

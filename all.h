@@ -79,6 +79,7 @@
 #include <SDL_thread.h>
 #include <SDL_events.h>
 #include <SDL_image.h>
+#include <SDL_net.h>
 #define NO_SDL_GLEXT
 #include <GL/glew.h>
 #include <GL/gl.h>

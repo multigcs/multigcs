@@ -245,7 +245,7 @@ int weather_thread (void *data) {
 //		SDL_Log("weather: sun_rise %s\n", weather.sun_rise);
 //		SDL_Log("weather: sun_set %s\n", weather.sun_set);
 
-
+/*
 
 		sprintf(url, "http://api.openweathermap.org/data/2.5/forecast?lat=%f&lon=%f&mode=xml&APPID=1be90e8af7cce1504db3fdb0a727e06c", ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long);
 		SDL_Log("weather: get %s\n", url);
@@ -262,6 +262,8 @@ int weather_thread (void *data) {
 //		sprintf(cmd, "wget -q -O/tmp/spaceweather.txt.tmp \"%s\"", url);
 //		system(cmd);
 		spaceweather_parseTxt("/tmp/spaceweather.txt.tmp");
+
+*/
 
 		for (n = 0; n < 600 && gui_running == 1; n++) {
 			SDL_Delay(1000);

@@ -96,13 +96,16 @@ typedef struct {
 	uint8_t chancount;
 	uint8_t sysid;
 	uint8_t compid;
+	uint8_t get_param;
 	uint32_t mavlink_update;
 	char telemetry_port[1024];
 	uint32_t telemetry_baud;
 	char deviceid[1024];
 	uint8_t use_deviceid;
 	uint8_t mavlink_sysid;
-//	uint8_t mavlink_compid;
+	char netip[16];
+	uint16_t netport;
+	int netsock;
 	int serial_fd;
 } Model;
 

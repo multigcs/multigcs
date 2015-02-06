@@ -267,7 +267,7 @@ void mavlink_set_value (uint8_t modelid, char *name, float value, int8_t type, i
 void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 	mavlink_message_t msg2;
 	char sysmsg_str[1024];
-	if (param_complete[modelid] == 0) {
+	if (ModelData[modelid].get_param == 1 && param_complete[modelid] == 0) {
 		if (param_timeout[modelid] > 1) {
 			param_timeout[modelid]--;
 		} else if (param_timeout[modelid] == 1) {
@@ -307,20 +307,18 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 			ModelData[modelid].dronetype = packet.type;
 			ModelData[modelid].pilottype = packet.autopilot;
 			ModelData[modelid].mode = packet.custom_mode;
-			if (packet.system_status == MAV_STATE_ACTIVE) {
-				ModelData[modelid].armed = MODEL_ARMED;
-			} else {
-				ModelData[modelid].armed = MODEL_DISARMED;
+			ModelData[modelid].armed = packet.system_status;
+			SDL_Log("Heartbeat(%i): %i, %i, %i\n", modelid, ModelData[modelid].armed, packet.custom_mode, packet.system_status);
+			if (ModelData[modelid].get_param == 1 && mavlink_maxparam[modelid] == 0) {
+				mavlink_start_feeds(modelid);
+			} else if (ModelData[modelid].heartbeat == 0) {
+				mavlink_start_feeds(modelid);
 			}
-//			SDL_Log("Heartbeat: %i, %i, %i\n", ModelData[modelid].armed, ModelData[modelid].mode, ModelData[modelid].status);
 			ModelData[modelid].heartbeat = 100;
 //			sprintf(sysmsg_str, "Heartbeat: %i", (int)time(0));
 			if ((*msg).sysid != 0xff) {
 				ModelData[modelid].sysid = (*msg).sysid;
 				ModelData[modelid].compid = (*msg).compid;
-				if (mavlink_maxparam[modelid] == 0) {
-					mavlink_start_feeds(modelid);
-				}
 			}
 			mavlink_msg_heartbeat_pack(127, 0, &msg2, MAV_TYPE_GCS, MAV_AUTOPILOT_INVALID, 0, 0, 0);
 			mavlink_send_message(modelid, &msg2);
@@ -1079,14 +1077,14 @@ void mavlink_send_cmd_rtl (uint8_t modelid) {
 }
 
 void mavlink_send_cmd_land (uint8_t modelid) {
-	SDL_Log("mavlink(%i): send cmd: RTL\n", modelid);
+	SDL_Log("mavlink(%i): send cmd: LAND\n", modelid);
 	mavlink_message_t msg;
 	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_CMD_NAV_LAND, 0, 0.0, 0.0, 0.0, 0.0, ModelData[modelid].p_lat, ModelData[modelid].p_long, ModelData[modelid].p_alt);
 	mavlink_send_message(modelid, &msg);
 }
 
 void mavlink_send_cmd_takeoff (uint8_t modelid) {
-	SDL_Log("mavlink(%i): send cmd: RTL\n", modelid);
+	SDL_Log("mavlink(%i): send cmd: TAKEOFF\n", modelid);
 	mavlink_message_t msg;
 	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_CMD_NAV_TAKEOFF, 0, 0.0, 0.0, 0.0, 0.0, ModelData[modelid].p_lat, ModelData[modelid].p_long, ModelData[modelid].p_alt);
 	mavlink_send_message(modelid, &msg);
@@ -1116,7 +1114,7 @@ void mavlink_send_cmd_mode (uint8_t modelid, uint8_t mode) {
 void mavlink_send_cmd_guided (uint8_t modelid) {
 	SDL_Log("mavlink(%i): send cmd: GUIDED\n", modelid);
 	mavlink_message_t msg;
-	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_CMD_DO_SET_MODE, 0, MAV_MODE_GUIDED_ARMED, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	mavlink_msg_set_mode_pack(127, 0, &msg, ModelData[modelid].sysid, MAV_MODE_FLAG_CUSTOM_MODE_ENABLED, 4);
 	mavlink_send_message(modelid, &msg);
 }
 
@@ -1218,9 +1216,11 @@ void mavlink_start_feeds (uint8_t modelid) {
 	param_complete[modelid] = 0;
 
 	SDL_Log("mavlink(%i): starting feeds\n", modelid);
-	mavlink_msg_param_request_list_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid);
-	mavlink_send_message(modelid, &msg);
-	SDL_Delay(30);
+	if (ModelData[modelid].get_param == 1) {
+		mavlink_msg_param_request_list_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid);
+		mavlink_send_message(modelid, &msg);
+		SDL_Delay(30);
+	}
 
 	mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_DATA_STREAM_RAW_SENSORS, MAV_DATA_STREAM_RAW_SENSORS_RATE, MAV_DATA_STREAM_RAW_SENSORS_ACTIVE);
 	mavlink_send_message(modelid, &msg);
@@ -1794,61 +1794,233 @@ void mavlink_web_get (uint8_t modelid, char *url, char *content, char *type) {
 
 #ifndef WINDOWS
 
-static int tcp_sock = -1;
+/*
+typedef struct {
+	TCPsocket sock;
+	char ip[16];
+} Client;
+
+int running = 1;
+Client *clients = NULL;
+int num_clients = 0;
+TCPsocket server;
+
+
+int find_client(TCPsocket sock) {
+	int i;
+	for (i = 0; i < num_clients; i++) {
+		if (clients[i].sock == sock) {
+			return(i);
+		}
+	}
+	return(-1);
+}
+
+Client *add_client(TCPsocket sock) {
+	IPaddress *ipaddr;
+	clients = (Client*)realloc(clients, (num_clients+1) * sizeof(Client));
+	clients[num_clients].sock = sock;
+	ipaddr = SDLNet_TCP_GetPeerAddress(sock);
+	if (ipaddr) {
+		uint32_t ip = SDL_SwapBE32(ipaddr->host);
+		sprintf(clients[num_clients].ip, "%d.%d.%d.%d", ip>>24, (ip>>16)&0xff, (ip>>8)&0xff, ip&0xff);
+	} else {
+		clients[num_clients].ip[0] = 0;
+	}
+	num_clients++;
+	return (&clients[num_clients - 1]);
+}
+
+void remove_client(int i) {
+	if (i < 0 && i >= num_clients) {
+		return;
+	}
+	SDLNet_TCP_Close(clients[i].sock);
+	num_clients--;
+	if (num_clients > i) {
+		memmove(&clients[i], &clients[i + 1], (num_clients - i) * sizeof(Client));
+	}
+	clients=(Client*)realloc(clients, num_clients*sizeof(Client));
+}
+
+SDLNet_SocketSet create_sockset() {
+	static SDLNet_SocketSet set = NULL;
+	int i = 0;
+	if (set) {
+		SDLNet_FreeSocketSet(set);
+	}
+	set = SDLNet_AllocSocketSet(num_clients + 1);
+	if (!set) {
+		printf("SDLNet_AllocSocketSet: %s\n", SDLNet_GetError());
+		exit(1);
+	}
+	SDLNet_TCP_AddSocket(set,server);
+	for (i = 0; i < num_clients; i++) {
+		SDLNet_TCP_AddSocket(set, clients[i].sock);
+	}
+	return(set);
+}
 
 int mavlink_tcp_send (uint8_t modelid, uint8_t *buf, uint16_t len) {
-	send(tcp_sock, buf, len, 0);
+	int i = 0;;
+	if (strcmp(ModelData[modelid].telemetry_port, "TCP") == 0) {
+		for (i = 0; i < num_clients; i++) {
+			SDLNet_TCP_Send(clients[i].sock, buf, len);
+		}
+	}
 	return 0;
 }
 
 int mavlink_tcp (void *data) {
+	IPaddress ip;
+	TCPsocket sock;
+	SDLNet_SocketSet set;
+	char buf[TCP_BUFLEN + 1];
 	uint8_t modelid = 0;
-    struct sockaddr_in server;
 	mavlink_message_t msg;
 	mavlink_status_t status;
-	SDL_Log("mavlink: init tcp thread\n");
+	int n = 0;
+	Uint32 ipaddr;
+	Uint16 port;
+	if (SDLNet_Init() == -1) {
+		printf("SDLNet_Init: %s\n", SDLNet_GetError());
+		SDL_Quit();
+		return 2;
+	}
+	port = (Uint16)strtol("9999", NULL, 0);
+	if (SDLNet_ResolveHost(&ip,NULL,port) == -1) {
+		printf("SDLNet_ResolveHost: %s\n", SDLNet_GetError());
+		SDLNet_Quit();
+		SDL_Quit();
+		return 3;
+	}
+	ipaddr = SDL_SwapBE32(ip.host);
+	printf("IP Address : %d.%d.%d.%d\n", ipaddr>>24, (ipaddr>>16)&0xff, (ipaddr>>8)&0xff, ipaddr&0xff);
+	printf("Port       : %d\n",port);
+	server = SDLNet_TCP_Open(&ip);
+	if (!server) {
+		printf("SDLNet_TCP_Open: %s\n", SDLNet_GetError());
+		SDLNet_Quit();
+		SDL_Quit();
+		return 4;
+	}
+	while (tcp_running == 1) {
+		int numready,i;
+		set = create_sockset();
+		if (SDLNet_SocketReady(set)) {
+			numready = SDLNet_CheckSockets(set, (Uint32)1000);
+		} else {
+			continue;
+		}
+		if (numready == -1) {
+			printf("SDLNet_CheckSockets: %s\n", SDLNet_GetError());
+			break;
+		}
+		if (!numready) {
+			continue;
+		}
+		if (SDLNet_SocketReady(server)) {
+			numready--;
+			sock = SDLNet_TCP_Accept(server);
+			if (sock) {
+				Client *client;
+				client = add_client(sock);
+				if (client) {
+					printf("## new client %s\n", client->ip);
+				}
+			}
+		}
+		for (i = 0; numready && i < num_clients; i++) {
+			if (SDLNet_SocketReady(clients[i].sock)) {
+				Uint32 result;
+				if ((result = SDLNet_TCP_Recv(clients[i].sock, buf, TCP_BUFLEN)) > 0) {
+					for (modelid = 0; modelid < MODELS_MAX; modelid++) {
+						if (strcmp(ModelData[modelid].telemetry_port, "TCP") == 0) {
+							for (n = 0; n < result; n++) {
+								if (mavlink_parse_char(modelid, buf[n], &msg, &status)) {
+									if (ModelData[modelid].use_deviceid == 0 || msg.sysid == ModelData[modelid].mavlink_sysid) {
+										mavlink_handleMessage(modelid, &msg);
+										mavlink_tcp_active = 1;
+									}
+								}
+							}
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+	SDLNet_Quit();
+	return(0);
+}
+
+*/
+
+int mavlink_tcp_send (uint8_t modelid, uint8_t *buf, uint16_t len) {
+	send(ModelData[modelid].netsock, buf, len, 0);
+	return 0;
+}
+
+int mavlink_tcp_connect (char *ip, uint16_t port) {
+	int tcp_sock = -1;
+    struct sockaddr_in server;
     tcp_sock = socket(AF_INET , SOCK_STREAM , 0);
     if (tcp_sock == -1) {
 		SDL_Log("mavlink: Could not create tcp socket\n");
         return -1;
     }
-    server.sin_addr.s_addr = inet_addr(setup.mavlink_tcp_server);
+    server.sin_addr.s_addr = inet_addr(ip);
     server.sin_family = AF_INET;
-    server.sin_port = htons(setup.mavlink_tcp_port);
+    server.sin_port = htons(port);
     if (connect(tcp_sock , (struct sockaddr *)&server , sizeof(server)) < 0) {
-        SDL_Log("mavlink: tcp connection failed (%s:%i)\n", setup.mavlink_tcp_server, setup.mavlink_tcp_port);
+        SDL_Log("mavlink: tcp connection failed (%s:%i)\n", ip, port);
         return -1;
     }
+	SDL_Log("mavlink: tcp connected (%s:%i)\n", ip, port);
+	return tcp_sock;
+}
+
+int mavlink_tcp (void *data) {
+	uint8_t modelid = 0;
+	mavlink_message_t msg;
+	mavlink_status_t status;
+	SDL_Log("mavlink: init tcp thread\n");
+	for (modelid = 0; modelid < MODELS_MAX; modelid++) {
+		if (strcmp(ModelData[modelid].telemetry_port, "TCP") == 0 && ModelData[modelid].netip[0] != 0 && ModelData[modelid].netport != 0) {
+			ModelData[modelid].netsock = mavlink_tcp_connect(ModelData[modelid].netip, ModelData[modelid].netport);
+		}
+	}
 	while (tcp_running == 1) {
 		char buf[TCP_BUFLEN + 1];
 		fd_set fds;
 		struct timeval ts;
-		ts.tv_sec = 1;
-		ts.tv_usec = 0;
-		FD_ZERO(&fds);
-		if (tcp_sock != 0) {
-			FD_SET(tcp_sock, &fds);
-		}
-		FD_SET(0, &fds);
-		int nready = select(tcp_sock + 1, &fds, (fd_set *)0, (fd_set *)0, &ts);
-		if (nready < 0) {
-			SDL_Log("mavlink: tcp error");
-			break;
-		} else if (nready == 0) {
-			ts.tv_sec = 1;
-			ts.tv_usec = 0;
-		} else if (tcp_sock != 0 && FD_ISSET(tcp_sock, &fds)) {
-			int rv;
-			if ((rv = recv(tcp_sock , buf , TCP_BUFLEN , 0)) < 0) {
-				return 1;
-			} else if (rv == 0) {
-				SDL_Log("mavlink: tcp connection closed by the remote end\n");
-				return 0;
-			}
-			int n = 0;
-			for (n = 0; n < rv; n++) {
-				for (modelid = 0; modelid < MODELS_MAX; modelid++) {
-					if (strcmp(ModelData[modelid].telemetry_port, "TCP") == 0) {
+		ts.tv_sec = 0;
+		ts.tv_usec = 1000;
+		for (modelid = 0; modelid < MODELS_MAX; modelid++) {
+			if (strcmp(ModelData[modelid].telemetry_port, "TCP") == 0 && ModelData[modelid].netip[0] != 0 && ModelData[modelid].netport != 0) {
+				FD_ZERO(&fds);
+				if (ModelData[modelid].netsock != 0) {
+					FD_SET(ModelData[modelid].netsock, &fds);
+				}
+				FD_SET(0, &fds);
+				int nready = select(ModelData[modelid].netsock + 1, &fds, (fd_set *)0, (fd_set *)0, &ts);
+				if (nready < 0) {
+					SDL_Log("mavlink: tcp error");
+					break;
+				} else if (nready == 0) {
+					ts.tv_sec = 0;
+					ts.tv_usec = 1000;
+				} else if (ModelData[modelid].netsock != 0 && FD_ISSET(ModelData[modelid].netsock, &fds)) {
+					int rv;
+					if ((rv = recv(ModelData[modelid].netsock , buf , TCP_BUFLEN , 0)) < 0) {
+						return 1;
+					} else if (rv == 0) {
+						SDL_Log("mavlink: tcp connection closed by the remote end\n");
+						return 0;
+					}
+					int n = 0;
+					for (n = 0; n < rv; n++) {
 						if (mavlink_parse_char(modelid, buf[n], &msg, &status)) {
 							if (ModelData[modelid].use_deviceid == 0 || msg.sysid == ModelData[modelid].mavlink_sysid) {
 								mavlink_handleMessage(modelid, &msg);
@@ -1856,9 +2028,9 @@ int mavlink_tcp (void *data) {
 							}
 						}
 					}
+					fflush(0);
 				}
 			}
-			fflush(0);
 		}
 		SDL_Delay(1);
 	}

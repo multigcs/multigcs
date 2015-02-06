@@ -1276,7 +1276,7 @@ void map_draw_buttons (ESContext *esContext) {
 	} else {
 		draw_button(esContext, "map_cmd", setup.view_mode, tmp_str, FONT_WHITE, 1.05, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_cmd_change, 0.0);
 	}
-	draw_text_button(esContext, "map_cmd_", setup.view_mode, "flightmode", FONT_WHITE, 1.26, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_overlay_change, 0.0);
+	draw_text_button(esContext, "map_cmd_", setup.view_mode, statetypes[ModelData[ModelActive].armed], FONT_WHITE, 1.26, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_cmd_change, 0.0);
 	ny++;
 
 	draw_box_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
@@ -1455,11 +1455,11 @@ void map_draw_buttons (ESContext *esContext) {
 		draw_text_button(esContext, "map_sp_radius_change_", setup.view_mode, "radius", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_sp_radius_change, 0.0);
 		ny2++;
 	}
-	if (ModelData[ModelActive].mode != 4) {
-		draw_text_button(esContext, "map_sp_", setup.view_mode, "guided not active", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_fm_change, 0.0);
-	} else {
+//	if (ModelData[ModelActive].mode != 4) {
+//		draw_text_button(esContext, "map_sp_", setup.view_mode, "guided not active", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_fm_change, 0.0);
+//	} else {
 		draw_text_button(esContext, "map_sp_", setup.view_mode, "fly to point", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_sp_change, 0.0);
-	}
+//	}
 	ny++;
 
 	draw_box_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
