@@ -31,7 +31,6 @@ uint8_t map_polynf_addmode = 0;
 uint8_t map_polynf_num = 0;
 uint8_t map_start_addmode = 0;
 uint8_t map_wp_mopen = 0;
-uint8_t map_poly_mopen = 0;
 uint8_t map_sethome = 0;
 uint8_t map_setpos = 0;
 uint8_t map_sp = 0;
@@ -49,7 +48,10 @@ uint8_t map_overlay_set = 0;
 uint8_t map_cmd_set = 0;
 uint8_t map_show_fov = 0;
 uint8_t map_show_profile = 0;
+uint8_t map_poly_mopen = 0;
 uint8_t map_show_survey_setup = 0;
+uint8_t map_swarm_mopen = 0;
+uint8_t map_show_swarm_setup = 0;
 
 
 uint8_t map_goto_screen (char *name, float x, float y, int8_t button, float data, uint8_t action) {
@@ -1500,6 +1502,44 @@ void map_draw_buttons (ESContext *esContext) {
 		draw_text_button(esContext, "map_fallowme_", setup.view_mode, "follow me", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_fm_change, 0.0);
 	}
 	ny++;
+
+	draw_box_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
+	draw_rect_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
+	draw_text_button(esContext, "swarm_open_", setup.view_mode, "swarming", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, swarm_set, 0.0);
+	if (map_swarm_mopen == 0) {
+		draw_button(esContext, "swarm_open", setup.view_mode, "SWARM", FONT_WHITE, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, swarm_set, 0.0);
+	} else {
+		int n = 0;
+		for (n = 0; n < 4; n++) {
+			if (SwarmSetup.slave[n] == -1) {
+				continue;
+			}
+			if (SwarmSetup.offset_x[n] == 0 && SwarmSetup.offset_y[n] == 0 && SwarmSetup.offset_z[n] == 0) {
+				SwarmSetup.offset_y[n] = (n + 1) * 2;
+				SwarmSetup.offset_z[n] = (n + 1);
+			}
+		}
+		draw_button(esContext, "swarm_open", setup.view_mode, "SWARM", FONT_GREEN, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, swarm_set, 0.0);
+		ny2 = ny;
+		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
+		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
+		if (SwarmSetup.active == 0) {
+			draw_button(esContext, "swar_active", setup.view_mode, "ACTIVE", FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, swarm_set, 0.0);
+		} else {
+			draw_button(esContext, "swar_active", setup.view_mode, "ACTIVE", FONT_GREEN, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, swarm_set, 0.0);
+		}
+		draw_text_button(esContext, "swar_active_", setup.view_mode, "swarm active", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, swarm_set, 0.0);
+		ny2++;
+		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
+		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
+		if (map_show_swarm_setup == 0) {
+			draw_button(esContext, "swarm_setup", setup.view_mode, "SETUP", FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, swarm_set, 0.0);
+		} else {
+			draw_button(esContext, "swarm_setup", setup.view_mode, "SETUP", FONT_GREEN, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, swarm_set, 0.0);
+		}
+		draw_text_button(esContext, "swarm_setup_", setup.view_mode, "show setup", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, swarm_set, 0.0);
+		ny2++;
+	}
 	ny++;
 	ny++;
 	ny++;
@@ -2462,6 +2502,10 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		if (map_show_survey_setup == 1) {
 			survey_draw_setup(esContext);
 		}
+		if (map_show_swarm_setup == 1) {
+			swarm_draw_setup(esContext);
+		}
+
 	}
 #ifdef SDLGL
 	if (_map_view == 3 || _map_view == 4 || _map_view == 5) {

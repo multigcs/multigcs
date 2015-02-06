@@ -151,6 +151,7 @@
 #include <screen_hud.h>
 #include <screen_keyboard.h>
 #include <screen_map_survey.h>
+#include <screen_map_swarm.h>
 #include <screen_map.h>
 #include <screen_mavlink_menu.h>
 #include <screen_model.h>

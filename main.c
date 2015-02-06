@@ -551,6 +551,16 @@ void setup_save (void) {
 		fprintf(fr, "SurveySetup.overlap	%f\n", SurveySetup.overlap);
 		fprintf(fr, "SurveySetup.alt		%f\n", SurveySetup.alt);
 		fprintf(fr, "SurveySetup.alt_abs	%i\n", SurveySetup.alt_abs);
+		fprintf(fr, "\n");
+		fprintf(fr, "SwarmSetup.active		%i\n", SwarmSetup.active);
+		fprintf(fr, "SwarmSetup.master		%i\n", SwarmSetup.master);
+		for (n = 0; n < 4; n++) {
+			fprintf(fr, "SwarmSetup.slave%i		%i\n", n, SwarmSetup.slave[n]);
+			fprintf(fr, "SwarmSetup.offset_x%i	%i\n", n, SwarmSetup.offset_x[n]);
+			fprintf(fr, "SwarmSetup.offset_y%i	%i\n", n, SwarmSetup.offset_y[n]);
+			fprintf(fr, "SwarmSetup.offset_z%i	%i\n", n, SwarmSetup.offset_z[n]);
+		}
+		fprintf(fr, "\n");
 		fprintf(fr, "ModelActive		%i\n", ModelActive);
 		for (n = 0; n < MODELS_MAX; n++) {
 			fprintf(fr, "\n");
@@ -879,6 +889,22 @@ void setup_load (void) {
 	                                SurveySetup.alt = atof(val);
 	                        } else if (strcmp(var, "SurveySetup.alt_abs") == 0) {
 	                                SurveySetup.alt_abs = atoi(val);
+	                        } else if (strcmp(var, "SwarmSetup.active") == 0) {
+	                                SwarmSetup.active = atoi(val);
+	                        } else if (strcmp(var, "SwarmSetup.master") == 0) {
+	                                SwarmSetup.master = atoi(val);
+	                        } else if (strncmp(var, "SwarmSetup.slave", 16) == 0) {
+									int nn = atoi(var + 16);
+	                                SwarmSetup.slave[nn] = atoi(val);
+	                        } else if (strncmp(var, "SwarmSetup.offset_x", 19) == 0) {
+									int nn = atoi(var + 19);
+	                                SwarmSetup.offset_x[nn] = atoi(val);
+	                        } else if (strncmp(var, "SwarmSetup.offset_y", 19) == 0) {
+									int nn = atoi(var + 19);
+	                                SwarmSetup.offset_y[nn] = atoi(val);
+	                        } else if (strncmp(var, "SwarmSetup.offset_z", 19) == 0) {
+									int nn = atoi(var + 19);
+	                                SwarmSetup.offset_z[nn] = atoi(val);
 	                        } else if (strcmp(var, "ModelActive") == 0) {
 	                                ModelActive = atoi(val);
 	                        } else if (strcmp(var, "model_name") == 0) {

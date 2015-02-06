@@ -2,9 +2,6 @@
 #include <all.h>
 
 Survey SurveySetup;
-
-
-
 alist list[PMAX + 2];
 
 
@@ -1657,5 +1654,6 @@ void survey_draw_setup (ESContext *esContext) {
 	draw_text_button(esContext, "survey_setup_done", setup.view_mode, "[CLOSE]", FONT_GREEN, px2 - 0.02, py2 - 0.075, 0.005, 0.07, ALIGN_RIGHT, ALIGN_TOP, survey_set, 0.0);
 	draw_rect_f3(esContext, px1, py1, 0.005, px2, py2, 0.005, 255, 255, 255, 255);
 }
+
 
 
