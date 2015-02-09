@@ -1131,13 +1131,6 @@ void mavlink_send_cmd_yaw (uint8_t modelid, float yaw, float rate) {
 	mavlink_send_message(modelid, &msg);
 }
 
-void mavlink_send_cmd_look_at (uint8_t modelid, float p_lat, float p_long, float p_alt) {
-	mavlink_message_t msg;
-// MAV_CMD_NAV_ROI
-	mavlink_msg_mission_item_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, 0, MAV_FRAME_GLOBAL_RELATIVE_ALT, MAV_CMD_NAV_ROI, 2, 0, 0.0, 0.0, 0.0, 0.0, p_lat, p_long, p_alt);
-	mavlink_send_message(modelid, &msg);
-}
-
 void mavlink_send_cmd_follow (uint8_t modelid, float p_lat, float p_long, float p_alt, float radius) {
 	mavlink_message_t msg;
 	ModelData[modelid].next_lat = p_lat;
