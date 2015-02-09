@@ -22,7 +22,6 @@ uint8_t omap_type_select = 0;
 uint8_t map_view = 0;
 uint8_t map_color = 0;
 uint8_t map_startup = 0;
-uint8_t map_fm = 0;
 uint8_t map_add = 0;
 uint8_t map_addmode = 0;
 uint8_t map_poimode = 0;
@@ -30,10 +29,8 @@ uint8_t map_poly_addmode = 0;
 uint8_t map_polynf_addmode = 0;
 uint8_t map_polynf_num = 0;
 uint8_t map_start_addmode = 0;
-uint8_t map_wp_mopen = 0;
 uint8_t map_sethome = 0;
 uint8_t map_setpos = 0;
-uint8_t map_sp = 0;
 uint8_t uav_active_waypoint = 0;
 uint8_t center_map = 1;
 uint8_t nav_map = 0;
@@ -44,15 +41,76 @@ uint8_t map_show_poi = 0;
 uint8_t map_rotate = 0;
 uint8_t map_side = 1;
 uint8_t map_dir = 0;
-uint8_t map_overlay_set = 0;
-uint8_t map_cmd_set = 0;
 uint8_t map_show_fov = 0;
 uint8_t map_show_profile = 0;
-uint8_t map_poly_mopen = 0;
 uint8_t map_show_survey_setup = 0;
-uint8_t map_swarm_mopen = 0;
 uint8_t map_show_swarm_setup = 0;
+uint8_t map_menu_r = 0;
 
+enum {
+	MR_NONE,
+	MR_SWARM,
+	MR_FOLLOW,
+	MR_POLY,
+	MR_WP,
+	MR_GOTO,
+	MR_MODE,
+	MR_OVL,
+};
+
+uint8_t map_overlay_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (map_menu_r == MR_OVL) {
+		map_menu_r = 0;
+	} else {
+		map_menu_r = MR_OVL;
+	}
+	return 0;
+}
+
+uint8_t swarm_mopen (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (map_menu_r == MR_SWARM) {
+		map_menu_r = 0;
+	} else {
+		map_menu_r = MR_SWARM;
+	}
+	return 0;
+}
+
+uint8_t map_fm_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (map_menu_r == MR_FOLLOW) {
+		map_menu_r = 0;
+	} else {
+		map_menu_r = MR_FOLLOW;
+	}
+	return 0;
+}
+
+uint8_t map_poly_mopen_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (map_menu_r == MR_POLY) {
+		map_menu_r = 0;
+	} else {
+		map_menu_r = MR_POLY;
+	}
+	return 0;
+}
+
+uint8_t map_wp_mopen_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (map_menu_r == MR_WP) {
+		map_menu_r = 0;
+	} else {
+		map_menu_r = MR_WP;
+	}
+	return 0;
+}
+
+uint8_t map_sp_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (map_menu_r == MR_GOTO) {
+		map_menu_r = 0;
+	} else {
+		map_menu_r = MR_GOTO;
+	}
+	return 0;
+}
 
 uint8_t map_goto_screen (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	setup.view_mode = (int)data;
@@ -127,21 +185,8 @@ uint8_t map_poly_set (char *name, float x, float y, int8_t button, float data, u
 	return 0;
 }
 
-uint8_t map_overlay_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	map_overlay_set = 1 - map_overlay_set;
-	return 0;
-}
-
 uint8_t map_followme_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	GroundData.followme = 1 - GroundData.followme;
-	map_sp = 0;
-	map_setpos = 0;
-	return 0;
-}
-
-uint8_t map_fm_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	map_fm = 1 - map_fm;
-	map_sp = 0;
 	map_setpos = 0;
 	return 0;
 }
@@ -149,30 +194,34 @@ uint8_t map_fm_change (char *name, float x, float y, int8_t button, float data, 
 uint8_t map_cmd_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (strcmp(name, "map_cmd_rtl") == 0) {
 		mavlink_send_cmd_rtl(ModelActive);
-		map_cmd_set = 0;
+		map_menu_r = 0;
 	} else if (strcmp(name, "map_cmd_mission") == 0) {
 		mavlink_send_cmd_mission(ModelActive);
-		map_cmd_set = 0;
+		map_menu_r = 0;
 	} else if (strcmp(name, "map_cmd_guided") == 0) {
 		mavlink_send_cmd_guided(ModelActive);
-		map_cmd_set = 0;
+		map_menu_r = 0;
 	} else if (strcmp(name, "map_cmd_loiter") == 0) {
 		mavlink_send_cmd_loiter(ModelActive);
-		map_cmd_set = 0;
+		map_menu_r = 0;
 	} else if (strcmp(name, "map_cmd_takeoff") == 0) {
 		mavlink_send_cmd_takeoff(ModelActive);
-		map_cmd_set = 0;
+		map_menu_r = 0;
 	} else if (strcmp(name, "map_cmd_land") == 0) {
 		mavlink_send_cmd_land(ModelActive);
-		map_cmd_set = 0;
+		map_menu_r = 0;
 	} else if (strcmp(name, "map_cmd_disarm") == 0) {
 		mavlink_send_cmd_arm(ModelActive, 0);
-		map_cmd_set = 0;
+		map_menu_r = 0;
 	} else if (strcmp(name, "map_cmd_arm") == 0) {
 		mavlink_send_cmd_arm(ModelActive, 1);
-		map_cmd_set = 0;
+		map_menu_r = 0;
 	} else {
-		map_cmd_set = 1 - map_cmd_set;
+		if (map_menu_r == MR_MODE) {
+			map_menu_r = 0;
+		} else {
+			map_menu_r = MR_MODE;
+		}
 	}
 	return 0;
 }
@@ -348,18 +397,6 @@ uint8_t map_uav2home (char *name, float x, float y, int8_t button, float data, u
 	return 0;
 }
 
-uint8_t map_poly_mopen_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	map_poly_mopen = 1 - map_poly_mopen;
-	map_wp_mopen = 0;
-	return 0;
-}
-
-uint8_t map_wp_mopen_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	map_wp_mopen = 1 - map_wp_mopen;
-	map_poly_mopen = 0;
-	return 0;
-}
-
 uint8_t map_add_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	map_add = 1 - map_add;
 	return 0;
@@ -469,14 +506,6 @@ uint8_t map_polypointnf_add (char *name, float x, float y, int8_t button, float 
 uint8_t map_setpos_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	map_setpos = 1 - map_setpos;
 	GroundData.followme = 0;
-	map_fm = 0;
-	return 0;
-}
-
-uint8_t map_sp_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	map_sp = 1 - map_sp;
-	GroundData.followme = 0;
-	map_fm = 0;
 	return 0;
 }
 
@@ -1238,7 +1267,7 @@ void map_draw_buttons (ESContext *esContext) {
 	}
 	draw_box_f3(esContext, 1.05, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 	draw_rect_f3(esContext, 1.05, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
-	if (map_cmd_set == 1) {
+	if (map_menu_r == MR_MODE) {
 		draw_button(esContext, "map_cmd", setup.view_mode, tmp_str, FONT_GREEN, 1.05, -0.8 + ny * 0.12 - 0.055, 0.002, 1.45, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_cmd_change, 0.0);
 		ny2 = ny;
 		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
@@ -1281,7 +1310,7 @@ void map_draw_buttons (ESContext *esContext) {
 
 	draw_box_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 	draw_rect_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
-	if (map_wp_mopen == 0) {
+	if (map_menu_r != MR_WP) {
 		draw_button(esContext, "map_wp_mopen", setup.view_mode, "WP", FONT_WHITE, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_wp_mopen_change, 0.0);
 		map_addmode = 0;
 		map_poimode = 0;
@@ -1362,7 +1391,7 @@ void map_draw_buttons (ESContext *esContext) {
 
 	draw_box_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 	draw_rect_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
-	if (map_poly_mopen == 0) {
+	if (map_menu_r != MR_POLY) {
 		draw_button(esContext, "map_poly_mopen", setup.view_mode, "POLY", FONT_WHITE, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_poly_mopen_change, 0.0);
 		map_poly_addmode = 0;
 		map_polynf_addmode = 0;
@@ -1425,12 +1454,11 @@ void map_draw_buttons (ESContext *esContext) {
 
 	draw_box_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 	draw_rect_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
-	if (map_sp == 0) {
+	if (map_menu_r != MR_GOTO) {
 		draw_button(esContext, "map_sp", setup.view_mode, "GOTO", FONT_WHITE, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_sp_change, 0.0);
 		map_setpos = 0;
 	} else {
 		GroundData.followme = 0;
-		map_fm = 0;
 		draw_button(esContext, "map_sp", setup.view_mode, "GOTO", FONT_GREEN, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_sp_change, 0.0);
 		ny2 = ny;
 		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
@@ -1464,11 +1492,10 @@ void map_draw_buttons (ESContext *esContext) {
 
 	draw_box_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 	draw_rect_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
-	if (map_fm == 0 || GroundData.active == 0) {
+	if (map_menu_r != MR_FOLLOW) {
 		draw_button(esContext, "map_fm", setup.view_mode, "FOLLOW", FONT_WHITE, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_fm_change, 0.0);
 		GroundData.followme = 0;
 	} else {
-		map_sp = 0;
 		map_setpos = 0;
 		draw_button(esContext, "map_fm", setup.view_mode, "FOLLOW", FONT_GREEN, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_fm_change, 0.0);
 		ny2 = ny;
@@ -1505,9 +1532,13 @@ void map_draw_buttons (ESContext *esContext) {
 
 	draw_box_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 	draw_rect_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
-	draw_text_button(esContext, "swarm_open_", setup.view_mode, "swarming", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, swarm_set, 0.0);
-	if (map_swarm_mopen == 0) {
-		draw_button(esContext, "swarm_open", setup.view_mode, "SWARM", FONT_WHITE, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, swarm_set, 0.0);
+	draw_text_button(esContext, "swarm_open_", setup.view_mode, "swarming", FONT_WHITE, 1.29, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, swarm_mopen, 0.0);
+	if (map_menu_r != MR_SWARM) {
+		if (SwarmSetup.active == 0) {
+			draw_button(esContext, "swarm_open", setup.view_mode, "SWARM", FONT_WHITE, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, swarm_mopen, 0.0);
+		} else {
+			draw_button(esContext, "swarm_open", setup.view_mode, "SWARM", FONT_PINK, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, swarm_mopen, 0.0);
+		}
 	} else {
 		int n = 0;
 		for (n = 0; n < 4; n++) {
@@ -1519,7 +1550,7 @@ void map_draw_buttons (ESContext *esContext) {
 				SwarmSetup.offset_z[n] = (n + 1);
 			}
 		}
-		draw_button(esContext, "swarm_open", setup.view_mode, "SWARM", FONT_GREEN, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, swarm_set, 0.0);
+		draw_button(esContext, "swarm_open", setup.view_mode, "SWARM", FONT_GREEN, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, swarm_mopen, 0.0);
 		ny2 = ny;
 		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
 		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
@@ -1547,7 +1578,7 @@ void map_draw_buttons (ESContext *esContext) {
 
 	draw_box_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 	draw_rect_f3(esContext, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
-	if (map_overlay_set == 1) {
+	if (map_menu_r == MR_OVL) {
 		draw_button(esContext, "map_overlay_set", setup.view_mode, "OVL", FONT_GREEN, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_overlay_change, 0.0);
 		ny2 = ny;
 		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
@@ -2007,11 +2038,41 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	} else {
 		for (n = 0; n < MODELS_MAX; n++) {
 			if (ModelData[n].heartbeat > 0 || n == ModelActive) {
-				uint8_t mode = 1;
 				if (n == ModelActive) {
-					mode = 0;
+					draw_model(esContext, ModelData[n].p_lat, ModelData[n].p_long, (ModelData[n].p_alt - ModelData[n].alt_offset), ModelData[n].roll, ModelData[n].pitch, ModelData[n].yaw, n, 0, mapdata->lat, mapdata->lon, mapdata->zoom);
+				} else {
+					draw_model(esContext, ModelData[n].p_lat, ModelData[n].p_long, (ModelData[n].p_alt - ModelData[n].alt_offset), ModelData[n].roll, ModelData[n].pitch, ModelData[n].yaw, n, 1, mapdata->lat, mapdata->lon, mapdata->zoom);
 				}
-				draw_model(esContext, ModelData[n].p_lat, ModelData[n].p_long, (ModelData[n].p_alt - ModelData[n].alt_offset), ModelData[n].roll, ModelData[n].pitch, ModelData[n].yaw, n, mode, mapdata->lat, mapdata->lon, mapdata->zoom);
+				if (ModelData[n].next_count > 0) {
+					ModelData[n].next_count--;
+					if (n == ModelActive) {
+						mark_point(esContext, ModelData[n].next_lat, ModelData[n].next_long, ModelData[n].next_alt, "", "", 6, 0.0, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
+					} else {
+						mark_point(esContext, ModelData[n].next_lat, ModelData[n].next_long, ModelData[n].next_alt, "", "", 7, 0.0, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
+					}
+				}
+				if (SwarmSetup.active ==1 && SwarmSetup.master != -1) {
+					int nn = 0;
+					for (nn = 0; nn < 4; nn++) {
+						if (SwarmSetup.slave[nn] == -1) {
+							continue;
+						}
+						float p_lat = ModelData[SwarmSetup.master].p_lat;
+						float p_long = ModelData[SwarmSetup.master].p_long;
+						float p_alt = ModelData[SwarmSetup.master].p_alt;
+						float off_x = SwarmSetup.offset_x[nn];
+						float off_y = SwarmSetup.offset_y[nn];
+						if (SwarmSetup.rotate == 1) {
+							float radius = sqrt((SwarmSetup.offset_x[nn] * SwarmSetup.offset_x[nn]) + (SwarmSetup.offset_y[nn] * SwarmSetup.offset_y[nn]));
+							float angle = ModelData[SwarmSetup.master].yaw + 90.0 + atan(SwarmSetup.offset_x[nn] / SwarmSetup.offset_y[nn]) * RAD_TO_DEG;
+							off_x = cos(angle * DEG2RAD) * radius;
+							off_y = sin(angle * DEG2RAD) * radius;
+						}
+						latlong_offset(&p_lat, &p_long, &p_alt, off_y, off_x, SwarmSetup.offset_z[nn]);
+						mark_point(esContext, p_lat, p_long, p_alt, "", "", 7, 0.0, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
+					}
+				}
+
 			}
 		}
 	}
@@ -2521,8 +2582,8 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 
 void screen_map (ESContext *esContext, float lat, float lon, uint8_t zoom) {
 	display_map(esContext, lat, lon, zoom, map_view, 1, 1.0, 0.0, 0.0, 0.0);
-	screen_number(esContext);
 	screen_filesystem(esContext);
+	screen_number(esContext);
 	screen_keyboard(esContext);
 }
 

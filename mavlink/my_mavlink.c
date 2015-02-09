@@ -267,7 +267,7 @@ void mavlink_set_value (uint8_t modelid, char *name, float value, int8_t type, i
 void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 	mavlink_message_t msg2;
 	char sysmsg_str[1024];
-	if (ModelData[modelid].get_param == 1 && param_complete[modelid] == 0) {
+	if (param_complete[modelid] == 0) {
 		if (param_timeout[modelid] > 1) {
 			param_timeout[modelid]--;
 		} else if (param_timeout[modelid] == 1) {
@@ -308,8 +308,8 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 			ModelData[modelid].pilottype = packet.autopilot;
 			ModelData[modelid].mode = packet.custom_mode;
 			ModelData[modelid].armed = packet.system_status;
-			SDL_Log("Heartbeat(%i): %i, %i, %i\n", modelid, ModelData[modelid].armed, packet.custom_mode, packet.system_status);
-			if (ModelData[modelid].get_param == 1 && mavlink_maxparam[modelid] == 0) {
+//			SDL_Log("Heartbeat(%i): %i, %i, %i\n", modelid, ModelData[modelid].armed, packet.custom_mode, packet.system_status);
+			if (mavlink_maxparam[modelid] == 0) {
 				mavlink_start_feeds(modelid);
 			} else if (ModelData[modelid].heartbeat == 0) {
 				mavlink_start_feeds(modelid);
@@ -539,7 +539,7 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 			break;
 		}
 		case MAVLINK_MSG_ID_MISSION_ACK: {
-			SDL_Log("mavlink(%i): Mission-Transfer ACK\n", modelid);
+//			SDL_Log("mavlink(%i): Mission-Transfer ACK\n", modelid);
 			break;
 		}
 		case MAVLINK_MSG_ID_MISSION_REQUEST: {
@@ -1125,8 +1125,25 @@ void mavlink_send_cmd_loiter (uint8_t modelid) {
 	mavlink_send_message(modelid, &msg);
 }
 
+void mavlink_send_cmd_yaw (uint8_t modelid, float yaw, float rate) {
+	mavlink_message_t msg;
+	mavlink_msg_mission_item_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, 0, MAV_FRAME_GLOBAL_RELATIVE_ALT, MAV_CMD_CONDITION_YAW, 2, 0, yaw, rate, 1.0, 0.0, 0.0, 0.0, 0.0);
+	mavlink_send_message(modelid, &msg);
+}
+
+void mavlink_send_cmd_look_at (uint8_t modelid, float p_lat, float p_long, float p_alt) {
+	mavlink_message_t msg;
+// MAV_CMD_NAV_ROI
+	mavlink_msg_mission_item_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, 0, MAV_FRAME_GLOBAL_RELATIVE_ALT, MAV_CMD_NAV_ROI, 2, 0, 0.0, 0.0, 0.0, 0.0, p_lat, p_long, p_alt);
+	mavlink_send_message(modelid, &msg);
+}
+
 void mavlink_send_cmd_follow (uint8_t modelid, float p_lat, float p_long, float p_alt, float radius) {
 	mavlink_message_t msg;
+	ModelData[modelid].next_lat = p_lat;
+	ModelData[modelid].next_long = p_long;
+	ModelData[modelid].next_alt = p_alt;
+	ModelData[modelid].next_count = 1000;
 	mavlink_msg_mission_item_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, 0, MAV_FRAME_GLOBAL_RELATIVE_ALT, MAV_CMD_NAV_WAYPOINT, 2, 0, 0.0, radius, 0.0, 0.0, p_lat, p_long, p_alt);
 	mavlink_send_message(modelid, &msg);
 }
@@ -1216,11 +1233,11 @@ void mavlink_start_feeds (uint8_t modelid) {
 	param_complete[modelid] = 0;
 
 	SDL_Log("mavlink(%i): starting feeds\n", modelid);
-	if (ModelData[modelid].get_param == 1) {
+//	if (ModelData[modelid].get_param == 1) {
 		mavlink_msg_param_request_list_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid);
 		mavlink_send_message(modelid, &msg);
 		SDL_Delay(30);
-	}
+//	}
 
 	mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_DATA_STREAM_RAW_SENSORS, MAV_DATA_STREAM_RAW_SENSORS_RATE, MAV_DATA_STREAM_RAW_SENSORS_ACTIVE);
 	mavlink_send_message(modelid, &msg);

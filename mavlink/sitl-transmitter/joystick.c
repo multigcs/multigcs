@@ -17,9 +17,14 @@
 
 int main ( int argc, char *argv[] ) {
 	int16_t values[8];
+	int port = 5501;
 	int sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	struct sockaddr_in gcAddr; 
 	int i = 0;
+	if (argc == 2) {
+		port = atoi(argv[1]);
+	}
+
 	if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) < 0) {
 		fprintf(stderr, "Unable to initialize Joystick: %s\n", SDL_GetError());
 		return -1;
@@ -37,7 +42,7 @@ int main ( int argc, char *argv[] ) {
 	memset(&gcAddr, 0, sizeof(gcAddr));
 	gcAddr.sin_family = AF_INET;
 	gcAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-	gcAddr.sin_port = htons(5501);
+	gcAddr.sin_port = htons(port);
 	for (i = 0; i < 8; ++i) {
 		values[i] = 1500;
 	}

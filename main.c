@@ -562,6 +562,8 @@ void setup_save (void) {
 		fprintf(fr, "SurveySetup.alt_abs	%i\n", SurveySetup.alt_abs);
 		fprintf(fr, "\n");
 		fprintf(fr, "SwarmSetup.master		%i\n", SwarmSetup.master);
+		fprintf(fr, "SwarmSetup.yaw_mode	%i\n", SwarmSetup.yaw_mode);
+		fprintf(fr, "SwarmSetup.rotate	%i\n", SwarmSetup.rotate);
 		for (n = 0; n < 4; n++) {
 			fprintf(fr, "SwarmSetup.slave%i		%i\n", n, SwarmSetup.slave[n]);
 			fprintf(fr, "SwarmSetup.offset_x%i	%i\n", n, SwarmSetup.offset_x[n]);
@@ -699,6 +701,8 @@ void setup_load (void) {
 	setup.aprs_filter[0] = 0;
 	setup.aprs_enable = 0;
 	SwarmSetup.active = 0;
+	SwarmSetup.yaw_mode = 0;
+	SwarmSetup.rotate = 0;
 #endif
 #ifdef ANDROID
 	setup.opencv_device = 0;
@@ -727,6 +731,12 @@ void setup_load (void) {
 		ModelData[model_n].p_lat = 50.2942581;
 		ModelData[model_n].p_long = 9.1228580;
 		ModelData[model_n].p_alt = 150.0;
+
+		ModelData[model_n].next_lat = 0.0;
+		ModelData[model_n].next_long = 0.0;
+		ModelData[model_n].next_alt = 0.0;
+		ModelData[model_n].next_count = 0;
+
 		strcpy(ModelData[model_n].netip, "127.0.0.1");
 		ModelData[model_n].netport = 5760;
 		ModelData[model_n].get_param = 0;
@@ -816,6 +826,7 @@ void setup_load (void) {
 	                        } else if (strcmp(var, "hud_view_screen") == 0) {
 	                                setup.hud_view_screen = atoi(val);
 	                        } else if (strcmp(var, "hud_view_map") == 0) {
+	                                setup.hud_view_map = atoi(val);
 	                                setup.hud_view_map = atoi(val);
 	                        } else if (strcmp(var, "hud_view_video") == 0) {
 	                                setup.hud_view_video = atoi(val);
@@ -913,6 +924,10 @@ void setup_load (void) {
 	                                SurveySetup.alt_abs = atoi(val);
 	                        } else if (strcmp(var, "SwarmSetup.master") == 0) {
 	                                SwarmSetup.master = atoi(val);
+	                        } else if (strcmp(var, "SwarmSetup.yaw_mode") == 0) {
+	                                SwarmSetup.yaw_mode = atoi(val);
+	                        } else if (strcmp(var, "SwarmSetup.rotate") == 0) {
+	                                SwarmSetup.rotate = atoi(val);
 	                        } else if (strncmp(var, "SwarmSetup.slave", 16) == 0) {
 									int nn = atoi(var + 16);
 	                                SwarmSetup.slave[nn] = atoi(val);
@@ -1737,13 +1752,27 @@ int telemetry_thread (void *data) {
 		}
 		if (utimer >= 300 && SwarmSetup.active == 1 && SwarmSetup.master != -1) {
 			GroundData.followme = 0;
-			int n = 0;
-			for (n = 0; n < 4; n++) {
-				if (SwarmSetup.slave[n] == -1) {
+			int nn = 0;
+			for (nn = 0; nn < 4; nn++) {
+				if (SwarmSetup.slave[nn] == -1) {
 					continue;
 				}
-				float off_z = SwarmSetup.offset_z[n];
-				mavlink_send_cmd_follow(SwarmSetup.slave[n], ModelData[SwarmSetup.master].p_lat, ModelData[SwarmSetup.master].p_long, ModelData[SwarmSetup.master].p_alt + off_z, 2.0);
+				float p_lat = ModelData[SwarmSetup.master].p_lat;
+				float p_long = ModelData[SwarmSetup.master].p_long;
+				float p_alt = ModelData[SwarmSetup.master].p_alt;
+				float off_x = SwarmSetup.offset_x[nn];
+				float off_y = SwarmSetup.offset_y[nn];
+				if (SwarmSetup.rotate == 1) {
+					float radius = sqrt((SwarmSetup.offset_x[nn] * SwarmSetup.offset_x[nn]) + (SwarmSetup.offset_y[nn] * SwarmSetup.offset_y[nn]));
+					float angle = ModelData[SwarmSetup.master].yaw + 90.0 + atan(SwarmSetup.offset_x[nn] / SwarmSetup.offset_y[nn]) * RAD_TO_DEG;
+					off_x = cos(angle * DEG2RAD) * radius;
+					off_y = sin(angle * DEG2RAD) * radius;
+				}
+				latlong_offset(&p_lat, &p_long, &p_alt, off_y, off_x, SwarmSetup.offset_z[nn]);
+				if (SwarmSetup.yaw_mode == 1) {
+					mavlink_send_cmd_yaw(SwarmSetup.slave[nn], ModelData[SwarmSetup.master].yaw, 360.0);
+				}
+				mavlink_send_cmd_follow(SwarmSetup.slave[nn], p_lat, p_long, p_alt, 2.0);
 			}
 			utimer = 0;
 		}

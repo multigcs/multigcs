@@ -128,6 +128,24 @@ static uint8_t model_name_edit (char *name, float x, float y, int8_t button, flo
 	return 0;
 }
 
+static uint8_t model_ip_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	strncpy(ModelData[ModelActive].netip, name, 16);
+	return 0;
+}
+
+static uint8_t model_ip_edit (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	keyboard_set_callback(model_ip_set);
+	keyboard_set_text(ModelData[ModelActive].netip);
+	keyboard_set_mode(setup.view_mode);
+	return 0;
+}
+
+static uint8_t model_port_edit (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	edit_number(setup.view_mode, NUMBER_TYPE_UINT16, &ModelData[ModelActive].netport, 1000.0, 60000.0);
+	return 0;
+}
+
+
 static uint8_t model_save_xml (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	reset_buttons();
 	FILE *fr;
@@ -377,7 +395,6 @@ void screen_model (ESContext *esContext) {
 	sprintf(tmp_str, "%s", ModelData[ModelActive].name);
 	draw_text_button(esContext, "model_name_edit", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_name_edit, 0);
 	n++;
-
 	draw_text_button(esContext, "model_type", VIEW_MODE_MODEL, "TYPE:", FONT_WHITE, -1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_dronetype_change, 0);
 	draw_text_button(esContext, "dronetype_change", VIEW_MODE_MODEL, dronetypes[ModelData[ModelActive].dronetype], FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_dronetype_change, 0);
 
@@ -468,27 +485,19 @@ void screen_model (ESContext *esContext) {
 	}
 	sprintf(tmp_str, "%s [SELECT]", ModelData[ModelActive].telemetry_port);
 	draw_text_button(esContext, "device_select", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_device_change, 0);
+	n++;
 
-	if (strcmp(ModelData[ModelActive].telemetry_port, "UDP") != 0 && strcmp(ModelData[ModelActive].telemetry_port, "TCP") != 0) {
+	if (strcmp(ModelData[ModelActive].telemetry_port, "TCP") == 0) {
+		draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "IP:");
+		sprintf(tmp_str, "%s [CHANGE]", ModelData[ModelActive].netip);
+		draw_text_button(esContext, "model_ip_edit", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_ip_edit, n);
 		n++;
-		draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "BAUD:");
-		sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].telemetry_baud);
-		draw_text_button(esContext, "rc_baud", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_baud_change, n);
-
+		draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "PORT:");
+		sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].netport);
+		draw_text_button(esContext, "model_port_edit", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_port_edit, n);
 		n++;
-		draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "USEID:");
-		sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].use_deviceid);
-		if (ModelData[ModelActive].use_deviceid == 1) {
-			draw_text_button(esContext, "rc_useid", VIEW_MODE_MODEL, tmp_str, FONT_GREEN, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
-			n++;
-			draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "ID:");
-			draw_text_button(esContext, "rc_deviceid", VIEW_MODE_MODEL, ModelData[ModelActive].deviceid, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_null, n);
-		} else {
-			draw_text_button(esContext, "rc_useid", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
-		}
-	} else {
+	} else if (strcmp(ModelData[ModelActive].telemetry_port, "UDP") == 0) {
 		if (ModelData[ModelActive].teletype == TELETYPE_ARDUPILOT) {
-			n++;
 			draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "USEID:");
 			sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].use_deviceid);
 			if (ModelData[ModelActive].use_deviceid == 1) {
@@ -501,6 +510,24 @@ void screen_model (ESContext *esContext) {
 				draw_text_button(esContext, "rc_useid", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
 			}
 		}
+		n++;
+	} else {
+		draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "BAUD:");
+		sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].telemetry_baud);
+		draw_text_button(esContext, "rc_baud", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_baud_change, n);
+		n++;
+
+		draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "USEID:");
+		sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].use_deviceid);
+		if (ModelData[ModelActive].use_deviceid == 1) {
+			draw_text_button(esContext, "rc_useid", VIEW_MODE_MODEL, tmp_str, FONT_GREEN, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
+			n++;
+			draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "ID:");
+			draw_text_button(esContext, "rc_deviceid", VIEW_MODE_MODEL, ModelData[ModelActive].deviceid, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_null, n);
+		} else {
+			draw_text_button(esContext, "rc_useid", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
+		}
+		n++;
 	}
 
 

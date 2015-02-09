@@ -52,6 +52,10 @@ typedef struct {
 	float p_lat;
 	float p_long;
 	float p_alt;
+	float next_lat;
+	float next_long;
+	float next_alt;
+	uint16_t next_count;
 	float alt_offset;
 	float baro;
 	float pitch;

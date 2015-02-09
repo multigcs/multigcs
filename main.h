@@ -11,6 +11,9 @@
 
 #define PI 3.14159265
 
+#define DEG_TO_RAD (PI / 180.0)
+#define RAD_TO_DEG (180.0 / PI)
+
 #define FONT_GREEN_BG BASE_DIR"/fonts/font1.png"
 #define FONT_TRANS BASE_DIR"/fonts/font2.png"
 #define FONT_BLACK_BG BASE_DIR"/fonts/font3.png"

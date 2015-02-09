@@ -659,8 +659,12 @@ void draw_model (ESContext *esContext, float mark_lat, float mark_long, float ma
 			object3d_load(&obj3d[modelid], tmp_str);
 		}
 		esTranslate( &modelview, x1, -y1, -2.0 + mark_z);
-		glScalef(0.15, 0.15, 0.15);
-		object3d_draw(&obj3d[modelid], 255, 255, 255, 100);
+		glScalef(0.1, 0.1, 0.1);
+		if (mode == 0) {
+			object3d_draw(&obj3d[modelid], 0, 255, 0, 127);
+		} else {
+			object3d_draw(&obj3d[modelid], 255, 255, 255, 50);
+		}
 		esTranslate( &modelview, -x1, y1, 2.0 - mark_z);
 	} else
 #endif
