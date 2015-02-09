@@ -593,6 +593,7 @@ void draw_model (ESContext *esContext, float mark_lat, float mark_long, float ma
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
 #endif
+	char tmp_str[1024];
 	int mark_x = long2x(mark_long, lon, zoom);
 	int mark_y = lat2y(mark_lat, lat, zoom);
 	float x1 = (float)mark_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
@@ -632,6 +633,12 @@ void draw_model (ESContext *esContext, float mark_lat, float mark_long, float ma
 		esTranslate( &modelview, -mapdata->offset_x1, mapdata->offset_y1, 0.0 );
 	}
 #endif
+
+	draw_text_f3(esContext, x1 + 0.04, y1 - 0.04, mark_z, 0.04, 0.04, FONT_WHITE, ModelData[modelid].name);
+	sprintf(tmp_str, "%0.0fm", ModelData[modelid].p_alt);
+	draw_text_f3(esContext, x1 + 0.04, y1 + 0.0, mark_z, 0.04, 0.04, FONT_WHITE, tmp_str);
+	draw_line_f3(esContext, x1, y1, mark_z, x1 + 0.2, y1, mark_z, 255, 255, 255, 127);
+
 	esTranslate( &modelview, x1, -y1, -2.0 + mark_z);
 	esRotate( &modelview, yaw, 0.0, 0.0, 1.0 );
 	esRotate( &modelview, roll, 0.0, 1.0, 0.0 );
@@ -649,7 +656,6 @@ void draw_model (ESContext *esContext, float mark_lat, float mark_long, float ma
 
 #ifdef SDLGL
 	static Object3d obj3d[MAV_TYPE_ENUM_END];
-	char tmp_str[1024];
 	get_background_model(modelid, tmp_str);
 	if (tmp_str[0] != 0) {
 		if (strcmp(obj3d[modelid].name, tmp_str) != 0) {
