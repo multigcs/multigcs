@@ -1,9 +1,6 @@
 
 #include <all.h>
 
-#define DEG_TO_RAD   ( PI / 180.0 )
-#define RAD_TO_DEG   ( 180.0 / PI )
-
 extern char message_txt[1024];
 float sel = 0.0;
 float set_sel = 0.0;

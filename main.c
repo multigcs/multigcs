@@ -2562,7 +2562,9 @@ int main ( int argc, char *argv[] ) {
 
 	int n = 0;
 	char dir[1024];
+#ifndef WINDOWS
 	char tmp_name[201];
+#endif
 	ESContext esContext;
 	GlobalesContext = &esContext;
 #ifdef USE_VISTA2D

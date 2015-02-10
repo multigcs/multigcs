@@ -2126,14 +2126,14 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			glBegin(GL_POLYGON);
 			for (n = 1; n < MAX_POLYPOINTS; n++) {
 				if (PolyPointsNoFly[n].num == nfn && PolyPointsNoFly[n].p_lat != 0.0) {
-					float pos_alt = get_altitude(PolyPointsNoFly[n].p_lat, PolyPointsNoFly[n].p_long);
-					float alt = SurveySetup.alt + pos_alt;
-					if (SurveySetup.alt_abs == 1) {
-						if (SurveySetup.alt < pos_alt + 1.0) {
-							SurveySetup.alt = pos_alt + 1.0;
-						}
-						alt = SurveySetup.alt;
-					}
+//					float pos_alt = get_altitude(PolyPointsNoFly[n].p_lat, PolyPointsNoFly[n].p_long);
+//					float alt = SurveySetup.alt + pos_alt;
+//					if (SurveySetup.alt_abs == 1) {
+//						if (SurveySetup.alt < pos_alt + 1.0) {
+//							SurveySetup.alt = pos_alt + 1.0;
+//						}
+//						alt = SurveySetup.alt;
+//					}
 					float pmark_x = long2x(PolyPointsNoFly[n].p_long, lon, zoom);
 					float pmark_y = lat2y(PolyPointsNoFly[n].p_lat, lat, zoom);
 					float px2 = (float)(pmark_x) / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;

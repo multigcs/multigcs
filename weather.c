@@ -282,9 +282,9 @@ int weather_init (void) {
 #else
 	thread_weather = SDL_CreateThread(weather_thread, NULL);
 #endif
+#endif
+#endif
 	return 0;
-#endif
-#endif
 }
 
 int weather_exit (void) {

@@ -86,13 +86,13 @@ void screen_device (ESContext *esContext) {
 	if (show_device != setup.view_mode) {
 		return;
 	}
-
 	reset_buttons();
 	draw_box_f3(esContext, -1.5, -1.0, 0.002, 1.5, 1.0, 0.002, 0, 0, 0, 200);
-
+#ifndef WINDOWS
 	DIR *dir = NULL;
 	struct dirent *dir_entry = NULL;
 	struct stat statbuf;
+#endif
 	char directory[200];
 	char new_path[400];
 	char tmp_str[400];
