@@ -2,6 +2,8 @@
 #
 #
 
+MINGW_DIR="`grep "MINGW_DIR = " Makefile.win32-cross  | awk '{print $3}'`"
+
 apt-get install binutils-mingw-w64-i686 gcc-mingw-w64-i686 gcc-mingw32 mingw-w64-x86-64-dev mingw-w64-i686-dev mingw32-runtime wine libwine-gl dos2unix nsis nsis-common wget gcc-mingw32 build-essential pkg-config zip unzip tofrodos
 
 mkdir -p winlibs
@@ -74,32 +76,35 @@ test -e libjpeg/libjpeg-9.dll || wget -O libjpeg/libjpeg-9.dll https://raw.githu
 test -e OpenCV-2.4.5VC.zip || wget http://www.multixmedia.org/test/OpenCV-2.4.5VC.zip
 unzip -o -x OpenCV-2.4.5VC.zip
 
-mkdir -p /usr/i686-w64-mingw32/bin/
-mkdir -p /usr/i686-w64-mingw32/lib/
-mkdir -p /usr/i686-w64-mingw32/include/
-mkdir -p /usr/i686-w64-mingw32/include/tcl/
+mkdir -p $MINGW_DIR/bin/
+mkdir -p $MINGW_DIR/lib/
+mkdir -p $MINGW_DIR/include/
+mkdir -p $MINGW_DIR/include/tcl/
 
-cp -av SDL2_image-2.0.0/i686-w64-mingw32/* /usr/i686-w64-mingw32/
-cp -av SDL2_net-2.0.0/i686-w64-mingw32/* /usr/i686-w64-mingw32/
-cp -av SDL2-2.0.0/i686-w64-mingw32/* /usr/i686-w64-mingw32/
-cp -av iconv-1.9.2.win32/* /usr/i686-w64-mingw32/
-cp -av libxml2-2.7.8.win32/* /usr/i686-w64-mingw32/
-cp -av libpng-1.2.37/* /usr/i686-w64-mingw32/
-cp -av libpng3/* /usr/i686-w64-mingw32/bin/
-cp -av zlib-1.2.3/* /usr/i686-w64-mingw32/
-cp -av tcl8.5.15/generic/*.h  /usr/i686-w64-mingw32/include/tcl/
-cp -av tcl8.5.15/win/*dll /usr/i686-w64-mingw32/bin/
-cp -av winglut/glut32.dll /usr/i686-w64-mingw32/bin/
-cp -av winglut/winlib/* /usr/i686-w64-mingw32/lib/
-cp -av winglut/GL/* /usr/i686-w64-mingw32/include/GL/
-cp -av glew-1.10.0/lib/* /usr/i686-w64-mingw32/lib/
-cp -av glew-1.10.0/bin/* /usr/i686-w64-mingw32/bin/
-cp -av glew-1.10.0/include/* /usr/i686-w64-mingw32/include/
-cp -av libjpeg/libjpeg-9.dll /usr/i686-w64-mingw32/bin/
-cp -av OpenCV-2.4.5VC/install/bin/* /usr/i686-w64-mingw32/bin/
-cp -av OpenCV-2.4.5VC/install/lib/* /usr/i686-w64-mingw32/lib/
-cp -av OpenCV-2.4.5VC/install/include/* /usr/i686-w64-mingw32/include/
+cp -av SDL2_image-2.0.0/i686-w64-mingw32/* $MINGW_DIR/
+cp -av SDL2_net-2.0.0/i686-w64-mingw32/* $MINGW_DIR/
+cp -av SDL2-2.0.0/i686-w64-mingw32/* $MINGW_DIR/
+cp -av iconv-1.9.2.win32/* $MINGW_DIR/
+cp -av libxml2-2.7.8.win32/* $MINGW_DIR/
+cp -av libpng-1.2.37/* $MINGW_DIR/
+cp -av libpng3/* $MINGW_DIR/bin/
+cp -av zlib-1.2.3/* $MINGW_DIR/
+cp -av tcl8.5.15/generic/*.h  $MINGW_DIR/include/tcl/
+cp -av tcl8.5.15/win/*dll $MINGW_DIR/bin/
+cp -av winglut/glut32.dll $MINGW_DIR/bin/
+cp -av winglut/winlib/* $MINGW_DIR/lib/
+cp -av winglut/GL/* $MINGW_DIR/include/GL/
+cp -av glew-1.10.0/lib/* $MINGW_DIR/lib/
+cp -av glew-1.10.0/bin/* $MINGW_DIR/bin/
+cp -av glew-1.10.0/include/* $MINGW_DIR/include/
+cp -av libjpeg/libjpeg-9.dll $MINGW_DIR/bin/
+cp -av OpenCV-2.4.5VC/install/bin/* $MINGW_DIR/bin/
+cp -av OpenCV-2.4.5VC/install/lib/* $MINGW_DIR/lib/
+cp -av OpenCV-2.4.5VC/install/include/* $MINGW_DIR/include/
 
 (cd /usr/share/nsis/ ; wget -O UltraModernUI_1.00_2010-11-11.zip http://freefr.dl.sourceforge.net/project/ultramodernui/UltraModernUI/UltraModernUI%201.00b2-dev/UltraModernUI_1.00_2010-11-11.zip)
 (cd /usr/share/nsis/ ; unzip -x UltraModernUI_1.00_2010-11-11.zip)
+
+
+
 

@@ -2,7 +2,6 @@
 #include <all.h>
 
 
-
 #ifdef SDL2
 SDL_Window *MainWindow = NULL;
 SDL_GLContext MainGLcontext;
@@ -28,6 +27,7 @@ GLenum RB_DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
 #define GL_RGB 0x1907
 #endif
 
+#define GL_OBJECT_USING_BUFFER
 
 void esTranslate(ESMatrix *result, GLfloat tx, GLfloat ty, GLfloat tz) {
 	glTranslatef(tx, ty, tz);
@@ -42,8 +42,6 @@ void esMatrixLoadIdentity(ESMatrix *result) {
 
 void esMatrixMultiply(ESMatrix *result, ESMatrix *srcA, ESMatrix *srcB) {
 }
-
-#define GL_OBJECT_USING_BUFFER
 
 void object3d_load_data (Object3d *o3d, char *filename) {
 	FILE *fr;

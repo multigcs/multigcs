@@ -4,6 +4,7 @@ VERSION_NAME = win32
 EXTRA_OBJECTS = draw/gl_draw.o
 BASE_DIR = /usr/share/multigcs
 COMP = i686-w64-mingw32-gcc
+MINGW_DIR = /usr/i686-w64-mingw32
 
 INCDIR = 
 LIBS = 
@@ -11,8 +12,8 @@ CFLAGS += -DSDLGL -DSDL2 -DWINDOWS -DUSE_OPENCV -O3 -Wall -DBASE_DIR="\"$(BASE_D
 #CFLAGS += -ggdb
 #CFLAGS +=  -pg
 
-INCDIR += -I/usr/i686-w64-mingw32/include -I/usr/i686-w64-mingw32/include/SDL2 -I/usr/i686-w64-mingw32/include/libpng12 -I/usr/i686-w64-mingw32/include/tcl -I/usr/i686-w64-mingw32/include/opencv
-LIBS += -Lc:/MinGW/lib/SDL2 -static-libgcc -lmingw32 -lopengl32 -lglu32 -lglew32.dll -lSDL2main -mwindows -lSDL2 -lSDL2_image -lSDL2_net -L/usr/i686-w64-mingw32/bin \
+INCDIR += -I$(MINGW_DIR)/include -I$(MINGW_DIR)/include/SDL2 -I$(MINGW_DIR)/include/libpng12 -I$(MINGW_DIR)/include/tcl -I$(MINGW_DIR)/include/opencv
+LIBS += -Lc:/MinGW/lib/SDL2 -static-libgcc -lmingw32 -lopengl32 -lglu32 -lglew32.dll -lSDL2main -mwindows -lSDL2 -lSDL2_image -lSDL2_net -L$(MINGW_DIR)/bin \
 -lm -lxml2 -ltcl85 -lpng -lopencv_highgui245d -lopencv_core245d -lopencv_imgproc245d
 
 
@@ -36,7 +37,7 @@ GCS = $(EXTRA_OBJECTS) main.o serial.o draw/draw.o draw/videocapture.o draw/map.
 	mavlink/my_mavlink.o gps/my_gps.o mwi21/mwi21.o jeti/jeti.o openpilot/openpilot.o openpilot/openpilot_xml.o frsky/frsky.o tracker/tracker.o simplebgc/simplebgc.o brugi/brugi.o net/savepng.o net/webserv.o net/webclient.o logging.o kml.o \
 	openpilot/uavobjects_store.o openpilot/uavobjects_encode.o openpilot/uavobjects_decode.o \
 	weather.o \
-	/usr/i686-w64-mingw32/lib/libz.a \
+	$(MINGW_DIR)/lib/libz.a \
 
 
 default: all
@@ -111,18 +112,18 @@ pack:
 	todos Windows/MultiGCS/GPLv3.txt
 	todos Windows/MultiGCS/README.txt
 	todos Windows/MultiGCS/changelog.txt
-	cp /usr/i686-w64-mingw32/bin/libpng3.dll Windows/MultiGCS/
-	cp /usr/i686-w64-mingw32/bin/tcl85.dll Windows/MultiGCS/
-	cp /usr/i686-w64-mingw32/bin/SDL2_image.dll Windows/MultiGCS/
-	cp /usr/i686-w64-mingw32/bin/SDL2_net.dll Windows/MultiGCS/
-	cp /usr/i686-w64-mingw32/bin/SDL2.dll Windows/MultiGCS/
-	cp /usr/i686-w64-mingw32/bin/zlib1.dll Windows/MultiGCS/
-	cp /usr/i686-w64-mingw32/bin/iconv.dll Windows/MultiGCS/
-	cp /usr/i686-w64-mingw32/bin/libxml2.dll Windows/MultiGCS/
-	cp /usr/i686-w64-mingw32/bin/glew32.dll Windows/MultiGCS/
-	cp /usr/i686-w64-mingw32/bin/libjpeg-9.dll Windows/MultiGCS/
-	cp /usr/i686-w64-mingw32/bin/opencv_highgui245d.dll Windows/MultiGCS/
-	cp /usr/i686-w64-mingw32/bin/opencv_core245d.dll Windows/MultiGCS/
-	cp /usr/i686-w64-mingw32/bin/opencv_imgproc245d.dll Windows/MultiGCS/
+	cp $(MINGW_DIR)/bin/libpng3.dll Windows/MultiGCS/
+	cp $(MINGW_DIR)/bin/tcl85.dll Windows/MultiGCS/
+	cp $(MINGW_DIR)/bin/SDL2_image.dll Windows/MultiGCS/
+	cp $(MINGW_DIR)/bin/SDL2_net.dll Windows/MultiGCS/
+	cp $(MINGW_DIR)/bin/SDL2.dll Windows/MultiGCS/
+	cp $(MINGW_DIR)/bin/zlib1.dll Windows/MultiGCS/
+	cp $(MINGW_DIR)/bin/iconv.dll Windows/MultiGCS/
+	cp $(MINGW_DIR)/bin/libxml2.dll Windows/MultiGCS/
+	cp $(MINGW_DIR)/bin/glew32.dll Windows/MultiGCS/
+	cp $(MINGW_DIR)/bin/libjpeg-9.dll Windows/MultiGCS/
+	cp $(MINGW_DIR)/bin/opencv_highgui245d.dll Windows/MultiGCS/
+	cp $(MINGW_DIR)/bin/opencv_core245d.dll Windows/MultiGCS/
+	cp $(MINGW_DIR)/bin/opencv_imgproc245d.dll Windows/MultiGCS/
 	(cd Windows ; zip -r multigcs-$(VERSION_NAME)_$(VERSION).zip MultiGCS)
 
