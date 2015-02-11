@@ -715,11 +715,15 @@ int16_t get_altitude (float lat, float lon) {
 	char LAT[128];
 	if (lat_m < 0) {
 		sprintf(LAT, "S%02i", lat_m * -1);
+		lat_m *= -1;
+		lat *= -1.0;
 	} else {
 		sprintf(LAT, "N%02i", lat_m);
 	}
 	if (lon_m < 0) {
 		sprintf(LON, "W%03i", lon_m * -1);
+		lon_m *= -1;
+		lon *= -1.0;
 	} else {
 		sprintf(LON, "E%03i", lon_m);
 	}
@@ -760,8 +764,8 @@ int16_t get_altitude (float lat, float lon) {
 						uint8_t val1 = 0;
 						uint8_t val2 = 0;
 						int16_t val = 0;
-				        	fread(&val1, 1, 1, fr);
-				        	fread(&val2, 1, 1, fr);
+						fread(&val1, 1, 1, fr);
+						fread(&val2, 1, 1, fr);
 						val = (val1<<8) + val2;
 						AltCache[alt_num].data[1200 - py][px] = val;
 					}
