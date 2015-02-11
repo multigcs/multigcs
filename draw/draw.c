@@ -708,13 +708,22 @@ int16_t get_altitude (float lat, float lon) {
 	uint32_t atime_min = time(0);
 	int16_t px = 0;
 	int16_t py = 0;
-	int8_t lat_m = (int)lat;
-	int8_t lon_m = (int)lon;
+	int16_t lat_m = (int)lat;
+	int16_t lon_m = (int)lon;
 	int8_t flag = 0;
-	if (lat_m == 0 || lon_m == 0) {
-		return 0;
+	char LON[128];
+	char LAT[128];
+	if (lat_m < 0) {
+		sprintf(LAT, "S%02i", lat_m * -1);
+	} else {
+		sprintf(LAT, "N%02i", lat_m);
 	}
-	sprintf(file, "%s/MAPS/N%02iE%03i.hgt", get_datadirectory(), lat_m, lon_m);
+	if (lon_m < 0) {
+		sprintf(LON, "W%03i", lon_m * -1);
+	} else {
+		sprintf(LON, "E%03i", lon_m);
+	}
+	sprintf(file, "%s/MAPS/%s%s.hgt", get_datadirectory(), LAT, LON);
 	for (n = 0; n < 8; n++) {
 		if (strcmp(AltCache[n].name, file) == 0) {
 			alt_num = n;

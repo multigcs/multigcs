@@ -517,8 +517,6 @@ void get_maps (uint8_t mode, GeoMap *mapdata) {
 							}
 						}
 					}
-
-
 					tiles_num++;
 				}
 			}
@@ -531,10 +529,12 @@ void get_srtm (GeoMap *mapdata) {
 	char LAT[128];
 	char file[1024];
 	char file2[1024];
+	char listfile[1024];
+	char line[1024];
 	char source[1024];
 	char target[1024];
-	int8_t lat_m = (int)mapdata->lat;
-	int8_t lon_m = (int)mapdata->lon;
+	int16_t lat_m = (int)mapdata->lat;
+	int16_t lon_m = (int)mapdata->lon;
 	if (lat_m < 0) {
 		sprintf(LAT, "S%02i", lat_m * -1);
 	} else {
@@ -548,21 +548,42 @@ void get_srtm (GeoMap *mapdata) {
 	sprintf(file, "%s%s.hgt", LAT, LON);
 	sprintf(file2, "%s/MAPS/%s", get_datadirectory(), file);
 	if (file_exists(file2) == 0) {
-		SDL_Log("map: getting srtm-data: %s\n", file);
 		sprintf(target, "%s/MAPS/part/", get_datadirectory());
 #ifndef WINDOWS
 		mkdir(target, 0755);
 #else
 		mkdir(target);
 #endif
-		sprintf(source, "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/Eurasia/%s.zip", file);
-		sprintf(target, "%s/MAPS/part/%s.zip", get_datadirectory(), file);
-		SDL_Log("map: get SRTM: %s\n", source);
-		if (file_download(target, source) != -1) {
-			sprintf(source, "%s/MAPS/part/%s.zip", get_datadirectory(), file);
-			sprintf(target, "%s/MAPS/%s", get_datadirectory(), file);
-			unzipFile(source, file, target);
-			unlink(source);
+		source[0] = 0;
+		FILE *fr = NULL;
+		sprintf(listfile, "%s/SRTM.list", BASE_DIR);
+		fr = fopen (listfile, "r");
+		if (fr != NULL) {
+			while(fgets(line, 1000, fr) != NULL) {
+				if (strstr(line, file) > 0) {
+					line[strlen(line) - 1] = 0;
+					sprintf(source, "%s", line);
+				}
+			}
+			fclose(fr);
+		} else {
+
+			SDL_Log("srtm: list not found: %s\n", listfile);
+
+			sprintf(source, "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/Eurasia/%s.zip", file);
+		}
+		if (source[0] != 0) {
+			SDL_Log("srtm: getting srtm-data: %s\n", file);
+			sprintf(target, "%s/MAPS/part/%s.zip", get_datadirectory(), file);
+			SDL_Log("map: get SRTM: %s\n", source);
+			if (file_download(target, source) != -1) {
+				sprintf(source, "%s/MAPS/part/%s.zip", get_datadirectory(), file);
+				sprintf(target, "%s/MAPS/%s", get_datadirectory(), file);
+				unzipFile(source, file, target);
+				unlink(source);
+			}
+		} else {
+			SDL_Log("srtm: file %s not found\n", file);
 		}
 	}
 }
