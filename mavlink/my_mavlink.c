@@ -959,6 +959,25 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 			fclose(fdlog);
 			break;
 		}
+		case MAVLINK_MSG_ID_AIRSPEED_AUTOCAL: {
+			mavlink_airspeed_autocal_t packet;
+			mavlink_msg_airspeed_autocal_decode(msg, &packet);
+/*
+ 			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AIRSPEED_AUTOCAL vx %f ##\n", packet.vx); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AIRSPEED_AUTOCAL vy %f ##\n", packet.vy); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AIRSPEED_AUTOCAL vz %f ##\n", packet.vz); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AIRSPEED_AUTOCAL diff_pressure %f ##\n", packet.diff_pressure); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AIRSPEED_AUTOCAL EAS2TAS %f ##\n", packet.EAS2TAS); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AIRSPEED_AUTOCAL ratio %f ##\n", packet.ratio); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AIRSPEED_AUTOCAL state_x %f ##\n", packet.state_x); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AIRSPEED_AUTOCAL state_y %f ##\n", packet.state_y); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AIRSPEED_AUTOCAL state_z %f ##\n", packet.state_z); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AIRSPEED_AUTOCAL Pax %f ##\n", packet.Pax); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AIRSPEED_AUTOCAL Pby %f ##\n", packet.Pby); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_AIRSPEED_AUTOCAL Pcz %f ##\n", packet.Pcz); //FLOAT
+*/
+			break;
+		}
 		case MAVLINK_MSG_ID_COMMAND_ACK: {
 			mavlink_command_ack_t packet;
 			mavlink_msg_command_ack_decode(msg, &packet);

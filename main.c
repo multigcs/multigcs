@@ -18,7 +18,6 @@ char statetypes[MAV_STATE_ENUM_END][16] = {
 	"POWEROFF"
 };
 
-
 char pilottypes[MAV_AUTOPILOT_ENUM_END][64] = {
 	"GENERIC",
 	"PIXHAWK",

@@ -8,6 +8,174 @@ uint8_t fms_null (char *name, float x, float y, int8_t button, float data, uint8
 	return 0;
 }
 
+void wp_save_mission (char *filename) {
+	FILE *fd = NULL;
+	int cmd = 0;
+	if ((fd = fopen(filename, "w")) > 0) {
+		fprintf(fd, "QGC WPL 110\n");
+		uint16_t n = 0;
+		for (n = 0; n < MAX_WAYPOINTS; n++) {
+			if (WayPoints[ModelActive][n].p_lat != 0.0) {
+				if (strcmp(WayPoints[ModelActive][n].command, "WAYPOINT") == 0) {
+					cmd = MAV_CMD_NAV_WAYPOINT;
+				} else if (strcmp(WayPoints[ModelActive][n].command, "RTL") == 0) {
+					cmd = MAV_CMD_NAV_RETURN_TO_LAUNCH;
+				} else if (strcmp(WayPoints[ModelActive][n].command, "LAND") == 0) {
+					cmd = MAV_CMD_NAV_LAND;
+				} else if (strcmp(WayPoints[ModelActive][n].command, "TAKEOFF") == 0) {
+					cmd = MAV_CMD_NAV_TAKEOFF;
+				} else if (strcmp(WayPoints[ModelActive][n].command, "SHUTTER") == 0) {
+					cmd = MAV_CMD_DO_DIGICAM_CONTROL;
+				} else if (strcmp(WayPoints[ModelActive][n].command, "SHUTTER_INT") == 0) {
+					cmd = MAV_CMD_DO_SET_CAM_TRIGG_DIST;
+				} else if (strcmp(WayPoints[ModelActive][n].command, "RELAY") == 0) {
+					cmd = MAV_CMD_DO_SET_RELAY;
+				} else if (strcmp(WayPoints[ModelActive][n].command, "RELAY_REP") == 0) {
+					cmd = MAV_CMD_DO_REPEAT_RELAY;
+				} else if (strcmp(WayPoints[ModelActive][n].command, "SERVO") == 0) {
+					cmd = MAV_CMD_DO_SET_SERVO;
+				} else if (strcmp(WayPoints[ModelActive][n].command, "SERVO_REP") == 0) {
+					cmd = MAV_CMD_DO_REPEAT_SERVO;
+				} else if (strcmp(WayPoints[ModelActive][n].command, "SET_ROI") == 0) {
+					cmd = MAV_CMD_NAV_ROI;
+					cmd = 201;
+				} else {
+					cmd = MAV_CMD_NAV_WAYPOINT;
+				}
+				fprintf(fd, "%i\t", n);
+				fprintf(fd, "%i\t", 0);
+				fprintf(fd, "%i\t", WayPoints[ModelActive][n].frametype);
+				fprintf(fd, "%i\t", cmd);
+				fprintf(fd, "%f\t", WayPoints[ModelActive][n].param1);
+				fprintf(fd, "%f\t", WayPoints[ModelActive][n].param2);
+				fprintf(fd, "%f\t", WayPoints[ModelActive][n].param3);
+				fprintf(fd, "%f\t", WayPoints[ModelActive][n].param4);
+				fprintf(fd, "%f\t", WayPoints[ModelActive][n].p_lat);
+				fprintf(fd, "%f\t", WayPoints[ModelActive][n].p_long);
+				fprintf(fd, "%f\t", WayPoints[ModelActive][n].p_alt);
+				fprintf(fd, "%i\n", 1);
+			}
+		}
+		fclose(fd);
+	}
+}
+
+void wp_load_mission (char *filename) {
+	char line[1024];
+	FILE *fd = NULL;
+	int n = 0;
+	int current = 0;
+	int cont = 0;
+	int frametype;
+	float p_lat;
+	float p_long;
+	float p_alt;
+	float param1;
+	float param2;
+	float param3;
+	float param4;
+	int cmd = 0;
+	for (n = 0; n < MAX_WAYPOINTS; n++) {
+		WayPoints[ModelActive][n].p_lat = 0.0;
+		WayPoints[ModelActive][n].p_long = 0.0;
+		WayPoints[ModelActive][n].p_alt = 0.0;
+		WayPoints[ModelActive][n].param1 = 0.0;
+		WayPoints[ModelActive][n].param2 = 2.0;
+		WayPoints[ModelActive][n].param3 = 0.0;
+		WayPoints[ModelActive][n].param4 = 0.0;
+		WayPoints[ModelActive][n].frametype = 0;
+		WayPoints[ModelActive][n].name[0] = 0;
+		WayPoints[ModelActive][n].command[0] = 0;
+		WayPoints[ModelActive][n].type = 0;
+	}
+	if ((fd = fopen(filename, "r")) > 0) {
+        while(fgets(line, 1000, fd) != NULL) {
+			if (strncmp(line, "QGC WPL ", 8) == 0) {
+			} else {
+				sscanf(line, "%i\t%i\t%i\t%i\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%i", &n, &current, &frametype, &cmd, &param1, &param2, &param3, &param4, &p_lat, &p_long, &p_alt, &cont);
+				n += 1;
+				WayPoints[ModelActive][n].frametype = frametype;
+				WayPoints[ModelActive][n].param1 = param1;
+				WayPoints[ModelActive][n].param2 = param2;
+				WayPoints[ModelActive][n].param3 = param3;
+				WayPoints[ModelActive][n].param4 = param4;
+				WayPoints[ModelActive][n].p_lat = p_lat;
+				WayPoints[ModelActive][n].p_long = p_long;
+				WayPoints[ModelActive][n].p_alt = p_alt;
+				switch (cmd) {
+					case MAV_CMD_NAV_WAYPOINT: {
+						strcpy(WayPoints[ModelActive][n].command, "WAYPOINT");
+						break;
+					}
+					case MAV_CMD_NAV_LOITER_UNLIM: {
+						strcpy(WayPoints[ModelActive][n].command, "LOITER_UNLIM");
+						break;
+					}
+					case MAV_CMD_NAV_LOITER_TURNS: {
+						strcpy(WayPoints[ModelActive][n].command, "LOITER_TURNS");
+						break;
+					}
+					case MAV_CMD_NAV_LOITER_TIME: {
+						strcpy(WayPoints[ModelActive][n].command, "LOITER_TIME");
+						break;
+					}
+					case MAV_CMD_NAV_RETURN_TO_LAUNCH: {
+						strcpy(WayPoints[ModelActive][n].command, "RTL");
+						break;
+					}
+					case MAV_CMD_NAV_LAND: {
+						strcpy(WayPoints[ModelActive][n].command, "LAND");
+						break;
+					}
+					case MAV_CMD_NAV_TAKEOFF: {
+						strcpy(WayPoints[ModelActive][n].command, "TAKEOFF");
+						break;
+					}
+					case MAV_CMD_DO_DIGICAM_CONTROL: {
+						strcpy(WayPoints[ModelActive][n].command, "SHUTTER");
+						break;
+					}
+					case MAV_CMD_DO_SET_CAM_TRIGG_DIST: {
+						strcpy(WayPoints[ModelActive][n].command, "SHUTTER_INT");
+						break;
+					}
+					case MAV_CMD_DO_SET_RELAY: {
+						strcpy(WayPoints[ModelActive][n].command, "RELAY");
+						break;
+					}
+					case MAV_CMD_DO_REPEAT_RELAY: {
+						strcpy(WayPoints[ModelActive][n].command, "RELAY_REP");
+						break;
+					}
+					case MAV_CMD_DO_SET_SERVO: {
+						strcpy(WayPoints[ModelActive][n].command, "SERVO");
+						break;
+					}
+					case MAV_CMD_DO_REPEAT_SERVO: {
+						strcpy(WayPoints[ModelActive][n].command, "SERVO_REP");
+						break;
+					}
+					case MAV_CMD_NAV_ROI: {
+						strcpy(WayPoints[ModelActive][n].command, "SET_ROI");
+						break;
+					}
+					case 201: {
+						strcpy(WayPoints[ModelActive][n].command, "SET_ROI");
+						break;
+					}
+					default: {
+						sprintf(WayPoints[ModelActive][n].command, "CMD:%i", cmd);
+						break;
+					}
+				}
+
+
+			}
+		}
+		fclose(fd);
+	}
+}
+
 uint8_t fms_add (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 0;
 }
