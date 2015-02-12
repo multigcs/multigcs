@@ -2117,7 +2117,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			}
 		}
 
-
 		int nfn = 0;
 		for (nfn = 0; nfn < 255; nfn++) {
 #ifdef SDLGL
@@ -2126,14 +2125,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			glBegin(GL_POLYGON);
 			for (n = 1; n < MAX_POLYPOINTS; n++) {
 				if (PolyPointsNoFly[n].num == nfn && PolyPointsNoFly[n].p_lat != 0.0) {
-//					float pos_alt = get_altitude(PolyPointsNoFly[n].p_lat, PolyPointsNoFly[n].p_long);
-//					float alt = SurveySetup.alt + pos_alt;
-//					if (SurveySetup.alt_abs == 1) {
-//						if (SurveySetup.alt < pos_alt + 1.0) {
-//							SurveySetup.alt = pos_alt + 1.0;
-//						}
-//						alt = SurveySetup.alt;
-//					}
 					float pmark_x = long2x(PolyPointsNoFly[n].p_long, lon, zoom);
 					float pmark_y = lat2y(PolyPointsNoFly[n].p_lat, lat, zoom);
 					float px2 = (float)(pmark_x) / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
@@ -2191,7 +2182,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				}
 			}
 		}
-
 		int pmark_x = long2x(PolyPoints[1].p_long, lon, zoom);
 		int pmark_y = lat2y(PolyPoints[1].p_lat, lat, zoom);
 		float px1 = 0.0;
@@ -2270,6 +2260,7 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 		float ltx = center_x + cos((45.0 + 180.0 + SurveySetup.angle) * DEG2RAD) * max_w;
 		float lty = center_y + sin((45.0 + 180.0 + SurveySetup.angle) * DEG2RAD) * max_w;
+
 		for (n_y = 0.0; n_y <= max_w * 1.5; n_y += grid_y) {
 			float lnx = ltx + cos((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
 			float lny = lty + sin((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
