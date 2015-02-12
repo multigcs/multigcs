@@ -536,12 +536,12 @@ void get_srtm (GeoMap *mapdata) {
 	int16_t lat_m = (int)mapdata->lat;
 	int16_t lon_m = (int)mapdata->lon;
 	if (lat_m < 0) {
-		sprintf(LAT, "S%02i", lat_m * -1);
+		sprintf(LAT, "S%02i", lat_m * -1 + 1);
 	} else {
 		sprintf(LAT, "N%02i", lat_m);
 	}
 	if (lon_m < 0) {
-		sprintf(LON, "W%03i", lon_m * -1);
+		sprintf(LON, "W%03i", lon_m * -1 + 1);
 	} else {
 		sprintf(LON, "E%03i", lon_m);
 	}

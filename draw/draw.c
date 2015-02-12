@@ -714,16 +714,12 @@ int16_t get_altitude (float lat, float lon) {
 	char LON[128];
 	char LAT[128];
 	if (lat_m < 0) {
-		sprintf(LAT, "S%02i", lat_m * -1);
-		lat_m *= -1;
-		lat *= -1.0;
+		sprintf(LAT, "S%02i", lat_m * -1 + 1);
 	} else {
 		sprintf(LAT, "N%02i", lat_m);
 	}
 	if (lon_m < 0) {
-		sprintf(LON, "W%03i", lon_m * -1);
-		lon_m *= -1;
-		lon *= -1.0;
+		sprintf(LON, "W%03i", lon_m * -1 + 1);
 	} else {
 		sprintf(LON, "E%03i", lon_m);
 	}
@@ -767,7 +763,19 @@ int16_t get_altitude (float lat, float lon) {
 						fread(&val1, 1, 1, fr);
 						fread(&val2, 1, 1, fr);
 						val = (val1<<8) + val2;
-						AltCache[alt_num].data[1200 - py][px] = val;
+						if (lat_m < 0) {
+							if (lon_m < 0) {
+								AltCache[alt_num].data[py][1200 - px] = val;
+							} else {
+								AltCache[alt_num].data[py][px] = val;
+							}
+						} else {
+							if (lon_m < 0) {
+								AltCache[alt_num].data[1200 - py][1200 - px] = val;
+							} else {
+								AltCache[alt_num].data[1200 - py][px] = val;
+							}
+						}
 					}
 				}
 				fclose(fr);
@@ -781,18 +789,30 @@ int16_t get_altitude (float lat, float lon) {
 		AltCache[alt_num].atime = time(0);
 //		SDL_Log("# using Alt-Cache: %s\n", AltCache[alt_num].name);
 		// geting all field-points
-		int16_t y1 = (int)((lat - (float)lat_m) * 1201.0);
-		int16_t x1 = (int)((lon - (float)lon_m) * 1201.0);
+		float fy = 0.0;
+		float fx = 0.0;
+		int16_t y1 = 0;
+		int16_t x1 = 0;
+		int16_t y2 = 0;
+		int16_t x2 = 0;
+		if (lat_m < 0) {
+			lat_m *= -1;
+			lat *= -1.0;
+		}
+		if (lon_m < 0) {
+			lon_m *= -1;
+			lon *= -1.0;
+		}
+		y1 = (int)((lat - (float)lat_m) * 1201.0);
+		y2 = y1 + 1;
+		fy = ((lat - (float)lat_m) * 1201.0);
+		x1 = (int)((lon - (float)lon_m) * 1201.0);
+		x2 = x1 + 1;
+		fx = ((lon - (float)lon_m) * 1201.0);
 
 #ifndef SDLGL
 		return AltCache[alt_num].data[y1][x1];
 #else
-		// geting field
-		float fy = ((lat - (float)lat_m) * 1201.0);
-		float fx = ((lon - (float)lon_m) * 1201.0);
-		int16_t y2 = (int)((lat - (float)lat_m) * 1201.0 + 1.0);
-		int16_t x2 = (int)((lon - (float)lon_m) * 1201.0 + 1.0);
-
 		// geting alt-values of field-points
 		int16_t vx1a = AltCache[alt_num].data[y1][x1];
 		int16_t vx2a = AltCache[alt_num].data[y1][x2];
