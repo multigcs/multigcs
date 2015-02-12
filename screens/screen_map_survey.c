@@ -4,7 +4,6 @@
 Survey SurveySetup;
 alist list[PMAX + 2];
 
-
 float f_max (float a, float b) {
 	if (a > b) {
 		return a;
@@ -819,7 +818,6 @@ uint8_t survey_export_kml (char *name, float x, float y, int8_t button, float da
 	fprintf(kmlout, "        <extrude>0</extrude>\n");
 	fprintf(kmlout, "        <tessellate>1</tessellate>\n");
 	fprintf(kmlout, "        <coordinates>\n");
-
 	for (n = 1; n < MAX_WAYPOINTS; n++) {
 		if (PolyPoints[n].p_lat != 0.0) {
 			pmark_x = long2x(PolyPoints[n].p_long, lon, zoom);
@@ -871,7 +869,6 @@ uint8_t survey_export_kml (char *name, float x, float y, int8_t button, float da
 		grid_x = w / mpp / SurveySetup.overlap;
 		grid_y = h / mpp / SurveySetup.overlap;
 	}
-
 	fprintf(kmlout, "    <Placemark>\n");
 	fprintf(kmlout, "      <name>Route</name>\n");
 	fprintf(kmlout, "    <ExtendedData>\n");
@@ -903,7 +900,6 @@ uint8_t survey_export_kml (char *name, float x, float y, int8_t button, float da
 	fprintf(kmlout, "        <tessellate>1</tessellate>\n");
 	fprintf(kmlout, "        <altitudeMode>absolute</altitudeMode>\n");
 	fprintf(kmlout, "        <coordinates>\n");
-
 	float n_x = 0.0;
 	float n_y = 0.0;
 	float center_x = min_x + (max_x - min_x) / 2.0;
@@ -1031,10 +1027,8 @@ uint8_t survey_export_kml (char *name, float x, float y, int8_t button, float da
 	fprintf(kmlout, "  </Document>\n");
 	fprintf(kmlout, "</kml>\n");
 	fclose(kmlout);
-
 	sprintf(ge_command, "googleearth \"%s\" &", filename);
 	system(ge_command);
-
 	return 0;
 }
 
@@ -1646,7 +1640,6 @@ void survey_draw_setup (ESContext *esContext) {
 		draw_text_button(esContext, "SurveySetup.angle", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
 		ny++;
 	}
-
 	draw_text_button(esContext, "survey_load", setup.view_mode, "[LOAD]", FONT_GREEN, px1 + 0.02, py2 - 0.075, 0.005, 0.07, ALIGN_LEFT, ALIGN_TOP, survey_load, 0.0);
 	draw_text_button(esContext, "survey_save", setup.view_mode, "[SAVE]", FONT_GREEN, px1 + 0.32, py2 - 0.075, 0.005, 0.07, ALIGN_LEFT, ALIGN_TOP, survey_save, 0.0);
 	draw_text_button(esContext, "survey_export_kml", setup.view_mode, "[KML]", FONT_GREEN, px2 - 0.62, py2 - 0.075, 0.005, 0.07, ALIGN_RIGHT, ALIGN_TOP, survey_export_kml, 0.0);

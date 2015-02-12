@@ -111,6 +111,7 @@ typedef struct {
 	uint16_t netport;
 	int netsock;
 	int serial_fd;
+	float history[255][5];
 } Model;
 
 typedef struct {

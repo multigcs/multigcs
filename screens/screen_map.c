@@ -45,6 +45,7 @@ uint8_t map_show_fov = 0;
 uint8_t map_show_profile = 0;
 uint8_t map_show_survey_setup = 0;
 uint8_t map_show_swarm_setup = 0;
+uint8_t map_show_history = 0;
 uint8_t map_menu_r = 0;
 
 enum {
@@ -115,6 +116,14 @@ uint8_t map_sp_change (char *name, float x, float y, int8_t button, float data, 
 uint8_t map_goto_screen (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	setup.view_mode = (int)data;
 	view_mode_next = (int)data;
+	return 0;
+}
+
+uint8_t map_show_history_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	map_show_history++;
+	if (map_show_history > 2) {
+		map_show_history = 0;
+	}
 	return 0;
 }
 
@@ -1608,6 +1617,17 @@ void map_draw_buttons (ESContext *esContext) {
 		}
 		draw_text_button(esContext, "map_show_profile_", setup.view_mode, "altitude profile", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, show_profile, 0.0);
 		ny2++;
+		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
+		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
+		if (map_show_history == 1) {
+			draw_button(esContext, "map_show_history", setup.view_mode, "HIST", FONT_GREEN, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_show_history_change, 0.0);
+		} else if (map_show_history == 2) {
+			draw_button(esContext, "map_show_history", setup.view_mode, "HIST", FONT_PINK, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_show_history_change, 0.0);
+		} else {
+			draw_button(esContext, "map_show_history", setup.view_mode, "HIST", FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_show_history_change, 0.0);
+		}
+		draw_text_button(esContext, "map_show_history_", setup.view_mode, "history", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_show_history_change, 0.0);
+		ny2++;
 #ifndef RPI_NO_X
 		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
 		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
@@ -1987,41 +2007,54 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	if (map_show_wp == 1) {
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
 			if (WayPoints[ModelActive][n].p_lat != 0.0) {
+				float aalt = WayPoints[ModelActive][n].p_alt;
+				if (WayPoints[ModelActive][n].frametype == MAV_FRAME_GLOBAL_RELATIVE_ALT) {
+					aalt = WayPoints[ModelActive][n].p_alt + (float)get_altitude(WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long);
+				}
 				if (n == uav_active_waypoint && n == waypoint_active) {
-					mark_point(esContext, WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long, WayPoints[ModelActive][n].p_alt, WayPoints[ModelActive][n].name, WayPoints[ModelActive][n].command, 3, WayPoints[ModelActive][n].param1, WayPoints[ModelActive][n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
+					mark_point(esContext, WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long, aalt, WayPoints[ModelActive][n].name, WayPoints[ModelActive][n].command, 3, WayPoints[ModelActive][n].param1, WayPoints[ModelActive][n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
 				} else if (n == uav_active_waypoint) {
-					mark_point(esContext, WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long, WayPoints[ModelActive][n].p_alt, WayPoints[ModelActive][n].name, WayPoints[ModelActive][n].command, 2, WayPoints[ModelActive][n].param1, WayPoints[ModelActive][n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
+					mark_point(esContext, WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long, aalt, WayPoints[ModelActive][n].name, WayPoints[ModelActive][n].command, 2, WayPoints[ModelActive][n].param1, WayPoints[ModelActive][n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
 				} else if (n == waypoint_active) {
-					mark_point(esContext, WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long, WayPoints[ModelActive][n].p_alt, WayPoints[ModelActive][n].name, WayPoints[ModelActive][n].command, 1, WayPoints[ModelActive][n].param1, WayPoints[ModelActive][n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
+					mark_point(esContext, WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long, aalt, WayPoints[ModelActive][n].name, WayPoints[ModelActive][n].command, 1, WayPoints[ModelActive][n].param1, WayPoints[ModelActive][n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
 				} else {
-					mark_point(esContext, WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long, WayPoints[ModelActive][n].p_alt, WayPoints[ModelActive][n].name, WayPoints[ModelActive][n].command, 0, WayPoints[ModelActive][n].param1, WayPoints[ModelActive][n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
+					mark_point(esContext, WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long, aalt, WayPoints[ModelActive][n].name, WayPoints[ModelActive][n].command, 0, WayPoints[ModelActive][n].param1, WayPoints[ModelActive][n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
 				}
 			}
 		}
 		if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
 			if (setup.hud_view_tunnel == 1) {
-				mark_tunnel(esContext, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) + 10.6, WayPoints[ModelActive][waypoint_active].p_lat, WayPoints[ModelActive][waypoint_active].p_long, WayPoints[ModelActive][waypoint_active].p_alt, 5, mapdata->lat, mapdata->lon, mapdata->zoom);
+				float aalt = WayPoints[ModelActive][waypoint_active].p_alt;
+				if (WayPoints[ModelActive][waypoint_active].frametype == MAV_FRAME_GLOBAL_RELATIVE_ALT) {
+					aalt = WayPoints[ModelActive][waypoint_active].p_alt + (float)get_altitude(WayPoints[ModelActive][waypoint_active].p_lat, WayPoints[ModelActive][waypoint_active].p_long);
+				}
+				mark_tunnel(esContext, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) + 10.6, WayPoints[ModelActive][waypoint_active].p_lat, WayPoints[ModelActive][waypoint_active].p_long, aalt, 5, mapdata->lat, mapdata->lon, mapdata->zoom);
 			}
 		}
 		for (n = 1; n < MAX_WAYPOINTS; n++) {
 			if (WayPoints[ModelActive][n].p_lat != 0.0) {
+				float aalt = WayPoints[ModelActive][n].p_alt;
+				if (WayPoints[ModelActive][n].frametype == MAV_FRAME_GLOBAL_RELATIVE_ALT) {
+					aalt = WayPoints[ModelActive][n].p_alt + (float)get_altitude(WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long);
+				}
 				if (strcmp(WayPoints[ModelActive][n].command, "SHUTTER") == 0 || strcmp(WayPoints[ModelActive][n].command, "SHUTTER_INT") == 0 || strcmp(WayPoints[ModelActive][n].command, "RELAY") == 0 || strcmp(WayPoints[ModelActive][n].command, "RELAY_REP") == 0 || strcmp(WayPoints[ModelActive][n].command, "SERVO") == 0 || strcmp(WayPoints[ModelActive][n].command, "SERVO_REP") == 0) {
 					if (flag != 0) {
 						mark_point(esContext, last_lat, last_lon, last_alt, WayPoints[ModelActive][n].name, WayPoints[ModelActive][n].command, 6, WayPoints[ModelActive][n].param1, WayPoints[ModelActive][n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
 					}
 				} else if (strcmp(WayPoints[ModelActive][n].command, "SET_ROI") == 0) {
 					if (flag != 0) {
-						mark_route(esContext, last_lat, last_lon, last_alt, WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long, WayPoints[ModelActive][n].p_alt, 1, mapdata->lat, mapdata->lon, mapdata->zoom);
-						mark_point(esContext, WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long, WayPoints[ModelActive][n].p_alt, WayPoints[ModelActive][n].name, WayPoints[ModelActive][n].command, 7, WayPoints[ModelActive][n].param1, WayPoints[ModelActive][n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
+						mark_route(esContext, last_lat, last_lon, last_alt, WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long, aalt, 1, mapdata->lat, mapdata->lon, mapdata->zoom);
+						mark_point(esContext, WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long, aalt, WayPoints[ModelActive][n].name, WayPoints[ModelActive][n].command, 7, WayPoints[ModelActive][n].param1, WayPoints[ModelActive][n].param3, mapdata->lat, mapdata->lon, mapdata->zoom);
 					}
-				} else {
+//				} else {
+				} else if (strcmp(WayPoints[ModelActive][n].command, "WAYPOINT") == 0) {
 					if (flag != 0) {
-						mark_route(esContext, last_lat, last_lon, last_alt, WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long, WayPoints[ModelActive][n].p_alt, 0, mapdata->lat, mapdata->lon, mapdata->zoom);
+						mark_route(esContext, last_lat, last_lon, last_alt, WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long, aalt, 0, mapdata->lat, mapdata->lon, mapdata->zoom);
 					}
 					flag = 1;
 					last_lat = WayPoints[ModelActive][n].p_lat;
 					last_lon = WayPoints[ModelActive][n].p_long;
-					last_alt = WayPoints[ModelActive][n].p_alt;
+					last_alt = aalt;
 				}
 			}
 		}
@@ -2029,13 +2062,29 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 	} else {
 		if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
 			if (setup.hud_view_tunnel == 1) {
-				mark_tunnel(esContext, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) + 10.6, WayPoints[ModelActive][waypoint_active].p_lat, WayPoints[ModelActive][waypoint_active].p_long, WayPoints[ModelActive][waypoint_active].p_alt, 5, mapdata->lat, mapdata->lon, mapdata->zoom);
+				float aalt = WayPoints[ModelActive][waypoint_active].p_alt;
+				if (WayPoints[ModelActive][waypoint_active].frametype == MAV_FRAME_GLOBAL_RELATIVE_ALT) {
+					aalt = WayPoints[ModelActive][waypoint_active].p_alt + (float)get_altitude(WayPoints[ModelActive][waypoint_active].p_lat, WayPoints[ModelActive][waypoint_active].p_long);
+				}
+				mark_tunnel(esContext, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) + 10.6, WayPoints[ModelActive][waypoint_active].p_lat, WayPoints[ModelActive][waypoint_active].p_long, aalt, 5, mapdata->lat, mapdata->lon, mapdata->zoom);
 			}
 		}
 	}
 
 	if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
 	} else {
+		for (n = 0; n < 255; n++) {
+			if (map_show_history == 1) {
+				int mark_x = long2x(ModelData[ModelActive].history[n][1], mapdata->lon, mapdata->zoom);
+				int mark_y = lat2y(ModelData[ModelActive].history[n][0], mapdata->lat, mapdata->zoom);
+				float x1 = (float)mark_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
+				float y1 = (float)mark_y / (float)esContext->height * 2.0 - 1.0;
+				float z1 = (ModelData[ModelActive].history[n][2] - ModelData[ModelActive].alt_offset) / alt_zoom;
+				draw_circleFilled_f3(esContext, x1, y1, z1, 0.001, 0, 255, 0, 255);
+			} else if (map_show_history == 2) {
+				draw_model(esContext, ModelData[ModelActive].history[n][0], ModelData[ModelActive].history[n][1], (ModelData[ModelActive].history[n][2] - ModelData[n].alt_offset), ModelData[ModelActive].history[n][4], 0, ModelData[ModelActive].history[n][3], ModelActive, 2, mapdata->lat, mapdata->lon, mapdata->zoom);
+			}
+		}
 		for (n = 0; n < MODELS_MAX; n++) {
 			if (ModelData[n].heartbeat > 0 || n == ModelActive) {
 				if (n == ModelActive) {

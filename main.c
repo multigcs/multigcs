@@ -587,6 +587,7 @@ void setup_save (void) {
 			fprintf(fr, "Model_lat		%f\n", ModelData[n].p_lat);
 			fprintf(fr, "Model_long		%f\n", ModelData[n].p_long);
 			fprintf(fr, "Model_alt		%f\n", ModelData[n].p_alt);
+			fprintf(fr, "Model_alt_offset		%f\n", ModelData[n].alt_offset);
 			fprintf(fr, "Model_netip		%s\n", ModelData[n].netip);
 			fprintf(fr, "Model_netport		%i\n", ModelData[n].netport);
 			fprintf(fr, "Model_get_param		%i\n", ModelData[n].get_param);
@@ -730,6 +731,7 @@ void setup_load (void) {
 		ModelData[model_n].p_lat = 50.2942581;
 		ModelData[model_n].p_long = 9.1228580;
 		ModelData[model_n].p_alt = 150.0;
+		ModelData[model_n].alt_offset = 0.0;
 
 		ModelData[model_n].next_lat = 0.0;
 		ModelData[model_n].next_long = 0.0;
@@ -967,6 +969,8 @@ void setup_load (void) {
 	                                ModelData[model_n].p_long = atof(val);
 	                        } else if (strcmp(var, "Model_alt") == 0) {
 	                                ModelData[model_n].p_alt = atof(val);
+	                        } else if (strcmp(var, "Model_alt_offset") == 0) {
+	                                ModelData[model_n].alt_offset = atof(val);
 	                        } else if (strcmp(var, "Model_netip") == 0) {
 	                                strcpy(ModelData[model_n].netip, val);
 	                        } else if (strcmp(var, "Model_netport") == 0) {

@@ -436,6 +436,16 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 			if (packet.lat != 0 && packet.lon != 0) {
 				ModelData[modelid].p_lat = (float)packet.lat / 10000000.0;
 				ModelData[modelid].p_long = (float)packet.lon / 10000000.0;
+
+static uint8_t pos[MODELS_MAX];
+ModelData[modelid].history[pos[modelid]][0] = ModelData[modelid].p_lat;
+ModelData[modelid].history[pos[modelid]][1] = ModelData[modelid].p_long;
+ModelData[modelid].history[pos[modelid]][2] = ModelData[modelid].p_alt;
+ModelData[modelid].history[pos[modelid]][3] = ModelData[modelid].yaw;
+ModelData[modelid].history[pos[modelid]][4] = ModelData[modelid].roll;
+
+pos[modelid]++;
+
 				ModelData[modelid].speed = (float)packet.vel / 100.0;
 				ModelData[modelid].numSat = packet.satellites_visible;
 				ModelData[modelid].gpsfix = packet.fix_type;
@@ -487,7 +497,7 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 		case MAVLINK_MSG_ID_STATUSTEXT: {
 			mavlink_statustext_t packet;
 			mavlink_msg_statustext_decode(msg, &packet);
-			SDL_Log("mavlink(%i): ### %s ###\n", modelid, packet.text);
+			SDL_Log("mavlink(%i): msg: ### %s ###\n", modelid, packet.text);
 			sprintf(sysmsg_str, "model:%i %s", modelid, packet.text);
 			sys_message(sysmsg_str);
 			break;
@@ -861,45 +871,6 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 			redraw_flag = 1;
 			break;
 		}
-		case MAVLINK_MSG_ID_TERRAIN_REPORT: {
-			mavlink_terrain_report_t packet;
-			mavlink_msg_terrain_report_decode(msg, &packet);
-/*
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REPORT lat %i ##\n", packet.lat); //INT32_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REPORT lon %i ##\n", packet.lon); //INT32_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REPORT terrain_height %f ##\n", packet.terrain_height); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REPORT current_height %f ##\n", packet.current_height); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REPORT spacing %i ##\n", packet.spacing); //UINT16_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REPORT pending %i ##\n", packet.pending); //UINT16_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REPORT loaded %i ##\n", packet.loaded); //UINT16_T
-*/
-			break;
-		}
-		case MAVLINK_MSG_ID_TERRAIN_REQUEST: {
-			mavlink_terrain_request_t packet;
-			mavlink_msg_terrain_request_decode(msg, &packet);
-/*
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REQUEST mask %llu ##\n", packet.mask); //UINT64_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REQUEST lat %i ##\n", packet.lat); //INT32_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REQUEST lon %i ##\n", packet.lon); //INT32_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REQUEST grid_spacing %i ##\n", packet.grid_spacing); //UINT16_T
-*/
-			break;
-		}
-		case MAVLINK_MSG_ID_LOCAL_POSITION_NED: {
-			mavlink_local_position_ned_t packet;
-			mavlink_msg_local_position_ned_decode(msg, &packet);
-/*
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOCAL_POSITION_NED time_boot_ms %i ##\n", packet.time_boot_ms); //UINT32_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOCAL_POSITION_NED x %f ##\n", packet.x); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOCAL_POSITION_NED y %f ##\n", packet.y); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOCAL_POSITION_NED z %f ##\n", packet.z); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOCAL_POSITION_NED vx %f ##\n", packet.vx); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOCAL_POSITION_NED vy %f ##\n", packet.vy); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOCAL_POSITION_NED vz %f ##\n", packet.vz); //FLOAT
-* */
-			break;
-		}
 		case MAVLINK_MSG_ID_MOUNT_STATUS: {
 			mavlink_mount_status_t packet;
 			mavlink_msg_mount_status_decode(msg, &packet);
@@ -910,24 +881,6 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 		case MAVLINK_MSG_ID_WIND: {
 			mavlink_wind_t packet;
 			mavlink_msg_wind_decode(msg, &packet);
-			break;
-		}
-		case MAVLINK_MSG_ID_SIMSTATE: {
-			mavlink_simstate_t packet;
-			mavlink_msg_simstate_decode(msg, &packet);
-/*
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE roll %f ##\n", packet.roll); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE pitch %f ##\n", packet.pitch); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE yaw %f ##\n", packet.yaw); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE xacc %f ##\n", packet.xacc); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE yacc %f ##\n", packet.yacc); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE zacc %f ##\n", packet.zacc); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE xgyro %f ##\n", packet.xgyro); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE ygyro %f ##\n", packet.ygyro); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE zgyro %f ##\n", packet.zgyro); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE lat %i ##\n", packet.lat); //INT32_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE lng %i ##\n", packet.lng); //INT32_T
-*/
 			break;
 		}
 		case MAVLINK_MSG_ID_LOG_ENTRY: {
@@ -957,6 +910,98 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 			FILE *fdlog = fopen(tmp_str, "ab");
 			fwrite(packet.data, packet.count, 1, fdlog);
 			fclose(fdlog);
+			break;
+		}
+		case MAVLINK_MSG_ID_SIMSTATE: {
+			mavlink_simstate_t packet;
+			mavlink_msg_simstate_decode(msg, &packet);
+/*
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE roll %f ##\n", packet.roll); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE pitch %f ##\n", packet.pitch); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE yaw %f ##\n", packet.yaw); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE xacc %f ##\n", packet.xacc); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE yacc %f ##\n", packet.yacc); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE zacc %f ##\n", packet.zacc); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE xgyro %f ##\n", packet.xgyro); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE ygyro %f ##\n", packet.ygyro); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE zgyro %f ##\n", packet.zgyro); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE lat %i ##\n", packet.lat); //INT32_T
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_SIMSTATE lng %i ##\n", packet.lng); //INT32_T
+*/
+			break;
+		}
+		case MAVLINK_MSG_ID_TERRAIN_REPORT: {
+			mavlink_terrain_report_t packet;
+			mavlink_msg_terrain_report_decode(msg, &packet);
+/*
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REPORT lat %i ##\n", packet.lat); //INT32_T
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REPORT lon %i ##\n", packet.lon); //INT32_T
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REPORT terrain_height %f ##\n", packet.terrain_height); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REPORT current_height %f ##\n", packet.current_height); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REPORT spacing %i ##\n", packet.spacing); //UINT16_T
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REPORT pending %i ##\n", packet.pending); //UINT16_T
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REPORT loaded %i ##\n", packet.loaded); //UINT16_T
+*/
+			break;
+		}
+		case MAVLINK_MSG_ID_TERRAIN_REQUEST: {
+			mavlink_terrain_request_t packet;
+			mavlink_msg_terrain_request_decode(msg, &packet);
+/*
+			static uint64_t send_mask = 0;
+
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REQUEST mask %llu ##\n", packet.mask); //UINT64_T
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REQUEST lat %i ##\n", packet.lat); //INT32_T
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REQUEST lon %i ##\n", packet.lon); //INT32_T
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_TERRAIN_REQUEST grid_spacing %i ##\n", packet.grid_spacing); //UINT16_T
+
+			int n = 0;
+			int bit = 0;
+			for (bit = 0; bit < 56; bit++) {
+				if ((packet.mask & (1<<bit)) && !(send_mask & (1<<bit))) {
+					SDL_Log("######### bit %i %llu\n", bit, send_mask);
+					send_mask |= (1<<bit);
+					int bit_spacing = packet.grid_spacing * 4;
+					int east = bit_spacing * (bit % 8);
+					int north = bit_spacing * (bit / 8);
+					SDL_Log("############## %i %i %i\n", bit_spacing, east, north);
+					int16_t data[16];
+					float lat = packet.lat / 10000000.0;
+					float lon = packet.lon / 10000000.0;
+					float alt = 0;
+					latlong_offset(&lat, &lon, &alt, north, east, 0);
+					for (n = 0; n < (4 * 4); n++) {
+						int y = n % 4;
+						int x = n / 4;
+						int east2 = packet.grid_spacing * y;
+						int north2 = packet.grid_spacing * x;
+						SDL_Log("############## %i %i %i\n", bit_spacing, east2, north2);
+						float lat2 = lat;
+						float lon2 = lon;
+						float alt2 = alt;
+						latlong_offset(&lat2, &lon2, &alt2, north2, east2, 0);
+						data[n] = get_altitude(lat2, lon2);
+					}
+					mavlink_message_t msg_s;
+					mavlink_msg_terrain_data_pack(127, 0, &msg_s, lat, lon, packet.grid_spacing, bit, data);
+					mavlink_send_message(modelid, &msg_s);
+				}
+			}
+*/
+			break;
+		}
+		case MAVLINK_MSG_ID_LOCAL_POSITION_NED: {
+			mavlink_local_position_ned_t packet;
+			mavlink_msg_local_position_ned_decode(msg, &packet);
+/*
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOCAL_POSITION_NED time_boot_ms %i ##\n", packet.time_boot_ms); //UINT32_T
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOCAL_POSITION_NED x %f ##\n", packet.x); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOCAL_POSITION_NED y %f ##\n", packet.y); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOCAL_POSITION_NED z %f ##\n", packet.z); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOCAL_POSITION_NED vx %f ##\n", packet.vx); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOCAL_POSITION_NED vy %f ##\n", packet.vy); //FLOAT
+			SDL_Log("mavlink: ## MAVLINK_MSG_ID_LOCAL_POSITION_NED vz %f ##\n", packet.vz); //FLOAT
+* */
 			break;
 		}
 		case MAVLINK_MSG_ID_AIRSPEED_AUTOCAL: {

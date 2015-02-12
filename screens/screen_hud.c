@@ -135,7 +135,11 @@ uint8_t hud_goto_screen (char *name, float x, float y, int8_t button, float data
 
 uint8_t hud_altitude_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	float ground_alt = (float)get_altitude(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long);
-	ModelData[ModelActive].alt_offset = ModelData[ModelActive].p_alt - ground_alt;
+	if (ModelData[ModelActive].alt_offset != 0.0) {
+		ModelData[ModelActive].alt_offset = 0.0;
+	} else {
+		ModelData[ModelActive].alt_offset = ModelData[ModelActive].p_alt - ground_alt;
+	}
 	return 0;
 }
 
