@@ -366,7 +366,7 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 		case MAVLINK_MSG_ID_RC_CHANNELS_SCALED: {
 			mavlink_rc_channels_scaled_t packet;
 			mavlink_msg_rc_channels_scaled_decode(msg, &packet);
-			SDL_Log("Radio1: %i,%i,%i\n", packet.chan1_scaled, packet.chan2_scaled, packet.chan3_scaled);
+//			SDL_Log("Radio1: %i,%i,%i\n", packet.chan1_scaled, packet.chan2_scaled, packet.chan3_scaled);
 			ModelData[modelid].radio[0] = (int)packet.chan1_scaled / 100.0;
 			ModelData[modelid].radio[1] = (int)packet.chan2_scaled / 100.0;
 			ModelData[modelid].radio[2] = (int)packet.chan3_scaled / 100.0;
@@ -863,9 +863,7 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 			mavlink_msg_hwstatus_decode(msg, &packet);
 			ModelData[modelid].fc_voltage1 = (float)packet.Vcc / 1000.0;
 			ModelData[modelid].fc_i2c_errors = packet.I2Cerr;
-
-			SDL_Log("############### hwstat\n");
-
+//			SDL_Log("############### hwstat\n");
 			break;
 		}
 		case MAVLINK_MSG_ID_POWER_STATUS: {
@@ -874,19 +872,13 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 			ModelData[modelid].fc_voltage1 = (float)packet.Vcc / 1000.0;
 			ModelData[modelid].fc_voltage2 = (float)packet.Vservo / 1000.0;
 			ModelData[modelid].fc_status = packet.flags;
-
-			SDL_Log("############### powerstat\n");
-
-
+//			SDL_Log("############### powerstat\n");
 			break;
 		}
 		case MAVLINK_MSG_ID_MEMINFO: {
 			mavlink_meminfo_t packet;
 			mavlink_msg_meminfo_decode(msg, &packet);
-
-			SDL_Log("############### meminfo\n");
-
-
+//			SDL_Log("############### meminfo\n");
 			break;
 		}
 		case MAVLINK_MSG_ID_SENSOR_OFFSETS: {
@@ -948,23 +940,21 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 		case MAVLINK_MSG_ID_DATA_STREAM: {
 			mavlink_data_stream_t packet;
 			mavlink_msg_data_stream_decode(msg, &packet);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_DATA_STREAM message_rate %i ##\n", packet.message_rate); //UINT16_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_DATA_STREAM stream_id %i ##\n", packet.stream_id); //UINT8_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_DATA_STREAM on_off %i ##\n", packet.on_off); //UINT8_T
+//			SDL_Log("mavlink: ## MAVLINK_MSG_ID_DATA_STREAM message_rate %i ##\n", packet.message_rate); //UINT16_T
+//			SDL_Log("mavlink: ## MAVLINK_MSG_ID_DATA_STREAM stream_id %i ##\n", packet.stream_id); //UINT8_T
+//			SDL_Log("mavlink: ## MAVLINK_MSG_ID_DATA_STREAM on_off %i ##\n", packet.on_off); //UINT8_T
 			break;
 		}
-
 		case MAVLINK_MSG_ID_PARAM_SET: {
 			mavlink_param_set_t packet;
 			mavlink_msg_param_set_decode(msg, &packet);
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_PARAM_SET param_value %f ##\n", packet.param_value); //FLOAT
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_PARAM_SET target_system %i ##\n", packet.target_system); //UINT8_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_PARAM_SET target_component %i ##\n", packet.target_component); //UINT8_T
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_PARAM_SET param_id %s ##\n", packet.param_id); //CHAR
-			SDL_Log("mavlink: ## MAVLINK_MSG_ID_PARAM_SET param_type %i ##\n", packet.param_type); //UINT8_T
+//			SDL_Log("mavlink: ## MAVLINK_MSG_ID_PARAM_SET param_value %f ##\n", packet.param_value); //FLOAT
+//			SDL_Log("mavlink: ## MAVLINK_MSG_ID_PARAM_SET target_system %i ##\n", packet.target_system); //UINT8_T
+//			SDL_Log("mavlink: ## MAVLINK_MSG_ID_PARAM_SET target_component %i ##\n", packet.target_component); //UINT8_T
+//			SDL_Log("mavlink: ## MAVLINK_MSG_ID_PARAM_SET param_id %s ##\n", packet.param_id); //CHAR
+//			SDL_Log("mavlink: ## MAVLINK_MSG_ID_PARAM_SET param_type %i ##\n", packet.param_type); //UINT8_T
 			break;
 		}
-
 		case MAVLINK_MSG_ID_SIMSTATE: {
 			mavlink_simstate_t packet;
 			mavlink_msg_simstate_decode(msg, &packet);
