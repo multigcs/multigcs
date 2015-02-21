@@ -123,8 +123,6 @@
 #include <main.h>
 #include <my_gps.h>
 #include <mwi21.h>
-#include <simplebgc.h>
-#include <brugi.h>
 #include <uavobjects.h>
 #include <openpilot.h>
 #include <jeti.h>
@@ -141,8 +139,6 @@
 #include <screen_baseflightcli.h>
 #include <screen_baud.h>
 #include <screen_number.h>
-#include <screen_brugi.h>
-#include <screen_simplebgc.h>
 #include <screen_calibration.h>
 #include <screen_cli.h>
 #include <screen_device.h>

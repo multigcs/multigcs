@@ -2,9 +2,9 @@
 #include <all.h>
 
 char teletypes[16][16] = {
-	"MULTIWII_21", "AUTOQUAD", "ARDUPILOT", "MEGAPIRATE_NG", 
-	"OPENPILOT", "GPS_NMEA", "FRSKY", "BASEFLIGHT", "BASEFLIGHTCLI", 
-	"HARAKIRI_ML", "CLI", "SIMPLEBGC", "BRUGI", "---", "---", "---",
+	"MULTIWII_21", "AUTOQUAD", "ARDUPILOT", "MEGAPIRATE_NG",
+	"OPENPILOT", "GPS_NMEA", "FRSKY", "BASEFLIGHT",
+	"HARAKIRI_ML", "---", "---", "---",
 };
 
 char statetypes[MAV_STATE_ENUM_END][16] = {
@@ -324,11 +324,7 @@ uint8_t need_bluetooth (void) {
 void stop_telemetry (uint8_t modelid) {
 	mwi21_exit(modelid);
 	mavlink_exit(modelid);
-	baseflightcli_exit();
-	cli_exit();
 	gps_exit(modelid);
-	simplebgc_exit();
-	brugi_exit();
 	openpilot_exit(modelid);
 	frsky_mode(0);
 }
@@ -343,18 +339,10 @@ void reset_telemetry (uint8_t modelid) {
 #endif
 	if (ModelData[modelid].teletype == TELETYPE_MULTIWII_21 || ModelData[modelid].teletype == TELETYPE_BASEFLIGHT) {
 		mwi21_init(modelid, ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
-	} else if (ModelData[modelid].teletype == TELETYPE_SIMPLEBGC) {
-		simplebgc_init(ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
-	} else if (ModelData[modelid].teletype == TELETYPE_BRUGI) {
-		brugi_init(ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
 	} else if (ModelData[modelid].teletype == TELETYPE_GPS_NMEA) {
 		gps_init(modelid, ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
 	} else if (ModelData[modelid].teletype == TELETYPE_OPENPILOT) {
 		openpilot_init(modelid, ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
-	} else if (ModelData[modelid].teletype == TELETYPE_CLI) {
-		cli_init(ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
-	} else if (ModelData[modelid].teletype == TELETYPE_BASEFLIGHTCLI) {
-		baseflightcli_init(ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
 	} else if (ModelData[modelid].teletype == TELETYPE_FRSKY) {
 		frsky_mode(1);
 	} else if (ModelData[modelid].teletype == 255) {
@@ -1730,18 +1718,10 @@ int telemetry_thread (void *data) {
 				SDL_Delay(90);
 			} else if (ModelData[modelid].teletype == TELETYPE_MULTIWII_21 || ModelData[modelid].teletype == TELETYPE_BASEFLIGHT) {
 				mwi21_update(modelid);
-			} else if (ModelData[modelid].teletype == TELETYPE_SIMPLEBGC) {
-				simplebgc_update();
-			} else if (ModelData[modelid].teletype == TELETYPE_BRUGI) {
-				brugi_update();
 			} else if (ModelData[modelid].teletype == TELETYPE_GPS_NMEA) {
 				gps_update(modelid);
 			} else if (ModelData[modelid].teletype == TELETYPE_OPENPILOT) {
 				openpilot_update(modelid);
-			} else if (ModelData[modelid].teletype == TELETYPE_BASEFLIGHTCLI) {
-				baseflightcli_update();
-			} else if (ModelData[modelid].teletype == TELETYPE_CLI) {
-				cli_update();
 			} else if (ModelData[modelid].teletype == 255) {
 			} else {
 				mavlink_update(modelid);
@@ -2286,14 +2266,6 @@ void Draw (ESContext *esContext) {
 			screen_graph(esContext);
 		} else if (ModelData[ModelActive].teletype == TELETYPE_OPENPILOT) {
 			screen_openpilot(esContext);
-		} else if (ModelData[ModelActive].teletype == TELETYPE_CLI) {
-			screen_cli(esContext);
-		} else if (ModelData[ModelActive].teletype == TELETYPE_BASEFLIGHTCLI) {
-			screen_baseflightcli(esContext);
-		} else if (ModelData[ModelActive].teletype == TELETYPE_BRUGI) {
-			screen_brugi(esContext);
-		} else if (ModelData[ModelActive].teletype == TELETYPE_SIMPLEBGC) {
-			screen_simplebgc(esContext);
 		} else if (ModelData[ModelActive].teletype == 255) {
 		} else {
 			screen_mavlink_menu(esContext);

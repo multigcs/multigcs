@@ -261,14 +261,6 @@ void screen_overview (ESContext *esContext) {
 				screen_graph(esContext);
 			} else if (ModelData[ModelActive].teletype == TELETYPE_OPENPILOT) {
 				screen_openpilot(esContext);
-			} else if (ModelData[ModelActive].teletype == TELETYPE_CLI) {
-				screen_cli(esContext);
-			} else if (ModelData[ModelActive].teletype == TELETYPE_BASEFLIGHTCLI) {
-				screen_baseflightcli(esContext);
-			} else if (ModelData[ModelActive].teletype == TELETYPE_BRUGI) {
-				screen_brugi(esContext);
-			} else if (ModelData[ModelActive].teletype == TELETYPE_SIMPLEBGC) {
-				screen_simplebgc(esContext);
 			} else {
 				screen_mavlink_menu(esContext);
 			}
