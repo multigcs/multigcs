@@ -136,11 +136,9 @@
 #include <unzip.h>
 
 #include <screen_background.h>
-#include <screen_baseflightcli.h>
 #include <screen_baud.h>
 #include <screen_number.h>
 #include <screen_calibration.h>
-#include <screen_cli.h>
 #include <screen_device.h>
 #include <screen_filesystem.h>
 #include <screen_fms.h>
