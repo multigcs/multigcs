@@ -110,8 +110,10 @@ void serial_info_update (void) {
 			strcat(info[n].deviceid, tmp_str);
 			sprintf(tmp_str, "%s", udev_device_get_sysattr_value(dev2,"product"));
 			strcat(info[n].deviceid, tmp_str);
-			sprintf(tmp_str, "%s", udev_device_get_sysattr_value(dev2,"serial"));
-			strcat(info[n].deviceid, tmp_str);
+			if (udev_device_get_sysattr_value(dev2,"serial") != NULL) {
+				sprintf(tmp_str, "%s", udev_device_get_sysattr_value(dev2,"serial"));
+				strcat(info[n].deviceid, tmp_str);
+			}
 			for (n2 = 0; n2 < strlen(info[n].deviceid); n2++) {
 				if (info[n].deviceid[n2] == ' ') {
 					info[n].deviceid[n2] = '_';
