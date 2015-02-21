@@ -326,7 +326,7 @@ void stop_telemetry (uint8_t modelid) {
 	mavlink_exit(modelid);
 	baseflightcli_exit();
 	cli_exit();
-	gps_exit();
+	gps_exit(modelid);
 	simplebgc_exit();
 	brugi_exit();
 	openpilot_exit(modelid);
@@ -348,7 +348,7 @@ void reset_telemetry (uint8_t modelid) {
 	} else if (ModelData[modelid].teletype == TELETYPE_BRUGI) {
 		brugi_init(ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
 	} else if (ModelData[modelid].teletype == TELETYPE_GPS_NMEA) {
-		gps_init(ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
+		gps_init(modelid, ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
 	} else if (ModelData[modelid].teletype == TELETYPE_OPENPILOT) {
 		openpilot_init(modelid, ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
 	} else if (ModelData[modelid].teletype == TELETYPE_CLI) {
@@ -1735,7 +1735,7 @@ int telemetry_thread (void *data) {
 			} else if (ModelData[modelid].teletype == TELETYPE_BRUGI) {
 				brugi_update();
 			} else if (ModelData[modelid].teletype == TELETYPE_GPS_NMEA) {
-				gps_update();
+				gps_update(modelid);
 			} else if (ModelData[modelid].teletype == TELETYPE_OPENPILOT) {
 				openpilot_update(modelid);
 			} else if (ModelData[modelid].teletype == TELETYPE_BASEFLIGHTCLI) {

@@ -3,7 +3,6 @@
 
 SDL_Thread *gcs_sdl_thread_serial_gps = NULL;
 int gcs_serial_fd_gps = -1;
-int serial_fd_gps = -1;
 uint8_t gcs_gps_running = 0;
 static uint32_t last_connection = 1;
 static uint32_t gcs_last_connection = 1;
@@ -15,19 +14,19 @@ uint8_t gcsgps_connection_status (void) {
 	return gcs_last_connection;
 }
 
-uint8_t gps_connection_status (void) {
-	if (serial_fd_gps == -1) {
+uint8_t gps_connection_status (uint8_t modelid) {
+	if (ModelData[modelid].serial_fd == -1) {
 		return 0;
 	}
 	return last_connection;
 }
 
-void gps_update (void) {
+void gps_update (uint8_t modelid) {
 	static uint8_t n = 0;
 	static int res;
 	static char serial_buf[2];
 	static char line[1024];
-	if (serial_fd_gps >= 0 && (res = serial_read(serial_fd_gps, serial_buf, 1)) > 0) {
+	if (ModelData[modelid].serial_fd >= 0 && (res = serial_read(ModelData[modelid].serial_fd, serial_buf, 1)) > 0) {
 		last_connection = time(0);
 		if (serial_buf[0] == '\r') {
 		} else if (serial_buf[0] != '\n') {
@@ -46,8 +45,11 @@ void gps_update (void) {
 				char ch_K;
 				sscanf( line, "$GPVTG,%f,%c,%c,%c,%f,%c,%f,%c,", &track, &ch_T, &null1, &null2, &speed_knots, &knots, &speed, &ch_K);
 //					SDL_Log("gps: %s\n", line);
-				ModelData[ModelActive].speed = speed;
+				ModelData[modelid].speed = speed;
 				redraw_flag = 1;
+			} else if (strncmp(line, "$GNTXT", 6) == 0) {
+				SDL_Log("gps: msg: ### %s ###\n", line + 7);
+				sys_message(line + 7);
 			} else if (strncmp(line, "$GPRMC", 6) == 0) {
 				float time;
 				char ch_A;
@@ -62,9 +64,9 @@ void gps_update (void) {
 				char ch_E;
 				sscanf( line, "$GPRMC,%f,%c,%f,%c,%f,%c,%f,%f,%f,%f,%c", &time, &ch_A, &lat1, &ch_N, &lon1, &ch_W, &speed_knots, &curse, &date, &mag_var, &ch_E);
 //					SDL_Log("gps: %s %f\n", line, curse);
-				ModelData[ModelActive].yaw = curse;
+				ModelData[modelid].yaw = curse;
 				redraw_flag = 1;
-			} else if (strncmp(line, "$GPGGA", 6) == 0) {
+			} else if (strncmp(line, "$GPGGA", 6) == 0 || strncmp(line, "$GNGGA", 6) == 0) {
 				float time;
 				float lat1;
 				char latdir;
@@ -77,9 +79,13 @@ void gps_update (void) {
 				char alt2_unit;
 				float alt1;
 				char alt1_unit;
-				sscanf( line, "$GPGGA,%f,%f,%c,%f,%c,%d,%d,%f,%f,%c,%f,%c", &time, &lat1, &latdir, &lon1, &londir, &quality, &num_sat, &hdilution, &alt2, &alt2_unit, &alt1, &alt1_unit);
-//					SDL_Log("gps: %s\n", line);
-//					SDL_Log("gps: ###################### %f, %f, %c, %f, %c, %d, %d, %f, %f, %c, %f, %c ##\n", time, lat1, latdir, lon1, londir, quality, num_sat, hdilution, alt2, alt2_unit, alt1, alt1_unit);
+				if (strncmp(line, "$GPGGA", 6) == 0) {
+					sscanf( line, "$GPGGA,%f,%f,%c,%f,%c,%d,%d,%f,%f,%c,%f,%c", &time, &lat1, &latdir, &lon1, &londir, &quality, &num_sat, &hdilution, &alt2, &alt2_unit, &alt1, &alt1_unit);
+				} else {
+					sscanf( line, "$GNGGA,%f,%f,%c,%f,%c,%d,%d,%f,%f,%c,%f,%c", &time, &lat1, &latdir, &lon1, &londir, &quality, &num_sat, &hdilution, &alt2, &alt2_unit, &alt1, &alt1_unit);
+				}
+//				SDL_Log("gps: %s\n", line);
+//				SDL_Log("gps: ###################### %f, %f, %c, %f, %c, %d, %d, %f, %f, %c, %f, %c ##\n", time, lat1, latdir, lon1, londir, quality, num_sat, hdilution, alt2, alt2_unit, alt1, alt1_unit);
 				char tmp_str[20];
 				sprintf(tmp_str, "%2.0f", lat1);
 				float hlat = atof(tmp_str + 2) / 60.0;
@@ -89,18 +95,18 @@ void gps_update (void) {
 				float hlon = atof(tmp_str + 3) / 60.0;
 				tmp_str[3] = 0;
 				hlon += atof(tmp_str);
-				ModelData[ModelActive].heartbeat = 100;
+				ModelData[modelid].heartbeat = 100;
 				if (hlat != 0.0 && hlon != 0.0) {
-					ModelData[ModelActive].p_lat = hlat;
-					ModelData[ModelActive].p_long = hlon;
-					ModelData[ModelActive].p_alt = alt2;
-					ModelData[ModelActive].numSat = num_sat;
-					ModelData[ModelActive].gpsfix = quality;
+					ModelData[modelid].p_lat = hlat;
+					ModelData[modelid].p_long = hlon;
+					ModelData[modelid].p_alt = alt2;
+					ModelData[modelid].numSat = num_sat;
+					ModelData[modelid].gpsfix = quality;
 					redraw_flag = 1;
 				}
 /*
 				SDL_Log("#%f - %f (%0.1fm)#\n", hlat, hlon, alt1);
-				SDL_Log("Lat:  %f\n", WayPoints[ModelActive][0].p_lat);
+				SDL_Log("Lat:  %f\n", WayPoints[modelid][0].p_lat);
 				SDL_Log("Lon:  %f\n", hlon);
 				SDL_Log("Alt:  %0.1fm (%0.1fm)\n", alt1, alt2);
 				SDL_Log("Sats: %i\n", num_sat);
@@ -117,25 +123,25 @@ void gps_update (void) {
 				float imuY;
 				float imuZ;
 				sscanf( line, "$IMU,%f,%f,%f", &imuX, &imuY, &imuZ);
-				ModelData[ModelActive].pitch = imuX;
-				ModelData[ModelActive].roll = imuY;
-				ModelData[ModelActive].yaw = imuZ;
+				ModelData[modelid].pitch = imuX;
+				ModelData[modelid].roll = imuY;
+				ModelData[modelid].yaw = imuZ;
 				redraw_flag = 1;
 			} else if (strncmp(line, "$ACC", 4) == 0) {
 				float accX;
 				float accY;
 				sscanf( line, "$ACC,%f,%f", &accX, &accY);
-				ModelData[ModelActive].acc_x = accX / 90.0;
-				ModelData[ModelActive].acc_y = accY / 90.0;
+				ModelData[modelid].acc_x = accX / 90.0;
+				ModelData[modelid].acc_y = accY / 90.0;
 				redraw_flag = 1;
 			} else if (strncmp(line, "$GYRO", 5) == 0) {
 				float gyroX;
 				float gyroY;
 				float gyroZ;
 				sscanf( line, "$GYRO,%f,%f,%f", &gyroX, &gyroY, &gyroZ);
-				ModelData[ModelActive].gyro_x = gyroX;
-				ModelData[ModelActive].gyro_y = gyroY;
-				ModelData[ModelActive].gyro_z = gyroZ;
+				ModelData[modelid].gyro_x = gyroX;
+				ModelData[modelid].gyro_y = gyroY;
+				ModelData[modelid].gyro_z = gyroZ;
 				redraw_flag = 1;
 			}
 			n = 0;
@@ -157,7 +163,7 @@ int gcs_thread_serial_gps (void *unused) {
 				line[n++] = serial_buf[0];
 				line[n] = 0;
 			} else {
-				if (strncmp(line, "$GPGGA", 6) == 0) {
+				if (strncmp(line, "$GPGGA", 6) == 0 || strncmp(line, "$GNGGA", 6) == 0) {
 					float time;
 					float lat1;
 					char latdir;
@@ -170,7 +176,11 @@ int gcs_thread_serial_gps (void *unused) {
 					char alt2_unit;
 					float alt1;
 					char alt1_unit;
-					sscanf( line, "$GPGGA,%f,%f,%c,%f,%c,%d,%d,%f,%f,%c,%f,%c", &time, &lat1, &latdir, &lon1, &londir, &quality, &num_sat, &hdilution, &alt2, &alt2_unit, &alt1, &alt1_unit);
+					if (strncmp(line, "$GPGGA", 6) == 0) {
+						sscanf( line, "$GPGGA,%f,%f,%c,%f,%c,%d,%d,%f,%f,%c,%f,%c", &time, &lat1, &latdir, &lon1, &londir, &quality, &num_sat, &hdilution, &alt2, &alt2_unit, &alt1, &alt1_unit);
+					} else {
+						sscanf( line, "$GNGGA,%f,%f,%c,%f,%c,%d,%d,%f,%f,%c,%f,%c", &time, &lat1, &latdir, &lon1, &londir, &quality, &num_sat, &hdilution, &alt2, &alt2_unit, &alt1, &alt1_unit);
+					}
 //					SDL_Log("%s\n", line);
 //					SDL_Log("###################### %f, %f, %c, %f, %c, %d, %d, %f, %f, %c, %f, %c ##\n", time, lat1, latdir, lon1, londir, quality, num_sat, hdilution, alt2, alt2_unit, alt1, alt1_unit);
 					char tmp_str[20];
@@ -200,7 +210,7 @@ int gcs_thread_serial_gps (void *unused) {
 					}
 /*
 					SDL_Log("#%f - %f (%0.1fm)#\n", hlat, hlon, alt1);
-					SDL_Log("Lat:  %f\n", WayPoints[ModelActive][0].p_lat);
+					SDL_Log("Lat:  %f\n", WayPoints[modelid][0].p_lat);
 					SDL_Log("Lon:  %f\n", hlon);
 					SDL_Log("Alt:  %0.1fm (%0.1fm)\n", alt1, alt2);
 					SDL_Log("Sats: %i\n", num_sat);
@@ -241,9 +251,9 @@ uint8_t gcs_gps_init (char *port, uint32_t baud) {
 	return 0;
 }
 
-uint8_t gps_init (char *port, uint32_t baud) {
-	SDL_Log("gps: init serial port...\n");
-	serial_fd_gps = serial_open(port, baud);
+uint8_t gps_init (uint8_t modelid, char *port, uint32_t baud) {
+	SDL_Log("gps(%i): init serial port...\n", modelid);
+	ModelData[modelid].serial_fd = serial_open(port, baud);
 	return 0;
 }
 
@@ -258,10 +268,10 @@ void gcs_gps_exit (void) {
 	gcs_serial_fd_gps = -1;
 }
 
-void gps_exit (void) {
-	if (serial_fd_gps >= 0) {
-		serial_close(serial_fd_gps);
-		serial_fd_gps = -1;
+void gps_exit (uint8_t modelid) {
+	if (ModelData[modelid].serial_fd >= 0) {
+		serial_close(ModelData[modelid].serial_fd);
+		ModelData[modelid].serial_fd = -1;
 	}
 }
 
