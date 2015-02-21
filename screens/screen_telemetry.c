@@ -252,11 +252,11 @@ void screen_telemetry (ESContext *esContext) {
 	draw_value_barmeter_duo(esContext, -1.2, 0.0, -0.9, 0.8, "RSSI(Tele)", "", 0, 0.0, 100.0, 40.0, 20.0, ModelData[ModelActive].rssi_tx, ModelData[ModelActive].rssi_rx);
 	draw_value_barmeter_duo(esContext, -0.7, 0.0, -0.4, 0.8, "RSSI(RC)", "", 0, 0.0, 100.0, 40.0, 20.0, ModelData[ModelActive].rssi_rc_tx, ModelData[ModelActive].rssi_rc_rx);
 	if (ModelData[ModelActive].chancount > 8) {
-		draw_value_barchannels(esContext, -0.2, 0.1, "Channels", 0, 100, 8, ModelData[ModelActive].radio);
+		draw_value_barchannels(esContext, -0.2, 0.0, "Channels", 0, 100, 8, ModelData[ModelActive].radio);
 		if (ModelData[ModelActive].chancount > 16) {
 			ModelData[ModelActive].chancount = 16;
 		}
-		draw_value_barchannels(esContext, -0.2, 0.5, "", 0, 100, ModelData[ModelActive].chancount - 8, ModelData[ModelActive].radio + 8);
+		draw_value_barchannels(esContext, -0.2, 0.4, "", 0, 100, ModelData[ModelActive].chancount - 8, ModelData[ModelActive].radio + 8);
 	} else {
 		draw_value_barchannels(esContext, -0.2, 0.1, "Channels", 0, 100, 8, ModelData[ModelActive].radio);
 	}
