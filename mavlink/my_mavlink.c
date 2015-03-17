@@ -1,6 +1,23 @@
 
 #include <all.h>
 
+#include <mavlink/GCS_MAVLink/include/mavlink/v1.0/autoquad/mavlink_msg_aq_telemetry_f.h>
+
+#define MAV_CMD_AQ_TELEMETRY 2
+enum mavlinkCustomDataSets {
+    AQMAV_DATASET_LEGACY1 = 0,	// legacy sets can eventually be phased out
+    AQMAV_DATASET_LEGACY2,
+    AQMAV_DATASET_LEGACY3,
+    AQMAV_DATASET_ALL,		// use this to toggle all datasets at once
+    AQMAV_DATASET_GPS_XTRA,
+    AQMAV_DATASET_UKF_XTRA,
+    AQMAV_DATASET_SUPERVISOR,
+    AQMAV_DATASET_STACKSFREE,
+    AQMAV_DATASET_GIMBAL,
+    AQMAV_DATASET_ENUM_END
+};
+
+
 #define TCP_BUFLEN 2000
 #define UDP_BUFLEN 2042
 #define UDP_PORT 14550
@@ -98,6 +115,9 @@ uint8_t mavlink_init (uint8_t modelid, char *port, uint32_t baud) {
 		MavLinkVars[modelid][n].type = MAV_VAR_FLOAT;
 		MavLinkVars[modelid][n].id = -1;
 	}
+	mavlink_message_t msg2;
+	mavlink_msg_heartbeat_pack(127, 0, &msg2, MAV_TYPE_GCS, MAV_AUTOPILOT_INVALID, 0, 0, 0);
+	mavlink_send_message(modelid, &msg2);
 	return 0;
 }
 
@@ -430,13 +450,21 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 //printf("IMU2_SCL %f %f %f\n", (float)packet.xmag, (float)packet.ymag, (float)packet.zmag);
 			break;
 		}
+		case MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN: {
+			mavlink_gps_global_origin_t packet;
+			mavlink_msg_gps_global_origin_decode(msg, &packet);
+			WayPoints[modelid][0].p_lat = (float)packet.latitude / 10000000.0;
+			WayPoints[modelid][0].p_long = (float)packet.longitude / 10000000.0;
+			WayPoints[modelid][0].p_alt = (float)packet.altitude / 1000.0;
+			break;
+		}
 		case MAVLINK_MSG_ID_GPS_RAW_INT: {
 			mavlink_gps_raw_int_t packet;
 			mavlink_msg_gps_raw_int_decode(msg, &packet);
 			if (packet.lat != 0 && packet.lon != 0) {
 				ModelData[modelid].p_lat = (float)packet.lat / 10000000.0;
 				ModelData[modelid].p_long = (float)packet.lon / 10000000.0;
-
+/*
 				static uint8_t pos[MODELS_MAX];
 				ModelData[modelid].history[pos[modelid]][0] = ModelData[modelid].p_lat;
 				ModelData[modelid].history[pos[modelid]][1] = ModelData[modelid].p_long;
@@ -444,7 +472,7 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 				ModelData[modelid].history[pos[modelid]][3] = ModelData[modelid].yaw;
 				ModelData[modelid].history[pos[modelid]][4] = ModelData[modelid].roll;
 				pos[modelid]++;
-
+*/
 				ModelData[modelid].speed = (float)packet.vel / 100.0;
 				ModelData[modelid].numSat = packet.satellites_visible;
 				ModelData[modelid].gpsfix = packet.fix_type;
@@ -881,11 +909,6 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 //			SDL_Log("############### meminfo\n");
 			break;
 		}
-		case MAVLINK_MSG_ID_SENSOR_OFFSETS: {
-			mavlink_sensor_offsets_t packet;
-			mavlink_msg_sensor_offsets_decode(msg, &packet);
-			break;
-		}
 		case MAVLINK_MSG_ID_AHRS2: {
 			mavlink_ahrs2_t packet;
 			mavlink_msg_ahrs2_decode(msg, &packet);
@@ -943,6 +966,52 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 //			SDL_Log("mavlink: ## MAVLINK_MSG_ID_DATA_STREAM message_rate %i ##\n", packet.message_rate); //UINT16_T
 //			SDL_Log("mavlink: ## MAVLINK_MSG_ID_DATA_STREAM stream_id %i ##\n", packet.stream_id); //UINT8_T
 //			SDL_Log("mavlink: ## MAVLINK_MSG_ID_DATA_STREAM on_off %i ##\n", packet.on_off); //UINT8_T
+			break;
+		}
+		case 150: { // MAVLINK_MSG_ID_AQ_TELEMETRY_F and MAVLINK_MSG_ID_SENSOR_OFFSETS
+/*
+			printf("########################################\n");
+			if (ModelData[modelid].pilottype == MAV_AUTOPILOT_AUTOQUAD) {
+				mavlink_aq_telemetry_f_t packet;
+				mavlink_msg_aq_telemetry_f_decode(msg, &packet);
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_AQ_TELEMETRY_F value1 %f ##\n", packet.value1); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_AQ_TELEMETRY_F value2 %f ##\n", packet.value2); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_AQ_TELEMETRY_F value3 %f ##\n", packet.value3); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_AQ_TELEMETRY_F value4 %f ##\n", packet.value4); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_AQ_TELEMETRY_F value5 %f ##\n", packet.value5); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_AQ_TELEMETRY_F value6 %f ##\n", packet.value6); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_AQ_TELEMETRY_F value7 %f ##\n", packet.value7); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_AQ_TELEMETRY_F value8 %f ##\n", packet.value8); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_AQ_TELEMETRY_F value9 %f ##\n", packet.value9); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_AQ_TELEMETRY_F value10 %f ##\n", packet.value10); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_AQ_TELEMETRY_F value11 %f ##\n", packet.value11); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_AQ_TELEMETRY_F value12 %f ##\n", packet.value12); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_AQ_TELEMETRY_F value13 %f ##\n", packet.value13); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_AQ_TELEMETRY_F value14 %f ##\n", packet.value14); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_AQ_TELEMETRY_F value15 %f ##\n", packet.value15); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_AQ_TELEMETRY_F value16 %f ##\n", packet.value16); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_AQ_TELEMETRY_F value17 %f ##\n", packet.value17); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_AQ_TELEMETRY_F value18 %f ##\n", packet.value18); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_AQ_TELEMETRY_F value19 %f ##\n", packet.value19); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_AQ_TELEMETRY_F value20 %f ##\n", packet.value20); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_AQ_TELEMETRY_F Index %i ##\n", packet.Index); //UINT16_T
+			} else {
+				mavlink_sensor_offsets_t packet;
+				mavlink_msg_sensor_offsets_decode(msg, &packet);
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_SENSOR_OFFSETS mag_declination %f ##\n", packet.mag_declination); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_SENSOR_OFFSETS raw_press %i ##\n", packet.raw_press); //INT32_T
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_SENSOR_OFFSETS raw_temp %i ##\n", packet.raw_temp); //INT32_T
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_SENSOR_OFFSETS gyro_cal_x %f ##\n", packet.gyro_cal_x); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_SENSOR_OFFSETS gyro_cal_y %f ##\n", packet.gyro_cal_y); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_SENSOR_OFFSETS gyro_cal_z %f ##\n", packet.gyro_cal_z); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_SENSOR_OFFSETS accel_cal_x %f ##\n", packet.accel_cal_x); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_SENSOR_OFFSETS accel_cal_y %f ##\n", packet.accel_cal_y); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_SENSOR_OFFSETS accel_cal_z %f ##\n", packet.accel_cal_z); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_SENSOR_OFFSETS mag_ofs_x %i ##\n", packet.mag_ofs_x); //INT16_T
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_SENSOR_OFFSETS mag_ofs_y %i ##\n", packet.mag_ofs_y); //INT16_T
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_SENSOR_OFFSETS mag_ofs_z %i ##\n", packet.mag_ofs_z); //INT16_T
+			}
+*/
 			break;
 		}
 		case MAVLINK_MSG_ID_PARAM_SET: {
@@ -1163,9 +1232,16 @@ void mavlink_load_from_flash (uint8_t modelid) {
 }
 
 void mavlink_send_cmd_calibration (uint8_t modelid) {
-	SDL_Log("mavlink(%i): send cmd: Calibration\n", modelid);
+	SDL_Log("mavlink(%i): send cmd: Calibration ACC\n", modelid);
 	mavlink_message_t msg;
 	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_CMD_PREFLIGHT_CALIBRATION, 0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0);
+	mavlink_send_message(modelid, &msg);
+}
+
+void mavlink_send_cmd_calibration_mag_aq (uint8_t modelid) {
+	SDL_Log("mavlink(%i): send cmd: Calibration MAG(AQ)\n", modelid);
+	mavlink_message_t msg;
+	mavlink_msg_command_long_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_CMD_PREFLIGHT_CALIBRATION, 0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	mavlink_send_message(modelid, &msg);
 }
 
@@ -1327,7 +1403,6 @@ void mavlink_param_get_id (uint8_t modelid, uint16_t id) {
 }
 
 void mavlink_start_feeds (uint8_t modelid) {
-
 	mavlink_message_t msg;
 	mavlink_timeout[modelid] = 0;
 	param_complete[modelid] = 0;
@@ -1347,7 +1422,27 @@ void mavlink_start_feeds (uint8_t modelid) {
 	mavlink_send_message(modelid, &msg);
 	SDL_Delay(30);
 
-	if (ModelData[modelid].teletype == TELETYPE_MEGAPIRATE_NG || ModelData[modelid].teletype == TELETYPE_ARDUPILOT || ModelData[modelid].teletype == TELETYPE_HARAKIRIML) {
+	if (ModelData[modelid].pilottype == MAV_AUTOPILOT_AUTOQUAD) {
+		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_DATA_STREAM_EXTRA1, MAV_DATA_STREAM_EXTRA1_RATE, MAV_DATA_STREAM_EXTRA1_ACTIVE);
+		mavlink_send_message(modelid, &msg);
+		SDL_Delay(30);
+
+		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_DATA_STREAM_EXTRA2, MAV_DATA_STREAM_EXTRA2_RATE, MAV_DATA_STREAM_EXTRA2_ACTIVE);
+		mavlink_send_message(modelid, &msg);
+		SDL_Delay(30);
+
+		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_DATA_STREAM_EXTRA3, MAV_DATA_STREAM_EXTRA3_RATE, MAV_DATA_STREAM_EXTRA3_ACTIVE);
+		mavlink_send_message(modelid, &msg);
+		SDL_Delay(30);
+
+//		mavlink_msg_command_long_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, \
+//			MAV_CMD_AQ_TELEMETRY, 1, 1.0, 100000.0, AQMAV_DATASET_SUPERVISOR, 0.0, 0.0, 0.0, 0.0);
+
+		mavlink_send_message(modelid, &msg);
+		SDL_Delay(30);
+
+
+	} else if (ModelData[modelid].teletype == TELETYPE_MEGAPIRATE_NG || ModelData[modelid].teletype == TELETYPE_ARDUPILOT || ModelData[modelid].teletype == TELETYPE_HARAKIRIML) {
 		mavlink_msg_request_data_stream_pack(127, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_DATA_STREAM_EXTENDED_STATUS, MAV_DATA_STREAM_EXTENDED_STATUS_RATE, MAV_DATA_STREAM_EXTENDED_STATUS_ACTIVE);
 		mavlink_send_message(modelid, &msg);
 		SDL_Delay(30);

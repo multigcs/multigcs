@@ -117,6 +117,7 @@ void mavlink_send_cmd_mode (uint8_t modelid, uint8_t mode);
 void mavlink_send_cmd_loiter (uint8_t modelid);
 void mavlink_send_cmd_guided (uint8_t modelid);
 void mavlink_send_cmd_calibration (uint8_t modelid);
+void mavlink_send_cmd_calibration_mag_aq (uint8_t modelid);
 void mavlink_send_cmd_calibration_ack (uint8_t modelid);
 void mavlink_send_cmd_follow (uint8_t modelid, float p_lat, float p_long, float p_alt, float radius);
 void mavlink_send_cmd_yaw (uint8_t modelid, float yaw, float rate);
