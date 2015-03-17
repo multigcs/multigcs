@@ -817,55 +817,58 @@ uint8_t mavlink_channel_select_set (char *name, float x, float y, int8_t button,
 	return 0;
 }
 
-uint8_t mavlink_mot_quadx (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	char tmp_str[128];
-	int16_t pn = 0;
-	mavlink_send_value(ModelActive, "MOT_PWRD_01_T", 100.000000, 9);
-	SDL_Delay(10);
-	mavlink_send_value(ModelActive, "MOT_PWRD_01_P", 100.000000, 9);
-	SDL_Delay(10);
-	mavlink_send_value(ModelActive, "MOT_PWRD_01_R", 100.000000, 9);
-	SDL_Delay(10);
-	mavlink_send_value(ModelActive, "MOT_PWRD_01_Y", -100.000000, 9);
-	SDL_Delay(10);
-	mavlink_send_value(ModelActive, "MOT_PWRD_02_T", 100.000000, 9);
-	SDL_Delay(10);
-	mavlink_send_value(ModelActive, "MOT_PWRD_02_P", 100.000000, 9);
-	SDL_Delay(10);
-	mavlink_send_value(ModelActive, "MOT_PWRD_02_R", -100.000000, 9);
-	SDL_Delay(10);
-	mavlink_send_value(ModelActive, "MOT_PWRD_02_Y", 100.000000, 9);
-	SDL_Delay(10);
-	mavlink_send_value(ModelActive, "MOT_PWRD_03_T", 100.000000, 9);
-	SDL_Delay(10);
-	mavlink_send_value(ModelActive, "MOT_PWRD_03_P", -100.000000, 9);
-	SDL_Delay(10);
-	mavlink_send_value(ModelActive, "MOT_PWRD_03_R", -100.000000, 9);
-	SDL_Delay(10);
-	mavlink_send_value(ModelActive, "MOT_PWRD_03_Y", -100.000000, 9);
-	SDL_Delay(10);
-	mavlink_send_value(ModelActive, "MOT_PWRD_04_T", 100.000000, 9);
-	SDL_Delay(10);
-	mavlink_send_value(ModelActive, "MOT_PWRD_04_P", -100.000000, 9);
-	SDL_Delay(10);
-	mavlink_send_value(ModelActive, "MOT_PWRD_04_R", 100.000000, 9);
-	SDL_Delay(10);
-	mavlink_send_value(ModelActive, "MOT_PWRD_04_Y", 100.000000, 9);
-	SDL_Delay(10);
-	for (pn = 4; pn < 8; pn++) {
-		sprintf(tmp_str, "MOT_PWRD_%02i_T", pn + 1);
-		mavlink_send_value(ModelActive, tmp_str, 0.000000, 9);
-		SDL_Delay(10);
-		sprintf(tmp_str, "MOT_PWRD_%02i_P", pn + 1);
-		mavlink_send_value(ModelActive, tmp_str, 0.000000, 9);
-		SDL_Delay(10);
-		sprintf(tmp_str, "MOT_PWRD_%02i_R", pn + 1);
-		mavlink_send_value(ModelActive, tmp_str, 0.000000, 9);
-		SDL_Delay(10);
-		sprintf(tmp_str, "MOT_PWRD_%02i_Y", pn + 1);
-		mavlink_send_value(ModelActive, tmp_str, 0.000000, 9);
-		SDL_Delay(10);
+uint8_t mavlink_mixes_load (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	char sectc[] = {' ', 'T', 'P', 'R', 'Y'};
+	char tmp_str[1024];
+	char filename[1024];
+	char line[1024];
+	float value = 0.0;
+	int8_t section = 0;
+	int8_t motor = 0;
+	FILE *fr;
+	if (name[0] == '/') {
+		sprintf(filename, "%s", name);
+	} else {
+		sprintf(filename, "%s/mixes/%s.mix", BASE_DIR, name);
 	}
+	if ((fr = fopen(filename, "r")) != 0) {
+		while(fgets(line, 1023, fr) != NULL) {
+			if (strncmp(line, "[Throttle]", 10) == 0) {
+				section = 1;
+			} else if (strncmp(line, "[Pitch]", 7) == 0) {
+				section = 2;
+			} else if (strncmp(line, "[Roll]", 6) == 0) {
+				section = 3;
+			} else if (strncmp(line, "[Yaw]", 5) == 0) {
+				section = 4;
+			} else if (strncmp(line, "Craft", 5) == 0) {
+			} else if (strncmp(line, "Motors", 6) == 0) {
+			} else if (strncmp(line, "Motor", 5) == 0) {
+				motor = atoi(line + 5);
+				if (motor >= 10) {
+					value = atof(line + 8);
+				} else {
+					value = atof(line + 7);
+				}
+				sprintf(tmp_str, "MOT_PWRD_%02i_%c", motor, sectc[section]);
+				SDL_Log("mixes: %s == %f\n", tmp_str, value);
+				mavlink_send_value(ModelActive, tmp_str, value, 9);
+				SDL_Delay(10);
+			}
+		}
+		fclose(fr);
+	}
+	return 0;
+}
+
+uint8_t mavlink_mixes_file (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	char directory[200];
+	sprintf(directory, "%s/mixes", BASE_DIR);
+	filesystem_set_callback(mavlink_mixes_load);
+	filesystem_set_dir(directory);
+	filesystem_reset_filter();
+	filesystem_add_filter(".mix\0");
+	filesystem_set_mode(VIEW_MODE_FCMENU);
 	return 0;
 }
 
@@ -906,15 +909,15 @@ void screen_mavlink_mot_aq (ESContext *esContext) {
 	float value_r = 0.0;
 	float value_y = 0.0;
 	int16_t yn = 0;
-	draw_title(esContext, "Motors");
-	draw_text_button(esContext, "h", VIEW_MODE_FCMENU, "Num", FONT_GREEN, -0.9, -0.8, 0.005, 0.08, 1, 0, mavlink_mot_null, 0.0);
+	draw_title(esContext, "Motor - Mixer");
+	draw_text_button(esContext, "h", VIEW_MODE_FCMENU, "Port", FONT_GREEN, -0.9, -0.8, 0.005, 0.08, 1, 0, mavlink_mot_null, 0.0);
 	draw_text_button(esContext, "h", VIEW_MODE_FCMENU, "Throttle", FONT_GREEN, -0.4, -0.8, 0.005, 0.08, 1, 0, mavlink_mot_null, 0.0);
 	draw_text_button(esContext, "h", VIEW_MODE_FCMENU, "Pitch", FONT_GREEN, -0.0, -0.8, 0.005, 0.08, 1, 0, mavlink_mot_null, 0.0);
 	draw_text_button(esContext, "h", VIEW_MODE_FCMENU, "Roll", FONT_GREEN, 0.4, -0.8, 0.005, 0.08, 1, 0, mavlink_mot_null, 0.0);
 	draw_text_button(esContext, "h", VIEW_MODE_FCMENU, "Yaw", FONT_GREEN, 0.8, -0.8, 0.005, 0.08, 1, 0, mavlink_mot_null, 0.0);
 	for (pn = 0; pn < 8; pn++) {
 		sprintf(tmp_str, "MOT_%02i", pn + 1);
-		sprintf(tmp_str2, "#%i", pn + 1);
+		sprintf(tmp_str2, "M%i", pn + 1);
 		draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_PINK, -0.9, -0.7 + yn * 0.1, 0.005, 0.08, 1, 0, mavlink_mot_null, 0.0);
 
 		sprintf(tmp_str, "MOT_PWRD_%02i_T", pn + 1);
@@ -946,30 +949,23 @@ void screen_mavlink_mot_aq (ESContext *esContext) {
 		} else if (value_y > 0.0) {
 			draw_text_button(esContext, "cwccw", VIEW_MODE_FCMENU, "CCW", FONT_PINK, 1.1, -0.7 + yn * 0.1, 0.005, 0.08, 1, 0, mavlink_mot_null, 0.0);
 		}
-
 		yn++;
-
-#ifdef SDLGL
-#ifndef ANDROID
-		if (value_r != 0.0 && value_p != 0.0) {
-			glLineWidth(5);
-			glBegin(GL_LINES);
-			glColor4f(0.0, 1.0, 0.0, 0.3);
-			glVertex3f(0.0, -0.45, 0.0);
-			glVertex3f(0.0 - (value_r / 450.0), -0.45 + (value_p / 450.0), -2.00);
-			glEnd();
-			sprintf(tmp_str, "#%i", pn + 1);
+		if (value_r != 0.0 || value_p != 0.0) {
+			draw_line_f3(esContext, 0.0, 0.45, 0.003, 0.0 - (value_r / 600.0), 0.45 - (value_p / 600.0), 0.003, 255, 255, 255, 255);
+			draw_circle_f3(esContext, 0.0 - (value_r / 400.0), 0.45 - (value_p / 400.0), 0.003, 0.08, 255, 255, 255, 255);
+			sprintf(tmp_str, "M%i", pn + 1);
 			if (value_y < 0.0) {
-				draw_text_button(esContext, "h", VIEW_MODE_FCMENU, tmp_str, FONT_GREEN, 0.0 - (value_r / 400.0), 0.45 - 0.03 - (value_p / 400.0), 0.005, 0.06, 1, 0, mavlink_mot_null, 0.0);
+				draw_text_button(esContext, "h", VIEW_MODE_FCMENU, tmp_str, FONT_GREEN, 0.0 - (value_r / 400.0), 0.45 - 0.027 - (value_p / 400.0), 0.005, 0.06, 1, 0, mavlink_mot_null, 0.0);
+				draw_line_f3(esContext, -0.015 - (value_r / 400.0), 0.45 - 0.012 - 0.08 - (value_p / 400.0), 0.003, 0.0 - (value_r / 400.0), 0.45 - 0.08 - (value_p / 400.0), 0.003, 255, 255, 255, 255);
+				draw_line_f3(esContext, -0.015 - (value_r / 400.0), 0.45 + 0.015 - 0.08 - (value_p / 400.0), 0.003, 0.0 - (value_r / 400.0), 0.45 - 0.08 - (value_p / 400.0), 0.003, 255, 255, 255, 255);
 			} else if (value_y > 0.0) {
-				draw_text_button(esContext, "h", VIEW_MODE_FCMENU, tmp_str, FONT_PINK, 0.0 - (value_r / 400.0), 0.45 - 0.03 - (value_p / 400.0), 0.005, 0.06, 1, 0, mavlink_mot_null, 0.0);
+				draw_text_button(esContext, "h", VIEW_MODE_FCMENU, tmp_str, FONT_PINK, 0.0 - (value_r / 400.0), 0.45 - 0.027 - (value_p / 400.0), 0.005, 0.06, 1, 0, mavlink_mot_null, 0.0);
+				draw_line_f3(esContext, 0.015 - (value_r / 400.0), 0.45 - 0.012 - 0.08 - (value_p / 400.0), 0.003, 0.0 - (value_r / 400.0), 0.45 - 0.08 - (value_p / 400.0), 0.003, 255, 255, 255, 255);
+				draw_line_f3(esContext, 0.015 - (value_r / 400.0), 0.45 + 0.015 - 0.08 - (value_p / 400.0), 0.003, 0.0 - (value_r / 400.0), 0.45 - 0.08 - (value_p / 400.0), 0.003, 255, 255, 255, 255);
 			}
 		}
-#endif
-#endif
-
 	}
-	draw_text_button(esContext, "set_mot_quad_x", VIEW_MODE_FCMENU, "[Quad-X]", FONT_WHITE, 0.0, 0.8, 0.005, 0.08, 1, 0, mavlink_mot_quadx, 0.0);
+	draw_text_button(esContext, "mixes_file", VIEW_MODE_FCMENU, "[Load Preset]", FONT_WHITE, 0.0, 0.8, 0.005, 0.08, 1, 0, mavlink_mixes_file, 0.0);
 }
 
 uint8_t mavlink_rcmap_futaba (char *name, float x, float y, int8_t button, float data, uint8_t action) {
@@ -1778,6 +1774,7 @@ void screen_mavlink_menu (ESContext *esContext) {
 			return;
 		} else if (mavlink_view_screen == 11) {
 			screen_mavlink_mot_aq(esContext);
+			screen_filesystem(esContext);
 			return;
 		} else if (mavlink_view_screen == 12) {
 			screen_mavlink_rate_aq(esContext);
