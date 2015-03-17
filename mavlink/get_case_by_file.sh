@@ -16,7 +16,7 @@ DEFINE=`grep "^#define MAVLINK_MSG_" $FILE | head -n1 | awk '{print $2}'`
 DECODE=`grep "void mavlink_msg_.*_decode" $FILE | cut -d"(" -f1 | cut -d" " -f4`
 PTYPE=`grep "packet;" $FILE | head -n1 | awk '{print $1}'`
 
-
+echo "// from file: $FILE"
 echo ""
 echo "		case $DEFINE: {"
 echo "			$PTYPE packet;"
