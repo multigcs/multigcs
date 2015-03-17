@@ -622,7 +622,11 @@ void screen_mavlink_list (ESContext *esContext, paralist *plist, int len) {
 			mav_id = mavlink_get_id_by_name(plist[pn].name);
 			if (mav_id != -1) {
 				sprintf(tmp_str, "mv_sel_%s_t", MavLinkVars[ModelActive][mav_id].name);
-				sprintf(tmp_str2, "%s", plist[pn].name);
+				if (plist[pn].title[0] != 0) {
+					sprintf(tmp_str2, "%s", plist[pn].title);
+				} else {
+					sprintf(tmp_str2, "%s", plist[pn].name);
+				}
 				if (MavLinkVars[ModelActive][mav_id].values[0] != 0) {
 					draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -1.2, -0.8 + row * 0.14, 0.002, 0.08, 0, 0, mavlink_options_menu, (float)(mav_id));
 					sprintf(tmp_str, "mv_sel_%s_v", MavLinkVars[ModelActive][mav_id].name);
@@ -657,19 +661,19 @@ void screen_mavlink_list (ESContext *esContext, paralist *plist, int len) {
 void screen_mavlink_rate (ESContext *esContext) {
 	paralist plist[] = {
 		{"RATE_RLL_P", "Rate Roll-P"},
-		{"RATE_RLL_I", "Rate Roll-P"},
-		{"RATE_RLL_D", "Rate Roll-P"},
-		{"RATE_RLL_IMAX", "Rate Roll-P"},
+		{"RATE_RLL_I", "Rate Roll-I"},
+		{"RATE_RLL_D", "Rate Roll-D"},
+		{"RATE_RLL_IMAX", "Rate Roll-IMAX"},
 		{"---", "---"},
 		{"RATE_PIT_P", "Rate Roll-P"},
-		{"RATE_PIT_I", "Rate Roll-P"},
-		{"RATE_PIT_D", "Rate Roll-P"},
-		{"RATE_PIT_IMAX", "Rate Roll-P"},
+		{"RATE_PIT_I", "Rate Roll-I"},
+		{"RATE_PIT_D", "Rate Roll-D"},
+		{"RATE_PIT_IMAX", "Rate Roll-IMAX"},
 		{"---", "---"},
 		{"RATE_YAW_P", "Rate Roll-P"},
-		{"RATE_YAW_I", "Rate Roll-P"},
-		{"RATE_YAW_D", "Rate Roll-P"},
-		{"RATE_YAW_IMAX", "Rate Roll-P"},
+		{"RATE_YAW_I", "Rate Roll-I"},
+		{"RATE_YAW_D", "Rate Roll-D"},
+		{"RATE_YAW_IMAX", "Rate Roll-IMAX"},
 	};
 	draw_title(esContext, "Rate");
 	screen_mavlink_list(esContext, plist, sizeof(plist) / sizeof(paralist));
@@ -686,6 +690,70 @@ void screen_mavlink_stabilize (ESContext *esContext) {
 		{"THR_ALT_P", "Throttle Alt-P"},
 	};
 	draw_title(esContext, "Stabilize");
+	screen_mavlink_list(esContext, plist, sizeof(plist) / sizeof(paralist));
+}
+
+void screen_mavlink_rate_aq (ESContext *esContext) {
+	paralist plist[] = {
+		{"CTRL_TLT_RTE_P", "Rate Tilt-P"},
+		{"CTRL_TLT_RTE_I", "Rate Tilt-I"},
+		{"CTRL_TLT_RTE_D", "Rate Tilt-D"},
+		{"CTRL_TLT_RTE_F", "Rate Tilt-F"},
+		{"---", "---"},
+		{"CTRL_TLT_RTE_PM", "Rate Tilt-PM"},
+		{"CTRL_TLT_RTE_IM", "Rate Tilt-IM"},
+		{"CTRL_TLT_RTE_DM", "Rate Tilt-DM"},
+		{"CTRL_TLT_RTE_OM", "Rate Tilt-OM"},
+	};
+	draw_title(esContext, "Tilt-Rate PID's");
+	screen_mavlink_list(esContext, plist, sizeof(plist) / sizeof(paralist));
+}
+
+void screen_mavlink_rateyaw_aq (ESContext *esContext) {
+	paralist plist[] = {
+		{"CTRL_YAW_RTE_P", "Rate Yaw-P"},
+		{"CTRL_YAW_RTE_I", "Rate Yaw-I"},
+		{"CTRL_YAW_RTE_D", "Rate Yaw-D"},
+		{"CTRL_YAW_RTE_F", "Rate Yaw-F"},
+		{"---", "---"},
+		{"CTRL_YAW_RTE_PM", "Rate Yaw-PM"},
+		{"CTRL_YAW_RTE_IM", "Rate Yaw-IM"},
+		{"CTRL_YAW_RTE_DM", "Rate Yaw-DM"},
+		{"CTRL_YAW_RTE_OM", "Rate Yaw-OM"},
+	};
+	draw_title(esContext, "Yaw-Rate PID's");
+	screen_mavlink_list(esContext, plist, sizeof(plist) / sizeof(paralist));
+}
+
+void screen_mavlink_stabilize_aq (ESContext *esContext) {
+	paralist plist[] = {
+		{"CTRL_TLT_ANG_P", "Angle Tilt-P"},
+		{"CTRL_TLT_ANG_I", "Angle Tilt-I"},
+		{"CTRL_TLT_ANG_D", "Angle Tilt-D"},
+		{"CTRL_TLT_ANG_F", "Angle Tilt-F"},
+		{"---", "---"},
+		{"CTRL_TLT_ANG_PM", "Angle Tilt-PM"},
+		{"CTRL_TLT_ANG_IM", "Angle Tilt-IM"},
+		{"CTRL_TLT_ANG_DM", "Angle Tilt-DM"},
+		{"CTRL_TLT_ANG_OM", "Angle Tilt-OM"},
+	};
+	draw_title(esContext, "Tilt-Angle PID's");
+	screen_mavlink_list(esContext, plist, sizeof(plist) / sizeof(paralist));
+}
+
+void screen_mavlink_stabilizeyaw_aq (ESContext *esContext) {
+	paralist plist[] = {
+		{"CTRL_YAW_ANG_P", "Angle Yaw-P"},
+		{"CTRL_YAW_ANG_I", "Angle Yaw-I"},
+		{"CTRL_YAW_ANG_D", "Angle Yaw-D"},
+		{"CTRL_YAW_ANG_F", "Angle Yaw-F"},
+		{"---", "---"},
+		{"CTRL_YAW_ANG_PM", "Angle Yaw-PM"},
+		{"CTRL_YAW_ANG_IM", "Angle Yaw-IM"},
+		{"CTRL_YAW_ANG_DM", "Angle Yaw-DM"},
+		{"CTRL_YAW_ANG_OM", "Angle Yaw-OM"},
+	};
+	draw_title(esContext, "Yaw-Angle PID's");
 	screen_mavlink_list(esContext, plist, sizeof(plist) / sizeof(paralist));
 }
 
@@ -1711,9 +1779,29 @@ void screen_mavlink_menu (ESContext *esContext) {
 		} else if (mavlink_view_screen == 11) {
 			screen_mavlink_mot_aq(esContext);
 			return;
+		} else if (mavlink_view_screen == 12) {
+			screen_mavlink_rate_aq(esContext);
+			return;
+		} else if (mavlink_view_screen == 13) {
+			screen_mavlink_rateyaw_aq(esContext);
+			return;
+		} else if (mavlink_view_screen == 14) {
+			screen_mavlink_stabilize_aq(esContext);
+			return;
+		} else if (mavlink_view_screen == 15) {
+			screen_mavlink_stabilizeyaw_aq(esContext);
+			return;
 		} else if (mavlink_view_screen == -1) {
 			draw_title(esContext, "Mavlink");
 			if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_AUTOQUAD) {
+				draw_text_button(esContext, "mlscreen12", VIEW_MODE_FCMENU, "Tilt-Rate-PID", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(12));
+				row++;
+				draw_text_button(esContext, "mlscreen13", VIEW_MODE_FCMENU, "Yaw-Rate-PID", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(13));
+				row++;
+				draw_text_button(esContext, "mlscreen14", VIEW_MODE_FCMENU, "Tilt-Angle-PID", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(14));
+				row++;
+				draw_text_button(esContext, "mlscreen15", VIEW_MODE_FCMENU, "Yaw-Angle-PID", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(15));
+				row++;
 				draw_text_button(esContext, "mlscreen6", VIEW_MODE_FCMENU, "RC-Calibration", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(6));
 				row++;
 				draw_text_button(esContext, "mlscreen8", VIEW_MODE_FCMENU, "ACC-Calibration", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(7));
