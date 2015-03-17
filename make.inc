@@ -52,6 +52,8 @@ install:
 	cp -a textures/* $(BASE_DIR)/textures/
 	mkdir -p $(BASE_DIR)/fonts
 	cp -a fonts/* $(BASE_DIR)/fonts/
+	mkdir -p $(BASE_DIR)/mixes
+	cp -a data/mixes/* $(BASE_DIR)/mixes/
 	mkdir -p $(BASE_DIR)/rcflow_presets
 	cp -a rcflow_presets/* $(BASE_DIR)/rcflow_presets/
 	mkdir -p $(BASE_DIR)/scripts
@@ -99,6 +101,8 @@ deb: gcs
 	cp -a textures/* package$(BASE_DIR)/textures/
 	mkdir -p package$(BASE_DIR)/fonts
 	cp -a fonts/* package$(BASE_DIR)/fonts/
+	mkdir -p package$$(BASE_DIR)/mixes
+	cp -a data/mixes/* package$$(BASE_DIR)/mixes/
 	mkdir -p package$(BASE_DIR)/rcflow_presets
 	cp -a rcflow_presets/* package$(BASE_DIR)/rcflow_presets/
 	mkdir -p package$(BASE_DIR)/scripts

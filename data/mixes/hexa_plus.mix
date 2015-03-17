@@ -1,0 +1,77 @@
+[META]
+ConfigId=10
+Craft=hexa_plus
+Motors=6
+PID = [
+	+100.0000  +100.0000    +0.0000  -100.0000  
+	+100.0000   +50.0000  -100.0000  +100.0000  
+	+100.0000   -50.0000  -100.0000  -100.0000  
+	+100.0000  -100.0000    +0.0000  +100.0000  
+	+100.0000   -50.0000  +100.0000  -100.0000  
+	+100.0000   +50.0000  +100.0000  +100.0000  
+];
+
+[Throttle]
+Motor1=100
+Motor2=100
+Motor3=100
+Motor4=100
+Motor5=100
+Motor6=100
+Motor7=0
+Motor8=0
+Motor9=0
+Motor10=0
+Motor11=0
+Motor12=0
+Motor13=0
+Motor14=0
+
+[Pitch]
+Motor1=100
+Motor2=50
+Motor3=-50
+Motor4=-100
+Motor5=-50
+Motor6=50
+Motor7=0
+Motor8=0
+Motor9=0
+Motor10=0
+Motor11=0
+Motor12=0
+Motor13=0
+Motor14=0
+
+[Roll]
+Motor1=0
+Motor2=-100
+Motor3=-100
+Motor4=0
+Motor5=100
+Motor6=100
+Motor7=0
+Motor8=0
+Motor9=0
+Motor10=0
+Motor11=0
+Motor12=0
+Motor13=0
+Motor14=0
+
+[Yaw]
+Motor1=-100
+Motor2=100
+Motor3=-100
+Motor4=100
+Motor5=-100
+Motor6=100
+Motor7=0
+Motor8=0
+Motor9=0
+Motor10=0
+Motor11=0
+Motor12=0
+Motor13=0
+Motor14=0
+

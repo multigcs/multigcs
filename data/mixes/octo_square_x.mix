@@ -1,0 +1,79 @@
+[META]
+ConfigId=38
+Craft=octo_square_x
+Motors=8
+PID = [
+	+100.0000  +100.0000  +100.0000  -100.0000  
+	+100.0000  +100.0000    -0.0000  +100.0000  
+	+100.0000  +100.0000  -100.0000  -100.0000  
+	+100.0000    -0.0000  -100.0000  +100.0000  
+	+100.0000  -100.0000  -100.0000  -100.0000  
+	+100.0000  -100.0000    -0.0000  +100.0000  
+	+100.0000  -100.0000  +100.0000  -100.0000  
+	+100.0000    -0.0000  +100.0000  +100.0000  
+];
+
+[Throttle]
+Motor1=100
+Motor2=100
+Motor3=100
+Motor4=100
+Motor5=100
+Motor6=100
+Motor7=100
+Motor8=100
+Motor9=0
+Motor10=0
+Motor11=0
+Motor12=0
+Motor13=0
+Motor14=0
+
+[Pitch]
+Motor1=100
+Motor2=100
+Motor3=100
+Motor4=-0
+Motor5=-100
+Motor6=-100
+Motor7=-100
+Motor8=-0
+Motor9=0
+Motor10=0
+Motor11=0
+Motor12=0
+Motor13=0
+Motor14=0
+
+[Roll]
+Motor1=100
+Motor2=-0
+Motor3=-100
+Motor4=-100
+Motor5=-100
+Motor6=-0
+Motor7=100
+Motor8=100
+Motor9=0
+Motor10=0
+Motor11=0
+Motor12=0
+Motor13=0
+Motor14=0
+
+[Yaw]
+Motor1=-100
+Motor2=100
+Motor3=-100
+Motor4=100
+Motor5=-100
+Motor6=100
+Motor7=-100
+Motor8=100
+Motor9=0
+Motor10=0
+Motor11=0
+Motor12=0
+Motor13=0
+Motor14=0
+
