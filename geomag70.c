@@ -81,7 +81,7 @@
 #define MAXDEG 13
 #define MAXCOEFF (MAXDEG*(MAXDEG+2)+1) /* index starts with 1!, (from old Fortran?) */
 
-static void print_result(double date, double d, double i, double h, double x, double y, double z, double f, int *ret_dd, int *ret_dm);
+static void print_result(double date, double d, double i, double h, double x, double y, double z, double f, int *ret_dd, int *ret_dm, int *ret_id, int *ret_im);
 static double julday();
 static int interpsh();
 static int extrapsh();
@@ -211,7 +211,7 @@ int init_declination (char *mdfile, int year, int month, int day) {
 }
 
 
-int get_declination (double latitude, double longitude, double alt, int *ret_dd, int *ret_dm) {
+int get_declination (double latitude, double longitude, double alt, int *ret_dd, int *ret_dm, int *ret_id, int *ret_im) {
       alt *= 0.001;
       shval3(1, latitude, longitude, alt, nmax, 3, IEXT, EXT_COEFF1, EXT_COEFF2, EXT_COEFF3);
       dihf(3);
@@ -227,13 +227,13 @@ int get_declination (double latitude, double longitude, double alt, int *ret_dd,
           y = NaN;
           d = NaN;
       }
-      print_result(sdate,d, i, h, x, y, z, f, ret_dd, ret_dm);
+      print_result(sdate,d, i, h, x, y, z, f, ret_dd, ret_dm, ret_id, ret_im);
       return 0;
 }
 
 
       
-static void print_result(double date, double d, double i, double h, double x, double y, double z, double f, int *ret_dd, int *ret_dm) {
+static void print_result(double date, double d, double i, double h, double x, double y, double z, double f, int *ret_dd, int *ret_dm, int *ret_id, int *ret_im) {
   int   ddeg,ideg;
   double dmin,imin;
   /* Change d and i to deg and min */
@@ -262,6 +262,9 @@ static void print_result(double date, double d, double i, double h, double x, do
 
   *ret_dd = (int)ddeg;
   *ret_dm = (int)dmin;
+
+  *ret_id = (int)ideg;
+  *ret_im = (int)imin;
 
 //  SDL_Log("%id %im\n", ddeg, (int)dmin);
   return;

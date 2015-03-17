@@ -1347,9 +1347,11 @@ void check_events (ESContext *esContext, SDL_Event event) {
 			int mouse_alt = get_altitude(mouse_lat, mouse_long);
 			int ret_dd = 0;
 			int ret_dm = 0;
-			get_declination(mouse_lat, mouse_long, mouse_alt, &ret_dd, &ret_dm);
+			int ret_id = 0;
+			int ret_im = 0;
+			get_declination(mouse_lat, mouse_long, mouse_alt, &ret_dd, &ret_dm, &ret_id, &ret_im);
 			char msg[200];
-			sprintf(msg, "POS: %f, %f (ALT_G:%im MAG_D:%id%02im)\n", mouse_lat, mouse_long, mouse_alt, ret_dd, ret_dm);
+			sprintf(msg, "POS: %f, %f (ALT_G:%im MAG_D:%id%02im I:%id%02im)\n", mouse_lat, mouse_long, mouse_alt, ret_dd, ret_dm, ret_id, ret_im);
 			sys_message(msg);
 		}
 		redraw_flag = 1;
