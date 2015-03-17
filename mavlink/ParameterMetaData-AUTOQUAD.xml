@@ -19,8 +19,18 @@
       <Increment>1</Increment>
       <User>Advanced</User>
     </RADIO_TYPE>
+    <RADIO_SETUP>
+      <DisplayName>RADIO_SETUP</DisplayName>
+      <Values>0:None, 1:Spektrum 11bit, 2:Spektrum 10bit, 3:SBUS, 4:PPM, 5:SUMD, 6:M-Link, 7:Deltang, 8:CYRF</Values>
+      <Units></Units>
+      <Default>0</Default>
+      <Range>0 8</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </RADIO_SETUP>
     <RADIO_THRO_CH>
       <DisplayName>RADIO_THRO_CH</DisplayName>
+      <Values>0:CH1, 1:CH2, 2:CH3, 3:CH4, 4:CH5, 5:CH6, 6:CH7, 7:CH8, 8:CH9, 9:CH10, 10:CH11, 11:CH12, 12:CH13, 13:CH14, 14:CH15, 15:CH16</Values>
       <Description></Description>
       <Units></Units>
       <Default>0</Default>
@@ -30,6 +40,7 @@
     </RADIO_THRO_CH>
     <RADIO_ROLL_CH>
       <DisplayName>RADIO_ROLL_CH</DisplayName>
+      <Values>0:CH1, 1:CH2, 2:CH3, 3:CH4, 4:CH5, 5:CH6, 6:CH7, 7:CH8, 8:CH9, 9:CH10, 10:CH11, 11:CH12, 12:CH13, 13:CH14, 14:CH15, 15:CH16</Values>
       <Description></Description>
       <Units></Units>
       <Default>1</Default>
@@ -39,6 +50,7 @@
     </RADIO_ROLL_CH>
     <RADIO_PITC_CH>
       <DisplayName>RADIO_PITC_CH</DisplayName>
+      <Values>0:CH1, 1:CH2, 2:CH3, 3:CH4, 4:CH5, 5:CH6, 6:CH7, 7:CH8, 8:CH9, 9:CH10, 10:CH11, 11:CH12, 12:CH13, 13:CH14, 14:CH15, 15:CH16</Values>
       <Description></Description>
       <Units></Units>
       <Default>2</Default>
@@ -48,6 +60,7 @@
     </RADIO_PITC_CH>
     <RADIO_RUDD_CH>
       <DisplayName>RADIO_RUDD_CH</DisplayName>
+      <Values>0:CH1, 1:CH2, 2:CH3, 3:CH4, 4:CH5, 5:CH6, 6:CH7, 7:CH8, 8:CH9, 9:CH10, 10:CH11, 11:CH12, 12:CH13, 13:CH14, 14:CH15, 15:CH16</Values>
       <Description></Description>
       <Units></Units>
       <Default>3</Default>
@@ -57,6 +70,7 @@
     </RADIO_RUDD_CH>
     <RADIO_GEAR_CH>
       <DisplayName>RADIO_GEAR_CH</DisplayName>
+      <Values>0:CH1, 1:CH2, 2:CH3, 3:CH4, 4:CH5, 5:CH6, 6:CH7, 7:CH8, 8:CH9, 9:CH10, 10:CH11, 11:CH12, 12:CH13, 13:CH14, 14:CH15, 15:CH16</Values>
       <Description></Description>
       <Units></Units>
       <Default>4</Default>
@@ -66,6 +80,7 @@
     </RADIO_GEAR_CH>
     <RADIO_FLAP_CH>
       <DisplayName>RADIO_FLAP_CH</DisplayName>
+      <Values>0:CH1, 1:CH2, 2:CH3, 3:CH4, 4:CH5, 5:CH6, 6:CH7, 7:CH8, 8:CH9, 9:CH10, 10:CH11, 11:CH12, 12:CH13, 13:CH14, 14:CH15, 15:CH16</Values>
       <Description></Description>
       <Units></Units>
       <Default>5</Default>
@@ -75,6 +90,7 @@
     </RADIO_FLAP_CH>
     <RADIO_AUX2_CH>
       <DisplayName>RADIO_AUX2_CH</DisplayName>
+      <Values>0:CH1, 1:CH2, 2:CH3, 3:CH4, 4:CH5, 5:CH6, 6:CH7, 7:CH8, 8:CH9, 9:CH10, 10:CH11, 11:CH12, 12:CH13, 13:CH14, 14:CH15, 15:CH16</Values>
       <Description></Description>
       <Units></Units>
       <Default>6</Default>
@@ -84,6 +100,7 @@
     </RADIO_AUX2_CH>
     <RADIO_AUX3_CH>
       <DisplayName>RADIO_AUX3_CH</DisplayName>
+      <Values>0:CH1, 1:CH2, 2:CH3, 3:CH4, 4:CH5, 5:CH6, 6:CH7, 7:CH8, 8:CH9, 9:CH10, 10:CH11, 11:CH12, 12:CH13, 13:CH14, 14:CH15, 15:CH16</Values>
       <Description></Description>
       <Units></Units>
       <Default>7</Default>
@@ -93,6 +110,7 @@
     </RADIO_AUX3_CH>
     <RADIO_AUX4_CH>
       <DisplayName>RADIO_AUX4_CH</DisplayName>
+      <Values>0:CH1, 1:CH2, 2:CH3, 3:CH4, 4:CH5, 5:CH6, 6:CH7, 7:CH8, 8:CH9, 9:CH10, 10:CH11, 11:CH12, 12:CH13, 13:CH14, 14:CH15, 15:CH16</Values>
       <Description></Description>
       <Units></Units>
       <Default>8</Default>
@@ -102,6 +120,7 @@
     </RADIO_AUX4_CH>
     <RADIO_AUX5_CH>
       <DisplayName>RADIO_AUX5_CH</DisplayName>
+      <Values>0:CH1, 1:CH2, 2:CH3, 3:CH4, 4:CH5, 5:CH6, 6:CH7, 7:CH8, 8:CH9, 9:CH10, 10:CH11, 11:CH12, 12:CH13, 13:CH14, 14:CH15, 15:CH16</Values>
       <Description></Description>
       <Units></Units>
       <Default>9</Default>
@@ -111,6 +130,7 @@
     </RADIO_AUX5_CH>
     <RADIO_AUX6_CH>
       <DisplayName>RADIO_AUX6_CH</DisplayName>
+      <Values>0:CH1, 1:CH2, 2:CH3, 3:CH4, 4:CH5, 5:CH6, 6:CH7, 7:CH8, 8:CH9, 9:CH10, 10:CH11, 11:CH12, 12:CH13, 13:CH14, 14:CH15, 15:CH16</Values>
       <Description></Description>
       <Units></Units>
       <Default>10</Default>
@@ -120,6 +140,7 @@
     </RADIO_AUX6_CH>
     <RADIO_AUX7_CH>
       <DisplayName>RADIO_AUX7_CH</DisplayName>
+      <Values>0:CH1, 1:CH2, 2:CH3, 3:CH4, 4:CH5, 5:CH6, 6:CH7, 7:CH8, 8:CH9, 9:CH10, 10:CH11, 11:CH12, 12:CH13, 13:CH14, 14:CH15, 15:CH16</Values>
       <Description></Description>
       <Units></Units>
       <Default>11</Default>
