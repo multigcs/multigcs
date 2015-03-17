@@ -840,6 +840,12 @@ void screen_mavlink_rccal (ESContext *esContext) {
 	}
 }
 
+uint8_t mavlink_magcal_start (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	// AQ-DIMU
+	mavlink_send_cmd_calibration_mag_aq(ModelActive);
+	return 0;
+}
+
 uint8_t mavlink_magcal_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (data < 0.0) {
 		mavlink_magcal = 0;
@@ -1218,8 +1224,12 @@ void screen_mavlink_magcal (ESContext *esContext) {
 		draw_text_button(esContext, "cancle_cal", VIEW_MODE_FCMENU, "[CANCEL]", FONT_GREEN, 0.0, 0.8, 0.005, 0.08, 1, 0, mavlink_magcal_change, -1.0);
 	} else {
 		screen_mavlink_list(esContext, plist, sizeof(plist) / sizeof(paralist));
-		draw_text_button(esContext, "start_test", VIEW_MODE_FCMENU, "[TEST]", FONT_WHITE, 0.0, 0.7, 0.005, 0.08, 1, 0, mavlink_magcal_change, 2.0);
-		draw_text_button(esContext, "start_cal", VIEW_MODE_FCMENU, "[Calibration]", FONT_WHITE, 0.0, 0.8, 0.005, 0.08, 1, 0, mavlink_magcal_change, 1.0);
+		if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_AUTOQUAD) {
+			draw_text_button(esContext, "start_cal", VIEW_MODE_FCMENU, "[DIMU-Calibration]", FONT_WHITE, 0.0, 0.8, 0.005, 0.08, 1, 0, mavlink_magcal_start, 0.0);
+		} else {
+			draw_text_button(esContext, "start_test", VIEW_MODE_FCMENU, "[TEST]", FONT_WHITE, 0.0, 0.7, 0.005, 0.08, 1, 0, mavlink_magcal_change, 2.0);
+			draw_text_button(esContext, "start_cal", VIEW_MODE_FCMENU, "[Calibration]", FONT_WHITE, 0.0, 0.8, 0.005, 0.08, 1, 0, mavlink_magcal_change, 1.0);
+		}
 		mag_pos = 0;
 	}
 }
