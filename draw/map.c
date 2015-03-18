@@ -947,15 +947,15 @@ void mark_point (ESContext *esContext, float mark_lat, float mark_long, float ma
 		return;
 	}
 	if (strcmp(command, "RTL") == 0) {
-		draw_text_f3(esContext, x1, y1, z, 0.05, 0.05, FONT_GREEN, "RTL");
+		draw_text_f3(esContext, x1, y1, z, 0.03, 0.03, FONT_GREEN, "RTL");
 	} else if (strcmp(command, "TAKEOFF") == 0) {
-		draw_text_f3(esContext, x1, y1, z, 0.05, 0.05, FONT_GREEN, "TAKEOFF");
+		draw_text_f3(esContext, x1, y1, z, 0.03, 0.03, FONT_GREEN, "TAKEOFF");
 	} else if (strcmp(command, "LAND") == 0) {
-		draw_text_f3(esContext, x1, y1, z, 0.05, 0.05, FONT_GREEN, "LAND");
+		draw_text_f3(esContext, x1, y1, z, 0.03, 0.03, FONT_GREEN, "LAND");
 	} else if (strcmp(command, "SET_ROI") == 0) {
-		draw_text_f3(esContext, x1, y1, z, 0.05, 0.05, FONT_PINK, "POI");
+		draw_text_f3(esContext, x1, y1, z, 0.03, 0.03, FONT_PINK, "POI");
 	} else if (strcmp(command, "SHUTTER") == 0) {
-		draw_text_f3(esContext, x1, y1, z, 0.05, 0.05, FONT_PINK, "SHUTTER");
+		draw_text_f3(esContext, x1, y1, z, 0.03, 0.03, FONT_PINK, "SHUTTER");
 	} else {
 #ifdef SDLGL
 		glMatrixMode(GL_MODELVIEW);
@@ -986,7 +986,7 @@ void mark_point (ESContext *esContext, float mark_lat, float mark_long, float ma
 			sprintf(tmp_str, "Orbit=%0.1f", orbit);
 			draw_text_f3(esContext, 0.01, 0.05, z, 0.05, 0.05, FONT_GREEN, tmp_str);
 		} else {
-			draw_text_f3(esContext, 0.01, 0.05, z, 0.05, 0.05, FONT_GREEN, command);
+			draw_text_f3(esContext, 0.01, 0.05, z, 0.03, 0.03, FONT_GREEN, command);
 		}
 		glPopMatrix();
 #else
@@ -1000,7 +1000,7 @@ void mark_point (ESContext *esContext, float mark_lat, float mark_long, float ma
 			sprintf(tmp_str, "Orbit=%0.1f", orbit);
 			draw_text_f3(esContext, x1, y1 + 0.05, z, 0.05, 0.05, FONT_GREEN, tmp_str);
 		} else {
-			draw_text_f3(esContext, x1, y1 + 0.05, z, 0.05, 0.05, FONT_GREEN, command);
+			draw_text_f3(esContext, x1, y1 + 0.05, z, 0.03, 0.03, FONT_GREEN, command);
 		}
 #endif
 	}

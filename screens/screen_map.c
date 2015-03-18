@@ -2231,6 +2231,57 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				}
 			}
 		}
+
+
+
+		char tmp_str[1024];
+		int n = 0;
+		FILE *fr;
+
+
+if (SurveySetup.write == 1) {
+
+		sprintf(tmp_str, "%s/survey/%s.pln", get_datadirectory(), SurveySetup.name);
+		fr = fopen(tmp_str, "wb");
+		if (fr != NULL) {
+			fprintf(fr, "#name: %s\n", SurveySetup.name);
+			fprintf(fr, "#interval: %i\n", SurveySetup.interval);
+			fprintf(fr, "#pos: %i\n", SurveySetup.pos);
+			fprintf(fr, "#type: %i\n", SurveySetup.type);
+			fprintf(fr, "#num: %i\n", SurveySetup.num);
+			fprintf(fr, "#triggermode: %i\n", SurveySetup.triggermode);
+			fprintf(fr, "#options: %i\n", SurveySetup.options);
+			fprintf(fr, "#mode: %i\n", SurveySetup.mode);
+			fprintf(fr, "#angle: %f\n", SurveySetup.angle);
+			fprintf(fr, "#grid_x: %f\n", SurveySetup.grid_x);
+			fprintf(fr, "#grid_y: %f\n", SurveySetup.grid_y);
+			fprintf(fr, "#film_width: %f\n", SurveySetup.film_width);
+			fprintf(fr, "#film_height: %f\n", SurveySetup.film_height);
+			fprintf(fr, "#sensor_mult: %f\n", SurveySetup.sensor_mult);
+			fprintf(fr, "#lense: %f\n", SurveySetup.lense);
+			fprintf(fr, "#overlap: %f\n", SurveySetup.overlap);
+			fprintf(fr, "#alt: %f\n", SurveySetup.alt);
+			fprintf(fr, "#alt_abs: %i\n", SurveySetup.alt_abs);
+			for (n = 0; n < MAX_POLYPOINTS; n++) {
+				if (PolyPoints[n].p_lat != 0.0) {
+					fprintf(fr, "#polypoint:%0.8f,%0.8f\n", PolyPoints[n].p_lat, PolyPoints[n].p_long);
+				}
+			}
+		}
+		// clear Waypoints
+		for (n = 1; n < MAX_WAYPOINTS; n++) {
+			WayPoints[ModelActive][n].p_lat = 0.0;
+		}
+
+}
+
+
+
+
+
+
+
+
 		int pmark_x = long2x(PolyPoints[1].p_long, lon, zoom);
 		int pmark_y = lat2y(PolyPoints[1].p_lat, lat, zoom);
 		float px1 = 0.0;
@@ -2296,6 +2347,25 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 			grid_x = w / mpp / SurveySetup.overlap;
 			grid_y = h / mpp / SurveySetup.overlap;
 		}
+		if (SurveySetup.write == 1) {
+			n = 1;
+			if (SurveySetup.triggermode == 2) {
+				WayPoints[ModelActive][n].p_lat = 1.0;
+				WayPoints[ModelActive][n].p_long = 0.0;
+				WayPoints[ModelActive][n].p_alt = 0.0;
+				WayPoints[ModelActive][n].frametype = 0;
+				sprintf(WayPoints[ModelActive][n].name, "SHUTTER");
+				strcpy(WayPoints[ModelActive][n].command, "SHUTTER_INT");
+				WayPoints[ModelActive][n].param1 = (float)SurveySetup.interval;
+				WayPoints[ModelActive][n].param2 = (float)0;
+				WayPoints[ModelActive][n].param3 = (float)0;
+				WayPoints[ModelActive][n].param4 = (float)0;
+				if (fr != NULL) {
+					fprintf(fr, "CMD;SHUTTER_DIST;%i\n", SurveySetup.interval);
+				}
+				n++;
+			}
+		}
 		float n_x = 0.0;
 		float n_y = 0.0;
 		float lastn_x = 0.0;
@@ -2309,7 +2379,6 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 		}
 		float ltx = center_x + cos((45.0 + 180.0 + SurveySetup.angle) * DEG2RAD) * max_w;
 		float lty = center_y + sin((45.0 + 180.0 + SurveySetup.angle) * DEG2RAD) * max_w;
-
 		for (n_y = 0.0; n_y <= max_w * 1.5; n_y += grid_y) {
 			float lnx = ltx + cos((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
 			float lny = lty + sin((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
@@ -2345,11 +2414,12 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				if (lastn_x != 0.0 || lastn_y != 0.0) {
 					int nfzone = 0;
 					if ((nfzone = survey_check_intersect_nofly(esContext, lastn_x, lastn_y, px1, py1)) >= 0) {
-
-						survey_reroute(esContext, lastn_x, lastn_y, px1, py1, alt, nfzone);
-
+						n = survey_reroute(esContext, lastn_x, lastn_y, px1, py1, alt, nfzone, SurveySetup.write, n, fr);
 						draw_line_f3(esContext, lastn_x, lastn_y, (lastn_alt / alt_zoom), px1, py1, (alt / alt_zoom), 255, 0, 0, 255);
 					} else {
+						if (SurveySetup.write == 1) {
+							n = survey_add_wp(fr, n, np_lat, np_long, alt, 0);
+						}
 						draw_line_f3(esContext, lastn_x, lastn_y, (lastn_alt / alt_zoom), px1, py1, (alt / alt_zoom), 255, 255, 255, 100);
 					}
 				}
@@ -2392,11 +2462,12 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				if (lastn_x != 0.0 || lastn_y != 0.0) {
 					int nfzone = 0;
 					if ((nfzone = survey_check_intersect_nofly(esContext, lastn_x, lastn_y, px1, py1)) >= 0) {
-
-						survey_reroute(esContext, lastn_x, lastn_y, px1, py1, alt, nfzone);
-
+						n = survey_reroute(esContext, lastn_x, lastn_y, px1, py1, alt, nfzone, SurveySetup.write, n, fr);
 						draw_line_f3(esContext, lastn_x, lastn_y, (lastn_alt / alt_zoom), px1, py1, (alt / alt_zoom), 255, 0, 0, 255);
 					} else {
+						if (SurveySetup.write == 1) {
+							n = survey_add_wp(fr, n, np_lat, np_long, alt, 0);
+						}
 						draw_line_f3(esContext, lastn_x, lastn_y, (lastn_alt / alt_zoom), px1, py1, (alt / alt_zoom), 255, 255, 255, 100);
 					}
 				}
@@ -2405,8 +2476,32 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				lastn_alt = alt;
 			}
 		}
+		if (SurveySetup.write == 1) {
+			if (SurveySetup.triggermode == 2) {
+				WayPoints[ModelActive][n].p_lat = 1.0;
+				WayPoints[ModelActive][n].p_long = 0.0;
+				WayPoints[ModelActive][n].p_alt = 0.0;
+				WayPoints[ModelActive][n].frametype = 0;
+				sprintf(WayPoints[ModelActive][n].name, "SHUTTER");
+				strcpy(WayPoints[ModelActive][n].command, "SHUTTER_INT");
+				WayPoints[ModelActive][n].param1 = (float)0;
+				WayPoints[ModelActive][n].param2 = (float)0;
+				WayPoints[ModelActive][n].param3 = (float)0;
+				WayPoints[ModelActive][n].param4 = (float)0;
+				if (fr != NULL) {
+					fprintf(fr, "CMD;SHUTTER_DIST;%i\n", 0);
+				}
+				n++;
+			}
+			if (fr != NULL) {
+				fclose(fr);
+			}
+			SurveySetup.write = 0;
+			map_show_survey_setup = 0;
+			map_show_poly = 0;
+			map_show_wp = 1;
+		}
 	}
-
 	// drawing Cam-FOV
 	if (map_show_fov == 1 || (map_show_survey_setup == 1 && SurveySetup.mode == 0)) {
 		draw_fov(esContext, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].p_alt, ModelData[ModelActive].yaw);

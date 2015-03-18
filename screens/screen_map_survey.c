@@ -166,19 +166,21 @@ void olist_mv2close (Point2D p, Point2D from, int f) {
 	}
 }
 
-void survey_reroute (ESContext *esContext, float x1, float y1, float x2, float y2, float alt, int nfzone) {
+uint16_t survey_reroute (ESContext *esContext, float x1, float y1, float x2, float y2, float alt, int nfzone, uint8_t do_write, uint16_t nwp, FILE *fr) {
 	Point2D active;
 	Point2D mypoly[PMAX];
+	Point2D mypoly_sort[PMAX];
 	Point2D start;
 	Point2D stop;
 	float active_dist = 0;
 	int num = 0;
 	int n = 0;
+	int polypoints = 0;
+	int pp_sort = 0;
 	start.x = x1;
 	start.y = y1;
 	stop.x = x2;
 	stop.y = y2;
-	int polypoints = 0;
 	for (num = 1; num < MAX_POLYPOINTS; num++) {
 		if (PolyPointsNoFly[num].num == nfzone && PolyPointsNoFly[num].p_lat != 0.0) {
 			float pmark_x = long2x(PolyPointsNoFly[num].p_long, lon, zoom);
@@ -257,9 +259,11 @@ void survey_reroute (ESContext *esContext, float x1, float y1, float x2, float y
 		int flag = 0;
 		for (n = 0; n < 100; n++) {
 			if (active.x == list[n].p.x && active.y == list[n].p.y) {
-
 				draw_line_f3(esContext, list[n].p.x, list[n].p.y, 0.0, list[n].from.x, list[n].from.y, 0.0, 255, 255, 255, 255);
-
+				mypoly_sort[pp_sort] = list[n].p;
+				pp_sort++;
+				mypoly_sort[pp_sort].x = 0.0;
+				mypoly_sort[pp_sort].y = 0.0;
 				active = list[n].from;
 				if (list[n].from.x == start.x && list[n].from.y == start.y) {
 				} else {
@@ -272,6 +276,18 @@ void survey_reroute (ESContext *esContext, float x1, float y1, float x2, float y
 			break;
 		}
 	}
+	if (do_write == 1) {
+		for (n = pp_sort - 1; n >= 0; n--) {
+			if (mypoly_sort[n].x != 0.0 && mypoly_sort[n].y != 0.0) {
+				int16_t bx = (mypoly_sort[n].x / aspect + 1.0) / 2.0 * (float)esContext->width;
+				int16_t by = (mypoly_sort[n].y + 1.0) / 2.0 * (float)esContext->height;
+				float np2_long = x2long(bx, lon, mapdata->zoom);
+				float np2_lat = y2lat(by, lat, mapdata->zoom);
+				nwp = survey_add_wp(fr, nwp, np2_lat, np2_long, alt, 1);
+			}
+		}
+	}
+	return nwp;
 }
 
 int point_in_poly (float testx, float testy) {
@@ -1032,6 +1048,64 @@ uint8_t survey_export_kml (char *name, float x, float y, int8_t button, float da
 	return 0;
 }
 
+uint16_t survey_add_wp (FILE *fr, uint16_t n, float lat, float lon, float alt, uint8_t mode) {
+	WayPoints[ModelActive][n].p_lat = lat;
+	WayPoints[ModelActive][n].p_long = lon;
+	WayPoints[ModelActive][n].p_alt = alt;
+	WayPoints[ModelActive][n].param1 = 0.0;
+	WayPoints[ModelActive][n].param2 = 0.0;
+	WayPoints[ModelActive][n].param3 = 0.0;
+	WayPoints[ModelActive][n].param4 = 0.0;
+	WayPoints[ModelActive][n].type = 0;
+	WayPoints[ModelActive][n].frametype = 0;
+
+	if (mode == 1) {
+		sprintf(WayPoints[ModelActive][n].name, "RE%i", n);
+	} else {
+		sprintf(WayPoints[ModelActive][n].name, "WP%i", n);
+	}
+
+	strcpy(WayPoints[ModelActive][n].command, "WAYPOINT");
+	if (fr != NULL) {
+		fprintf(fr, "WAYPOINT;%f;%f;%f\n", lat, lon, alt);
+	}
+	n++;
+	if (SurveySetup.triggermode == 1 && mode == 0) {
+		WayPoints[ModelActive][n].p_lat = 1.0;
+		WayPoints[ModelActive][n].p_long = 0.0;
+		WayPoints[ModelActive][n].p_alt = 0.0;
+		WayPoints[ModelActive][n].frametype = 0;
+		if (SurveySetup.type == 1) {
+			sprintf(WayPoints[ModelActive][n].name, "RELAY%i", SurveySetup.num);
+			strcpy(WayPoints[ModelActive][n].command, "RELAY_REP");
+			WayPoints[ModelActive][n].param1 = (float)SurveySetup.num;
+			WayPoints[ModelActive][n].param2 = (float)2;
+			WayPoints[ModelActive][n].param3 = (float)1;
+			if (fr != NULL) {
+				fprintf(fr, "CMD;RELAY_TOGGLE;%i\n", SurveySetup.num);
+			}
+		} else if (SurveySetup.type == 2) {
+			sprintf(WayPoints[ModelActive][n].name, "SERVO%i", SurveySetup.num);
+			strcpy(WayPoints[ModelActive][n].command, "SERVO_REP");
+			WayPoints[ModelActive][n].param1 = (float)SurveySetup.num;
+			WayPoints[ModelActive][n].param2 = (float)SurveySetup.pos;
+			WayPoints[ModelActive][n].param3 = (float)1;
+			WayPoints[ModelActive][n].param4 = (float)500;
+			if (fr != NULL) {
+				fprintf(fr, "CMD;SERVO_TOGGLE;%i;%i\n", SurveySetup.num, SurveySetup.pos);
+			}
+		} else {
+			sprintf(WayPoints[ModelActive][n].name, "SHUTTER%i", n);
+			strcpy(WayPoints[ModelActive][n].command, "SHUTTER");
+			if (fr != NULL) {
+				fprintf(fr, "CMD;SHUTTER\n");
+			}
+		}
+		n++;
+	}
+	return n;
+}
+
 uint8_t survey_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (strncmp(name, "cam_lense_", 10) == 0) {
 		SurveySetup.lense = atof(name + 10);
@@ -1203,309 +1277,7 @@ uint8_t survey_set (char *name, float x, float y, int8_t button, float data, uin
 	} else if (strcmp(name, "survey_setup_done") == 0) {
 		map_show_survey_setup = 1 - map_show_survey_setup;
 	} else if (strcmp(name, "survey_setup_write") == 0) {
-		char tmp_str[1024];
-		int n = 0;
-		FILE *fr;
-		sprintf(tmp_str, "%s/survey/%s.pln", get_datadirectory(), SurveySetup.name);
-		fr = fopen(tmp_str, "wb");
-		if (fr != NULL) {
-			fprintf(fr, "#name: %s\n", SurveySetup.name);
-			fprintf(fr, "#interval: %i\n", SurveySetup.interval);
-			fprintf(fr, "#pos: %i\n", SurveySetup.pos);
-			fprintf(fr, "#type: %i\n", SurveySetup.type);
-			fprintf(fr, "#num: %i\n", SurveySetup.num);
-			fprintf(fr, "#triggermode: %i\n", SurveySetup.triggermode);
-			fprintf(fr, "#options: %i\n", SurveySetup.options);
-			fprintf(fr, "#mode: %i\n", SurveySetup.mode);
-			fprintf(fr, "#angle: %f\n", SurveySetup.angle);
-			fprintf(fr, "#grid_x: %f\n", SurveySetup.grid_x);
-			fprintf(fr, "#grid_y: %f\n", SurveySetup.grid_y);
-			fprintf(fr, "#film_width: %f\n", SurveySetup.film_width);
-			fprintf(fr, "#film_height: %f\n", SurveySetup.film_height);
-			fprintf(fr, "#sensor_mult: %f\n", SurveySetup.sensor_mult);
-			fprintf(fr, "#lense: %f\n", SurveySetup.lense);
-			fprintf(fr, "#overlap: %f\n", SurveySetup.overlap);
-			fprintf(fr, "#alt: %f\n", SurveySetup.alt);
-			fprintf(fr, "#alt_abs: %i\n", SurveySetup.alt_abs);
-			for (n = 0; n < MAX_POLYPOINTS; n++) {
-				if (PolyPoints[n].p_lat != 0.0) {
-					fprintf(fr, "#polypoint:%0.8f,%0.8f\n", PolyPoints[n].p_lat, PolyPoints[n].p_long);
-				}
-			}
-		}
-		map_show_survey_setup = 1 - map_show_survey_setup;
-		// clear Waypoints
-		for (n = 1; n < MAX_WAYPOINTS; n++) {
-			WayPoints[ModelActive][n].p_lat = 0.0;
-		}
-		// add Waypoints
-		int pmark_x = long2x(PolyPoints[1].p_long, lon, zoom);
-		int pmark_y = lat2y(PolyPoints[1].p_lat, lat, zoom);
-		float min_x = pmark_x;
-		float min_y = pmark_y;
-		float max_x = pmark_x;
-		float max_y = pmark_y;
-		float pos_alt_max = -999999.0;
-		// check box
-		for (n = 1; n < MAX_POLYPOINTS; n++) {
-			if (PolyPoints[n].p_lat != 0.0) {
-				pmark_x = long2x(PolyPoints[n].p_long, lon, zoom);
-				pmark_y = lat2y(PolyPoints[n].p_lat, lat, zoom);
-				if (min_x > pmark_x) {
-					min_x = pmark_x;
-				}
-				if (min_y > pmark_y) {
-					min_y = pmark_y;
-				}
-				if (max_x < pmark_x) {
-					max_x = pmark_x;
-				}
-				if (max_y < pmark_y) {
-					max_y = pmark_y;
-				}
-				float pos_alt = get_altitude(PolyPoints[n].p_lat, PolyPoints[n].p_long);
-				if (pos_alt_max < pos_alt) {
-					pos_alt_max = pos_alt;
-				}
-			}
-		}
-		float h = 0.0;
-		float w = 0.0;
-		float mpp = get_m_per_pixel(lat, zoom);
-		float dist = 0.0;
-		float grid_x = 0.0;
-		float grid_y = 0.0;
-		if (SurveySetup.alt_abs == 1) {
-			dist = SurveySetup.alt - pos_alt_max;
-		} else {
-			dist = SurveySetup.alt;
-		}
-		if (dist < 1.0) {
-			dist = 1.0;
-		}
-		if (SurveySetup.mode == 1) {
-			grid_x = SurveySetup.grid_x / mpp;
-			grid_y = SurveySetup.grid_y / mpp;
-		} else {
-			calc_fov(SurveySetup.film_width, SurveySetup.film_height, SurveySetup.sensor_mult, SurveySetup.lense, dist, &w, &h);
-			grid_x = w / mpp / SurveySetup.overlap;
-			grid_y = h / mpp / SurveySetup.overlap;
-		}
-		n = 1;
-		if (SurveySetup.triggermode == 2) {
-			WayPoints[ModelActive][n].p_lat = 1.0;
-			WayPoints[ModelActive][n].p_long = 0.0;
-			WayPoints[ModelActive][n].p_alt = 0.0;
-			WayPoints[ModelActive][n].frametype = 0;
-			sprintf(WayPoints[ModelActive][n].name, "SHUTTER");
-			strcpy(WayPoints[ModelActive][n].command, "SHUTTER_INT");
-			WayPoints[ModelActive][n].param1 = (float)SurveySetup.interval;
-			WayPoints[ModelActive][n].param2 = (float)0;
-			WayPoints[ModelActive][n].param3 = (float)0;
-			WayPoints[ModelActive][n].param4 = (float)0;
-			if (fr != NULL) {
-				fprintf(fr, "CMD;SHUTTER_DIST;%i\n", SurveySetup.interval);
-			}
-			n++;
-		}
-		float n_x = 0.0;
-		float n_y = 0.0;
-		float center_x = min_x + (max_x - min_x) / 2.0;
-		float center_y = min_y + (max_y - min_y) / 2.0;
-		float max_w = max_y - min_y;
-		if (max_w < max_x - min_x) {
-			max_w = max_x - min_x;
-		}
-		float ltx = center_x + cos((45.0 + 180.0 + SurveySetup.angle) * DEG2RAD) * max_w;
-		float lty = center_y + sin((45.0 + 180.0 + SurveySetup.angle) * DEG2RAD) * max_w;
-		for (n_y = 0.0; n_y <= max_w * 1.5; n_y += grid_y) {
-			float lnx = ltx + cos((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
-			float lny = lty + sin((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
-			for (n_x = 0; n_x < max_w * 1.5; n_x += grid_x) {
-				float nx = lnx + cos((SurveySetup.angle) * DEG2RAD) * n_x;
-				float ny = lny + sin((SurveySetup.angle) * DEG2RAD) * n_x;
-				if (SurveySetup.triggermode == 2) {
-					float nx1 = lnx + cos((SurveySetup.angle) * DEG2RAD) * (n_x - grid_x);
-					float ny1 = lny + sin((SurveySetup.angle) * DEG2RAD) * (n_x - grid_x);
-					float nx2 = lnx + cos((SurveySetup.angle) * DEG2RAD) * (n_x + grid_x);
-					float ny2 = lny + sin((SurveySetup.angle) * DEG2RAD) * (n_x + grid_x);
-					if ((point_in_poly(nx, ny) == 1 && point_in_poly(nx1, ny1) == 0) || (point_in_poly(nx, ny) == 1 && point_in_poly(nx2, ny2) == 0)) {
-					} else {
-						continue;
-					}
-				} else {
-					if (point_in_poly(nx, ny) == 0) {
-						continue;
-					}
-					if (point_in_polynf(nx, ny) != 0) {
-						continue;
-					}
-				}
-				float np_long = x2long(nx, lon, mapdata->zoom);
-				float np_lat = y2lat(ny, lat, mapdata->zoom);
-				float pos_alt = get_altitude(np_lat, np_long);
-				float alt = SurveySetup.alt + pos_alt;
-				if (SurveySetup.alt_abs == 1) {
-					if (SurveySetup.alt < pos_alt + 1.0) {
-						SurveySetup.alt = pos_alt + 1.0;
-					}
-					alt = SurveySetup.alt;
-				}
-				WayPoints[ModelActive][n].p_lat = np_lat;
-				WayPoints[ModelActive][n].p_long = np_long;
-				WayPoints[ModelActive][n].p_alt = alt;
-				WayPoints[ModelActive][n].param1 = 0.0;
-				WayPoints[ModelActive][n].param2 = 0.0;
-				WayPoints[ModelActive][n].param3 = 0.0;
-				WayPoints[ModelActive][n].param4 = 0.0;
-				WayPoints[ModelActive][n].type = 0;
-				WayPoints[ModelActive][n].frametype = 0;
-				sprintf(WayPoints[ModelActive][n].name, "WP%i", n);
-				strcpy(WayPoints[ModelActive][n].command, "WAYPOINT");
-				if (fr != NULL) {
-					fprintf(fr, "WAYPOINT;%f;%f;%f\n", np_lat, np_long, alt);
-				}
-				n++;
-				if (SurveySetup.triggermode == 1) {
-					WayPoints[ModelActive][n].p_lat = 1.0;
-					WayPoints[ModelActive][n].p_long = 0.0;
-					WayPoints[ModelActive][n].p_alt = 0.0;
-					WayPoints[ModelActive][n].frametype = 0;
-					if (SurveySetup.type == 1) {
-						sprintf(WayPoints[ModelActive][n].name, "RELAY%i", SurveySetup.num);
-						strcpy(WayPoints[ModelActive][n].command, "RELAY_REP");
-						WayPoints[ModelActive][n].param1 = (float)SurveySetup.num;
-						WayPoints[ModelActive][n].param2 = (float)2;
-						WayPoints[ModelActive][n].param3 = (float)1;
-						if (fr != NULL) {
-							fprintf(fr, "CMD;RELAY_TOGGLE;%i\n", SurveySetup.num);
-						}
-					} else if (SurveySetup.type == 2) {
-						sprintf(WayPoints[ModelActive][n].name, "SERVO%i", SurveySetup.num);
-						strcpy(WayPoints[ModelActive][n].command, "SERVO_REP");
-						WayPoints[ModelActive][n].param1 = (float)SurveySetup.num;
-						WayPoints[ModelActive][n].param2 = (float)SurveySetup.pos;
-						WayPoints[ModelActive][n].param3 = (float)1;
-						WayPoints[ModelActive][n].param4 = (float)500;
-						if (fr != NULL) {
-							fprintf(fr, "CMD;SERVO_TOGGLE;%i;%i\n", SurveySetup.num, SurveySetup.pos);
-						}
-					} else {
-						sprintf(WayPoints[ModelActive][n].name, "SHUTTER%i", n);
-						strcpy(WayPoints[ModelActive][n].command, "SHUTTER");
-						if (fr != NULL) {
-							fprintf(fr, "CMD;SHUTTER\n");
-						}
-					}
-					n++;
-				}
-			}
-			n_y += grid_y;
-			lnx = ltx + cos((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
-			lny = lty + sin((SurveySetup.angle + 90.0) * DEG2RAD) * n_y;
-			for (n_x = n_x - grid_x; n_x > -grid_x; n_x -= grid_x) {
-				float nx = lnx + cos((SurveySetup.angle) * DEG2RAD) * n_x;
-				float ny = lny + sin((SurveySetup.angle) * DEG2RAD) * n_x;
-				if (SurveySetup.triggermode == 2) {
-					float nx1 = lnx + cos((SurveySetup.angle) * DEG2RAD) * (n_x - grid_x);
-					float ny1 = lny + sin((SurveySetup.angle) * DEG2RAD) * (n_x - grid_x);
-					float nx2 = lnx + cos((SurveySetup.angle) * DEG2RAD) * (n_x + grid_x);
-					float ny2 = lny + sin((SurveySetup.angle) * DEG2RAD) * (n_x + grid_x);
-					if ((point_in_poly(nx, ny) == 1 && point_in_poly(nx1, ny1) == 0) || (point_in_poly(nx, ny) == 1 && point_in_poly(nx2, ny2) == 0)) {
-					} else {
-						continue;
-					}
-				} else {
-					if (point_in_poly(nx, ny) == 0) {
-						continue;
-					}
-					if (point_in_polynf(nx, ny) != 0) {
-						continue;
-					}
-				}
-				float np_long = x2long(nx, lon, mapdata->zoom);
-				float np_lat = y2lat(ny, lat, mapdata->zoom);
-				float pos_alt = get_altitude(np_lat, np_long);
-				float alt = SurveySetup.alt + pos_alt;
-				if (SurveySetup.alt_abs == 1) {
-					if (SurveySetup.alt < pos_alt + 1.0) {
-						SurveySetup.alt = pos_alt + 1.0;
-					}
-					alt = SurveySetup.alt;
-				}
-				WayPoints[ModelActive][n].p_lat = np_lat;
-				WayPoints[ModelActive][n].p_long = np_long;
-				WayPoints[ModelActive][n].p_alt = alt;
-				WayPoints[ModelActive][n].param1 = 0.0;
-				WayPoints[ModelActive][n].param2 = 0.0;
-				WayPoints[ModelActive][n].param3 = 0.0;
-				WayPoints[ModelActive][n].param4 = 0.0;
-				WayPoints[ModelActive][n].type = 0;
-				WayPoints[ModelActive][n].frametype = 0;
-				sprintf(WayPoints[ModelActive][n].name, "WP%i", n);
-				strcpy(WayPoints[ModelActive][n].command, "WAYPOINT");
-
-				if (fr != NULL) {
-					fprintf(fr, "WAYPOINT;%f;%f;%f\n", np_lat, np_long, alt);
-				}
-
-				n++;
-				if (SurveySetup.triggermode == 1) {
-					WayPoints[ModelActive][n].p_lat = 1.0;
-					WayPoints[ModelActive][n].p_long = 0.0;
-					WayPoints[ModelActive][n].p_alt = 0.0;
-					WayPoints[ModelActive][n].frametype = 0;
-					if (SurveySetup.type == 1) {
-						sprintf(WayPoints[ModelActive][n].name, "RELAY%i", SurveySetup.num);
-						strcpy(WayPoints[ModelActive][n].command, "RELAY_REP");
-						WayPoints[ModelActive][n].param1 = (float)SurveySetup.num;
-						WayPoints[ModelActive][n].param2 = (float)2;
-						WayPoints[ModelActive][n].param3 = (float)1;
-						if (fr != NULL) {
-							fprintf(fr, "CMD;RELAY_TOGGLE;%i\n", SurveySetup.num);
-						}
-					} else if (SurveySetup.type == 2) {
-						sprintf(WayPoints[ModelActive][n].name, "SERVO%i", SurveySetup.num);
-						strcpy(WayPoints[ModelActive][n].command, "SERVO_REP");
-						WayPoints[ModelActive][n].param1 = (float)SurveySetup.num;
-						WayPoints[ModelActive][n].param2 = (float)SurveySetup.pos;
-						WayPoints[ModelActive][n].param3 = (float)1;
-						WayPoints[ModelActive][n].param4 = (float)500;
-						if (fr != NULL) {
-							fprintf(fr, "CMD;SERVO_TOGGLE;%i;%i\n", SurveySetup.num, SurveySetup.pos);
-						}
-					} else {
-						sprintf(WayPoints[ModelActive][n].name, "SHUTTER%i", n);
-						strcpy(WayPoints[ModelActive][n].command, "SHUTTER");
-						if (fr != NULL) {
-							fprintf(fr, "CMD;SHUTTER\n");
-						}
-					}
-					n++;
-				}
-			}
-		}
-		if (SurveySetup.triggermode == 2) {
-			WayPoints[ModelActive][n].p_lat = 1.0;
-			WayPoints[ModelActive][n].p_long = 0.0;
-			WayPoints[ModelActive][n].p_alt = 0.0;
-			WayPoints[ModelActive][n].frametype = 0;
-			sprintf(WayPoints[ModelActive][n].name, "SHUTTER");
-			strcpy(WayPoints[ModelActive][n].command, "SHUTTER_INT");
-			WayPoints[ModelActive][n].param1 = (float)0;
-			WayPoints[ModelActive][n].param2 = (float)0;
-			WayPoints[ModelActive][n].param3 = (float)0;
-			WayPoints[ModelActive][n].param4 = (float)0;
-			if (fr != NULL) {
-				fprintf(fr, "CMD;SHUTTER_DIST;%i\n", 0);
-			}
-			n++;
-		}
-		if (fr != NULL) {
-			fclose(fr);
-		}
-		map_show_poly = 0;
-		map_show_wp = 1;
+		SurveySetup.write = 1;
 	}
 	return 0;
 }
