@@ -1132,6 +1132,7 @@
     <COMM_BAUD1>
       <DisplayName>COMM_BAUD1</DisplayName>
       <Description></Description>
+      <_Values>1200:1200, 2400:2400, 9600:9600, 19200:19200, 38400:38400, 57600:57600, 115200:115200</_Values>
       <Units></Units>
       <Default>115200</Default>
       <Range>1200 3000000</Range>
@@ -1168,6 +1169,7 @@
     <COMM_STREAM_TYP1>
       <DisplayName>COMM_STREAM_TYP1</DisplayName>
       <Description></Description>
+      <Values>0:None, 2:Mavlink, 4:AQ-Serial</Values>
       <Units></Units>
       <Default>2</Default>
       <Range>0 255</Range>
@@ -1444,6 +1446,16 @@
       <Increment>1</Increment>
       <User>Advanced</User>
     </IMU_ROT>
+    <IMU_FLIP>
+      <DisplayName>IMU_FLIP</DisplayName>
+      <Description>IMU-Flip</Description>
+      <Values>0:Normal, 1:X/Roll-Axis, 2:Y/Pitch-Axis</Values>
+      <Units></Units>
+      <Default>0.0</Default>
+      <Range>0 2</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </IMU_FLIP>
     <IMU_ACC_BIAS_X>
       <DisplayName>IMU_ACC_BIAS_X</DisplayName>
       <Description></Description>

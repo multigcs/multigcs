@@ -725,6 +725,74 @@ void screen_mavlink_rateyaw_aq (ESContext *esContext) {
 	screen_mavlink_list(esContext, plist, sizeof(plist) / sizeof(paralist));
 }
 
+uint8_t mavlink_aqpid_450 (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	mavlink_send_value(ModelActive, "CTRL_TLT_ANG_D", 3500, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_TLT_ANG_DM", 900, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_TLT_ANG_F", 0.25, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_TLT_ANG_I", 0.00499999988824, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_TLT_ANG_IM", 360, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_TLT_ANG_OM", 1200, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_TLT_ANG_P", 200, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_TLT_ANG_PM", 1200, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_TLT_RTE_D", 12000, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_TLT_RTE_DM", 9999, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_TLT_RTE_F", 0.25, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_TLT_RTE_I", 0, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_TLT_RTE_IM", 9999, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_TLT_RTE_OM", 3000, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_TLT_RTE_P", 0, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_TLT_RTE_PM", 9999, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_YAW_ANG_D", 0, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_YAW_ANG_DM", 0, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_YAW_ANG_F", 0, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_YAW_ANG_I", 1.99999994948e-05, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_YAW_ANG_IM", 0.0399999991059, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_YAW_ANG_OM", 1.25, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_YAW_ANG_P", 0.0500000007451, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_YAW_ANG_PM", 1.25, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_YAW_RTE_D", 240, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_YAW_RTE_DM", 386, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_YAW_RTE_F", 0.25, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_YAW_RTE_I", 0.725000023842, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_YAW_RTE_IM", 386, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_YAW_RTE_OM", 870, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_YAW_RTE_P", 1445, 9);
+	SDL_Delay(10);
+	mavlink_send_value(ModelActive, "CTRL_YAW_RTE_PM", 386, 9);
+	SDL_Delay(10);
+	return 0;
+}
+
 void screen_mavlink_stabilize_aq (ESContext *esContext) {
 	paralist plist[] = {
 		{"CTRL_TLT_ANG_P", "Angle Tilt-P"},
@@ -739,6 +807,7 @@ void screen_mavlink_stabilize_aq (ESContext *esContext) {
 	};
 	draw_title(esContext, "Tilt-Angle PID's");
 	screen_mavlink_list(esContext, plist, sizeof(plist) / sizeof(paralist));
+	draw_text_button(esContext, "set_450_pid", VIEW_MODE_FCMENU, "[Default PID's (450size)]", FONT_WHITE, 0.0, 0.8, 0.005, 0.08, 1, 0, mavlink_aqpid_450, 0.0);
 }
 
 void screen_mavlink_stabilizeyaw_aq (ESContext *esContext) {
@@ -999,12 +1068,12 @@ void screen_mavlink_rccal_aq (ESContext *esContext) {
 		{"RADIO_ROLL_CH", "Roll"},
 		{"RADIO_PITC_CH", "Pitch"},
 		{"RADIO_RUDD_CH", "Yaw"},
-		{"RADIO_GEAR_CH", "Mode"},
-		{"RADIO_FLAP_CH", "Aux1"},
-		{"RADIO_AUX2_CH", "Aux2"},
-		{"RADIO_AUX3_CH", "Aux3"},
-		{"RADIO_AUX4_CH", "Aux4"},
-		{"RADIO_AUX5_CH", "Aux5"},
+		{"RADIO_GEAR_CH", "Cam-Trigger"},
+		{"RADIO_FLAP_CH", "Flight-Mode"},
+		{"RADIO_AUX2_CH", "Homeaction"},
+		{"RADIO_AUX3_CH", "Gimbal-Tilt"},
+		{"RADIO_AUX4_CH", "Heading-Free"},
+		{"RADIO_AUX5_CH", "Passthrough1"},
 	};
 	draw_title(esContext, "RC-Setup");
 	screen_mavlink_list(esContext, plist, sizeof(plist) / sizeof(paralist));
@@ -1157,14 +1226,28 @@ uint8_t mavlink_mag_dec_inc (char *name, float x, float y, int8_t button, float 
 }
 
 
-void screen_mavlink_magcal_aq (ESContext *esContext) {
+void screen_mavlink_dimu_aq (ESContext *esContext) {
 	paralist plist[] = {
+		{"IMU_FLIP", "IMU-Flip"},
+		{"IMU_ROT", "IMU-Rotate"},
 		{"IMU_MAG_DECL", "Declination"},
 		{"IMU_MAG_INCL", "Inclination"},
 	};
-	draw_title(esContext, "Compass-Calibration");
+	draw_title(esContext, "DIMU-Setup");
 	screen_mavlink_list(esContext, plist, sizeof(plist) / sizeof(paralist));
+
+	draw_text_button(esContext, "acccalmsg", VIEW_MODE_FCMENU, "[ACC-Calibration/Tare]", FONT_WHITE, 0.0, 0.6, 0.005, 0.08, 1, 0, mavlink_view_acccal_change, 0.0);
+	draw_text_button(esContext, "start_cal", VIEW_MODE_FCMENU, "[MAG-Calibration]", FONT_WHITE, 0.0, 0.7, 0.005, 0.08, 1, 0, mavlink_magcal_start, 0.0);
 	draw_text_button(esContext, "set_dec_inc", VIEW_MODE_FCMENU, "[Set Declination/Inclination]", FONT_WHITE, 0.0, 0.8, 0.005, 0.08, 1, 0, mavlink_mag_dec_inc, 0.0);
+}
+
+void screen_mavlink_serial_aq (ESContext *esContext) {
+	paralist plist[] = {
+		{"COMM_BAUD1", "Serial1-Baud"},
+		{"COMM_STREAM_TYP1", "Serial1-Type"},
+	};
+	draw_title(esContext, "Serial-Setup");
+	screen_mavlink_list(esContext, plist, sizeof(plist) / sizeof(paralist));
 }
 
 void screen_mavlink_magcal (ESContext *esContext) {
@@ -1761,7 +1844,7 @@ void screen_mavlink_menu (ESContext *esContext) {
 			return;
 		} else if (mavlink_view_screen == 8) {
 			if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_AUTOQUAD) {
-				screen_mavlink_magcal_aq(esContext);
+				screen_mavlink_dimu_aq(esContext);
 			} else {
 				screen_mavlink_magcal(esContext);
 			}
@@ -1788,6 +1871,9 @@ void screen_mavlink_menu (ESContext *esContext) {
 		} else if (mavlink_view_screen == 15) {
 			screen_mavlink_stabilizeyaw_aq(esContext);
 			return;
+		} else if (mavlink_view_screen == 16) {
+			screen_mavlink_serial_aq(esContext);
+			return;
 		} else if (mavlink_view_screen == -1) {
 			draw_title(esContext, "Mavlink");
 			if (ModelData[ModelActive].pilottype == MAV_AUTOPILOT_AUTOQUAD) {
@@ -1801,11 +1887,11 @@ void screen_mavlink_menu (ESContext *esContext) {
 				row++;
 				draw_text_button(esContext, "mlscreen6", VIEW_MODE_FCMENU, "RC-Calibration", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(6));
 				row++;
-				draw_text_button(esContext, "mlscreen8", VIEW_MODE_FCMENU, "ACC-Calibration", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(7));
-				row++;
-				draw_text_button(esContext, "mlscreen7", VIEW_MODE_FCMENU, "Compass-Calibration", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(8));
+				draw_text_button(esContext, "mlscreen8", VIEW_MODE_FCMENU, "DIMU-Setup", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(8));
 				row++;
 				draw_text_button(esContext, "mlscreen11", VIEW_MODE_FCMENU, "Motors", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(11));
+				row++;
+				draw_text_button(esContext, "mlscreen16", VIEW_MODE_FCMENU, "Serial", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(16));
 				row++;
 			} else {
 				draw_text_button(esContext, "mlscreen1", VIEW_MODE_FCMENU, "Stabilize-P", FONT_WHITE, 0.0, -0.75 + row * 0.14, 0.005, 0.08, 1, 0, mavlink_view_screen_change, (float)(1));
