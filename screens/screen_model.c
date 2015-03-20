@@ -38,7 +38,13 @@ static uint8_t model_sysid_edit (char *name, float x, float y, int8_t button, fl
 }
 
 static uint8_t model_mavlink_forward_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	ModelData[ModelActive].mavlink_forward = 1 - ModelData[ModelActive].mavlink_forward;
+	if (ModelData[ModelActive].mavlink_forward == 0) {
+		ModelData[ModelActive].mavlink_forward = 1;
+	} else if (ModelData[ModelActive].mavlink_forward == 1) {
+		ModelData[ModelActive].mavlink_forward = 2;
+	} else if (ModelData[ModelActive].mavlink_forward == 2) {
+		ModelData[ModelActive].mavlink_forward = 0;
+	}
 	return 0;
 }
 
@@ -542,7 +548,14 @@ void screen_model (ESContext *esContext) {
 	}
 
 	draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "FORWARD:");
-	sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].mavlink_forward);
+	if (ModelData[ModelActive].mavlink_forward == 0) {
+		sprintf(tmp_str, "NO [CHANGE]");
+	} else if (ModelData[ModelActive].mavlink_forward == 1) {
+		sprintf(tmp_str, "READ/WRITE [CHANGE]");
+	} else if (ModelData[ModelActive].mavlink_forward == 2) {
+		sprintf(tmp_str, "WRITE PROTECT [CHANGE]");
+	}
+
 	draw_text_button(esContext, "mavlink_forward_change", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_mavlink_forward_change, n);
 	n++;
 

@@ -1166,7 +1166,7 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 			break;
 		}
 	}
-	if (ModelData[modelid].mavlink_forward == 1) {
+	if (ModelData[modelid].mavlink_forward > 0) {
 		mavlink_forward_udp_send(modelid, msg);
 	}
 }
@@ -1414,7 +1414,9 @@ void mavlink_forward_udp_send (uint8_t modelid, mavlink_message_t* msg) {
 			if (mavlink_parse_char(100, buf[i], &msg2, &status)) {
 				uint8_t modelid = mavlink_target_rewrite(&msg2);
 				if (modelid != 255) {
-					mavlink_send_message(modelid, &msg2);
+					if (ModelData[modelid].mavlink_forward == 1) {
+						mavlink_send_message(modelid, &msg2);
+					}
 				}
 			}
 		}
