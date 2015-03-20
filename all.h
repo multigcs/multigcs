@@ -120,6 +120,7 @@
 #include <geomag70.h>
 #include <webclient.h>
 #include <my_mavlink.h>
+#include <my_mavlink_rewrite.h>
 #include <main.h>
 #include <my_gps.h>
 #include <mwi21.h>

@@ -32,11 +32,23 @@ static uint8_t model_null (char *name, float x, float y, int8_t button, float da
 	return 0;
 }
 
+static uint8_t model_sysid_edit (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	edit_number(setup.view_mode, NUMBER_TYPE_UINT8, &ModelData[ModelActive].mavlink_sysid, 0.0, 255.0);
+	return 0;
+}
+
+static uint8_t model_mavlink_forward_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	ModelData[ModelActive].mavlink_forward = 1 - ModelData[ModelActive].mavlink_forward;
+	return 0;
+}
+
 static uint8_t model_mavlink_sysid_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 4) {
 		ModelData[ModelActive].mavlink_sysid++;
 	} else if (button == 5) {
 		ModelData[ModelActive].mavlink_sysid--;
+	} else {
+		model_sysid_edit(name, x, y, button, data, action);
 	}
 	return 0;
 }
@@ -144,7 +156,6 @@ static uint8_t model_port_edit (char *name, float x, float y, int8_t button, flo
 	edit_number(setup.view_mode, NUMBER_TYPE_UINT16, &ModelData[ModelActive].netport, 1000.0, 60000.0);
 	return 0;
 }
-
 
 static uint8_t model_save_xml (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	reset_buttons();
@@ -530,7 +541,10 @@ void screen_model (ESContext *esContext) {
 		n++;
 	}
 
-
+	draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "FORWARD:");
+	sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].mavlink_forward);
+	draw_text_button(esContext, "mavlink_forward_change", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_mavlink_forward_change, n);
+	n++;
 
 	if (strstr(ModelData[ModelActive].telemetry_port, "rfcomm") > 0) {
 		n++;

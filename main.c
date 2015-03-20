@@ -512,6 +512,9 @@ void setup_save (void) {
 		fprintf(fr, "mavlink_tcp_server		%s\n", setup.mavlink_tcp_server);
 		fprintf(fr, "mavlink_tcp_port		%i\n", setup.mavlink_tcp_port);
 		fprintf(fr, "mavlink_udp_port		%i\n", setup.mavlink_udp_port);
+		fprintf(fr, "mavlink_forward_udp_local_port		%i\n", setup.mavlink_forward_udp_local_port);
+		fprintf(fr, "mavlink_forward_udp_remote_port		%i\n", setup.mavlink_forward_udp_remote_port);
+		fprintf(fr, "mavlink_forward_udp_remote_ip		%s\n", setup.mavlink_forward_udp_remote_ip);
 #if defined USE_APRS
 		fprintf(fr, "aprs_server		%s\n", setup.aprs_server);
 		fprintf(fr, "aprs_port		%i\n", setup.aprs_port);
@@ -567,6 +570,7 @@ void setup_save (void) {
 			fprintf(fr, "deviceid		%s\n", ModelData[n].deviceid);
 			fprintf(fr, "use_deviceid		%i\n", ModelData[n].use_deviceid);
 			fprintf(fr, "mavlink_sysid		%i\n", ModelData[n].mavlink_sysid);
+			fprintf(fr, "mavlink_forward	%i\n", ModelData[n].mavlink_forward);
 			fprintf(fr, "model_name		%s\n", ModelData[n].name);
 			fprintf(fr, "model_sysstr		%s\n", ModelData[n].sysstr);
 			fprintf(fr, "telemetry_type		%i\n", ModelData[n].teletype);
@@ -682,6 +686,9 @@ void setup_load (void) {
 	strcpy(setup.mavlink_tcp_server, "127.0.0.1");
 	setup.mavlink_tcp_port = 5760;
 	setup.mavlink_udp_port = 14550;
+	setup.mavlink_forward_udp_local_port = 14561;
+	setup.mavlink_forward_udp_remote_port = 14560;
+	strcpy(setup.mavlink_forward_udp_remote_ip, "127.0.0.1");
 #if defined USE_APRS
 	setup.aprs_server[0] = 0;
 	strcpy(setup.aprs_server, "146.229.162.182");
@@ -713,6 +720,7 @@ void setup_load (void) {
 		strcpy(ModelData[model_n].deviceid, "");
 		ModelData[model_n].use_deviceid = 0;
 		ModelData[model_n].mavlink_sysid = 0;
+		ModelData[model_n].mavlink_forward = 1;
 
 		ModelData[model_n].sysid = 250;
 		ModelData[model_n].compid = 0;
@@ -865,6 +873,12 @@ void setup_load (void) {
 	                                setup.mavlink_tcp_port = atoi(val);
 	                        } else if (strcmp(var, "mavlink_udp_port") == 0) {
 	                                setup.mavlink_udp_port = atoi(val);
+	                        } else if (strcmp(var, "mavlink_forward_udp_local_port") == 0) {
+	                                setup.mavlink_forward_udp_local_port = atoi(val);
+	                        } else if (strcmp(var, "mavlink_forward_udp_remote_port") == 0) {
+	                                setup.mavlink_forward_udp_remote_port = atoi(val);
+	                        } else if (strcmp(var, "mavlink_forward_udp_remote_ip") == 0) {
+	                                strcpy(setup.mavlink_forward_udp_remote_ip, val);
 #if defined USE_APRS
 	                        } else if (strcmp(var, "aprs_server") == 0) {
 	                                strncpy(setup.aprs_server, val, 128);
@@ -951,6 +965,8 @@ void setup_load (void) {
 	                                ModelData[model_n].use_deviceid = atoi(val);
 	                        } else if (strcmp(var, "mavlink_sysid") == 0) {
 	                                ModelData[model_n].mavlink_sysid = atoi(val);
+	                        } else if (strcmp(var, "mavlink_forward") == 0) {
+	                                ModelData[model_n].mavlink_forward = atoi(val);
 	                        } else if (strcmp(var, "Model_lat") == 0) {
 	                                ModelData[model_n].p_lat = atof(val);
 	                        } else if (strcmp(var, "Model_long") == 0) {
@@ -1082,10 +1098,9 @@ void setup_load (void) {
 	strncpy(WayPoints[ModelActive][0].name, "HOME", 127);
 	serial_info_update();
 	for (model_n = 0; model_n < MODELS_MAX; model_n++) {
-		if (ModelData[model_n].use_deviceid == 1) {
+		if (strcmp(ModelData[model_n].telemetry_port, "UDP") == 0 || strcmp(ModelData[model_n].telemetry_port, "TCP") == 0) {
+		} else if (ModelData[model_n].use_deviceid == 1) {
 			ModelData[model_n].telemetry_port[0] = 0;
-		}
-		if (ModelData[model_n].use_deviceid == 1 && strcmp(ModelData[model_n].telemetry_port, "UDP") != 0 && strcmp(ModelData[model_n].telemetry_port, "TCP") != 0) {
 			serial_get_device_by_id(ModelData[model_n].deviceid, ModelData[model_n].telemetry_port);
 		}
 	}
@@ -2668,6 +2683,7 @@ int main ( int argc, char *argv[] ) {
 
 	mavlink_init_udp();
 	mavlink_init_tcp();
+	mavlink_forward_udp_init();
 
 	frsky_init(setup.frsky_port, setup.frsky_baud);
 	jeti_init(setup.jeti_port, setup.jeti_baud);

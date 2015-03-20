@@ -180,6 +180,10 @@ typedef struct {
 	int mavlink_tcp_port;
 	int mavlink_udp_port;
 
+	int mavlink_forward_udp_local_port;
+	int mavlink_forward_udp_remote_port;
+	char mavlink_forward_udp_remote_ip[128];
+
 #if defined USE_APRS
 	char aprs_server[128];
 	int aprs_port;

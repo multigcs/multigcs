@@ -420,6 +420,12 @@ uint8_t mavlink_param_file_save (char *name, float x, float y, int8_t button, fl
 	return 0;
 }
 
+
+uint8_t mavlink_netid (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	mavlink_set_netid(ModelActive, (uint16_t)data);
+	return 0;
+}
+
 uint8_t mavlink_param_save (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	char filename[1024];
 	sprintf(filename, "%s.txt", ModelData[ModelActive].name);
@@ -2258,6 +2264,10 @@ void screen_mavlink_menu (ESContext *esContext) {
 	if (flag == 0) {
 		draw_text_f(esContext, -0.4, 0.0, 0.05, 0.05, FONT_BLACK_BG, "No Mavlink-Parameters found");
 	}
+
+
+draw_text_button(esContext, "set_netid0", VIEW_MODE_FCMENU, "[netid 0]", FONT_WHITE, -1.3, 0.6, 0.002, 0.08, 0, 0, mavlink_netid, 90);
+draw_text_button(esContext, "set_netid1", VIEW_MODE_FCMENU, "[netid 1]", FONT_WHITE, -1.3, 0.7, 0.002, 0.08, 0, 0, mavlink_netid, 91);
 
 	screen_keyboard(esContext);
 	screen_filesystem(esContext);

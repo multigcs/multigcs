@@ -1,6 +1,8 @@
 
 #include "GCS_MAVLink/include/mavlink/v1.0/ardupilotmega/mavlink.h"
 
+#define MAVLINK_GSC_SYSID 127
+
 #define PI 3.14159265
 #define toDeg(x) (x*180.0)/PI
 #define toRad(x) (PI/180.0) * x
@@ -107,6 +109,7 @@ void mavlink_param_get_id (uint8_t modelid, uint16_t id);
 void mavlink_start_feeds (uint8_t modelid);
 int mavlink_udp (void *data);
 
+void mavlink_set_netid (uint8_t modelid, uint16_t netid);
 void mavlink_send_cmd_rtl (uint8_t modelid);
 void mavlink_send_cmd_mission (uint8_t modelid);
 void mavlink_send_cmd_arm (uint8_t modelid, uint8_t mode);
@@ -133,3 +136,5 @@ void mavlink_exit (uint8_t modelid);
 void mavlink_update (uint8_t modelid);
 void mavlink_send_message (uint8_t modelid, mavlink_message_t* msg);
 uint8_t mavlink_connection_status (uint8_t modelid);
+void mavlink_forward_udp_init (void);
+void mavlink_forward_udp_send (uint8_t modelid, mavlink_message_t* msg);
