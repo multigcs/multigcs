@@ -112,7 +112,11 @@ void screen_device (ESContext *esContext) {
 							sprintf(tmp_str, "%s", dir_entry->d_name);
 							draw_text_button(esContext, new_path, setup.view_mode, tmp_str, FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, device_name_save, 0.0);
 							if (serial_info_get(new_path, tmp_str) == 0) {
-								draw_text_button(esContext, "--", setup.view_mode, tmp_str, FONT_WHITE, -1.0 + 0.05, -0.8 + n * 0.1 + 0.05, 0.002, 0.04, 0, 0, device_null, 0.0);
+								draw_text_button(esContext, "-id-", setup.view_mode, tmp_str, FONT_WHITE, -1.0 + 0.05, -0.8 + n * 0.1 + 0.05, 0.002, 0.04, 0, 0, device_null, 0.0);
+							}
+							sprintf(tmp_str, "/var/lock/LCK..%s", basename(new_path));
+							if (file_exists(tmp_str) != 0) {
+								draw_text_button(esContext, "-used-", setup.view_mode, "-IN USE-", FONT_PINK, 0.7, -0.8 + n * 0.1 + 0.05, 0.002, 0.04, 0, 0, device_null, 0.0);
 							}
 						}
 						n++;
