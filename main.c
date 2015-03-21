@@ -1,6 +1,24 @@
 
 #include <all.h>
 
+char screennames[VIEW_MODE_LAST + 2][16] = {
+	"HUD",
+	"TELEMETRY",
+	"MAP",
+	"FMS",
+	"MODEL",
+	"FCMENU",
+	"RCFLOW",
+#ifndef ANDROID
+	"VIDEOLIST",
+	"TCL",
+#endif
+	"TRACKER",
+	"SYSTEM",
+	"LAST",
+	"WPEDIT",
+};
+
 char teletypes[16][16] = {
 	"MULTIWII_21", "AUTOQUAD", "ARDUPILOT", "MEGAPIRATE_NG",
 	"OPENPILOT", "GPS_NMEA", "FRSKY", "BASEFLIGHT",
@@ -103,6 +121,7 @@ Button Buttons[MAX_BUTTONS + 1];
 uint8_t connection_found = 0;
 uint8_t view_overview = 0;
 uint8_t view_modellist = 0;
+uint8_t view_screenlist = 0;
 ESContext *GlobalesContext = NULL;
 
 #ifdef HTML_DRAWING
@@ -1936,9 +1955,30 @@ static uint8_t screen_next (char *name, float x, float y, int8_t button, float d
 	return 0;
 }
 
+uint8_t screen_select (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (data == -1.0) {
+		if (button == 4) {
+			screen_last(name, x, y, button, data, action);
+		} else if (button == 5) {
+			screen_next(name, x, y, button, data, action);
+		} else {
+			view_screenlist = 1 - view_screenlist;
+		}
+	} else {
+		if (setup.view_mode == (uint8_t)data) {
+			view_screenlist = 0;
+		} else {
+			setup.view_mode = (uint8_t)data;
+		}
+//		trans_count = 1.0;
+		setup_save();
+	}
+	return 0;
+}
+
 static uint8_t model_select (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (data == 0.0) {
-		if (button == 5) {
+		if (button == 4) {
 			if (ModelActive > 0) {
 				ModelActive--;
 			} else {
@@ -1952,13 +1992,13 @@ static uint8_t model_select (char *name, float x, float y, int8_t button, float 
 			}
 		}
 	} else if (data == -1.0) {
-		if (button == 5) {
+		if (button == 4) {
 			if (ModelActive > 0) {
 				ModelActive--;
 			} else {
 				ModelActive = MODELS_MAX - 1;
 			}
-		} else if (button == 4) {
+		} else if (button == 5) {
 			if (ModelActive < MODELS_MAX - 1) {
 				ModelActive++;
 			} else {
@@ -1968,7 +2008,11 @@ static uint8_t model_select (char *name, float x, float y, int8_t button, float 
 			view_modellist = 1 - view_modellist;
 		}
 	} else {
-		ModelActive = (uint8_t)data - 1;
+		if (ModelActive == (uint8_t)data - 1) {
+			view_modellist = 0;
+		} else {
+			ModelActive = (uint8_t)data - 1;
+		}
 	}
 	return 0;
 }
@@ -2313,8 +2357,8 @@ void Draw (ESContext *esContext) {
 		sprintf(tmp_str, "%s", ModelData[ModelActive].name);
 		draw_text_button(esContext, "MODELSEL", setup.view_mode, tmp_str, FONT_WHITE, 1.0, -0.95, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, model_select, -1.0);
 		if (view_modellist == 1) {
-			draw_box_f3(esContext, 0.7, -0.88, 0.002, 1.3, 0.05, 0.002, 0, 0, 0, 200);
-			draw_rect_f3(esContext, 0.7, -0.88, 0.002, 1.3, 0.05, 0.002, 255, 255, 255, 200);
+			draw_box_f3(esContext, 0.7, -0.88, 0.002, 1.3, -0.88 + 0.1 * MODELS_MAX, 0.002, 0, 0, 0, 200);
+			draw_rect_f3(esContext, 0.7, -0.88, 0.002, 1.3, -0.88 + 0.1 * MODELS_MAX, 0.002, 255, 255, 255, 200);
 			for (n = 0; n < MODELS_MAX; n++) {
 				if (ModelData[n].dronetype == MAV_TYPE_GENERIC) {
 					strcpy(tmp_str2, "Generic air vehicle");
@@ -2396,6 +2440,22 @@ void Draw (ESContext *esContext) {
 				}
 			}
 		}
+		draw_text_button(esContext, "SCREENSEL", setup.view_mode, screennames[setup.view_mode], FONT_WHITE, -1.0, -0.95, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, screen_select, -1.0);
+		if (view_screenlist == 1) {
+			draw_box_f3(esContext, -1.3, -0.88, 0.002, -0.7, -0.88 + 0.1 * VIEW_MODE_LAST, 0.002, 0, 0, 0, 200);
+			draw_rect_f3(esContext, -1.3, -0.88, 0.002, -0.7, -0.88 + 0.1 * VIEW_MODE_LAST, 0.002, 255, 255, 255, 200);
+			for (n = 0; n < VIEW_MODE_LAST; n++) {
+				sprintf(tmp_str, "screen %i", n);
+				sprintf(tmp_str2, "%s", screennames[n]);
+				if (n == setup.view_mode) {
+					draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str2, FONT_GREEN, -1.0, -0.87 + n * 0.1, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, screen_select, n);
+				} else {
+					draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str2, FONT_WHITE, -1.0, -0.87 + n * 0.1, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, screen_select, n);
+				}
+			}
+		}
+
+
 	}
 	if (message > 0) {
 		draw_text_f(esContext, 0.0 - strlen(message_txt) * 0.05 * 0.6 / 2 - 0.012, -0.99, 0.05, 0.05, FONT_PINK, message_txt);

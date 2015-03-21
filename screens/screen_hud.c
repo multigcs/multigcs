@@ -1114,8 +1114,8 @@ void screen_hud_internal (ESContext *esContext) {
 	//SDL_Log("hud#6\n");
 
 	// Status
-	draw_text_f3(esContext, -1.0 - strlen(statetypes[ModelData[ModelActive].armed]) * 0.07 * 0.6 / 2.0, -0.92, 0.002, 0.07, 0.07, FONT_GREEN, statetypes[ModelData[ModelActive].armed]);
-	draw_line_f3(esContext, -0.8, -0.94, 0.002, -0.8, -0.83, 0.002, 255, 255, 255, 255);
+//	draw_text_f3(esContext, -1.0 - strlen(statetypes[ModelData[ModelActive].armed]) * 0.07 * 0.6 / 2.0, -0.92, 0.002, 0.07, 0.07, FONT_GREEN, statetypes[ModelData[ModelActive].armed]);
+//	draw_line_f3(esContext, -0.8, -0.94, 0.002, -0.8, -0.83, 0.002, 255, 255, 255, 255);
 
 	if (ModelData[ModelActive].mode == 0) {
 		sprintf(tmp_str, "MANUAL");
@@ -1148,8 +1148,8 @@ void screen_hud_internal (ESContext *esContext) {
 	} else {
 		sprintf(tmp_str, "UNKNOWN%i", ModelData[ModelActive].mode);
 	}
-	draw_text_f3(esContext, -0.6 - strlen(tmp_str) * 0.07 * 0.6 / 2.0, -0.92, 0.002, 0.07, 0.07, FONT_GREEN, tmp_str);
-	draw_line_f3(esContext, -0.4, -0.94, 0.002, -0.4, -0.83, 0.002, 255, 255, 255, 255);
+//	draw_text_f3(esContext, -0.6 - strlen(tmp_str) * 0.07 * 0.6 / 2.0, -0.92, 0.002, 0.07, 0.07, FONT_GREEN, tmp_str);
+//	draw_line_f3(esContext, -0.4, -0.94, 0.002, -0.4, -0.83, 0.002, 255, 255, 255, 255);
 
 	// Yaw
 	float compas_r = 0.9;

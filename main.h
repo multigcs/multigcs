@@ -66,6 +66,8 @@ enum {
 	VIEW_MODE_WPEDIT,
 };
 
+char screennames[VIEW_MODE_LAST + 2][16];
+
 #define MAX_WAYPOINTS 250
 typedef struct {
 	float p_lat;

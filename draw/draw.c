@@ -17,6 +17,8 @@ Uint32 amask = 0xff000000;
 SrtmCache AltCache[MAX_ALTCACHE];
 const GLfloat DEG2RAD = 3.14159 / 180.0;
 
+uint8_t screen_select (char *name, float x, float y, int8_t button, float data, uint8_t action);
+
 #ifndef GL_BGRA
 #define GL_BGRA 0x80E1
 #define GL_RGBA	0x1908
@@ -56,6 +58,7 @@ void draw_title (ESContext *esContext, char *text) {
 	return;
 #endif
 	draw_text_f3(esContext, 0.0 - strlen(text) * 0.06 * 0.6 / 2.0 - 0.012, -0.95, 0.02, 0.06, 0.06, FONT_GREEN, text);
+//	draw_text_button(esContext, "screen_select", setup.view_mode, text, FONT_WHITE, -1.1, -0.95, 0.003, 0.06, ALIGN_LEFT, ALIGN_TOP, screen_select, -1.0);
 }
 
 uint8_t draw_button (ESContext *esContext, char *name, uint8_t view_mode, char *text, char *font, float x1, float y1, float z1, float x2, float y2, float z2, float fh, uint8_t align_x, uint8_t align_y, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t), float data) {
@@ -138,6 +141,10 @@ uint8_t draw_text_button (ESContext *esContext, char *name, uint8_t view_mode, c
 		y2 = y + h / 2;
 	}
 	draw_text_f3(esContext, x1, y1, z1, h, h, font, text);
+
+	if (callback == NULL) {
+		return 0;
+	}
 //	draw_rect_f3(esContext, x1 - 0.01, y1 - 0.01, z1, x2 + 0.01, y2 + 0.01, z1, 255, 255, 255, 64);
 	for (n = 0; n < MAX_BUTTONS; n++) {
 		if (strcmp(Buttons[n].name, name) == 0) {
