@@ -408,6 +408,9 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 			mavlink_scaled_pressure_t packet;
 			mavlink_msg_scaled_pressure_decode(msg, &packet);
 //			SDL_Log("BAR;%i;%0.2f;%0.2f;%0.2f\n", time(0), packet.press_abs, packet.press_diff, packet.temperature / 100.0);
+			ModelData[modelid].press_abs = packet.press_abs;
+			ModelData[modelid].press_diff = packet.press_diff;
+			ModelData[modelid].temperature[0] = packet.temperature / 100.0;
 			break;
 		}
 		case MAVLINK_MSG_ID_ATTITUDE: {

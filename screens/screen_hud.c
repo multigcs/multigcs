@@ -401,8 +401,8 @@ void draw_altiude_rule (ESContext *esContext, float ti_x, float ti_y, float w, f
 		draw_text_f3(esContext, 0.0 - (float)strlen("GROUND CONTACT") * 0.07 * 0.6 / 2.0, -0.75, 0.002, 0.07, 0.07, FONT_GREEN, "GROUND CONTACT");
 	} else if (ground_alt - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) > -2.0) {
 		draw_text_f3(esContext, 0.0 - (float)strlen("LOW ALT") * 0.07 * 0.6 / 2.0, -0.75, 0.002, 0.07, 0.07, FONT_GREEN, "LOW ALT");
-	} else if ((ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) - ground_alt > 100.0) {
-		draw_text_f3(esContext, 0.0 - (float)strlen("PUBLIC AIRSPACE") * 0.07 * 0.6 / 2.0, -0.75, 0.002, 0.07, 0.07, FONT_GREEN, "PUBLIC AIRSPACE");
+//	} else if ((ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) - ground_alt > 100.0) {
+//		draw_text_f3(esContext, 0.0 - (float)strlen("PUBLIC AIRSPACE") * 0.07 * 0.6 / 2.0, -0.75, 0.002, 0.07, 0.07, FONT_GREEN, "PUBLIC AIRSPACE");
 	}
 
 	sprintf(tmp_str, "%0.1f", (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) - ground_alt);
@@ -444,6 +444,8 @@ void draw_altiude_rule (ESContext *esContext, float ti_x, float ti_y, float w, f
 	draw_text_f3(esContext, ax + 0.28 - strlen(tmp_str) * 0.05 * 0.6 - 0.05, 0.0 - 0.025, 0.0025, 0.05, 0.05, FONT_WHITE, tmp_str);
 	set_button("alt_null", VIEW_MODE_HUD, ax, -0.05, ax + 0.28, 0.05, hud_altitude_null, ModelData[ModelActive].p_alt, 0);
 
+	sprintf(tmp_str, "%0.2f", ModelData[ModelActive].press_abs);
+	draw_text_button(esContext, "hud_alt_press", VIEW_MODE_HUD, tmp_str, FONT_WHITE, ax + 0.27, 0.015, 0.05, 0.035, 2, 0, hud_null, 0);
 }
 
 
@@ -1506,9 +1508,22 @@ void screen_hud_internal (ESContext *esContext) {
 
 		if (ModelData[ModelActive].teletype != TELETYPE_MULTIWII_21 && ModelData[ModelActive].teletype != TELETYPE_BASEFLIGHT) {
 			sprintf(tmp_str, "CPU %0.0f%%", ModelData[ModelActive].load);
-			draw_circleMeter_f3(esContext, -1.05, -0.1, 0.001, 0.06, 20.0, 33.0, 66.0, 160.0, 50, "", "", 3);
+			draw_circleMeter_f3(esContext, -1.05, -0.1, 0.001, 0.06, 20.0, 33.0, 66.0, 160.0, ModelData[ModelActive].load, "", "", 3);
 			draw_text_button(esContext, "hud_load", VIEW_MODE_HUD, tmp_str, FONT_WHITE, -1.05, -0.1, 0.003, 0.035, 1, 0, hud_null, 0);
 		}
+
+		sprintf(tmp_str, "PRESS %0.2f", ModelData[ModelActive].press_abs);
+		draw_circleMeter_f3(esContext, -1.05, 0.1, 0.001, 0.06, 20.0, 33.0, 66.0, 160.0, ModelData[ModelActive].press_abs / 20.0, "", "", 3);
+		draw_text_button(esContext, "hud_press", VIEW_MODE_HUD, tmp_str, FONT_WHITE, -1.05, 0.1, 0.003, 0.035, 1, 0, hud_null, 0);
+
+		sprintf(tmp_str, "VARIO %0.2f", ModelData[ModelActive].press_diff);
+		draw_circleMeter_f3(esContext, -1.05, 0.2, 0.001, 0.06, 20.0, 33.0, 66.0, 160.0, ModelData[ModelActive].press_diff + 50.0, "", "", 3);
+		draw_text_button(esContext, "hud_press", VIEW_MODE_HUD, tmp_str, FONT_WHITE, -1.05, 0.2, 0.003, 0.035, 1, 0, hud_null, 0);
+
+		sprintf(tmp_str, "TEMP %0.1f'C", ModelData[ModelActive].temperature[0]);
+		draw_circleMeter_f3(esContext, -1.05, 0.3, 0.001, 0.06, 20.0, 33.0, 66.0, 160.0, ModelData[ModelActive].temperature[0], "", "", 3);
+		draw_text_button(esContext, "hud_press", VIEW_MODE_HUD, tmp_str, FONT_WHITE, -1.05, 0.3, 0.003, 0.035, 1, 0, hud_null, 0);
+
 
 	//SDL_Log("hud#9f\n");
 
@@ -1637,10 +1652,10 @@ void screen_hud_internal (ESContext *esContext) {
 
 			// Temperature
 			draw_circleMeter_f3(esContext, 1.07, 0.025, 0.001, 0.06, 20.0, 50.0, 50.0, 160.0, ((float)ModelData[ModelActive].temperature[0] + 30) * 100 / 280, "", "", 3);
-			sprintf(tmp_str, "%i°C", ModelData[ModelActive].temperature[0]);
+			sprintf(tmp_str, "%0.1f°C", ModelData[ModelActive].temperature[0]);
 			draw_text_button(esContext, "temp1", VIEW_MODE_HUD, tmp_str, FONT_WHITE, 1.07, 0.025, 0.003, 0.035, 1, 0, hud_null, 0);
 			draw_circleMeter_f3(esContext, 1.23, 0.025, 0.001, 0.06, 20.0, 50.0, 50.0, 160.0, 50.0, "", "", 3);
-			sprintf(tmp_str, "%i°C", ModelData[ModelActive].temperature[1]);
+			sprintf(tmp_str, "%0.1f°C", ModelData[ModelActive].temperature[1]);
 			draw_text_button(esContext, "temp2", VIEW_MODE_HUD, tmp_str, FONT_WHITE, 1.23, 0.025, 0.003, 0.035, 1, 0, hud_null, 0);
 
 			// Test-Graph

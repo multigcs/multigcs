@@ -78,6 +78,8 @@ typedef struct {
 	float mag2_x;
 	float mag2_y;
 	float mag2_z;
+	float press_abs;
+	float press_diff;
 	float mnt_pitch;
 	float mnt_roll;
 	float mnt_yaw;
@@ -87,7 +89,7 @@ typedef struct {
 	uint8_t rssi_rc_tx;
 	float voltage_rx;
 	float voltage_zell[6];
-	int16_t temperature[2];
+	float temperature[2];
 	float ampere;
 	float fc_voltage1;
 	float fc_voltage2;
