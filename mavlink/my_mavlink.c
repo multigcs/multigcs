@@ -2290,7 +2290,7 @@ int mavlink_tcp (void *data) {
 	mavlink_status_t status;
 	SDL_Log("mavlink: init tcp thread\n");
 	for (modelid = 0; modelid < MODELS_MAX; modelid++) {
-		if (strcmp(ModelData[modelid].telemetry_port, "TCP") == 0 && ModelData[modelid].netip[0] != 0 && ModelData[modelid].netport != 0) {
+		if ((ModelData[modelid].teletype == TELETYPE_AUTOQUAD || ModelData[modelid].teletype == TELETYPE_ARDUPILOT || ModelData[modelid].teletype == TELETYPE_MEGAPIRATE_NG) && strcmp(ModelData[modelid].telemetry_port, "TCP") == 0 && ModelData[modelid].netip[0] != 0 && ModelData[modelid].netport != 0) {
 			ModelData[modelid].netsock = mavlink_tcp_connect(ModelData[modelid].netip, ModelData[modelid].netport);
 		}
 	}

@@ -14,6 +14,14 @@
 
 //#define DEBUG
 
+#ifndef WINDOWS
+
+#define TCP_BUFLEN 2000
+static uint8_t tcp_running = 1;
+static SDL_Thread *thread_tcp = NULL;
+
+#endif
+
 int hidraw_fd_openpilot[MODELS_MAX];
 uint32_t last_connection[MODELS_MAX];
 uint8_t openpilot_get[MODELS_MAX];
@@ -125,6 +133,10 @@ void openpilot_hidraw_write (int fd, uint8_t *data, int len) {
 void openpilot_write (uint8_t modelid, uint8_t *data, int len) {
 	if (ModelData[modelid].serial_fd >= 0) {
 		serial_write(ModelData[modelid].serial_fd, data, len);
+	} else {
+#ifndef ANDROID
+		openpilot_tcp_send(modelid, data, len);
+#endif
 	}
 #ifndef WINDOWS
 #ifndef ANDROID
@@ -622,10 +634,119 @@ void openpilot_exit (uint8_t modelid) {
 #endif
 }
 
+#ifndef WINDOWS
+
+int openpilot_tcp_send (uint8_t modelid, uint8_t *buf, uint16_t len) {
+	if (ModelData[modelid].netsock != -1) {
+		send(ModelData[modelid].netsock, buf, len, 0);
+	}
+	return 0;
+}
+
+int openpilot_tcp_connect (char *ip, uint16_t port) {
+	int tcp_sock = -1;
+    struct sockaddr_in server;
+    tcp_sock = socket(AF_INET , SOCK_STREAM , 0);
+    if (tcp_sock == -1) {
+		SDL_Log("openpilot: Could not create tcp socket\n");
+        return -1;
+    }
+    server.sin_addr.s_addr = inet_addr(ip);
+    server.sin_family = AF_INET;
+    server.sin_port = htons(port);
+    if (connect(tcp_sock , (struct sockaddr *)&server , sizeof(server)) < 0) {
+        SDL_Log("openpilot: tcp connection failed (%s:%i)\n", ip, port);
+        return -1;
+    }
+	SDL_Log("openpilot: tcp connected (%s:%i)\n", ip, port);
+	return tcp_sock;
+}
+
+int openpilot_tcp (void *data) {
+	uint8_t modelid = 0;
+	SDL_Log("openpilot: init tcp thread\n");
+	for (modelid = 0; modelid < MODELS_MAX; modelid++) {
+		if (ModelData[modelid].teletype == TELETYPE_OPENPILOT && strcmp(ModelData[modelid].telemetry_port, "TCP") == 0 && ModelData[modelid].netip[0] != 0 && ModelData[modelid].netport != 0) {
+			ModelData[modelid].netsock = openpilot_tcp_connect(ModelData[modelid].netip, ModelData[modelid].netport);
+		}
+	}
+	while (tcp_running == 1) {
+		char buf[TCP_BUFLEN + 1];
+		fd_set fds;
+		struct timeval ts;
+		ts.tv_sec = 0;
+		ts.tv_usec = 1000;
+		for (modelid = 0; modelid < MODELS_MAX; modelid++) {
+			if (strcmp(ModelData[modelid].telemetry_port, "TCP") == 0 && ModelData[modelid].netip[0] != 0 && ModelData[modelid].netport != 0) {
+				FD_ZERO(&fds);
+				if (ModelData[modelid].netsock != 0) {
+					FD_SET(ModelData[modelid].netsock, &fds);
+				}
+				FD_SET(0, &fds);
+				int nready = select(ModelData[modelid].netsock + 1, &fds, (fd_set *)0, (fd_set *)0, &ts);
+				if (nready < 0) {
+					SDL_Log("openpilot: tcp error");
+					break;
+				} else if (nready == 0) {
+					ts.tv_sec = 0;
+					ts.tv_usec = 1000;
+				} else if (ModelData[modelid].netsock != 0 && FD_ISSET(ModelData[modelid].netsock, &fds)) {
+					int rv;
+					if ((rv = recv(ModelData[modelid].netsock , buf , TCP_BUFLEN , 0)) < 0) {
+						return 1;
+					} else if (rv == 0) {
+						SDL_Log("openpilot: tcp connection closed by the remote end\n");
+						return 0;
+					}
+					int n = 0;
+					for (n = 0; n < rv; n++) {
+//						printf("####op_tcp: 0x%x\n", buf[n]);
+						openpilot_decode(modelid, buf[n]);
+					}
+					fflush(0);
+				}
+			}
+		}
+		SDL_Delay(1);
+	}
+	SDL_Log("openpilot: exit tcp thread\n");
+	return 0;
+}
+
+void openpilot_init_tcp (void) {
+	tcp_running = 1;
+#ifdef SDL2
+	thread_tcp = SDL_CreateThread(openpilot_tcp, NULL, NULL);
+#else
+	thread_tcp = SDL_CreateThread(openpilot_tcp, NULL);
+#endif
+	if ( thread_tcp == NULL ) {
+		fprintf(stderr, "openpilot: Thread konnte nicht gestartet werden (openpilot_tcp): %s\n", SDL_GetError());
+	}
+}
+
+void openpilot_exit_tcp (void) {
+	tcp_running = 0;
+	if (thread_tcp != NULL) {
+		SDL_Log("openpilot: wait tcp thread\n");
+		SDL_WaitThread(thread_tcp, NULL);
+		thread_tcp = NULL;
+	}
+}
+
+#else
+
+void openpilot_init_tcp (void) {
+}
+
+void openpilot_exit_tcp (void) {
+}
+
+#endif
+
 void openpilot_xml_load (xmlDocPtr doc, xmlNodePtr cur) { 
 //	model_parseOpenPilot(doc, cur);
 }
 
 void openpilot_xml_save (FILE *fr) {
 }
-

@@ -23,6 +23,8 @@ extern uint8_t openpilot_save[MODELS_MAX];
 extern void openpilot_save_to_flash (uint8_t modelid);
 extern void openpilot_request_SystemSettings (uint8_t modelid);
 
-
+void openpilot_init_tcp (void);
+void openpilot_exit_tcp (void);
+int openpilot_tcp_send (uint8_t modelid, uint8_t *buf, uint16_t len);
 
 

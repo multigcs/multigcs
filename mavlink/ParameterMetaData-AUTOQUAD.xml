@@ -414,7 +414,7 @@
       <Description></Description>
       <Units></Units>
       <Default>60.0</Default>
-      <Range>-33333 33333</Range>
+      <Range>0 600</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
     </CTRL_TLT_ANG_P>
@@ -486,7 +486,7 @@
       <Description></Description>
       <Units></Units>
       <Default>0.05</Default>
-      <Range>-33333 33333</Range>
+      <Range>0 600</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
     </CTRL_YAW_ANG_P>

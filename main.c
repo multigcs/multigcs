@@ -2533,6 +2533,7 @@ void ShutDown ( ESContext *esContext ) {
 
 	mavlink_exit_udp();
 	mavlink_exit_tcp();
+	openpilot_exit_tcp();
 
 	frsky_exit();
 	tracker_exit();
@@ -2740,6 +2741,10 @@ int main ( int argc, char *argv[] ) {
 	if (ModelData[ModelActive].p_alt < zz + 10) {
 		ModelData[ModelActive].p_alt = zz + 10;
 	}
+
+
+	openpilot_init_tcp();
+
 
 	mavlink_init_udp();
 	mavlink_init_tcp();
