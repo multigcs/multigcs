@@ -3,6 +3,8 @@
 
 Swarm SwarmSetup;
 
+static uint8_t pd_open[MODELS_MAX];
+static uint8_t pd_openm = 0;
 
 void latlong_offset (float *p_lat, float *p_long, float *p_alt, float lat_om, float long_om, float alt_om) {
 	float R = 6378137.0 + *p_alt + alt_om;
@@ -17,17 +19,17 @@ uint8_t swarm_set (char *name, float x, float y, int8_t button, float data, uint
 	int n = 0;
 	if (strcmp(name, "swarm_setup") == 0) {
 		map_show_swarm_setup = 1 - map_show_swarm_setup;
-	} else if (strcmp(name, "swarm_yawmode") == 0) {
+	} else if (strncmp(name, "swarm_yawmode", 13) == 0) {
 		SwarmSetup.yaw_mode = 1 - SwarmSetup.yaw_mode;
-	} else if (strcmp(name, "swarm_rotate") == 0) {
+	} else if (strncmp(name, "swarm_rotate", 12) == 0) {
 		SwarmSetup.rotate = 1 - SwarmSetup.rotate;
 	} else if (strcmp(name, "swarm_setup_done") == 0) {
 		map_show_swarm_setup = 0;
 	} else if (strcmp(name, "swar_active") == 0) {
 		SwarmSetup.active = 1 - SwarmSetup.active;
-	} else if (strcmp(name, "SwarmSetup.options1") == 0) {
+	} else if (strcmp(name, "SwarmSetup.options0") == 0) {
 		SwarmSetup.options = 0;
-	} else if (strcmp(name, "SwarmSetup.options2") == 0) {
+	} else if (strcmp(name, "SwarmSetup.options1") == 0) {
 		SwarmSetup.options = 1;
 	} else if (strcmp(name, "SwarmSetup.selected") == 0) {
 		if (button == 5) {
@@ -44,74 +46,89 @@ uint8_t swarm_set (char *name, float x, float y, int8_t button, float data, uint
 			}
 		}
 	} else if (strncmp(name, "SwarmSetup.offx", 15) == 0) {
-		int n = (int)data;
-		if (data == -1.0) {
-			n = SwarmSetup.selected;
-		}
+		int n = atoi(name + 15);
 		if (button == 5) {
 			if (SwarmSetup.offset_x[n] > -50) {
 				SwarmSetup.offset_x[n]--;
 			}
-		} else {
+		} else if (button == 4) {
 			if (SwarmSetup.offset_x[n] < 50) {
 				SwarmSetup.offset_x[n]++;
 			}
+		} else {
+			edit_number(setup.view_mode, NUMBER_TYPE_INT16, &SwarmSetup.offset_x[n], -50.0, 50.0);
 		}
 	} else if (strncmp(name, "SwarmSetup.offy", 15) == 0) {
-		int n = (int)data;
-		if (data == -1.0) {
-			n = SwarmSetup.selected;
-		}
+		int n = atoi(name + 15);
 		if (button == 5) {
 			if (SwarmSetup.offset_y[n] > -50) {
 				SwarmSetup.offset_y[n]--;
 			}
-		} else {
+		} else if (button == 4) {
 			if (SwarmSetup.offset_y[n] < 50) {
 				SwarmSetup.offset_y[n]++;
 			}
+		} else {
+			edit_number(setup.view_mode, NUMBER_TYPE_INT16, &SwarmSetup.offset_y[n], -50.0, 50.0);
 		}
 	} else if (strncmp(name, "SwarmSetup.offz", 15) == 0) {
-		int n = (int)data;
-		if (data == -1.0) {
-			n = SwarmSetup.selected;
-		}
+		int n = atoi(name + 15);
 		if (button == 5) {
 			if (SwarmSetup.offset_z[n] > -10) {
 				SwarmSetup.offset_z[n]--;
 			}
-		} else {
+		} else if (button == 4) {
 			if (SwarmSetup.offset_z[n] < 10) {
 				SwarmSetup.offset_z[n]++;
 			}
+		} else {
+			edit_number(setup.view_mode, NUMBER_TYPE_INT16, &SwarmSetup.offset_z[n], -50.0, 50.0);
 		}
-	} else if (strcmp(name, "SwarmSetup.master") == 0) {
-		if (button == 5) {
+	} else if (strncmp(name, "SwarmSetup.master", 17) == 0) {
+		if (button == 4) {
 			if (SwarmSetup.master > 0) {
 				SwarmSetup.master--;
 			} else {
 				SwarmSetup.master = MODELS_MAX - 1;
 			}
-		} else {
+		} else if (button == 5) {
 			if (SwarmSetup.master < MODELS_MAX - 1) {
 				SwarmSetup.master++;
 			} else {
 				SwarmSetup.master = 0;
 			}
+		} else {
+			if (pd_openm == 1) {
+				if (data > 0.0) {
+					SwarmSetup.master = (int8_t)data - 2;
+				}
+				pd_openm = 0;
+			} else {
+				pd_openm = 1;
+			}
 		}
 	} else if (strncmp(name, "SwarmSetup.slave", 16) == 0) {
 		n = atoi(name + 16);
-		if (button == 5) {
+		if (button == 4) {
 			if (SwarmSetup.slave[n] > -1) {
 				SwarmSetup.slave[n]--;
 			} else {
 				SwarmSetup.slave[n] = MODELS_MAX - 1;
 			}
-		} else {
+		} else if (button == 5) {
 			if (SwarmSetup.slave[n] < MODELS_MAX - 1) {
 				SwarmSetup.slave[n]++;
 			} else {
 				SwarmSetup.slave[n] = -1;
+			}
+		} else {
+			if (pd_open[n] == 1) {
+				if (data > 0.0) {
+					SwarmSetup.slave[n] = (int8_t)data - 2;
+				}
+				pd_open[n] = 0;
+			} else {
+				pd_open[n] = 1;
 			}
 		}
 	}
@@ -127,91 +144,79 @@ void swarm_draw_setup (ESContext *esContext) {
 	char tmp_str2[128];
 	float px1 = -0.8;
 	float py1 = -0.9;
-	float px2 = 0.8;
-	float py2 = -0.0;
+	float px2 = 0.9;
+	float py2 = 0.1;
+	float sy = 0.08;
 	reset_buttons();
-	draw_box_f3(esContext, px1, py1, 0.002, px2, py2, 0.002, 0, 0, 0, 127);
-	draw_box_f3(esContext, px1, py1, 0.005, px2, py1 + 0.06, 0.005, 255, 255, 255, 127);
-	draw_rect_f3(esContext, px1, py1, 0.005, px2, py1 + 0.06, 0.005, 255, 255, 255, 255);
-	draw_text_button(esContext, "swarm_setup_title", setup.view_mode, "Swarm-Setup", FONT_GREEN, px1, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, 0.0);
+
+	EntryList list[3];
+	list[0].name = "ROLE";
+	list[1].name = "OFFSET";
+	list[2].name = NULL;
+	draw_window(esContext, px1, py1, px2, py2, 0.002, "SwarmSetup.options", "Swarm-Setup", list, SwarmSetup.options, swarm_set);
+
 	if (SwarmSetup.options == 0) {
-		draw_text_button(esContext, "SwarmSetup.options1", setup.view_mode, "[ROLE]", FONT_GREEN, px1 + 0.95, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, 0.0);
-		draw_text_button(esContext, "SwarmSetup.options2", setup.view_mode, "[OFFSET]", FONT_WHITE, px1 + 1.25, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, 1.0);
-	} else {
-		draw_text_button(esContext, "SwarmSetup.options1", setup.view_mode, "[ROLE]", FONT_WHITE, px1 + 0.95, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, 0.0);
-		draw_text_button(esContext, "SwarmSetup.options2", setup.view_mode, "[OFFSET]", FONT_GREEN, px1 + 1.25, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, 1.0);
-	}
-	if (SwarmSetup.options == 0) {
-		draw_text_button(esContext, "master_title", setup.view_mode, "Master:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, 0.0);
+		draw_text_button(esContext, "master_title", setup.view_mode, "Master:", FONT_WHITE, px1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, 0.0);
 		ny++;
-		if (SwarmSetup.master == -1) {
-			sprintf(tmp_str, "NONE");
-		} else {
-			sprintf(tmp_str, "%s", ModelData[SwarmSetup.master].name);
+		uint8_t n2 = 0;
+		EntryList list[MODELS_MAX + 2];
+		list[0].name = "NONE";
+		for (n2 = 0; n2 < MODELS_MAX; n2++) {
+			list[n2 + 1].name = ModelData[n2].name;
 		}
-		draw_text_button(esContext, "SwarmSetup.master", setup.view_mode, tmp_str, FONT_GREEN, px1 + 0.1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, 0.0);
+		list[n2 + 1].name = NULL;
+		draw_pulldown(esContext, px1 + 0.1, py1 + (float)ny * sy, 0.45, 0.01, "SwarmSetup.master", list, pd_openm, SwarmSetup.master + 1, swarm_set);
 		ny++;
-		ny++;
-		draw_text_button(esContext, "sclave_title", setup.view_mode, "Slaves:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, 0.0);
+		draw_text_button(esContext, "sclave_title", setup.view_mode, "Slaves:", FONT_WHITE, px1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, 0.0);
 		ny++;
 		for (n = 0; n < 4; n++) {
-			if (SwarmSetup.slave[n] == -1) {
-				sprintf(tmp_str, "NONE");
-			} else {
-				sprintf(tmp_str, "%s", ModelData[SwarmSetup.slave[n]].name);
-			}
 			sprintf(tmp_str2, "SwarmSetup.slave%i", n);
-			draw_text_button(esContext, tmp_str2, setup.view_mode, tmp_str, FONT_GREEN, px1 + 0.1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, 0.0);
+			draw_pulldown(esContext, px1 + 0.1, py1 + (float)ny * sy, 0.44, 0.01, tmp_str2, list, pd_open[n], SwarmSetup.slave[n] + 1, swarm_set);
+
 			sprintf(tmp_str, "X=%im", SwarmSetup.offset_x[n]);
 			sprintf(tmp_str2, "SwarmSetup.offx%i", n);
-			draw_text_button(esContext, tmp_str2, setup.view_mode, tmp_str, FONT_GREEN, px1 + 0.6, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, (float)n);
+			draw_spinbox(esContext, px1 + 0.55, py1 + (float)ny * sy, 0.34, 0.01, tmp_str2, "X=%0.0fm", SwarmSetup.offset_x[n], swarm_set);
+
 			sprintf(tmp_str, "Y=%im", SwarmSetup.offset_y[n]);
 			sprintf(tmp_str2, "SwarmSetup.offy%i", n);
-			draw_text_button(esContext, tmp_str2, setup.view_mode, tmp_str, FONT_GREEN, px1 + 0.9, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, (float)n);
+			draw_spinbox(esContext, px1 + 0.9, py1 + (float)ny * sy, 0.34, 0.01, tmp_str2, "Y=%0.0fm", SwarmSetup.offset_y[n], swarm_set);
+
 			sprintf(tmp_str, "Z=%im", SwarmSetup.offset_z[n]);
 			sprintf(tmp_str2, "SwarmSetup.offz%i", n);
-			draw_text_button(esContext, tmp_str2, setup.view_mode, tmp_str, FONT_GREEN, px1 + 1.2, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, (float)n);
+			draw_spinbox(esContext, px1 + 1.25, py1 + (float)ny * sy, 0.34, 0.01, tmp_str2, "Z=%0.0fm", SwarmSetup.offset_z[n], swarm_set);
+
 			ny++;
 		}
 		ny++;
+		draw_text_button(esContext, "swarm_yawmode_", setup.view_mode, "Yaw-Rotate", FONT_GREEN, px1 + 0.1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, 0.0);
+		draw_checkbox(esContext, px1 + 0.7, py1 + (float)ny * sy, 0.005, "swarm_yawmode", SwarmSetup.yaw_mode, swarm_set);
 		ny++;
-		if (SwarmSetup.yaw_mode == 1) {
-			sprintf(tmp_str, "YawMode   ROTATE");
-		} else {
-			sprintf(tmp_str, "YawMode   FIX");
-		}
-		draw_text_button(esContext, "swarm_yawmode", setup.view_mode, tmp_str, FONT_GREEN, px1 + 0.1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, 0.0);
-		ny++;
-		if (SwarmSetup.rotate == 1) {
-			sprintf(tmp_str, "Rotate    TRUE");
-		} else {
-			sprintf(tmp_str, "YawMode   FALSE");
-		}
-		draw_text_button(esContext, "swarm_rotate", setup.view_mode, tmp_str, FONT_GREEN, px1 + 0.1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, 0.0);
+		draw_text_button(esContext, "swarm_rotate_", setup.view_mode, "Pattern-Rotate", FONT_GREEN, px1 + 0.1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, 0.0);
+		draw_checkbox(esContext, px1 + 0.7, py1 + (float)ny * sy, 0.005, "swarm_rotate", SwarmSetup.rotate, swarm_set);
 		ny++;
 	} else {
 		float gx1 = px1 + 0.5;
 		float gx2 = px2 - 0.1;
-		float gy1 = py1 + 0.1;
-		float gy2 = py2 - 0.1;
+		float gy1 = py1 + 0.15;
+		float gy2 = py2 - 0.15;
 		int gxn = 80;
 		int gyn = 40;
 		ny++;
 		ny++;
 		sprintf(tmp_str, "SLAVE=%i", SwarmSetup.selected);
-		draw_text_button(esContext, "SwarmSetup.selected", setup.view_mode, tmp_str, FONT_GREEN, px1 + 0.01, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, 0.0);
+		draw_text_button(esContext, "SwarmSetup.selected", setup.view_mode, tmp_str, FONT_GREEN, px1 + 0.01, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, 0.0);
 		ny++;
 		sprintf(tmp_str, "%s", ModelData[SwarmSetup.slave[SwarmSetup.selected]].name);
-		draw_text_button(esContext, "SwarmSetup.offn", setup.view_mode, tmp_str, FONT_GREEN, px1 + 0.01, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, (float)SwarmSetup.selected);
+		draw_text_button(esContext, "SwarmSetup.offn", setup.view_mode, tmp_str, FONT_GREEN, px1 + 0.01, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, (float)SwarmSetup.selected);
 		ny++;
 		sprintf(tmp_str, "X=%im", SwarmSetup.offset_x[SwarmSetup.selected]);
-		draw_text_button(esContext, "SwarmSetup.offx", setup.view_mode, tmp_str, FONT_GREEN, px1 + 0.01, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, (float)SwarmSetup.selected);
+		draw_text_button(esContext, "SwarmSetup.offx", setup.view_mode, tmp_str, FONT_GREEN, px1 + 0.01, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, (float)SwarmSetup.selected);
 		ny++;
 		sprintf(tmp_str, "Y=%im", SwarmSetup.offset_y[SwarmSetup.selected]);
-		draw_text_button(esContext, "SwarmSetup.offy", setup.view_mode, tmp_str, FONT_GREEN, px1 + 0.01, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, (float)SwarmSetup.selected);
+		draw_text_button(esContext, "SwarmSetup.offy", setup.view_mode, tmp_str, FONT_GREEN, px1 + 0.01, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, (float)SwarmSetup.selected);
 		ny++;
 		sprintf(tmp_str, "Z=%im", SwarmSetup.offset_z[SwarmSetup.selected]);
-		draw_text_button(esContext, "SwarmSetup.offz", setup.view_mode, tmp_str, FONT_GREEN, px1 + 0.01, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, (float)SwarmSetup.selected);
+		draw_text_button(esContext, "SwarmSetup.offz", setup.view_mode, tmp_str, FONT_GREEN, px1 + 0.01, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, (float)SwarmSetup.selected);
 		ny++;
 
 		for (gx = 0; gx <= gxn; gx++) {
@@ -235,6 +240,6 @@ void swarm_draw_setup (ESContext *esContext) {
 		}
 	}
 
-	draw_text_button(esContext, "swarm_setup_done", setup.view_mode, "[CLOSE]", FONT_GREEN, px2 - 0.02, py2 - 0.075, 0.005, 0.07, ALIGN_RIGHT, ALIGN_TOP, swarm_set, 0.0);
-	draw_rect_f3(esContext, px1, py1, 0.005, px2, py2, 0.005, 255, 255, 255, 255);
+	draw_buttonbox(esContext, "swarm_setup_done", setup.view_mode, "CLOSE", px2 - 0.33, py2 - 0.1, 0.3, 0.005, swarm_set, 0.0);
+
 }

@@ -86,4 +86,6 @@ void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float 
 void draw_update (ESContext *esContext);
 void draw_init (ESContext *esContext);
 void draw_exit (ESContext *esContext);
+void draw_box_rounded_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
+void draw_rect_rounded_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a);
 #endif

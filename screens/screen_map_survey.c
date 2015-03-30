@@ -3,6 +3,7 @@
 
 Survey SurveySetup;
 alist list[PMAX + 2];
+uint8_t alt_abs_open = 0;
 
 float f_max (float a, float b) {
 	if (a > b) {
@@ -1288,136 +1289,139 @@ void survey_draw_setup (ESContext *esContext) {
 	float px1 = -0.8;
 	float py1 = -0.9;
 	float px2 = 0.8;
-	float py2 = -0.0;
+	float py2 = 0.4;
+	float sy = 0.08;
 	reset_buttons();
-	draw_box_f3(esContext, px1, py1, 0.002, px2, py2, 0.002, 0, 0, 0, 127);
-	draw_box_f3(esContext, px1, py1, 0.005, px2, py1 + 0.06, 0.005, 255, 255, 255, 127);
-	draw_rect_f3(esContext, px1, py1, 0.005, px2, py1 + 0.06, 0.005, 255, 255, 255, 255);
-	draw_text_button(esContext, "survey_setup_title", setup.view_mode, "Survey-Setup", FONT_PINK, px1, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
-	if (SurveySetup.options == 0) {
-		draw_text_button(esContext, "SurveySetup.options1", setup.view_mode, "[GRID]", FONT_GREEN, px1 + 0.95, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
-		draw_text_button(esContext, "SurveySetup.options2", setup.view_mode, "[TRIGGER]", FONT_WHITE, px1 + 1.25, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 1.0);
-	} else {
-		draw_text_button(esContext, "SurveySetup.options1", setup.view_mode, "[GRID]", FONT_WHITE, px1 + 0.95, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
-		draw_text_button(esContext, "SurveySetup.options2", setup.view_mode, "[TRIGGER]", FONT_GREEN, px1 + 1.25, py1, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 1.0);
-	}
+
+	EntryList list[3];
+	list[0].name = "GRID";
+	list[1].name = "TRIGGER";
+	list[2].name = NULL;
+
+	draw_window(esContext, px1, py1, px2, py2, 0.002, "SurveySetup.options", "Survey-Setup", list, SurveySetup.options, survey_set);
 
 	sprintf(tmp_str, "Name: %s", SurveySetup.name);
-	draw_text_button(esContext, "survey_name", setup.view_mode, tmp_str, FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_name_edit, 0.0);
+	draw_text_button(esContext, "survey_name", setup.view_mode, tmp_str, FONT_WHITE, px1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_name_edit, 0.0);
 	ny++;
 
 	if (SurveySetup.options == 1) {
-		draw_text_button(esContext, "trigger_title", setup.view_mode, "Trigger:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+		draw_text_button(esContext, "trigger_title", setup.view_mode, "Trigger:", FONT_WHITE, px1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
 		ny++;
 		if (SurveySetup.triggermode == 1) {
-			draw_text_button(esContext, "SurveySetup.triggermode", setup.view_mode, "  Mode: ON EACH WP", FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+			draw_text_button(esContext, "SurveySetup.triggermode", setup.view_mode, "  Mode: ON EACH WP", FONT_GREEN, px1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
 			ny++;
 			if (SurveySetup.type == 1) {
-				draw_text_button(esContext, "SurveySetup.type", setup.view_mode, "  Type: RELAY", FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+				draw_text_button(esContext, "SurveySetup.type", setup.view_mode, "  Type: RELAY", FONT_GREEN, px1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
 				ny++;
 				sprintf(tmp_str, "  Relay-Number: %i", SurveySetup.num);
-				draw_text_button(esContext, "SurveySetup.num", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+				draw_text_button(esContext, "SurveySetup.num", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
 			} else if (SurveySetup.type == 2) {
-				draw_text_button(esContext, "SurveySetup.type", setup.view_mode, "  Type: SERVO", FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+				draw_text_button(esContext, "SurveySetup.type", setup.view_mode, "  Type: SERVO", FONT_GREEN, px1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
 				ny++;
 				sprintf(tmp_str, "  Servo-Num: %i", SurveySetup.num);
-				draw_text_button(esContext, "SurveySetup.num", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+				draw_text_button(esContext, "SurveySetup.num", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
 				ny++;
 				sprintf(tmp_str, "  Servo-Position: %i", SurveySetup.pos);
-				draw_text_button(esContext, "SurveySetup.pos", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+				draw_text_button(esContext, "SurveySetup.pos", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
 			} else {
-				draw_text_button(esContext, "SurveySetup.type", setup.view_mode, "  Type: SHUTTER", FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+				draw_text_button(esContext, "SurveySetup.type", setup.view_mode, "  Type: SHUTTER", FONT_GREEN, px1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
 			}
 		} else if (SurveySetup.triggermode == 2) {
-			draw_text_button(esContext, "SurveySetup.triggermode", setup.view_mode, "  Mode: SHUTTER INTERVAL", FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+			draw_text_button(esContext, "SurveySetup.triggermode", setup.view_mode, "  Mode: SHUTTER INTERVAL", FONT_GREEN, px1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
 			ny++;
 			sprintf(tmp_str, "  Interval: %im", SurveySetup.interval);
-			draw_text_button(esContext, "SurveySetup.interval", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+			draw_text_button(esContext, "SurveySetup.interval", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
 		} else {
-			draw_text_button(esContext, "SurveySetup.triggermode", setup.view_mode, "  Mode: NONE", FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+			draw_text_button(esContext, "SurveySetup.triggermode", setup.view_mode, "  Mode: NONE", FONT_GREEN, px1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
 		}
-		ny++;
-	} else if (SurveySetup.mode == 1) {
-		// fixed grid
-		draw_text_button(esContext, "SurveySetup.mode", setup.view_mode, "Mode: GRID", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
-		ny++;
-		draw_text_button(esContext, "cam_grid", setup.view_mode, "Grid:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
-		ny++;
-		if (SurveySetup.triggermode == 2) {
-			sprintf(tmp_str, "  grid_x: %0.0fm (set by Trigger-Intervall)", SurveySetup.grid_x);
-		} else {
-			sprintf(tmp_str, "  grid_x: %0.0fm", SurveySetup.grid_x);
-		}
-		draw_text_button(esContext, "SurveySetup.grid_x", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
-		ny++;
-		sprintf(tmp_str, "  grid_y: %0.0fm", SurveySetup.grid_y);
-		draw_text_button(esContext, "SurveySetup.grid_y", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
-		ny++;
-		draw_text_button(esContext, "cam_alt", setup.view_mode, "Misc:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
-		ny++;
-		sprintf(tmp_str, "  Alt: %0.2f", SurveySetup.alt);
-		draw_text_button(esContext, "SurveySetup.alt", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
-		if (SurveySetup.alt_abs == 1) {
-			draw_text_button(esContext, "SurveySetup.alt_abs", setup.view_mode, "ABS", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
-		} else {
-			draw_text_button(esContext, "SurveySetup.alt_abs", setup.view_mode, "REL", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
-		}
-		ny++;
-		sprintf(tmp_str, "  Angle: %0.0f", SurveySetup.angle);
-		draw_text_button(esContext, "SurveySetup.angle", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
 		ny++;
 	} else {
-		// Cam-Grid
-		draw_text_button(esContext, "SurveySetup.mode", setup.view_mode, "Mode: CAM", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
-		ny++;
-		// Lense
-		draw_text_button(esContext, "SurveySetup.lense", setup.view_mode, "Lense:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
-		draw_text_button(esContext, "cam_lense_20", setup.view_mode, "[20mm]", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, survey_set, 0.0);
-		draw_text_button(esContext, "cam_lense_50", setup.view_mode, "[50mm]", FONT_GREEN, px1 + 1.1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, survey_set, 0.0);
-		draw_text_button(esContext, "cam_lense_70", setup.view_mode, "[70mm]", FONT_GREEN, px1 + 1.4, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, survey_set, 0.0);
-		ny++;
-		sprintf(tmp_str, "  focal length: %0.0fmm", SurveySetup.lense);
-		draw_text_button(esContext, "SurveySetup.lense", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
-		ny++;
-		// Sensor
-		draw_text_button(esContext, "cam_sensor", setup.view_mode, "Sensor:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
-		draw_text_button(esContext, "cam_sensor_1.0", setup.view_mode, "[Full]", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, survey_set, 0.0);
-		draw_text_button(esContext, "cam_sensor_1.4", setup.view_mode, "[APS-E]", FONT_GREEN, px1 + 1.1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, survey_set, 0.0);
-		draw_text_button(esContext, "cam_sensor_1.6", setup.view_mode, "[APS-C]", FONT_GREEN, px1 + 1.4, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, survey_set, 0.0);
-		ny++;
-		sprintf(tmp_str, "  Film-Width: %0.0fmm", SurveySetup.film_width);
-		draw_text_button(esContext, "SurveySetup.film_width", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
-		ny++;
-		sprintf(tmp_str, "  Film-Height: %0.0fmm", SurveySetup.film_height);
-		draw_text_button(esContext, "SurveySetup.film_height", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
-		ny++;
-		sprintf(tmp_str, "  Sensor-Mult.: %0.2fx", SurveySetup.sensor_mult);
-		draw_text_button(esContext, "SurveySetup.sensor_mult", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
-		ny++;
-		// Overlap/Alt
-		draw_text_button(esContext, "SurveySetup.overlap", setup.view_mode, "Misc:", FONT_WHITE, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
-		ny++;
-		sprintf(tmp_str, "  Overlap: %0.2f", SurveySetup.overlap);
-		draw_text_button(esContext, "SurveySetup.overlap", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
-		ny++;
-		sprintf(tmp_str, "  Alt: %0.2f", SurveySetup.alt);
-		draw_text_button(esContext, "SurveySetup.alt", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
-		if (SurveySetup.alt_abs == 1) {
-			draw_text_button(esContext, "SurveySetup.alt_abs", setup.view_mode, "ABS", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+
+		EntryList list2[3];
+		list2[0].name = "CAM";
+		list2[1].name = "GRID";
+		list2[2].name = NULL;
+		draw_pulldown(esContext, px1 + 0.1, py1 + (float)ny * sy, 0.44, 0.01, "SurveySetup.mode", list2, alt_abs_open, SurveySetup.mode, survey_set);
+			ny++;
+
+		if (SurveySetup.mode == 1) {
+			// fixed grid
+			draw_text_button(esContext, "cam_grid", setup.view_mode, "Grid:", FONT_WHITE, px1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+			ny++;
+			draw_text_button(esContext, "SurveySetup.grid_x_", setup.view_mode, "grid_x", FONT_WHITE, px1 + 0.1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+			if (SurveySetup.triggermode == 2) {
+				draw_spinbox(esContext, px1 + 0.6, py1 + (float)ny * sy, 0.4, 0.01, "SurveySetup.grid_x", "%0.0fm (set by Trigger-Intervall)", SurveySetup.grid_x, survey_set);
+			} else {
+				draw_spinbox(esContext, px1 + 0.6, py1 + (float)ny * sy, 0.4, 0.01, "SurveySetup.grid_x", "%0.0fm", SurveySetup.grid_x, survey_set);
+			}
+			ny++;
+			draw_text_button(esContext, "SurveySetup.grid_y_", setup.view_mode, "grid_y", FONT_WHITE, px1 + 0.1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+			draw_spinbox(esContext, px1 + 0.6, py1 + (float)ny * sy, 0.4, 0.01, "SurveySetup.grid_y", "%0.0fm", SurveySetup.grid_y, survey_set);
+
+			ny++;
+			draw_text_button(esContext, "cam_alt", setup.view_mode, "Misc:", FONT_WHITE, px1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+			ny++;
+			draw_text_button(esContext, "SurveySetup.alt_", setup.view_mode, "Alt", FONT_WHITE, px1 + 0.1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+			draw_spinbox(esContext, px1 + 0.6, py1 + (float)ny * sy, 0.4, 0.01, "SurveySetup.alt", "%0.2fm", SurveySetup.alt, survey_set);
+
+			EntryList list2[3];
+			list2[0].name = "REL";
+			list2[1].name = "ABS";
+			list2[2].name = NULL;
+			draw_pulldown(esContext, px1 + 1.02, py1 + (float)ny * sy, 0.44, 0.01, "SurveySetup.alt_abs", list2, alt_abs_open, SurveySetup.alt_abs, survey_set);
+			ny++;
+			draw_text_button(esContext, "SurveySetup.angle_", setup.view_mode, "Angle", FONT_WHITE, px1 + 0.1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+			draw_spinbox(esContext, px1 + 0.6, py1 + (float)ny * sy, 0.4, 0.01, "SurveySetup.angle", "%0.1f", SurveySetup.angle, survey_set);
+			ny++;
 		} else {
-			draw_text_button(esContext, "SurveySetup.alt_abs", setup.view_mode, "REL", FONT_GREEN, px1 + 0.8, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+			// Lense
+			draw_text_button(esContext, "SurveySetup.lense", setup.view_mode, "Lense:", FONT_WHITE, px1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+			draw_text_button(esContext, "cam_lense_20", setup.view_mode, "[20mm]", FONT_GREEN, px1 + 0.6, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, survey_set, 0.0);
+			draw_text_button(esContext, "cam_lense_50", setup.view_mode, "[50mm]", FONT_GREEN, px1 + 0.9, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, survey_set, 0.0);
+			draw_text_button(esContext, "cam_lense_70", setup.view_mode, "[70mm]", FONT_GREEN, px1 + 1.2, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, survey_set, 0.0);
+			ny++;
+			draw_text_button(esContext, "SurveySetup.lense_", setup.view_mode, "focal length", FONT_WHITE, px1 + 0.1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+			draw_spinbox(esContext, px1 + 0.6, py1 + (float)ny * sy, 0.4, 0.01, "SurveySetup.lense", "%0.0fmm", SurveySetup.lense, survey_set);
+			ny++;
+			// Sensor
+			draw_text_button(esContext, "cam_sensor", setup.view_mode, "Sensor:", FONT_WHITE, px1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+			draw_text_button(esContext, "cam_sensor_1.0", setup.view_mode, "[Full]", FONT_GREEN, px1 + 0.6, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, survey_set, 0.0);
+			draw_text_button(esContext, "cam_sensor_1.4", setup.view_mode, "[APS-E]", FONT_GREEN, px1 + 0.9, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, survey_set, 0.0);
+			draw_text_button(esContext, "cam_sensor_1.6", setup.view_mode, "[APS-C]", FONT_GREEN, px1 + 1.2, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, survey_set, 0.0);
+			ny++;
+			draw_text_button(esContext, "SurveySetup.film_width_", setup.view_mode, "Width", FONT_WHITE, px1 + 0.1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+			draw_spinbox(esContext, px1 + 0.6, py1 + (float)ny * sy, 0.4, 0.01, "SurveySetup.film_width", "%0.0fmm", SurveySetup.film_width, survey_set);
+			ny++;
+			draw_text_button(esContext, "SurveySetup.film_height_", setup.view_mode, "Film-Height", FONT_WHITE, px1 + 0.1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+			draw_spinbox(esContext, px1 + 0.6, py1 + (float)ny * sy, 0.4, 0.01, "SurveySetup.film_height", "%0.0fmm", SurveySetup.film_height, survey_set);
+			ny++;
+			draw_text_button(esContext, "SurveySetup.sensor_mult_", setup.view_mode, "Sensor-Mult", FONT_WHITE, px1 + 0.1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+			draw_spinbox(esContext, px1 + 0.6, py1 + (float)ny * sy, 0.4, 0.01, "SurveySetup.sensor_mult", "%0.2fx", SurveySetup.sensor_mult, survey_set);
+			ny++;
+			// Overlap/Alt
+			draw_text_button(esContext, "SurveySetup.overlap_", setup.view_mode, "Misc:", FONT_WHITE, px1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+			ny++;
+			draw_text_button(esContext, "SurveySetup.overlap_", setup.view_mode, "Overlap", FONT_WHITE, px1 + 0.1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+			draw_spinbox(esContext, px1 + 0.6, py1 + (float)ny * sy, 0.4, 0.01, "SurveySetup.overlap", "%0.2fx", SurveySetup.overlap, survey_set);
+			ny++;
+			draw_text_button(esContext, "SurveySetup.alt_", setup.view_mode, "Alt", FONT_WHITE, px1 + 0.1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+			draw_spinbox(esContext, px1 + 0.6, py1 + (float)ny * sy, 0.4, 0.01, "SurveySetup.alt", "%0.2fm", SurveySetup.alt, survey_set);
+			EntryList list2[3];
+			list2[0].name = "REL";
+			list2[1].name = "ABS";
+			list2[2].name = NULL;
+			draw_pulldown(esContext, px1 + 1.02, py1 + (float)ny * sy, 0.44, 0.01, "SurveySetup.alt_abs", list2, alt_abs_open, SurveySetup.alt_abs, survey_set);
+			ny++;
+			draw_text_button(esContext, "SurveySetup.angle", setup.view_mode, "Angle", FONT_WHITE, px1 + 0.1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
+			draw_spinbox(esContext, px1 + 0.6, py1 + (float)ny * sy, 0.4, 0.01, "SurveySetup.angle", "%0.0f", SurveySetup.angle, survey_set);
+			ny++;
 		}
-		ny++;
-		sprintf(tmp_str, "  Angle: %0.0f", SurveySetup.angle);
-		draw_text_button(esContext, "SurveySetup.angle", setup.view_mode, tmp_str, FONT_GREEN, px1, py1 + (float)ny * 0.06, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
-		ny++;
 	}
 	draw_text_button(esContext, "survey_load", setup.view_mode, "[LOAD]", FONT_GREEN, px1 + 0.02, py2 - 0.075, 0.005, 0.07, ALIGN_LEFT, ALIGN_TOP, survey_load, 0.0);
 	draw_text_button(esContext, "survey_save", setup.view_mode, "[SAVE]", FONT_GREEN, px1 + 0.32, py2 - 0.075, 0.005, 0.07, ALIGN_LEFT, ALIGN_TOP, survey_save, 0.0);
 	draw_text_button(esContext, "survey_export_kml", setup.view_mode, "[KML]", FONT_GREEN, px2 - 0.62, py2 - 0.075, 0.005, 0.07, ALIGN_RIGHT, ALIGN_TOP, survey_export_kml, 0.0);
 	draw_text_button(esContext, "survey_setup_write", setup.view_mode, "[WRITE]", FONT_GREEN, px2 - 0.32, py2 - 0.075, 0.005, 0.07, ALIGN_RIGHT, ALIGN_TOP, survey_set, 0.0);
 	draw_text_button(esContext, "survey_setup_done", setup.view_mode, "[CLOSE]", FONT_GREEN, px2 - 0.02, py2 - 0.075, 0.005, 0.07, ALIGN_RIGHT, ALIGN_TOP, survey_set, 0.0);
-	draw_rect_f3(esContext, px1, py1, 0.005, px2, py2, 0.005, 255, 255, 255, 255);
 }
 
 

@@ -48,6 +48,8 @@
 
 #define APRS_MAX	5000
 
+extern uint8_t gui_ov_lock;
+
 enum {
 	VIEW_MODE_HUD,
 	VIEW_MODE_TELEMETRY,

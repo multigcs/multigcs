@@ -82,6 +82,7 @@ char dronetypes[MAV_TYPE_ENUM_END][32] = {
 };
 
 GcsSetup setup;
+uint8_t gui_ov_lock = 0;
 uint8_t key_pressed = 0;
 uint8_t ModelActive = 0;
 Model ModelData[MODELS_MAX];
@@ -245,6 +246,10 @@ void reset_buttons (void) {
 
 uint8_t set_button (char *name, uint8_t view_mode, float x1, float y1, float x2, float y2, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t), float data, uint8_t type) {
 	uint16_t n = 0;
+	if (gui_ov_lock == 1) {
+		return 0;
+	}
+
 	for (n = 0; n < MAX_BUTTONS; n++) {
 		if (strcmp(Buttons[n].name, name) == 0) {
 			Buttons[n].view_mode = view_mode;
@@ -2509,6 +2514,9 @@ void Draw (ESContext *esContext) {
 #ifndef CONSOLE_ONLY
 	draw_update(esContext);
 #endif
+
+	gui_ov_lock = 0;
+
 	SDL_Delay(15);
 }
 

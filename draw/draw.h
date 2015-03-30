@@ -4,6 +4,10 @@
 
 
 typedef struct {
+	char *name;
+} EntryList;
+
+typedef struct {
 	float x;
 	float y;
 	float z;
@@ -68,6 +72,13 @@ uint8_t draw_button (ESContext *esContext, char *name, uint8_t view_mode, char *
 uint8_t draw_text_align (ESContext *esContext, char *text, char *font, float x, float y, float z, float h, uint8_t align_x, uint8_t align_y);
 int next_power_of_two (int n);
 SDL_Surface* convert_to_power_of_two (SDL_Surface* surface);
+
+void draw_pulldown (ESContext *esContext, float x1, float y1, float w, float z, char *name, EntryList *list, uint8_t open, uint8_t select, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t));
+void draw_spinbox (ESContext *esContext, float x1, float y1, float w, float z, char *name, char *format, float value, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t));
+void draw_textbox (ESContext *esContext, float x1, float y1, float w, float z, char *name, char *text, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t));
+void draw_checkbox (ESContext *esContext, float x1, float y1, float z, char *name, uint8_t check, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t));
+void draw_window (ESContext *esContext, float x1, float y1, float x2, float y2, float z, char *name, char *title, EntryList *list, uint8_t select, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t));
+void draw_buttonbox (ESContext *esContext, char *name, uint8_t view_mode, char *text, float x1, float y1, float w, float z, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t), float data);
 
 #ifdef SDLGL
 uint32_t getpixel(SDL_Surface *surface, int x, int y);

@@ -89,6 +89,9 @@ uint8_t draw_button (ESContext *esContext, char *name, uint8_t view_mode, char *
 	}
 //	draw_text_f3(esContext, x1, y1 + (y2 - y1) / 2 - fh / 2, z1, fh, fh, font, text);
 	draw_text_f3(esContext, tx, ty, z1, fh, fh, font, text);
+	if (gui_ov_lock == 1) {
+		return 0;
+	}
 	for (n = 0; n < MAX_BUTTONS; n++) {
 		if (strcmp(Buttons[n].name, name) == 0) {
 			Buttons[n].view_mode = setup.view_mode;
@@ -146,6 +149,9 @@ uint8_t draw_text_button (ESContext *esContext, char *name, uint8_t view_mode, c
 		return 0;
 	}
 //	draw_rect_f3(esContext, x1 - 0.01, y1 - 0.01, z1, x2 + 0.01, y2 + 0.01, z1, 255, 255, 255, 64);
+	if (gui_ov_lock == 1) {
+		return 0;
+	}
 	for (n = 0; n < MAX_BUTTONS; n++) {
 		if (strcmp(Buttons[n].name, name) == 0) {
 			Buttons[n].view_mode = setup.view_mode;
@@ -223,6 +229,9 @@ uint8_t draw_image_button (ESContext *esContext, char *name, uint8_t view_mode, 
 	}
 	draw_image_f3(esContext, x1, y1, x2, y2, 0.0, image);
 //	draw_rect_f3(esContext, x1 - 0.01, y1 - 0.01, z1, x2 + 0.01, y2 + 0.01, z1, 255, 0, 0, 255);
+	if (gui_ov_lock == 1) {
+		return 0;
+	}
 	for (n = 0; n < MAX_BUTTONS; n++) {
 		if (strcmp(Buttons[n].name, name) == 0) {
 			Buttons[n].view_mode = setup.view_mode;
@@ -923,3 +932,178 @@ void draw_text (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h
 	float fh = (float)h / 200;
 	draw_text_f3(esContext, x1, y1, 0.0, fw, fh, file, text);
 }
+
+void draw_pulldown (ESContext *esContext, float x1, float y1, float w, float z, char *name, EntryList *list, uint8_t open, uint8_t select, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t)) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
+	uint8_t n = 0;
+	float x2 = x1 + w;
+	float h = 0.07;
+	float y2 = y1 + h;
+	char tmp_str[1024];
+#ifdef SDLGL
+#ifndef ANDROID
+	draw_box_rounded_f3(esContext, x1, y1, z, x2, y2, z, h / 3, 255, 255, 255, 55);
+	draw_rect_rounded_f3(esContext, x1, y1, z, x2, y2, z, h / 3, 255, 255, 255, 255);
+#else
+	draw_box_f3(esContext, x1, y1, z, x2, y2, z, 255, 255, 255, 55);
+	draw_rect_f3(esContext, x1, y1, z, x2, y2, z, 255, 255, 255, 255);
+#endif
+#endif
+	if (open == 1) {
+//		y1 -= select * h;
+//		y2 -= select * h;
+		while (list[n].name != NULL) {
+			if (n == select) {
+				draw_box_f3(esContext, x1 + 0.01, y1 + n * h, z, x2 - 0.01, y2 + n * h, z + 0.05, 200, 200, 200, 200);
+			} else {
+				draw_box_f3(esContext, x1 + 0.01, y1 + n * h, z, x2 - 0.01, y2 + n * h, z + 0.05, 255, 255, 255, 200);
+			}
+			draw_text_f3(esContext, x1 + 0.001 + 0.005, y1 + n * h + 0.005, z + 0.1, h - 0.01, h - 0.01, FONT_GREEN, list[n].name);
+			sprintf(tmp_str, "%s_%i", name, n);
+			set_button(tmp_str, setup.view_mode, x1 + 0.01, y1 + n * h, x2 + 0.01, y2 + n * h, callback, (float)(n + 1), 0);
+			n++;
+		}
+		gui_ov_lock = 1;
+	} else {
+		draw_line_f3(esContext, x2 - h + 0.02, y1 + h / 2 - 0.01, z, x2 - 0.02, y1 + h / 2 - 0.01, z, 255, 255, 255, 255);
+		draw_line_f3(esContext, x2 - h + 0.02, y1 + h / 2 - 0.01, z, x2 - h / 2, y1 + h / 2 + 0.01, z, 255, 255, 255, 255);
+		draw_line_f3(esContext, x2 - h / 2, y1 + h / 2 + 0.01, z, x2 - 0.02, y1 + h / 2 - 0.01, z, 255, 255, 255, 255);
+		draw_text_f3(esContext, x1 + 0.005, y1 + 0.005, z + 0.001, h - 0.01, h - 0.01, FONT_GREEN, list[select].name);
+		sprintf(tmp_str, "%s", name);
+		set_button(tmp_str, setup.view_mode, x1, y1, x2, y2, callback, 0.0, 0);
+	}
+}
+
+void draw_spinbox (ESContext *esContext, float x1, float y1, float w, float z, char *name, char *format, float value, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t)) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
+	float x2 = x1 + w;
+	float h = 0.07;
+	float y2 = y1 + h;
+	char tmp_str[1024];
+	sprintf(tmp_str, format, value);
+#ifdef SDLGL
+#ifndef ANDROID
+	draw_box_rounded_f3(esContext, x1, y1, z, x2, y2, z, h / 3, 255, 255, 255, 55);
+	draw_rect_rounded_f3(esContext, x1, y1, z, x2, y2, z, h / 3, 255, 255, 255, 255);
+#else
+	draw_box_f3(esContext, x1, y1, z, x2, y2, z, 255, 255, 255, 55);
+	draw_rect_f3(esContext, x1, y1, z, x2, y2, z, 255, 255, 255, 255);
+#endif
+#endif
+	draw_line_f3(esContext, x2 - h + 0.02, y1 + h / 2 + 0.005, z, x2 - 0.02, y1 + h / 2 + 0.005, z, 255, 255, 255, 255);
+	draw_line_f3(esContext, x2 - h + 0.02, y1 + h / 2 + 0.005, z, x2 - h / 2, y1 + h / 2 + 0.02, z, 255, 255, 255, 255);
+	draw_line_f3(esContext, x2 - h / 2, y1 + h / 2 + 0.02, z, x2 - 0.02, y1 + h / 2 + 0.005, z, 255, 255, 255, 255);
+	draw_line_f3(esContext, x2 - h + 0.02, y1 + h / 2 - 0.005, z, x2 - 0.02, y1 + h / 2 - 0.005, z, 255, 255, 255, 255);
+	draw_line_f3(esContext, x2 - h + 0.02, y1 + h / 2 - 0.005, z, x2 - h / 2, y1 + h / 2 - 0.02, z, 255, 255, 255, 255);
+	draw_line_f3(esContext, x2 - h / 2, y1 + h / 2 - 0.02, z, x2 - 0.02, y1 + h / 2 - 0.005, z, 255, 255, 255, 255);
+	draw_text_f3(esContext, x1 + 0.005, y1 + 0.005, z + 0.001, h - 0.01, h - 0.01, FONT_GREEN, tmp_str);
+	set_button(name, setup.view_mode, x1, y1, x2, y2, callback, 0.0, 0);
+}
+
+void draw_textbox (ESContext *esContext, float x1, float y1, float w, float z, char *name, char *text, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t)) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
+	float x2 = x1 + w;
+	float h = 0.07;
+	float y2 = y1 + h;
+#ifdef SDLGL
+#ifndef ANDROID
+	draw_box_rounded_f3(esContext, x1, y1, z, x2, y2, z, h / 3, 255, 255, 255, 55);
+	draw_rect_rounded_f3(esContext, x1, y1, z, x2, y2, z, h / 3, 255, 255, 255, 255);
+#else
+	draw_box_f3(esContext, x1, y1, z, x2, y2, z, 255, 255, 255, 55);
+	draw_rect_f3(esContext, x1, y1, z, x2, y2, z, 255, 255, 255, 255);
+#endif
+#endif
+	draw_text_f3(esContext, x1 + 0.005, y1 + 0.005, z + 0.001, h - 0.01, h - 0.01, FONT_GREEN, text);
+	set_button(name, setup.view_mode, x1, y1, x2, y2, callback, 0.0, 0);
+}
+
+void draw_checkbox (ESContext *esContext, float x1, float y1, float z, char *name, uint8_t check, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t)) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
+	float w = 0.07;
+	float h = 0.07;
+	float x2 = x1 + w;
+	float y2 = y1 + h;
+#ifdef SDLGL
+#ifndef ANDROID
+	draw_box_rounded_f3(esContext, x1, y1, z, x2, y2, z, h / 3, 255, 255, 255, 55);
+	draw_rect_rounded_f3(esContext, x1, y1, z, x2, y2, z, h / 3, 255, 255, 255, 255);
+#else
+	draw_box_f3(esContext, x1, y1, z, x2, y2, z, 255, 255, 255, 55);
+	draw_rect_f3(esContext, x1, y1, z, x2, y2, z, 255, 255, 255, 255);
+#endif
+#endif
+	if (check == 1) {
+		draw_line_f3(esContext, x1 + 0.02, y1 + 0.02, z, x2 - 0.02, y2 - 0.02, z, 255, 255, 255, 255);
+		draw_line_f3(esContext, x1 + 0.02, y2 - 0.02, z, x2 - 0.02, y1 + 0.02, z, 255, 255, 255, 255);
+	}
+	set_button(name, setup.view_mode, x1, y1, x2, y2, callback, 0.0, 0);
+}
+
+void draw_window (ESContext *esContext, float x1, float y1, float x2, float y2, float z, char *name, char *title, EntryList *list, uint8_t select, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t)) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
+	uint8_t n = 0;
+	uint8_t m = 0;
+	float tw = 0.6;
+	float step = 0.4;
+	char tmp_str[1024];
+	while (list[m].name != NULL) {
+		m++;
+	}
+#ifdef SDLGL
+#ifndef ANDROID
+	draw_box_rounded_f3(esContext, x1, y1, z, x2, y2, z, 0.04, 55, 55, 255, 100);
+	draw_rect_rounded_f3(esContext, x1, y1, z, x2, y2, z, 0.04, 255, 255, 255, 255);
+#else
+	draw_box_f3(esContext, x1, y1, z, x2, y2, z, 55, 55, 255, 100);
+	draw_rect_f3(esContext, x1, y1, z, x2, y2, z, 255, 255, 255, 255);
+#endif
+#endif
+	draw_line_f3(esContext, x1, y1 + 0.08, z, x1 + tw, y1 + 0.08, z, 255, 255, 255, 255);
+	draw_line_f3(esContext, x1 + tw, y1 + 0.08, z, x1 + tw + 0.1, y1, z, 255, 255, 255, 255);
+	draw_text_f3(esContext, x1 + 0.05, y1 + 0.01, z + 0.001, 0.07, 0.07, FONT_PINK, title);
+	while (list[n].name != NULL) {
+		sprintf(tmp_str, "%s%i", name, n);
+		if (n == select) {
+			draw_line_f3(esContext, x1 + tw + step * n, y1 + 0.08, z, x1 + tw + step * n + step, y1 + 0.08, z, 255, 255, 255, 100);
+		} else {
+			draw_line_f3(esContext, x1 + tw + step * n, y1 + 0.08, z, x1 + tw + step * n + step, y1 + 0.08, z, 255, 255, 255, 255);
+		}
+		draw_line_f3(esContext, x1 + tw + step * n + step, y1 + 0.08, z, x1 + tw + step * n + step + 0.1, y1, z, 255, 255, 255, 255);
+		draw_text_f3(esContext, x1 + tw + step * n + 0.07, y1 + 0.02, z + 0.001, 0.06, 0.06, FONT_WHITE, list[n].name);
+		set_button(tmp_str, setup.view_mode, x1 + tw + step * n, y1, x1 + tw + step * n + step, y1 + 0.08, callback, (float)n, 0);
+		n++;
+	}
+	draw_line_f3(esContext, x1 + tw + step * n, y1 + 0.08, z, x2, y1 + 0.08, z, 255, 255, 255, 255);
+}
+
+void draw_buttonbox (ESContext *esContext, char *name, uint8_t view_mode, char *text, float x1, float y1, float w, float z, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t), float data) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
+	float x2 = x1 + w;
+	float h = 0.07;
+	float y2 = y1 + h;
+#ifdef SDLGL
+#ifndef ANDROID
+	draw_box_rounded_f3(esContext, x1, y1, z, x2, y2, z, h / 3, 255, 255, 255, 55);
+	draw_rect_rounded_f3(esContext, x1, y1, z, x2, y2, z, h / 3, 255, 255, 255, 255);
+#else
+	draw_box_f3(esContext, x1, y1, z, x2, y2, z, 255, 255, 255, 55);
+	draw_rect_f3(esContext, x1, y1, z, x2, y2, z, 255, 255, 255, 255);
+#endif
+#endif
+	draw_text_f3(esContext, x1 + w / 2 - (h - 0.01) * 0.6 * strlen(text) / 2.0 - (h - 0.01) * 0.6 / 3.0, y1 + 0.005, z + 0.001, h - 0.01, h - 0.01, FONT_GREEN, text);
+	set_button(name, setup.view_mode, x1, y1, x2, y2, callback, 0.0, 0);
+}
+

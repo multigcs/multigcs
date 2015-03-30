@@ -451,6 +451,36 @@ void draw_circleSS_f3 (ESContext *esContext, float x1, float y1, float z1, float
 	glEnd();
 }
 
+void draw_circleSS_strip_f3 (ESContext *esContext, float x1, float y1, float z1, float radius, float start, float stop) {
+#ifdef CONSOLE_ONLY
+	return;
+#endif
+	uint16_t ii = 0;
+	float num_segments = radius * 300.0;
+	if (num_segments < 100.0) {
+		num_segments = 100.0;
+	} else if (num_segments > 360.0) {
+		num_segments = 360.0;
+	}
+	float theta = 2 * 3.1415926 / num_segments;
+	float tangetial_factor = tanf(theta);
+	float radial_factor = cosf(theta);
+	float x = radius;//we start at angle = 0
+	float y = 0;
+	for (ii = 0; ii <= (float)num_segments * stop / 360.0; ii++) {
+		if (ii >= (float)num_segments * start / 360.0) {
+			glVertex3f(x1 - x, y + y1, -2.0 + z1);
+
+		}
+		float tx = -y;
+		float ty = x;
+		x += tx * tangetial_factor;
+		y += ty * tangetial_factor;
+		x *= radial_factor;
+		y *= radial_factor;
+	}
+}
+
 void draw_circleFilled_f3 (ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;
@@ -708,6 +738,46 @@ void draw_box_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, 
 	glVertex3f(x2, y1, -2.0 + z1);
 	glVertex3f(x2, y2, -2.0 + z2);
 	glVertex3f(x1, y2, -2.0 + z2);
+	glEnd();
+}
+
+void draw_box_rounded_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef HTML_DRAWING
+	char tmp_str[1024];
+	sprintf(tmp_str, "	draw_box(context, %0.0f, %0.0f, %0.0f, %0.0f, 'rgba(%i,%i,%i,%0.3f)');\n", x1 * X_CAL, y1 * Y_CAL, x2 * X_CAL, y2 * Y_CAL, r, g, b, (float)a / 255.0);
+	strcat(display_html, tmp_str);
+#endif
+#ifdef CONSOLE_ONLY
+	return;
+#endif
+	y1 = y1 * -1;
+	y2 = y2 * -1;
+	glBegin(GL_TRIANGLE_FAN);
+	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
+	draw_circleSS_strip_f3(esContext, x1 + radius, y1 - radius, z1, radius, 0.0, 90.0);
+	draw_circleSS_strip_f3(esContext, x2 - radius, y1 - radius, z1, radius, 90.0, 180.0);
+	draw_circleSS_strip_f3(esContext, x2 - radius, y2 + radius, z1, radius, 180.0, 270.0);
+	draw_circleSS_strip_f3(esContext, x1 + radius, y2 + radius, z1, radius, 270.0, 360.0);
+	glEnd();
+}
+
+void draw_rect_rounded_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+#ifdef HTML_DRAWING
+	char tmp_str[1024];
+	sprintf(tmp_str, "	draw_box(context, %0.0f, %0.0f, %0.0f, %0.0f, 'rgba(%i,%i,%i,%0.3f)');\n", x1 * X_CAL, y1 * Y_CAL, x2 * X_CAL, y2 * Y_CAL, r, g, b, (float)a / 255.0);
+	strcat(display_html, tmp_str);
+#endif
+#ifdef CONSOLE_ONLY
+	return;
+#endif
+	y1 = y1 * -1;
+	y2 = y2 * -1;
+	glBegin(GL_LINE_LOOP);
+	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
+	draw_circleSS_strip_f3(esContext, x1 + radius, y1 - radius, z1, radius, 0.0, 90.0);
+	draw_circleSS_strip_f3(esContext, x2 - radius, y1 - radius, z1, radius, 90.0, 180.0);
+	draw_circleSS_strip_f3(esContext, x2 - radius, y2 + radius, z1, radius, 180.0, 270.0);
+	draw_circleSS_strip_f3(esContext, x1 + radius, y2 + radius, z1, radius, 270.0, 360.0);
 	glEnd();
 }
 
