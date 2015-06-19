@@ -2,8 +2,14 @@
 #
 #
 
+EXTRA_HEADERS="mavlink/GCS_MAVLink/include/mavlink/v1.0/autoquad/mavlink_msg_aq_esc_telemetry.h"
+
 echo ""
 echo "#include <all.h>"
+for EXTRA_HEADER in $EXTRA_HEADERS
+do
+	echo "#include <$EXTRA_HEADER>"
+done
 echo "#include <mavlink/GCS_MAVLink/include/mavlink/v1.0/autoquad/mavlink_msg_aq_telemetry_f.h>"
 echo "#include <mavlink/GCS_MAVLink/include/mavlink/v1.0/pixhawk/mavlink_msg_set_netid.h>"
 echo ""
@@ -39,7 +45,7 @@ echo "}"
 echo ""
 echo "uint8_t mavlink_source_rewrite (uint8_t modelid, mavlink_message_t* msg) {"
 echo "	switch (msg->msgid) {"
-grep -R "MAVLINK_MSG_.*_CRC\>" mavlink/GCS_MAVLink/include/mavlink/v1.0/common/ mavlink/GCS_MAVLink/include/mavlink/v1.0/ardupilotmega/ | grep /mavlink_msg_ | cut -d":" -f1 | sort -u | while read F
+grep -R "MAVLINK_MSG_.*_CRC\>" mavlink/GCS_MAVLink/include/mavlink/v1.0/common/ mavlink/GCS_MAVLink/include/mavlink/v1.0/ardupilotmega/ $EXTRA_HEADERS | grep /mavlink_msg_ | cut -d":" -f1 | sort -u | while read F
 do
 	MSG_ID="`grep "MAVLINK_MSG_ID_" "$F" | head -n1 | sed "s|^#define ||g" | cut -d" " -f1`"
 	NAME="`echo $MSG_ID | cut -d"_" -f4- | tr "A-Z" "a-z"`"
