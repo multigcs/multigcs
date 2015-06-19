@@ -654,6 +654,7 @@ uint8_t survey_save_xml (char *name, float x, float y, int8_t button, float data
 	sprintf(tmp_str, "mkdir -p %s/survey", get_datadirectory());
 	system(tmp_str);
 	sprintf(tmp_str, "%s/survey/%s", get_datadirectory(), name);
+	SDL_Log("write XML to %s\n", tmp_str);
 	fr = fopen(tmp_str, "wb");
 	if (fr != 0) {
 		fprintf(fr, "<survey>\n");
@@ -759,6 +760,7 @@ uint8_t survey_export_kml (char *name, float x, float y, int8_t button, float da
 	char filename[1024];
 	char ge_command[1024];
 	sprintf(filename, "%s/survey/%s.kml", get_datadirectory(), SurveySetup.name);
+	SDL_Log("write KML to %s\n", filename);
 	FILE *kmlout = fopen(filename, "w");
 	fprintf(kmlout, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
 	fprintf(kmlout, "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");

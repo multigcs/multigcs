@@ -8,9 +8,50 @@ uint8_t fms_null (char *name, float x, float y, int8_t button, float data, uint8
 	return 0;
 }
 
+uint8_t save_gpx (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	char filename[2048];
+	FILE *fd = NULL;
+	sprintf(filename, "mkdir -p %s/gpx", get_datadirectory());
+	system(filename);
+	sprintf(filename, "%s/gpx/%s", get_datadirectory(), "test.gpx");
+	SDL_Log("write GPX to %s\n", filename);
+	if ((fd = fopen(filename, "w")) > 0) {
+		fprintf(fd, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n");
+		fprintf(fd, "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"multigcs\" \n");
+		fprintf(fd, "    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \n");
+		fprintf(fd, "    xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd\"> \n");
+		fprintf(fd, " <metadata>\n");
+		fprintf(fd, "  <name>%s</name>\n", "test.gpx");
+		fprintf(fd, "  <desc>Waypoint-Export from MultiGCS</desc>\n");
+		fprintf(fd, " </metadata>\n");
+		fprintf(fd, " <rte>\n");
+		fprintf(fd, "  <name>Route</name>\n");
+		fprintf(fd, "  <desc>Waypoint-Route</desc>\n");
+		uint16_t n = 0;
+		for (n = 0; n < MAX_WAYPOINTS; n++) {
+			if (WayPoints[ModelActive][n].p_lat != 0.0) {
+				fprintf(fd, "  <rtept lat=\"%f\" lon=\"%f\">\n", WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long);
+				fprintf(fd, "   <name>%s</name>\n", WayPoints[ModelActive][n].command);
+				fprintf(fd, "   <ele>%f</ele>\n", WayPoints[ModelActive][n].p_alt);
+				fprintf(fd, "   <frametype>%i</frametype>\n", WayPoints[ModelActive][n].frametype);
+				fprintf(fd, "   <param1>%f</param1>\n", WayPoints[ModelActive][n].param1);
+				fprintf(fd, "   <param2>%f</param2>\n", WayPoints[ModelActive][n].param2);
+				fprintf(fd, "   <param3>%f</param3>\n", WayPoints[ModelActive][n].param3);
+				fprintf(fd, "   <param4>%f</param4>\n", WayPoints[ModelActive][n].param4);
+				fprintf(fd, "  </rtept>\n");
+			}
+		}
+		fprintf(fd, " </rte>\n");
+		fprintf(fd, "</gpx>\n");
+		fclose(fd);
+	}
+	return 0;
+}
+
 void wp_save_mission (char *filename) {
 	FILE *fd = NULL;
 	int cmd = 0;
+	SDL_Log("write Mission to %s\n", filename);
 	if ((fd = fopen(filename, "w")) > 0) {
 		fprintf(fd, "QGC WPL 110\n");
 		uint16_t n = 0;
@@ -400,5 +441,6 @@ void screen_fms (ESContext *esContext) {
 	draw_text_button(esContext, "fms_read_wp", VIEW_MODE_FMS, "READ_WP", FONT_GREEN_BG, -0.2, 0.9, 0.005, 0.06, 1, 0, read_wp, 0.0);
 	draw_text_button(esContext, "fms_write_wp", VIEW_MODE_FMS, "WRITE_WP", FONT_GREEN_BG, 0.2, 0.9, 0.005, 0.06, 1, 0, write_wp, 0.0);
 	draw_text_button(esContext, "fms_goto", VIEW_MODE_FMS, "GOTO", FONT_GREEN_BG, 0.7, 0.9, 0.005, 0.06, 1, 0, map_goto, (float)waypoint_active);
+	draw_text_button(esContext, "fms_save_gpx", VIEW_MODE_FMS, "SAVE_GPX", FONT_GREEN_BG, 0.95, 0.9, 0.002, 0.06, 1, 0, save_gpx, 0.0);
 }
 
