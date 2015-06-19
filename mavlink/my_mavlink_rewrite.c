@@ -1,5 +1,6 @@
 
 #include <all.h>
+#include <mavlink/GCS_MAVLink/include/mavlink/v1.0/autoquad/mavlink_msg_aq_esc_telemetry.h>
 #include <mavlink/GCS_MAVLink/include/mavlink/v1.0/autoquad/mavlink_msg_aq_telemetry_f.h>
 #include <mavlink/GCS_MAVLink/include/mavlink/v1.0/pixhawk/mavlink_msg_set_netid.h>
 
@@ -493,28 +494,6 @@ uint8_t mavlink_target_rewrite (mavlink_message_t* msg) {
 			break;
 		}
 #endif
-#ifdef MAVLINK_MSG_ID_SETPOINT_6DOF
-		case MAVLINK_MSG_ID_SETPOINT_6DOF: {
-			mavlink_setpoint_6dof_t packet;
-			mavlink_msg_setpoint_6dof_decode(msg, &packet);
-			modelid = packet.target_system - 1;
-			packet.target_system = ModelData[modelid].mavlink_org_sysid;
-			mavlink_msg_setpoint_6dof_encode(msg->sysid, msg->compid, msg, &packet);
-			return modelid;
-			break;
-		}
-#endif
-#ifdef MAVLINK_MSG_ID_SETPOINT_8DOF
-		case MAVLINK_MSG_ID_SETPOINT_8DOF: {
-			mavlink_setpoint_8dof_t packet;
-			mavlink_msg_setpoint_8dof_decode(msg, &packet);
-			modelid = packet.target_system - 1;
-			packet.target_system = ModelData[modelid].mavlink_org_sysid;
-			mavlink_msg_setpoint_8dof_encode(msg->sysid, msg->compid, msg, &packet);
-			return modelid;
-			break;
-		}
-#endif
 #ifdef MAVLINK_MSG_ID_SET_POSITION_TARGET_GLOBAL_INT
 		case MAVLINK_MSG_ID_SET_POSITION_TARGET_GLOBAL_INT: {
 			mavlink_set_position_target_global_int_t packet;
@@ -570,6 +549,28 @@ uint8_t mavlink_target_rewrite (mavlink_message_t* msg) {
 			break;
 		}
 #endif
+#ifdef MAVLINK_MSG_ID_SETPOINT_6DOF
+		case MAVLINK_MSG_ID_SETPOINT_6DOF: {
+			mavlink_setpoint_6dof_t packet;
+			mavlink_msg_setpoint_6dof_decode(msg, &packet);
+			modelid = packet.target_system - 1;
+			packet.target_system = ModelData[modelid].mavlink_org_sysid;
+			mavlink_msg_setpoint_6dof_encode(msg->sysid, msg->compid, msg, &packet);
+			return modelid;
+			break;
+		}
+#endif
+#ifdef MAVLINK_MSG_ID_SETPOINT_8DOF
+		case MAVLINK_MSG_ID_SETPOINT_8DOF: {
+			mavlink_setpoint_8dof_t packet;
+			mavlink_msg_setpoint_8dof_decode(msg, &packet);
+			modelid = packet.target_system - 1;
+			packet.target_system = ModelData[modelid].mavlink_org_sysid;
+			mavlink_msg_setpoint_8dof_encode(msg->sysid, msg->compid, msg, &packet);
+			return modelid;
+			break;
+		}
+#endif
 #ifdef MAVLINK_MSG_ID_V2_EXTENSION
 		case MAVLINK_MSG_ID_V2_EXTENSION: {
 			mavlink_v2_extension_t packet;
@@ -577,17 +578,6 @@ uint8_t mavlink_target_rewrite (mavlink_message_t* msg) {
 			modelid = packet.target_system - 1;
 			packet.target_system = ModelData[modelid].mavlink_org_sysid;
 			mavlink_msg_v2_extension_encode(msg->sysid, msg->compid, msg, &packet);
-			return modelid;
-			break;
-		}
-#endif
-#ifdef MAVLINK_MSG_ID_FLEXIFUNCTION_BUFFER_FUNCTION_ACK
-		case MAVLINK_MSG_ID_FLEXIFUNCTION_BUFFER_FUNCTION_ACK: {
-			mavlink_flexifunction_buffer_function_ack_t packet;
-			mavlink_msg_flexifunction_buffer_function_ack_decode(msg, &packet);
-			modelid = packet.target_system - 1;
-			packet.target_system = ModelData[modelid].mavlink_org_sysid;
-			mavlink_msg_flexifunction_buffer_function_ack_encode(msg->sysid, msg->compid, msg, &packet);
 			return modelid;
 			break;
 		}
@@ -603,6 +593,17 @@ uint8_t mavlink_target_rewrite (mavlink_message_t* msg) {
 			break;
 		}
 #endif
+#ifdef MAVLINK_MSG_ID_FLEXIFUNCTION_BUFFER_FUNCTION_ACK
+		case MAVLINK_MSG_ID_FLEXIFUNCTION_BUFFER_FUNCTION_ACK: {
+			mavlink_flexifunction_buffer_function_ack_t packet;
+			mavlink_msg_flexifunction_buffer_function_ack_decode(msg, &packet);
+			modelid = packet.target_system - 1;
+			packet.target_system = ModelData[modelid].mavlink_org_sysid;
+			mavlink_msg_flexifunction_buffer_function_ack_encode(msg->sysid, msg->compid, msg, &packet);
+			return modelid;
+			break;
+		}
+#endif
 #ifdef MAVLINK_MSG_ID_FLEXIFUNCTION_COMMAND
 		case MAVLINK_MSG_ID_FLEXIFUNCTION_COMMAND: {
 			mavlink_flexifunction_command_t packet;
@@ -614,17 +615,6 @@ uint8_t mavlink_target_rewrite (mavlink_message_t* msg) {
 			break;
 		}
 #endif
-#ifdef MAVLINK_MSG_ID_FLEXIFUNCTION_DIRECTORY_ACK
-		case MAVLINK_MSG_ID_FLEXIFUNCTION_DIRECTORY_ACK: {
-			mavlink_flexifunction_directory_ack_t packet;
-			mavlink_msg_flexifunction_directory_ack_decode(msg, &packet);
-			modelid = packet.target_system - 1;
-			packet.target_system = ModelData[modelid].mavlink_org_sysid;
-			mavlink_msg_flexifunction_directory_ack_encode(msg->sysid, msg->compid, msg, &packet);
-			return modelid;
-			break;
-		}
-#endif
 #ifdef MAVLINK_MSG_ID_FLEXIFUNCTION_DIRECTORY
 		case MAVLINK_MSG_ID_FLEXIFUNCTION_DIRECTORY: {
 			mavlink_flexifunction_directory_t packet;
@@ -632,6 +622,17 @@ uint8_t mavlink_target_rewrite (mavlink_message_t* msg) {
 			modelid = packet.target_system - 1;
 			packet.target_system = ModelData[modelid].mavlink_org_sysid;
 			mavlink_msg_flexifunction_directory_encode(msg->sysid, msg->compid, msg, &packet);
+			return modelid;
+			break;
+		}
+#endif
+#ifdef MAVLINK_MSG_ID_FLEXIFUNCTION_DIRECTORY_ACK
+		case MAVLINK_MSG_ID_FLEXIFUNCTION_DIRECTORY_ACK: {
+			mavlink_flexifunction_directory_ack_t packet;
+			mavlink_msg_flexifunction_directory_ack_decode(msg, &packet);
+			modelid = packet.target_system - 1;
+			packet.target_system = ModelData[modelid].mavlink_org_sysid;
+			mavlink_msg_flexifunction_directory_ack_encode(msg->sysid, msg->compid, msg, &packet);
 			return modelid;
 			break;
 		}
@@ -679,17 +680,6 @@ uint8_t mavlink_target_rewrite (mavlink_message_t* msg) {
 
 uint8_t mavlink_source_rewrite (uint8_t modelid, mavlink_message_t* msg) {
 	switch (msg->msgid) {
-#ifdef MAVLINK_MSG_ID_AHRS2
-		case MAVLINK_MSG_ID_AHRS2: {
-			mavlink_ahrs2_t packet;
-			mavlink_msg_ahrs2_decode(msg, &packet);
-			ModelData[modelid].mavlink_org_sysid = msg->sysid;
-			msg->sysid = modelid + 1;
-			mavlink_msg_ahrs2_encode(msg->sysid, msg->compid, msg, &packet);
-			return ModelData[modelid].mavlink_org_sysid;
-			break;
-		}
-#endif
 #ifdef MAVLINK_MSG_ID_AHRS
 		case MAVLINK_MSG_ID_AHRS: {
 			mavlink_ahrs_t packet;
@@ -697,6 +687,17 @@ uint8_t mavlink_source_rewrite (uint8_t modelid, mavlink_message_t* msg) {
 			ModelData[modelid].mavlink_org_sysid = msg->sysid;
 			msg->sysid = modelid + 1;
 			mavlink_msg_ahrs_encode(msg->sysid, msg->compid, msg, &packet);
+			return ModelData[modelid].mavlink_org_sysid;
+			break;
+		}
+#endif
+#ifdef MAVLINK_MSG_ID_AHRS2
+		case MAVLINK_MSG_ID_AHRS2: {
+			mavlink_ahrs2_t packet;
+			mavlink_msg_ahrs2_decode(msg, &packet);
+			ModelData[modelid].mavlink_org_sysid = msg->sysid;
+			msg->sysid = modelid + 1;
+			mavlink_msg_ahrs2_encode(msg->sysid, msg->compid, msg, &packet);
 			return ModelData[modelid].mavlink_org_sysid;
 			break;
 		}
@@ -1031,6 +1032,17 @@ uint8_t mavlink_source_rewrite (uint8_t modelid, mavlink_message_t* msg) {
 			break;
 		}
 #endif
+#ifdef MAVLINK_MSG_ID_AQ_ESC_TELEMETRY
+		case MAVLINK_MSG_ID_AQ_ESC_TELEMETRY: {
+			mavlink_aq_esc_telemetry_t packet;
+			mavlink_msg_aq_esc_telemetry_decode(msg, &packet);
+			ModelData[modelid].mavlink_org_sysid = msg->sysid;
+			msg->sysid = modelid + 1;
+			mavlink_msg_aq_esc_telemetry_encode(msg->sysid, msg->compid, msg, &packet);
+			return ModelData[modelid].mavlink_org_sysid;
+			break;
+		}
+#endif
 #ifdef MAVLINK_MSG_ID_ATTITUDE
 		case MAVLINK_MSG_ID_ATTITUDE: {
 			mavlink_attitude_t packet;
@@ -1042,17 +1054,6 @@ uint8_t mavlink_source_rewrite (uint8_t modelid, mavlink_message_t* msg) {
 			break;
 		}
 #endif
-#ifdef MAVLINK_MSG_ID_ATTITUDE_QUATERNION_COV
-		case MAVLINK_MSG_ID_ATTITUDE_QUATERNION_COV: {
-			mavlink_attitude_quaternion_cov_t packet;
-			mavlink_msg_attitude_quaternion_cov_decode(msg, &packet);
-			ModelData[modelid].mavlink_org_sysid = msg->sysid;
-			msg->sysid = modelid + 1;
-			mavlink_msg_attitude_quaternion_cov_encode(msg->sysid, msg->compid, msg, &packet);
-			return ModelData[modelid].mavlink_org_sysid;
-			break;
-		}
-#endif
 #ifdef MAVLINK_MSG_ID_ATTITUDE_QUATERNION
 		case MAVLINK_MSG_ID_ATTITUDE_QUATERNION: {
 			mavlink_attitude_quaternion_t packet;
@@ -1060,6 +1061,17 @@ uint8_t mavlink_source_rewrite (uint8_t modelid, mavlink_message_t* msg) {
 			ModelData[modelid].mavlink_org_sysid = msg->sysid;
 			msg->sysid = modelid + 1;
 			mavlink_msg_attitude_quaternion_encode(msg->sysid, msg->compid, msg, &packet);
+			return ModelData[modelid].mavlink_org_sysid;
+			break;
+		}
+#endif
+#ifdef MAVLINK_MSG_ID_ATTITUDE_QUATERNION_COV
+		case MAVLINK_MSG_ID_ATTITUDE_QUATERNION_COV: {
+			mavlink_attitude_quaternion_cov_t packet;
+			mavlink_msg_attitude_quaternion_cov_decode(msg, &packet);
+			ModelData[modelid].mavlink_org_sysid = msg->sysid;
+			msg->sysid = modelid + 1;
+			mavlink_msg_attitude_quaternion_cov_encode(msg->sysid, msg->compid, msg, &packet);
 			return ModelData[modelid].mavlink_org_sysid;
 			break;
 		}
@@ -1108,17 +1120,6 @@ uint8_t mavlink_source_rewrite (uint8_t modelid, mavlink_message_t* msg) {
 			break;
 		}
 #endif
-#ifdef MAVLINK_MSG_ID_CHANGE_OPERATOR_CONTROL_ACK
-		case MAVLINK_MSG_ID_CHANGE_OPERATOR_CONTROL_ACK: {
-			mavlink_change_operator_control_ack_t packet;
-			mavlink_msg_change_operator_control_ack_decode(msg, &packet);
-			ModelData[modelid].mavlink_org_sysid = msg->sysid;
-			msg->sysid = modelid + 1;
-			mavlink_msg_change_operator_control_ack_encode(msg->sysid, msg->compid, msg, &packet);
-			return ModelData[modelid].mavlink_org_sysid;
-			break;
-		}
-#endif
 #ifdef MAVLINK_MSG_ID_CHANGE_OPERATOR_CONTROL
 		case MAVLINK_MSG_ID_CHANGE_OPERATOR_CONTROL: {
 			mavlink_change_operator_control_t packet;
@@ -1126,6 +1127,17 @@ uint8_t mavlink_source_rewrite (uint8_t modelid, mavlink_message_t* msg) {
 			ModelData[modelid].mavlink_org_sysid = msg->sysid;
 			msg->sysid = modelid + 1;
 			mavlink_msg_change_operator_control_encode(msg->sysid, msg->compid, msg, &packet);
+			return ModelData[modelid].mavlink_org_sysid;
+			break;
+		}
+#endif
+#ifdef MAVLINK_MSG_ID_CHANGE_OPERATOR_CONTROL_ACK
+		case MAVLINK_MSG_ID_CHANGE_OPERATOR_CONTROL_ACK: {
+			mavlink_change_operator_control_ack_t packet;
+			mavlink_msg_change_operator_control_ack_decode(msg, &packet);
+			ModelData[modelid].mavlink_org_sysid = msg->sysid;
+			msg->sysid = modelid + 1;
+			mavlink_msg_change_operator_control_ack_encode(msg->sysid, msg->compid, msg, &packet);
 			return ModelData[modelid].mavlink_org_sysid;
 			break;
 		}
@@ -1273,17 +1285,6 @@ uint8_t mavlink_source_rewrite (uint8_t modelid, mavlink_message_t* msg) {
 			break;
 		}
 #endif
-#ifdef MAVLINK_MSG_ID_GLOBAL_POSITION_INT_COV
-		case MAVLINK_MSG_ID_GLOBAL_POSITION_INT_COV: {
-			mavlink_global_position_int_cov_t packet;
-			mavlink_msg_global_position_int_cov_decode(msg, &packet);
-			ModelData[modelid].mavlink_org_sysid = msg->sysid;
-			msg->sysid = modelid + 1;
-			mavlink_msg_global_position_int_cov_encode(msg->sysid, msg->compid, msg, &packet);
-			return ModelData[modelid].mavlink_org_sysid;
-			break;
-		}
-#endif
 #ifdef MAVLINK_MSG_ID_GLOBAL_POSITION_INT
 		case MAVLINK_MSG_ID_GLOBAL_POSITION_INT: {
 			mavlink_global_position_int_t packet;
@@ -1291,6 +1292,17 @@ uint8_t mavlink_source_rewrite (uint8_t modelid, mavlink_message_t* msg) {
 			ModelData[modelid].mavlink_org_sysid = msg->sysid;
 			msg->sysid = modelid + 1;
 			mavlink_msg_global_position_int_encode(msg->sysid, msg->compid, msg, &packet);
+			return ModelData[modelid].mavlink_org_sysid;
+			break;
+		}
+#endif
+#ifdef MAVLINK_MSG_ID_GLOBAL_POSITION_INT_COV
+		case MAVLINK_MSG_ID_GLOBAL_POSITION_INT_COV: {
+			mavlink_global_position_int_cov_t packet;
+			mavlink_msg_global_position_int_cov_decode(msg, &packet);
+			ModelData[modelid].mavlink_org_sysid = msg->sysid;
+			msg->sysid = modelid + 1;
+			mavlink_msg_global_position_int_cov_encode(msg->sysid, msg->compid, msg, &packet);
 			return ModelData[modelid].mavlink_org_sysid;
 			break;
 		}
@@ -1493,17 +1505,6 @@ uint8_t mavlink_source_rewrite (uint8_t modelid, mavlink_message_t* msg) {
 			break;
 		}
 #endif
-#ifdef MAVLINK_MSG_ID_LOCAL_POSITION_NED_COV
-		case MAVLINK_MSG_ID_LOCAL_POSITION_NED_COV: {
-			mavlink_local_position_ned_cov_t packet;
-			mavlink_msg_local_position_ned_cov_decode(msg, &packet);
-			ModelData[modelid].mavlink_org_sysid = msg->sysid;
-			msg->sysid = modelid + 1;
-			mavlink_msg_local_position_ned_cov_encode(msg->sysid, msg->compid, msg, &packet);
-			return ModelData[modelid].mavlink_org_sysid;
-			break;
-		}
-#endif
 #ifdef MAVLINK_MSG_ID_LOCAL_POSITION_NED
 		case MAVLINK_MSG_ID_LOCAL_POSITION_NED: {
 			mavlink_local_position_ned_t packet;
@@ -1511,6 +1512,17 @@ uint8_t mavlink_source_rewrite (uint8_t modelid, mavlink_message_t* msg) {
 			ModelData[modelid].mavlink_org_sysid = msg->sysid;
 			msg->sysid = modelid + 1;
 			mavlink_msg_local_position_ned_encode(msg->sysid, msg->compid, msg, &packet);
+			return ModelData[modelid].mavlink_org_sysid;
+			break;
+		}
+#endif
+#ifdef MAVLINK_MSG_ID_LOCAL_POSITION_NED_COV
+		case MAVLINK_MSG_ID_LOCAL_POSITION_NED_COV: {
+			mavlink_local_position_ned_cov_t packet;
+			mavlink_msg_local_position_ned_cov_decode(msg, &packet);
+			ModelData[modelid].mavlink_org_sysid = msg->sysid;
+			msg->sysid = modelid + 1;
+			mavlink_msg_local_position_ned_cov_encode(msg->sysid, msg->compid, msg, &packet);
 			return ModelData[modelid].mavlink_org_sysid;
 			break;
 		}
@@ -2065,17 +2077,6 @@ uint8_t mavlink_source_rewrite (uint8_t modelid, mavlink_message_t* msg) {
 			break;
 		}
 #endif
-#ifdef MAVLINK_MSG_ID_SCALED_IMU2
-		case MAVLINK_MSG_ID_SCALED_IMU2: {
-			mavlink_scaled_imu2_t packet;
-			mavlink_msg_scaled_imu2_decode(msg, &packet);
-			ModelData[modelid].mavlink_org_sysid = msg->sysid;
-			msg->sysid = modelid + 1;
-			mavlink_msg_scaled_imu2_encode(msg->sysid, msg->compid, msg, &packet);
-			return ModelData[modelid].mavlink_org_sysid;
-			break;
-		}
-#endif
 #ifdef MAVLINK_MSG_ID_SCALED_IMU
 		case MAVLINK_MSG_ID_SCALED_IMU: {
 			mavlink_scaled_imu_t packet;
@@ -2083,6 +2084,17 @@ uint8_t mavlink_source_rewrite (uint8_t modelid, mavlink_message_t* msg) {
 			ModelData[modelid].mavlink_org_sysid = msg->sysid;
 			msg->sysid = modelid + 1;
 			mavlink_msg_scaled_imu_encode(msg->sysid, msg->compid, msg, &packet);
+			return ModelData[modelid].mavlink_org_sysid;
+			break;
+		}
+#endif
+#ifdef MAVLINK_MSG_ID_SCALED_IMU2
+		case MAVLINK_MSG_ID_SCALED_IMU2: {
+			mavlink_scaled_imu2_t packet;
+			mavlink_msg_scaled_imu2_decode(msg, &packet);
+			ModelData[modelid].mavlink_org_sysid = msg->sysid;
+			msg->sysid = modelid + 1;
+			mavlink_msg_scaled_imu2_encode(msg->sysid, msg->compid, msg, &packet);
 			return ModelData[modelid].mavlink_org_sysid;
 			break;
 		}
@@ -2175,28 +2187,6 @@ uint8_t mavlink_source_rewrite (uint8_t modelid, mavlink_message_t* msg) {
 			break;
 		}
 #endif
-#ifdef MAVLINK_MSG_ID_SETPOINT_6DOF
-		case MAVLINK_MSG_ID_SETPOINT_6DOF: {
-			mavlink_setpoint_6dof_t packet;
-			mavlink_msg_setpoint_6dof_decode(msg, &packet);
-			ModelData[modelid].mavlink_org_sysid = msg->sysid;
-			msg->sysid = modelid + 1;
-			mavlink_msg_setpoint_6dof_encode(msg->sysid, msg->compid, msg, &packet);
-			return ModelData[modelid].mavlink_org_sysid;
-			break;
-		}
-#endif
-#ifdef MAVLINK_MSG_ID_SETPOINT_8DOF
-		case MAVLINK_MSG_ID_SETPOINT_8DOF: {
-			mavlink_setpoint_8dof_t packet;
-			mavlink_msg_setpoint_8dof_decode(msg, &packet);
-			ModelData[modelid].mavlink_org_sysid = msg->sysid;
-			msg->sysid = modelid + 1;
-			mavlink_msg_setpoint_8dof_encode(msg->sysid, msg->compid, msg, &packet);
-			return ModelData[modelid].mavlink_org_sysid;
-			break;
-		}
-#endif
 #ifdef MAVLINK_MSG_ID_SET_POSITION_TARGET_GLOBAL_INT
 		case MAVLINK_MSG_ID_SET_POSITION_TARGET_GLOBAL_INT: {
 			mavlink_set_position_target_global_int_t packet;
@@ -2270,6 +2260,28 @@ uint8_t mavlink_source_rewrite (uint8_t modelid, mavlink_message_t* msg) {
 			ModelData[modelid].mavlink_org_sysid = msg->sysid;
 			msg->sysid = modelid + 1;
 			mavlink_msg_set_roll_pitch_yaw_thrust_encode(msg->sysid, msg->compid, msg, &packet);
+			return ModelData[modelid].mavlink_org_sysid;
+			break;
+		}
+#endif
+#ifdef MAVLINK_MSG_ID_SETPOINT_6DOF
+		case MAVLINK_MSG_ID_SETPOINT_6DOF: {
+			mavlink_setpoint_6dof_t packet;
+			mavlink_msg_setpoint_6dof_decode(msg, &packet);
+			ModelData[modelid].mavlink_org_sysid = msg->sysid;
+			msg->sysid = modelid + 1;
+			mavlink_msg_setpoint_6dof_encode(msg->sysid, msg->compid, msg, &packet);
+			return ModelData[modelid].mavlink_org_sysid;
+			break;
+		}
+#endif
+#ifdef MAVLINK_MSG_ID_SETPOINT_8DOF
+		case MAVLINK_MSG_ID_SETPOINT_8DOF: {
+			mavlink_setpoint_8dof_t packet;
+			mavlink_msg_setpoint_8dof_decode(msg, &packet);
+			ModelData[modelid].mavlink_org_sysid = msg->sysid;
+			msg->sysid = modelid + 1;
+			mavlink_msg_setpoint_8dof_encode(msg->sysid, msg->compid, msg, &packet);
 			return ModelData[modelid].mavlink_org_sysid;
 			break;
 		}

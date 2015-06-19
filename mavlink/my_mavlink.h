@@ -1,5 +1,6 @@
 
 #include "GCS_MAVLink/include/mavlink/v1.0/ardupilotmega/mavlink.h"
+#include "GCS_MAVLink/include/mavlink/v1.0/autoquad/mavlink.h"
 
 #define MAVLINK_GSC_SYSID 127
 
@@ -23,6 +24,7 @@
 #define MAV_DATA_STREAM_EXTRA2_ACTIVE 1 // HUD-
 #define MAV_DATA_STREAM_EXTRA3_ACTIVE 1
 #define MAV_DATA_STREAM_RC_CHANNELS_ACTIVE 1
+#define MAV_DATA_STREAM_PROPULSION_ACTIVE 1
 
 #define MAV_DATA_STREAM_POSITION_RATE 5 // in Hz
 #define MAV_DATA_STREAM_RAW_SENSORS_RATE 5
@@ -32,6 +34,7 @@
 #define MAV_DATA_STREAM_EXTRA2_RATE 2
 #define MAV_DATA_STREAM_EXTRA3_RATE 2
 #define MAV_DATA_STREAM_RC_CHANNELS_RATE 1
+#define MAV_DATA_STREAM_PROPULSION_RATE 5
 
 enum MAV_VAR {
 	MAV_VAR_FLOAT=0, /* 32 bit float | */
@@ -97,6 +100,8 @@ void mavlink_send_waypoints (uint8_t modelid);
 void mavlink_read_loglist (uint8_t modelid);
 void mavlink_read_logfile (uint8_t modelid, uint16_t id, uint32_t offset, uint32_t len);
 
+void mavlink_set_gimbal_pos (uint8_t modelid, float pitch_deg, float roll_deg, float yaw_deg);
+void mavlink_send_channels (uint8_t modelid, int16_t *data);
 void mavlink_param_xml_meta_load (uint8_t modelid);
 void mavlink_stop_feeds (uint8_t modelid);
 void mavlink_send_value (uint8_t modelid, char *name, float val, int8_t type);
@@ -104,9 +109,12 @@ void mavlink_set_value (uint8_t modelid, char *name, float val, int8_t type, int
 void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg);
 void mavlink_save_to_flash (uint8_t modelid);
 void mavlink_load_from_flash (uint8_t modelid);
+void mavlink_save_to_eeprom (uint8_t modelid);
+void mavlink_load_from_eeprom (uint8_t modelid);
 void mavlink_send_waypoints (uint8_t modelid);
 void mavlink_param_get_id (uint8_t modelid, uint16_t id);
 void mavlink_start_feeds (uint8_t modelid);
+void mavlink_reload (uint8_t modelid);
 int mavlink_udp (void *data);
 
 void mavlink_set_netid (uint8_t modelid, uint16_t netid);

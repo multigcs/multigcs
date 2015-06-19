@@ -2,20 +2,63 @@
 #include <all.h>
 #include <mavlink/GCS_MAVLink/include/mavlink/v1.0/autoquad/mavlink_msg_aq_telemetry_f.h>
 #include <mavlink/GCS_MAVLink/include/mavlink/v1.0/pixhawk/mavlink_msg_set_netid.h>
+#include <mavlink/GCS_MAVLink/include/mavlink/v1.0/autoquad/mavlink_msg_aq_esc_telemetry.h>
 
 #define MAV_CMD_AQ_TELEMETRY 2
 enum mavlinkCustomDataSets {
-    AQMAV_DATASET_LEGACY1 = 0,	// legacy sets can eventually be phased out
-    AQMAV_DATASET_LEGACY2,
-    AQMAV_DATASET_LEGACY3,
-    AQMAV_DATASET_ALL,		// use this to toggle all datasets at once
-    AQMAV_DATASET_GPS_XTRA,
-    AQMAV_DATASET_UKF_XTRA,
-    AQMAV_DATASET_SUPERVISOR,
-    AQMAV_DATASET_STACKSFREE,
-    AQMAV_DATASET_GIMBAL,
-    AQMAV_DATASET_ENUM_END
+	AQMAV_DATASET_LEGACY1 = 0,	// legacy sets can eventually be phased out
+	AQMAV_DATASET_LEGACY2,
+	AQMAV_DATASET_LEGACY3,
+	AQMAV_DATASET_ALL,		// use this to toggle all datasets at once
+	AQMAV_DATASET_GPS_XTRA,
+	AQMAV_DATASET_UKF_XTRA,
+	AQMAV_DATASET_SUPERVISOR,
+	AQMAV_DATASET_STACKSFREE,
+	AQMAV_DATASET_GIMBAL,
+	AQMAV_DATASET_ENUM_END
 };
+
+enum escDisarmReasons {
+    REASON_STARTUP = 0,
+    REASON_BAD_DETECTS,
+    REASON_CROSSING_TIMEOUT,
+    REASON_PWM_TIMEOUT,
+    REASON_LOW_VOLTAGE,
+    REASON_CLI_USER,
+    REASON_BINARY_USER,
+    REASON_CAN_USER,
+    REASON_CAN_TIMEOUT
+};
+
+const char *escErrors[] = {
+    "STARTUP",
+    "BAD_DETECTS",
+    "CROSSING_TIMEOUT",
+    "PWM_TIMEOUT",
+    "LOW_VOLTAGE",
+    "CLI_USER",
+    "BINARY_USER",
+    "CAN_USER",
+    "CAN_TIMEOUT"
+};
+
+const char *escStates[] = {
+    "DISARMED",
+    "STOPPED",
+    "PRE-START",
+    "STARTING",
+    "RUNNING"
+};
+
+typedef struct {
+    unsigned int state :    3;
+    unsigned int vin :	    12;	// x 100
+    unsigned int amps :	    14;	// x 100
+    unsigned int rpm :	    15;
+    unsigned int duty :	    8;	// x (255/100)
+    unsigned int temp :     9;  // (Deg C + 32) * 4
+    unsigned int errCode :  3;
+} __attribute__((packed)) esc32CanStatus_t;
 
 
 #define TCP_BUFLEN 2000
@@ -121,6 +164,27 @@ uint8_t mavlink_init (uint8_t modelid, char *port, uint32_t baud) {
 	return 0;
 }
 
+void mavlink_reload (uint8_t modelid) {
+	int n = 0;
+	mavlink_maxparam[modelid] = 0;
+	mavlink_foundparam[modelid] = 0;
+	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
+		MavLinkVars[modelid][n].name[0] = 0;
+		MavLinkVars[modelid][n].group[0] = 0;
+		MavLinkVars[modelid][n].display[0] = 0;
+		MavLinkVars[modelid][n].desc[0] = 0;
+		MavLinkVars[modelid][n].values[0] = 0;
+		MavLinkVars[modelid][n].bits[0] = 0;
+		MavLinkVars[modelid][n].value = 0.0;
+		MavLinkVars[modelid][n].onload = 0.0;
+		MavLinkVars[modelid][n].type = MAV_VAR_FLOAT;
+		MavLinkVars[modelid][n].id = -1;
+	}
+	mavlink_message_t msg2;
+	mavlink_msg_heartbeat_pack(MAVLINK_GSC_SYSID, 0, &msg2, MAV_TYPE_GCS, MAV_AUTOPILOT_INVALID, 0, 0, 0);
+	mavlink_send_message(modelid, &msg2);
+}
+
 void mavlink_exit_udp (void) {
 	udp_running = 0;
 	if (thread_udp != NULL) {
@@ -153,6 +217,14 @@ void mavlink_stop_feeds (uint8_t modelid) {
 	mavlink_send_message(modelid, &msg1);
 }
 
+void mavlink_set_gimbal_pos (uint8_t modelid, float pitch_deg, float roll_deg, float yaw_deg) {
+//	SDL_Log("mavlink(%i): mavlink_set_gimbal_pos %f %f %f\n", modelid, pitch_deg, roll_deg, yaw_deg);
+	mavlink_message_t msg;
+	float mount_mode = MAV_MOUNT_MODE_NEUTRAL;
+	mavlink_msg_command_long_pack(MAVLINK_GSC_SYSID, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_CMD_DO_MOUNT_CONTROL, 0, pitch_deg, roll_deg, yaw_deg, 0, 0, 0, mount_mode);
+	mavlink_send_message(modelid, &msg);
+}
+
 void mavlink_set_netid (uint8_t modelid, uint16_t netid) {
 	SDL_Log("mavlink(%i): set netid %i\n", modelid, netid);
 	mavlink_message_t msg1;
@@ -174,6 +246,14 @@ void mavlink_send_value (uint8_t modelid, char *name, float val, int8_t type) {
 		mavlink_send_message(modelid, &msg);
 		ModelData[modelid].mavlink_update = (int)time(0);
 	}
+}
+
+void mavlink_send_channels (uint8_t modelid, int16_t *data) {
+	mavlink_message_t msg;
+	mavlink_msg_rc_channels_override_pack(MAVLINK_GSC_SYSID, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, 
+		data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]
+	);
+	mavlink_send_message(modelid, &msg);
 }
 
 void mavlink_set_value (uint8_t modelid, char *name, float value, int8_t type, int16_t id) {
@@ -327,6 +407,7 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 			}
 		}
 	}
+
 	switch (msg->msgid) {
 		case MAVLINK_MSG_ID_HEARTBEAT: {
 			mavlink_heartbeat_t packet;
@@ -385,8 +466,11 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 					strcpy(ModelData[modelid].sysstr, "Aerob");
 				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_ASLUAV) {
 					strcpy(ModelData[modelid].sysstr, "ASLUAV autopilot");
+				} else if (ModelData[modelid].pilottype == 83) {
+					strcpy(ModelData[modelid].sysstr, "GIMBAL");
 				} else {
 					sprintf(ModelData[modelid].sysstr, "UNKNOWN_FC(%i)", ModelData[modelid].pilottype);
+printf("%s ##\n", ModelData[modelid].sysstr);
 				}
 			break;
 		}
@@ -499,7 +583,7 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 		case MAVLINK_MSG_ID_RC_CHANNELS_RAW: {
 			mavlink_rc_channels_raw_t packet;
 			mavlink_msg_rc_channels_raw_decode(msg, &packet);
-//			SDL_Log("Radio2: %i,%i,%i\n", packet.chan1_raw, packet.chan2_raw, packet.chan3_raw);
+//			SDL_Log("Radio2 (%i): %i,%i,%i\n", packet.port, packet.chan1_raw, packet.chan2_raw, packet.chan3_raw);
 			int cn = packet.port * 8;
 			if (ModelData[modelid].chancount < packet.port * 8 + 8) {
 				ModelData[modelid].chancount = packet.port * 8 + 8;
@@ -656,8 +740,7 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 				type = MAV_CMD_DO_REPEAT_SERVO;
 			} else if (strcmp(WayPoints[modelid][id2 + 1].command, "SET_ROI") == 0) {
 				SDL_Log("mavlink(%i): Type: MAV_CMD_NAV_ROI\n", modelid);
-				type = MAV_CMD_NAV_ROI;
-				type = 201;
+				type = MAV_CMD_DO_SET_ROI;
 			} else {
 				SDL_Log("mavlink(%i): Type: UNKNOWN\n", modelid);
 				type = MAV_CMD_NAV_WAYPOINT;
@@ -753,11 +836,7 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 					strcpy(WayPoints[modelid][1 + packet.seq].command, "SERVO_REP");
 					break;
 				}
-				case MAV_CMD_NAV_ROI: {
-					strcpy(WayPoints[modelid][1 + packet.seq].command, "SET_ROI");
-					break;
-				}
-				case 201: {
+				case MAV_CMD_DO_SET_ROI: {
 					strcpy(WayPoints[modelid][1 + packet.seq].command, "SET_ROI");
 					break;
 				}
@@ -818,6 +897,25 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 			mavlink_msg_vfr_hud_decode(msg, &packet);
 			if (GPS_found[modelid] == 0) {
 				ModelData[modelid].p_alt = packet.alt;
+			}
+			break;
+		}
+		case MAVLINK_MSG_ID_AQ_ESC_TELEMETRY: {
+			mavlink_aq_esc_telemetry_t packet;
+			mavlink_msg_aq_esc_telemetry_decode(msg, &packet);
+			uint16_t n1 = 0;
+			esc32CanStatus_t canStatus[4];
+			ModelData[modelid].num_motors = packet.num_motors;
+			for (n1 = 0; n1 < 4; n1++) {
+				memcpy(&canStatus[n1], &packet.data0[n1], sizeof(uint32_t));
+				memcpy((uint32_t *)&canStatus[n1] + 1, &packet.data1[n1], sizeof(uint32_t));
+				ModelData[modelid].escstat[n1 + ((packet.seq - 1) * packet.num_in_seq)].id   = packet.escid[n1];
+				ModelData[modelid].escstat[n1 + ((packet.seq - 1) * packet.num_in_seq)].stat = canStatus[n1].state;
+				ModelData[modelid].escstat[n1 + ((packet.seq - 1) * packet.num_in_seq)].vin  = (float)canStatus[n1].vin / 100.0;
+				ModelData[modelid].escstat[n1 + ((packet.seq - 1) * packet.num_in_seq)].amps = (float)canStatus[n1].amps / 100.0;
+				ModelData[modelid].escstat[n1 + ((packet.seq - 1) * packet.num_in_seq)].rpm  = canStatus[n1].rpm;
+				ModelData[modelid].escstat[n1 + ((packet.seq - 1) * packet.num_in_seq)].err  = canStatus[n1].errCode;
+				ModelData[modelid].escstat[n1 + ((packet.seq - 1) * packet.num_in_seq)].age  = packet.status_age[n1];
 			}
 			break;
 		}
@@ -913,12 +1011,12 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 //			SDL_Log("############### powerstat\n");
 			break;
 		}
-		case MAVLINK_MSG_ID_MEMINFO: {
-			mavlink_meminfo_t packet;
-			mavlink_msg_meminfo_decode(msg, &packet);
+//		case MAVLINK_MSG_ID_MEMINFO: {
+//			mavlink_meminfo_t packet;
+//			mavlink_msg_meminfo_decode(msg, &packet);
 //			SDL_Log("############### meminfo\n");
-			break;
-		}
+//			break;
+//		}
 		case MAVLINK_MSG_ID_AHRS2: {
 			mavlink_ahrs2_t packet;
 			mavlink_msg_ahrs2_decode(msg, &packet);
@@ -1149,18 +1247,28 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg) {
 			mavlink_command_ack_t packet;
 			mavlink_msg_command_ack_decode(msg, &packet);
 			SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK command %i ##\n", modelid, packet.command); //UINT16_T
-			if (packet.result == MAV_RESULT_ACCEPTED) {
-				SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: ACCEPTED ##\n", modelid, packet.result); //UINT8_T
-			} else if (packet.result == MAV_RESULT_TEMPORARILY_REJECTED) {
-				SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: TEMPORARILY_REJECTED ##\n", modelid, packet.result); //UINT8_T
-			} else if (packet.result == MAV_RESULT_DENIED) {
-				SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: DENIED ##\n", modelid, packet.result); //UINT8_T
-			} else if (packet.result == MAV_RESULT_UNSUPPORTED) {
-				SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: UNSUPPORTED ##\n", modelid, packet.result); //UINT8_T
-			} else if (packet.result == MAV_RESULT_FAILED) {
-				SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: FAILED ##\n", modelid, packet.result); //UINT8_T
+			if (ModelData[modelid].pilottype == MAV_AUTOPILOT_AUTOQUAD) {
+				if (packet.result == MAV_CMD_ACK_OK) {
+					SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: OK ##\n", modelid, packet.result); //UINT8_T
+					sys_message("COMMAND OK");
+				} else {
+					SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: FAILED ##\n", modelid, packet.result); //UINT8_T
+					sys_message("COMMAND FALIED");
+				}
 			} else {
-				SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: UNKNOWN ##\n", modelid, packet.result); //UINT8_T
+				if (packet.result == MAV_RESULT_ACCEPTED) {
+					SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: ACCEPTED ##\n", modelid, packet.result); //UINT8_T
+				} else if (packet.result == MAV_RESULT_TEMPORARILY_REJECTED) {
+					SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: TEMPORARILY_REJECTED ##\n", modelid, packet.result); //UINT8_T
+				} else if (packet.result == MAV_RESULT_DENIED) {
+					SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: DENIED ##\n", modelid, packet.result); //UINT8_T
+				} else if (packet.result == MAV_RESULT_UNSUPPORTED) {
+					SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: UNSUPPORTED ##\n", modelid, packet.result); //UINT8_T
+				} else if (packet.result == MAV_RESULT_FAILED) {
+					SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: FAILED ##\n", modelid, packet.result); //UINT8_T
+				} else {
+					SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: UNKNOWN ##\n", modelid, packet.result); //UINT8_T
+				}
 			}
 			break;
 		}
@@ -1241,6 +1349,20 @@ void mavlink_load_from_flash (uint8_t modelid) {
 	SDL_Log("mavlink(%i): load values from flash\n", modelid);
 	mavlink_message_t msg;
 	mavlink_msg_command_long_pack(MAVLINK_GSC_SYSID, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_CMD_PREFLIGHT_STORAGE, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	mavlink_send_message(modelid, &msg);
+}
+
+void mavlink_save_to_eeprom (uint8_t modelid) {
+	SDL_Log("mavlink(%i): save values to eeprom\n", modelid);
+	mavlink_message_t msg;
+	mavlink_msg_command_long_pack(MAVLINK_GSC_SYSID, 0, &msg, ModelData[modelid].sysid, 200, MAV_CMD_PREFLIGHT_STORAGE, 0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+	mavlink_send_message(modelid, &msg);
+}
+
+void mavlink_load_from_eeprom (uint8_t modelid) {
+	SDL_Log("mavlink(%i): load values from eeprom\n", modelid);
+	mavlink_message_t msg;
+	mavlink_msg_command_long_pack(MAVLINK_GSC_SYSID, 0, &msg, ModelData[modelid].sysid, 200, MAV_CMD_PREFLIGHT_STORAGE, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 	mavlink_send_message(modelid, &msg);
 }
 
@@ -1525,6 +1647,10 @@ void mavlink_start_feeds (uint8_t modelid) {
 		SDL_Delay(30);
 
 		mavlink_msg_request_data_stream_pack(MAVLINK_GSC_SYSID, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_DATA_STREAM_EXTRA3, MAV_DATA_STREAM_EXTRA3_RATE, MAV_DATA_STREAM_EXTRA3_ACTIVE);
+		mavlink_send_message(modelid, &msg);
+		SDL_Delay(30);
+
+		mavlink_msg_request_data_stream_pack(MAVLINK_GSC_SYSID, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_DATA_STREAM_PROPULSION, MAV_DATA_STREAM_PROPULSION_RATE, MAV_DATA_STREAM_PROPULSION_ACTIVE);
 		mavlink_send_message(modelid, &msg);
 		SDL_Delay(30);
 
