@@ -335,7 +335,8 @@ typedef enum MAV_DATA_STREAM
 	MAV_DATA_STREAM_EXTRA1=10, /* Dependent on the autopilot | */
 	MAV_DATA_STREAM_EXTRA2=11, /* Dependent on the autopilot | */
 	MAV_DATA_STREAM_EXTRA3=12, /* Dependent on the autopilot | */
-	MAV_DATA_STREAM_ENUM_END=13, /*  | */
+	MAV_DATA_STREAM_PROPULSION=13, /* Motor/ESC telemetry data. | */
+	MAV_DATA_STREAM_ENUM_END=14, /*  | */
 } MAV_DATA_STREAM;
 #endif
 
