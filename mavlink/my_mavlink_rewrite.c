@@ -1,6 +1,6 @@
 
 #include <all.h>
-#include <mavlink/GCS_MAVLink/include/mavlink/v1.0/autoquad/mavlink_msg_aq_esc_telemetry.h>
+//#include <mavlink/GCS_MAVLink/include/mavlink/v1.0/autoquad/mavlink_msg_aq_esc_telemetry.h>
 #include <mavlink/GCS_MAVLink/include/mavlink/v1.0/autoquad/mavlink_msg_aq_telemetry_f.h>
 #include <mavlink/GCS_MAVLink/include/mavlink/v1.0/pixhawk/mavlink_msg_set_netid.h>
 

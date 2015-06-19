@@ -263,9 +263,9 @@ void webserv_child_dump_modeldata (int fd) {
 	strcat(content, tmp_str);
 	sprintf(tmp_str, "voltage_zell=%f\n", ModelData[ModelActive].voltage_zell[5]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "temperature=%i\n", ModelData[ModelActive].temperature[0]);
+	sprintf(tmp_str, "temperature=%f\n", ModelData[ModelActive].temperature[0]);
 	strcat(content, tmp_str);
-	sprintf(tmp_str, "temperature=%i\n", ModelData[ModelActive].temperature[1]);
+	sprintf(tmp_str, "temperature=%f\n", ModelData[ModelActive].temperature[1]);
 	strcat(content, tmp_str);
 	sprintf(tmp_str, "ampere=%f\n", ModelData[ModelActive].ampere);
 	strcat(content, tmp_str);

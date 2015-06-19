@@ -931,7 +931,7 @@ void Logging (void) {
 			LogAppend(line);
 		}
 		if (last_voltage != ModelData[ModelActive].voltage || last_voltage != ModelData[ModelActive].voltage || last_ampere != ModelData[ModelActive].ampere) {
-			sprintf(line, "AV0;%i.%03i;%f;%f;%f;%f;%f;%f;%f;%f;%i;%i", sec, micros, ModelData[ModelActive].ampere, ModelData[ModelActive].voltage, ModelData[ModelActive].voltage_zell[0], ModelData[ModelActive].voltage_zell[1], ModelData[ModelActive].voltage_zell[2], ModelData[ModelActive].voltage_zell[3], ModelData[ModelActive].voltage_zell[4], ModelData[ModelActive].voltage_zell[5], ModelData[ModelActive].temperature[0], ModelData[ModelActive].temperature[1]);
+			sprintf(line, "AV0;%i.%03i;%f;%f;%f;%f;%f;%f;%f;%f;%f;%f", sec, micros, ModelData[ModelActive].ampere, ModelData[ModelActive].voltage, ModelData[ModelActive].voltage_zell[0], ModelData[ModelActive].voltage_zell[1], ModelData[ModelActive].voltage_zell[2], ModelData[ModelActive].voltage_zell[3], ModelData[ModelActive].voltage_zell[4], ModelData[ModelActive].voltage_zell[5], ModelData[ModelActive].temperature[0], ModelData[ModelActive].temperature[1]);
 			LogAppend(line);
 			last_ampere = ModelData[ModelActive].ampere;
 			last_voltage = ModelData[ModelActive].voltage;

@@ -77,8 +77,8 @@ static int ModelData_Cmd (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Ob
 	sprintf(tmp_str, "{{voltage_zell(3)} {%f}} ", ModelData[ModelActive].voltage_zell[3]); strcat(data, tmp_str);
 	sprintf(tmp_str, "{{voltage_zell(4)} {%f}} ", ModelData[ModelActive].voltage_zell[4]); strcat(data, tmp_str);
 	sprintf(tmp_str, "{{voltage_zell(5)} {%f}} ", ModelData[ModelActive].voltage_zell[5]); strcat(data, tmp_str);
-	sprintf(tmp_str, "{{temperature(0)} {%i}} ", ModelData[ModelActive].temperature[0]); strcat(data, tmp_str);
-	sprintf(tmp_str, "{{temperature(1)} {%i}} ", ModelData[ModelActive].temperature[1]); strcat(data, tmp_str);
+	sprintf(tmp_str, "{{temperature(0)} {%f}} ", ModelData[ModelActive].temperature[0]); strcat(data, tmp_str);
+	sprintf(tmp_str, "{{temperature(1)} {%f}} ", ModelData[ModelActive].temperature[1]); strcat(data, tmp_str);
 	sprintf(tmp_str, "{{ampere} {%f}} ", ModelData[ModelActive].ampere); strcat(data, tmp_str);
 	sprintf(tmp_str, "{{fc_voltage1} {%f}} ", ModelData[ModelActive].fc_voltage1); strcat(data, tmp_str);
 	sprintf(tmp_str, "{{fc_voltage2} {%f}} ", ModelData[ModelActive].fc_voltage2); strcat(data, tmp_str);

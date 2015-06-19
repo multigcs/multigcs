@@ -2,7 +2,7 @@
 #include <all.h>
 #include <mavlink/GCS_MAVLink/include/mavlink/v1.0/autoquad/mavlink_msg_aq_telemetry_f.h>
 #include <mavlink/GCS_MAVLink/include/mavlink/v1.0/pixhawk/mavlink_msg_set_netid.h>
-#include <mavlink/GCS_MAVLink/include/mavlink/v1.0/autoquad/mavlink_msg_aq_esc_telemetry.h>
+//#include <mavlink/GCS_MAVLink/include/mavlink/v1.0/autoquad/mavlink_msg_aq_esc_telemetry.h>
 
 #define MAV_CMD_AQ_TELEMETRY 2
 enum mavlinkCustomDataSets {
@@ -900,6 +900,7 @@ printf("%s ##\n", ModelData[modelid].sysstr);
 			}
 			break;
 		}
+#ifdef MAVLINK_MSG_ID_AQ_ESC_TELEMETRY
 		case MAVLINK_MSG_ID_AQ_ESC_TELEMETRY: {
 			mavlink_aq_esc_telemetry_t packet;
 			mavlink_msg_aq_esc_telemetry_decode(msg, &packet);
@@ -919,6 +920,7 @@ printf("%s ##\n", ModelData[modelid].sysstr);
 			}
 			break;
 		}
+#endif
 		case MAVLINK_MSG_ID_RADIO_STATUS: {
 			mavlink_radio_status_t packet;
 			mavlink_msg_radio_status_decode(msg, &packet);
