@@ -2234,43 +2234,48 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 
 		char tmp_str[1024];
 		int n = 0;
-		FILE *fr;
+		FILE *fr = NULL;
 		if (SurveySetup.write == 1) {
-				if (SurveySetup.name[0] == 0) {
-					strcpy(SurveySetup.name, "Unnamed");
-				}
-				sprintf(tmp_str, "%s/survey/%s.pln", get_datadirectory(), SurveySetup.name);
-				SDL_Log("write PLN to %s\n", tmp_str);
-				fr = fopen(tmp_str, "wb");
-				if (fr != NULL) {
-					fprintf(fr, "#name: %s\n", SurveySetup.name);
-					fprintf(fr, "#interval: %i\n", SurveySetup.interval);
-					fprintf(fr, "#pos: %i\n", SurveySetup.pos);
-					fprintf(fr, "#type: %i\n", SurveySetup.type);
-					fprintf(fr, "#num: %i\n", SurveySetup.num);
-					fprintf(fr, "#triggermode: %i\n", SurveySetup.triggermode);
-					fprintf(fr, "#options: %i\n", SurveySetup.options);
-					fprintf(fr, "#mode: %i\n", SurveySetup.mode);
-					fprintf(fr, "#angle: %f\n", SurveySetup.angle);
-					fprintf(fr, "#grid_x: %f\n", SurveySetup.grid_x);
-					fprintf(fr, "#grid_y: %f\n", SurveySetup.grid_y);
-					fprintf(fr, "#film_width: %f\n", SurveySetup.film_width);
-					fprintf(fr, "#film_height: %f\n", SurveySetup.film_height);
-					fprintf(fr, "#sensor_mult: %f\n", SurveySetup.sensor_mult);
-					fprintf(fr, "#lense: %f\n", SurveySetup.lense);
-					fprintf(fr, "#overlap: %f\n", SurveySetup.overlap);
-					fprintf(fr, "#alt: %f\n", SurveySetup.alt);
-					fprintf(fr, "#alt_abs: %i\n", SurveySetup.alt_abs);
-					for (n = 0; n < MAX_POLYPOINTS; n++) {
-						if (PolyPoints[n].p_lat != 0.0) {
-							fprintf(fr, "#polypoint:%0.8f,%0.8f\n", PolyPoints[n].p_lat, PolyPoints[n].p_long);
-						}
+			if (SurveySetup.name[0] == 0) {
+				strcpy(SurveySetup.name, "Unnamed");
+			}
+			sprintf(tmp_str, "%s/survey/%s.pln", get_datadirectory(), SurveySetup.name);
+			SDL_Log("write PLN to %s\n", tmp_str);
+			fr = fopen(tmp_str, "wb");
+			if (fr != NULL) {
+				fprintf(fr, "#name: %s\n", SurveySetup.name);
+				fprintf(fr, "#interval: %i\n", SurveySetup.interval);
+				fprintf(fr, "#pos: %i\n", SurveySetup.pos);
+				fprintf(fr, "#type: %i\n", SurveySetup.type);
+				fprintf(fr, "#num: %i\n", SurveySetup.num);
+				fprintf(fr, "#triggermode: %i\n", SurveySetup.triggermode);
+				fprintf(fr, "#options: %i\n", SurveySetup.options);
+				fprintf(fr, "#mode: %i\n", SurveySetup.mode);
+				fprintf(fr, "#angle: %f\n", SurveySetup.angle);
+				fprintf(fr, "#grid_x: %f\n", SurveySetup.grid_x);
+				fprintf(fr, "#grid_y: %f\n", SurveySetup.grid_y);
+				fprintf(fr, "#film_width: %f\n", SurveySetup.film_width);
+				fprintf(fr, "#film_height: %f\n", SurveySetup.film_height);
+				fprintf(fr, "#sensor_mult: %f\n", SurveySetup.sensor_mult);
+				fprintf(fr, "#lense: %f\n", SurveySetup.lense);
+				fprintf(fr, "#overlap: %f\n", SurveySetup.overlap);
+				fprintf(fr, "#alt: %f\n", SurveySetup.alt);
+				fprintf(fr, "#alt_abs: %i\n", SurveySetup.alt_abs);
+				for (n = 0; n < MAX_POLYPOINTS; n++) {
+					if (PolyPoints[n].p_lat != 0.0) {
+						fprintf(fr, "#polypoint:%0.8f,%0.8f\n", PolyPoints[n].p_lat, PolyPoints[n].p_long);
 					}
 				}
-				// clear Waypoints
-				for (n = 1; n < MAX_WAYPOINTS; n++) {
-					WayPoints[ModelActive][n].p_lat = 0.0;
+				for (n = 1; n < MAX_POLYPOINTS; n++) {
+					if (PolyPointsNoFly[n].p_lat != 0.0) {
+						fprintf(fr, "#polypoint_nf:%0.8f,%0.8f\n", PolyPointsNoFly[n].p_lat, PolyPointsNoFly[n].p_long);
+					}
 				}
+			}
+			// clear Waypoints
+			for (n = 1; n < MAX_WAYPOINTS; n++) {
+				WayPoints[ModelActive][n].p_lat = 0.0;
+			}
 		}
 
 		int pmark_x = long2x(PolyPoints[1].p_long, lon, zoom);

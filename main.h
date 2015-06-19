@@ -227,7 +227,7 @@ extern char display_html2[HTML_MAX];
 #endif
 
 extern char teletypes[16][16];
-extern char dronetypes[MAV_TYPE_ENUM_END][32];
+extern char dronetypes[MAV_TYPE_ENUM_END + 6][32];
 extern char pilottypes[MAV_AUTOPILOT_ENUM_END][64];
 extern char statetypes[MAV_STATE_ENUM_END][16];
 

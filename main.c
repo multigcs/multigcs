@@ -57,7 +57,7 @@ char pilottypes[MAV_AUTOPILOT_ENUM_END][64] = {
 	"ASLUAV",
 };
 
-char dronetypes[MAV_TYPE_ENUM_END][32] = {
+char dronetypes[MAV_TYPE_ENUM_END + 6][32] = {
 	"GENERIC",
 	"FIXED_WING",
 	"QUADROTOR",
@@ -78,7 +78,13 @@ char dronetypes[MAV_TYPE_ENUM_END][32] = {
 	"KITE",
 	"ONBOARD_CONTROLLER",
 	"VTOL_DUOROTOR",
-	"VTOL_QUADROTOR"
+	"VTOL_QUADROTOR",
+	"22",
+	"23",
+	"24",
+	"25",
+	"",
+	"BL-Gimbal",
 };
 
 GcsSetup setup;
@@ -762,6 +768,8 @@ void setup_load (void) {
 		ModelData[model_n].netport = 5760;
 		ModelData[model_n].get_param = 0;
 		ModelData[model_n].heartbeat = 0;
+
+		ModelData[model_n].follow = 0;
 	}
 	model_n = 0;
 	char filename[1024];
@@ -2022,6 +2030,64 @@ static uint8_t model_select (char *name, float x, float y, int8_t button, float 
 	return 0;
 }
 
+#ifdef SDLGL
+SDL_Joystick *joy1 = NULL;
+
+int8_t joystick_init (void) {
+	printf("search for joysticks\n");
+	if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) < 0) {
+		fprintf(stderr, "Unable to initialize Joystick: %s\n", SDL_GetError());
+		return -1;
+	}
+	fprintf(stderr, "%i joysticks found\n", SDL_NumJoysticks());
+	if (SDL_NumJoysticks() <= 0) {
+		return -1;
+	}
+	joy1 = SDL_JoystickOpen(0);
+	if (joy1 == NULL) {
+		fprintf(stderr, "could not open joystick\n");
+		return -1;
+	}
+	SDL_JoystickEventState(SDL_QUERY);
+	return 0;
+}
+#endif
+
+
+
+
+
+
+
+
+void gimbal_update (float lat_from, float lon_from, float alt_from, float lat_to, float lon_to, float alt_to, float *pitch, float *yaw) {
+	/* Alt - Diff */
+	float alt = alt_to - alt_from;
+	/* Bearing/Heading/Richtung */
+	float heading = toDeg(atan2(cos(toRad(lat_from)) * sin(toRad(lat_to)) - sin(toRad(lat_from)) * cos(toRad(lat_to)) * cos(toRad(lon_to) - toRad(lon_from)), sin(toRad(lon_to) - toRad(lon_from)) * cos(toRad(lat_to)))) + 270;
+	if (heading > 180) {
+		heading -= 360;
+	}
+	/* Distance - Grund */
+	float distance1 =   acos( 
+		cos(toRad( lat_from ))
+		* cos(toRad(lat_to))
+		* cos(toRad(lon_from) - toRad(lon_to))
+		+ sin(toRad(lat_from)) 
+		* sin(toRad(lat_to))
+	) * 6378.137;
+	/* Distance - Sichtverbindung */
+	float distance2 = sqrt(((distance1 * 1000) * (distance1 * 1000)) + (alt * alt));
+	/* Steigung */
+	float angle_up = (asin(alt / distance2)) * 180 / PI;
+
+	*pitch = angle_up * -1.0;
+	*yaw = heading;
+}
+
+
+
+
 void Draw (ESContext *esContext) {
 	int n = 0;
 	char tmp_str[1024];
@@ -2034,6 +2100,54 @@ void Draw (ESContext *esContext) {
 			connection_found = 1;
 		}
 	}
+
+
+	static uint16_t timg = 0;
+	if (timg++ > 15) {
+		timg = 0;
+		for (n = 0; n < MODELS_MAX; n++) {
+			if (ModelData[n].dronetype == 26) {
+
+				ModelData[n].follow = 1;
+				if (ModelData[n].follow >= 0) {
+
+float pitch = 0.0;
+float yaw = 0.0;
+
+gimbal_update(ModelData[n].p_lat, ModelData[n].p_long, ModelData[n].p_alt, ModelData[ModelData[n].follow].p_lat, ModelData[ModelData[n].follow].p_long, ModelData[ModelData[n].follow].p_alt, &pitch, &yaw);
+mavlink_set_gimbal_pos(n, pitch, 0.0, yaw);
+
+
+				}
+			}
+		}
+	}
+
+#ifdef SDLGL
+	static uint16_t timu = 0;
+	int16_t values[8];
+	if (timu++ > 5) {
+		timu = 0;
+		if (joy1 != NULL) {
+			SDL_JoystickUpdate();
+			for (n = 0; n < SDL_JoystickNumAxes(joy1) && n < 8; ++n) {
+				int16_t value = SDL_JoystickGetAxis(joy1, n);
+				values[n] = value / 66 + 1500;
+//				fprintf(stderr, "%i ", values[n]);
+			}
+//			fprintf(stderr, "\n");
+			mavlink_send_channels(ModelActive, values);
+		}
+
+//		for (n = 0; n < 8; ++n) {
+//			values[n] = 1500;
+//		}
+//		mavlink_send_channels(ModelActive, values);
+
+	}
+#endif
+
+
 
 	Logging();
 	// set RTL-Waypoints to HOME-Position
@@ -2750,14 +2864,14 @@ int main ( int argc, char *argv[] ) {
 		ModelData[ModelActive].p_alt = zz + 10;
 	}
 
+#ifdef SDLGL
+	joystick_init();
+#endif
 
-	openpilot_init_tcp();
-
-
+//	openpilot_init_tcp();
 	mavlink_init_udp();
 	mavlink_init_tcp();
 	mavlink_forward_udp_init();
-
 	frsky_init(setup.frsky_port, setup.frsky_baud);
 	jeti_init(setup.jeti_port, setup.jeti_baud);
 	gcs_gps_init(setup.gcs_gps_port, setup.gcs_gps_baud);

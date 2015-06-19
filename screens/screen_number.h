@@ -13,3 +13,5 @@ enum {
 };
 
 void edit_number (uint8_t mode, uint8_t type, void *ptr, float min, float max);
+uint8_t screen_number_check (ESContext *esContext);
+

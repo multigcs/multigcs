@@ -89,6 +89,13 @@ void edit_number (uint8_t mode, uint8_t type, void *ptr, float min, float max) {
 	keyboard_set_mode(mode);
 }
 
+uint8_t screen_number_check (ESContext *esContext) {
+	if (show_number != setup.view_mode) {
+		return 0;
+	}
+	return 1;
+}
+
 void screen_number (ESContext *esContext) {
 	if (show_number != setup.view_mode) {
 		return;

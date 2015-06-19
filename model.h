@@ -31,6 +31,16 @@ enum {
 };
 
 typedef struct {
+	float vin;
+	float amps;
+	uint16_t rpm;
+	uint16_t age;
+	uint8_t id;
+	uint8_t stat;
+	uint8_t err;
+} EscStat;
+
+typedef struct {
 	char name[200];
 	char sysstr[200];
 	char image[512];
@@ -112,6 +122,9 @@ typedef struct {
 	int netsock;
 	int serial_fd;
 	float history[255][5];
+	uint8_t num_motors;
+	EscStat escstat[16];
+	int8_t follow;
 } Model;
 
 typedef struct {

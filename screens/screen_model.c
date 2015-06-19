@@ -413,12 +413,23 @@ void screen_model (ESContext *esContext) {
 	draw_text_button(esContext, "model_name_edit", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_name_edit, 0);
 	n++;
 	draw_text_button(esContext, "model_type", VIEW_MODE_MODEL, "TYPE:", FONT_WHITE, -1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_dronetype_change, 0);
-	draw_text_button(esContext, "dronetype_change", VIEW_MODE_MODEL, dronetypes[ModelData[ModelActive].dronetype], FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_dronetype_change, 0);
+
+	if (ModelData[ModelActive].dronetype > 26) {
+		sprintf(tmp_str, "UNKNOWN: %i", ModelData[ModelActive].dronetype);
+		draw_text_button(esContext, "dronetype_change", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_dronetype_change, 0);
+	} else {
+		draw_text_button(esContext, "dronetype_change", VIEW_MODE_MODEL, dronetypes[ModelData[ModelActive].dronetype], FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_dronetype_change, 0);
+	}
 
 
 #ifdef SDLGL
 //	get_background_model(ModelActive, tmp_str);
+
+if (ModelData[ModelActive].dronetype > 26) {
+	sprintf(tmp_str, "%s/obj3d/_.obj", BASE_DIR);
+} else {
 	sprintf(tmp_str, "%s/obj3d/%s.obj", BASE_DIR, dronetypes[ModelData[ModelActive].dronetype]);
+}
 	if (file_exists(tmp_str) != 0) {
 		static uint8_t startup = 0;
 		static float rotate = 0.0;

@@ -14,7 +14,42 @@ static uint8_t hud_use_vista2d = 0;
 
 #endif
 
+
+static float gimbal_pitch = 0.0;
+static float gimbal_roll = 0.0;
+static float gimbal_yaw = 0.0;
+
 uint8_t hud_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	return 0;
+}
+
+uint8_t gimbal_set_pitch (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (button == 4) {
+		gimbal_pitch++;
+	} else if (button == 5) {
+		gimbal_pitch--;
+	}
+	mavlink_set_gimbal_pos(ModelActive, gimbal_pitch, gimbal_roll, gimbal_yaw);
+	return 0;
+}
+
+uint8_t gimbal_set_roll (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (button == 4) {
+		gimbal_roll++;
+	} else if (button == 5) {
+		gimbal_roll--;
+	}
+	mavlink_set_gimbal_pos(ModelActive, gimbal_pitch, gimbal_roll, gimbal_yaw);
+	return 0;
+}
+
+uint8_t gimbal_set_yaw (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (button == 4) {
+		gimbal_yaw++;
+	} else if (button == 5) {
+		gimbal_yaw--;
+	}
+	mavlink_set_gimbal_pos(ModelActive, gimbal_pitch, gimbal_roll, gimbal_yaw);
 	return 0;
 }
 
@@ -1734,6 +1769,13 @@ void screen_hud_internal (ESContext *esContext) {
 	} else {
 		draw_text_button(esContext, "view_hud_video", VIEW_MODE_HUD, "VID", FONT_WHITE, -1.15, 0.8, 0.002, 0.06, 0, 0, view_hud_video, 0);
 	}
+
+	if (ModelData[ModelActive].dronetype == 26) {
+		draw_text_button(esContext, "gimbal_pitch", VIEW_MODE_HUD, "PITCH", FONT_WHITE, -1.2, 0.5, 0.002, 0.06, 0, 0, gimbal_set_pitch, 0);
+		draw_text_button(esContext, "gimbal_roll", VIEW_MODE_HUD, "ROLL", FONT_WHITE, -1.2, 0.6, 0.002, 0.06, 0, 0, gimbal_set_roll, 0);
+		draw_text_button(esContext, "gimbal_yaw", VIEW_MODE_HUD, "YAW", FONT_WHITE, -1.2, 0.7, 0.002, 0.06, 0, 0, gimbal_set_yaw, 0);
+	}
+
 #else
 	draw_text_button(esContext, "view_map_bw", VIEW_MODE_HUD, "BW", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_bw, 0);
 #endif
@@ -1773,6 +1815,8 @@ void screen_hud_internal (ESContext *esContext) {
 		strcpy(tmp_str, "Flapping wing");
 	} else if (ModelData[ModelActive].dronetype == MAV_TYPE_KITE) {
 		strcpy(tmp_str, "Flapping wing");
+	} else if (ModelData[ModelActive].dronetype == 26) {
+		sprintf(tmp_str, "BL-Gimabal");
 	} else {
 		sprintf(tmp_str, "UNKNOWN(%i)", ModelData[ModelActive].dronetype);
 	}
