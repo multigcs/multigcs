@@ -553,6 +553,35 @@
       <Increment>1</Increment>
       <User>Advanced</User>
     </CTRL_YAW_ANG_OM>
+    <CTRL_BATT_COMP>
+      <DisplayName>CTRL_BATT_COMP</DisplayName>
+      <Description>Throttle Battery-Voltage Compensation</Description>
+      <Units></Units>
+      <Default>0</Default>
+      <Range>0 2</Range>
+      <Increment>0.05</Increment>
+      <User>Advanced</User>
+    </CTRL_BATT_COMP>
+    <MOT_CANL>
+      <DisplayName>MOT_CANL</DisplayName>
+      <Description></Description>
+      <Bits>0:ID11,1:ID2,2:ID3,3:ID4,4:ID5,5:ID6,6:ID7,7:ID8,8:ID8,9:ID10,10:ID11,11:ID12,12:ID13,13:ID14,14:ID15,15:ID16</Bits>
+      <Units></Units>
+      <Default>0</Default>
+      <Range>0 255</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_CANL>
+    <MOT_CANH>
+      <DisplayName>MOT_CANH</DisplayName>
+      <Description></Description>
+      <Bits>0:ID11,1:ID2,2:ID3,3:ID4,4:ID5,5:ID6,6:ID7,7:ID8,8:ID8,9:ID10,10:ID11,11:ID12,12:ID13,13:ID14,14:ID15,15:ID16</Bits>
+      <Units></Units>
+      <Default>0</Default>
+      <Range>0 255</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_CANH>
     <MOT_FRAME>
       <DisplayName>MOT_FRAME</DisplayName>
       <Description>used as hint for frame config GUI</Description>
@@ -571,6 +600,15 @@
       <Increment>1</Increment>
       <User>Advanced</User>
     </MOT_START>
+    <MOT_ARM>
+      <DisplayName>MOT_ARM</DisplayName>
+      <Description></Description>
+      <Units></Units>
+      <Default>975</Default>
+      <Range>800 2200</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_ARM>
     <MOT_MIN>
       <DisplayName>MOT_MIN</DisplayName>
       <Description></Description>
@@ -589,6 +627,15 @@
       <Increment>1</Increment>
       <User>Advanced</User>
     </MOT_MAX>
+    <MOT_PWM_FREQ>
+      <DisplayName>MOT_PWM_FREQ</DisplayName>
+      <Description>Motor PWM Update Frequenz</Description>
+      <Units></Units>
+      <Default>400</Default>
+      <Range>100 16000</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </MOT_PWM_FREQ>
     <MOT_HOV_THROT>
       <DisplayName>MOT_HOV_THROT</DisplayName>
       <Description></Description>
@@ -1169,7 +1216,7 @@
     <COMM_STREAM_TYP1>
       <DisplayName>COMM_STREAM_TYP1</DisplayName>
       <Description></Description>
-      <Values>0:None, 2:Mavlink, 4:AQ-Serial</Values>
+      <Bits>0:Multiplex,1:Mavlink,2:Telemetry,3:GPS,4:Frsky,5:CLI,6:OMAP_CONSOLE,7:OMAP_PPP</Bits>
       <Units></Units>
       <Default>2</Default>
       <Range>0 255</Range>
@@ -1179,6 +1226,7 @@
     <COMM_STREAM_TYP2>
       <DisplayName>COMM_STREAM_TYP2</DisplayName>
       <Description></Description>
+      <Bits>0:Multiplex,1:Mavlink,2:Telemetry,3:GPS,4:Frsky,5:CLI,6:OMAP_CONSOLE,7:OMAP_PPP</Bits>
       <Units></Units>
       <Default>0</Default>
       <Range>0 255</Range>
@@ -1188,6 +1236,7 @@
     <COMM_STREAM_TYP3>
       <DisplayName>COMM_STREAM_TYP3</DisplayName>
       <Description></Description>
+      <Bits>0:Multiplex,1:Mavlink,2:Telemetry,3:GPS,4:Frsky,5:CLI,6:OMAP_CONSOLE,7:OMAP_PPP</Bits>
       <Units></Units>
       <Default>0</Default>
       <Range>0 255</Range>
@@ -1197,12 +1246,23 @@
     <COMM_STREAM_TYP4>
       <DisplayName>COMM_STREAM_TYP4</DisplayName>
       <Description></Description>
+      <Bits>0:Multiplex,1:Mavlink,2:Telemetry,3:GPS,4:Frsky,5:CLI,6:OMAP_CONSOLE,7:OMAP_PPP</Bits>
       <Units></Units>
       <Default>0</Default>
       <Range>0 255</Range>
       <Increment>1</Increment>
       <User>Advanced</User>
     </COMM_STREAM_TYP4>
+    <COMM_STREAM_TYP5>
+      <DisplayName>COMM_STREAM_TYP5</DisplayName>
+      <Description></Description>
+      <Bits>0:Multiplex,1:Mavlink,2:Telemetry,3:GPS,4:Frsky,5:CLI,6:OMAP_CONSOLE,7:OMAP_PPP</Bits>
+      <Units></Units>
+      <Default>0</Default>
+      <Range>0 255</Range>
+      <Increment>1</Increment>
+      <User>Advanced</User>
+    </COMM_STREAM_TYP5>
     <TELEMETRY_RATE>
       <DisplayName>TELEMETRY_RATE</DisplayName>
       <Description>loops between reports</Description>
