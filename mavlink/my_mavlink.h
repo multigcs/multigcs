@@ -105,6 +105,7 @@ void mavlink_send_channels (uint8_t modelid, int16_t *data);
 void mavlink_param_xml_meta_load (uint8_t modelid);
 void mavlink_stop_feeds (uint8_t modelid);
 void mavlink_send_value (uint8_t modelid, char *name, float val, int8_t type);
+void mavlink_send_changes (uint8_t modelid, char *name, float value, int8_t type, int16_t id);
 void mavlink_set_value (uint8_t modelid, char *name, float val, int8_t type, int16_t id);
 void mavlink_handleMessage(uint8_t modelid, mavlink_message_t* msg);
 void mavlink_save_to_flash (uint8_t modelid);
@@ -146,3 +147,4 @@ void mavlink_send_message (uint8_t modelid, mavlink_message_t* msg);
 uint8_t mavlink_connection_status (uint8_t modelid);
 void mavlink_forward_udp_init (void);
 void mavlink_forward_udp_send (uint8_t modelid, mavlink_message_t* msg);
+

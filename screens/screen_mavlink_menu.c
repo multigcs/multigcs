@@ -610,13 +610,17 @@ void mavlink_param_read_file (char *param_file) {
 		val = 0.0;
 		if ((line[0] >= 'a' && line[0] <= 'z') || (line[0] >= 'A' && line[0] <= 'Z')) {
 			if (sscanf (line, "%s %f %f %f", var, &val, &min, &max) == 4) {
-				mavlink_set_value(ModelActive, var, val, -1, -1);
+				mavlink_send_changes(ModelActive, var, val, -1, -1);
 			} else if (sscanf (line, "%[0-9a-zA-Z_],%f", var, &val) == 2) {
-				mavlink_set_value(ModelActive, var, val, -1, -1);
+				mavlink_send_changes(ModelActive, var, val, -1, -1);
+			} else if (sscanf (line, "%[0-9a-zA-Z_] %f", var, &val) == 2) {
+				mavlink_send_changes(ModelActive, var, val, -1, -1);
+			} else {
+				SDL_Log("## Unknown format: %s ##\n", line);
 			}
 		} else if (line[0] >= '0' && line[0] <= '9') {
 			sscanf (line, "%i %i %s %f", &tmp_int1, &tmp_int2, var, &val);
-			mavlink_set_value(ModelActive, var, val, -1, -1);
+			mavlink_send_changes(ModelActive, var, val, -1, -1);
 		}
 	}
 	fclose(fr);
