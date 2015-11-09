@@ -266,6 +266,9 @@ void mavlink_send_changes (uint8_t modelid, char *name, float value, int8_t type
 				SDL_Log("mavlink(%i): changed value: %s: %f -> %f\n", modelid, name, MavLinkVars[modelid][n].value, value);
 				mavlink_set_value(modelid, name, value, type, id);
 				mavlink_send_value(modelid, name, value, type);
+				SDL_Delay(30);
+				mavlink_send_value(modelid, name, value, type);
+				SDL_Delay(30);
 			}
 			flag = 1;
 			break;
@@ -275,6 +278,9 @@ void mavlink_send_changes (uint8_t modelid, char *name, float value, int8_t type
 		SDL_Log("mavlink(%i): new value: %s = %f\n", modelid, name, value);
 		mavlink_set_value(modelid, name, value, type, id);
 		mavlink_send_value(modelid, name, value, type);
+		SDL_Delay(30);
+		mavlink_send_value(modelid, name, value, type);
+		SDL_Delay(30);
 	}
 }
 
