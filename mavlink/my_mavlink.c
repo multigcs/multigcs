@@ -259,24 +259,22 @@ void mavlink_send_channels (uint8_t modelid, int16_t *data) {
 void mavlink_send_changes (uint8_t modelid, char *name, float value, int8_t type, int16_t id) {
 	uint16_t n = 0;
 	uint8_t flag = 0;
-	float min = 999999.0;
-	float max = 999999.0;
 	name[16] = 0;
 	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
 		if (strcmp(MavLinkVars[modelid][n].name, name) == 0 && (MavLinkVars[modelid][n].id == id || MavLinkVars[modelid][n].id == -1 || id > MAVLINK_PARAMETER_MAX || id == -1)) {
 			if (MavLinkVars[modelid][n].value != value) {
-				SDL_Log("## changed value: %s = %f (old: %f) ##\n", name, value, MavLinkVars[modelid][n].value);
-				mavlink_set_value(modelid, name, val, type);
-				mavlink_send_value(modelid, name, val, type);
+				SDL_Log("mavlink(%i): changed value: %s: %f -> %f\n", modelid, name, MavLinkVars[modelid][n].value, value);
+				mavlink_set_value(modelid, name, value, type, id);
+				mavlink_send_value(modelid, name, value, type);
 			}
 			flag = 1;
 			break;
 		}
 	}
 	if (flag == 0) {
-		SDL_Log("## new value: %s = %f ##\n", name, value);
-		mavlink_set_value(modelid, name, val, type);
-		mavlink_send_value(modelid, name, val, type);
+		SDL_Log("mavlink(%i): new value: %s = %f\n", modelid, name, value);
+		mavlink_set_value(modelid, name, value, type, id);
+		mavlink_send_value(modelid, name, value, type);
 	}
 }
 
