@@ -719,6 +719,7 @@ void setup_load (void) {
 	setup.mavlink_forward_udp_local_port = 14561;
 	setup.mavlink_forward_udp_remote_port = 14560;
 	strcpy(setup.mavlink_forward_udp_remote_ip, "127.0.0.1");
+	map_type = 1;
 #if defined USE_APRS
 	setup.aprs_server[0] = 0;
 	strcpy(setup.aprs_server, "146.229.162.182");
