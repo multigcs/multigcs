@@ -8,12 +8,12 @@ BASE_DIR = /usr/share/multigcs
 COMP = gcc
 
 INCDIR = -I/opt/vc/include -I/opt/vc/include/interface/vcos/pthreads -I/opt/vc/include/interface/vmcs_host/linux
-LIBS = -lbcm_host -L$(SDKSTAGE)/opt/vc/lib
+LIBS = -lbcm_host -L$(SDKSTAGE)/opt/vc/lib -ludev
 CFLAGS += -DRPI_NO_X -Ofast -pipe -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard -DBASE_DIR="\"$(BASE_DIR)\""
 #CFLAGS += -flto -ffast-math -fno-math-errno -funsafe-math-optimizations -ffinite-math-only -fno-signed-zeros -fno-trapping-math -frounding-math
 
 INCDIR += $(shell pkg-config --cflags sdl) $(shell pkg-config --cflags SDL_image) $(shell pkg-config --cflags SDL_net)
-LIBS += $(shell pkg-config --libs sdl) $(shell pkg-config --libs SDL_image) $(shell pkg-config --libs SDL_net) -lEGL -lGLESv2
+LIBS += $(shell pkg-config --libs sdl) $(shell pkg-config --libs SDL_image) $(shell pkg-config --libs SDL_net) -lEGL lGLESv2 -lglut -lGL
 
 ## ldd gcs  | grep -v /opt | awk '{print $1}' | xargs -r -l dpkg -S  | cut -d":" -f1 | sort -u | tr  "\n" "," ##
 
