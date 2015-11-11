@@ -1367,6 +1367,9 @@ void check_events (ESContext *esContext, SDL_Event event) {
 				}
 				WayPoints[ModelActive][waypoint_active].p_lat = mouse_lat;
 				WayPoints[ModelActive][waypoint_active].p_long = mouse_long;
+			} else if (polypoint_active >= 0) {
+				PolyPoints[polypoint_active].p_lat = mouse_lat;
+				PolyPoints[polypoint_active].p_long = mouse_long;
 			} else if (polypointnf_active >= 0) {
 				PolyPointsNoFly[polypointnf_active].p_lat = mouse_lat;
 				PolyPointsNoFly[polypointnf_active].p_long = mouse_long;
@@ -1647,6 +1650,8 @@ void check_events (ESContext *esContext, SDL_Event event) {
 									if (by + 20 > mark_y && by - 20 < mark_y) {
 										SDL_Log("WAYPOINT: %i\n", n);
 										waypoint_active = n;
+										polypoint_active = -1;
+										polypointnf_active = -1;
 										mousemode = 1;
 										break;
 									}
@@ -1662,7 +1667,9 @@ void check_events (ESContext *esContext, SDL_Event event) {
 								if (bx + 20 > mark_x && bx - 20 < mark_x) {
 									if (by + 20 > mark_y && by - 20 < mark_y) {
 										SDL_Log("POLYPOINT: %i\n", n);
+										waypoint_active = -1;
 										polypoint_active = n;
+										polypointnf_active = -1;
 										mousemode = 1;
 										break;
 									}
@@ -1676,6 +1683,8 @@ void check_events (ESContext *esContext, SDL_Event event) {
 								if (bx + 20 > mark_x && bx - 20 < mark_x) {
 									if (by + 20 > mark_y && by - 20 < mark_y) {
 										SDL_Log("POLYPOINT_NF: %i\n", n);
+										waypoint_active = -1;
+										polypoint_active = -1;
 										polypointnf_active = n;
 										mousemode = 1;
 										break;
@@ -1714,9 +1723,21 @@ void check_events (ESContext *esContext, SDL_Event event) {
 					}
 				}
 			} else if (event.button.button == 2) {
-				if (waypoint_active >= 0) {
-					WayPoints[ModelActive][waypoint_active].p_lat = mouse_lat;
-					WayPoints[ModelActive][waypoint_active].p_long = mouse_long;
+				if (map_show_wp == 1) {
+					if (waypoint_active >= 0) {
+						WayPoints[ModelActive][waypoint_active].p_lat = mouse_lat;
+						WayPoints[ModelActive][waypoint_active].p_long = mouse_long;
+					}
+				}
+				if (map_show_poly == 1) {
+					if (polypoint_active >= 0) {
+						PolyPoints[polypoint_active].p_lat = mouse_lat;
+						PolyPoints[polypoint_active].p_long = mouse_long;
+					}
+					if (polypointnf_active >= 0) {
+						PolyPointsNoFly[polypointnf_active].p_lat = mouse_lat;
+						PolyPointsNoFly[polypointnf_active].p_long = mouse_long;
+					}
 				}
 			} else if (event.button.button == 4) {
 				if (zoom < 18) {
