@@ -743,7 +743,7 @@ void setup_load (void) {
 		ModelData[model_n].chancount = 8;
 		strcpy(ModelData[model_n].telemetry_port, "");
 		ModelData[model_n].telemetry_baud = 115200;
-		ModelData[model_n].teletype = 255;
+		ModelData[model_n].teletype = 0;
 		ModelData[model_n].serial_fd = -1;
 		ModelData[model_n].dronetype = 250;
 		ModelData[model_n].pilottype = 250;
