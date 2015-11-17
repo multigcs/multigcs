@@ -1805,25 +1805,37 @@ int telemetry_thread (void *data) {
 		}
 		if (utimer >= 300 && SwarmSetup.active == 1 && SwarmSetup.master != -1) {
 			GroundData.followme = 0;
+			float p_lat = 0.0;
+			float p_long = 0.0;
+			float p_alt = 0.0;
+			float p_yaw = 0.0;
+			if (SwarmSetup.master == -1) {
+				p_lat = GroundData.p_lat;
+				p_long = GroundData.p_long;
+				p_alt = GroundData.fm_alt;
+				p_yaw = 0.0;
+			} else {
+				p_lat = ModelData[SwarmSetup.master].p_lat;
+				p_long = ModelData[SwarmSetup.master].p_long;
+				p_alt = ModelData[SwarmSetup.master].p_alt;
+				p_yaw = ModelData[SwarmSetup.master].yaw;
+			}
 			int nn = 0;
 			for (nn = 0; nn < 4; nn++) {
 				if (SwarmSetup.slave[nn] == -1) {
 					continue;
 				}
-				float p_lat = ModelData[SwarmSetup.master].p_lat;
-				float p_long = ModelData[SwarmSetup.master].p_long;
-				float p_alt = ModelData[SwarmSetup.master].p_alt;
 				float off_x = SwarmSetup.offset_x[nn];
 				float off_y = SwarmSetup.offset_y[nn];
 				if (SwarmSetup.rotate == 1) {
 					float radius = sqrt((SwarmSetup.offset_x[nn] * SwarmSetup.offset_x[nn]) + (SwarmSetup.offset_y[nn] * SwarmSetup.offset_y[nn]));
-					float angle = ModelData[SwarmSetup.master].yaw + 90.0 + atan(SwarmSetup.offset_x[nn] / SwarmSetup.offset_y[nn]) * RAD_TO_DEG;
+					float angle = p_yaw + 90.0 + atan(SwarmSetup.offset_x[nn] / SwarmSetup.offset_y[nn]) * RAD_TO_DEG;
 					off_x = cos(angle * DEG2RAD) * radius;
 					off_y = sin(angle * DEG2RAD) * radius;
 				}
 				latlong_offset(&p_lat, &p_long, &p_alt, off_y, off_x, SwarmSetup.offset_z[nn]);
 				if (SwarmSetup.yaw_mode == 1) {
-					mavlink_send_cmd_yaw(SwarmSetup.slave[nn], ModelData[SwarmSetup.master].yaw, 360.0);
+					mavlink_send_cmd_yaw(SwarmSetup.slave[nn], p_yaw, 360.0);
 				}
 				mavlink_send_cmd_follow(SwarmSetup.slave[nn], p_lat, p_long, p_alt, 2.0);
 			}

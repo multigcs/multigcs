@@ -86,7 +86,7 @@ uint8_t swarm_set (char *name, float x, float y, int8_t button, float data, uint
 		}
 	} else if (strncmp(name, "SwarmSetup.master", 17) == 0) {
 		if (button == 4) {
-			if (SwarmSetup.master > 0) {
+			if (SwarmSetup.master > -1) {
 				SwarmSetup.master--;
 			} else {
 				SwarmSetup.master = MODELS_MAX - 1;
@@ -95,7 +95,7 @@ uint8_t swarm_set (char *name, float x, float y, int8_t button, float data, uint
 			if (SwarmSetup.master < MODELS_MAX - 1) {
 				SwarmSetup.master++;
 			} else {
-				SwarmSetup.master = 0;
+				SwarmSetup.master = -1;
 			}
 		} else {
 			if (pd_openm == 1) {
@@ -160,7 +160,7 @@ void swarm_draw_setup (ESContext *esContext) {
 		ny++;
 		uint8_t n2 = 0;
 		EntryList list[MODELS_MAX + 2];
-		list[0].name = "NONE";
+		list[0].name = "GCS";
 		for (n2 = 0; n2 < MODELS_MAX; n2++) {
 			list[n2 + 1].name = ModelData[n2].name;
 		}
