@@ -2402,23 +2402,26 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				if (SurveySetup.mode == 0) {
 					draw_fov(esContext, np_lat, np_long, alt, SurveySetup.angle + 90.0);
 				}
+				glLineWidth(3);
 				draw_line_f3(esContext, px1 + 0.01, py1 + 0.01, (alt / alt_zoom), px1 - 0.01, py1 - 0.01, (alt / alt_zoom), 0, 255, 255, 255);
 				draw_line_f3(esContext, px1 + 0.01, py1 - 0.01, (alt / alt_zoom), px1 - 0.01, py1 + 0.01, (alt / alt_zoom), 0, 255, 255, 255);
 				draw_line_f3(esContext, px1 + 0.01, py1 + 0.01, (pos_alt / alt_zoom), px1 - 0.01, py1 - 0.01, (pos_alt / alt_zoom), 0, 255, 255, 255);
 				draw_line_f3(esContext, px1 + 0.01, py1 - 0.01, (pos_alt / alt_zoom), px1 - 0.01, py1 + 0.01, (pos_alt / alt_zoom), 0, 255, 255, 255);
-				draw_line_f3(esContext, px1, py1, (alt / alt_zoom), px1, py1, (pos_alt / alt_zoom), 0, 255, 255, 127);
+				draw_line_f3(esContext, px1, py1, (alt / alt_zoom), px1, py1, (pos_alt / alt_zoom), 0, 255, 255, 255);
 				if (lastn_x != 0.0 || lastn_y != 0.0) {
 					int nfzone = 0;
 					if ((nfzone = survey_check_intersect_nofly(esContext, lastn_x, lastn_y, px1, py1)) >= 0) {
 						n = survey_reroute(esContext, lastn_x, lastn_y, px1, py1, alt, nfzone, SurveySetup.write, n, fr);
+						glLineWidth(1);
 						draw_line_f3(esContext, lastn_x, lastn_y, (lastn_alt / alt_zoom), px1, py1, (alt / alt_zoom), 255, 0, 0, 255);
 					} else {
 						if (SurveySetup.write == 1) {
 							n = survey_add_wp(fr, n, np_lat, np_long, alt, 0);
 						}
-						draw_line_f3(esContext, lastn_x, lastn_y, (lastn_alt / alt_zoom), px1, py1, (alt / alt_zoom), 255, 255, 255, 100);
+						draw_line_f3(esContext, lastn_x, lastn_y, (lastn_alt / alt_zoom), px1, py1, (alt / alt_zoom), 0, 255, 255, 255);
 					}
 				}
+				glLineWidth(1);
 				lastn_x = px1;
 				lastn_y = py1;
 				lastn_alt = alt;
@@ -2450,23 +2453,27 @@ void display_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint
 				if (SurveySetup.mode == 0) {
 					draw_fov(esContext, np_lat, np_long, alt, SurveySetup.angle + 90.0);
 				}
+				glLineWidth(3);
 				draw_line_f3(esContext, px1 + 0.01, py1 + 0.01, (alt / alt_zoom), px1 - 0.01, py1 - 0.01, (alt / alt_zoom), 0, 255, 255, 255);
 				draw_line_f3(esContext, px1 + 0.01, py1 - 0.01, (alt / alt_zoom), px1 - 0.01, py1 + 0.01, (alt / alt_zoom), 0, 255, 255, 255);
 				draw_line_f3(esContext, px1 + 0.01, py1 + 0.01, (pos_alt / alt_zoom), px1 - 0.01, py1 - 0.01, (pos_alt / alt_zoom), 0, 255, 255, 255);
 				draw_line_f3(esContext, px1 + 0.01, py1 - 0.01, (pos_alt / alt_zoom), px1 - 0.01, py1 + 0.01, (pos_alt / alt_zoom), 0, 255, 255, 255);
-				draw_line_f3(esContext, px1, py1, (alt / alt_zoom), px1, py1, (pos_alt / alt_zoom), 0, 255, 255, 127);
+				draw_line_f3(esContext, px1, py1, (alt / alt_zoom), px1, py1, (pos_alt / alt_zoom), 0, 255, 255, 255);
 				if (lastn_x != 0.0 || lastn_y != 0.0) {
 					int nfzone = 0;
 					if ((nfzone = survey_check_intersect_nofly(esContext, lastn_x, lastn_y, px1, py1)) >= 0) {
 						n = survey_reroute(esContext, lastn_x, lastn_y, px1, py1, alt, nfzone, SurveySetup.write, n, fr);
+						glLineWidth(1);
 						draw_line_f3(esContext, lastn_x, lastn_y, (lastn_alt / alt_zoom), px1, py1, (alt / alt_zoom), 255, 0, 0, 255);
 					} else {
 						if (SurveySetup.write == 1) {
 							n = survey_add_wp(fr, n, np_lat, np_long, alt, 0);
 						}
-						draw_line_f3(esContext, lastn_x, lastn_y, (lastn_alt / alt_zoom), px1, py1, (alt / alt_zoom), 255, 255, 255, 100);
+						glLineWidth(3);
+						draw_line_f3(esContext, lastn_x, lastn_y, (lastn_alt / alt_zoom), px1, py1, (alt / alt_zoom), 0, 255, 255, 255);
 					}
 				}
+				glLineWidth(1);
 				lastn_x = px1;
 				lastn_y = py1;
 				lastn_alt = alt;

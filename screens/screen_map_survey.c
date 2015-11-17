@@ -260,7 +260,7 @@ uint16_t survey_reroute (ESContext *esContext, float x1, float y1, float x2, flo
 		int flag = 0;
 		for (n = 0; n < 100; n++) {
 			if (active.x == list[n].p.x && active.y == list[n].p.y) {
-				draw_line_f3(esContext, list[n].p.x, list[n].p.y, 0.0, list[n].from.x, list[n].from.y, 0.0, 255, 255, 255, 255);
+				draw_line_f3(esContext, list[n].p.x, list[n].p.y, 0.0, list[n].from.x, list[n].from.y, 0.0, 0, 255, 255, 255);
 				mypoly_sort[pp_sort] = list[n].p;
 				pp_sort++;
 				mypoly_sort[pp_sort].x = 0.0;
