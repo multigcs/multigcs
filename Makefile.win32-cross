@@ -3,8 +3,8 @@
 VERSION_NAME = win32
 EXTRA_OBJECTS = draw/gl_draw.o
 BASE_DIR = /usr/share/multigcs
-COMP = i686-w64-mingw32-gcc
-MINGW_DIR = /usr/i686-w64-mingw32
+COMP = /usr/lib/mxe/usr/bin/i686-w64-mingw32.static-gcc
+MINGW_DIR = /usr/lib/mxe/usr/i686-w64-mingw32.static
 
 INCDIR = 
 LIBS = 
@@ -12,7 +12,7 @@ CFLAGS += -DSDLGL -DSDL2 -DWINDOWS -DUSE_OPENCV -O3 -Wall -DBASE_DIR="\"$(BASE_D
 #CFLAGS += -ggdb
 #CFLAGS +=  -pg
 
-INCDIR += -I$(MINGW_DIR)/include -I$(MINGW_DIR)/include/SDL2 -I$(MINGW_DIR)/include/libpng12 -I$(MINGW_DIR)/include/tcl -I$(MINGW_DIR)/include/opencv
+INCDIR += -I$(MINGW_DIR)/include -I$(MINGW_DIR)/include/SDL2 -I$(MINGW_DIR)/include/libxml2 -I$(MINGW_DIR)/include/libpng12 -I$(MINGW_DIR)/include/tcl -I$(MINGW_DIR)/include/opencv
 LIBS += -Lc:/MinGW/lib/SDL2 -static-libgcc -lmingw32 -lopengl32 -lglu32 -lglew32.dll -lSDL2main -mwindows -lSDL2 -lSDL2_image -lSDL2_net -L$(MINGW_DIR)/bin \
 -lm -lxml2 -ltcl85 -lpng -lopencv_highgui245d -lopencv_core245d -lopencv_imgproc245d
 

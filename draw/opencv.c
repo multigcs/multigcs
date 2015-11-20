@@ -39,6 +39,7 @@ void cvar_run (IplImage *image) {
 		gray = cvCreateImage(cvGetSize(image), image->depth, 1);
 	}
 	cvCvtColor(image, gray, CV_BGR2GRAY);
+/*
 	cvFindChessboardCorners(gray, b_size, corners, &corner_count, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
 	cvFindCornerSubPix(gray, corners, corner_count, cvSize(11, 11), cvSize(-1, -1), cvTermCriteria(CV_TERMCRIT_EPS+CV_TERMCRIT_ITER, 30, 0.1));
 	if (corner_count == b_squares) {
@@ -55,6 +56,8 @@ void cvar_run (IplImage *image) {
 		cvLine(image, p[2], p[3], CV_RGB(0, 0, 255), 2, 8, 0);
 		cvLine(image, p[3], p[0], CV_RGB(255, 255, 0), 2, 8, 0);
 	}
+*/
+
 /*
 	CvPoint2D32f src_pnt[4];
 	src_pnt[0] = cvPoint2D32f (p[0].x, p[0].y);
@@ -72,21 +75,20 @@ void cvar_run (IplImage *image) {
 	tmp_img = cvCloneImage(image);
 	cvWarpPerspective(tmp_img, image, mmat, CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS, cvScalarAll(0)); 
 */
-/*
+
 	IplImage *edge = cvCreateImage(cvSize(image->width, image->height), 8, 1);
 	int edge_thresh = 1;
 	CvMemStorage* storage = cvCreateMemStorage(0);
 	cvThreshold(gray, gray, CV_GAUSSIAN, 9, 9);
 	cvSmooth(gray, gray, CV_GAUSSIAN, 11, 11, 0, 0); 
 	cvCanny(gray, edge, (float)edge_thresh, (float)edge_thresh * 3, 5);
-	CvSeq* circles = cvHoughCircles(edge, storage, CV_HOUGH_GRADIENT, 2, gray->height / 4, 200, 100, 10, 100);
+	CvSeq* circles = cvHoughCircles(edge, storage, CV_HOUGH_GRADIENT, 2, gray->height / 4, 200, 100, 10, 0);
 	int i;
 	for (i = 0; i < circles->total; i++) {
 	float* p = (float*)cvGetSeqElem(circles, i);
 		cvCircle(image, cvPoint(cvRound(p[0]),cvRound(p[1])), 3, CV_RGB(0,255,0), -1, 8, 0 );
 		cvCircle(image, cvPoint(cvRound(p[0]),cvRound(p[1])), cvRound(p[2]), CV_RGB(255,0,0), 3, 8, 0 );
 	}
-*/
 }
 
 void cvar_exit (void) {
@@ -156,14 +158,14 @@ int cv_update (void *data) {
 		if (cv_surface != NULL && cv_bg != NULL) {
 			SDL_Log("opencv: running thread\n");
 #ifdef OPENCV_EFFECTS
-			if (cv_features == 1) {
+			if (cv_features != 0) {
 				cvar_init();
 			}
 #endif
 			while (cv_running == 1) {
 				if ((opencvimg = cvQueryFrame(cv_capture)) != NULL) {
 #ifdef OPENCV_EFFECTS
-					if (cv_features == 1) {
+					if (cv_features != 0) {
 						cvar_run(opencvimg);
 					}
 #endif
@@ -208,7 +210,7 @@ int cv_update (void *data) {
 }
 
 void openvc_init (char *opencv_file, int cam_id, int features) {
-	SDL_Log("opencv: init\n");
+	SDL_Log("opencv: init (%i)\n", features);
 	cv_camid = cam_id;
 	strncpy(cv_file, opencv_file, 1024);
 	cv_features = features;
