@@ -127,8 +127,28 @@ int cv_update (void *data) {
 		img_w = next_power_of_two(img_w);
 		img_h = next_power_of_two(img_h);
 #endif
-		cv_surface = SDL_CreateRGBSurface(0, img_w, img_h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-		cv_bg = SDL_CreateRGBSurface(0, img_w, img_h, opencvimg->depth*opencvimg->nChannels, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+//		cv_surface = SDL_CreateRGBSurface(0, img_w, img_h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+//		cv_bg = SDL_CreateRGBSurface(0, img_w, img_h, opencvimg->depth*opencvimg->nChannels, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+
+		SDL_Surface *csf = ipl_to_surface(opencvimg);
+
+
+		cv_surface = SDL_CreateRGBSurface( csf->flags, img_w, img_h,
+			csf->format->BitsPerPixel,
+			csf->format->Rmask,
+			csf->format->Gmask,
+			csf->format->Bmask,
+			csf->format->Amask
+		);
+		cv_bg = SDL_CreateRGBSurface( csf->flags, img_w, img_h,
+			csf->format->BitsPerPixel,
+			csf->format->Rmask,
+			csf->format->Gmask,
+			csf->format->Bmask,
+			csf->format->Amask
+		);
+
+
 		if (cv_surface != NULL && cv_bg != NULL) {
 			SDL_Log("opencv: running thread\n");
 #ifdef OPENCV_EFFECTS
