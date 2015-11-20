@@ -15,6 +15,7 @@ static SDL_Thread *cv_thread = NULL;
 static uint8_t cv_running = 0;
 static int cv_camid = 0;
 static int cv_features = 0;
+static char cv_file[1025];
 
 #ifdef OPENCV_EFFECTS
 static int b_squares;
@@ -112,11 +113,19 @@ SDL_Surface *ipl_to_surface (IplImage *opencvimg) {
 
 int cv_update (void *data) {
 	IplImage *opencvimg = NULL;
-	if ((cv_capture = cvCaptureFromCAM(cv_camid)) == NULL) {
-		SDL_Log("opencv: can not open capture device: %i\n", cv_camid);
-		return 0;
+	if (cv_file[0] != 0) {
+		if ((cv_capture = cvCaptureFromAVI(cv_file)) == NULL) {
+			SDL_Log("opencv: can not open video: %s\n", cv_file);
+			return 0;
+		}
+		SDL_Log("opencv: open video: %s\n", cv_file);
+	} else {
+		if ((cv_capture = cvCaptureFromCAM(cv_camid)) == NULL) {
+			SDL_Log("opencv: can not open capture device: %i\n", cv_camid);
+			return 0;
+		}
+		SDL_Log("opencv: open capture device: %i\n", cv_camid);
 	}
-	SDL_Log("opencv: open capture device: %i\n", cv_camid);
 #ifdef OSX
 	SDL_Delay(2000);
 #endif
@@ -127,12 +136,7 @@ int cv_update (void *data) {
 		img_w = next_power_of_two(img_w);
 		img_h = next_power_of_two(img_h);
 #endif
-//		cv_surface = SDL_CreateRGBSurface(0, img_w, img_h, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-//		cv_bg = SDL_CreateRGBSurface(0, img_w, img_h, opencvimg->depth*opencvimg->nChannels, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
-
 		SDL_Surface *csf = ipl_to_surface(opencvimg);
-
-
 		cv_surface = SDL_CreateRGBSurface( csf->flags, img_w, img_h,
 			csf->format->BitsPerPixel,
 			csf->format->Rmask,
@@ -203,12 +207,17 @@ int cv_update (void *data) {
 	return 0;
 }
 
-void openvc_init (int cam_id, int features) {
+void openvc_init (char *opencv_file, int cam_id, int features) {
 	SDL_Log("opencv: init\n");
 	cv_camid = cam_id;
+	strncpy(cv_file, opencv_file, 1024);
 	cv_features = features;
 	cv_running = 1;
 	cv_mutex = SDL_CreateMutex();
+	if (cv_file[0] != 0 && strncmp(cv_file, "cam:", 4) == 0) {
+		cv_camid = atoi(cv_file + 4);
+		cv_file[0] = 0;
+	}
 #ifdef SDL2
 	cv_thread = SDL_CreateThread(cv_update, NULL, NULL);
 #else

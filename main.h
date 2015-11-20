@@ -166,6 +166,7 @@ typedef struct {
 	int8_t speak;
 	float volt_min;
 
+	char opencv_file[1025];
 	int opencv_device;
 	int opencv_features;
 

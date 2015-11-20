@@ -533,6 +533,7 @@ void setup_save (void) {
 		fprintf(fr, "calibration_max_y	%i\n", setup.calibration_max_y);
 		fprintf(fr, "videolist_lastfile	%s\n", videolist_lastfile);
 		fprintf(fr, "qrcheck			%i\n", setup.qrcheck);
+		fprintf(fr, "opencv_file		%s\n", setup.opencv_file);
 		fprintf(fr, "opencv_device		%i\n", setup.opencv_device);
 		fprintf(fr, "opencv_features		%i\n", setup.opencv_features);
 		fprintf(fr, "videocapture_device	%s\n", setup.videocapture_device);
@@ -735,6 +736,7 @@ void setup_load (void) {
 #else
 	setup.opencv_device = -1;
 #endif
+	setup.opencv_file[0] = 0;
 	setup.opencv_features = 0;
 	setup.videocapture_width = 640;
 	setup.videocapture_height = 480;
@@ -874,6 +876,8 @@ void setup_load (void) {
 	                                strncpy(setup.videocapture_device, val, 1023);
 	                        } else if (strcmp(var, "qrcheck") == 0) {
 	                                setup.qrcheck = atoi(val);
+	                        } else if (strcmp(var, "opencv_file") == 0) {
+	                                strncpy(setup.opencv_file, val, 1024);
 	                        } else if (strcmp(var, "opencv_device") == 0) {
 	                                setup.opencv_device = atoi(val);
 	                        } else if (strcmp(var, "opencv_features") == 0) {
@@ -2863,7 +2867,7 @@ int main ( int argc, char *argv[] ) {
 #endif
 
 #if defined USE_OPENCV
-	openvc_init(setup.opencv_device, setup.opencv_features);
+	openvc_init(setup.opencv_file, setup.opencv_device, setup.opencv_features);
 #elif defined USE_VLC
 	vlc_init(setup.videocapture_device);
 #endif
