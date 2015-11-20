@@ -138,6 +138,7 @@ typedef struct {
 	float fm_radius;
 	float sp_alt;
 	float sp_radius;
+	int16_t wifibc_rssi[4];
 } Ground;
 
 extern uint8_t ModelActive;

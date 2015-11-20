@@ -13,10 +13,17 @@ CFLAGS += -DSDLGL -O3 -Wall -DBASE_DIR="\"$(BASE_DIR)\""
 #CFLAGS += -ggdb
 #CFLAGS += -pg
 
+
+## opencv api for cam and video-files ##
+#CFLAGS += -DUSE_WIFIBC
+#INCDIR += -I./wifibc
+#LIBS += -lrt -lpcap
+#EXTRA_OBJECTS += wifibc/wifibc.o wifibc/lib.o wifibc/radiotap.o wifibc/fec.o
+
 ## video for linux api for cam ##
 #CFLAGS += -DUSE_V4L
 
-## opencv api for cam and video-files ##
+# opencv api for cam and video-files ##
 #CFLAGS += -DUSE_OPENCV
 #CFLAGS += -DOPENCV_EFFECTS -DUSE_QUIRC
 #INCDIR += $(shell pkg-config --cflags opencv)

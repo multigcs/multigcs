@@ -230,6 +230,9 @@ External Libs:
 	libvlc:
 		* Licensed under the GNU General Public License, version 2 or later.
 
+	wifibc:
+		* Licensed under the GNU General Public License, version 2 or later.
+
 ---------------------------------------------------------------------------------------------------------------------
 
 External Services:

@@ -446,6 +446,10 @@ void setup_waypoints (void) {
 	GroundData.fm_radius = 6.0;
 	GroundData.sp_alt = 15.0;
 	GroundData.sp_radius = 2.0;
+	GroundData.wifibc_rssi[0] = 0;
+	GroundData.wifibc_rssi[1] = 0;
+	GroundData.wifibc_rssi[2] = 0;
+	GroundData.wifibc_rssi[3] = 0;
 	SurveySetup.name[0] = 0;
 	SurveySetup.interval = 10;
 	SurveySetup.pos = 1900;
@@ -499,39 +503,60 @@ void setup_save (void) {
 		fprintf(fr, "keep_ratio		%f\n", setup.keep_ratio);
 		fprintf(fr, "fullscreen		%i\n", setup.fullscreen);
 		fprintf(fr, "borderless		%i\n", setup.borderless);
+		fprintf(fr, "\n");
 		fprintf(fr, "lat			%0.8f\n", lat);
 		fprintf(fr, "lon			%0.8f\n", lon);
 		fprintf(fr, "zoom			%i\n", zoom);
 		fprintf(fr, "map_type		%i\n", map_type);
 		fprintf(fr, "omap_type		%i\n", omap_type);
 		fprintf(fr, "center_map		%i\n", center_map);
+		fprintf(fr, "\n");
 		fprintf(fr, "gcs_gps_port		%s\n", setup.gcs_gps_port);
 		fprintf(fr, "gcs_gps_baud		%i\n", setup.gcs_gps_baud);
+		fprintf(fr, "\n");
 		fprintf(fr, "rcflow_port		%s\n", setup.rcflow_port);
 		fprintf(fr, "rcflow_baud		%i\n", setup.rcflow_baud);
+		fprintf(fr, "\n");
 		fprintf(fr, "jeti_port		%s\n", setup.jeti_port);
 		fprintf(fr, "jeti_baud		%i\n", setup.jeti_baud);
+		fprintf(fr, "\n");
 		fprintf(fr, "frsky_port		%s\n", setup.frsky_port);
 		fprintf(fr, "frsky_baud		%i\n", setup.frsky_baud);
+		fprintf(fr, "\n");
 		fprintf(fr, "tracker_port		%s\n", setup.tracker_port);
 		fprintf(fr, "tracker_baud		%i\n", setup.tracker_baud);
+		fprintf(fr, "\n");
 		fprintf(fr, "volt_min		%0.1f\n", setup.volt_min);
 		fprintf(fr, "speak			%i\n", setup.speak);
+		fprintf(fr, "\n");
 		fprintf(fr, "hud_view_screen		%i\n", setup.hud_view_screen);
 		fprintf(fr, "hud_view_video		%i\n", setup.hud_view_video);
 		fprintf(fr, "hud_view_map		%i\n", setup.hud_view_map);
 		fprintf(fr, "hud_view_tunnel		%i\n", setup.hud_view_tunnel);
+		fprintf(fr, "\n");
 		fprintf(fr, "map_view		%i\n", map_view);
 		fprintf(fr, "map_show_profile	%i\n", map_show_profile);
+		fprintf(fr, "\n");
 		fprintf(fr, "webport			%i\n", setup.webport);
+		fprintf(fr, "\n");
 		fprintf(fr, "gearth_interval		%f\n", setup.gearth_interval);
+		fprintf(fr, "\n");
 		fprintf(fr, "touchscreen_device	%s\n", setup.touchscreen_device);
 		fprintf(fr, "calibration_mode	%i\n", setup.calibration_mode);
 		fprintf(fr, "calibration_min_x	%i\n", setup.calibration_min_x);
 		fprintf(fr, "calibration_max_x	%i\n", setup.calibration_max_x);
 		fprintf(fr, "calibration_min_y	%i\n", setup.calibration_min_y);
 		fprintf(fr, "calibration_max_y	%i\n", setup.calibration_max_y);
+		fprintf(fr, "\n");
 		fprintf(fr, "videolist_lastfile	%s\n", videolist_lastfile);
+#ifdef USE_WIFIBC
+		fprintf(fr, "\n");
+		fprintf(fr, "wifibc_device			%s\n", setup.wifibc_device);
+		fprintf(fr, "wifibc_channel			%i\n", setup.wifibc_channel);
+		fprintf(fr, "wifibc_port			%i\n", setup.wifibc_port);
+		fprintf(fr, "wifibc_blocksize			%i\n", setup.wifibc_blocksize);
+#endif
+		fprintf(fr, "\n");
 		fprintf(fr, "qrcheck			%i\n", setup.qrcheck);
 		fprintf(fr, "opencv_file		%s\n", setup.opencv_file);
 		fprintf(fr, "opencv_device		%i\n", setup.opencv_device);
@@ -539,7 +564,9 @@ void setup_save (void) {
 		fprintf(fr, "videocapture_device	%s\n", setup.videocapture_device);
 		fprintf(fr, "videocapture_width	%i\n", setup.videocapture_width);
 		fprintf(fr, "videocapture_height	%i\n", setup.videocapture_height);
+		fprintf(fr, "\n");
 		fprintf(fr, "weather_enable	%i\n", setup.weather_enable);
+		fprintf(fr, "\n");
 		fprintf(fr, "mavlink_tcp_server		%s\n", setup.mavlink_tcp_server);
 		fprintf(fr, "mavlink_tcp_port		%i\n", setup.mavlink_tcp_port);
 		fprintf(fr, "mavlink_udp_port		%i\n", setup.mavlink_udp_port);
@@ -721,6 +748,14 @@ void setup_load (void) {
 	setup.mavlink_forward_udp_remote_port = 14560;
 	strcpy(setup.mavlink_forward_udp_remote_ip, "127.0.0.1");
 	map_type = 1;
+
+#ifdef USE_WIFIBC
+	strcpy(setup.wifibc_device, "wlan1");
+	setup.wifibc_channel = 13;
+	setup.wifibc_port = 0;
+	setup.wifibc_blocksize = 8;
+#endif
+
 #if defined USE_APRS
 	setup.aprs_server[0] = 0;
 	strcpy(setup.aprs_server, "146.229.162.182");
@@ -872,6 +907,16 @@ void setup_load (void) {
 	                                setup.webport = atoi(val);
 	                        } else if (strcmp(var, "gearth_interval") == 0) {
 	                                setup.gearth_interval = atoi(val);
+#ifdef USE_WIFIBC
+	                        } else if (strcmp(var, "wifibc_device") == 0) {
+	                                strncpy(setup.wifibc_device, val, 127);
+	                        } else if (strcmp(var, "wifibc_channel") == 0) {
+	                                setup.wifibc_channel = atoi(val);
+	                        } else if (strcmp(var, "wifibc_port") == 0) {
+	                                setup.wifibc_port = atoi(val);
+	                        } else if (strcmp(var, "wifibc_blocksize") == 0) {
+	                                setup.wifibc_blocksize = atoi(val);
+#endif
 	                        } else if (strcmp(var, "videocapture_device") == 0) {
 	                                strncpy(setup.videocapture_device, val, 1023);
 	                        } else if (strcmp(var, "qrcheck") == 0) {
@@ -2679,6 +2724,9 @@ void ShutDown ( ESContext *esContext ) {
 #ifdef USE_OPENCV
 	openvc_exit();
 #endif
+#ifdef USE_WIFIBC
+	wifibc_exit();
+#endif
 	serial_monitor_exit();
 
 	SDL_Log("Shutdown\n");
@@ -2866,6 +2914,9 @@ int main ( int argc, char *argv[] ) {
 #endif
 #endif
 
+#ifdef USE_WIFIBC
+	wifibc_init();
+#endif
 #if defined USE_OPENCV
 	openvc_init(setup.opencv_file, setup.opencv_device, setup.opencv_features);
 #elif defined USE_VLC
