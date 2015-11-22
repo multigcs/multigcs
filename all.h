@@ -178,6 +178,9 @@
 #include <highgui.h>
 #include <opencv.h>
 #endif
+#if defined USE_WIFIBC
+#include <wifibc.h>
+#endif
 #ifdef USE_QUIRC
 #include <quirc.h>
 #include <qrcheck.h>

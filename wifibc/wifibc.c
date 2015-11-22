@@ -532,8 +532,8 @@ int wifibc_update (void *data) {
 	int i;
     block_buffer_t *block_buffer_list;
 
-	param_port = 0;
-//	param_data_packets_per_block = atoi(optarg);
+	param_port = setup.wifibc_port;
+	param_data_packets_per_block = setup.wifibc_blocksize;
 //	param_fec_packets_per_block = atoi(optarg);
 //	param_block_buffers = atoi(optarg);
 //	param_packet_length = atoi(optarg);
@@ -610,7 +610,7 @@ void wifibc_init (void) {
 	system(cmd_str);
 	sprintf(cmd_str, "ifconfig %s up", setup.wifibc_device);
 	system(cmd_str);
-	sprintf(cmd_str, "iwconfig %s channel 13", setup.wifibc_device);
+	sprintf(cmd_str, "iwconfig %s channel %i", setup.wifibc_device, setup.wifibc_channel);
 	system(cmd_str);
 
 	wifibc_running = 1;
