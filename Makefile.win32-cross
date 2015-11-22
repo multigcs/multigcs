@@ -24,7 +24,7 @@ COMMONHRD =
 
 
 
-VERSION = 0.9-`date +%s`
+VERSION = 0.92-`date +%s`
 BASE_DIR = Data
 
 

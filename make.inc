@@ -1,6 +1,7 @@
 
 ARCH = `dpkg --print-architecture`
-VERSION = 0.9-`date +%s`
+VERSION = 0.92
+VERSION_BUILD := `date +%s`
 BASE_DIR = /usr/share/multigcs
 
 
@@ -26,7 +27,7 @@ default: all
 all: gcs
 
 clean:
-	rm -f gcs *.o Common/*.o screens/*.o net/*.o draw/*.o tcl/*.o mavlink/*.o gps/*.o mwi21/*.o jeti/*.o openpilot/*.o frsky/*.o tracker/*.o minizip/*.o tracker/*.o quirc/*.o
+	rm -f gcs *.o Common/*.o screens/*.o net/*.o draw/*.o tcl/*.o mavlink/*.o gps/*.o mwi21/*.o jeti/*.o openpilot/*.o frsky/*.o tracker/*.o minizip/*.o tracker/*.o quirc/*.o wifibc/*.o
 
 install:
 	cp -a gcs /usr/bin/gl-gcs
@@ -139,7 +140,7 @@ deb: gcs
 	chmod -R -s package/ -R
 	chmod 0755 package/DEBIAN/ -R
 	dpkg-deb --build package
-	mv package.deb multigcs-$(VERSION_NAME)_$(VERSION)_$(ARCH).deb
+	mv package.deb multigcs-$(VERSION_NAME)_$(VERSION)-$(VERSION_BUILD)_$(ARCH).deb
 
 %.o: %.c
 	@echo "$< -> $@"
