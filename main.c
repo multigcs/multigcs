@@ -510,6 +510,7 @@ void setup_save (void) {
 		fprintf(fr, "map_type		%i\n", map_type);
 		fprintf(fr, "omap_type		%i\n", omap_type);
 		fprintf(fr, "center_map		%i\n", center_map);
+		fprintf(fr, "weather_enable	%i\n", setup.weather_enable);
 		fprintf(fr, "\n");
 		fprintf(fr, "gcs_gps_port		%s\n", setup.gcs_gps_port);
 		fprintf(fr, "gcs_gps_baud		%i\n", setup.gcs_gps_baud);
@@ -556,16 +557,19 @@ void setup_save (void) {
 		fprintf(fr, "wifibc_port			%i\n", setup.wifibc_port);
 		fprintf(fr, "wifibc_blocksize			%i\n", setup.wifibc_blocksize);
 #endif
+#ifdef USE_OPENCV
 		fprintf(fr, "\n");
 		fprintf(fr, "qrcheck			%i\n", setup.qrcheck);
 		fprintf(fr, "opencv_file		%s\n", setup.opencv_file);
 		fprintf(fr, "opencv_device		%i\n", setup.opencv_device);
 		fprintf(fr, "opencv_features		%i\n", setup.opencv_features);
+#endif
+#ifdef USE_V4L
+		fprintf(fr, "\n");
 		fprintf(fr, "videocapture_device	%s\n", setup.videocapture_device);
 		fprintf(fr, "videocapture_width	%i\n", setup.videocapture_width);
 		fprintf(fr, "videocapture_height	%i\n", setup.videocapture_height);
-		fprintf(fr, "\n");
-		fprintf(fr, "weather_enable	%i\n", setup.weather_enable);
+#endif
 		fprintf(fr, "\n");
 		fprintf(fr, "mavlink_tcp_server		%s\n", setup.mavlink_tcp_server);
 		fprintf(fr, "mavlink_tcp_port		%i\n", setup.mavlink_tcp_port);
@@ -574,6 +578,7 @@ void setup_save (void) {
 		fprintf(fr, "mavlink_forward_udp_remote_port		%i\n", setup.mavlink_forward_udp_remote_port);
 		fprintf(fr, "mavlink_forward_udp_remote_ip		%s\n", setup.mavlink_forward_udp_remote_ip);
 #if defined USE_APRS
+		fprintf(fr, "\n");
 		fprintf(fr, "aprs_server		%s\n", setup.aprs_server);
 		fprintf(fr, "aprs_port		%i\n", setup.aprs_port);
 		fprintf(fr, "aprs_filter	%s\n", setup.aprs_filter);
