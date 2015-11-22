@@ -505,18 +505,18 @@ wifibroadcast_rx_status_t *status_memory_open(void) {
 
 	if(fd < 0) {
 		perror("shm_open");
-		return 1;
+		return NULL;
 	}
 
 	if (ftruncate(fd, sizeof(wifibroadcast_rx_status_t)) == -1) {
 		perror("ftruncate");
-		return 1;
+		return NULL;
 	}
 
 	void *retval = mmap(NULL, sizeof(wifibroadcast_rx_status_t), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	if (retval == MAP_FAILED) {
 		perror("mmap");
-		return 1;
+		return NULL;
 	}
 	
 	wifibroadcast_rx_status_t *tretval = (wifibroadcast_rx_status_t*)retval;
@@ -603,6 +603,7 @@ void wifibc_init (void) {
 
 	system("rm -rf /tmp/fifo.avi");
 	system("mkfifo /tmp/fifo.avi");
+	system("echo > /tmp/fifo.avi &");
 	sprintf(cmd_str, "ifconfig %s down", setup.wifibc_device);
 	system(cmd_str);
 	sprintf(cmd_str, "iw dev %s set monitor otherbss fcsfail", setup.wifibc_device);

@@ -21,9 +21,9 @@ static char cv_file[1025];
 static int b_squares;
 static CvSize b_size;
 static CvMat *warp_matrix = NULL;
-static CvPoint2D32f corners[20];
 static IplImage *gray = NULL;
-static CvPoint p[4];
+// static CvPoint2D32f corners[20];
+// static CvPoint p[4];
 
 void cvar_init (void) {
 	int b_width  = 5;
@@ -34,7 +34,7 @@ void cvar_init (void) {
 }
 
 void cvar_run (IplImage *image) {
-	int corner_count = 0;
+//	int corner_count = 0;
 	if (gray == NULL) {
 		gray = cvCreateImage(cvGetSize(image), image->depth, 1);
 	}
