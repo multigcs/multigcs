@@ -15,10 +15,10 @@ CFLAGS += -DSDLGL -O3 -Wall -DBASE_DIR="\"$(BASE_DIR)\""
 
 
 ## opencv api for cam and video-files ##
-#CFLAGS += -DUSE_WIFIBC
-#INCDIR += -I./wifibc
-#LIBS += -lrt -lpcap
-#EXTRA_OBJECTS += wifibc/wifibc.o wifibc/lib.o wifibc/radiotap.o wifibc/fec.o
+CFLAGS += -DUSE_WIFIBC
+INCDIR += -I./wifibc
+LIBS += -lrt -lpcap -lavformat -lavcodec -lswscale -lz -lavutil
+EXTRA_OBJECTS += wifibc/wifibc.o wifibc/lib.o wifibc/radiotap.o wifibc/fec.o
 
 ## video for linux api for cam ##
 #CFLAGS += -DUSE_V4L

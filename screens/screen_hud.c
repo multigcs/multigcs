@@ -574,6 +574,17 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 		vlc_init(setup.videocapture_device);
 	}
 	draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, vlc_update());
+#elif defined USE_WIFIBC
+	SDL_Surface *vidsurf = wifibc_get();
+	if (vidsurf != NULL) {
+#ifdef _ANDROID
+		SDL_Surface *imageSurface = convert_to_power_of_two(vidsurf);
+		draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, imageSurface);
+		SDL_FreeSurface(imageSurface);
+#else
+		draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, vidsurf);
+#endif
+	}
 #elif defined USE_OPENCV
 	SDL_Surface *vidsurf = openvc_get();
 	if (vidsurf != NULL) {

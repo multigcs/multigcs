@@ -106,7 +106,7 @@ SDL_Surface *ipl_to_surface (IplImage *opencvimg) {
 	SDL_Surface *surface = SDL_CreateRGBSurfaceFrom((void*)opencvimg->imageData,
 		opencvimg->width,
 		opencvimg->height,
-		opencvimg->depth*opencvimg->nChannels,
+		opencvimg->depth * opencvimg->nChannels,
 		opencvimg->widthStep,
 		0xff0000, 0x00ff00, 0x0000ff, 0
 	);
