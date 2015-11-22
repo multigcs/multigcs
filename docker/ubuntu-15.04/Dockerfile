@@ -13,6 +13,6 @@ RUN apt-get install -y build-essential clang pkg-config libxml2-dev libpng12-dev
 RUN apt-get install -y libpcap-dev iw
 
 ## build ##
-RUN echo "#!/bin/sh" > /usr/local/bin/build && echo "(cd /usr/src/multigcs/ && make -f Makefile.gl-sdl clean all deb)" >> /usr/local/bin/build && chmod 755 /usr/local/bin/build
+RUN echo "#!/bin/sh" > /usr/local/bin/build && echo "(cd /usr/src/multigcs/ && make clean all deb)" >> /usr/local/bin/build && chmod 755 /usr/local/bin/build
 
 

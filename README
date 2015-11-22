@@ -29,7 +29,7 @@ Compilation/Installation:
 
 	Linux/Raspberry-Pi (OpenGL-ES):
 
-		make all install deb
+		make -f Makefile.rpi all install deb
 
 	Mac-OSX (OpenGL):
 

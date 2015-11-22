@@ -53,32 +53,6 @@ static SDL_Thread *wifibc_thread2 = NULL;
 static uint8_t wifibc_running = 0;
 static uint8_t wifibc_running2 = 0;
 
-
-#define QUEUE_ELEMENTS (1024 * 100)
-#define QUEUE_SIZE (QUEUE_ELEMENTS + 1)
-static uint8_t Queue[QUEUE_SIZE];
-static uint64_t QueueIn = 0;
-static uint64_t QueueOut = 0;
-
-uint8_t QueuePut(uint8_t new) {
-	while (wifibc_running == 1 && QueueIn == (( QueueOut - 1 + QUEUE_SIZE) % QUEUE_SIZE)) {
-		SDL_Delay(1);
-	}
-	Queue[QueueIn] = new;
-	QueueIn = (QueueIn + 1) % QUEUE_SIZE;
-	return 0; // No errors
-}
-
-uint8_t QueueGet(uint8_t *old) {
-	while (wifibc_running == 1 && QueueIn == QueueOut) {
-		SDL_Delay(1);
-	}
-	*old = Queue[QueueOut];
-	QueueOut = (QueueOut + 1) % QUEUE_SIZE;
-	return 0; // No errors
-}
-
-
 typedef struct  {
 	int m_nChannel;
 	int m_nChannelFlags;
@@ -110,7 +84,32 @@ typedef struct {
 #ifdef USE_FIFO
 static FILE *infd = NULL;
 static FILE *wifibc_fr = NULL;
+#else
+#define QUEUE_ELEMENTS (1024 * 100)
+#define QUEUE_SIZE (QUEUE_ELEMENTS + 1)
+static uint8_t Queue[QUEUE_SIZE];
+static uint64_t QueueIn = 0;
+static uint64_t QueueOut = 0;
+
+inline static uint8_t QueuePut(uint8_t new) {
+	while (wifibc_running == 1 && QueueIn == (( QueueOut - 1 + QUEUE_SIZE) % QUEUE_SIZE)) {
+		SDL_Delay(1);
+	}
+	Queue[QueueIn] = new;
+	QueueIn = (QueueIn + 1) % QUEUE_SIZE;
+	return 0; // No errors
+}
+
+inline static uint8_t QueueGet(uint8_t *old) {
+	while (wifibc_running == 1 && QueueIn == QueueOut) {
+		SDL_Delay(1);
+	}
+	*old = Queue[QueueOut];
+	QueueOut = (QueueOut + 1) % QUEUE_SIZE;
+	return 0; // No errors
+}
 #endif
+
 
 int open_and_configure_interface(const char *name, int port, monitor_interface_t *interface) {
 	struct bpf_program bpfprogram;
@@ -124,7 +123,6 @@ int open_and_configure_interface(const char *name, int port, monitor_interface_t
 		fprintf(stderr, "Unable to open interface %s in pcap: %s\n", name, szErrbuf);
 		return 1;
 	}
-
 
 	if(pcap_setnonblock(interface->ppcap, 1, szErrbuf) < 0) {
 		fprintf(stderr, "Error setting %s to nonblocking mode: %s\n", name, szErrbuf);
@@ -473,36 +471,22 @@ void process_packet(monitor_interface_t *interface, block_buffer_t *block_buffer
 		fprintf(stderr, "%s\n", pcap_geterr(interface->ppcap));
 		return;
 	}
-
-	//if(retval == 0)
-	//	fprintf(stderr, "retval = 0\n");
-
 	if (retval != 1) {
 		return;
 	}
-
-
 	u16HeaderLen = (pu8Payload[2] + (pu8Payload[3] << 8));
-
 	if (ppcapPacketHeader->len <
 			(u16HeaderLen + interface->n80211HeaderLength)) {
 		return;
 	}
-
-	bytes = ppcapPacketHeader->len -
-			(u16HeaderLen + interface->n80211HeaderLength);
+	bytes = ppcapPacketHeader->len - (u16HeaderLen + interface->n80211HeaderLength);
 	if (bytes < 0) {
 		return;
 	}
-
-	if (ieee80211_radiotap_iterator_init(&rti,
-										 (struct ieee80211_radiotap_header *)pu8Payload,
-										 ppcapPacketHeader->len) < 0) {
+	if (ieee80211_radiotap_iterator_init(&rti, (struct ieee80211_radiotap_header *)pu8Payload, ppcapPacketHeader->len) < 0) {
 		return;
 	}
-
 	while ((n = ieee80211_radiotap_iterator_next(&rti)) == 0) {
-
 		switch (rti.this_arg_index) {
 			case IEEE80211_RADIOTAP_RATE:
 				prd.m_nRate = (*rti.this_arg);
@@ -530,31 +514,20 @@ void process_packet(monitor_interface_t *interface, block_buffer_t *block_buffer
 		}
 	}
 	pu8Payload += u16HeaderLen + interface->n80211HeaderLength;
-
 	if (prd.m_nRadiotapFlags & IEEE80211_RADIOTAP_F_FCS) {
 		bytes -= 4;
 	}
-
-
 	int checksum_correct = (prd.m_nRadiotapFlags & 0x40) == 0;
-
 	if(!checksum_correct) {
 		rx_status->adapter[adapter_no].wrong_crc_cnt++;
 	}
-
 	rx_status->adapter[adapter_no].received_packet_cnt++;
-
 	if(rx_status->adapter[adapter_no].received_packet_cnt % 1024 == 0) {
-		//			fprintf(stderr, "Signal (card %d): %ddBm\n", adapter_no, rx_status->adapter[adapter_no].current_signal_dbm);
 		GroundData.wifibc_rssi[adapter_no] = rx_status->adapter[adapter_no].current_signal_dbm;
 	}
-
 	rx_status->last_update = time(NULL);
-
 	process_payload(pu8Payload, bytes, checksum_correct, block_buffer_list, adapter_no);
 }
-
-
 
 void status_memory_init(wifibroadcast_rx_status_t *s) {
 	s->received_block_cnt = 0;
@@ -570,35 +543,27 @@ void status_memory_init(wifibroadcast_rx_status_t *s) {
 	}
 }
 
-
 wifibroadcast_rx_status_t *status_memory_open(void) {
 	char buf[128];
 	int fd;
-
 	sprintf(buf, "/wifibroadcast_rx_status_%d", param_port);
 	fd = shm_open(buf, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
-
-	if(fd < 0) {
+	if (fd < 0) {
 		perror("shm_open");
 		return NULL;
 	}
-
 	if (ftruncate(fd, sizeof(wifibroadcast_rx_status_t)) == -1) {
 		perror("ftruncate");
 		return NULL;
 	}
-
 	void *retval = mmap(NULL, sizeof(wifibroadcast_rx_status_t), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	if (retval == MAP_FAILED) {
 		perror("mmap");
 		return NULL;
 	}
-
 	wifibroadcast_rx_status_t *tretval = (wifibroadcast_rx_status_t*)retval;
 	status_memory_init(tretval);
-
 	return tretval;
-
 }
 
 int readFunction (void *opaque, uint8_t *buf, int buf_size) {
@@ -616,11 +581,7 @@ int readFunction (void *opaque, uint8_t *buf, int buf_size) {
 	return numBytes;
 }
 
-
-
 int wifibc_update2 (void *data) {
-	SDL_Delay(3000);
-
 	AVFormatContext *pFormatCtx = NULL;
 	int             i = 0;
 	int             videoStream = -1;
@@ -638,15 +599,12 @@ int wifibc_update2 (void *data) {
 	int               numBytes;
 	uint8_t           *buffer = NULL;
 
+	av_register_all();
+	ioBuffer = (unsigned char *)av_malloc(ioBufferSize + FF_INPUT_BUFFER_PADDING_SIZE);
 #ifdef USE_FIFO
 	if ((infd = fopen("/tmp/fifo.avi", "rb")) == NULL) {
 		fprintf(stderr, "error reading fifo: /tmp/fifo.avi\n");
 	}
-#endif
-
-	av_register_all();
-	ioBuffer = (unsigned char *)av_malloc(ioBufferSize + FF_INPUT_BUFFER_PADDING_SIZE);
-#ifdef USE_FIFO
 	avioContext = avio_alloc_context(ioBuffer, ioBufferSize, 0, (void*)(&infd), &readFunction, NULL, NULL);
 #else
 	avioContext = avio_alloc_context(ioBuffer, ioBufferSize, 0, NULL, &readFunction, NULL, NULL);
@@ -689,22 +647,18 @@ int wifibc_update2 (void *data) {
 	if(pFrameRGB == NULL) {
 		return -1;
 	}
-
 	wifibc_surface = SDL_CreateRGBSurface(0, pCodecCtx->width, pCodecCtx->height, 24, 0x0000ff, 0x00ff00, 0xff0000, 0);
 	wifibc_bg = SDL_CreateRGBSurface(0, pCodecCtx->width, pCodecCtx->height, 24, 0x0000ff, 0x00ff00, 0xff0000, 0);
-
 	numBytes = avpicture_get_size(PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height);
 	buffer = (uint8_t *)av_malloc(numBytes*sizeof(uint8_t));
 	avpicture_fill((AVPicture *)pFrameRGB, buffer, PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height);
 	sws_ctx = sws_getContext(pCodecCtx->width, pCodecCtx->height, pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height, PIX_FMT_RGB24,
 							 SWS_BICUBIC, NULL, NULL, NULL);
-
 	while (av_read_frame(pFormatCtx, &packet) >= 0 && wifibc_running2 == 1) {
 		if (packet.stream_index == videoStream) {
 			avcodec_decode_video2(pCodecCtx, pFrame, &frameFinished, &packet);
 			if (frameFinished) {
 				sws_scale(sws_ctx, (uint8_t const * const *)pFrame->data, pFrame->linesize, 0, pCodecCtx->height, pFrameRGB->data, pFrameRGB->linesize);
-
 				SDL_Surface *image = SDL_CreateRGBSurfaceFrom(
 										 pFrameRGB->data[0],
 										 pCodecCtx->width, pCodecCtx->height,
@@ -712,11 +666,9 @@ int wifibc_update2 (void *data) {
 										 pCodecCtx->width * 3,
 										 0x0000ff, 0x00ff00, 0xff0000, 0
 									 );
-
 				SDL_LockMutex(wifibc_mutex);
 				SDL_BlitSurface(image, NULL, wifibc_bg, NULL);
 				SDL_UnlockMutex(wifibc_mutex);
-
 				SDL_FreeSurface(image);
 			}
 		}
@@ -734,7 +686,6 @@ int wifibc_update (void *data) {
 	int num_interfaces = 0;
 	int i;
 	block_buffer_t *block_buffer_list;
-
 	param_port = setup.wifibc_port;
 	param_data_packets_per_block = setup.wifibc_blocksize;
 	//	param_fec_packets_per_block = atoi(optarg);
@@ -745,9 +696,7 @@ int wifibc_update (void *data) {
 		SDL_Log("wifibc: Packet length is limited to %d bytes (you requested %d bytes)\n", MAX_USER_PACKET_LENGTH, param_packet_length);
 		return (1);
 	}
-
 	fec_init();
-
 	int x = optind;
 	if (open_and_configure_interface("wlan1", param_port, interfaces + num_interfaces) != 0) {
 		SDL_Log("wifibc: faild open wifi: %s\n", "wlan1");
@@ -755,11 +704,9 @@ int wifibc_update (void *data) {
 	}
 	++num_interfaces;
 	++x;
-
 #ifdef USE_FIFO
 	wifibc_fr = fopen("/tmp/fifo.avi", "wb");
 #endif
-
 	//block buffers contain both the block_num as well as packet buffers for a block.
 	block_buffer_list = malloc(sizeof(block_buffer_t) * param_block_buffers);
 	for(i=0; i<param_block_buffers; ++i) {
@@ -767,25 +714,19 @@ int wifibc_update (void *data) {
 		block_buffer_list[i].packet_buffer_list = lib_alloc_packet_buffer_list(param_data_packets_per_block+param_fec_packets_per_block,
 				MAX_PACKET_LENGTH);
 	}
-
 	rx_status = status_memory_open();
 	rx_status->wifi_adapter_cnt = num_interfaces;
-
 	SDL_Log("wifibc: start stream\n");
-
 	while (wifibc_running == 1) {
 		fd_set readset;
 		struct timeval to;
-
 		to.tv_sec = 0;
 		to.tv_usec = 1e5;
-
 		FD_ZERO(&readset);
 		for(i=0; i<num_interfaces; ++i) {
 			FD_SET(interfaces[i].selectable_fd, &readset);
 		}
 		int n = select(30, &readset, NULL, NULL, &to);
-
 		for(i=0; i<num_interfaces; ++i) {
 			if (n == 0) {
 				break;
@@ -794,17 +735,13 @@ int wifibc_update (void *data) {
 				process_packet(interfaces + i, block_buffer_list, i);
 			}
 		}
-
 	}
-
 #ifdef USE_FIFO
 	fclose(wifibc_fr);
 #endif
 	wifibc_running2 = 0;
-
 	return (0);
 }
-
 
 void wifibc_init (void) {
 	char cmd_str[1024];
@@ -821,10 +758,8 @@ void wifibc_init (void) {
 	system(cmd_str);
 	sprintf(cmd_str, "iwconfig %s channel %i", setup.wifibc_device, setup.wifibc_channel);
 	system(cmd_str);
-
 	wifibc_running = 1;
 	wifibc_running2 = 1;
-
 #ifdef SDL2
 	wifibc_thread = SDL_CreateThread(wifibc_update, NULL, NULL);
 	wifibc_thread2 = SDL_CreateThread(wifibc_update2, NULL, NULL);

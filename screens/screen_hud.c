@@ -1572,7 +1572,7 @@ void screen_hud_internal (ESContext *esContext) {
 
 #ifdef USE_WIFIBC
 		sprintf(tmp_str, "%idBm", GroundData.wifibc_rssi[0]);
-		draw_circleMeter_f3(esContext, -1.05, 0.6, 0.001, 0.14, 0.0, 25.0, 50.0, 180.0, (GroundData.wifibc_rssi[0] * -2.5), "WifiBC", tmp_str, 0);
+		draw_circleMeter_f3(esContext, -1.05, 0.6, 0.001, 0.14, 0.0, 25.0, 50.0, 180.0, (GroundData.wifibc_rssi[0] * -2.0), "WifiBC", tmp_str, 0);
 #endif
 
 	//SDL_Log("hud#9f\n");
