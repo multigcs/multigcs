@@ -317,34 +317,32 @@ ModelData[0].yaw = data[data_len - 1];
 					if (ph->data_length > param_packet_length) {
 						ph->data_length = param_packet_length;
 					}
-
-
-if (setup.wifibc_record == 1) {
-		if (record_run == 0) {
-			sprintf(record_file, "/tmp/record-%i.avi", 1);
-			record_fr = fopen(record_file, "wb");
-			if (record_fr == NULL) {
-				SDL_Log("error write to record file: %s\n", record_file);
-				setup.wifibc_record = 0;
-			} else {
-				SDL_Log("write to record file: %s\n", record_file);
-				record_run = 1;
-			}
-		}
-		if (record_fr != NULL) {
-			fwrite(data_blocks[i] + sizeof(payload_header_t), ph->data_length, 1, record_fr);
-		}
-} else if (setup.wifibc_record == 0) {
-		if (record_run == 1) {
-			SDL_Log("stop recording, file saved to: %s\n", record_file);
-			fclose(record_fr);
-			record_fr = NULL;
-			record_run = 0;
-		}
-}
-
-
-
+					// save video stream to file
+					if (setup.wifibc_record == 1) {
+							if (record_run == 0) {
+								setup.wifibc_record_size = 0;
+								sprintf(record_file, "/tmp/record-%i.avi", 1);
+								record_fr = fopen(record_file, "wb");
+								if (record_fr == NULL) {
+									SDL_Log("error write to record file: %s\n", record_file);
+									setup.wifibc_record = 0;
+								} else {
+									SDL_Log("write to record file: %s\n", record_file);
+									record_run = 1;
+								}
+							}
+							if (record_fr != NULL) {
+								setup.wifibc_record_size += ph->data_length;
+								fwrite(data_blocks[i] + sizeof(payload_header_t), ph->data_length, 1, record_fr);
+							}
+					} else if (setup.wifibc_record == 0) {
+							if (record_run == 1) {
+								SDL_Log("stop recording, file saved to: %s (size: %0.2fMB)\n", record_file, (float)setup.wifibc_record_size / 1024 / 1024);
+								fclose(record_fr);
+								record_fr = NULL;
+								record_run = 0;
+							}
+					}
 #ifdef USE_FIFO
 					fwrite(data_blocks[i] + sizeof(payload_header_t), ph->data_length, 1, wifibc_fr);
 #else
