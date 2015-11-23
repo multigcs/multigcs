@@ -194,6 +194,8 @@ typedef struct {
 	int wifibc_channel;
 	int wifibc_port;
 	int wifibc_blocksize;
+	int wifibc_packetlen;
+	uint8_t wifibc_record;
 #endif
 
 #if defined USE_APRS

@@ -88,6 +88,10 @@ static uint8_t Queue[QUEUE_SIZE];
 static uint64_t QueueIn = 0;
 static uint64_t QueueOut = 0;
 
+static FILE *record_fr = NULL;
+static uint8_t record_run = 0;
+static char record_file[1024];
+
 inline static uint8_t QueuePut(uint8_t new) {
 	while (wifibc_running == 1 && QueueIn == (( QueueOut - 1 + QUEUE_SIZE) % QUEUE_SIZE)) {
 		SDL_Delay(1);
@@ -178,6 +182,20 @@ void process_payload(uint8_t *data, size_t data_len, int crc_correct, block_buff
 	data += sizeof(wifi_packet_header_t);
 	data_len -= sizeof(wifi_packet_header_t);
 	block_num = wph->sequence_number / (param_data_packets_per_block + param_fec_packets_per_block);
+
+
+/*
+//printf("## %i ##\n", data_len);
+int ti = 0;
+for (ti = 0; ti < 100; ti++) {
+	//printf("%i %i, ", ti, data[data_len - 100 + ti]);
+}
+
+
+ModelData[0].yaw = data[data_len - 1];
+	//printf("\n");
+*/
+
 	int tx_restart = (block_num + 128 * param_block_buffers < max_block_num);
 	if ((block_num > max_block_num || tx_restart) && crc_correct) {
 		if (tx_restart) {
@@ -299,6 +317,33 @@ void process_payload(uint8_t *data, size_t data_len, int crc_correct, block_buff
 					if (ph->data_length > param_packet_length) {
 						ph->data_length = param_packet_length;
 					}
+
+
+if (setup.wifibc_record == 1) {
+		if (record_run == 0) {
+			sprintf(record_file, "/tmp/record-%i.avi", 1);
+			record_fr = fopen(record_file, "wb");
+			if (record_fr == NULL) {
+				SDL_Log("error write to record file: %s\n", record_file);
+				setup.wifibc_record = 0;
+			} else {
+				SDL_Log("write to record file: %s\n", record_file);
+				record_run = 1;
+			}
+		}
+		if (record_fr != NULL) {
+			fwrite(data_blocks[i] + sizeof(payload_header_t), ph->data_length, 1, record_fr);
+		}
+} else if (setup.wifibc_record == 0) {
+		if (record_run == 1) {
+			SDL_Log("stop recording, file saved to: %s\n", record_file);
+			fclose(record_fr);
+			record_fr = NULL;
+			record_run = 0;
+		}
+}
+
+
 
 #ifdef USE_FIFO
 					fwrite(data_blocks[i] + sizeof(payload_header_t), ph->data_length, 1, wifibc_fr);
@@ -497,11 +542,12 @@ int wifibc_update_video (void *data) {
 	if (avformat_find_stream_info(pFormatCtx, NULL) < 0) {
 		return -1;
 	}
-	for (i = 0; i < pFormatCtx->nb_streams; i++)
+	for (i = 0; i < pFormatCtx->nb_streams; i++) {
 		if (pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
 			videoStream = i;
 			break;
 		}
+	}
 	if (videoStream == -1) {
 		return -1;
 	}
@@ -564,13 +610,13 @@ int wifibc_update_video (void *data) {
 int wifibc_update_stream (void *data) {
 	monitor_interface_t interfaces[MAX_PENUMBRA_INTERFACES];
 	int num_interfaces = 0;
-	int i;
+	int i = 0;
 	block_buffer_t *block_buffer_list;
 	param_port = setup.wifibc_port;
 	param_data_packets_per_block = setup.wifibc_blocksize;
+	param_packet_length = setup.wifibc_packetlen;
 	//	param_fec_packets_per_block = atoi(optarg);
 	//	param_block_buffers = atoi(optarg);
-	//	param_packet_length = atoi(optarg);
 	if (param_packet_length > MAX_USER_PACKET_LENGTH) {
 		SDL_Log("wifibc: Packet length is limited to %d bytes (you requested %d bytes)\n", MAX_USER_PACKET_LENGTH, param_packet_length);
 		return (1);

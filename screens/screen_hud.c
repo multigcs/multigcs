@@ -23,6 +23,11 @@ uint8_t hud_null (char *name, float x, float y, int8_t button, float data, uint8
 	return 0;
 }
 
+uint8_t hud_record (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	setup.wifibc_record = 1 - setup.wifibc_record;
+	return 0;
+}
+
 uint8_t gimbal_set_pitch (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 4) {
 		gimbal_pitch++;
@@ -1572,7 +1577,12 @@ void screen_hud_internal (ESContext *esContext) {
 
 #ifdef USE_WIFIBC
 		sprintf(tmp_str, "%idBm", GroundData.wifibc_rssi[0]);
-		draw_circleMeter_f3(esContext, -1.05, 0.6, 0.001, 0.14, 0.0, 25.0, 50.0, 180.0, (GroundData.wifibc_rssi[0] * -2.0), "WifiBC", tmp_str, 0);
+		draw_circleMeter_f3(esContext, -1.05, 0.6, 0.001, 0.14, 0.0, 10.0, 25.0, 180.0, 100.0 - (GroundData.wifibc_rssi[0] / -64.0 * 100.0), "WifiBC", tmp_str, 0);
+		if (setup.wifibc_record == 1) {
+			draw_text_button(esContext, "record", VIEW_MODE_HUD, "Stop Record", FONT_PINK, -1.05, 0.7, 0.005, 0.035, 1, 0, hud_record, 0);
+		} else {
+			draw_text_button(esContext, "record", VIEW_MODE_HUD, "Start Record", FONT_GREEN, -1.05, 0.7, 0.005, 0.035, 1, 0, hud_record, 0);
+		}
 #endif
 
 	//SDL_Log("hud#9f\n");

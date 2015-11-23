@@ -556,6 +556,8 @@ void setup_save (void) {
 		fprintf(fr, "wifibc_channel			%i\n", setup.wifibc_channel);
 		fprintf(fr, "wifibc_port			%i\n", setup.wifibc_port);
 		fprintf(fr, "wifibc_blocksize			%i\n", setup.wifibc_blocksize);
+		fprintf(fr, "wifibc_packetlen			%i\n", setup.wifibc_packetlen);
+		fprintf(fr, "wifibc_record				%i\n", setup.wifibc_record);
 #endif
 #ifdef USE_OPENCV
 		fprintf(fr, "\n");
@@ -759,6 +761,8 @@ void setup_load (void) {
 	setup.wifibc_channel = 13;
 	setup.wifibc_port = 0;
 	setup.wifibc_blocksize = 8;
+	setup.wifibc_packetlen = 1024;
+	setup.wifibc_record = 0;
 #endif
 
 #if defined USE_APRS
@@ -921,6 +925,10 @@ void setup_load (void) {
 	                                setup.wifibc_port = atoi(val);
 	                        } else if (strcmp(var, "wifibc_blocksize") == 0) {
 	                                setup.wifibc_blocksize = atoi(val);
+	                        } else if (strcmp(var, "wifibc_packetlen") == 0) {
+	                                setup.wifibc_packetlen = atoi(val);
+	                        } else if (strcmp(var, "wifibc_record") == 0) {
+	                                setup.wifibc_record = atoi(val);
 #endif
 	                        } else if (strcmp(var, "videocapture_device") == 0) {
 	                                strncpy(setup.videocapture_device, val, 1023);
