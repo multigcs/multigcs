@@ -16,14 +16,11 @@
  *
  */
 
-
 #include <all.h>
 
 #if defined USE_WIFIBC
 
-
 //#define USE_FIFO
-
 
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
@@ -48,8 +45,8 @@
 static SDL_mutex *wifibc_mutex = NULL;
 static SDL_Surface *wifibc_bg = NULL;
 static SDL_Surface *wifibc_surface = NULL;
-static SDL_Thread *wifibc_thread = NULL;
-static SDL_Thread *wifibc_thread2 = NULL;
+static SDL_Thread *wifibc_thread_stream = NULL;
+static SDL_Thread *wifibc_thread_video = NULL;
 static uint8_t wifibc_running = 0;
 static uint8_t wifibc_running2 = 0;
 
@@ -66,7 +63,7 @@ int param_port = 0;
 int param_data_packets_per_block = 8;
 int param_fec_packets_per_block = 4;
 int param_block_buffers = 1;
-int param_packet_length = MAX_USER_PACKET_LENGTH;
+int param_packet_length = 1024;
 wifibroadcast_rx_status_t *rx_status = NULL;
 int max_block_num = -1;
 
@@ -110,46 +107,35 @@ inline static uint8_t QueueGet(uint8_t *old) {
 }
 #endif
 
-
 int open_and_configure_interface(const char *name, int port, monitor_interface_t *interface) {
 	struct bpf_program bpfprogram;
 	char szProgram[512];
 	char szErrbuf[PCAP_ERRBUF_SIZE];
-	// open the interface in pcap
-
 	szErrbuf[0] = '\0';
 	interface->ppcap = pcap_open_live(name, 2048, 1, -1, szErrbuf);
 	if (interface->ppcap == NULL) {
 		fprintf(stderr, "Unable to open interface %s in pcap: %s\n", name, szErrbuf);
 		return 1;
 	}
-
-	if(pcap_setnonblock(interface->ppcap, 1, szErrbuf) < 0) {
+	if (pcap_setnonblock(interface->ppcap, 1, szErrbuf) < 0) {
 		fprintf(stderr, "Error setting %s to nonblocking mode: %s\n", name, szErrbuf);
 	}
-
 	int nLinkEncap = pcap_datalink(interface->ppcap);
-
 	switch (nLinkEncap) {
-
 		case DLT_PRISM_HEADER:
 			fprintf(stderr, "DLT_PRISM_HEADER Encap\n");
 			interface->n80211HeaderLength = 0x20; // ieee80211 comes after this
 			sprintf(szProgram, "radio[0x4a:4]==0x13223344 && radio[0x4e:2] == 0x55%.2x", port);
 			break;
-
 		case DLT_IEEE802_11_RADIO:
 			fprintf(stderr, "DLT_IEEE802_11_RADIO Encap\n");
 			interface->n80211HeaderLength = 0x18; // ieee80211 comes after this
 			sprintf(szProgram, "ether[0x0a:4]==0x13223344 && ether[0x0e:2] == 0x55%.2x", port);
 			break;
-
 		default:
 			fprintf(stderr, "!!! unknown encapsulation on %s !\n", name);
 			return 1;
-
 	}
-
 	if (pcap_compile(interface->ppcap, &bpfprogram, szProgram, 1, 0) == -1) {
 		puts(szProgram);
 		puts(pcap_geterr(interface->ppcap));
@@ -162,29 +148,23 @@ int open_and_configure_interface(const char *name, int port, monitor_interface_t
 		}
 		pcap_freecode(&bpfprogram);
 	}
-
 	interface->selectable_fd = pcap_get_selectable_fd(interface->ppcap);
-
 	return 0;
 }
-
 
 void block_buffer_list_reset(block_buffer_t *block_buffer_list, size_t block_buffer_list_len, int block_buffer_len) {
 	int i;
 	block_buffer_t *rb = block_buffer_list;
-
-	for(i=0; i<block_buffer_list_len; ++i) {
+	for (i = 0; i < block_buffer_list_len; ++i) {
 		rb->block_num = -1;
-
 		int j;
 		packet_buffer_t *p = rb->packet_buffer_list;
-		for(j=0; j<param_data_packets_per_block+param_fec_packets_per_block; ++j) {
+		for (j = 0; j < param_data_packets_per_block+param_fec_packets_per_block; ++j) {
 			p->valid = 0;
 			p->crc_correct = 0;
 			p->len = 0;
 			p++;
 		}
-
 		rb++;
 	}
 }
@@ -194,50 +174,32 @@ void process_payload(uint8_t *data, size_t data_len, int crc_correct, block_buff
 	int block_num;
 	int packet_num;
 	int i;
-
 	wph = (wifi_packet_header_t*)data;
 	data += sizeof(wifi_packet_header_t);
 	data_len -= sizeof(wifi_packet_header_t);
-
-	block_num = wph->sequence_number / (param_data_packets_per_block
-										+param_fec_packets_per_block);//if aram_data_packets_per_block+param_fec_packets_per_block would be limited to powers of two, this could be replaced by a logical AND operation
-
-	//debug_print("adap %d rec %x blk %x crc %d len %d\n", adapter_no, wph->sequence_number, block_num, crc_correct, data_len);
-
-
-	//we have received a block number that exceeds the currently seen ones -> we need to make room for this new block
-	//or we have received a block_num that is several times smaller than the current window of buffers -> this indicated that either the window is too small or that the transmitter has been restarted
-	int tx_restart = (block_num + 128*param_block_buffers < max_block_num);
-	if((block_num > max_block_num || tx_restart) && crc_correct) {
-		if(tx_restart) {
+	block_num = wph->sequence_number / (param_data_packets_per_block + param_fec_packets_per_block);
+	int tx_restart = (block_num + 128 * param_block_buffers < max_block_num);
+	if ((block_num > max_block_num || tx_restart) && crc_correct) {
+		if (tx_restart) {
 			rx_status->tx_restart_cnt++;
-
 			fprintf(stderr,
 					"TX RESTART: Detected blk %x that lies outside of the current retr block buffer window (max_block_num = %x) (if there was no tx restart, increase window size via -d)\n",
 					block_num, max_block_num);
-
-
 			block_buffer_list_reset(block_buffer_list, param_block_buffers, param_data_packets_per_block + param_fec_packets_per_block);
 		}
-
 		//first, find the minimum block num in the buffers list. this will be the block that we replace
 		int min_block_num = INT_MAX;
 		int min_block_num_idx;
-		for(i=0; i<param_block_buffers; ++i) {
-			if(block_buffer_list[i].block_num < min_block_num) {
+		for (i = 0; i < param_block_buffers; ++i) {
+			if (block_buffer_list[i].block_num < min_block_num) {
 				min_block_num = block_buffer_list[i].block_num;
 				min_block_num_idx = i;
 			}
 		}
-
-		//debug_print("removing block %x at index %i for block %x\n", min_block_num, min_block_num_idx, block_num);
-
 		packet_buffer_t *packet_buffer_list = block_buffer_list[min_block_num_idx].packet_buffer_list;
 		int last_block_num = block_buffer_list[min_block_num_idx].block_num;
-
-		if(last_block_num != -1) {
+		if (last_block_num != -1) {
 			rx_status->received_block_cnt++;
-
 			//we have both pointers to the packet buffers (to get information about crc and vadility) and raw data pointers for fec_decode
 			packet_buffer_t *data_pkgs[MAX_DATA_OR_FEC_PACKETS_PER_BLOCK];
 			packet_buffer_t *fec_pkgs[MAX_DATA_OR_FEC_PACKETS_PER_BLOCK];
@@ -245,124 +207,73 @@ void process_payload(uint8_t *data, size_t data_len, int crc_correct, block_buff
 			uint8_t *fec_blocks[MAX_DATA_OR_FEC_PACKETS_PER_BLOCK];
 			int datas_missing = 0, datas_corrupt = 0, fecs_missing = 0, fecs_corrupt = 0;
 			int di = 0, fi = 0;
-
-
 			//first, split the received packets into DATA a FEC packets and count the damaged packets
 			i = 0;
-			while(di < param_data_packets_per_block || fi < param_fec_packets_per_block) {
-				if(di < param_data_packets_per_block) {
+			while (di < param_data_packets_per_block || fi < param_fec_packets_per_block) {
+				if (di < param_data_packets_per_block) {
 					data_pkgs[di] = packet_buffer_list + i++;
 					data_blocks[di] = data_pkgs[di]->data;
-					if(!data_pkgs[di]->valid) {
+					if (!data_pkgs[di]->valid) {
 						datas_missing++;
 					}
-					if(data_pkgs[di]->valid && !data_pkgs[di]->crc_correct) {
+					if (data_pkgs[di]->valid && !data_pkgs[di]->crc_correct) {
 						datas_corrupt++;
 					}
 					di++;
 				}
-
-				if(fi < param_fec_packets_per_block) {
+				if (fi < param_fec_packets_per_block) {
 					fec_pkgs[fi] = packet_buffer_list + i++;
-					if(!fec_pkgs[fi]->valid) {
+					if (!fec_pkgs[fi]->valid) {
 						fecs_missing++;
 					}
-
-					if(fec_pkgs[fi]->valid && !fec_pkgs[fi]->crc_correct) {
+					if (fec_pkgs[fi]->valid && !fec_pkgs[fi]->crc_correct) {
 						fecs_corrupt++;
 					}
-
 					fi++;
 				}
 			}
-
 			const int good_fecs_c = param_fec_packets_per_block - fecs_missing - fecs_corrupt;
 			const int datas_missing_c = datas_missing;
 			const int datas_corrupt_c = datas_corrupt;
 			const int fecs_missing_c = fecs_missing;
 			const int fecs_corrupt_c = fecs_corrupt;
-
 			int good_fecs = good_fecs_c;
 			//the following three fields are infos for fec_decode
 			unsigned int fec_block_nos[MAX_DATA_OR_FEC_PACKETS_PER_BLOCK];
 			unsigned int erased_blocks[MAX_DATA_OR_FEC_PACKETS_PER_BLOCK];
 			unsigned int nr_fec_blocks = 0;
-
-
-#if DEBUG
-			if(datas_missing_c + datas_corrupt_c > good_fecs_c) {
-				int x;
-
-				for(x=0; x<param_data_packets_per_block; ++x) {
-					if(data_pkgs[x]->valid) {
-						if(data_pkgs[x]->crc_correct) {
-							fprintf(stderr, "v");
-						} else {
-							fprintf(stderr, "c");
-						}
-					} else {
-						fprintf(stderr, "m");
-					}
-				}
-
-				fprintf(stderr, " ");
-
-				for(x=0; x<param_fec_packets_per_block; ++x) {
-					if(fec_pkgs[x]->valid) {
-						if(fec_pkgs[x]->crc_correct) {
-							fprintf(stderr, "v");
-						} else {
-							fprintf(stderr, "c");
-						}
-					} else {
-						fprintf(stderr, "m");
-					}
-				}
-
-				fprintf(stderr, "\n");
-			}
-#endif
-
 			fi = 0;
 			di = 0;
-
 			//look for missing DATA and replace them with good FECs
-			while(di < param_data_packets_per_block && fi < param_fec_packets_per_block) {
+			while (di < param_data_packets_per_block && fi < param_fec_packets_per_block) {
 				//if this data is fine we go to the next
-				if(data_pkgs[di]->valid && data_pkgs[di]->crc_correct) {
+				if (data_pkgs[di]->valid && data_pkgs[di]->crc_correct) {
 					di++;
 					continue;
 				}
-
 				//if this DATA is corrupt and there are less good fecs than missing datas we cannot do anything for this data
-				if(data_pkgs[di]->valid && !data_pkgs[di]->crc_correct && good_fecs <= datas_missing) {
+				if (data_pkgs[di]->valid && !data_pkgs[di]->crc_correct && good_fecs <= datas_missing) {
 					di++;
 					continue;
 				}
-
 				//if this FEC is not received we go on to the next
-				if(!fec_pkgs[fi]->valid) {
+				if (!fec_pkgs[fi]->valid) {
 					fi++;
 					continue;
 				}
-
 				//if this FEC is corrupted and there are more lost packages than good fecs we should replace this DATA even with this corrupted FEC
-				if(!fec_pkgs[fi]->crc_correct && datas_missing > good_fecs) {
+				if (!fec_pkgs[fi]->crc_correct && datas_missing > good_fecs) {
 					fi++;
 					continue;
 				}
-
-
-				if(!data_pkgs[di]->valid) {
+				if (!data_pkgs[di]->valid) {
 					datas_missing--;
-				} else if(!data_pkgs[di]->crc_correct) {
+				} else if (!data_pkgs[di]->crc_correct) {
 					datas_corrupt--;
 				}
-
-				if(fec_pkgs[fi]->crc_correct) {
+				if (fec_pkgs[fi]->crc_correct) {
 					good_fecs--;
 				}
-
 				//at this point, data is invalid and fec is good -> replace data with fec
 				erased_blocks[nr_fec_blocks] = di;
 				fec_block_nos[nr_fec_blocks] = fi;
@@ -371,28 +282,21 @@ void process_payload(uint8_t *data, size_t data_len, int crc_correct, block_buff
 				fi++;
 				nr_fec_blocks++;
 			}
-
-
 			int reconstruction_failed = datas_missing_c + datas_corrupt_c > good_fecs_c;
-
-			if(reconstruction_failed) {
+			if (reconstruction_failed) {
 				//we did not have enough FEC packets to repair this block
 				rx_status->damaged_block_cnt++;
 				fprintf(stderr, "Could not fully reconstruct block %x! Damage rate: %f (%d / %d blocks)\n", last_block_num,
 						1.0 * rx_status->damaged_block_cnt / rx_status->received_block_cnt, rx_status->damaged_block_cnt, rx_status->received_block_cnt);
 				debug_print("Data mis: %d\tData corr: %d\tFEC mis: %d\tFEC corr: %d\n", datas_missing_c, datas_corrupt_c, fecs_missing_c, fecs_corrupt_c);
 			}
-
-
 			//decode data and write it to STDOUT
-			fec_decode((unsigned int) param_packet_length, data_blocks, param_data_packets_per_block, fec_blocks, fec_block_nos, erased_blocks,
-					   nr_fec_blocks);
-			for(i=0; i<param_data_packets_per_block; ++i) {
+			fec_decode((unsigned int) param_packet_length, data_blocks, param_data_packets_per_block, fec_blocks, fec_block_nos, erased_blocks, nr_fec_blocks);
+			for (i = 0; i < param_data_packets_per_block; ++i) {
 				payload_header_t *ph = (payload_header_t*)data_blocks[i];
-
-				if(!reconstruction_failed || data_pkgs[i]->valid) {
+				if (!reconstruction_failed || data_pkgs[i]->valid) {
 					//if reconstruction did fail, the data_length value is undefined. better limit it to some sensible value
-					if(ph->data_length > param_packet_length) {
+					if (ph->data_length > param_packet_length) {
 						ph->data_length = param_packet_length;
 					}
 
@@ -406,51 +310,40 @@ void process_payload(uint8_t *data, size_t data_len, int crc_correct, block_buff
 						QueuePut(bit[0]);
 					}
 #endif
-
 				}
 			}
-
-
 			//reset buffers
-			for(i=0; i<param_data_packets_per_block + param_fec_packets_per_block; ++i) {
+			for (i = 0; i < param_data_packets_per_block + param_fec_packets_per_block; ++i) {
 				packet_buffer_t *p = packet_buffer_list + i;
 				p->valid = 0;
 				p->crc_correct = 0;
 				p->len = 0;
 			}
 		}
-
 		block_buffer_list[min_block_num_idx].block_num = block_num;
 		max_block_num = block_num;
 	}
-
-
 	//find the buffer into which we have to write this packet
 	block_buffer_t *rbb = block_buffer_list;
-	for(i=0; i<param_block_buffers; ++i) {
-		if(rbb->block_num == block_num) {
+	for (i = 0; i < param_block_buffers; ++i) {
+		if (rbb->block_num == block_num) {
 			break;
 		}
 		rbb++;
 	}
-
 	//check if we have actually found the corresponding block. this could not be the case due to a corrupt packet
-	if(i != param_block_buffers) {
+	if (i != param_block_buffers) {
 		packet_buffer_t *packet_buffer_list = rbb->packet_buffer_list;
-		packet_num = wph->sequence_number % (param_data_packets_per_block
-											 +param_fec_packets_per_block); //if retr_block_size would be limited to powers of two, this could be replace by a locical and operation
-
+		packet_num = wph->sequence_number % (param_data_packets_per_block + param_fec_packets_per_block);
 		//only overwrite packets where the checksum is not yet correct. otherwise the packets are already received correctly
-		if(packet_buffer_list[packet_num].crc_correct == 0) {
+		if (packet_buffer_list[packet_num].crc_correct == 0) {
 			memcpy(packet_buffer_list[packet_num].data, data, data_len);
 			packet_buffer_list[packet_num].len = data_len;
 			packet_buffer_list[packet_num].valid = 1;
 			packet_buffer_list[packet_num].crc_correct = crc_correct;
 		}
 	}
-
 }
-
 
 void process_packet(monitor_interface_t *interface, block_buffer_t *block_buffer_list, int adapter_no) {
 	struct pcap_pkthdr * ppcapPacketHeader = NULL;
@@ -462,10 +355,7 @@ void process_packet(monitor_interface_t *interface, block_buffer_t *block_buffer
 	int n;
 	int retval;
 	int u16HeaderLen;
-
-	// receive
 	retval = pcap_next_ex(interface->ppcap, &ppcapPacketHeader, (const u_char**)&pu8Payload);
-
 	if (retval < 0) {
 		fprintf(stderr, "Socket broken\n");
 		fprintf(stderr, "%s\n", pcap_geterr(interface->ppcap));
@@ -475,8 +365,7 @@ void process_packet(monitor_interface_t *interface, block_buffer_t *block_buffer
 		return;
 	}
 	u16HeaderLen = (pu8Payload[2] + (pu8Payload[3] << 8));
-	if (ppcapPacketHeader->len <
-			(u16HeaderLen + interface->n80211HeaderLength)) {
+	if (ppcapPacketHeader->len < (u16HeaderLen + interface->n80211HeaderLength)) {
 		return;
 	}
 	bytes = ppcapPacketHeader->len - (u16HeaderLen + interface->n80211HeaderLength);
@@ -491,26 +380,20 @@ void process_packet(monitor_interface_t *interface, block_buffer_t *block_buffer
 			case IEEE80211_RADIOTAP_RATE:
 				prd.m_nRate = (*rti.this_arg);
 				break;
-
 			case IEEE80211_RADIOTAP_CHANNEL:
-				prd.m_nChannel =
-					le16_to_cpu(*((u16 *)rti.this_arg));
-				prd.m_nChannelFlags =
-					le16_to_cpu(*((u16 *)(rti.this_arg + 2)));
+				prd.m_nChannel = le16_to_cpu(*((u16 *)rti.this_arg));
+				prd.m_nChannelFlags = le16_to_cpu(*((u16 *)(rti.this_arg + 2)));
 				break;
-
 			case IEEE80211_RADIOTAP_ANTENNA:
 				prd.m_nAntenna = (*rti.this_arg) + 1;
 				break;
-
 			case IEEE80211_RADIOTAP_FLAGS:
 				prd.m_nRadiotapFlags = *rti.this_arg;
 				break;
-
 			case IEEE80211_RADIOTAP_DBM_ANTSIGNAL:
 				rx_status->adapter[adapter_no].current_signal_dbm = (int8_t)(*rti.this_arg);
+				GroundData.wifibc_rssi[adapter_no] = (int8_t)(*rti.this_arg);
 				break;
-
 		}
 	}
 	pu8Payload += u16HeaderLen + interface->n80211HeaderLength;
@@ -518,13 +401,10 @@ void process_packet(monitor_interface_t *interface, block_buffer_t *block_buffer
 		bytes -= 4;
 	}
 	int checksum_correct = (prd.m_nRadiotapFlags & 0x40) == 0;
-	if(!checksum_correct) {
+	if (!checksum_correct) {
 		rx_status->adapter[adapter_no].wrong_crc_cnt++;
 	}
 	rx_status->adapter[adapter_no].received_packet_cnt++;
-	if(rx_status->adapter[adapter_no].received_packet_cnt % 1024 == 0) {
-		GroundData.wifibc_rssi[adapter_no] = rx_status->adapter[adapter_no].current_signal_dbm;
-	}
 	rx_status->last_update = time(NULL);
 	process_payload(pu8Payload, bytes, checksum_correct, block_buffer_list, adapter_no);
 }
@@ -535,8 +415,8 @@ void status_memory_init(wifibroadcast_rx_status_t *s) {
 	s->tx_restart_cnt = 0;
 	s->wifi_adapter_cnt = 0;
 
-	int i;
-	for(i=0; i<MAX_PENUMBRA_INTERFACES; ++i) {
+	int i = 0;
+	for (i = 0; i < MAX_PENUMBRA_INTERFACES; ++i) {
 		s->adapter[i].received_packet_cnt = 0;
 		s->adapter[i].wrong_crc_cnt = 0;
 		s->adapter[i].current_signal_dbm = 0;
@@ -581,7 +461,7 @@ int readFunction (void *opaque, uint8_t *buf, int buf_size) {
 	return numBytes;
 }
 
-int wifibc_update2 (void *data) {
+int wifibc_update_video (void *data) {
 	AVFormatContext *pFormatCtx = NULL;
 	int             i = 0;
 	int             videoStream = -1;
@@ -611,14 +491,14 @@ int wifibc_update2 (void *data) {
 #endif
 	pFormatCtx = avformat_alloc_context();
 	pFormatCtx->pb = avioContext;
-	if(avformat_open_input(&pFormatCtx, "wifibc", NULL, NULL)!=0) {
+	if (avformat_open_input(&pFormatCtx, "wifibc", NULL, NULL)!=0) {
 		return -1;
 	}
 	if (avformat_find_stream_info(pFormatCtx, NULL) < 0) {
 		return -1;
 	}
 	for (i = 0; i < pFormatCtx->nb_streams; i++)
-		if(pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+		if (pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
 			videoStream = i;
 			break;
 		}
@@ -640,11 +520,11 @@ int wifibc_update2 (void *data) {
 		return -1;
 	}
 	pFrame = av_frame_alloc();
-	if(pFrame == NULL) {
+	if (pFrame == NULL) {
 		return -1;
 	}
 	pFrameRGB = av_frame_alloc();
-	if(pFrameRGB == NULL) {
+	if (pFrameRGB == NULL) {
 		return -1;
 	}
 	wifibc_surface = SDL_CreateRGBSurface(0, pCodecCtx->width, pCodecCtx->height, 24, 0x0000ff, 0x00ff00, 0xff0000, 0);
@@ -681,7 +561,7 @@ int wifibc_update2 (void *data) {
 	return 0;
 }
 
-int wifibc_update (void *data) {
+int wifibc_update_stream (void *data) {
 	monitor_interface_t interfaces[MAX_PENUMBRA_INTERFACES];
 	int num_interfaces = 0;
 	int i;
@@ -691,8 +571,7 @@ int wifibc_update (void *data) {
 	//	param_fec_packets_per_block = atoi(optarg);
 	//	param_block_buffers = atoi(optarg);
 	//	param_packet_length = atoi(optarg);
-
-	if(param_packet_length > MAX_USER_PACKET_LENGTH) {
+	if (param_packet_length > MAX_USER_PACKET_LENGTH) {
 		SDL_Log("wifibc: Packet length is limited to %d bytes (you requested %d bytes)\n", MAX_USER_PACKET_LENGTH, param_packet_length);
 		return (1);
 	}
@@ -709,7 +588,7 @@ int wifibc_update (void *data) {
 #endif
 	//block buffers contain both the block_num as well as packet buffers for a block.
 	block_buffer_list = malloc(sizeof(block_buffer_t) * param_block_buffers);
-	for(i=0; i<param_block_buffers; ++i) {
+	for (i = 0; i < param_block_buffers; ++i) {
 		block_buffer_list[i].block_num = -1;
 		block_buffer_list[i].packet_buffer_list = lib_alloc_packet_buffer_list(param_data_packets_per_block+param_fec_packets_per_block,
 				MAX_PACKET_LENGTH);
@@ -723,11 +602,11 @@ int wifibc_update (void *data) {
 		to.tv_sec = 0;
 		to.tv_usec = 1e5;
 		FD_ZERO(&readset);
-		for(i=0; i<num_interfaces; ++i) {
+		for (i = 0; i < num_interfaces; ++i) {
 			FD_SET(interfaces[i].selectable_fd, &readset);
 		}
 		int n = select(30, &readset, NULL, NULL, &to);
-		for(i=0; i<num_interfaces; ++i) {
+		for (i = 0; i < num_interfaces; ++i) {
 			if (n == 0) {
 				break;
 			}
@@ -761,18 +640,18 @@ void wifibc_init (void) {
 	wifibc_running = 1;
 	wifibc_running2 = 1;
 #ifdef SDL2
-	wifibc_thread = SDL_CreateThread(wifibc_update, NULL, NULL);
-	wifibc_thread2 = SDL_CreateThread(wifibc_update2, NULL, NULL);
+	wifibc_thread_stream = SDL_CreateThread(wifibc_update_stream, NULL, NULL);
+	wifibc_thread_video = SDL_CreateThread(wifibc_update_video, NULL, NULL);
 #else
-	wifibc_thread = SDL_CreateThread(wifibc_update, NULL);
-	wifibc_thread2 = SDL_CreateThread(wifibc_update2, NULL);
+	wifibc_thread_stream = SDL_CreateThread(wifibc_update_stream, NULL);
+	wifibc_thread_video = SDL_CreateThread(wifibc_update_video, NULL);
 #endif
 }
 
 void wifibc_exit (void) {
 	wifibc_running = 0;
-	SDL_WaitThread(wifibc_thread, NULL);
-	SDL_WaitThread(wifibc_thread2, NULL);
+	SDL_WaitThread(wifibc_thread_stream, NULL);
+	SDL_WaitThread(wifibc_thread_video, NULL);
 }
 
 SDL_Surface *wifibc_get (void) {
@@ -780,6 +659,44 @@ SDL_Surface *wifibc_get (void) {
 	if (wifibc_bg != NULL) {
 		SDL_BlitSurface(wifibc_bg, NULL, wifibc_surface, NULL);
 		SDL_UnlockMutex(wifibc_mutex);
+
+
+/*
+static IplImage *gray = NULL;
+static IplImage *edge = NULL;
+static IplImage *cv_image = NULL;
+static CvMemStorage *storage = NULL;
+int edge_thresh = 1;
+int i = 0;
+
+if (cv_image == NULL) {
+	cv_image = cvCreateImageHeader(cvSize(wifibc_surface->w, wifibc_surface->h), IPL_DEPTH_8U, 3);
+}
+if (gray == NULL) {
+	gray = cvCreateImage(cvGetSize(cv_image), cv_image->depth, 1);
+}
+if (edge == NULL) {
+	edge = cvCreateImage(cvSize(cv_image->width, cv_image->height), 8, 1);
+}
+if (storage == NULL) {
+	storage = cvCreateMemStorage(0);
+}
+cvSetData(cv_image, wifibc_surface->pixels, cv_image->widthStep);
+cvCvtColor(cv_image, gray, CV_BGR2GRAY);
+cvThreshold(gray, gray, CV_GAUSSIAN, 9, 9);
+cvSmooth(gray, gray, CV_GAUSSIAN, 11, 11, 0, 0); 
+cvCanny(gray, edge, (float)edge_thresh, (float)edge_thresh * 3, 5);
+CvSeq* circles = cvHoughCircles(edge, storage, CV_HOUGH_GRADIENT, 2, gray->height / 2, 200, 100, 200, 0);
+for (i = 0; i < circles->total; i++) {
+	float* p = (float*)cvGetSeqElem(circles, i);
+	cvCircle(cv_image, cvPoint(cvRound(p[0]),cvRound(p[1])), 3, CV_RGB(0,255,0), -1, 8, 0 );
+	cvCircle(cv_image, cvPoint(cvRound(p[0]),cvRound(p[1])), cvRound(p[2]), CV_RGB(255,0,0), 3, 8, 0 );
+}
+
+//cvSaveImage("/tmp/foo.png", cv_image, NULL);
+
+*/
+
 		return wifibc_surface;
 	}
 	SDL_UnlockMutex(wifibc_mutex);

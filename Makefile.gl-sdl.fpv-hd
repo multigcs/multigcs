@@ -16,8 +16,8 @@ CFLAGS += -DSDLGL -O3 -Wall -DBASE_DIR="\"$(BASE_DIR)\""
 
 ## wifibroadcast support ##
 CFLAGS += -DUSE_WIFIBC
-INCDIR += -I./wifibc
-LIBS += -lrt -lpcap -lavformat -lavcodec -lswscale -lz -lavutil
+INCDIR += -I./wifibc $(shell pkg-config --cflags opencv)
+LIBS += -lrt -lpcap -lavformat -lavcodec -lswscale -lz -lavutil $(shell pkg-config --libs opencv)
 EXTRA_OBJECTS += wifibc/wifibc.o wifibc/lib.o wifibc/radiotap.o wifibc/fec.o
 
 ## video for linux api for cam ##
