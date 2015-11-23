@@ -88,10 +88,6 @@ static uint8_t Queue[QUEUE_SIZE];
 static uint64_t QueueIn = 0;
 static uint64_t QueueOut = 0;
 
-static FILE *record_fr = NULL;
-static uint8_t record_run = 0;
-static char record_file[1024];
-
 inline static uint8_t QueuePut(uint8_t new) {
 	while (wifibc_running == 1 && QueueIn == (( QueueOut - 1 + QUEUE_SIZE) % QUEUE_SIZE)) {
 		SDL_Delay(1);
@@ -110,6 +106,10 @@ inline static uint8_t QueueGet(uint8_t *old) {
 	return 0; // No errors
 }
 #endif
+
+static FILE *record_fr = NULL;
+static uint8_t record_run = 0;
+static char record_file[1024];
 
 int open_and_configure_interface(const char *name, int port, monitor_interface_t *interface) {
 	struct bpf_program bpfprogram;
@@ -324,10 +324,10 @@ ModelData[0].yaw = data[data_len - 1];
 								sprintf(record_file, "/tmp/record-%i.avi", 1);
 								record_fr = fopen(record_file, "wb");
 								if (record_fr == NULL) {
-									SDL_Log("error write to record file: %s\n", record_file);
+									SDL_Log("wifibc: error write to record file: %s\n", record_file);
 									setup.wifibc_record = 0;
 								} else {
-									SDL_Log("write to record file: %s\n", record_file);
+									SDL_Log("wifibc: record to file: %s\n", record_file);
 									record_run = 1;
 								}
 							}
@@ -337,7 +337,7 @@ ModelData[0].yaw = data[data_len - 1];
 							}
 					} else if (setup.wifibc_record == 0) {
 							if (record_run == 1) {
-								SDL_Log("stop recording, file saved to: %s (size: %0.2fMB)\n", record_file, (float)setup.wifibc_record_size / 1024 / 1024);
+								SDL_Log("wifibc: stop recording, file saved to: %s (size: %0.2fMB)\n", record_file, (float)setup.wifibc_record_size / 1024 / 1024);
 								fclose(record_fr);
 								record_fr = NULL;
 								record_run = 0;
@@ -571,6 +571,14 @@ int wifibc_update_video (void *data) {
 	if (pFrameRGB == NULL) {
 		return -1;
 	}
+
+    AVRational time_base = pFormatCtx->streams[videoStream]->time_base;
+    SDL_log("wifibc: video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:pixel_aspect=%d/%d \n",
+            pCodecCtx->width, pCodecCtx->height, pCodecCtx->pix_fmt, time_base.num, time_base.den,
+            pCodecCtx->sample_aspect_ratio.num, pCodecCtx->sample_aspect_ratio.den);
+ 
+
+
 	wifibc_surface = SDL_CreateRGBSurface(0, pCodecCtx->width, pCodecCtx->height, 24, 0x0000ff, 0x00ff00, 0xff0000, 0);
 	wifibc_bg = SDL_CreateRGBSurface(0, pCodecCtx->width, pCodecCtx->height, 24, 0x0000ff, 0x00ff00, 0xff0000, 0);
 	numBytes = avpicture_get_size(PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height);

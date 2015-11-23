@@ -23,10 +23,37 @@ uint8_t hud_null (char *name, float x, float y, int8_t button, float data, uint8
 	return 0;
 }
 
-uint8_t hud_record (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t hud_wifibc_record (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	setup.wifibc_record = 1 - setup.wifibc_record;
 	return 0;
 }
+
+#if defined USE_WIFIBC
+uint8_t hud_wifibc_channel (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	char cmd_str[1024];
+	if (button == 5) {
+		setup.wifibc_channel--;
+	} else if (button == 4) {
+		setup.wifibc_channel++;
+	} else {
+		for (setup.wifibc_channel = 1; setup.wifibc_channel < 20; setup.wifibc_channel++) {
+			sprintf(cmd_str, "iwconfig %s channel %i", setup.wifibc_device, setup.wifibc_channel);
+			SDL_Log("wifibc: %s\n", cmd_str);
+			system(cmd_str);
+			SDL_Delay(10);
+			GroundData.wifibc_rssi[0] = -64;
+			SDL_Delay(100);
+			SDL_Log("wifibc: RSSI: %idBm\n", GroundData.wifibc_rssi[0]);
+			if (GroundData.wifibc_rssi[0] != -64) {
+				break;
+			}
+		}
+	}
+	sprintf(cmd_str, "iwconfig %s channel %i", setup.wifibc_device, setup.wifibc_channel);
+	system(cmd_str);
+	return 0;
+}
+#endif
 
 uint8_t gimbal_set_pitch (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 4) {
@@ -1576,13 +1603,15 @@ void screen_hud_internal (ESContext *esContext) {
 		draw_text_button(esContext, "hud_press", VIEW_MODE_HUD, tmp_str, FONT_WHITE, -1.05, 0.3, 0.003, 0.035, 1, 0, hud_null, 0);
 
 #ifdef USE_WIFIBC
+		sprintf(tmp_str, "Channel: %i", setup.wifibc_channel);
+		draw_text_button(esContext, "wifibc_channel", VIEW_MODE_HUD, tmp_str, FONT_GREEN, -1.05, 0.7, 0.005, 0.035, 1, 0, hud_wifibc_channel, 0);
 		sprintf(tmp_str, "%idBm", GroundData.wifibc_rssi[0]);
 		draw_circleMeter_f3(esContext, -1.05, 0.6, 0.001, 0.14, 0.0, 10.0, 25.0, 180.0, 100.0 - (GroundData.wifibc_rssi[0] / -64.0 * 100.0), "WifiBC", tmp_str, 0);
 		if (setup.wifibc_record == 1) {
 			sprintf(tmp_str, "Record: %0.2fMB", (float)setup.wifibc_record_size / 1024 / 1024);
-			draw_text_button(esContext, "record", VIEW_MODE_HUD, tmp_str, FONT_PINK, -1.05, 0.7, 0.005, 0.035, 1, 0, hud_record, 0);
+			draw_text_button(esContext, "wifibc_record", VIEW_MODE_HUD, tmp_str, FONT_PINK, -1.05, 0.73, 0.005, 0.035, 1, 0, hud_wifibc_record, 0);
 		} else {
-			draw_text_button(esContext, "record", VIEW_MODE_HUD, "Record", FONT_GREEN, -1.05, 0.7, 0.005, 0.035, 1, 0, hud_record, 0);
+			draw_text_button(esContext, "wifibc_record", VIEW_MODE_HUD, "Record", FONT_GREEN, -1.05, 0.73, 0.005, 0.035, 1, 0, hud_wifibc_record, 0);
 		}
 #endif
 
