@@ -25,6 +25,7 @@
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libswscale/swscale.h>
+#include <libavutil/opt.h>
 #include <fec.h>
 #include <lib.h>
 #include <wifibroadcast.h>
@@ -87,6 +88,28 @@ static FILE *wifibc_fr = NULL;
 static uint8_t Queue[QUEUE_SIZE];
 static uint64_t QueueIn = 0;
 static uint64_t QueueOut = 0;
+
+const char *avcodec_get_name2 (enum AVCodecID id) {
+	const AVCodecDescriptor *cd;
+	AVCodec *codec;
+	if (id == AV_CODEC_ID_NONE) {
+		return "none";
+	}
+	cd = avcodec_descriptor_get(id);
+	if (cd) {
+		return cd->name;
+	}
+	av_log(NULL, AV_LOG_WARNING, "Codec 0x%x is not in the full list.\n", id);
+	codec = avcodec_find_decoder(id);
+	if (codec) {
+		return codec->name;
+	}
+	codec = avcodec_find_encoder(id);
+	if (codec) {
+		return codec->name;
+	}
+	return "unknown_codec";
+}
 
 inline static uint8_t QueuePut(uint8_t new) {
 	while (wifibc_running == 1 && QueueIn == (( QueueOut - 1 + QUEUE_SIZE) % QUEUE_SIZE)) {
@@ -184,17 +207,17 @@ void process_payload(uint8_t *data, size_t data_len, int crc_correct, block_buff
 	block_num = wph->sequence_number / (param_data_packets_per_block + param_fec_packets_per_block);
 
 
-/*
-//printf("## %i ##\n", data_len);
-int ti = 0;
-for (ti = 0; ti < 100; ti++) {
-	//printf("%i %i, ", ti, data[data_len - 100 + ti]);
-}
+	/*
+	//printf("## %i ##\n", data_len);
+	int ti = 0;
+	for (ti = 0; ti < 100; ti++) {
+		//printf("%i %i, ", ti, data[data_len - 100 + ti]);
+	}
 
 
-ModelData[0].yaw = data[data_len - 1];
-	//printf("\n");
-*/
+	ModelData[0].yaw = data[data_len - 1];
+		//printf("\n");
+	*/
 
 	int tx_restart = (block_num + 128 * param_block_buffers < max_block_num);
 	if ((block_num > max_block_num || tx_restart) && crc_correct) {
@@ -309,7 +332,8 @@ ModelData[0].yaw = data[data_len - 1];
 				debug_print("Data mis: %d\tData corr: %d\tFEC mis: %d\tFEC corr: %d\n", datas_missing_c, datas_corrupt_c, fecs_missing_c, fecs_corrupt_c);
 			}
 			//decode data and write it to STDOUT
-			fec_decode((unsigned int) param_packet_length, data_blocks, param_data_packets_per_block, fec_blocks, fec_block_nos, erased_blocks, nr_fec_blocks);
+			fec_decode((unsigned int) param_packet_length, data_blocks, param_data_packets_per_block, fec_blocks, fec_block_nos, erased_blocks,
+					   nr_fec_blocks);
 			for (i = 0; i < param_data_packets_per_block; ++i) {
 				payload_header_t *ph = (payload_header_t*)data_blocks[i];
 				if (!reconstruction_failed || data_pkgs[i]->valid) {
@@ -319,29 +343,29 @@ ModelData[0].yaw = data[data_len - 1];
 					}
 					// save video stream to file
 					if (setup.wifibc_record == 1) {
-							if (record_run == 0) {
-								setup.wifibc_record_size = 0;
-								sprintf(record_file, "/tmp/record-%i.avi", 1);
-								record_fr = fopen(record_file, "wb");
-								if (record_fr == NULL) {
-									SDL_Log("wifibc: error write to record file: %s\n", record_file);
-									setup.wifibc_record = 0;
-								} else {
-									SDL_Log("wifibc: record to file: %s\n", record_file);
-									record_run = 1;
-								}
+						if (record_run == 0) {
+							setup.wifibc_record_size = 0;
+							sprintf(record_file, "/tmp/record-%i.avi", 1);
+							record_fr = fopen(record_file, "wb");
+							if (record_fr == NULL) {
+								SDL_Log("wifibc: error write to record file: %s\n", record_file);
+								setup.wifibc_record = 0;
+							} else {
+								SDL_Log("wifibc: record to file: %s\n", record_file);
+								record_run = 1;
 							}
-							if (record_fr != NULL) {
-								setup.wifibc_record_size += ph->data_length;
-								fwrite(data_blocks[i] + sizeof(payload_header_t), ph->data_length, 1, record_fr);
-							}
+						}
+						if (record_fr != NULL) {
+							setup.wifibc_record_size += ph->data_length;
+							fwrite(data_blocks[i] + sizeof(payload_header_t), ph->data_length, 1, record_fr);
+						}
 					} else if (setup.wifibc_record == 0) {
-							if (record_run == 1) {
-								SDL_Log("wifibc: stop recording, file saved to: %s (size: %0.2fMB)\n", record_file, (float)setup.wifibc_record_size / 1024 / 1024);
-								fclose(record_fr);
-								record_fr = NULL;
-								record_run = 0;
-							}
+						if (record_run == 1) {
+							SDL_Log("wifibc: stop recording, file saved to: %s (size: %0.2fMB)\n", record_file, (float)setup.wifibc_record_size / 1024 / 1024);
+							fclose(record_fr);
+							record_fr = NULL;
+							record_run = 0;
+						}
 					}
 #ifdef USE_FIFO
 					fwrite(data_blocks[i] + sizeof(payload_header_t), ph->data_length, 1, wifibc_fr);
@@ -571,13 +595,11 @@ int wifibc_update_video (void *data) {
 	if (pFrameRGB == NULL) {
 		return -1;
 	}
-
-    AVRational time_base = pFormatCtx->streams[videoStream]->time_base;
-    SDL_log("wifibc: video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:pixel_aspect=%d/%d \n",
-            pCodecCtx->width, pCodecCtx->height, pCodecCtx->pix_fmt, time_base.num, time_base.den,
-            pCodecCtx->sample_aspect_ratio.num, pCodecCtx->sample_aspect_ratio.den);
- 
-
+	AVRational time_base = pFormatCtx->streams[videoStream]->time_base;
+	SDL_Log("wifibc: video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:pixel_aspect=%d/%d:codec=%s\n",
+			pCodecCtx->width, pCodecCtx->height, pCodecCtx->pix_fmt, time_base.num, time_base.den,
+			pCodecCtx->sample_aspect_ratio.num, pCodecCtx->sample_aspect_ratio.den,
+			avcodec_get_name2(pFormatCtx->streams[videoStream]->codec->codec_id));
 
 	wifibc_surface = SDL_CreateRGBSurface(0, pCodecCtx->width, pCodecCtx->height, 24, 0x0000ff, 0x00ff00, 0xff0000, 0);
 	wifibc_bg = SDL_CreateRGBSurface(0, pCodecCtx->width, pCodecCtx->height, 24, 0x0000ff, 0x00ff00, 0xff0000, 0);
@@ -713,41 +735,41 @@ SDL_Surface *wifibc_get (void) {
 		SDL_UnlockMutex(wifibc_mutex);
 
 
-/*
-static IplImage *gray = NULL;
-static IplImage *edge = NULL;
-static IplImage *cv_image = NULL;
-static CvMemStorage *storage = NULL;
-int edge_thresh = 1;
-int i = 0;
+		/*
+		static IplImage *gray = NULL;
+		static IplImage *edge = NULL;
+		static IplImage *cv_image = NULL;
+		static CvMemStorage *storage = NULL;
+		int edge_thresh = 1;
+		int i = 0;
 
-if (cv_image == NULL) {
-	cv_image = cvCreateImageHeader(cvSize(wifibc_surface->w, wifibc_surface->h), IPL_DEPTH_8U, 3);
-}
-if (gray == NULL) {
-	gray = cvCreateImage(cvGetSize(cv_image), cv_image->depth, 1);
-}
-if (edge == NULL) {
-	edge = cvCreateImage(cvSize(cv_image->width, cv_image->height), 8, 1);
-}
-if (storage == NULL) {
-	storage = cvCreateMemStorage(0);
-}
-cvSetData(cv_image, wifibc_surface->pixels, cv_image->widthStep);
-cvCvtColor(cv_image, gray, CV_BGR2GRAY);
-cvThreshold(gray, gray, CV_GAUSSIAN, 9, 9);
-cvSmooth(gray, gray, CV_GAUSSIAN, 11, 11, 0, 0); 
-cvCanny(gray, edge, (float)edge_thresh, (float)edge_thresh * 3, 5);
-CvSeq* circles = cvHoughCircles(edge, storage, CV_HOUGH_GRADIENT, 2, gray->height / 2, 200, 100, 200, 0);
-for (i = 0; i < circles->total; i++) {
-	float* p = (float*)cvGetSeqElem(circles, i);
-	cvCircle(cv_image, cvPoint(cvRound(p[0]),cvRound(p[1])), 3, CV_RGB(0,255,0), -1, 8, 0 );
-	cvCircle(cv_image, cvPoint(cvRound(p[0]),cvRound(p[1])), cvRound(p[2]), CV_RGB(255,0,0), 3, 8, 0 );
-}
+		if (cv_image == NULL) {
+			cv_image = cvCreateImageHeader(cvSize(wifibc_surface->w, wifibc_surface->h), IPL_DEPTH_8U, 3);
+		}
+		if (gray == NULL) {
+			gray = cvCreateImage(cvGetSize(cv_image), cv_image->depth, 1);
+		}
+		if (edge == NULL) {
+			edge = cvCreateImage(cvSize(cv_image->width, cv_image->height), 8, 1);
+		}
+		if (storage == NULL) {
+			storage = cvCreateMemStorage(0);
+		}
+		cvSetData(cv_image, wifibc_surface->pixels, cv_image->widthStep);
+		cvCvtColor(cv_image, gray, CV_BGR2GRAY);
+		cvThreshold(gray, gray, CV_GAUSSIAN, 9, 9);
+		cvSmooth(gray, gray, CV_GAUSSIAN, 11, 11, 0, 0);
+		cvCanny(gray, edge, (float)edge_thresh, (float)edge_thresh * 3, 5);
+		CvSeq* circles = cvHoughCircles(edge, storage, CV_HOUGH_GRADIENT, 2, gray->height / 2, 200, 100, 200, 0);
+		for (i = 0; i < circles->total; i++) {
+			float* p = (float*)cvGetSeqElem(circles, i);
+			cvCircle(cv_image, cvPoint(cvRound(p[0]),cvRound(p[1])), 3, CV_RGB(0,255,0), -1, 8, 0 );
+			cvCircle(cv_image, cvPoint(cvRound(p[0]),cvRound(p[1])), cvRound(p[2]), CV_RGB(255,0,0), 3, 8, 0 );
+		}
 
-//cvSaveImage("/tmp/foo.png", cv_image, NULL);
+		//cvSaveImage("/tmp/foo.png", cv_image, NULL);
 
-*/
+		*/
 
 		return wifibc_surface;
 	}
