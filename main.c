@@ -704,13 +704,8 @@ void setup_load (void) {
 	int wp_num = 0;
 	int pp_num = 1;
 	int ppnf_num = 1;
-#ifdef RPI_NO_X
-	strncpy(setup.gcs_gps_port, "/dev/ttyAMA0", 1023);
-	setup.gcs_gps_baud = 9600;
-#else
 	strncpy(setup.gcs_gps_port, "/dev/ttyUSB20", 1023);
 	setup.gcs_gps_baud = 9600;
-#endif
 	strncpy(setup.rcflow_port, "/dev/ttyUSB21", 1023);
 	setup.rcflow_baud = 115200;
 	strncpy(setup.jeti_port, "/dev/ttyUSB10", 1023);

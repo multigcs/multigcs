@@ -1425,8 +1425,10 @@ void screen_mavlink_magcal (ESContext *esContext) {
 				max2Z = mag2_data[n][2];
 			}
 		}
+#ifdef SDLGL
 #ifndef ANDROID
 		glEnd();
+#endif
 #endif
 		float offsetX = maxX - (maxX - minX) / 2.0;
 		float offsetY = maxY - (maxY - minY) / 2.0;

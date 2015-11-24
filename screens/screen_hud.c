@@ -23,12 +23,12 @@ uint8_t hud_null (char *name, float x, float y, int8_t button, float data, uint8
 	return 0;
 }
 
+#if defined USE_WIFIBC
 uint8_t hud_wifibc_record (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	setup.wifibc_record = 1 - setup.wifibc_record;
 	return 0;
 }
 
-#if defined USE_WIFIBC
 uint8_t hud_wifibc_channel (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	char cmd_str[1024];
 	if (button == 5) {
