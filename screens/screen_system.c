@@ -17,7 +17,9 @@ static char view_names[VIEW_MODE_LAST][100] = {
 	"RCFLOW",
 #ifndef ANDROID
 	"VIDEOLIST",
+#ifdef USE_TCL
 	"TCL",
+#endif
 #endif
 	"TRACKER",
 	"SYSTEM",
@@ -247,8 +249,10 @@ void screen_overview (ESContext *esContext) {
 #ifndef ANDROID
 		} else if (n == VIEW_MODE_VIDEOLIST) {
 			screen_videolist(esContext);
+#ifdef USE_TCL
 		} else if (n == VIEW_MODE_TCL) {
 			screen_tcl(esContext);
+#endif
 #endif
 		} else if (n == VIEW_MODE_TRACKER) {
 			screen_tracker(esContext);

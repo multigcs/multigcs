@@ -3,8 +3,9 @@
 VERSION_NAME = win32
 EXTRA_OBJECTS = draw/gl_draw.o
 BASE_DIR = /usr/share/multigcs
-COMP = /usr/lib/mxe/usr/bin/i686-w64-mingw32.static-gcc
-MINGW_DIR = /usr/lib/mxe/usr/i686-w64-mingw32.static
+COMP = /usr/bin/i686-w64-mingw32-gcc
+MINGW_DIR = /usr/i686-w64-mingw32
+
 
 INCDIR = 
 LIBS = 
@@ -12,9 +13,15 @@ CFLAGS += -DSDLGL -DSDL2 -DWINDOWS -DUSE_OPENCV -O3 -Wall -DBASE_DIR="\"$(BASE_D
 #CFLAGS += -ggdb
 #CFLAGS +=  -pg
 
-INCDIR += -I$(MINGW_DIR)/include -I$(MINGW_DIR)/include/SDL2 -I$(MINGW_DIR)/include/libxml2 -I$(MINGW_DIR)/include/libpng12 -I$(MINGW_DIR)/include/tcl -I$(MINGW_DIR)/include/opencv
+## tcl scripting support ##
+#CFLAGS += -DUSE_TCL
+#INCDIR +=  -I$(MINGW_DIR)/include/tcl -Itcl
+#LIBS += -ltcl85 
+#EXTRA_OBJECTS += screens/screen_tcl.o 
+
+INCDIR += -I$(MINGW_DIR)/include -I$(MINGW_DIR)/include/SDL2 -I$(MINGW_DIR)/include/libxml2 -I$(MINGW_DIR)/include/libpng12 -I$(MINGW_DIR)/include/opencv
 LIBS += -Lc:/MinGW/lib/SDL2 -static-libgcc -lmingw32 -lopengl32 -lglu32 -lglew32.dll -lSDL2main -mwindows -lSDL2 -lSDL2_image -lSDL2_net -L$(MINGW_DIR)/bin \
--lm -lxml2 -ltcl85 -lpng -lopencv_highgui245d -lopencv_core245d -lopencv_imgproc245d
+-lm -lxml2 -lpng -lopencv_highgui245d -lopencv_core245d -lopencv_imgproc245d
 
 
 ## ldd gcs  | grep -v /opt | awk '{print $1}' | xargs -r -l dpkg -S  | cut -d":" -f1 | sort -u | tr  "\n" "," ##
@@ -28,12 +35,12 @@ VERSION = 0.92-`date +%s`
 BASE_DIR = Data
 
 
-INCDIR += -I./ -ICommon -Iscreens -Inet -Itcl -Idraw -Imavlink -Igps -Imwi21 -Ijeti -Iopenpilot -Ifrsky -Iminizip -Itracker -Iutils
+INCDIR += -I./ -ICommon -Iscreens -Inet -Idraw -Imavlink -Igps -Imwi21 -Ijeti -Iopenpilot -Ifrsky -Iminizip -Itracker -Iutils
 
 
 GCS = $(EXTRA_OBJECTS) main.o serial.o draw/draw.o draw/videocapture.o draw/map.o geomag70.o \
 	minizip/ioapi.o minizip/unzip.o net/htmlget-sdl.o \
-	screens/screen_rcflow.o screens/screen_keyboard.o screens/screen_filesystem.o screens/screen_device.o screens/screen_baud.o screens/screen_number.o screens/screen_model.o screens/screen_background.o screens/screen_wpedit.o screens/screen_hud.o screens/screen_map.o screens/screen_map_swarm.o screens/screen_map_survey.o screens/screen_calibration.o screens/screen_fms.o screens/screen_system.o screens/screen_tcl.o screens/screen_mavlink_menu.o screens/screen_tracker.o screens/screen_mwi_menu.o screens/screen_openpilot_menu.o screens/screen_videolist.o screens/screen_graph.o screens/screen_telemetry.o \
+	screens/screen_rcflow.o screens/screen_keyboard.o screens/screen_filesystem.o screens/screen_device.o screens/screen_baud.o screens/screen_number.o screens/screen_model.o screens/screen_background.o screens/screen_wpedit.o screens/screen_hud.o screens/screen_map.o screens/screen_map_swarm.o screens/screen_map_survey.o screens/screen_calibration.o screens/screen_fms.o screens/screen_system.o screens/screen_mavlink_menu.o screens/screen_tracker.o screens/screen_mwi_menu.o screens/screen_openpilot_menu.o screens/screen_videolist.o screens/screen_graph.o screens/screen_telemetry.o \
 	mavlink/my_mavlink.o mavlink/my_mavlink_rewrite.o gps/my_gps.o mwi21/mwi21.o jeti/jeti.o openpilot/openpilot.o openpilot/openpilot_xml.o frsky/frsky.o tracker/tracker.o net/savepng.o net/webserv.o net/webclient.o logging.o kml.o \
 	openpilot/uavobjects_store.o openpilot/uavobjects_encode.o openpilot/uavobjects_decode.o \
 	weather.o \
@@ -113,7 +120,7 @@ pack:
 	todos Windows/MultiGCS/README.txt
 	todos Windows/MultiGCS/changelog.txt
 	cp $(MINGW_DIR)/bin/libpng3.dll Windows/MultiGCS/
-	cp $(MINGW_DIR)/bin/tcl85.dll Windows/MultiGCS/
+	cp $(MINGW_DIR)/bin/tcl85.dll Windows/MultiGCS/ || true
 	cp $(MINGW_DIR)/bin/SDL2_image.dll Windows/MultiGCS/
 	cp $(MINGW_DIR)/bin/SDL2_net.dll Windows/MultiGCS/
 	cp $(MINGW_DIR)/bin/SDL2.dll Windows/MultiGCS/

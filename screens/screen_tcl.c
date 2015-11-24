@@ -1,7 +1,7 @@
 
 #include <all.h>
 
-
+#ifdef USE_TCL
 
 Tcl_Interp *tcl_interp = NULL;
 static uint8_t tcl_startup = 0;
@@ -151,4 +151,5 @@ void screen_tcl (ESContext *esContext) {
 
 }
 
+#endif
 

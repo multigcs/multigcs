@@ -134,8 +134,10 @@ void openpilot_write (uint8_t modelid, uint8_t *data, int len) {
 	if (ModelData[modelid].serial_fd >= 0) {
 		serial_write(ModelData[modelid].serial_fd, data, len);
 	} else {
+#ifndef WINDOWS
 #ifndef ANDROID
 		openpilot_tcp_send(modelid, data, len);
+#endif
 #endif
 	}
 #ifndef WINDOWS

@@ -4,7 +4,7 @@
 
 MINGW_DIR="`grep "MINGW_DIR = " Makefile.win32-cross  | awk '{print $3}'`"
 
-apt-get install binutils-mingw-w64-i686 gcc-mingw-w64-i686 gcc-mingw32 mingw-w64-x86-64-dev mingw-w64-i686-dev mingw32-runtime wine libwine-gl dos2unix nsis nsis-common wget gcc-mingw32 build-essential pkg-config zip unzip tofrodos
+apt-get install mingw32 wine dos2unix nsis nsis-common wget build-essential pkg-config zip unzip tofrodos tclsh
 
 mkdir -p winlibs
 cd winlibs
@@ -47,10 +47,10 @@ test -e winglut.zip || wget http://web.cs.wpi.edu/~gogo/courses/mingw/winglut.zi
 mkdir -p winglut
 (cd winglut ; unzip -o -x ../winglut.zip)
 
-test -e glew-1.10.0.tgz || wget http://garr.dl.sourceforge.net/project/glew/glew/1.10.0/glew-1.10.0.tgz
-tar xzvpf glew-1.10.0.tgz
+test -e glew-1.13.0.tgz || wget http://kent.dl.sourceforge.net/project/glew/glew/1.13.0/glew-1.13.0.tgz
+tar xzvpf glew-1.13.0.tgz
 (
-cd glew-1.10.0
+cd glew-1.13.0
 rm -rf lib/
 rm -rf bin/
 mkdir -p lib/
@@ -94,16 +94,16 @@ cp -av tcl8.5.15/win/*dll $MINGW_DIR/bin/
 cp -av winglut/glut32.dll $MINGW_DIR/bin/
 cp -av winglut/winlib/* $MINGW_DIR/lib/
 cp -av winglut/GL/* $MINGW_DIR/include/GL/
-cp -av glew-1.10.0/lib/* $MINGW_DIR/lib/
-cp -av glew-1.10.0/bin/* $MINGW_DIR/bin/
-cp -av glew-1.10.0/include/* $MINGW_DIR/include/
+cp -av glew-1.13.0/lib/* $MINGW_DIR/lib/
+cp -av glew-1.13.0/bin/* $MINGW_DIR/bin/
+cp -av glew-1.13.0/include/* $MINGW_DIR/include/
 cp -av libjpeg/libjpeg-9.dll $MINGW_DIR/bin/
 cp -av OpenCV-2.4.5VC/install/bin/* $MINGW_DIR/bin/
 cp -av OpenCV-2.4.5VC/install/lib/* $MINGW_DIR/lib/
 cp -av OpenCV-2.4.5VC/install/include/* $MINGW_DIR/include/
 
-(cd /usr/share/nsis/ ; wget -O UltraModernUI_1.00_2010-11-11.zip http://freefr.dl.sourceforge.net/project/ultramodernui/UltraModernUI/UltraModernUI%201.00b2-dev/UltraModernUI_1.00_2010-11-11.zip)
-(cd /usr/share/nsis/ ; unzip -x UltraModernUI_1.00_2010-11-11.zip)
+(cd /usr/share/nsis/ ; test -e UltraModernUI_1.00_2010-11-11.zip || wget -O UltraModernUI_1.00_2010-11-11.zip http://freefr.dl.sourceforge.net/project/ultramodernui/UltraModernUI/UltraModernUI%201.00b2-dev/UltraModernUI_1.00_2010-11-11.zip)
+(cd /usr/share/nsis/ ; test -e /usr/share/nsis/Contrib/Graphics/UltraModernUI/Complete.bmp || unzip -x UltraModernUI_1.00_2010-11-11.zip)
 
 
 

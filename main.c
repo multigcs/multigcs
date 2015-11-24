@@ -11,7 +11,9 @@ char screennames[VIEW_MODE_LAST + 2][16] = {
 	"RCFLOW",
 #ifndef ANDROID
 	"VIDEOLIST",
+#ifdef USE_TCL
 	"TCL",
+#endif
 #endif
 	"TRACKER",
 	"SYSTEM",
@@ -203,8 +205,10 @@ void save_screenshot (void) {
 #ifndef ANDROID
 	} else if (setup.view_mode == VIEW_MODE_VIDEOLIST) {
 		strncpy(name, "video", 99);
+#ifdef USE_TCL
 	} else if (setup.view_mode == VIEW_MODE_TCL) {
 		strncpy(name, "tcl", 99);
+#endif
 #endif
 	} else if (setup.view_mode == VIEW_MODE_TRACKER) {
 		strncpy(name, "tracker", 99);
@@ -2519,9 +2523,11 @@ mavlink_set_gimbal_pos(n, pitch, 0.0, yaw);
 	} else if (setup.view_mode == VIEW_MODE_VIDEOLIST) {
 		screen_background(esContext);
 		screen_videolist(esContext);
+#ifdef USE_TCL
 	} else if (setup.view_mode == VIEW_MODE_TCL) {
 		screen_background(esContext);
 		screen_tcl(esContext);
+#endif
 #endif
 	} else if (setup.view_mode == VIEW_MODE_TRACKER) {
 		screen_background(esContext);
@@ -2748,8 +2754,9 @@ void ShutDown ( ESContext *esContext ) {
 
 	mavlink_exit_udp();
 	mavlink_exit_tcp();
+#ifndef WINDOWS
 	openpilot_exit_tcp();
-
+#endif
 	frsky_exit();
 	tracker_exit();
 	jeti_exit();

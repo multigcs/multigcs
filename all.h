@@ -22,7 +22,9 @@
 #include <linux/input.h>
 #endif
 #ifndef ANDROID
+#ifdef USE_TCL
 #include <tcl.h>
+#endif
 #endif
 #ifdef WINDOWS
 #include <windows.h>
