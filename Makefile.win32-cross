@@ -132,5 +132,8 @@ pack:
 	cp $(MINGW_DIR)/bin/opencv_highgui245d.dll Windows/MultiGCS/
 	cp $(MINGW_DIR)/bin/opencv_core245d.dll Windows/MultiGCS/
 	cp $(MINGW_DIR)/bin/opencv_imgproc245d.dll Windows/MultiGCS/
+	test -e winlibs/msvcp100.dll && cp winlibs/msvcp100.dll winlibs/msvcr100.dll Windows/MultiGCS/
+	test -e winlibs/msvcr100.dll && cp winlibs/msvcp100.dll Windows/MultiGCS/
+	test -e /usr/lib/x86_64-linux-gnu/wine/wine/msvcp100.dll.so && cp /usr/lib/x86_64-linux-gnu/wine/wine/msvcp100.dll.so Windows/MultiGCS/
 	(cd Windows ; zip -r multigcs-$(VERSION_NAME)_$(VERSION).zip MultiGCS)
 
