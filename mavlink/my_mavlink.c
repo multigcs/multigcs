@@ -139,9 +139,11 @@ void mavlink_init_tcp (void) {
 
 uint8_t mavlink_init (uint8_t modelid, char *port, uint32_t baud) {
 	int n = 0;
-	if (port[0] != '/' && strncmp(port, "COM", 3)!= 0) {
+#ifndef WINDOWS
+	if (port[0] != '/') {
 		return -1;
 	}
+#endif
 	mavlink_maxparam[modelid] = 0;
 	mavlink_foundparam[modelid] = 0;
 	SDL_Log("mavlink(%i): init serial port...\n", modelid);
@@ -1684,8 +1686,7 @@ void mavlink_start_feeds (uint8_t modelid) {
 		mavlink_send_message(modelid, &msg);
 		SDL_Delay(30);
 
-//		mavlink_msg_command_long_pack(MAVLINK_GSC_SYSID, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, \
-//			MAV_CMD_AQ_TELEMETRY, 1, 1.0, 100000.0, AQMAV_DATASET_SUPERVISOR, 0.0, 0.0, 0.0, 0.0);
+//		mavlink_msg_command_long_pack(MAVLINK_GSC_SYSID, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_CMD_AQ_TELEMETRY, 1, 1.0, 100000.0, AQMAV_DATASET_SUPERVISOR, 0.0, 0.0, 0.0, 0.0);
 //		mavlink_send_message(modelid, &msg);
 //		SDL_Delay(30);
 

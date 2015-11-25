@@ -40,9 +40,11 @@ uint8_t thread_sermon_running = 0;
 
 int serial_info_get (char *device, char *deviceid) {
 	int n = 0;
-	if (device[0] != '/' && strncmp(device, "COM", 3)!= 0) {
+#ifndef WINDOWS
+	if (device[0] != '/') {
 		return -1;
 	}
+#endif
 	deviceid[0] = 0;
 	for (n = 0; n < 100; n++) {
 		if (strcmp(info[n].device, device) == 0) {
@@ -253,6 +255,7 @@ ssize_t serial_read(int fd, void *data, size_t len) {
 }
 
 int serial_check (int fd) {
+#ifndef WINDOWS
 	int n = 0;
 	for (n = 0; n < 100; n++) {
 		if (locks[n].name[0] != 0 && locks[n].fd == fd) {
@@ -260,6 +263,9 @@ int serial_check (int fd) {
 		}
 	}
 	return -1;
+#else
+	return fd;
+#endif
 }
 
 int serial_close_by_device (char *device) {
@@ -309,9 +315,11 @@ int serial_close (int fd) {
 
 
 int serial_open (char *mdevice, uint32_t baud) {
-	if (mdevice[0] != '/' && strncmp(mdevice, "COM", 3)!= 0) {
+#ifndef WINDOWS
+	if (mdevice[0] != '/') {
 		return -1;
 	}
+#endif
 #ifdef ANDROID
 	return 1;
 #endif
