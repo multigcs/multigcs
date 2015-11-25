@@ -39,8 +39,8 @@ install:
 	cp -a copyright /usr/share/doc/multigcs/copyright
 	cp -a GPLv3.txt /usr/share/doc/multigcs/GPLv3.txt
 	cp -a multigcs.html /usr/share/doc/multigcs/multigcs.html
-	test -e .git && git log | gzip -9 > /usr/share/doc/multigcs/changelog.gz
-	test -e .git && git log | gzip -9 > /usr/share/doc/multigcs/changelog.Debian.gz 
+	test -e .git && git log | gzip -9 > /usr/share/doc/multigcs/changelog.gz || true
+	test -e .git && git log | gzip -9 > /usr/share/doc/multigcs/changelog.Debian.gz || true 
 	mkdir -p $(BASE_DIR)
 	cp -a data/WMM.COF $(BASE_DIR)/
 	cp -a data/SRTM.list $(BASE_DIR)/

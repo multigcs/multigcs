@@ -41,9 +41,11 @@ uint8_t thread_sermon_running = 0;
 int serial_info_get (char *device, char *deviceid) {
 	int n = 0;
 #ifndef WINDOWS
+#ifndef ANDROID
 	if (device[0] != '/') {
 		return -1;
 	}
+#endif
 #endif
 	deviceid[0] = 0;
 	for (n = 0; n < 100; n++) {
@@ -227,7 +229,7 @@ void serial_write (int fd, void *data, int len) {
 	int n = 0;
 	for (n = 0; n < len; n++) {
 		uint8_t *udata = (uint8_t *)data;
-		Android_JNI_SendSerial(udata[n]);
+//		Android_JNI_SendSerial(udata[n]);
 	}
 #else
 	write(fd, data, len);
@@ -255,6 +257,9 @@ ssize_t serial_read(int fd, void *data, size_t len) {
 }
 
 int serial_check (int fd) {
+#ifdef ANDROID
+	return fd;
+#else
 #ifndef WINDOWS
 	int n = 0;
 	for (n = 0; n < 100; n++) {
@@ -266,9 +271,11 @@ int serial_check (int fd) {
 #else
 	return fd;
 #endif
+#endif
 }
 
 int serial_close_by_device (char *device) {
+#ifdef ANDROID
 #ifndef WINDOWS
 	int n = 0;
 	for (n = 0; n < 100; n++) {
@@ -282,6 +289,7 @@ int serial_close_by_device (char *device) {
 			locks[n].fd = -1;
 		}
 	}
+#endif
 #endif
 	return 0;
 }
@@ -316,11 +324,21 @@ int serial_close (int fd) {
 
 int serial_open (char *mdevice, uint32_t baud) {
 #ifndef WINDOWS
+#ifndef ANDROID
 	if (mdevice[0] != '/') {
 		return -1;
 	}
 #endif
+#endif
 #ifdef ANDROID
+	SDL_Log("	Try to open Serial-Port: %s (%i)...", mdevice, baud);
+//	if (strncmp(mdevice, "bt:", 3) == 0) {
+		SDL_Log("bluetooth\n");
+		Android_JNI_ConnectSerial("apm");
+//	} else {
+//		SDL_Log("usb\n");
+//		Android_JNI_ConnectUsbSerial(baud);
+//	}
 	return 1;
 #endif
 #ifndef WINDOWS

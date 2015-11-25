@@ -452,7 +452,7 @@ public class SDLActivity extends Activity {
       if (sDriver != null) {
         try  {
             byte buffer[] = new byte[1];
-	    buffer[0] = c;
+            buffer[0] = c;
             if (sDriver != null) {
               sDriver.write(buffer, 100);
             } else {

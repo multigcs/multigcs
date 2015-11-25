@@ -368,9 +368,6 @@ void reset_telemetry (uint8_t modelid) {
 	if (clientmode == 1) {
 		return;
 	}
-#ifdef ANDROID
-	Android_JNI_ConnectUsbSerial(ModelData[modelid].telemetry_baud);
-#endif
 	if (ModelData[modelid].teletype == TELETYPE_MULTIWII_21 || ModelData[modelid].teletype == TELETYPE_BASEFLIGHT) {
 		mwi21_init(modelid, ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
 	} else if (ModelData[modelid].teletype == TELETYPE_GPS_NMEA) {
@@ -383,21 +380,6 @@ void reset_telemetry (uint8_t modelid) {
 	} else {
 		mavlink_init(modelid, ModelData[modelid].telemetry_port, ModelData[modelid].telemetry_baud);
 	}
-}
-
-void set_telemetry (uint8_t modelid, char *device, uint32_t baud) {
-	if (clientmode == 1) {
-		return;
-	}
-//	strncpy(ModelData[modelid].telemetry_port, device, 1023);
-//	ModelData[modelid].telemetry_baud = baud;
-
-#ifdef ANDROID
-	if (strncmp(ModelData[modelid].telemetry_port, "bt:", 3) == 0) {
-		Android_JNI_ConnectSerial(ModelData[modelid].telemetry_port + 3);
-	}
-#endif
-	reset_telemetry(modelid);
 }
 
 void setup_waypoints (void) {
@@ -2971,6 +2953,7 @@ int main ( int argc, char *argv[] ) {
 	joystick_init();
 #endif
 
+#ifndef ANDROID
 //	openpilot_init_tcp();
 	mavlink_init_udp();
 	mavlink_init_tcp();
@@ -2980,12 +2963,12 @@ int main ( int argc, char *argv[] ) {
 	gcs_gps_init(setup.gcs_gps_port, setup.gcs_gps_baud);
 	rcflow_init(setup.rcflow_port, setup.rcflow_baud);
 	tracker_init(setup.tracker_port, setup.tracker_baud);
+	serial_monitor_init();
+#endif
 
 	if (setup.weather_enable == 1) {
 		weather_init();
 	}
-
-	serial_monitor_init();
 
 	SDL_Log("telemetry: init thread\n");
 	for (n = 0; n < MODELS_MAX; n++) {

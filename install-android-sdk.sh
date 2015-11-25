@@ -7,7 +7,7 @@ test -e android/jni/SDL2 || tar xzvpf android-libs.tgz
 
 mkdir -p android/jni/src
 
-apt-get install openjdk-7-jdk bunzip unzip ant
+apt-get install openjdk-7-jdk bzip2 unzip ant
 mkdir -p android-dev
 (
 	cd android-dev

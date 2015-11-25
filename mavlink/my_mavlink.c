@@ -140,9 +140,11 @@ void mavlink_init_tcp (void) {
 uint8_t mavlink_init (uint8_t modelid, char *port, uint32_t baud) {
 	int n = 0;
 #ifndef WINDOWS
+#ifndef ANDROID
 	if (port[0] != '/') {
 		return -1;
 	}
+#endif
 #endif
 	mavlink_maxparam[modelid] = 0;
 	mavlink_foundparam[modelid] = 0;

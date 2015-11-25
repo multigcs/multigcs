@@ -446,7 +446,7 @@ void Android_JNI_ConnectSerial(char *name)
 
 void Android_JNI_ConnectUsbSerial(int baudrate)
 {
-    SDL_Log("JNI_ConnectSerial");
+    SDL_Log("JNI_ConnectUsbSerial");
     jmethodID mid;
     JNIEnv *mEnv = Android_JNI_GetEnv();
     mid = (*mEnv)->GetStaticMethodID(mEnv, mActivityClass, "USBserialConnect", "(I)Z");
@@ -459,10 +459,12 @@ void Android_JNI_SendSerial(uint8_t c)
 {
     jmethodID mid;
     JNIEnv *mEnv = Android_JNI_GetEnv();
-    mid = (*mEnv)->GetStaticMethodID(mEnv, mActivityClass, "serialWrite", "(B)Z");
-    if (mid) {
-        (*mEnv)->CallStaticBooleanMethod(mEnv, mActivityClass, mid, (jbyte)c);
-    }
+    if (mEnv) {
+		mid = (*mEnv)->GetStaticMethodID(mEnv, mActivityClass, "serialWrite", "(B)Z");
+		if (mid) {
+			(*mEnv)->CallStaticBooleanMethod(mEnv, mActivityClass, mid, (jbyte)c);
+		}
+	}
 }
 
 int Android_JNI_ReadSerial(uint8_t *data, int len)

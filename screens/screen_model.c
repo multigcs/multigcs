@@ -69,11 +69,9 @@ static uint8_t model_mavlink_sysid_change (char *name, float x, float y, int8_t 
 //}
 
 static uint8_t model_reconnect (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-//	set_telemetry(ModelActive, ModelData[ModelActive].telemetry_port, ModelData[ModelActive].telemetry_baud);
 	reset_telemetry(ModelActive);
 	return 0;
 }
-
 
 uint8_t model_teletype_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int)data < TELETYPE_LAST) {
