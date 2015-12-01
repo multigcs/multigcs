@@ -89,6 +89,9 @@ static uint8_t Queue[QUEUE_SIZE];
 static uint64_t QueueIn = 0;
 static uint64_t QueueOut = 0;
 
+WifiBcChannels wifibc_channels[50];
+int wifibc_channels_max = 0;
+
 const char *avcodec_get_name2 (enum AVCodecID id) {
 	const AVCodecDescriptor *cd;
 	AVCodec *codec;
@@ -711,6 +714,40 @@ void wifibc_init (void) {
 	system(cmd_str);
 	sprintf(cmd_str, "iwconfig %s channel %i", setup.wifibc_device, setup.wifibc_channel);
 	system(cmd_str);
+
+//	sprintf(cmd_str, "iw phy`iw %s info | grep wiphy | awk '{print $2}'` info | grep 'MHz \[[0-9][0-9]*\]" | sed "s|.*\* \([0-9][0-9]*\) MHz [\\([0-9][0-9]*\\)]|\2 \1|g" > /tmp/list', setup.wifibc_device);
+
+	char buf[1024];
+	FILE *ptr = NULL;
+	char *c = NULL;
+	int wiphy = -1;
+	wifibc_channels_max = 0;
+	sprintf(cmd_str, "iw %s info", setup.wifibc_device);
+	if ((ptr = popen(cmd_str, "r")) != NULL) {
+		while (fgets(buf, 1023, ptr) != NULL) {
+			if ((c = strstr(buf, "wiphy ")) > 0) {
+				wiphy = atoi(c + 6);
+			} 
+		}
+		pclose(ptr);
+	}
+	if (wiphy >= 0) {
+		sprintf(cmd_str, "iw phy%i info", wiphy);
+		if ((ptr = popen(cmd_str, "r")) != NULL) {
+			while (fgets(buf, 1023, ptr) != NULL && wifibc_channels_max < 49) {
+				if ((c = strstr(buf, "MHz ")) > 0) {
+					wifibc_channels[wifibc_channels_max].comment[0] = 0;
+					wifibc_channels[wifibc_channels_max].freq = atoi(c - 5);
+					wifibc_channels[wifibc_channels_max].channel = atoi(c + 5);
+					if ((c = strstr(buf, "] ")) > 0) {
+						strcpy(wifibc_channels[wifibc_channels_max].comment, c + 2);
+					}
+					wifibc_channels_max++;
+				}
+			}
+			pclose(ptr);
+		}
+	}
 	wifibc_running = 1;
 	wifibc_running2 = 1;
 #ifdef SDL2
