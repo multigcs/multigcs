@@ -654,8 +654,8 @@ int wifibc_update_stream (void *data) {
 	}
 	fec_init();
 	int x = optind;
-	if (open_and_configure_interface("wlan1", param_port, interfaces + num_interfaces) != 0) {
-		SDL_Log("wifibc: faild open wifi: %s\n", "wlan1");
+	if (open_and_configure_interface(setup.wifibc_device, param_port, interfaces + num_interfaces) != 0) {
+		SDL_Log("wifibc: faild open wifi: %s\n", setup.wifibc_device);
 		return 1;
 	}
 	++num_interfaces;
