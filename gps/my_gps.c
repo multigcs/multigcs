@@ -201,6 +201,8 @@ int gcs_thread_serial_gps (void *unused) {
 						GroundData.p_lat = hlat;
 						GroundData.p_long = hlon;
 						GroundData.p_alt = (float)nz;
+						GroundData.gpsfix = quality;
+						GroundData.numSat = num_sat;
 						GroundData.dir = 0.0;
 						if (GroundData.active == 0) {
 							SDL_Log("ground: found gps (%f %f %i)\n", hlat, hlon, (int16_t)alt2);
@@ -210,7 +212,7 @@ int gcs_thread_serial_gps (void *unused) {
 					}
 /*
 					SDL_Log("#%f - %f (%0.1fm)#\n", hlat, hlon, alt1);
-					SDL_Log("Lat:  %f\n", WayPoints[modelid][0].p_lat);
+					SDL_Log("Lat:  %f\n", hlat);
 					SDL_Log("Lon:  %f\n", hlon);
 					SDL_Log("Alt:  %0.1fm (%0.1fm)\n", alt1, alt2);
 					SDL_Log("Sats: %i\n", num_sat);

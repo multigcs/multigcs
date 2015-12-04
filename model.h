@@ -139,6 +139,10 @@ typedef struct {
 	float sp_alt;
 	float sp_radius;
 	int16_t wifibc_rssi[4];
+	int8_t gpsfix;
+	int8_t numSat;
+	float hdop;
+	float vdop;
 } Ground;
 
 extern uint8_t ModelActive;

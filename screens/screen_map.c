@@ -47,6 +47,7 @@ uint8_t map_show_survey_setup = 0;
 uint8_t map_show_swarm_setup = 0;
 uint8_t map_show_history = 0;
 uint8_t map_menu_r = 0;
+uint8_t map_ground_gps = 0;
 
 enum {
 	MR_NONE,
@@ -182,6 +183,11 @@ uint8_t map_null (char *name, float x, float y, int8_t button, float data, uint8
 		fmap_scale -= 0.0001;
 	}
 #endif
+	return 0;
+}
+
+uint8_t map_gps (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	map_ground_gps = 1 - map_ground_gps;
 	return 0;
 }
 
@@ -1230,17 +1236,36 @@ void map_draw_buttons (ESContext *esContext) {
 	draw_rect_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
 	if (ModelData[ModelActive].gpsfix > 0) {
 		sprintf(tmp_str, "Fix: %iD", ModelData[ModelActive].gpsfix);
-		draw_text_button(esContext, "map_fix", setup.view_mode, tmp_str, FONT_GREEN, -1.4, -0.8 + ny * 0.12 - 0.03, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
+		draw_text_button(esContext, "map_fix", setup.view_mode, tmp_str, FONT_GREEN, -1.4, -0.8 + ny * 0.12 - 0.03, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_gps, 0.0);
 		sprintf(tmp_str, "Sat: %i", ModelData[ModelActive].numSat);
-		draw_text_button(esContext, "map_sats", setup.view_mode, tmp_str, FONT_GREEN, -1.4, -0.8 + ny * 0.12 + 0.0, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
+		draw_text_button(esContext, "map_sats", setup.view_mode, tmp_str, FONT_GREEN, -1.4, -0.8 + ny * 0.12 + 0.0, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_gps, 0.0);
 	} else {
 		strcpy(tmp_str, "No GPS");
-		draw_text_button(esContext, "map_fix", setup.view_mode, tmp_str, FONT_WHITE, -1.4, -0.8 + ny * 0.12 - 0.03, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
+		draw_text_button(esContext, "map_fix", setup.view_mode, tmp_str, FONT_WHITE, -1.4, -0.8 + ny * 0.12 - 0.03, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_gps, 0.0);
 		sprintf(tmp_str, "Sat: %i", ModelData[ModelActive].numSat);
-		draw_text_button(esContext, "map_sats", setup.view_mode, tmp_str, FONT_WHITE, -1.4, -0.8 + ny * 0.12 + 0.0, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
+		draw_text_button(esContext, "map_sats", setup.view_mode, tmp_str, FONT_WHITE, -1.4, -0.8 + ny * 0.12 + 0.0, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_gps, 0.0);
 	}
 	sprintf(tmp_str, "HDOP: %0.1f", ModelData[ModelActive].hdop);
-	draw_text_button(esContext, "map_hdop", setup.view_mode, tmp_str, FONT_GREEN, -1.4, -0.8 + ny * 0.12 + 0.03, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
+	draw_text_button(esContext, "map_hdop", setup.view_mode, tmp_str, FONT_GREEN, -1.4, -0.8 + ny * 0.12 + 0.03, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_gps, 0.0);
+
+	if (map_ground_gps == 1) {
+		draw_box_f3(esContext, -1.45 + 0.3, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15 + 0.3, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
+		draw_rect_f3(esContext, -1.45 + 0.3, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15 + 0.3, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
+		if (GroundData.gpsfix > 0) {
+			sprintf(tmp_str, "Fix: %iD", GroundData.gpsfix);
+			draw_text_button(esContext, "map_ground_fix", setup.view_mode, tmp_str, FONT_GREEN, -1.4 + 0.3, -0.8 + ny * 0.12 - 0.03, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
+			sprintf(tmp_str, "Sat: %i", GroundData.numSat);
+			draw_text_button(esContext, "map_ground_sats", setup.view_mode, tmp_str, FONT_GREEN, -1.4 + 0.3, -0.8 + ny * 0.12 + 0.0, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
+		} else {
+			strcpy(tmp_str, "No GPS");
+			draw_text_button(esContext, "map_ground_fix", setup.view_mode, tmp_str, FONT_WHITE, -1.4 + 0.3, -0.8 + ny * 0.12 - 0.03, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
+			sprintf(tmp_str, "Sat: %i", GroundData.numSat);
+			draw_text_button(esContext, "map_ground_sats", setup.view_mode, tmp_str, FONT_WHITE, -1.4 + 0.3, -0.8 + ny * 0.12 + 0.0, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
+		}
+		sprintf(tmp_str, "HDOP: %0.1f", GroundData.hdop);
+		draw_text_button(esContext, "map_ground_hdop", setup.view_mode, tmp_str, FONT_GREEN, -1.4 + 0.3, -0.8 + ny * 0.12 + 0.03, 0.003, 0.04, ALIGN_LEFT, ALIGN_CENTER, map_null, 0.0);
+	}
+
 
 	ny = 0;
 	if (ModelData[ModelActive].mode == 0) {
