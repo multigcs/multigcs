@@ -25,9 +25,6 @@ font = ImageFont.load_default()
 disp = Adafruit_SSD1306.SSD1306_128_32(rst=RST)
 width = disp.width
 height = disp.height
-disp.begin()
-disp.clear()
-disp.display()
 
 n = 0
 aFreq = list() 
@@ -49,17 +46,21 @@ source.close()
 cmd = "iwconfig %s channel %d" % ("wlan0", aFreq[n][0])
 os.popen(cmd).read()
 
+disp.begin()
+disp.clear()
+disp.display()
+image = Image.new('1', (width, height))
+draw = ImageDraw.Draw(image)
+draw.rectangle((0, 0,  width, height), outline=0, fill=0)
+buf = "Channel: %d" % (aFreq[n][0])
+draw.text((0, 0), buf,  font=font, fill=255)
+buf = "Frequenz: %d MHz" % (aFreq[n][1])
+draw.text((0, 0 + 10), buf, font=font, fill=255)
+draw.text((0, 0 + 20), aFreq[n][2], font=font, fill=255)
+disp.image(image)
+disp.display()
+
 while True:
-    image = Image.new('1', (width, height))
-    draw = ImageDraw.Draw(image)
-    draw.rectangle((0, 0,  width, height), outline=0, fill=0)
-    buf = "Channel: %d" % (aFreq[n][0])
-    draw.text((0, 0), buf,  font=font, fill=255)
-    buf = "Frequenz: %d MHz" % (aFreq[n][1])
-    draw.text((0, 0 + 10), buf, font=font, fill=255)
-    draw.text((0, 0 + 20), aFreq[n][2], font=font, fill=255)
-    disp.image(image)
-    disp.display()
     if GPIO.input(18) == False:
         time.sleep(0.1)
         while GPIO.input(18) == False:
@@ -73,4 +74,12 @@ while True:
         target = open("setup.txt", 'w')
         target.write(str(n))
         target.close()
+        draw.rectangle((0, 0,  width, height), outline=0, fill=0)
+        buf = "Channel: %d" % (aFreq[n][0])
+        draw.text((0, 0), buf,  font=font, fill=255)
+        buf = "Frequenz: %d MHz" % (aFreq[n][1])
+        draw.text((0, 0 + 10), buf, font=font, fill=255)
+        draw.text((0, 0 + 20), aFreq[n][2], font=font, fill=255)
+        disp.image(image)
+        disp.display()
 
