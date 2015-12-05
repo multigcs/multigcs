@@ -82,4 +82,5 @@ while True:
         draw.text((0, 0 + 20), aFreq[n][2], font=font, fill=255)
         disp.image(image)
         disp.display()
+    time.sleep(0.1)
 
