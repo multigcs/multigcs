@@ -3020,8 +3020,8 @@ void webserv_child (int fd) {
 			int tx = 0;
 			int ty = 0;
 			int zoom = 0;
-			sscanf(buffer + 10, "%i/%i/%i.png", &zoom, &tx, &ty);
-			sprintf(tmp_str, mapnames[map_type][2], get_datadirectory(), zoom, tx, ty);
+			sscanf(buffer + 10, "%i/%i/%i", &zoom, &tx, &ty);
+			sprintf(tmp_str, mapnames[map_type][MAP_FILE], get_datadirectory(), zoom, tx, ty);
 			if (strstr(tmp_str, ".jpg\0") > 0) {
 				webserv_child_dump_file(fd, tmp_str, "image/jpg");
 			} else {

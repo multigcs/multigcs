@@ -2942,6 +2942,8 @@ int main ( int argc, char *argv[] ) {
 	draw_text_f3(&esContext, -1.4, -0.95, 0.003, 0.06, 0.06, FONT_WHITE, "PreLoading Maps...");
 	draw_update(&esContext);
 	screen_map(&esContext, lat, lon, zoom);
+#else
+	init_map(NULL, lat, lon, zoom, map_view, 1, 1.0, 0.0, 0.0, 0.0);
 #endif
 
 	int16_t zz = get_altitude(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long);
@@ -2987,6 +2989,7 @@ int main ( int argc, char *argv[] ) {
 
 	SDL_Log("main: start loop\n");
 #ifdef CONSOLE_ONLY
+	webserv_init();
 	SDL_Log("main: now you can connect via Browser or Google-Earth to port :%i\n", setup.webport);
 #endif
 
