@@ -33,8 +33,24 @@ void gps_update (uint8_t modelid) {
 			line[n++] = serial_buf[0];
 			line[n] = 0;
 		} else {
-//				SDL_Log("gps: %s\n", line);
-			if (strncmp(line, "$GPVTG", 6) == 0) {
+//			SDL_Log("gps: %s\n", line);
+			if (strncmp(line, "$GPGSA", 6) == 0) {
+				char autosel;
+				int quality;
+				sscanf(line, "$GPGSA,%c,%i,", &autosel, &quality);
+				GroundData.gpsfix = quality;
+/*
+				if (quality == 0) {
+					SDL_Log("GPS:  Invalid\n");
+				} else if (quality == 1) {
+					SDL_Log("GPS:  no Fix\n");
+				} else if (quality == 2) {
+					SDL_Log("GPS:  2D Fix\n");
+				} else if (quality == 3) {
+					SDL_Log("GPS:  3D Fix\n");
+				}
+*/
+			} else if (strncmp(line, "$GPVTG", 6) == 0) {
 				float track;
 				char ch_T;
 				char null1;
@@ -44,7 +60,7 @@ void gps_update (uint8_t modelid) {
 				float speed;
 				char ch_K;
 				sscanf( line, "$GPVTG,%f,%c,%c,%c,%f,%c,%f,%c,", &track, &ch_T, &null1, &null2, &speed_knots, &knots, &speed, &ch_K);
-//					SDL_Log("gps: %s\n", line);
+//				SDL_Log("gps: %s\n", line);
 				ModelData[modelid].speed = speed;
 				redraw_flag = 1;
 			} else if (strncmp(line, "$GNTXT", 6) == 0) {
@@ -101,7 +117,6 @@ void gps_update (uint8_t modelid) {
 					ModelData[modelid].p_long = hlon;
 					ModelData[modelid].p_alt = alt2;
 					ModelData[modelid].numSat = num_sat;
-					ModelData[modelid].gpsfix = quality;
 					redraw_flag = 1;
 				}
 /*
@@ -110,13 +125,6 @@ void gps_update (uint8_t modelid) {
 				SDL_Log("Lon:  %f\n", hlon);
 				SDL_Log("Alt:  %0.1fm (%0.1fm)\n", alt1, alt2);
 				SDL_Log("Sats: %i\n", num_sat);
-				if (quality == 0) {
-					SDL_Log("GPS:  Invalid\n");
-				} else if (quality == 1) {
-					SDL_Log("GPS:  2D Fix\n");
-				} else if (quality == 2) {
-					SDL_Log("GPS:  3D Fix\n");
-				}
 */
 			} else if (strncmp(line, "$IMU", 4) == 0) {
 				float imuX;
@@ -163,7 +171,23 @@ int gcs_thread_serial_gps (void *unused) {
 				line[n++] = serial_buf[0];
 				line[n] = 0;
 			} else {
-				if (strncmp(line, "$GPGGA", 6) == 0 || strncmp(line, "$GNGGA", 6) == 0) {
+				if (strncmp(line, "$GPGSA", 6) == 0) {
+					char autosel;
+					int quality;
+					sscanf(line, "$GPGSA,%c,%i,", &autosel, &quality);
+					GroundData.gpsfix = quality;
+/*
+					if (quality == 0) {
+						SDL_Log("GPS:  Invalid\n");
+					} else if (quality == 1) {
+						SDL_Log("GPS:  no Fix\n");
+					} else if (quality == 2) {
+						SDL_Log("GPS:  2D Fix\n");
+					} else if (quality == 3) {
+						SDL_Log("GPS:  3D Fix\n");
+					}
+*/
+				} else if (strncmp(line, "$GPGGA", 6) == 0 || strncmp(line, "$GNGGA", 6) == 0) {
 					float time;
 					float lat1;
 					char latdir;
@@ -177,9 +201,9 @@ int gcs_thread_serial_gps (void *unused) {
 					float alt1;
 					char alt1_unit;
 					if (strncmp(line, "$GPGGA", 6) == 0) {
-						sscanf( line, "$GPGGA,%f,%f,%c,%f,%c,%d,%d,%f,%f,%c,%f,%c", &time, &lat1, &latdir, &lon1, &londir, &quality, &num_sat, &hdilution, &alt2, &alt2_unit, &alt1, &alt1_unit);
+						sscanf(line, "$GPGGA,%f,%f,%c,%f,%c,%d,%d,%f,%f,%c,%f,%c", &time, &lat1, &latdir, &lon1, &londir, &quality, &num_sat, &hdilution, &alt2, &alt2_unit, &alt1, &alt1_unit);
 					} else {
-						sscanf( line, "$GNGGA,%f,%f,%c,%f,%c,%d,%d,%f,%f,%c,%f,%c", &time, &lat1, &latdir, &lon1, &londir, &quality, &num_sat, &hdilution, &alt2, &alt2_unit, &alt1, &alt1_unit);
+						sscanf(line, "$GNGGA,%f,%f,%c,%f,%c,%d,%d,%f,%f,%c,%f,%c", &time, &lat1, &latdir, &lon1, &londir, &quality, &num_sat, &hdilution, &alt2, &alt2_unit, &alt1, &alt1_unit);
 					}
 //					SDL_Log("%s\n", line);
 //					SDL_Log("###################### %f, %f, %c, %f, %c, %d, %d, %f, %f, %c, %f, %c ##\n", time, lat1, latdir, lon1, londir, quality, num_sat, hdilution, alt2, alt2_unit, alt1, alt1_unit);
@@ -201,7 +225,6 @@ int gcs_thread_serial_gps (void *unused) {
 						GroundData.p_lat = hlat;
 						GroundData.p_long = hlon;
 						GroundData.p_alt = (float)nz;
-						GroundData.gpsfix = quality;
 						GroundData.numSat = num_sat;
 						GroundData.dir = 0.0;
 						if (GroundData.active == 0) {
@@ -216,13 +239,6 @@ int gcs_thread_serial_gps (void *unused) {
 					SDL_Log("Lon:  %f\n", hlon);
 					SDL_Log("Alt:  %0.1fm (%0.1fm)\n", alt1, alt2);
 					SDL_Log("Sats: %i\n", num_sat);
-					if (quality == 0) {
-						SDL_Log("GPS:  Invalid\n");
-					} else if (quality == 1) {
-						SDL_Log("GPS:  2D Fix\n");
-					} else if (quality == 2) {
-						SDL_Log("GPS:  3D Fix\n");
-					}
 */
 				}
 				n = 0;
