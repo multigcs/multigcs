@@ -63,6 +63,7 @@ int quirc_count(const struct quirc *q)
 	return q->num_grids;
 }
 
+/*
 static const char *const error_table[] = {
 	[QUIRC_SUCCESS] = "Success",
 	[QUIRC_ERROR_INVALID_GRID_SIZE] = "Invalid grid size",
@@ -73,13 +74,13 @@ static const char *const error_table[] = {
 	[QUIRC_ERROR_DATA_OVERFLOW] = "Data overflow",
 	[QUIRC_ERROR_DATA_UNDERFLOW] = "Data underflow"
 };
-
+*/
 const char *quirc_strerror(quirc_decode_error_t err)
 {
 //	if (err >= 0 && err < sizeof(error_table) / sizeof(error_table[0]))
-	if (err < sizeof(error_table) / sizeof(error_table[0]))
-		return error_table[err];
-
+//	if (err < sizeof(error_table) / sizeof(error_table[0]))
+//		return error_table[err];
+//
 	return "Unknown error";
 }
 
