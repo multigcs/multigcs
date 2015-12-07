@@ -3057,28 +3057,48 @@ void webserv_child (int fd) {
 		} else if (strncmp(buffer + 4,"/GPLv2.txt", 10) == 0) {
 			sprintf(tmp_str, "%s/webserv/GPLv2.txt", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/plain");
-
-#ifndef OSX
-#ifdef SDLGL
 		} else if (strncmp(buffer + 4,"/video.png", 10) == 0) {
-#if defined USE_V4L
-			SDL_SavePNG(videodev_loop(), "/tmp/video.png");
-			webserv_child_dump_file(fd, "/tmp/video.png", "image/png");
+#if defined USE_VLC
+	if (vlc_is_playing() == 0) {
+		vlc_exit();
+		vlc_init(setup.videocapture_device);
+	}
+	SDL_SavePNG(vlc_update(), "/tmp/video.png");
+	webserv_child_dump_file(fd, "/tmp/video.png", "image/png");
+#elif defined USE_WIFIBC
+	SDL_Surface *vidsurf = wifibc_get();
+	if (vidsurf != NULL) {
+#ifdef _ANDROID
+		SDL_Surface *imageSurface = convert_to_power_of_two(vidsurf);
+		draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, imageSurface);
+		SDL_FreeSurface(imageSurface);
+#else
+		SDL_SavePNG(vidsurf, "/tmp/video.png");
+		webserv_child_dump_file(fd, "/tmp/video.png", "image/png");
 #endif
-/*
-			char PngBuffer[502249];
-			SDL_RWops *rwop = SDL_RWFromMem(PngBuffer, 502249);
-			SDL_SavePNG_RW(videodev_loop(), rwop, 1);
-			int32_t length = SDL_RWseek(rwop, 0, SEEK_END);
-			char buffer[BUFSIZE + 1];
-			sprintf(buffer, header_str, 502249, "image/png");
-			write(fd, buffer, strlen(buffer));
-			write(fd, PngBuffer, 502249);
-*/
+	}
+#elif defined USE_OPENCV
+	SDL_Surface *vidsurf = openvc_get();
+	if (vidsurf != NULL) {
+#ifdef _ANDROID
+		SDL_Surface *imageSurface = convert_to_power_of_two(vidsurf);
+		SDL_SavePNG(vidsurf, "/tmp/video.png");
+		webserv_child_dump_file(fd, "/tmp/video.png", "image/png");
+		SDL_FreeSurface(imageSurface);
+#else
+		SDL_SavePNG(vidsurf, "/tmp/video.png");
+		webserv_child_dump_file(fd, "/tmp/video.png", "image/png");
+#endif
+	}
+#else
+#ifndef OSX
+#if defined USE_V4L
+	SDL_SavePNG(videodev_loop(), "/tmp/video.png");
+	webserv_child_dump_file(fd, "/tmp/video.png", "image/png");
+#endif
 #endif
 #endif
 		} else {
-
 			type[0] = 0;
 			content[0] = 0;
 
