@@ -37,7 +37,7 @@ install:
 	mkdir -p /usr/share/doc/multigcs/
 	cp -a README /usr/share/doc/multigcs/README
 	cp -a copyright /usr/share/doc/multigcs/copyright
-	cp -a GPLv3.txt /usr/share/doc/multigcs/GPLv3.txt
+	cp -a GPLv2.txt /usr/share/doc/multigcs/GPLv2.txt
 	cp -a multigcs.html /usr/share/doc/multigcs/multigcs.html
 	test -e .git && git log | gzip -9 > /usr/share/doc/multigcs/changelog.gz || true
 	test -e .git && git log | gzip -9 > /usr/share/doc/multigcs/changelog.Debian.gz || true 
@@ -73,7 +73,7 @@ install:
 	cp -a net/plane.dae $(BASE_DIR)/webserv/plane.dae
 	cp -a net/simple.dae $(BASE_DIR)/webserv/simple.dae
 	cp -a copyright $(BASE_DIR)/webserv/copyright
-	cp -a GPLv3.txt $(BASE_DIR)/webserv/GPLv3.txt
+	cp -a GPLv2.txt $(BASE_DIR)/webserv/GPLv2.txt
 	chmod 0755 /usr/bin/gl-gcs
 	chmod 0755 /usr/bin/multigcs
 	chmod 0755 $(BASE_DIR)/clean-badmaps.sh
@@ -88,7 +88,7 @@ deb: gcs
 	mkdir -p package/usr/share/doc/multigcs/
 	cp -a README package/usr/share/doc/multigcs/README
 	cp -a copyright package/usr/share/doc/multigcs/copyright
-	cp -a GPLv3.txt package/usr/share/doc/multigcs/GPLv3.txt
+	cp -a GPLv2.txt package/usr/share/doc/multigcs/GPLv2.txt
 	cp -a multigcs.html package/usr/share/doc/multigcs/multigcs.html
 	git log | gzip -9 > package/usr/share/doc/multigcs/changelog.gz
 	git log | gzip -9 > package/usr/share/doc/multigcs/changelog.Debian.gz 
@@ -122,7 +122,7 @@ deb: gcs
 	cp -a net/plane.dae package$(BASE_DIR)/webserv/plane.dae
 	cp -a net/simple.dae package$(BASE_DIR)/webserv/simple.dae
 	cp -a copyright package$(BASE_DIR)/webserv/copyright
-	cp -a GPLv3.txt package$(BASE_DIR)/webserv/GPLv3.txt
+	cp -a GPLv2.txt package$(BASE_DIR)/webserv/GPLv2.txt
 	chmod 0755 package/usr/bin/gl-gcs
 	chmod 0755 package/usr/bin/multigcs
 	chmod 0755 package$(BASE_DIR)/clean-badmaps.sh

@@ -806,7 +806,7 @@ void webserv_child_show_misc (int fd) {
 	strcat(content, "<A href=\"/screenshot\">/screenshot</A> (take a screenshot of the GUI)<BR>\n");
 	strcat(content, "<H3>Copyright</H3>\n");
 	strcat(content, "<A href=\"/copyright\">/copyright</A> (Copyright)<BR>\n");
-	strcat(content, "<A href=\"/GPLv3.txt\">/GPLv3.txt</A> (GPL v3)<BR>\n");
+	strcat(content, "<A href=\"/GPLv2.txt\">/GPLv2.txt</A> (GPL v2 or later)<BR>\n");
 	strcat(content, "</CENTER>\n");
 	webserv_html_stop(content);
 
@@ -3054,8 +3054,8 @@ void webserv_child (int fd) {
 		} else if (strncmp(buffer + 4,"/copyright", 10) == 0) {
 			sprintf(tmp_str, "%s/webserv/copyright", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/plain");
-		} else if (strncmp(buffer + 4,"/GPLv3.txt", 10) == 0) {
-			sprintf(tmp_str, "%s/webserv/GPLv3.txt", BASE_DIR);
+		} else if (strncmp(buffer + 4,"/GPLv2.txt", 10) == 0) {
+			sprintf(tmp_str, "%s/webserv/GPLv2.txt", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/plain");
 
 #ifndef OSX

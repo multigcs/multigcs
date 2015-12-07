@@ -109,14 +109,14 @@ pack:
 	cp -a net/plane.dae Windows/MultiGCS/$(BASE_DIR)/webserv/plane.dae
 	cp -a net/simple.dae Windows/MultiGCS/$(BASE_DIR)/webserv/simple.dae
 	cp -a copyright Windows/MultiGCS/$(BASE_DIR)/webserv/copyright
-	cp -a GPLv3.txt Windows/MultiGCS/$(BASE_DIR)/webserv/GPLv3.txt
+	cp -a GPLv2.txt Windows/MultiGCS/$(BASE_DIR)/webserv/GPLv2.txt
 	cp -a copyright Windows/MultiGCS/copyright.txt
-	cp -a GPLv3.txt Windows/MultiGCS/GPLv3.txt
+	cp -a GPLv2.txt Windows/MultiGCS/GPLv2.txt
 	cp -a README Windows/MultiGCS/README.txt
 	cp -a multigcs.html Windows/MultiGCS/multigcs.html
 	test -e .git && git log > Windows/MultiGCS/changelog.txt
 	todos Windows/MultiGCS/copyright.txt
-	todos Windows/MultiGCS/GPLv3.txt
+	todos Windows/MultiGCS/GPLv2.txt
 	todos Windows/MultiGCS/README.txt
 	todos Windows/MultiGCS/changelog.txt
 	cp $(MINGW_DIR)/bin/libpng3.dll Windows/MultiGCS/

@@ -10,7 +10,7 @@ Ground-Control-Station for multiple Protocols
 * Network-Support: HTML5 Frontend and (Live-)Data-Export (Google-Earth, Blender) 
 * Touchscreens-Optimization
 * for Linux-PC's, Mac-OSX, Android, Windows and Raspberry-PI(raspbian)
-* GPL v3
+* GPL v2 or later
 
 
 Homepage: http://www.multixmedia.org/Multi-GCS/index.html

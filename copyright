@@ -2,13 +2,13 @@ This package was debianized by Oliver Dippel <oliver@multixmedia.org>
 
 It was downloaded from http://www.multixmedia.org/
 
-Copyright holder: (C) 2013 Oliver Dippel <oliver@multixmedia.org>
+Copyright holder: (C) 2013-2015 Oliver Dippel <oliver@multixmedia.org>
 
 License:
 
 	This package is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 3 of the License, or
+	the Free Software Foundation; either version 2 of the License, or
 	(at your option) any later version.
 
 	This package is distributed in the hope that it will be useful,
@@ -21,7 +21,7 @@ License:
 	Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
 
 On Debian systems, the full text of this license can be found in
-	/usr/share/common-licenses/GPL-3
+	/usr/share/common-licenses/GPL-2
 
 ---------------------------------------------------------------------------------------------------------------------
 
@@ -92,8 +92,9 @@ External Code/Data:
 		* ....
 
 
-	data/mixes:
-		* copy from qgroundcontrol_aq (GPL3)
+	wifibc:
+		* Licensed under the GNU General Public License, version 2.
+
 
 ---------------------------------------------------------------------------------------------------------------------
 
@@ -230,8 +231,6 @@ External Libs:
 	libvlc:
 		* Licensed under the GNU General Public License, version 2 or later.
 
-	wifibc:
-		* Licensed under the GNU General Public License, version 2 or later.
 
 ---------------------------------------------------------------------------------------------------------------------
 
@@ -260,4 +259,8 @@ External Services:
 
 	3D-Models:
 		please look at: models3d/*.txt
+
+
+	data/mixes:
+		* copy from qgroundcontrol_aq (GPL3)
 
