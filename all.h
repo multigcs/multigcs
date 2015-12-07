@@ -37,6 +37,13 @@
 #include <arpa/inet.h>
 #endif
 
+#if defined TELEMTRY_BRIDGE
+#include <SDL.h>
+#include <SDL_thread.h>
+#include <model.h>
+#include <my_mavlink.h>
+#define SDL_Log printf
+#else
 #if defined ANDROID
 #include <SDL.h>
 #include <SDL_opengles.h>
@@ -191,3 +198,4 @@
 #include <aprs.h>
 #endif
 #include <weather.h>
+#endif

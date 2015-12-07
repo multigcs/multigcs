@@ -242,11 +242,14 @@ void mavlink_send_value (uint8_t modelid, char *name, float val, int8_t type) {
 		type = MAV_VAR_FLOAT;
 	}
 	mavlink_msg_param_set_pack(MAVLINK_GSC_SYSID, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, name, val, type);
+#ifndef TELEMTRY_BRIDGE
 	if (clientmode == 1) {
 #ifndef WINDOWS
 		webclient_send_value(clientmode_server, clientmode_port, name, val, type);
 #endif
-	} else {
+	} else
+#endif
+	{
 		mavlink_send_message(modelid, &msg);
 		ModelData[modelid].mavlink_update = (int)time(0);
 	}
@@ -543,7 +546,9 @@ printf("%s ##\n", ModelData[modelid].sysstr);
 			}
 			mavlink_update_yaw = 1;
 //			SDL_Log("ATT;%i;%0.2f;%0.2f;%0.2f\n", time(0), toDeg(packet.roll), toDeg(packet.pitch), toDeg(packet.yaw));
+#ifndef TELEMTRY_BRIDGE
 			redraw_flag = 1;
+#endif
 			break;
 		}
 		case MAVLINK_MSG_ID_RAW_IMU: {
@@ -579,9 +584,11 @@ printf("%s ##\n", ModelData[modelid].sysstr);
 		case MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN: {
 			mavlink_gps_global_origin_t packet;
 			mavlink_msg_gps_global_origin_decode(msg, &packet);
+#ifndef TELEMTRY_BRIDGE
 			WayPoints[modelid][0].p_lat = (float)packet.latitude / 10000000.0;
 			WayPoints[modelid][0].p_long = (float)packet.longitude / 10000000.0;
 			WayPoints[modelid][0].p_alt = (float)packet.altitude / 1000.0;
+#endif
 			break;
 		}
 		case MAVLINK_MSG_ID_GPS_RAW_INT: {
@@ -608,7 +615,9 @@ printf("%s ##\n", ModelData[modelid].sysstr);
 					GPS_found[modelid] = 1;
 					ModelData[modelid].p_alt = (float)packet.alt / 1000.0;
 				}
+#ifndef TELEMTRY_BRIDGE
 				redraw_flag = 1;
+#endif
 			}
 			break;
 		}
@@ -738,6 +747,7 @@ printf("%s ##\n", ModelData[modelid].sysstr);
 					id2 = id2 - 1;
 				}
 			}
+#ifndef TELEMTRY_BRIDGE
 			sprintf(sysmsg_str, "model:%i sending Waypoint (%i): %s\n", modelid, id, WayPoints[modelid][id2 + 1].name);
 			sys_message(sysmsg_str);
 			if (strcmp(WayPoints[modelid][id2 + 1].command, "WAYPOINT") == 0) {
@@ -777,7 +787,6 @@ printf("%s ##\n", ModelData[modelid].sysstr);
 				SDL_Log("mavlink(%i): Type: UNKNOWN\n", modelid);
 				type = MAV_CMD_NAV_WAYPOINT;
 			}
-
 			sprintf(sysmsg_str, "SENDING MISSION_ITEM: %i: %f, %f, %f\n", id, WayPoints[modelid][id2 + 1].p_lat, WayPoints[modelid][id2 + 1].p_long, WayPoints[modelid][id2 + 1].p_alt);
 			SDL_Log("mavlink(%i): %s\n", modelid, sysmsg_str);
 			if (ModelData[modelid].dronetype != MAV_TYPE_FIXED_WING && WayPoints[modelid][id2 + 1].frametype == MAV_FRAME_GLOBAL) {
@@ -787,6 +796,7 @@ printf("%s ##\n", ModelData[modelid].sysstr);
 				mavlink_msg_mission_item_pack(MAVLINK_GSC_SYSID, 0, &msg2, ModelData[modelid].sysid, ModelData[modelid].compid, id, WayPoints[modelid][id2 + 1].frametype, type, 0, 1, WayPoints[modelid][id2 + 1].param1, WayPoints[modelid][id2 + 1].param2, WayPoints[modelid][id2 + 1].param3, WayPoints[modelid][id2 + 1].param4, WayPoints[modelid][id2 + 1].p_lat, WayPoints[modelid][id2 + 1].p_long, WayPoints[modelid][id2 + 1].p_alt);
 			}
 			mavlink_send_message(modelid, &msg2);
+#endif
 			break;
 		}
 		case MAVLINK_MSG_ID_MISSION_ITEM: {
@@ -815,6 +825,7 @@ printf("%s ##\n", ModelData[modelid].sysstr);
 				}
 			}
 			SDL_Log("mavlink(%i): getting WP(%i): %f, %f\n", modelid, packet.seq, packet.x, packet.y);
+#ifndef TELEMTRY_BRIDGE
 			switch (packet.command) {
 				case MAV_CMD_NAV_WAYPOINT: {
 					strcpy(WayPoints[modelid][1 + packet.seq].command, "WAYPOINT");
@@ -911,12 +922,15 @@ printf("%s ##\n", ModelData[modelid].sysstr);
 			WayPoints[modelid][1 + packet.seq + 1].name[0] = 0;
 			WayPoints[modelid][1 + packet.seq + 1].frametype = 0;
 			WayPoints[modelid][1 + packet.seq + 1].command[0] = 0;
+#endif
 			break;
 		}
 		case MAVLINK_MSG_ID_MISSION_CURRENT: {
 			mavlink_mission_current_t packet;
 			mavlink_msg_mission_current_decode(msg, &packet);
+#ifndef TELEMTRY_BRIDGE
 			uav_active_waypoint = (uint8_t)packet.seq;
+#endif
 			break;
 		}
 		case MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT: {
@@ -1058,7 +1072,9 @@ printf("%s ##\n", ModelData[modelid].sysstr);
 //			ModelData[modelid].roll = toDeg(packet.roll);
 //			ModelData[modelid].pitch = toDeg(packet.pitch);
 			mavlink_update_yaw = 1;
+#ifndef TELEMTRY_BRIDGE
 			redraw_flag = 1;
+#endif
 			break;
 		}
 		case MAVLINK_MSG_ID_MOUNT_STATUS: {
@@ -1494,6 +1510,7 @@ void mavlink_send_cmd_follow (uint8_t modelid, float p_lat, float p_long, float 
 }
 
 void mavlink_send_waypoints (uint8_t modelid) {
+#ifndef TELEMTRY_BRIDGE
 	mavlink_message_t msg;
 	mavlink_msg_mission_clear_all_pack(MAVLINK_GSC_SYSID, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid);
 	mavlink_send_message(modelid, &msg);
@@ -1511,6 +1528,7 @@ void mavlink_send_waypoints (uint8_t modelid) {
 	SDL_Log("mavlink(%i): sending Waypoints (%i)\n", modelid, n - 1);
 	mavlink_msg_mission_count_pack(MAVLINK_GSC_SYSID, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, n - 1);
 	mavlink_send_message(modelid, &msg);
+#endif
 }
 
 #ifndef WINDOWS
@@ -1521,6 +1539,7 @@ struct sockaddr_in forward_remAddr;
 int forward_sock = -1;
 
 void mavlink_forward_udp_init (void) {
+#ifndef TELEMTRY_BRIDGE
 	SDL_Log("mavlink: init udp forward..\n");
 	forward_sock = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	memset(&forward_locAddr, 0, sizeof(forward_locAddr));
@@ -1546,6 +1565,7 @@ void mavlink_forward_udp_init (void) {
 	forward_remAddr.sin_addr.s_addr = inet_addr(setup.mavlink_forward_udp_remote_ip);
 	forward_remAddr.sin_port = htons(setup.mavlink_forward_udp_remote_port);
 	SDL_Log("mavlink: init udp forward...done\n");
+#endif
 }
 
 void mavlink_forward_udp_send (uint8_t modelid, mavlink_message_t* msg) {
@@ -1670,7 +1690,7 @@ void mavlink_start_feeds (uint8_t modelid) {
 	mavlink_msg_request_data_stream_pack(MAVLINK_GSC_SYSID, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_DATA_STREAM_RC_CHANNELS, MAV_DATA_STREAM_RC_CHANNELS_RATE, MAV_DATA_STREAM_RC_CHANNELS_ACTIVE);
 	mavlink_send_message(modelid, &msg);
 	SDL_Delay(30);
-
+#ifndef TELEMTRY_BRIDGE
 	if (ModelData[modelid].pilottype == MAV_AUTOPILOT_AUTOQUAD) {
 		mavlink_msg_request_data_stream_pack(MAVLINK_GSC_SYSID, 0, &msg, ModelData[modelid].sysid, ModelData[modelid].compid, MAV_DATA_STREAM_EXTRA1, MAV_DATA_STREAM_EXTRA1_RATE, MAV_DATA_STREAM_EXTRA1_ACTIVE);
 		mavlink_send_message(modelid, &msg);
@@ -1717,6 +1737,7 @@ void mavlink_start_feeds (uint8_t modelid) {
 		mavlink_send_message(modelid, &msg);
 		SDL_Delay(30);
 	}
+#endif
 }
 
 void mavlink_parseParams1 (uint8_t modelid, xmlDocPtr doc, xmlNodePtr cur, char *name) { 
@@ -2014,6 +2035,7 @@ static void mavlink_parseDoc (uint8_t modelid, char *docname) {
 }
 
 void mavlink_param_xml_meta_load (uint8_t modelid) {
+#ifndef TELEMTRY_BRIDGE
 	char filename[1024];
 	sprintf(filename, "%s/mavlink/ParameterMetaData-%s.xml", get_datadirectory(), teletypes[ModelData[modelid].teletype]);
 	if (file_exists(filename) != 0) {
@@ -2025,6 +2047,7 @@ void mavlink_param_xml_meta_load (uint8_t modelid) {
 		mavlink_parseDoc(modelid, filename);
 		return;
 	}
+#endif
 }
 
 static void model_parseMavlinkParam (uint8_t modelid, xmlDocPtr doc, xmlNodePtr cur, uint16_t param) { 
@@ -2070,6 +2093,7 @@ void mavlink_xml_load (uint8_t modelid, xmlDocPtr doc, xmlNodePtr cur) {
 }
 
 static void mavlink_html_page (uint8_t modelid, char *content, char *sub) {
+#ifndef TELEMTRY_BRIDGE
 	char tmp_str[512];
 	char tmp_str2[512];
 	uint16_t n = 0;
@@ -2219,10 +2243,12 @@ static void mavlink_html_page (uint8_t modelid, char *content, char *sub) {
 	strcat(content, "</TABLE><BR><BR>\n");
 	strcat(content, "</TD></TR></TABLE>\n");
 	webserv_html_stop(content);
+#endif
 }
 
 
 void mavlink_web_get (uint8_t modelid, char *url, char *content, char *type) {
+#ifndef TELEMTRY_BRIDGE
 	char tmp_str[512];
 	if (strncmp(url, "/mavlink_value_set?", 19) == 0) {
 		char name[20];
@@ -2252,6 +2278,7 @@ void mavlink_web_get (uint8_t modelid, char *url, char *content, char *type) {
 		}
 		strcpy(type, "text/plain");
 	}
+#endif
 }
 
 #ifndef WINDOWS
@@ -2444,6 +2471,7 @@ int mavlink_tcp_connect (char *ip, uint16_t port) {
 }
 
 int mavlink_tcp (void *data) {
+#ifndef TELEMTRY_BRIDGE
 	uint8_t modelid = 0;
 	mavlink_message_t msg;
 	mavlink_status_t status;
@@ -2497,10 +2525,12 @@ int mavlink_tcp (void *data) {
 		SDL_Delay(1);
 	}
 	SDL_Log("mavlink: exit tcp thread\n");
+#endif
 	return 0;
 }
 
 int mavlink_udp (void *data) {
+#ifndef TELEMTRY_BRIDGE
 	uint8_t modelid = 0;
 	mavlink_message_t msg;
 	mavlink_status_t status;
@@ -2542,6 +2572,7 @@ int mavlink_udp (void *data) {
 	}
 	close(s);
 	SDL_Log("mavlink: exit udp thread\n");
+#endif
 	return 0;
 }
 #else

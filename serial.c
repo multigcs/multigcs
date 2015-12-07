@@ -178,12 +178,16 @@ int serial_monitor (void *data) {
 							serial_info_get((char *)udev_device_get_devnode(dev), tmp_str);
 							if (strcmp(ModelData[n].deviceid, tmp_str) == 0) {
 									serial_get_device_by_id(ModelData[n].deviceid, ModelData[n].telemetry_port);
+#ifndef TELEMTRY_BRIDGE
 									reset_telemetry(n);
+#endif
 									break;
 							}
 						} else {
 							if (strcmp(ModelData[n].telemetry_port, (char *)udev_device_get_devnode(dev)) == 0) {
+#ifndef TELEMTRY_BRIDGE
 								reset_telemetry(n);
+#endif
 								break;
 							}
 						}

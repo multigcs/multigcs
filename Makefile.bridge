@@ -1,0 +1,14 @@
+
+INCDIR += $(shell pkg-config --cflags libxml-2.0) -I./mavlink -I./ -DTELEMTRY_BRIDGE=1
+LIBS += $(shell pkg-config --libs libxml-2.0)
+
+
+INCDIR += $(shell pkg-config --cflags sdl)
+LIBS += $(shell pkg-config --libs sdl)
+LIBS += -ludev
+
+
+all:
+	gcc -o telemetrie-bridge telemetrie-bridge.c mavlink/my_mavlink.c mavlink/my_mavlink_rewrite.c serial.c $(INCDIR) $(LIBS)
+
+
