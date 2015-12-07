@@ -1674,15 +1674,12 @@ void map_draw_buttons (ESContext *esContext) {
 
 
 void init_map (ESContext *esContext, float lat, float lon, uint8_t zoom, uint8_t _map_view, uint8_t draw_tiles, float alpha0, float alpha1, float alpha2, float grid) {
-	ESMatrix modelview;
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
 #endif
-	char tmp_str[1024];
 	// calculate Altitude-Zoom
 	uint32_t zz = (1<<zoom);
 	alt_zoom = 25500000 / (float)zz;
-	int16_t n = 0;
 
 	if (map_startup == 0) {
 		map_startup = 1;

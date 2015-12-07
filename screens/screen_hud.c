@@ -685,8 +685,14 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 			draw_image_f3(esContext, -2.5, 0.0, 2.5, 2.5, -0.001, tmp_str); // brown
 #endif
 		}
-		draw_line_f3(esContext, -2.5, 0.0, 0.001, 2.5, 0.0, 0.001, 255, 255, 255, 255);
 	}
+#ifdef SDLGL
+	glLineWidth(3);
+	draw_line_f3(esContext, -2.5, 0.0, 0.001, 2.5, 0.0, 0.001, 255, 255, 255, 255);
+	glLineWidth(1);
+#else
+	draw_line_f3(esContext, -2.5, 0.0, 0.001, 2.5, 0.0, 0.001, 255, 255, 255, 255);
+#endif
 #ifdef SDLGL
 	glPopMatrix();
 #endif
