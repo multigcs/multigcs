@@ -36,7 +36,7 @@ all:
 	cp -a net/plane.dae android/assets/webserv/plane.dae
 	cp -a net/simple.dae android/assets/webserv/simple.dae
 	cp -a copyright android/assets/webserv/copyright
-	cp -a GPLv3.txt android/assets/webserv/GPLv3.txt
+	cp -a GPLv2.txt android/assets/webserv/GPLv2.txt
 	(cd android-dev/opencv-android-sdk/sdk/java/ ; $(ANDROID) update project -s -p ./ -t android-18)
 	(cd android ; $(ANDROID) update project -s -p ./ -t android-18)
 	(cd android ; $(NDKBUILD))
