@@ -262,11 +262,7 @@ uint8_t view_hud_map (char *name, float x, float y, int8_t button, float data, u
 }
 
 uint8_t view_hud_video (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	if (setup.hud_view_video < 2) {
-		setup.hud_view_video++;
-	} else {
-		setup.hud_view_video = 0;
-	}
+	setup.hud_view_video = 1 - setup.hud_view_video;
 	return 0;
 }
 
@@ -598,20 +594,14 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 
 #ifdef SDLGL
 	glDisable(GL_DEPTH_TEST);
-	if (setup.hud_view_video > 0) {
+	if (setup.hud_view_video == 1) {
 
 #if defined USE_VLC
 	if (vlc_is_playing() == 0) {
 		vlc_exit();
 		vlc_init(setup.videocapture_device);
 	}
-	SDL_Surface *vidsurf = vlc_update();
-	if (setup.hud_view_video == 2) {
-		draw_surface_f3(esContext, -1.42, -1.0, 0.0, 1.0, -2.0, 1.0, vidsurf);
-		draw_surface_f3(esContext, 0.0, -1.0, 1.42, 1.0, -2.0, 1.0, vidsurf);
-	} else {
-		draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, vidsurf);
-	}
+	draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, vlc_update());
 #elif defined USE_WIFIBC
 	SDL_Surface *vidsurf = wifibc_get();
 	if (vidsurf != NULL) {
@@ -620,12 +610,7 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 		draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, imageSurface);
 		SDL_FreeSurface(imageSurface);
 #else
-		if (setup.hud_view_video == 2) {
-			draw_surface_f3(esContext, -1.42, -1.0, 0.0, 1.0, -2.0, 1.0, vidsurf);
-			draw_surface_f3(esContext, 0.0, -1.0, 1.42, 1.0, -2.0, 1.0, vidsurf);
-		} else {
-			draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, vidsurf);
-		}
+		draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, vidsurf);
 #endif
 	}
 #elif defined USE_OPENCV
@@ -633,20 +618,10 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 	if (vidsurf != NULL) {
 #ifdef _ANDROID
 		SDL_Surface *imageSurface = convert_to_power_of_two(vidsurf);
-		if (setup.hud_view_video == 2) {
-			draw_surface_f3(esContext, -1.42, -1.0, 0.0, 1.0, -2.0, 1.0, imageSurface);
-			draw_surface_f3(esContext, 0.0, -1.0, 1.42, 1.0, -2.0, 1.0, imageSurface);
-		} else {
-			draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, imageSurface);
-		}
+		draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, imageSurface);
 		SDL_FreeSurface(imageSurface);
 #else
-		if (setup.hud_view_video == 2) {
-			draw_surface_f3(esContext, -1.42, -1.0, 0.0, 1.0, -2.0, 1.0, vidsurf);
-			draw_surface_f3(esContext, 0.0, -1.0, 1.42, 1.0, -2.0, 1.0, vidsurf);
-		} else {
-			draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, vidsurf);
-		}
+		draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, vidsurf);
 #endif
 	}
 #else
@@ -1881,8 +1856,6 @@ void screen_hud_internal (ESContext *esContext) {
 	}
 	if (setup.hud_view_video == 1) {
 		draw_text_button(esContext, "view_hud_video", VIEW_MODE_HUD, "VID", FONT_GREEN, -1.15, 0.8, 0.002, 0.06, 0, 0, view_hud_video, 0);
-	} else if (setup.hud_view_video == 2) {
-		draw_text_button(esContext, "view_hud_video", VIEW_MODE_HUD, "VID", FONT_PINK, -1.15, 0.8, 0.002, 0.06, 0, 0, view_hud_video, 0);
 	} else {
 		draw_text_button(esContext, "view_hud_video", VIEW_MODE_HUD, "VID", FONT_WHITE, -1.15, 0.8, 0.002, 0.06, 0, 0, view_hud_video, 0);
 	}
