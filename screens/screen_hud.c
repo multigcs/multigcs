@@ -585,7 +585,6 @@ int16_t graph1_size = 128;
 
 
 void hud_draw_horizon (ESContext *esContext, uint8_t type) {
-	return;
 	ESMatrix modelview;
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
