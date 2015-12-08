@@ -1800,11 +1800,15 @@ void draw_buffer_to_screen (float x1, float y1, float x2, float y2, float z, flo
 }
 
 void draw_update (ESContext *esContext) {
+	GLdouble cPlaneLeft[4] = {-1.0, 0.0, 0.0, 0.0};
+	GLdouble cPlaneRight[4] = {1.0, 0.0, 0.0, 0.0};
 	if (setup.side_by_side == 1) {
 		static int n = 0;
 		if (n == 0) {
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
+			glClipPlane(GL_CLIP_PLANE1, cPlaneRight);
+			glEnable(GL_CLIP_PLANE1);
 			glScalef(0.5, 1.0, 1.0);
 			glTranslatef(1.0 * aspect, 0.0, 0.0);
 			n = 1;
@@ -1822,6 +1826,8 @@ void draw_update (ESContext *esContext) {
 			glLoadIdentity();
 			glClearColor(0.0, 0.0, 0.0, 1.0);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+			glClipPlane(GL_CLIP_PLANE1, cPlaneLeft);
+			glEnable(GL_CLIP_PLANE1);
 			glScalef(0.5, 1.0, 1.0);
 			glTranslatef(-1.0 * aspect, 0.0, 0.0);
 			n = 0;
@@ -1840,6 +1846,7 @@ void draw_update (ESContext *esContext) {
 		glLoadIdentity();
 		glClearColor(0.0, 0.0, 0.0, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+		glDisable(GL_CLIP_PLANE1);
 	}
 }
 
