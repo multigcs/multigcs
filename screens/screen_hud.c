@@ -14,7 +14,9 @@ static uint8_t hud_use_vista2d = 0;
 
 #endif
 
-
+static uint8_t graph1_data[3][200];
+static int16_t graph1_pointer = 0;
+static int16_t graph1_size = 128;
 static float gimbal_pitch = 0.0;
 static float gimbal_roll = 0.0;
 static float gimbal_yaw = 0.0;
@@ -576,13 +578,6 @@ void draw_speed_rule (ESContext *esContext, float ti_x, float ti_y, float w, flo
 	sprintf(tmp_str, "%0.1fm/s", speed);
 	draw_text_f3(esContext, ax - strlen(tmp_str) * 0.05 * 0.6 - 0.05, 0.0 - 0.025, 0.0025, 0.05, 0.05, FONT_WHITE, tmp_str);
 }
-
-
-
-uint8_t graph1_data[3][200];
-int16_t graph1_pointer = 0;
-int16_t graph1_size = 128;
-
 
 void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 	ESMatrix modelview;
