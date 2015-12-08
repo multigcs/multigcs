@@ -585,6 +585,7 @@ int16_t graph1_size = 128;
 
 
 void hud_draw_horizon (ESContext *esContext, uint8_t type) {
+	return;
 	ESMatrix modelview;
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
@@ -634,7 +635,6 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 	}
 #endif
 #ifdef SDLGL
-
 	if (setup.hud_view_map != 0) {
 		glPushMatrix();
 		glScalef(mapcamscale, mapcamscale, 1.0);
@@ -696,31 +696,60 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 #ifdef SDLGL
 	glPopMatrix();
 #endif
-if (type == 1) {
-	// Pitch & Roll-Winkel
-	for (n = -30 - ((int)(-ModelData[ModelActive].pitch / 10) % 10 * 10); n <= 20 - ((int)((-ModelData[ModelActive].pitch - 3) / 10) % 10 * 10); n += 10) {
-		// Pitch
+	if (type == 1) {
+		// Pitch & Roll-Angle
+		for (n = -30 - ((int)(-ModelData[ModelActive].pitch / 10) % 10 * 10); n <= 20 - ((int)((-ModelData[ModelActive].pitch - 3) / 10) % 10 * 10); n += 10) {
+			// Pitch
 #ifdef SDLGL
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
+			glMatrixMode(GL_MODELVIEW);
+			glPushMatrix();
 #else
-		esMatrixLoadIdentity(&modelview);
+			esMatrixLoadIdentity(&modelview);
 #endif
-		esTranslate(&modelview, 0.0, 0.0, -3.0);
-		esRotate(&modelview, -ModelData[ModelActive].roll, 0.0, 0.0, 1.0);
-		esTranslate(&modelview, 0.0, (float)(n + -ModelData[ModelActive].pitch) / 70.0, 0.0);
-		esTranslate(&modelview, 0.0, 0.0, 3.0);
+			esTranslate(&modelview, 0.0, 0.0, -3.0);
+			esRotate(&modelview, -ModelData[ModelActive].roll, 0.0, 0.0, 1.0);
+			esTranslate(&modelview, 0.0, (float)(n + -ModelData[ModelActive].pitch) / 70.0, 0.0);
+			esTranslate(&modelview, 0.0, 0.0, 3.0);
 #ifndef SDLGL
-		esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
-		esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
+			esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
+			esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
-		if (n == 0) {
-			draw_line_f3(esContext, -2.0, 0.0, -0.001, 2.0, 0.0, -0.001, 255, 255, 255, 255);
-		} else {
-			sprintf(tmp_str, "%i", n * -1);
-			draw_text_f3(esContext, -0.2 - strlen(tmp_str) * 0.05 * 0.6, -0.025, 0.001, 0.05, 0.05, FONT_WHITE, tmp_str);
-			draw_text_f3(esContext, 0.2, -0.025, 0.001, 0.05, 0.05, FONT_WHITE, tmp_str);
-
+			if (n == 0) {
+				draw_line_f3(esContext, -2.0, 0.0, -0.001, 2.0, 0.0, -0.001, 255, 255, 255, 255);
+			} else {
+				sprintf(tmp_str, "%i", n * -1);
+				draw_text_f3(esContext, -0.2 - strlen(tmp_str) * 0.05 * 0.6, -0.025, 0.001, 0.05, 0.05, FONT_WHITE, tmp_str);
+				draw_text_f3(esContext, 0.2, -0.025, 0.001, 0.05, 0.05, FONT_WHITE, tmp_str);
+				uint8_t alpha = 255;
+				if ((n + -ModelData[ModelActive].pitch) < 0) {
+					alpha = 255 - -(n + -ModelData[ModelActive].pitch) * 255 / 45;
+				} else {
+					alpha = 255 - (n + -ModelData[ModelActive].pitch) * 255 / 45;
+				}
+				if ((n + -ModelData[ModelActive].pitch) > -45 && (n + -ModelData[ModelActive].pitch) < 45) {
+					draw_line_f3(esContext, -0.15, 0.0, 0.001, 0.15, 0.0, 0.001, 255, 255, 255, alpha);
+				}
+			}
+#ifdef SDLGL
+			glPopMatrix();
+#endif
+		}
+		for (n = -35 - ((int)(-ModelData[ModelActive].pitch / 10) % 10 * 10); n <= 25 - ((int)((-ModelData[ModelActive].pitch - 3) / 10) % 10 * 10); n += 10) {
+			// Pitch
+#ifdef SDLGL
+			glMatrixMode(GL_MODELVIEW);
+			glPushMatrix();
+#else
+			esMatrixLoadIdentity(&modelview);
+#endif
+			esTranslate(&modelview, 0.0, 0.0, -3.0);
+			esRotate(&modelview, -ModelData[ModelActive].roll, 0.0, 0.0, 1.0);
+			esTranslate(&modelview, 0.0, (float)(n + -ModelData[ModelActive].pitch) / 70.0, 0.0);
+			esTranslate(&modelview, 0.0, 0.0, 3.0);
+#ifndef SDLGL
+			esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
+			esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
+#endif
 			uint8_t alpha = 255;
 			if ((n + -ModelData[ModelActive].pitch) < 0) {
 				alpha = 255 - -(n + -ModelData[ModelActive].pitch) * 255 / 45;
@@ -728,182 +757,144 @@ if (type == 1) {
 				alpha = 255 - (n + -ModelData[ModelActive].pitch) * 255 / 45;
 			}
 			if ((n + -ModelData[ModelActive].pitch) > -45 && (n + -ModelData[ModelActive].pitch) < 45) {
-				draw_line_f3(esContext, -0.15, 0.0, 0.001, 0.15, 0.0, 0.001, 255, 255, 255, alpha);
+				draw_line_f3(esContext, -0.1, 0.0, 0.001, 0.1, 0.0, 0.001, 255, 255, 255, alpha);
 			}
-		}
 #ifdef SDLGL
-		glPopMatrix();
+			glPopMatrix();
 #endif
-	}
-	for (n = -35 - ((int)(-ModelData[ModelActive].pitch / 10) % 10 * 10); n <= 25 - ((int)((-ModelData[ModelActive].pitch - 3) / 10) % 10 * 10); n += 10) {
-		// Pitch
+		}
+		for (n = -45; n <= 45; n += 10) {
+			// Roll
 #ifdef SDLGL
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
+			glMatrixMode(GL_MODELVIEW);
+			glPushMatrix();
 #else
-		esMatrixLoadIdentity(&modelview);
+			esMatrixLoadIdentity(&modelview);
 #endif
-		esTranslate(&modelview, 0.0, 0.0, -3.0);
-		esRotate(&modelview, -ModelData[ModelActive].roll, 0.0, 0.0, 1.0);
-		esTranslate(&modelview, 0.0, (float)(n + -ModelData[ModelActive].pitch) / 70.0, 0.0);
-		esTranslate(&modelview, 0.0, 0.0, 3.0);
+			esRotate(&modelview, -(float)n, 0.0, 0.0, 1.0);
 #ifndef SDLGL
-		esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
-		esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
+			esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
+			esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
-		uint8_t alpha = 255;
-		if ((n + -ModelData[ModelActive].pitch) < 0) {
-			alpha = 255 - -(n + -ModelData[ModelActive].pitch) * 255 / 45;
-		} else {
-			alpha = 255 - (n + -ModelData[ModelActive].pitch) * 255 / 45;
-		}
-		if ((n + -ModelData[ModelActive].pitch) > -45 && (n + -ModelData[ModelActive].pitch) < 45) {
-			draw_line_f3(esContext, -0.1, 0.0, 0.001, 0.1, 0.0, 0.001, 255, 255, 255, alpha);
-		}
-#ifdef SDLGL
-		glPopMatrix();
-#endif
-	}
-
-	for (n = -45; n <= 45; n += 10) {
-		// Roll
-#ifdef SDLGL
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-#else
-		esMatrixLoadIdentity(&modelview);
-#endif
-		esRotate(&modelview, -(float)n, 0.0, 0.0, 1.0);
-#ifndef SDLGL
-		esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
-		esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
-#endif
-		uint8_t alpha = 255;
+			uint8_t alpha = 255;
 /*
-		if ((n) < 0) {
-			alpha = 255 - -(n) * 255 / 45;
-		} else {
-			alpha = 255 - (n) * 255 / 45;
-		}
+			if ((n) < 0) {
+				alpha = 255 - -(n) * 255 / 45;
+			} else {
+				alpha = 255 - (n) * 255 / 45;
+			}
 */
-		if ((n) > -45 && (n) < 45) {
-			draw_line_f(esContext, 0.0, -0.65, 0.0, -0.6, 255, 255, 255, alpha);
-		}
+			if ((n) > -45 && (n) < 45) {
+				draw_line_f(esContext, 0.0, -0.65, 0.0, -0.6, 255, 255, 255, alpha);
+			}
 #ifdef SDLGL
-		glPopMatrix();
+			glPopMatrix();
 #endif
-	}
-
-	for (n = -45; n <= 45; n += 5) {
-		// Roll
+		}
+		for (n = -45; n <= 45; n += 5) {
+			// Roll
+#ifdef SDLGL
+			glMatrixMode(GL_MODELVIEW);
+			glPushMatrix();
+#else
+			esMatrixLoadIdentity(&modelview);
+#endif
+			esRotate(&modelview, -(float)n, 0.0, 0.0, 1.0);
+#ifndef SDLGL
+			esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
+			esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
+#endif
+			uint8_t alpha = 255;
+/*
+			if ((n) < 0) {
+				alpha = 255 - -(n) * 255 / 45;
+			} else {
+				alpha = 255 - (n) * 255 / 45;
+			}
+*/
+			if ((n) > -45 && (n) < 45) {
+				draw_line_f(esContext, 0.0, -0.63, 0.0, -0.6, 255, 255, 255, alpha);
+			}
+#ifdef SDLGL
+			glPopMatrix();
+#endif
+		}
+		// Roll-Pointer
 #ifdef SDLGL
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
 #else
 		esMatrixLoadIdentity(&modelview);
 #endif
-		esRotate(&modelview, -(float)n, 0.0, 0.0, 1.0);
+		esRotate(&modelview, -ModelData[ModelActive].roll, 0.0, 0.0, 1.0);
 #ifndef SDLGL
 		esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
 		esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
-		uint8_t alpha = 255;
-/*		if ((n) < 0) {
-			alpha = 255 - -(n) * 255 / 45;
+		draw_line_f(esContext, 0.0, -0.6, -0.04, -0.56, 255, 255, 255, 255);
+		draw_line_f(esContext, 0.0, -0.6, 0.04, -0.56, 255, 255, 255, 255);
+		draw_line_f(esContext, -0.04, -0.56, 0.04, -0.56, 255, 255, 255, 255);
+		draw_line_f(esContext, -0.04, -0.54, 0.04, -0.54, 255, 255, 255, 255);
+		draw_line_f(esContext, -0.04, -0.54, -0.04, -0.56, 255, 255, 255, 255);
+		draw_line_f(esContext, 0.04, -0.54, 0.04, -0.56, 255, 255, 255, 255);
+#ifdef SDLGL
+		glPopMatrix();
+#endif
+		// Center-Cross
+#ifdef SDLGL
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+#else
+		esMatrixLoadIdentity(&modelview);
+		esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
+		esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
+#endif
+		draw_box_f3(esContext, -0.45, -0.02, 0.001, -0.15, 0.02, 0.001, 255, 255, 255, 255);
+		draw_box_f3(esContext, -0.15 - 0.04, -0.02, 0.001, -0.15, 0.08, 0.001, 255, 255, 255, 255);
+		draw_box_f3(esContext, 0.15, -0.02, 0.001, 0.45, 0.02, 0.001, 255, 255, 255, 255);
+		draw_box_f3(esContext, 0.15, -0.02, 0.001, 0.15 + 0.04, 0.08, 0.001, 255, 255, 255, 255);
+#ifdef SDLGL
+		glPopMatrix();
+#endif
+#ifdef SDLGL
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+#else
+		esMatrixLoadIdentity(&modelview);
+#endif
+		esTranslate(&modelview, 0.0, 0.0, +0.01);
+#ifndef SDLGL
+		esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
+		esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
+#endif
+		draw_box_f(esContext, -0.45 + 0.005, -0.02 + 0.005, -0.15 - 0.005, 0.02 - 0.005, 0, 0, 0, 255);
+		draw_box_f(esContext, -0.15 - 0.04 + 0.005, -0.02 + 0.005, -0.15 - 0.005, 0.08 - 0.005, 0, 0, 0, 255);
+		draw_box_f(esContext, 0.15 + 0.005, -0.02 + 0.005, 0.45 - 0.005, 0.02 - 0.005, 0, 0, 0, 255);
+		draw_box_f(esContext, 0.15 + 0.005, -0.02 + 0.005, 0.15 + 0.04 - 0.005, 0.08 - 0.005, 0, 0, 0, 255);
+#ifdef SDLGL
+		glPopMatrix();
+#endif
+#ifdef SDLGL
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+#else
+		esMatrixLoadIdentity(&modelview);
+#endif
+		esTranslate(&modelview, 0.0, 0.0, +0.01);
+#ifndef SDLGL
+		esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
+		esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
+#endif
+		if (setup.contrast == 1) {
+			draw_box_f3(esContext, -0.005, -0.2, 0.001, 0.005, 0.2, 0.001, 0, 0, 0, 255);
+			draw_box_f3(esContext, -0.2, -0.005, 0.001, 0.2, 0.005, 0.001, 0, 0, 0, 255);
 		} else {
-			alpha = 255 - (n) * 255 / 45;
-		}
-*/
-		if ((n) > -45 && (n) < 45) {
-			draw_line_f(esContext, 0.0, -0.63, 0.0, -0.6, 255, 255, 255, alpha);
+			draw_box_f3(esContext, -0.005, -0.2, 0.001, 0.005, 0.2, 0.001, 0xff, 0x33, 0xfc, 255); // pink
+			draw_box_f3(esContext, -0.2, -0.005, 0.001, 0.2, 0.005, 0.001, 0xff, 0x33, 0xfc, 255); // pink
 		}
 #ifdef SDLGL
 		glPopMatrix();
 #endif
-	}
-
-	// Roll-Zeiger
-#ifdef SDLGL
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-#else
-	esMatrixLoadIdentity(&modelview);
-#endif
-
-	esRotate(&modelview, -ModelData[ModelActive].roll, 0.0, 0.0, 1.0);
-
-#ifndef SDLGL
-	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
-	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
-#endif
-	draw_line_f(esContext, 0.0, -0.6, -0.04, -0.56, 255, 255, 255, 255);
-	draw_line_f(esContext, 0.0, -0.6, 0.04, -0.56, 255, 255, 255, 255);
-	draw_line_f(esContext, -0.04, -0.56, 0.04, -0.56, 255, 255, 255, 255);
-	draw_line_f(esContext, -0.04, -0.54, 0.04, -0.54, 255, 255, 255, 255);
-	draw_line_f(esContext, -0.04, -0.54, -0.04, -0.56, 255, 255, 255, 255);
-	draw_line_f(esContext, 0.04, -0.54, 0.04, -0.56, 255, 255, 255, 255);
-
-#ifdef SDLGL
-	glPopMatrix();
-#endif
-
-	// Center-Cross
-#ifdef SDLGL
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-#else
-	esMatrixLoadIdentity(&modelview);
-	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
-	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
-#endif
-	draw_box_f3(esContext, -0.45, -0.02, 0.001, -0.15, 0.02, 0.001, 255, 255, 255, 255);
-	draw_box_f3(esContext, -0.15 - 0.04, -0.02, 0.001, -0.15, 0.08, 0.001, 255, 255, 255, 255);
-	draw_box_f3(esContext, 0.15, -0.02, 0.001, 0.45, 0.02, 0.001, 255, 255, 255, 255);
-	draw_box_f3(esContext, 0.15, -0.02, 0.001, 0.15 + 0.04, 0.08, 0.001, 255, 255, 255, 255);
-#ifdef SDLGL
-	glPopMatrix();
-#endif
-#ifdef SDLGL
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-#else
-	esMatrixLoadIdentity(&modelview);
-#endif
-	esTranslate(&modelview, 0.0, 0.0, +0.01);
-#ifndef SDLGL
-	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
-	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
-#endif
-	draw_box_f(esContext, -0.45 + 0.005, -0.02 + 0.005, -0.15 - 0.005, 0.02 - 0.005, 0, 0, 0, 255);
-	draw_box_f(esContext, -0.15 - 0.04 + 0.005, -0.02 + 0.005, -0.15 - 0.005, 0.08 - 0.005, 0, 0, 0, 255);
-	draw_box_f(esContext, 0.15 + 0.005, -0.02 + 0.005, 0.45 - 0.005, 0.02 - 0.005, 0, 0, 0, 255);
-	draw_box_f(esContext, 0.15 + 0.005, -0.02 + 0.005, 0.15 + 0.04 - 0.005, 0.08 - 0.005, 0, 0, 0, 255);
-#ifdef SDLGL
-	glPopMatrix();
-#endif
-#ifdef SDLGL
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-#else
-	esMatrixLoadIdentity(&modelview);
-#endif
-	esTranslate(&modelview, 0.0, 0.0, +0.01);
-#ifndef SDLGL
-	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
-	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
-#endif
-
-	if (setup.contrast == 1) {
-		draw_box_f3(esContext, -0.005, -0.2, 0.001, 0.005, 0.2, 0.001, 0, 0, 0, 255);
-		draw_box_f3(esContext, -0.2, -0.005, 0.001, 0.2, 0.005, 0.001, 0, 0, 0, 255);
-	} else {
-		draw_box_f3(esContext, -0.005, -0.2, 0.001, 0.005, 0.2, 0.001, 0xff, 0x33, 0xfc, 255); // pink
-		draw_box_f3(esContext, -0.2, -0.005, 0.001, 0.2, 0.005, 0.001, 0xff, 0x33, 0xfc, 255); // pink
-	}
-#ifdef SDLGL
-	glPopMatrix();
-#endif
-
 	} else {
 		draw_box_f(esContext, -2.0, -0.01, 2.0, 0.01, 255, 255, 255, 255);
 		if (setup.contrast == 1) {
