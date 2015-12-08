@@ -16,6 +16,7 @@
  */
 
 #include <all.h>
+#include <model-minimal.h>
 #include "fec.h"
 #include "lib.h"
 #include "wifibroadcast.h"
@@ -86,7 +87,9 @@ static SDL_Thread *wifibc_thread_telemetry = NULL;
 static int param_serial_baud = 57600;
 static char param_serial_port[1024];
 
+
 Model ModelData[MODELS_MAX];
+ModelMinimal ModelDataMinimal;
 
 void sys_message (char *msg) {
 }
@@ -193,11 +196,11 @@ void pb_transmit_block (packet_buffer_t *pbl, pcap_t *ppcap, int *seq_nr, int po
 	uint8_t *data_blocks[MAX_DATA_OR_FEC_PACKETS_PER_BLOCK];
 	uint8_t fec_pool[MAX_DATA_OR_FEC_PACKETS_PER_BLOCK][MAX_USER_PACKET_LENGTH];
 	uint8_t *fec_blocks[MAX_DATA_OR_FEC_PACKETS_PER_BLOCK];
-	for (i=0; i<data_packets_per_block; ++i) {
+	for (i = 0; i < data_packets_per_block; ++i) {
 		data_blocks[i] = pbl[i].data;
 	}
 	if (fec_packets_per_block) {
-		for (i=0; i<fec_packets_per_block; ++i) {
+		for (i = 0; i < fec_packets_per_block; ++i) {
 			fec_blocks[i] = fec_pool[i];
 		}
 		fec_encode(packet_length, data_blocks, data_packets_per_block, (unsigned char **)fec_blocks, fec_packets_per_block);
@@ -206,7 +209,7 @@ void pb_transmit_block (packet_buffer_t *pbl, pcap_t *ppcap, int *seq_nr, int po
 	set_port_no(pb, port);
 	pb += packet_header_len;
 	int x;
-	for (x=0; x<transmission_count; ++x) {
+	for (x = 0; x < transmission_count; ++x) {
 		//send data and FEC packets interleaved
 		int di = 0;
 		int fi = 0;
@@ -388,8 +391,8 @@ int main (int argc, char *argv[]) {
 				pb->len += sizeof(payload_header_t); //make space for a length field (will be filled later)
 			}
 			//read the data
-			int inl = read(fifo[i].fd, pb->data + pb->len, param_packet_length - pb->len);
-			if (inl < 0 || inl > param_packet_length-pb->len) {
+			int inl = read(fifo[i].fd, pb->data + pb->len, param_packet_length - pb->len - sizeof(ModelDataMinimal));
+			if (inl < 0 || inl > param_packet_length - pb->len - sizeof(ModelDataMinimal)) {
 				perror("reading stdin");
 				return 1;
 			}
@@ -400,6 +403,20 @@ int main (int argc, char *argv[]) {
 				continue;
 			}
 			pb->len += inl;
+			// add telemtry-data
+			ModelDataMinimal.p_lat = ModelData[0].p_lat;
+			ModelDataMinimal.p_long = ModelData[0].p_long;
+			ModelDataMinimal.p_alt = ModelData[0].p_alt;
+			ModelDataMinimal.pitch = ModelData[0].pitch;
+			ModelDataMinimal.roll = ModelData[0].roll;
+			ModelDataMinimal.yaw = ModelData[0].yaw;
+			ModelDataMinimal.speed = ModelData[0].speed;
+			ModelDataMinimal.voltage = ModelData[0].voltage;
+			ModelDataMinimal.ampere = ModelData[0].ampere;
+			ModelDataMinimal.gpsfix = ModelData[0].gpsfix;
+			ModelDataMinimal.numSat = ModelData[0].numSat;
+			memcpy(pb->data + pb->len + param_packet_length, &ModelDataMinimal, sizeof(ModelDataMinimal));
+			pb->len += sizeof(ModelDataMinimal);
 			//check if this packet is finished
 			if (pb->len >= param_min_packet_length) {
 				payload_header_t *ph = (payload_header_t*)pb->data;

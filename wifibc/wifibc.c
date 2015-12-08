@@ -17,8 +17,11 @@
  */
 
 #include <all.h>
-
 #if defined USE_WIFIBC
+
+#ifdef USE_WIFIBC_TELEMETRY
+#include <model-minimal.h>
+#endif
 
 //#define USE_FIFO
 
@@ -91,6 +94,10 @@ static uint64_t QueueOut = 0;
 
 WifiBcChannels wifibc_channels[50];
 int wifibc_channels_max = 0;
+
+#ifdef USE_WIFIBC_TELEMETRY
+ModelMinimal ModelDataMinimal;
+#endif
 
 const char *avcodec_get_name2 (enum AVCodecID id) {
 	const AVCodecDescriptor *cd;
@@ -209,18 +216,22 @@ void process_payload(uint8_t *data, size_t data_len, int crc_correct, block_buff
 	data_len -= sizeof(wifi_packet_header_t);
 	block_num = wph->sequence_number / (param_data_packets_per_block + param_fec_packets_per_block);
 
-
-	/*
-	//printf("## %i ##\n", data_len);
-	int ti = 0;
-	for (ti = 0; ti < 100; ti++) {
-		//printf("%i %i, ", ti, data[data_len - 100 + ti]);
+#ifdef USE_WIFIBC_TELEMETRY
+	if (data_len >= sizeof(ModelDataMinimal)) {
+		memcpy(&ModelDataMinimal, data + (data_len - sizeof(ModelDataMinimal)), sizeof(ModelDataMinimal));
+		ModelData[0].p_lat = ModelDataMinimal.p_lat;
+		ModelData[0].p_long = ModelDataMinimal.p_long;
+		ModelData[0].p_alt = ModelDataMinimal.p_alt;
+		ModelData[0].pitch = ModelDataMinimal.pitch;
+		ModelData[0].roll = ModelDataMinimal.roll;
+		ModelData[0].yaw = ModelDataMinimal.yaw;
+		ModelData[0].speed = ModelDataMinimal.speed;
+		ModelData[0].voltage = ModelDataMinimal.voltage;
+		ModelData[0].ampere = ModelDataMinimal.ampere;
+		ModelData[0].gpsfix = ModelDataMinimal.gpsfix;
+		ModelData[0].numSat = ModelDataMinimal.numSat;
 	}
-
-
-	ModelData[0].yaw = data[data_len - 1];
-		//printf("\n");
-	*/
+#endif
 
 	int tx_restart = (block_num + 128 * param_block_buffers < max_block_num);
 	if ((block_num > max_block_num || tx_restart) && crc_correct) {

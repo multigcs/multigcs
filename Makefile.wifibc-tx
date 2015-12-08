@@ -9,6 +9,6 @@ LIBS += -ludev
 
 
 all:
-	gcc -o wifibc/wifibc-tx wifibc/wifibc-tx.c wifibc/fec.c wifibc/lib.c mavlink/my_mavlink.c mavlink/my_mavlink_rewrite.c serial.c $(INCDIR) $(LIBS)
+	gcc -o wifibc-tx wifibc/wifibc-tx.c wifibc/fec.c wifibc/lib.c mavlink/my_mavlink.c mavlink/my_mavlink_rewrite.c serial.c $(INCDIR) $(LIBS)
 
 
