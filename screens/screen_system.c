@@ -594,7 +594,11 @@ void screen_system (ESContext *esContext) {
 	draw_text_button(esContext, "ratio--", VIEW_MODE_SYSTEM, "[-]", FONT_GREEN, 0.85, 0.6, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_ratio, -0.1);
 	draw_text_button(esContext, "ratio++", VIEW_MODE_SYSTEM, "[+]", FONT_GREEN, 0.95, 0.6, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_ratio, 0.1);
 
-	draw_text_button(esContext, "side_by_side", VIEW_MODE_SYSTEM, "SbS", FONT_GREEN, 0.85, 0.7, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_side_by_side, 0.1);
+	if (setup.side_by_side == 1) {
+		draw_text_button(esContext, "side_by_side", VIEW_MODE_SYSTEM, "SideBySide", FONT_PINK, 0.55, 0.7, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_side_by_side, 0.1);
+	} else {
+		draw_text_button(esContext, "side_by_side", VIEW_MODE_SYSTEM, "SideBySide", FONT_GREEN, 0.55, 0.7, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_side_by_side, 0.1);
+	}
 
 
 #ifndef ANDROID
