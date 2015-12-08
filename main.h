@@ -156,6 +156,7 @@ typedef struct {
 	uint16_t screen_h;
 	uint16_t screen_border_x;
 	uint16_t screen_border_y;
+	uint8_t side_by_side;
 	float keep_ratio;
 
 	char touchscreen_device[200];

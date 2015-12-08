@@ -1759,7 +1759,7 @@ void draw_to_buffer (void) {
 	RB_Active = 1;
 #ifndef WINDOWS
 	glBindFramebuffer(GL_FRAMEBUFFER, RB_FramebufferName);
-	glViewport(0,0,1024,768); // Render on the whole framebuffer, complete from the lower left corner to the upper right
+	glViewport(0, 0, 1024, 768); // Render on the whole framebuffer, complete from the lower left corner to the upper right
 	glMatrixMode(GL_MODELVIEW);
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -1799,20 +1799,48 @@ void draw_buffer_to_screen (float x1, float y1, float x2, float y2, float z, flo
 #endif
 }
 
-
 void draw_update (ESContext *esContext) {
+	if (setup.side_by_side == 1) {
+		static int n = 0;
+		if (n == 0) {
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glScalef(0.5, 1.0, 1.0);
+			glTranslatef(1.0 * aspect, 0.0, 0.0);
+			n = 1;
+		} else {
 #ifdef GLUTINIT
-	glutSwapBuffers();
+			glutSwapBuffers();
 #else
 #ifdef SDL2
-	SDL_GL_SwapWindow(MainWindow);
+			SDL_GL_SwapWindow(MainWindow);
 #else
-	SDL_GL_SwapBuffers();
+			SDL_GL_SwapBuffers();
 #endif
 #endif
-	glMatrixMode(GL_MODELVIEW);
-	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glClearColor(0.0, 0.0, 0.0, 1.0);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+			glScalef(0.5, 1.0, 1.0);
+			glTranslatef(-1.0 * aspect, 0.0, 0.0);
+			n = 0;
+		}
+	} else {
+#ifdef GLUTINIT
+		glutSwapBuffers();
+#else
+#ifdef SDL2
+		SDL_GL_SwapWindow(MainWindow);
+#else
+		SDL_GL_SwapBuffers();
+#endif
+#endif
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		glClearColor(0.0, 0.0, 0.0, 1.0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	}
 }
 
 void draw_init (ESContext *esContext) {

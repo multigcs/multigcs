@@ -489,6 +489,7 @@ void setup_save (void) {
 		fprintf(fr, "keep_ratio		%f\n", setup.keep_ratio);
 		fprintf(fr, "fullscreen		%i\n", setup.fullscreen);
 		fprintf(fr, "borderless		%i\n", setup.borderless);
+		fprintf(fr, "side_by_side	%i\n", setup.side_by_side);
 		fprintf(fr, "\n");
 		fprintf(fr, "lat			%0.8f\n", lat);
 		fprintf(fr, "lon			%0.8f\n", lon);
@@ -702,6 +703,7 @@ void setup_load (void) {
 	setup.tracker_baud = 38400;
 	setup.fullscreen = 0;
 	setup.borderless = 0;
+	setup.side_by_side = 0;
 	setup.screen_w = SCREEN_W;
 	setup.screen_h = SCREEN_H;
 	setup.screen_border_x = 0;
@@ -832,6 +834,8 @@ void setup_load (void) {
 					setup.fullscreen = atoi(val);
 	                        } else if (strcmp(var, "borderless") == 0) {
 					setup.borderless = atoi(val);
+	                        } else if (strcmp(var, "side_by_side") == 0) {
+					setup.side_by_side = atoi(val);
 	                        } else if (strcmp(var, "lat") == 0) {
 					lat = atof(val);
 	                        } else if (strcmp(var, "lon") == 0) {
@@ -2170,30 +2174,22 @@ void Draw (ESContext *esContext) {
 	char tmp_str2[1024];
 	char tmp_str3[1024];
 	uint32_t timer = SDL_GetTicks() / 10;
-
+	static uint16_t timg = 0;
 	for (n = 0; n < MODELS_MAX; n++) {
 		if (ModelData[n].heartbeat != 0) {
 			connection_found = 1;
 		}
 	}
-
-
-	static uint16_t timg = 0;
 	if (timg++ > 15) {
 		timg = 0;
 		for (n = 0; n < MODELS_MAX; n++) {
 			if (ModelData[n].dronetype == 26) {
-
 				ModelData[n].follow = 1;
 				if (ModelData[n].follow >= 0) {
-
-float pitch = 0.0;
-float yaw = 0.0;
-
-gimbal_update(ModelData[n].p_lat, ModelData[n].p_long, ModelData[n].p_alt, ModelData[ModelData[n].follow].p_lat, ModelData[ModelData[n].follow].p_long, ModelData[ModelData[n].follow].p_alt, &pitch, &yaw);
-mavlink_set_gimbal_pos(n, pitch, 0.0, yaw);
-
-
+					float pitch = 0.0;
+					float yaw = 0.0;
+					gimbal_update(ModelData[n].p_lat, ModelData[n].p_long, ModelData[n].p_alt, ModelData[ModelData[n].follow].p_lat, ModelData[ModelData[n].follow].p_long, ModelData[ModelData[n].follow].p_alt, &pitch, &yaw);
+					mavlink_set_gimbal_pos(n, pitch, 0.0, yaw);
 				}
 			}
 		}
@@ -2222,8 +2218,6 @@ mavlink_set_gimbal_pos(n, pitch, 0.0, yaw);
 
 	}
 #endif
-
-
 
 	Logging();
 	// set RTL-Waypoints to HOME-Position

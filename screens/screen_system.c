@@ -142,6 +142,11 @@ uint8_t system_null (char *name, float x, float y, int8_t button, float data, ui
 	return 0;
 }
 
+uint8_t system_set_side_by_side (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	setup.side_by_side = 1 - setup.side_by_side;
+	return 0;
+}
+
 uint8_t system_set_ratio (char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (data == 0.0) {
 		if (setup.keep_ratio == 0.0) {
@@ -588,6 +593,9 @@ void screen_system (ESContext *esContext) {
 	draw_text_button(esContext, "ratio", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, 0.55, 0.6, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_ratio, 0.0);
 	draw_text_button(esContext, "ratio--", VIEW_MODE_SYSTEM, "[-]", FONT_GREEN, 0.85, 0.6, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_ratio, -0.1);
 	draw_text_button(esContext, "ratio++", VIEW_MODE_SYSTEM, "[+]", FONT_GREEN, 0.95, 0.6, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_ratio, 0.1);
+
+	draw_text_button(esContext, "side_by_side", VIEW_MODE_SYSTEM, "SbS", FONT_GREEN, 0.85, 0.7, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_side_by_side, 0.1);
+
 
 #ifndef ANDROID
 #ifdef SDL2
