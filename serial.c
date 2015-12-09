@@ -38,7 +38,7 @@ HANDLE hSerial[10] = {INVALID_HANDLE_VALUE, INVALID_HANDLE_VALUE, INVALID_HANDLE
 SDL_Thread *thread_sermon = NULL;
 uint8_t thread_sermon_running = 0;
 
-int serial_info_get (char *device, char *deviceid) {
+int serial_info_get(char *device, char *deviceid) {
 	int n = 0;
 #ifndef WINDOWS
 #ifndef ANDROID
@@ -57,7 +57,7 @@ int serial_info_get (char *device, char *deviceid) {
 	return -1;
 }
 
-int serial_get_device_by_id (char *deviceid, char *device) {
+int serial_get_device_by_id(char *deviceid, char *device) {
 	int n = 0;
 	if (deviceid[0] == 0) {
 		return -1;
@@ -72,7 +72,7 @@ int serial_get_device_by_id (char *deviceid, char *device) {
 	return -1;
 }
 
-void serial_info_update (void) {
+void serial_info_update(void) {
 #ifndef WINDOWS
 #ifndef ANDROID
 	struct udev *udev;
@@ -80,7 +80,7 @@ void serial_info_update (void) {
 	struct udev_list_entry *devices, *dev_list_entry;
 	struct udev_device *dev;
 	struct udev_device *dev2;
-   	struct udev_monitor *mon;
+	struct udev_monitor *mon;
 	char tmp_str[1024];
 	int n = 0;
 	int n2 = 0;
@@ -110,12 +110,12 @@ void serial_info_update (void) {
 		dev2 = udev_device_get_parent_with_subsystem_devtype(dev, "usb", "usb_device");
 		if (dev2) {
 			strcpy(info[n].device, udev_device_get_devnode(dev));
-			sprintf(tmp_str, "%s", udev_device_get_sysattr_value(dev2,"manufacturer"));
+			sprintf(tmp_str, "%s", udev_device_get_sysattr_value(dev2, "manufacturer"));
 			strcat(info[n].deviceid, tmp_str);
-			sprintf(tmp_str, "%s", udev_device_get_sysattr_value(dev2,"product"));
+			sprintf(tmp_str, "%s", udev_device_get_sysattr_value(dev2, "product"));
 			strcat(info[n].deviceid, tmp_str);
-			if (udev_device_get_sysattr_value(dev2,"serial") != NULL) {
-				sprintf(tmp_str, "%s", udev_device_get_sysattr_value(dev2,"serial"));
+			if (udev_device_get_sysattr_value(dev2, "serial") != NULL) {
+				sprintf(tmp_str, "%s", udev_device_get_sysattr_value(dev2, "serial"));
 				strcat(info[n].deviceid, tmp_str);
 			}
 			for (n2 = 0; n2 < strlen(info[n].deviceid); n2++) {
@@ -135,13 +135,13 @@ void serial_info_update (void) {
 #endif
 }
 
-int serial_monitor (void *data) {
+int serial_monitor(void *data) {
 #ifndef WINDOWS
 #ifndef ANDROID
 	char tmp_str[1024];
 	struct udev *udev;
 	struct udev_device *dev;
-   	struct udev_monitor *mon;
+	struct udev_monitor *mon;
 	int n = 0;
 	int fd;
 	udev = udev_new();
@@ -161,7 +161,7 @@ int serial_monitor (void *data) {
 		FD_SET(fd, &fds);
 		tv.tv_sec = 0;
 		tv.tv_usec = 0;
-		ret = select(fd+1, &fds, NULL, NULL, &tv);
+		ret = select(fd + 1, &fds, NULL, NULL, &tv);
 		if (ret > 0 && FD_ISSET(fd, &fds)) {
 			dev = udev_monitor_receive_device(mon);
 			if (dev) {
@@ -177,11 +177,11 @@ int serial_monitor (void *data) {
 						if (ModelData[n].use_deviceid == 1) {
 							serial_info_get((char *)udev_device_get_devnode(dev), tmp_str);
 							if (strcmp(ModelData[n].deviceid, tmp_str) == 0) {
-									serial_get_device_by_id(ModelData[n].deviceid, ModelData[n].telemetry_port);
+								serial_get_device_by_id(ModelData[n].deviceid, ModelData[n].telemetry_port);
 #ifndef TELEMTRY_BRIDGE
-									reset_telemetry(n);
+								reset_telemetry(n);
 #endif
-									break;
+								break;
 							}
 						} else {
 							if (strcmp(ModelData[n].telemetry_port, (char *)udev_device_get_devnode(dev)) == 0) {
@@ -194,9 +194,9 @@ int serial_monitor (void *data) {
 					}
 				}
 				udev_device_unref(dev);
-			}					
+			}
 		}
-		usleep(250*1000);
+		usleep(250 * 1000);
 		fflush(stdout);
 	}
 	udev_unref(udev);
@@ -205,7 +205,7 @@ int serial_monitor (void *data) {
 	return 0;
 }
 
-void serial_monitor_init (void) {
+void serial_monitor_init(void) {
 	serial_info_update();
 	SDL_Log("sermon: init thread\n");
 	thread_sermon_running = 1;
@@ -219,7 +219,7 @@ void serial_monitor_init (void) {
 	}
 }
 
-void serial_monitor_exit (void) {
+void serial_monitor_exit(void) {
 	thread_sermon_running = 0;
 	SDL_Log("sermon: wait thread\n");
 	SDL_WaitThread(thread_sermon, NULL);
@@ -227,13 +227,13 @@ void serial_monitor_exit (void) {
 }
 
 
-void serial_write (int fd, void *data, int len) {
+void serial_write(int fd, void *data, int len) {
 #ifndef WINDOWS
 #ifdef ANDROID
 	int n = 0;
 	for (n = 0; n < len; n++) {
 		uint8_t *udata = (uint8_t *)data;
-//		Android_JNI_SendSerial(udata[n]);
+		//		Android_JNI_SendSerial(udata[n]);
 	}
 #else
 	write(fd, data, len);
@@ -260,7 +260,7 @@ ssize_t serial_read(int fd, void *data, size_t len) {
 #endif
 }
 
-int serial_check (int fd) {
+int serial_check(int fd) {
 #ifdef ANDROID
 	return fd;
 #else
@@ -278,7 +278,7 @@ int serial_check (int fd) {
 #endif
 }
 
-int serial_close_by_device (char *device) {
+int serial_close_by_device(char *device) {
 #ifdef ANDROID
 #ifndef WINDOWS
 	int n = 0;
@@ -298,7 +298,7 @@ int serial_close_by_device (char *device) {
 	return 0;
 }
 
-int serial_close (int fd) {
+int serial_close(int fd) {
 #ifndef WINDOWS
 	SDL_Log("closing serial fd (%i)\n", fd);
 	if (fd >= 0) {
@@ -326,7 +326,7 @@ int serial_close (int fd) {
 }
 
 
-int serial_open (char *mdevice, uint32_t baud) {
+int serial_open(char *mdevice, uint32_t baud) {
 #ifndef WINDOWS
 #ifndef ANDROID
 	if (mdevice[0] != '/') {
@@ -336,13 +336,13 @@ int serial_open (char *mdevice, uint32_t baud) {
 #endif
 #ifdef ANDROID
 	SDL_Log("	Try to open Serial-Port: %s (%i)...", mdevice, baud);
-//	if (strncmp(mdevice, "bt:", 3) == 0) {
-		SDL_Log("bluetooth\n");
-		Android_JNI_ConnectSerial("apm");
-//	} else {
-//		SDL_Log("usb\n");
-//		Android_JNI_ConnectUsbSerial(baud);
-//	}
+	//	if (strncmp(mdevice, "bt:", 3) == 0) {
+	SDL_Log("bluetooth\n");
+	Android_JNI_ConnectSerial("apm");
+	//	} else {
+	//		SDL_Log("usb\n");
+	//		Android_JNI_ConnectUsbSerial(baud);
+	//	}
 	return 1;
 #endif
 #ifndef WINDOWS
@@ -351,56 +351,80 @@ int serial_open (char *mdevice, uint32_t baud) {
 	int fd = -1;
 #ifndef OSX
 	int baudr = 9600;
-	switch(baud) {
-		case      50 : baudr = B50;
-                   break;
-		case      75 : baudr = B75;
-                   break;
-		case     110 : baudr = B110;
-                   break;
-		case     134 : baudr = B134;
-                   break;
-		case     150 : baudr = B150;
-                   break;
-		case     200 : baudr = B200;
-                   break;
-		case     300 : baudr = B300;
-                   break;
-		case     600 : baudr = B600;
-                   break;
-		case    1200 : baudr = B1200;
-                   break;
-		case    1800 : baudr = B1800;
-                   break;
-		case    2400 : baudr = B2400;
-                   break;
-		case    4800 : baudr = B4800;
-                   break;
-		case    9600 : baudr = B9600;
-                   break;
-		case   19200 : baudr = B19200;
-                   break;
-		case   38400 : baudr = B38400;
-                   break;
-		case   57600 : baudr = B57600;
-                   break;
-		case  115200 : baudr = B115200;
-                   break;
-		case  230400 : baudr = B230400;
-                   break;
-		case  460800 : baudr = B460800;
-                   break;
-		case  500000 : baudr = B500000;
-                   break;
-		case  576000 : baudr = B576000;
-                   break;
-		case  921600 : baudr = B921600;
-                   break;
-		case 1000000 : baudr = B1000000;
-                   break;
-		default      : SDL_Log("invalid baudrate\n");
-                   return(1);
-                   break;
+	switch (baud) {
+		case      50 :
+			baudr = B50;
+			break;
+		case      75 :
+			baudr = B75;
+			break;
+		case     110 :
+			baudr = B110;
+			break;
+		case     134 :
+			baudr = B134;
+			break;
+		case     150 :
+			baudr = B150;
+			break;
+		case     200 :
+			baudr = B200;
+			break;
+		case     300 :
+			baudr = B300;
+			break;
+		case     600 :
+			baudr = B600;
+			break;
+		case    1200 :
+			baudr = B1200;
+			break;
+		case    1800 :
+			baudr = B1800;
+			break;
+		case    2400 :
+			baudr = B2400;
+			break;
+		case    4800 :
+			baudr = B4800;
+			break;
+		case    9600 :
+			baudr = B9600;
+			break;
+		case   19200 :
+			baudr = B19200;
+			break;
+		case   38400 :
+			baudr = B38400;
+			break;
+		case   57600 :
+			baudr = B57600;
+			break;
+		case  115200 :
+			baudr = B115200;
+			break;
+		case  230400 :
+			baudr = B230400;
+			break;
+		case  460800 :
+			baudr = B460800;
+			break;
+		case  500000 :
+			baudr = B500000;
+			break;
+		case  576000 :
+			baudr = B576000;
+			break;
+		case  921600 :
+			baudr = B921600;
+			break;
+		case 1000000 :
+			baudr = B1000000;
+			break;
+		default      :
+			SDL_Log("invalid baudrate\n");
+			return (1);
+			break;
 	}
 	SDL_Log("	Try to open Serial-Port: %s (%i)...", mdevice, baud);
 	sprintf(mdevice_name, "/var/lock/LCK..%s", basename(mdevice));
@@ -415,7 +439,7 @@ int serial_open (char *mdevice, uint32_t baud) {
 		fprintf(lock_fd, "%i\n", getpid());
 		fclose(lock_fd);
 	}
-	if ((fd = open(mdevice, O_RDWR | O_NOCTTY )) >= 0) {
+	if ((fd = open(mdevice, O_RDWR | O_NOCTTY)) >= 0) {
 		int n = 0;
 		for (n = 0; n < 100; n++) {
 			if (locks[n].name[0] == 0) {
@@ -441,7 +465,7 @@ int serial_open (char *mdevice, uint32_t baud) {
 	SDL_Log("..Failed\n");
 #else
 	SDL_Log("	Try to open Serial-Port: %s (%i)...", mdevice, baud);
-	if ((fd = open(mdevice, O_RDWR | O_NOCTTY | O_NONBLOCK )) >= 0) {
+	if ((fd = open(mdevice, O_RDWR | O_NOCTTY | O_NONBLOCK)) >= 0) {
 		struct termios theTermios;
 		memset(&theTermios, 0, sizeof(struct termios));
 		cfmakeraw(&theTermios);
@@ -456,11 +480,8 @@ int serial_open (char *mdevice, uint32_t baud) {
 	}
 	SDL_Log("..Failed\n");
 #endif
-
 #else
-
 	SDL_Log("	Try to open Serial-Port: %s (%i)...", mdevice, baud);
-
 	DCB dcbSerialParams = {0};
 	COMMTIMEOUTS timeouts = {0};
 	int n = 0;
@@ -474,7 +495,6 @@ int serial_open (char *mdevice, uint32_t baud) {
 		SDL_Log("..Failed (no usable ports found)\n");
 		return -1;
 	}
-
 	hSerial[free_port] = CreateFile(mdevice, GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 	if (hSerial[free_port] == INVALID_HANDLE_VALUE) {
 		SDL_Log("..Failed (INVALID_HANDLE_VALUE: %i)\n", (int)GetLastError());
@@ -487,26 +507,35 @@ int serial_open (char *mdevice, uint32_t baud) {
 		hSerial[free_port] = INVALID_HANDLE_VALUE;
 		return -1;
 	}
-	switch(baud) {
-		case    1200 : dcbSerialParams.BaudRate = CBR_1200;
-                   break;
-		case    2400 : dcbSerialParams.BaudRate = CBR_2400;
-                   break;
-		case    4800 : dcbSerialParams.BaudRate = CBR_4800;
-                   break;
-		case    9600 : dcbSerialParams.BaudRate = CBR_9600;
-                   break;
-		case   19200 : dcbSerialParams.BaudRate = CBR_19200;
-                   break;
-		case   38400 : dcbSerialParams.BaudRate = CBR_38400;
-                   break;
-		case   57600 : dcbSerialParams.BaudRate = CBR_57600;
-                   break;
-		case  115200 : dcbSerialParams.BaudRate = CBR_115200;
-                   break;
-		default      : SDL_Log("invalid baudrate\n");
-                   return(1);
-                   break;
+	switch (baud) {
+		case    1200 :
+			dcbSerialParams.BaudRate = CBR_1200;
+			break;
+		case    2400 :
+			dcbSerialParams.BaudRate = CBR_2400;
+			break;
+		case    4800 :
+			dcbSerialParams.BaudRate = CBR_4800;
+			break;
+		case    9600 :
+			dcbSerialParams.BaudRate = CBR_9600;
+			break;
+		case   19200 :
+			dcbSerialParams.BaudRate = CBR_19200;
+			break;
+		case   38400 :
+			dcbSerialParams.BaudRate = CBR_38400;
+			break;
+		case   57600 :
+			dcbSerialParams.BaudRate = CBR_57600;
+			break;
+		case  115200 :
+			dcbSerialParams.BaudRate = CBR_115200;
+			break;
+		default      :
+			SDL_Log("invalid baudrate\n");
+			return (1);
+			break;
 	}
 	dcbSerialParams.ByteSize = 8;
 	dcbSerialParams.StopBits = ONESTOPBIT;
@@ -522,91 +551,112 @@ int serial_open (char *mdevice, uint32_t baud) {
 	dcbSerialParams.fErrorChar = FALSE;
 	dcbSerialParams.fNull = FALSE;
 	dcbSerialParams.fAbortOnError = FALSE;
-
-	if(SetCommState(hSerial[free_port], &dcbSerialParams) == 0) {
+	if (SetCommState(hSerial[free_port], &dcbSerialParams) == 0) {
 		SDL_Log("..Failed (Error setting device parameters\n");
 		CloseHandle(hSerial[free_port]);
 		hSerial[free_port] = INVALID_HANDLE_VALUE;
 		return -1;
 	}
-
 	timeouts.ReadIntervalTimeout = 0;
 	timeouts.ReadTotalTimeoutConstant = 1;
 	timeouts.ReadTotalTimeoutMultiplier = 0;
-
 	timeouts.WriteTotalTimeoutConstant = 1;
 	timeouts.WriteTotalTimeoutMultiplier = 1;
-	if(SetCommTimeouts(hSerial[free_port], &timeouts) == 0) {
+	if (SetCommTimeouts(hSerial[free_port], &timeouts) == 0) {
 		SDL_Log("..Failed (Error setting timeouts)\n");
 		CloseHandle(hSerial[free_port]);
 		hSerial[free_port] = INVALID_HANDLE_VALUE;
 		return -1;
 	}
- 	SDL_Log("..Ok\n");
+	SDL_Log("..Ok\n");
 	return free_port;
 #endif
 	return -1;
 }
 
-int serial_open9b (char *mdevice, uint32_t baud) {
+int serial_open9b(char *mdevice, uint32_t baud) {
 #ifndef WINDOWS
 	int fd = -1;
 	int baudr = 9600;
-	switch(baud) {
-		case      50 : baudr = B50;
-                   break;
-		case      75 : baudr = B75;
-                   break;
-		case     110 : baudr = B110;
-                   break;
-		case     134 : baudr = B134;
-                   break;
-		case     150 : baudr = B150;
-                   break;
-		case     200 : baudr = B200;
-                   break;
-		case     300 : baudr = B300;
-                   break;
-		case     600 : baudr = B600;
-                   break;
-		case    1200 : baudr = B1200;
-                   break;
-		case    1800 : baudr = B1800;
-                   break;
-		case    2400 : baudr = B2400;
-                   break;
-		case    4800 : baudr = B4800;
-                   break;
-		case    9600 : baudr = B9600;
-                   break;
-		case   19200 : baudr = B19200;
-                   break;
-		case   38400 : baudr = B38400;
-                   break;
-		case   57600 : baudr = B57600;
-                   break;
-		case  115200 : baudr = B115200;
-                   break;
+	switch (baud) {
+		case      50 :
+			baudr = B50;
+			break;
+		case      75 :
+			baudr = B75;
+			break;
+		case     110 :
+			baudr = B110;
+			break;
+		case     134 :
+			baudr = B134;
+			break;
+		case     150 :
+			baudr = B150;
+			break;
+		case     200 :
+			baudr = B200;
+			break;
+		case     300 :
+			baudr = B300;
+			break;
+		case     600 :
+			baudr = B600;
+			break;
+		case    1200 :
+			baudr = B1200;
+			break;
+		case    1800 :
+			baudr = B1800;
+			break;
+		case    2400 :
+			baudr = B2400;
+			break;
+		case    4800 :
+			baudr = B4800;
+			break;
+		case    9600 :
+			baudr = B9600;
+			break;
+		case   19200 :
+			baudr = B19200;
+			break;
+		case   38400 :
+			baudr = B38400;
+			break;
+		case   57600 :
+			baudr = B57600;
+			break;
+		case  115200 :
+			baudr = B115200;
+			break;
 #ifndef OSX
-		case  230400 : baudr = B230400;
-                   break;
-		case  460800 : baudr = B460800;
-                   break;
-		case  500000 : baudr = B500000;
-                   break;
-		case  576000 : baudr = B576000;
-                   break;
-		case  921600 : baudr = B921600;
-                   break;
-		case 1000000 : baudr = B1000000;
-                   break;
+		case  230400 :
+			baudr = B230400;
+			break;
+		case  460800 :
+			baudr = B460800;
+			break;
+		case  500000 :
+			baudr = B500000;
+			break;
+		case  576000 :
+			baudr = B576000;
+			break;
+		case  921600 :
+			baudr = B921600;
+			break;
+		case 1000000 :
+			baudr = B1000000;
+			break;
 #endif
-		default      : SDL_Log("invalid baudrate\n");
-                   return(1);
-                   break;
+		default      :
+			SDL_Log("invalid baudrate\n");
+			return (1);
+			break;
 	}
 	SDL_Log("	Try to open Serial-Port: %s (%i)...", mdevice, baud);
-	if ((fd = open(mdevice, O_RDWR | O_NOCTTY )) >= 0) {
+	if ((fd = open(mdevice, O_RDWR | O_NOCTTY)) >= 0) {
 		tcgetattr(fd, &newtio);
 		memset(&newtio, 0, sizeof(newtio));  /* clear the new struct */
 		newtio.c_cflag = baudr | CS8 | CLOCAL | CREAD;

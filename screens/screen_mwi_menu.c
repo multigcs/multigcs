@@ -5,47 +5,47 @@
 uint8_t mwi_view = 0;
 uint8_t mwi_mode = 1;
 
-uint8_t mwi_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t mwi_null(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 0;
 }
 
-uint8_t mwi_cal_acc (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t mwi_cal_acc(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	mwi21_cal_acc(ModelActive);
 	return 0;
 }
 
-uint8_t mwi_cal_mac (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t mwi_cal_mac(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	mwi21_cal_mac(ModelActive);
 	return 0;
 }
 
-uint8_t mwi_write_rom (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t mwi_write_rom(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	mwi21_write_rom(ModelActive);
 	return 0;
 }
 
-uint8_t mwi_get_values (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t mwi_get_values(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	mwi21_get_values(ModelActive);
 	return 0;
 }
 
-uint8_t mwi_view_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t mwi_view_change(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	mwi_view = 1 - mwi_view;
 	reset_buttons();
 	return 0;
 }
 
-uint8_t mwi_status_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t mwi_status_set(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	uint8_t n = (uint8_t)data;
-	if (mwi_status[ModelActive] & (1<<n)) {
-		mwi_status[ModelActive] &= ~(1<<n);
+	if (mwi_status[ModelActive] & (1 << n)) {
+		mwi_status[ModelActive] &= ~(1 << n);
 	} else {
-		mwi_status[ModelActive] |= (1<<n);
+		mwi_status[ModelActive] |= (1 << n);
 	}
 	return 0;
 }
 
-uint8_t mwi_pid_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t mwi_pid_set(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	uint8_t n = 0;
 	int8_t n2 = 0;
 	int8_t v = 0;
@@ -82,24 +82,24 @@ uint8_t mwi_pid_set (char *name, float x, float y, int8_t button, float data, ui
 	return 0;
 }
 
-uint8_t mwi_box_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t mwi_box_set(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	uint8_t n = 0;
 	int8_t n2 = 0;
 	int8_t n3 = 0;
 	uint8_t nn = (uint8_t)data;
 	for (n2 = 0; n2 < 16; n2++) {
 		for (n3 = 0; n3 < 12; n3++) {
-			if (mwi_set_box[ModelActive][n2] & (1<<n3)) {
+			if (mwi_set_box[ModelActive][n2] & (1 << n3)) {
 				if (n == nn) {
-					mwi_set_box[ModelActive][n2] &= ~(1<<n3);
+					mwi_set_box[ModelActive][n2] &= ~(1 << n3);
 				} else {
-					mwi_set_box[ModelActive][n2] |= (1<<n3);
+					mwi_set_box[ModelActive][n2] |= (1 << n3);
 				}
 			} else {
 				if (n == nn) {
-					mwi_set_box[ModelActive][n2] |= (1<<n3);
+					mwi_set_box[ModelActive][n2] |= (1 << n3);
 				} else {
-					mwi_set_box[ModelActive][n2] &= ~(1<<n3);
+					mwi_set_box[ModelActive][n2] &= ~(1 << n3);
 				}
 			}
 			n++;
@@ -109,17 +109,17 @@ uint8_t mwi_box_set (char *name, float x, float y, int8_t button, float data, ui
 	return 0;
 }
 
-uint8_t mwi_sensors_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t mwi_sensors_set(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	uint8_t n = (uint8_t)data;
-	if (mwi_sensors[ModelActive] & (1<<n)) {
-		mwi_sensors[ModelActive] &= ~(1<<n);
+	if (mwi_sensors[ModelActive] & (1 << n)) {
+		mwi_sensors[ModelActive] &= ~(1 << n);
 	} else {
-		mwi_sensors[ModelActive] |= (1<<n);
+		mwi_sensors[ModelActive] |= (1 << n);
 	}
 	return 0;
 }
 
-void screen_mwi_menu (ESContext *esContext) {
+void screen_mwi_menu(ESContext *esContext) {
 	int16_t n = 0;
 	int16_t n2 = 0;
 	int16_t n3 = 0;
@@ -156,13 +156,13 @@ void screen_mwi_menu (ESContext *esContext) {
 		for (n2 = 0; n2 < 16 && mwi_box_names[ModelActive][n2][0] != 0; n2++) {
 			sprintf(tmp_str, "mwi_v%i", n);
 			sprintf(tmp_str2, "%s", mwi_box_names[ModelActive][n2]);
-			if (n2 < 3 && ! (mwi_sensors[ModelActive] & (1<<n2))) {
+			if (n2 < 3 && !(mwi_sensors[ModelActive] & (1 << n2))) {
 				draw_text_button(esContext, "box", VIEW_MODE_FCMENU, tmp_str2, FONT_TRANS, -1.2, -0.7 + (float)n2 * 0.1, 0.002, 0.08, 0, 0, mwi_null, (float)n2);
-//			} else if ((n2 == 6 || n2 == 7) && ! (mwi_sensors[ModelActive] & (1<<3))) {
-//				draw_text_button(esContext, "box", VIEW_MODE_FCMENU, tmp_str2, FONT_TRANS, -1.2, -0.7 + (float)n2 * 0.1, 0.002, 0.08, 0, 0, mwi_null, (float)n2);
-//			} else if ((n2 == 9) && ! (mwi_sensors[ModelActive] & (1<<2))) {
-//				draw_text_button(esContext, "box", VIEW_MODE_FCMENU, tmp_str2, FONT_TRANS, -1.2, -0.7 + (float)n2 * 0.1, 0.002, 0.08, 0, 0, mwi_null, (float)n2);
-			} else if (mwi_status[ModelActive] & (1<<n2)) {
+				//			} else if ((n2 == 6 || n2 == 7) && ! (mwi_sensors[ModelActive] & (1<<3))) {
+				//				draw_text_button(esContext, "box", VIEW_MODE_FCMENU, tmp_str2, FONT_TRANS, -1.2, -0.7 + (float)n2 * 0.1, 0.002, 0.08, 0, 0, mwi_null, (float)n2);
+				//			} else if ((n2 == 9) && ! (mwi_sensors[ModelActive] & (1<<2))) {
+				//				draw_text_button(esContext, "box", VIEW_MODE_FCMENU, tmp_str2, FONT_TRANS, -1.2, -0.7 + (float)n2 * 0.1, 0.002, 0.08, 0, 0, mwi_null, (float)n2);
+			} else if (mwi_status[ModelActive] & (1 << n2)) {
 				draw_text_button(esContext, "box", VIEW_MODE_FCMENU, tmp_str2, FONT_GREEN, -1.2, -0.7 + (float)n2 * 0.1, 0.002, 0.08, 0, 0, mwi_null, (float)n2);
 			} else {
 				draw_text_button(esContext, "box", VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -1.2, -0.7 + (float)n2 * 0.1, 0.002, 0.08, 0, 0, mwi_null, (float)n2);
@@ -172,7 +172,7 @@ void screen_mwi_menu (ESContext *esContext) {
 		for (n2 = 0; n2 < 16 && mwi_box_names[ModelActive][n2][0] != 0; n2++) {
 			for (n3 = 0; n3 < 12; n3++) {
 				sprintf(tmp_str, "mwi_v%i", n);
-				if (mwi_set_box[ModelActive][n2] & (1<<n3)) {
+				if (mwi_set_box[ModelActive][n2] & (1 << n3)) {
 					sprintf(tmp_str2, "[x]");
 					draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -0.8 + (float)n3 * 0.16, -0.7 + (float)n2 * 0.1, 0.002, 0.08, 0, 0, mwi_box_set, (float)n);
 				} else {
@@ -255,7 +255,6 @@ void screen_mwi_menu (ESContext *esContext) {
 					draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, tmp_str2, FONT_WHITE, -0.0 + 1.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 1.0);
 					sprintf(tmp_str, "mwi_i+%i", n);
 					draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[+]", FONT_WHITE, -0.0 + 2.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 1.0);
-	
 					sprintf(tmp_str2, "%0.0f", (float)mwi_pid[ModelActive][n2][2] / 1.0);
 					sprintf(tmp_str, "mwi_d-%i", n);
 					draw_text_button(esContext, tmp_str, VIEW_MODE_FCMENU, "[-]", FONT_WHITE, 0.7 + 0.0 * 0.2, -0.7 + (float)n2 * 0.13, 0.002, 0.08, 1, 0, mwi_pid_set, (float)n + 2.0);

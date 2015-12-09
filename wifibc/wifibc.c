@@ -1,20 +1,20 @@
 /*
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; version 2.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License along
- *   with this program; if not, write to the Free Software Foundation, Inc.,
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- *  (c)2015 befinitiv
- *
- */
+     This program is free software; you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation; version 2.
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License along
+     with this program; if not, write to the Free Software Foundation, Inc.,
+     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+    (c)2015 befinitiv
+
+*/
 
 #include <all.h>
 #if defined USE_WIFIBC
@@ -99,7 +99,7 @@ int wifibc_channels_max = 0;
 ModelMinimal ModelDataMinimal;
 #endif
 
-const char *avcodec_get_name2 (enum AVCodecID id) {
+const char *avcodec_get_name2(enum AVCodecID id) {
 	const AVCodecDescriptor *cd;
 	AVCodec *codec;
 	if (id == AV_CODEC_ID_NONE) {
@@ -122,7 +122,7 @@ const char *avcodec_get_name2 (enum AVCodecID id) {
 }
 
 inline static uint8_t QueuePut(uint8_t new) {
-	while (wifibc_running == 1 && QueueIn == (( QueueOut - 1 + QUEUE_SIZE) % QUEUE_SIZE)) {
+	while (wifibc_running == 1 && QueueIn == ((QueueOut - 1 + QUEUE_SIZE) % QUEUE_SIZE)) {
 		SDL_Delay(1);
 	}
 	Queue[QueueIn] = new;
@@ -196,7 +196,7 @@ void block_buffer_list_reset(block_buffer_t *block_buffer_list, size_t block_buf
 		rb->block_num = -1;
 		int j;
 		packet_buffer_t *p = rb->packet_buffer_list;
-		for (j = 0; j < param_data_packets_per_block+param_fec_packets_per_block; ++j) {
+		for (j = 0; j < param_data_packets_per_block + param_fec_packets_per_block; ++j) {
 			p->valid = 0;
 			p->crc_correct = 0;
 			p->len = 0;
@@ -211,11 +211,10 @@ void process_payload(uint8_t *data, size_t data_len, int crc_correct, block_buff
 	int block_num;
 	int packet_num;
 	int i;
-	wph = (wifi_packet_header_t*)data;
+	wph = (wifi_packet_header_t *)data;
 	data += sizeof(wifi_packet_header_t);
 	data_len -= sizeof(wifi_packet_header_t);
 	block_num = wph->sequence_number / (param_data_packets_per_block + param_fec_packets_per_block);
-
 #ifdef USE_WIFIBC_TELEMETRY
 	if (data_len >= sizeof(ModelDataMinimal)) {
 		memcpy(&ModelDataMinimal, data + (data_len - sizeof(ModelDataMinimal)), sizeof(ModelDataMinimal));
@@ -232,7 +231,6 @@ void process_payload(uint8_t *data, size_t data_len, int crc_correct, block_buff
 		ModelData[0].numSat = ModelDataMinimal.numSat;
 	}
 #endif
-
 	int tx_restart = (block_num + 128 * param_block_buffers < max_block_num);
 	if ((block_num > max_block_num || tx_restart) && crc_correct) {
 		if (tx_restart) {
@@ -349,7 +347,7 @@ void process_payload(uint8_t *data, size_t data_len, int crc_correct, block_buff
 			fec_decode((unsigned int) param_packet_length, data_blocks, param_data_packets_per_block, fec_blocks, fec_block_nos, erased_blocks,
 					   nr_fec_blocks);
 			for (i = 0; i < param_data_packets_per_block; ++i) {
-				payload_header_t *ph = (payload_header_t*)data_blocks[i];
+				payload_header_t *ph = (payload_header_t *)data_blocks[i];
 				if (!reconstruction_failed || data_pkgs[i]->valid) {
 					//if reconstruction did fail, the data_length value is undefined. better limit it to some sensible value
 					if (ph->data_length > param_packet_length) {
@@ -427,7 +425,7 @@ void process_payload(uint8_t *data, size_t data_len, int crc_correct, block_buff
 }
 
 void process_packet(monitor_interface_t *interface, block_buffer_t *block_buffer_list, int adapter_no) {
-	struct pcap_pkthdr * ppcapPacketHeader = NULL;
+	struct pcap_pkthdr *ppcapPacketHeader = NULL;
 	struct ieee80211_radiotap_iterator rti;
 	PENUMBRA_RADIOTAP_DATA prd;
 	u8 payloadBuffer[MAX_PACKET_LENGTH];
@@ -436,7 +434,7 @@ void process_packet(monitor_interface_t *interface, block_buffer_t *block_buffer
 	int n;
 	int retval;
 	int u16HeaderLen;
-	retval = pcap_next_ex(interface->ppcap, &ppcapPacketHeader, (const u_char**)&pu8Payload);
+	retval = pcap_next_ex(interface->ppcap, &ppcapPacketHeader, (const u_char **)&pu8Payload);
 	if (retval < 0) {
 		fprintf(stderr, "Socket broken\n");
 		fprintf(stderr, "%s\n", pcap_geterr(interface->ppcap));
@@ -495,7 +493,6 @@ void status_memory_init(wifibroadcast_rx_status_t *s) {
 	s->damaged_block_cnt = 0;
 	s->tx_restart_cnt = 0;
 	s->wifi_adapter_cnt = 0;
-
 	int i = 0;
 	for (i = 0; i < MAX_PENUMBRA_INTERFACES; ++i) {
 		s->adapter[i].received_packet_cnt = 0;
@@ -522,19 +519,18 @@ wifibroadcast_rx_status_t *status_memory_open(void) {
 		perror("mmap");
 		return NULL;
 	}
-	wifibroadcast_rx_status_t *tretval = (wifibroadcast_rx_status_t*)retval;
+	wifibroadcast_rx_status_t *tretval = (wifibroadcast_rx_status_t *)retval;
 	status_memory_init(tretval);
 	return tretval;
 }
 
-int readFunction (void *opaque, uint8_t *buf, int buf_size) {
+int readFunction(void *opaque, uint8_t *buf, int buf_size) {
 #ifdef USE_FIFO
-	int numBytes = fread((char*)buf, 1, buf_size, infd);
+	int numBytes = fread((char *)buf, 1, buf_size, infd);
 #else
 	int n = 0;
 	for (n = 0; n < buf_size; n++) {
 		//		BufferOut(buf + n);
-
 		QueueGet(buf + n);
 	}
 	int numBytes = buf_size;
@@ -542,7 +538,7 @@ int readFunction (void *opaque, uint8_t *buf, int buf_size) {
 	return numBytes;
 }
 
-int wifibc_update_video (void *data) {
+int wifibc_update_video(void *data) {
 	AVFormatContext *pFormatCtx = NULL;
 	int             i = 0;
 	int             videoStream = -1;
@@ -559,20 +555,19 @@ int wifibc_update_video (void *data) {
 	const int         ioBufferSize = 32768;
 	int               numBytes;
 	uint8_t           *buffer = NULL;
-
 	av_register_all();
 	ioBuffer = (unsigned char *)av_malloc(ioBufferSize + FF_INPUT_BUFFER_PADDING_SIZE);
 #ifdef USE_FIFO
 	if ((infd = fopen("/tmp/fifo.avi", "rb")) == NULL) {
 		fprintf(stderr, "error reading fifo: /tmp/fifo.avi\n");
 	}
-	avioContext = avio_alloc_context(ioBuffer, ioBufferSize, 0, (void*)(&infd), &readFunction, NULL, NULL);
+	avioContext = avio_alloc_context(ioBuffer, ioBufferSize, 0, (void *)(&infd), &readFunction, NULL, NULL);
 #else
 	avioContext = avio_alloc_context(ioBuffer, ioBufferSize, 0, NULL, &readFunction, NULL, NULL);
 #endif
 	pFormatCtx = avformat_alloc_context();
 	pFormatCtx->pb = avioContext;
-	if (avformat_open_input(&pFormatCtx, "wifibc", NULL, NULL)!=0) {
+	if (avformat_open_input(&pFormatCtx, "wifibc", NULL, NULL) != 0) {
 		return -1;
 	}
 	if (avformat_find_stream_info(pFormatCtx, NULL) < 0) {
@@ -598,7 +593,7 @@ int wifibc_update_video (void *data) {
 		fprintf(stderr, "Couldn't copy codec context");
 		return -1;
 	}
-	if (avcodec_open2(pCodecCtx, pCodec, NULL)<0) {
+	if (avcodec_open2(pCodecCtx, pCodec, NULL) < 0) {
 		return -1;
 	}
 	pFrame = av_frame_alloc();
@@ -614,11 +609,10 @@ int wifibc_update_video (void *data) {
 			pCodecCtx->width, pCodecCtx->height, pCodecCtx->pix_fmt, time_base.num, time_base.den,
 			pCodecCtx->sample_aspect_ratio.num, pCodecCtx->sample_aspect_ratio.den,
 			avcodec_get_name2(pFormatCtx->streams[videoStream]->codec->codec_id));
-
 	wifibc_surface = SDL_CreateRGBSurface(0, pCodecCtx->width, pCodecCtx->height, 24, 0x0000ff, 0x00ff00, 0xff0000, 0);
 	wifibc_bg = SDL_CreateRGBSurface(0, pCodecCtx->width, pCodecCtx->height, 24, 0x0000ff, 0x00ff00, 0xff0000, 0);
 	numBytes = avpicture_get_size(PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height);
-	buffer = (uint8_t *)av_malloc(numBytes*sizeof(uint8_t));
+	buffer = (uint8_t *)av_malloc(numBytes * sizeof(uint8_t));
 	avpicture_fill((AVPicture *)pFrameRGB, buffer, PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height);
 	sws_ctx = sws_getContext(pCodecCtx->width, pCodecCtx->height, pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height, PIX_FMT_RGB24,
 							 SWS_BICUBIC, NULL, NULL, NULL);
@@ -649,7 +643,7 @@ int wifibc_update_video (void *data) {
 	return 0;
 }
 
-int wifibc_update_stream (void *data) {
+int wifibc_update_stream(void *data) {
 	monitor_interface_t interfaces[MAX_PENUMBRA_INTERFACES];
 	int num_interfaces = 0;
 	int i = 0;
@@ -678,7 +672,7 @@ int wifibc_update_stream (void *data) {
 	block_buffer_list = malloc(sizeof(block_buffer_t) * param_block_buffers);
 	for (i = 0; i < param_block_buffers; ++i) {
 		block_buffer_list[i].block_num = -1;
-		block_buffer_list[i].packet_buffer_list = lib_alloc_packet_buffer_list(param_data_packets_per_block+param_fec_packets_per_block,
+		block_buffer_list[i].packet_buffer_list = lib_alloc_packet_buffer_list(param_data_packets_per_block + param_fec_packets_per_block,
 				MAX_PACKET_LENGTH);
 	}
 	rx_status = status_memory_open();
@@ -710,7 +704,7 @@ int wifibc_update_stream (void *data) {
 	return (0);
 }
 
-void wifibc_init (void) {
+void wifibc_init(void) {
 	char cmd_str[1024];
 	SDL_Log("wifibc: init\n");
 #ifdef USE_FIFO
@@ -725,9 +719,7 @@ void wifibc_init (void) {
 	system(cmd_str);
 	sprintf(cmd_str, "iwconfig %s channel %i", setup.wifibc_device, setup.wifibc_channel);
 	system(cmd_str);
-
-//	sprintf(cmd_str, "iw phy`iw %s info | grep wiphy | awk '{print $2}'` info | grep 'MHz \[[0-9][0-9]*\]" | sed "s|.*\* \([0-9][0-9]*\) MHz [\\([0-9][0-9]*\\)]|\2 \1|g" > /tmp/list', setup.wifibc_device);
-
+	//	sprintf(cmd_str, "iw phy`iw %s info | grep wiphy | awk '{print $2}'` info | grep 'MHz \[[0-9][0-9]*\]" | sed "s|.*\* \([0-9][0-9]*\) MHz [\\([0-9][0-9]*\\)]|\2 \1|g" > /tmp/list', setup.wifibc_device);
 	char buf[1024];
 	FILE *ptr = NULL;
 	char *c = NULL;
@@ -738,7 +730,7 @@ void wifibc_init (void) {
 		while (fgets(buf, 1023, ptr) != NULL) {
 			if ((c = strstr(buf, "wiphy ")) > 0) {
 				wiphy = atoi(c + 6);
-			} 
+			}
 		}
 		pclose(ptr);
 	}
@@ -770,55 +762,52 @@ void wifibc_init (void) {
 #endif
 }
 
-void wifibc_exit (void) {
+void wifibc_exit(void) {
 	wifibc_running = 0;
 	SDL_WaitThread(wifibc_thread_stream, NULL);
 	SDL_WaitThread(wifibc_thread_video, NULL);
 }
 
-SDL_Surface *wifibc_get (void) {
+SDL_Surface *wifibc_get(void) {
 	SDL_LockMutex(wifibc_mutex);
 	if (wifibc_bg != NULL) {
 		SDL_BlitSurface(wifibc_bg, NULL, wifibc_surface, NULL);
 		SDL_UnlockMutex(wifibc_mutex);
-
-
 		/*
-		static IplImage *gray = NULL;
-		static IplImage *edge = NULL;
-		static IplImage *cv_image = NULL;
-		static CvMemStorage *storage = NULL;
-		int edge_thresh = 1;
-		int i = 0;
+		    static IplImage *gray = NULL;
+		    static IplImage *edge = NULL;
+		    static IplImage *cv_image = NULL;
+		    static CvMemStorage *storage = NULL;
+		    int edge_thresh = 1;
+		    int i = 0;
 
-		if (cv_image == NULL) {
+		    if (cv_image == NULL) {
 			cv_image = cvCreateImageHeader(cvSize(wifibc_surface->w, wifibc_surface->h), IPL_DEPTH_8U, 3);
-		}
-		if (gray == NULL) {
+		    }
+		    if (gray == NULL) {
 			gray = cvCreateImage(cvGetSize(cv_image), cv_image->depth, 1);
-		}
-		if (edge == NULL) {
+		    }
+		    if (edge == NULL) {
 			edge = cvCreateImage(cvSize(cv_image->width, cv_image->height), 8, 1);
-		}
-		if (storage == NULL) {
+		    }
+		    if (storage == NULL) {
 			storage = cvCreateMemStorage(0);
-		}
-		cvSetData(cv_image, wifibc_surface->pixels, cv_image->widthStep);
-		cvCvtColor(cv_image, gray, CV_BGR2GRAY);
-		cvThreshold(gray, gray, CV_GAUSSIAN, 9, 9);
-		cvSmooth(gray, gray, CV_GAUSSIAN, 11, 11, 0, 0);
-		cvCanny(gray, edge, (float)edge_thresh, (float)edge_thresh * 3, 5);
-		CvSeq* circles = cvHoughCircles(edge, storage, CV_HOUGH_GRADIENT, 2, gray->height / 2, 200, 100, 200, 0);
-		for (i = 0; i < circles->total; i++) {
+		    }
+		    cvSetData(cv_image, wifibc_surface->pixels, cv_image->widthStep);
+		    cvCvtColor(cv_image, gray, CV_BGR2GRAY);
+		    cvThreshold(gray, gray, CV_GAUSSIAN, 9, 9);
+		    cvSmooth(gray, gray, CV_GAUSSIAN, 11, 11, 0, 0);
+		    cvCanny(gray, edge, (float)edge_thresh, (float)edge_thresh * 3, 5);
+		    CvSeq* circles = cvHoughCircles(edge, storage, CV_HOUGH_GRADIENT, 2, gray->height / 2, 200, 100, 200, 0);
+		    for (i = 0; i < circles->total; i++) {
 			float* p = (float*)cvGetSeqElem(circles, i);
 			cvCircle(cv_image, cvPoint(cvRound(p[0]),cvRound(p[1])), 3, CV_RGB(0,255,0), -1, 8, 0 );
 			cvCircle(cv_image, cvPoint(cvRound(p[0]),cvRound(p[1])), cvRound(p[2]), CV_RGB(255,0,0), 3, 8, 0 );
-		}
+		    }
 
-		//cvSaveImage("/tmp/foo.png", cv_image, NULL);
+		    //cvSaveImage("/tmp/foo.png", cv_image, NULL);
 
 		*/
-
 		return wifibc_surface;
 	}
 	SDL_UnlockMutex(wifibc_mutex);

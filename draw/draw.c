@@ -17,7 +17,7 @@ Uint32 amask = 0xff000000;
 SrtmCache AltCache[MAX_ALTCACHE];
 const GLfloat DEG2RAD = 3.14159 / 180.0;
 
-uint8_t screen_select (char *name, float x, float y, int8_t button, float data, uint8_t action);
+uint8_t screen_select(char *name, float x, float y, int8_t button, float data, uint8_t action);
 
 #ifndef GL_BGRA
 #define GL_BGRA 0x80E1
@@ -26,7 +26,7 @@ uint8_t screen_select (char *name, float x, float y, int8_t button, float data, 
 #define GL_RGB 0x1907
 #endif
 
-void draw_scrollbar (ESContext *esContext, uint16_t page, uint16_t page_max, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t)) {
+void draw_scrollbar(ESContext *esContext, uint16_t page, uint16_t page_max, uint8_t (*callback)(char *, float, float, int8_t, float, uint8_t)) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -53,24 +53,23 @@ void draw_scrollbar (ESContext *esContext, uint16_t page, uint16_t page_max, uin
 	}
 }
 
-void draw_title (ESContext *esContext, char *text) {
+void draw_title(ESContext *esContext, char *text) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
 	draw_text_f3(esContext, 0.0 - strlen(text) * 0.06 * 0.6 / 2.0 - 0.012, -0.95, 0.02, 0.06, 0.06, FONT_GREEN, text);
-//	draw_text_button(esContext, "screen_select", setup.view_mode, text, FONT_WHITE, -1.1, -0.95, 0.003, 0.06, ALIGN_LEFT, ALIGN_TOP, screen_select, -1.0);
+	//	draw_text_button(esContext, "screen_select", setup.view_mode, text, FONT_WHITE, -1.1, -0.95, 0.003, 0.06, ALIGN_LEFT, ALIGN_TOP, screen_select, -1.0);
 }
 
-uint8_t draw_button (ESContext *esContext, char *name, uint8_t view_mode, char *text, char *font, float x1, float y1, float z1, float x2, float y2, float z2, float fh, uint8_t align_x, uint8_t align_y, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t), float data) {
+uint8_t draw_button(ESContext *esContext, char *name, uint8_t view_mode, char *text, char *font, float x1, float y1, float z1, float x2, float y2, float z2, float fh, uint8_t align_x, uint8_t align_y,
+					uint8_t (*callback)(char *, float, float, int8_t, float, uint8_t), float data) {
 #ifdef CONSOLE_ONLY
 	return 0;
 #endif
 	uint16_t n = 0;
-
 	draw_rect_f3(esContext, x1, y1, z1, x2, y2, z1, 128, 128, 128, 32);
 	draw_box_f3c2(esContext, x1, y1, z1, x2, y1 + (y2 - y1) / 3 * 2, z1, 128, 128, 128, 64, 128, 128, 128, 128);
 	draw_box_f3c2(esContext, x1, y1 + (y2 - y1) / 3 * 2, z1, x2, y2, z1, 128, 128, 128, 128, 128, 128, 128, 64);
-
 	float tx = x1;
 	float ty = y1;
 	if (align_x == ALIGN_CENTER) {
@@ -87,7 +86,7 @@ uint8_t draw_button (ESContext *esContext, char *name, uint8_t view_mode, char *
 	} else if (align_y == ALIGN_BOTTOM) {
 		ty = y2 - fh / 4 - fh;
 	}
-//	draw_text_f3(esContext, x1, y1 + (y2 - y1) / 2 - fh / 2, z1, fh, fh, font, text);
+	//	draw_text_f3(esContext, x1, y1 + (y2 - y1) / 2 - fh / 2, z1, fh, fh, font, text);
 	draw_text_f3(esContext, tx, ty, z1, fh, fh, font, text);
 	if (gui_ov_lock == 1) {
 		return 0;
@@ -119,7 +118,8 @@ uint8_t draw_button (ESContext *esContext, char *name, uint8_t view_mode, char *
 	return 2;
 }
 
-uint8_t draw_text_button (ESContext *esContext, char *name, uint8_t view_mode, char *text, char *font, float x, float y, float z, float h, uint8_t align_x, uint8_t align_y, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t), float data) {
+uint8_t draw_text_button(ESContext *esContext, char *name, uint8_t view_mode, char *text, char *font, float x, float y, float z, float h, uint8_t align_x, uint8_t align_y, uint8_t (*callback)(char *,
+						 float, float, int8_t, float, uint8_t), float data) {
 #ifdef CONSOLE_ONLY
 	return 0;
 #endif
@@ -144,11 +144,10 @@ uint8_t draw_text_button (ESContext *esContext, char *name, uint8_t view_mode, c
 		y2 = y + h / 2;
 	}
 	draw_text_f3(esContext, x1, y1, z1, h, h, font, text);
-
 	if (callback == NULL) {
 		return 0;
 	}
-//	draw_rect_f3(esContext, x1 - 0.01, y1 - 0.01, z1, x2 + 0.01, y2 + 0.01, z1, 255, 255, 255, 64);
+	//	draw_rect_f3(esContext, x1 - 0.01, y1 - 0.01, z1, x2 + 0.01, y2 + 0.01, z1, 255, 255, 255, 64);
 	if (gui_ov_lock == 1) {
 		return 0;
 	}
@@ -179,7 +178,7 @@ uint8_t draw_text_button (ESContext *esContext, char *name, uint8_t view_mode, c
 	return 2;
 }
 
-uint8_t draw_text_align (ESContext *esContext, char *text, char *font, float x, float y, float z, float h, uint8_t align_x, uint8_t align_y) {
+uint8_t draw_text_align(ESContext *esContext, char *text, char *font, float x, float y, float z, float h, uint8_t align_x, uint8_t align_y) {
 #ifdef CONSOLE_ONLY
 	return 0;
 #endif
@@ -200,7 +199,8 @@ uint8_t draw_text_align (ESContext *esContext, char *text, char *font, float x, 
 	return 0;
 }
 
-uint8_t draw_image_button (ESContext *esContext, char *name, uint8_t view_mode, char *image, float x, float y, float z, float w, float h, uint8_t align_x, uint8_t align_y, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t), float data) {
+uint8_t draw_image_button(ESContext *esContext, char *name, uint8_t view_mode, char *image, float x, float y, float z, float w, float h, uint8_t align_x, uint8_t align_y, uint8_t (*callback)(char *,
+						  float, float, int8_t, float, uint8_t), float data) {
 #ifdef CONSOLE_ONLY
 	return 0;
 #endif
@@ -228,7 +228,7 @@ uint8_t draw_image_button (ESContext *esContext, char *name, uint8_t view_mode, 
 		y2 = y + h / 2;
 	}
 	draw_image_f3(esContext, x1, y1, x2, y2, 0.0, image);
-//	draw_rect_f3(esContext, x1 - 0.01, y1 - 0.01, z1, x2 + 0.01, y2 + 0.01, z1, 255, 0, 0, 255);
+	//	draw_rect_f3(esContext, x1 - 0.01, y1 - 0.01, z1, x2 + 0.01, y2 + 0.01, z1, 255, 0, 0, 255);
 	if (gui_ov_lock == 1) {
 		return 0;
 	}
@@ -259,15 +259,15 @@ uint8_t draw_image_button (ESContext *esContext, char *name, uint8_t view_mode, 
 	return 2;
 }
 
-int next_power_of_two (int n) {
+int next_power_of_two(int n) {
 	double logbase2 = log((double) n) / log(2.0);
 	return (int)(pow(2, ceil(logbase2)) + 0.5);
 }
 
-SDL_Surface* convert_to_power_of_two (SDL_Surface* surface) {
+SDL_Surface *convert_to_power_of_two(SDL_Surface *surface) {
 	int width = next_power_of_two(surface->w);
 	int height = next_power_of_two(surface->h);
-	SDL_Surface* pot_surface = SDL_CreateRGBSurface(0, width, height, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+	SDL_Surface *pot_surface = SDL_CreateRGBSurface(0, width, height, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
 	SDL_Rect dstrect;
 	dstrect.x = (pot_surface->w - surface->w) / 2;
 	dstrect.y = (pot_surface->h - surface->h) / 2;
@@ -277,10 +277,10 @@ SDL_Surface* convert_to_power_of_two (SDL_Surface* surface) {
 	return pot_surface;
 }
 
-int imagefile_exists (char *fileName) {
+int imagefile_exists(char *fileName) {
 	struct stat buf;
-	int i = stat ( fileName, &buf );
-	if ( i == 0 ) {
+	int i = stat(fileName, &buf);
+	if (i == 0) {
 		return 1;
 	}
 	return 0;
@@ -316,27 +316,27 @@ int loadImage(const char *filename) {
 	GLuint texture;
 	GLenum texture_format;
 	GLint  nOfColors;
-        nOfColors = imageSurface->format->BytesPerPixel;
-        if (nOfColors == 4) {
-                if (imageSurface->format->Rmask == 0x000000ff) {
-                        texture_format = GL_RGBA;
-                } else {
-                        texture_format = GL_BGRA;
+	nOfColors = imageSurface->format->BytesPerPixel;
+	if (nOfColors == 4) {
+		if (imageSurface->format->Rmask == 0x000000ff) {
+			texture_format = GL_RGBA;
+		} else {
+			texture_format = GL_BGRA;
 		}
-        } else if (nOfColors == 3) {
-                if (imageSurface->format->Rmask == 0x000000ff) {
-                        texture_format = GL_RGB;
-                } else {
-                        texture_format = GL_BGR;
-                }
-        } else {
-                SDL_Log("warning: the image is not truecolor..  this will probably break\n");
+	} else if (nOfColors == 3) {
+		if (imageSurface->format->Rmask == 0x000000ff) {
+			texture_format = GL_RGB;
+		} else {
+			texture_format = GL_BGR;
+		}
+	} else {
+		SDL_Log("warning: the image is not truecolor..  this will probably break\n");
 		return 0;
-        }
+	}
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 #ifndef ANDROID
 #ifdef SDLGL
 	glTexImage2D(GL_TEXTURE_2D, 0, nOfColors, imageSurface->w, imageSurface->h, 0, texture_format, GL_UNSIGNED_BYTE, imageSurface->pixels);
@@ -352,114 +352,112 @@ int loadImage(const char *filename) {
 }
 
 int loadPNG(const char *filename) {
-    GLuint texture;
-    png_structp png_ptr = NULL;
-    png_infop info_ptr = NULL;
-    png_bytep *row_pointers = NULL;
-    int bitDepth, colourType;
-    FILE *pngFile = fopen(filename, "rb");
-    if (!pngFile)
-        return 0;
-    png_byte sig[8];
-    fread(&sig, 8, sizeof(png_byte), pngFile);
-    rewind(pngFile);
-    if (!png_check_sig(sig, 8)) {
-        //SDL_Log("png sig failure\n");
-        return 0;
-    }
-    png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-    if (!png_ptr) {
-        //SDL_Log("png ptr not created\n");
-        return 0;
-    }
-    if (setjmp(png_jmpbuf(png_ptr))) {
-        //SDL_Log("set jmp failed\n");
-        return 0;
-    }
-    info_ptr = png_create_info_struct(png_ptr);
-    if (!info_ptr) {
-        //SDL_Log("cant get png info ptr\n");
-        return 0;
-    }
-    png_init_io(png_ptr, pngFile);
-    png_read_info(png_ptr, info_ptr);
-    bitDepth = png_get_bit_depth(png_ptr, info_ptr);
-    colourType = png_get_color_type(png_ptr, info_ptr);
-    if (colourType == PNG_COLOR_TYPE_PALETTE)
-        png_set_palette_to_rgb(png_ptr);
-    if (colourType == PNG_COLOR_TYPE_GRAY && bitDepth < 8)
-        //png_set_gray_1_2_4_to_8(png_ptr);
-        png_set_expand_gray_1_2_4_to_8(png_ptr);  // thanks to Jesse Jaara for bug fix for newer libpng...
-    if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
-        png_set_tRNS_to_alpha(png_ptr);
-
-    if (bitDepth == 16)
-        png_set_strip_16(png_ptr);
-    else if (bitDepth < 8)
-        png_set_packing(png_ptr);
-
-    png_read_update_info(png_ptr, info_ptr);
-
-    png_uint_32 width, height;
-    png_get_IHDR(png_ptr, info_ptr, &width, &height, &bitDepth, &colourType, NULL, NULL, NULL);
-
-    int components;		// = GetTextureInfo(colourType);
-    switch (colourType) {
-    case PNG_COLOR_TYPE_GRAY:
-        components = 1;
-        break;
-    case PNG_COLOR_TYPE_GRAY_ALPHA:
-        components = 2;
-        break;
-    case PNG_COLOR_TYPE_RGB:
-        components = 3;
-        break;
-    case PNG_COLOR_TYPE_RGB_ALPHA:
-        components = 4;
-        break;
-    default:
-        components = -1;
-    }
-
-    if (components == -1) {
-        if (png_ptr)
-            png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-        //SDL_Log("%s broken?\n", filename);
-        return 0;
-    }
-
-    GLubyte *pixels =
-        (GLubyte *) malloc(sizeof(GLubyte) * (width * height * components));
-    row_pointers = (png_bytep *) malloc(sizeof(png_bytep) * height);
-
-    int i = 0;
-    for (i = 0; i < height; ++i) {
-        row_pointers[i] = (png_bytep) (pixels + (i * width * components));
-    }
-    png_read_image(png_ptr, row_pointers);
-    png_read_end(png_ptr, NULL);
-
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    GLuint glcolours;
-    (components == 4) ? (glcolours = GL_RGBA) : (0);
-    (components == 3) ? (glcolours = GL_RGB) : (0);
-    (components == 2) ? (glcolours = GL_LUMINANCE_ALPHA) : (0);
-    (components == 1) ? (glcolours = GL_LUMINANCE) : (0);
-
-    //SDL_Log("%s has %i colour components\n",filename,components);
-    //glTexImage2D(GL_TEXTURE_2D, 0, components, width, height, 0, glcolours, GL_UNSIGNED_BYTE, pixels);
-    glTexImage2D(GL_TEXTURE_2D, 0, glcolours, width, height, 0, glcolours, GL_UNSIGNED_BYTE, pixels);
-    png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-    fclose(pngFile);
-    free(row_pointers);
-    free(pixels);
-    return texture;
+	GLuint texture;
+	png_structp png_ptr = NULL;
+	png_infop info_ptr = NULL;
+	png_bytep *row_pointers = NULL;
+	int bitDepth, colourType;
+	FILE *pngFile = fopen(filename, "rb");
+	if (!pngFile) {
+		return 0;
+	}
+	png_byte sig[8];
+	fread(&sig, 8, sizeof(png_byte), pngFile);
+	rewind(pngFile);
+	if (!png_check_sig(sig, 8)) {
+		//SDL_Log("png sig failure\n");
+		return 0;
+	}
+	png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	if (!png_ptr) {
+		//SDL_Log("png ptr not created\n");
+		return 0;
+	}
+	if (setjmp(png_jmpbuf(png_ptr))) {
+		//SDL_Log("set jmp failed\n");
+		return 0;
+	}
+	info_ptr = png_create_info_struct(png_ptr);
+	if (!info_ptr) {
+		//SDL_Log("cant get png info ptr\n");
+		return 0;
+	}
+	png_init_io(png_ptr, pngFile);
+	png_read_info(png_ptr, info_ptr);
+	bitDepth = png_get_bit_depth(png_ptr, info_ptr);
+	colourType = png_get_color_type(png_ptr, info_ptr);
+	if (colourType == PNG_COLOR_TYPE_PALETTE) {
+		png_set_palette_to_rgb(png_ptr);
+	}
+	if (colourType == PNG_COLOR_TYPE_GRAY && bitDepth < 8)
+		//png_set_gray_1_2_4_to_8(png_ptr);
+	{
+		png_set_expand_gray_1_2_4_to_8(png_ptr);    // thanks to Jesse Jaara for bug fix for newer libpng...
+	}
+	if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)) {
+		png_set_tRNS_to_alpha(png_ptr);
+	}
+	if (bitDepth == 16) {
+		png_set_strip_16(png_ptr);
+	} else if (bitDepth < 8) {
+		png_set_packing(png_ptr);
+	}
+	png_read_update_info(png_ptr, info_ptr);
+	png_uint_32 width, height;
+	png_get_IHDR(png_ptr, info_ptr, &width, &height, &bitDepth, &colourType, NULL, NULL, NULL);
+	int components;		// = GetTextureInfo(colourType);
+	switch (colourType) {
+		case PNG_COLOR_TYPE_GRAY:
+			components = 1;
+			break;
+		case PNG_COLOR_TYPE_GRAY_ALPHA:
+			components = 2;
+			break;
+		case PNG_COLOR_TYPE_RGB:
+			components = 3;
+			break;
+		case PNG_COLOR_TYPE_RGB_ALPHA:
+			components = 4;
+			break;
+		default:
+			components = -1;
+	}
+	if (components == -1) {
+		if (png_ptr) {
+			png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+		}
+		//SDL_Log("%s broken?\n", filename);
+		return 0;
+	}
+	GLubyte *pixels =
+		(GLubyte *) malloc(sizeof(GLubyte) * (width * height * components));
+	row_pointers = (png_bytep *) malloc(sizeof(png_bytep) * height);
+	int i = 0;
+	for (i = 0; i < height; ++i) {
+		row_pointers[i] = (png_bytep)(pixels + (i * width * components));
+	}
+	png_read_image(png_ptr, row_pointers);
+	png_read_end(png_ptr, NULL);
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	GLuint glcolours;
+	(components == 4) ? (glcolours = GL_RGBA) : (0);
+	(components == 3) ? (glcolours = GL_RGB) : (0);
+	(components == 2) ? (glcolours = GL_LUMINANCE_ALPHA) : (0);
+	(components == 1) ? (glcolours = GL_LUMINANCE) : (0);
+	//SDL_Log("%s has %i colour components\n",filename,components);
+	//glTexImage2D(GL_TEXTURE_2D, 0, components, width, height, 0, glcolours, GL_UNSIGNED_BYTE, pixels);
+	glTexImage2D(GL_TEXTURE_2D, 0, glcolours, width, height, 0, glcolours, GL_UNSIGNED_BYTE, pixels);
+	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+	fclose(pngFile);
+	free(row_pointers);
+	free(pixels);
+	return texture;
 }
 
-void draw_image_uncache (char *file) {
+void draw_image_uncache(char *file) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -469,7 +467,7 @@ void draw_image_uncache (char *file) {
 		if (strcmp(TexCache[n].name, file) == 0) {
 			tex_num = n;
 			SDL_Log("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, tex_num, TexCache[tex_num].atime);
-			glDeleteTextures( 1, &TexCache[tex_num].texture );
+			glDeleteTextures(1, &TexCache[tex_num].texture);
 			TexCache[tex_num].name[0] = 0;
 			TexCache[tex_num].texture = -1;
 			break;
@@ -479,14 +477,14 @@ void draw_image_uncache (char *file) {
 
 
 
-void draw_line_f (ESContext *esContext, float x1, float y1, float x2, float y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_line_f(ESContext *esContext, float x1, float y1, float x2, float y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
 	draw_line_f3(esContext, x1, y1, 0.0, x2, y2, 0.0, r, g, b, a);
 }
 
-void draw_line (ESContext *esContext, int16_t px1, int16_t py1, int16_t px2, int16_t py2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_line(ESContext *esContext, int16_t px1, int16_t py1, int16_t px2, int16_t py2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -498,14 +496,14 @@ void draw_line (ESContext *esContext, int16_t px1, int16_t py1, int16_t px2, int
 }
 
 
-void draw_circle_f (ESContext *esContext, float x1, float y1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_circle_f(ESContext *esContext, float x1, float y1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
 	draw_circle_f3(esContext, x1, y1, 0.0, radius, r, g, b, a);
 }
 
-void draw_circle (ESContext *esContext, int16_t x, int16_t y, int16_t radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_circle(ESContext *esContext, int16_t x, int16_t y, int16_t radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -516,14 +514,14 @@ void draw_circle (ESContext *esContext, int16_t x, int16_t y, int16_t radius, ui
 	draw_circle_f3(esContext, x1, y1, 0.0, radius1, r, g, b, a);
 }
 
-void draw_circleFilled_f (ESContext *esContext, float x1, float y1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_circleFilled_f(ESContext *esContext, float x1, float y1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
 	draw_circleFilled_f3(esContext, x1, y1, 0.0, radius, r, g, b, a);
 }
 
-void draw_circleFilled (ESContext *esContext, int16_t x, int16_t y, int16_t radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_circleFilled(ESContext *esContext, int16_t x, int16_t y, int16_t radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -534,21 +532,21 @@ void draw_circleFilled (ESContext *esContext, int16_t x, int16_t y, int16_t radi
 	draw_circleFilled_f3(esContext, x1, y1, 0.0, radius1, r, g, b, a);
 }
 
-void draw_rect_f (ESContext *esContext, float x1, float y1, float x2, float y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_rect_f(ESContext *esContext, float x1, float y1, float x2, float y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
 	draw_rect_f3(esContext, x1, y1, 0.0, x2, y2, 0.0, r, g, b, a);
 }
 
-void draw_box_f (ESContext *esContext, float x1, float y1, float x2, float y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_box_f(ESContext *esContext, float x1, float y1, float x2, float y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
 	draw_box_f3(esContext, x1, y1, 0.0, x2, y2, 0.0, r, g, b, a);
 }
 
-void draw_rect (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_rect(ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -559,7 +557,7 @@ void draw_rect (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h
 	draw_rect_f3(esContext, x1, y1, 0.0, x2, y2, 0.0, r, g, b, a);
 }
 
-void draw_box (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_box(ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -570,21 +568,21 @@ void draw_box (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h,
 	draw_box_f3(esContext, x1, y1, 0.0, x2, y2, 0.0, r, g, b, a);
 }
 
-void draw_tria_f (ESContext *esContext, float x1, float y1, float x2, float y2, float x3, float y3, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_tria_f(ESContext *esContext, float x1, float y1, float x2, float y2, float x3, float y3, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
 	draw_tria_f3(esContext, x1, y1, 0.0, x2, y2, 0.0, x3, y3, 0.0, r, g, b, a);
 }
 
-void draw_triaFilled_f (ESContext *esContext, float x1, float y1, float x2, float y2, float x3, float y3, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_triaFilled_f(ESContext *esContext, float x1, float y1, float x2, float y2, float x3, float y3, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
 	draw_triaFilled_f3(esContext, x1, y1, 0.0, x2, y2, 0.0, x3, y3, 0.0, r, g, b, a);
 }
 
-void draw_circleFilled_f3_part_end (ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_circleFilled_f3_part_end(ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -599,7 +597,7 @@ void draw_circleFilled_f3_part_end (ESContext *esContext, float x1, float y1, fl
 }
 
 
-void draw_circleMeter_f3 (ESContext *esContext, float x, float y, float z, float radius, float start1, float start2, float start3, float start4, float value, char *text, char *text2, uint8_t type) {
+void draw_circleMeter_f3(ESContext *esContext, float x, float y, float z, float radius, float start1, float start2, float start3, float start4, float value, char *text, char *text2, uint8_t type) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -615,32 +613,32 @@ void draw_circleMeter_f3 (ESContext *esContext, float x, float y, float z, float
 	value = (offset2 - offset1) * value / 100.0 + offset1;
 	if (type == 2) {
 		if (setup.contrast == 1) {
-	//		draw_circleFilled_f3_part_end(esContext, x, y, z, radius, radius - width, offset1, 255, 255, 255, 255);
+			//		draw_circleFilled_f3_part_end(esContext, x, y, z, radius, radius - width, offset1, 255, 255, 255, 255);
 			draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, offset1, start2, 255, 255, 255, 255);
 			draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, start2, start3, 255, 255, 0, 255);
 			draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, start3, offset2, 255, 0, 0, 255);
-	//		draw_circleFilled_f3_part_end(esContext, x, y, z, radius, radius - width, offset2, 255, 0, 0, 255);
+			//		draw_circleFilled_f3_part_end(esContext, x, y, z, radius, radius - width, offset2, 255, 0, 0, 255);
 			draw_circleFilled_f3_part(esContext, x, y, z, 0.0, radius - width, offset1, value, 100, 100, 255, 255);
 			draw_circlePointer_f3(esContext, x, y, z + 0.0001, radius - width, radius / 20.0, value, 255, 255, 255, 255);
 		} else {
-	//		draw_circleFilled_f3_part_end(esContext, x, y, z, radius, radius - width, offset1, 227, 227, 227, 200);
+			//		draw_circleFilled_f3_part_end(esContext, x, y, z, radius, radius - width, offset1, 227, 227, 227, 200);
 			draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, offset1, start2, 227, 227, 227, 200);
 			draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, start2, start3, 255, 255, 0, 200);
 			draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, start3, offset2, 255, 0, 0, 200);
-	//		draw_circleFilled_f3_part_end(esContext, x, y, z, radius, radius - width, offset2, 255, 0, 0, 200);
+			//		draw_circleFilled_f3_part_end(esContext, x, y, z, radius, radius - width, offset2, 255, 0, 0, 200);
 			draw_circleFilled_f3_part(esContext, x, y, z, 0.0, radius - width, offset1, value, 100, 100, 255, 127);
 			draw_circlePointer_f3(esContext, x, y, z + 0.0001, radius - width, radius / 20.0, value, 255, 255, 255, 255);
 		}
 	} else {
 		if (setup.contrast == 1) {
-	//		draw_circleFilled_f3_part_end(esContext, x, y, z, radius, radius - width, offset1, 127, 127, 127, 255);
+			//		draw_circleFilled_f3_part_end(esContext, x, y, z, radius, radius - width, offset1, 127, 127, 127, 255);
 			draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, offset1, start2, 127, 127, 127, 255);
 			draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, start2, start3, 200, 200, 200, 255);
 			draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, start3, offset2, 255, 255, 255, 255);
-	//		draw_circleFilled_f3_part_end(esContext, x, y, z, radius, radius - width, offset2, 10, 200, 10, 255);
+			//		draw_circleFilled_f3_part_end(esContext, x, y, z, radius, radius - width, offset2, 10, 200, 10, 255);
 			draw_circlePointer_f3(esContext, x, y, z + 0.0001, radius - width, radius / 20.0, value, 255, 255, 255, 255);
 		} else {
-	//		draw_circleFilled_f3_part_end(esContext, x, y, z, radius, radius - width, offset1, 200, 10, 10, 255);
+			//		draw_circleFilled_f3_part_end(esContext, x, y, z, radius, radius - width, offset1, 200, 10, 10, 255);
 			if (type == 3) {
 				draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, offset1, start2, 10, 220, 10, 255);
 				draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, start2, start3, 220, 220, 10, 255);
@@ -650,7 +648,7 @@ void draw_circleMeter_f3 (ESContext *esContext, float x, float y, float z, float
 				draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, start2, start3, 220, 220, 10, 255);
 				draw_circleFilled_f3_part(esContext, x, y, z, radius, radius - width, start3, offset2, 10, 220, 10, 255);
 			}
-	//		draw_circleFilled_f3_part_end(esContext, x, y, z, radius, radius - width, offset2, 10, 200, 10, 255);
+			//		draw_circleFilled_f3_part_end(esContext, x, y, z, radius, radius - width, offset2, 10, 200, 10, 255);
 			draw_circlePointer_f3(esContext, x, y, z + 0.0001, radius - width, radius / 20.0, value, 255, 255, 255, 255);
 		}
 	}
@@ -670,14 +668,14 @@ void draw_circleMeter_f3 (ESContext *esContext, float x, float y, float z, float
 	}
 }
 
-void draw_image_f (ESContext *esContext, float x1, float y1, float x2, float y2, char *file) {
+void draw_image_f(ESContext *esContext, float x1, float y1, float x2, float y2, char *file) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
 	draw_image_f3(esContext, x1, y1, x2, y2, 0.0, file);
 }
 
-void draw_image (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file) {
+void draw_image(ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -690,33 +688,29 @@ void draw_image (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t 
 
 #ifdef SDLGL
 uint32_t getpixel(SDL_Surface *surface, int x, int y) {
-    int bpp = surface->format->BytesPerPixel;
-    /* Here p is the address to the pixel we want to retrieve */
-    Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
+	int bpp = surface->format->BytesPerPixel;
+	/* Here p is the address to the pixel we want to retrieve */
+	Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
+	switch (bpp) {
+		case 1:
+			return *p;
+		case 2:
+			return *(Uint16 *)p;
+		case 3:
+			if (SDL_BYTEORDER == SDL_BIG_ENDIAN) {
+				return p[0] << 16 | p[1] << 8 | p[2];
+			} else {
+				return p[0] | p[1] << 8 | p[2] << 16;
+			}
+		case 4:
+			return *(Uint32 *)p;
+		default:
+			return 0;       /* shouldn't happen, but avoids warnings */
+	}
+}
+#endif
 
-    switch(bpp) {
-    case 1:
-        return *p;
-
-    case 2:
-        return *(Uint16 *)p;
-
-    case 3:
-        if(SDL_BYTEORDER == SDL_BIG_ENDIAN)
-            return p[0] << 16 | p[1] << 8 | p[2];
-        else
-            return p[0] | p[1] << 8 | p[2] << 16;
-
-    case 4:
-        return *(Uint32 *)p;
-
-    default:
-        return 0;       /* shouldn't happen, but avoids warnings */
-    }
-} 
-#endif 
-
-int16_t get_altitude (float lat, float lon) {
+int16_t get_altitude(float lat, float lon) {
 	char file[100];
 	int8_t n = 0;
 	int8_t alt_num = -1;
@@ -761,11 +755,11 @@ int16_t get_altitude (float lat, float lon) {
 		if (alt_num == -1) {
 			alt_num = old_num;
 			SDL_Log("remove srtm %s from cache %i (%i)\n", AltCache[alt_num].name, old_num, AltCache[alt_num].atime);
-//			Delete;
+			//			Delete;
 			AltCache[alt_num].name[0] = 0;
 		}
 		if (alt_num != -1) {
-//			SDL_Log("loading srtm %s in to alt-cache %i %i\n", file, alt_num, AltCache[alt_num].atime);
+			//			SDL_Log("loading srtm %s in to alt-cache %i %i\n", file, alt_num, AltCache[alt_num].atime);
 			FILE *fr;
 			fr = fopen(file, "rb");
 			if (fr != 0) {
@@ -778,7 +772,7 @@ int16_t get_altitude (float lat, float lon) {
 						int16_t val = 0;
 						fread(&val1, 1, 1, fr);
 						fread(&val2, 1, 1, fr);
-						val = (val1<<8) + val2;
+						val = (val1 << 8) + val2;
 						if (lat_m < 0) {
 							if (lon_m < 0) {
 								AltCache[alt_num].data[py][1200 - px] = val;
@@ -800,10 +794,9 @@ int16_t get_altitude (float lat, float lon) {
 			}
 		}
 	}
-
 	if (flag == 0) {
 		AltCache[alt_num].atime = time(0);
-//		SDL_Log("# using Alt-Cache: %s\n", AltCache[alt_num].name);
+		//		SDL_Log("# using Alt-Cache: %s\n", AltCache[alt_num].name);
 		// geting all field-points
 		float fy = 0.0;
 		float fx = 0.0;
@@ -825,7 +818,6 @@ int16_t get_altitude (float lat, float lon) {
 		x1 = (int)((lon - (float)lon_m) * 1201.0);
 		x2 = x1 + 1;
 		fx = ((lon - (float)lon_m) * 1201.0);
-
 #ifndef SDLGL
 		return AltCache[alt_num].data[y1][x1];
 #else
@@ -897,7 +889,7 @@ int16_t get_altitude (float lat, float lon) {
 	return 0;
 }
 
-void draw_pointer (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file) {
+void draw_pointer(ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -908,21 +900,21 @@ void draw_pointer (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_
 	draw_image_f3(esContext, x1, y1, x2, y2, 0.0035, file);
 }
 
-void draw_text_f3 (ESContext *esContext, float x1, float y1, float z1, float w, float h, char *file, char *text) {
+void draw_text_f3(ESContext *esContext, float x1, float y1, float z1, float w, float h, char *file, char *text) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
 	draw_text_f3_fast(esContext, x1, y1, z1, w, h, file, text);
 }
 
-void draw_text_f (ESContext *esContext, float x1, float y1, float w, float h, char *file, char *text) {
+void draw_text_f(ESContext *esContext, float x1, float y1, float w, float h, char *file, char *text) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
 	draw_text_f3(esContext, x1, y1, 0.003, w, h, file, text);
 }
 
-void draw_text (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file, char *text) {
+void draw_text(ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file, char *text) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -933,7 +925,8 @@ void draw_text (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h
 	draw_text_f3(esContext, x1, y1, 0.0, fw, fh, file, text);
 }
 
-void draw_pulldown (ESContext *esContext, float x1, float y1, float w, float z, char *name, EntryList *list, uint8_t open, uint8_t select, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t)) {
+void draw_pulldown(ESContext *esContext, float x1, float y1, float w, float z, char *name, EntryList *list, uint8_t open, uint8_t select, uint8_t (*callback)(char *, float, float, int8_t, float,
+				   uint8_t)) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -952,8 +945,8 @@ void draw_pulldown (ESContext *esContext, float x1, float y1, float w, float z, 
 #endif
 #endif
 	if (open == 1) {
-//		y1 -= select * h;
-//		y2 -= select * h;
+		//		y1 -= select * h;
+		//		y2 -= select * h;
 		while (list[n].name != NULL) {
 			if (n == select) {
 				draw_box_f3(esContext, x1 + 0.01, y1 + n * h, z, x2 - 0.01, y2 + n * h, z + 0.05, 200, 200, 200, 200);
@@ -976,7 +969,7 @@ void draw_pulldown (ESContext *esContext, float x1, float y1, float w, float z, 
 	}
 }
 
-void draw_spinbox (ESContext *esContext, float x1, float y1, float w, float z, char *name, char *format, float value, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t)) {
+void draw_spinbox(ESContext *esContext, float x1, float y1, float w, float z, char *name, char *format, float value, uint8_t (*callback)(char *, float, float, int8_t, float, uint8_t)) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -1004,7 +997,7 @@ void draw_spinbox (ESContext *esContext, float x1, float y1, float w, float z, c
 	set_button(name, setup.view_mode, x1, y1, x2, y2, callback, 0.0, 0);
 }
 
-void draw_textbox (ESContext *esContext, float x1, float y1, float w, float z, char *name, char *text, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t)) {
+void draw_textbox(ESContext *esContext, float x1, float y1, float w, float z, char *name, char *text, uint8_t (*callback)(char *, float, float, int8_t, float, uint8_t)) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -1024,7 +1017,7 @@ void draw_textbox (ESContext *esContext, float x1, float y1, float w, float z, c
 	set_button(name, setup.view_mode, x1, y1, x2, y2, callback, 0.0, 0);
 }
 
-void draw_checkbox (ESContext *esContext, float x1, float y1, float z, char *name, uint8_t check, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t)) {
+void draw_checkbox(ESContext *esContext, float x1, float y1, float z, char *name, uint8_t check, uint8_t (*callback)(char *, float, float, int8_t, float, uint8_t)) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -1048,7 +1041,8 @@ void draw_checkbox (ESContext *esContext, float x1, float y1, float z, char *nam
 	set_button(name, setup.view_mode, x1, y1, x2, y2, callback, 0.0, 0);
 }
 
-void draw_window (ESContext *esContext, float x1, float y1, float x2, float y2, float z, char *name, char *title, EntryList *list, uint8_t select, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t)) {
+void draw_window(ESContext *esContext, float x1, float y1, float x2, float y2, float z, char *name, char *title, EntryList *list, uint8_t select, uint8_t (*callback)(char *, float, float, int8_t,
+				 float, uint8_t)) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -1087,7 +1081,8 @@ void draw_window (ESContext *esContext, float x1, float y1, float x2, float y2, 
 	draw_line_f3(esContext, x1 + tw + step * n, y1 + 0.08, z, x2, y1 + 0.08, z, 255, 255, 255, 255);
 }
 
-void draw_buttonbox (ESContext *esContext, char *name, uint8_t view_mode, char *text, float x1, float y1, float w, float z, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t), float data) {
+void draw_buttonbox(ESContext *esContext, char *name, uint8_t view_mode, char *text, float x1, float y1, float w, float z, uint8_t (*callback)(char *, float, float, int8_t, float, uint8_t),
+					float data) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif

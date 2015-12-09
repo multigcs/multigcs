@@ -77,7 +77,7 @@ typedef struct {
 extern volatile RcFlowData RcData;
 
 
-int16_t rcflow_value_limit (int16_t value, int16_t min, int16_t max);
-void rcflow_calc_Embedded (void);
-void rcflow_init (void);
+int16_t rcflow_value_limit(int16_t value, int16_t min, int16_t max);
+void rcflow_calc_Embedded(void);
+void rcflow_init(void);
 

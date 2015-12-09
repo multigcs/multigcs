@@ -26,7 +26,7 @@ float alt_zoom = 700.0;
 uint8_t RB_Active = 0;
 GLuint RB_texture;
 
-void draw_texture_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, GLuint texture);
+void draw_texture_f3(ESContext *esContext, float x1, float y1, float x2, float y2, float z, GLuint texture);
 
 void esTranslate(ESMatrix *result, GLfloat tx, GLfloat ty, GLfloat tz) {
 	glTranslatef(tx, ty, tz);
@@ -36,7 +36,7 @@ void esRotate(ESMatrix *result, GLfloat angle, GLfloat x, GLfloat y, GLfloat z) 
 	glRotatef(angle, x, y, -z);
 }
 
-void gl_exit (int rc) {
+void gl_exit(int rc) {
 	int i;
 	if (context != NULL) {
 		for (i = 0; i < state->num_windows; i++) {
@@ -54,35 +54,46 @@ void gl_exit (int rc) {
 
 #define __glPi 3.14159265358979323846
 
-static void __gluMakeIdentityf (GLfloat m[16]) {
-    m[0+4*0] = 1; m[0+4*1] = 0; m[0+4*2] = 0; m[0+4*3] = 0;
-    m[1+4*0] = 0; m[1+4*1] = 1; m[1+4*2] = 0; m[1+4*3] = 0;
-    m[2+4*0] = 0; m[2+4*1] = 0; m[2+4*2] = 1; m[2+4*3] = 0;
-    m[3+4*0] = 0; m[3+4*1] = 0; m[3+4*2] = 0; m[3+4*3] = 1;
+static void __gluMakeIdentityf(GLfloat m[16]) {
+	m[0 + 4 * 0] = 1;
+	m[0 + 4 * 1] = 0;
+	m[0 + 4 * 2] = 0;
+	m[0 + 4 * 3] = 0;
+	m[1 + 4 * 0] = 0;
+	m[1 + 4 * 1] = 1;
+	m[1 + 4 * 2] = 0;
+	m[1 + 4 * 3] = 0;
+	m[2 + 4 * 0] = 0;
+	m[2 + 4 * 1] = 0;
+	m[2 + 4 * 2] = 1;
+	m[2 + 4 * 3] = 0;
+	m[3 + 4 * 0] = 0;
+	m[3 + 4 * 1] = 0;
+	m[3 + 4 * 2] = 0;
+	m[3 + 4 * 3] = 1;
 }
 
-void gluPerspective (GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar) {
-    GLfloat m[4][4];
-    GLfloat sine, cotangent, deltaZ;
-    GLfloat radians=(GLfloat)(fovy/2.0f*__glPi/180.0f);
-    deltaZ=zFar-zNear;
-    sine=(GLfloat)sin(radians);
-    if ((deltaZ==0.0f) || (sine==0.0f) || (aspect==0.0f))
-    {
-        return;
-    }
-    cotangent=(GLfloat)(cos(radians)/sine);
-    __gluMakeIdentityf(&m[0][0]);
-    m[0][0] = cotangent / aspect;
-    m[1][1] = cotangent;
-    m[2][2] = -(zFar + zNear) / deltaZ;
-    m[2][3] = -1.0f;
-    m[3][2] = -2.0f * zNear * zFar / deltaZ;
-    m[3][3] = 0;
-    glMultMatrixf(&m[0][0]);
+void gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar) {
+	GLfloat m[4][4];
+	GLfloat sine, cotangent, deltaZ;
+	GLfloat radians = (GLfloat)(fovy / 2.0f * __glPi / 180.0f);
+	deltaZ = zFar - zNear;
+	sine = (GLfloat)sin(radians);
+	if ((deltaZ == 0.0f) || (sine == 0.0f) || (aspect == 0.0f)) {
+		return;
+	}
+	cotangent = (GLfloat)(cos(radians) / sine);
+	__gluMakeIdentityf(&m[0][0]);
+	m[0][0] = cotangent / aspect;
+	m[1][1] = cotangent;
+	m[2][2] = -(zFar + zNear) / deltaZ;
+	m[2][3] = -1.0f;
+	m[3][2] = -2.0f * zNear * zFar / deltaZ;
+	m[3][3] = 0;
+	glMultMatrixf(&m[0][0]);
 }
 
-void gl_init (ESContext *esContext) {
+void gl_init(ESContext *esContext) {
 	int i;
 	int value;
 	SDL_DisplayMode mode;
@@ -97,7 +108,7 @@ void gl_init (ESContext *esContext) {
 	state->gl_green_size = 5;
 	state->gl_blue_size = 5;
 	state->gl_depth_size = 16;
-	state->gl_accelerated=1;
+	state->gl_accelerated = 1;
 	if (!SDLTest_CommonInit(state)) {
 		gl_exit(2);
 	}
@@ -150,8 +161,8 @@ void gl_init (ESContext *esContext) {
 		gluPerspective(53.0, aspect, 0.001, 7.0);
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-//		glShadeModel(GL_SMOOTH);
-//		glEnable(GL_POLYGON_SMOOTH);
+		//		glShadeModel(GL_SMOOTH);
+		//		glEnable(GL_POLYGON_SMOOTH);
 		glEnable(GL_POINT_SMOOTH);
 		glEnable(GL_LINE_SMOOTH);
 		glShadeModel(GL_FLAT);
@@ -174,11 +185,11 @@ void gl_init (ESContext *esContext) {
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
-int glExit (ESContext *esContext) {
+int glExit(ESContext *esContext) {
 	gl_exit(0);
 }
 
-void glResize (ESContext *esContext, int w, int h) {
+void glResize(ESContext *esContext, int w, int h) {
 	int i = 0;
 	SDL_DisplayMode mode;
 	SDL_GetCurrentDisplayMode(0, &mode);
@@ -206,22 +217,22 @@ void glResize (ESContext *esContext, int w, int h) {
 	glLoadIdentity();
 }
 
-void object3d_free (Object3d *o3d) {
+void object3d_free(Object3d *o3d) {
 }
 
-void object3d_draw (Object3d *o3d, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void object3d_draw(Object3d *o3d, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 }
 
-void object3d_save_as_collada (Object3d *o3d, char *filename) {
+void object3d_save_as_collada(Object3d *o3d, char *filename) {
 }
 
-void object3d_load (Object3d *o3d, char *filename) {
+void object3d_load(Object3d *o3d, char *filename) {
 }
 
-void object3d_load_data (Object3d *o3d, char *filename) {
+void object3d_load_data(Object3d *o3d, char *filename) {
 }
 
-void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, float alpha, SDL_Surface *screen) {
+void draw_surface_f3(ESContext *esContext, float x1, float y1, float x2, float y2, float z, float alpha, SDL_Surface *screen) {
 	y1 = y1 * -1;
 	y2 = y2 * -1;
 	if (screen == NULL) {
@@ -230,23 +241,23 @@ void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float 
 	GLuint texture;
 	GLenum texture_format;
 	GLint  nOfColors;
-        nOfColors = screen->format->BytesPerPixel;
-        if (nOfColors == 4) {
-                if (screen->format->Rmask == 0x000000ff) {
-                        texture_format = GL_RGBA;
-                } else {
-                        texture_format = GL_BGRA;
+	nOfColors = screen->format->BytesPerPixel;
+	if (nOfColors == 4) {
+		if (screen->format->Rmask == 0x000000ff) {
+			texture_format = GL_RGBA;
+		} else {
+			texture_format = GL_BGRA;
 		}
-        } else if (nOfColors == 3) {
-                if (screen->format->Rmask == 0x000000ff) {
-                        texture_format = GL_RGB;
-                } else {
-                        texture_format = GL_BGR;
-                }
-        } else {
-                SDL_Log("warning: the image is not truecolor..  this will probably break\n");
+	} else if (nOfColors == 3) {
+		if (screen->format->Rmask == 0x000000ff) {
+			texture_format = GL_RGB;
+		} else {
+			texture_format = GL_BGR;
+		}
+	} else {
+		SDL_Log("warning: the image is not truecolor..  this will probably break\n");
 		return;
-        }
+	}
 	GLfloat vVertices[] = {
 		x1, y1, -2.0f + z,  // Position 0
 		x1, y2, -2.0f + z,  // Position 1
@@ -254,7 +265,7 @@ void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float 
 		x2, y1, -2.0f + z,   // Position 3
 	};
 	GLfloat vTex[] = {
-		0.0f,  0.0f,         // TexCoord 0 
+		0.0f,  0.0f,         // TexCoord 0
 		0.0f,  1.0f,         // TexCoord 1
 		1.0f,  1.0f,         // TexCoord 2
 		1.0f,  0.0f          // TexCoord 3
@@ -262,10 +273,9 @@ void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float 
 	GLushort indices[] = { 0, 1, 2, 0, 2, 3 };
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_BGRA, screen->w, screen->h, 0, texture_format, GL_UNSIGNED_BYTE, screen->pixels);
-
 	glEnable(GL_TEXTURE_2D);
 	glColor4f(1.0, 1.0, 1.0, 0.2);
 	glActiveTexture(GL_TEXTURE0);
@@ -279,11 +289,11 @@ void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float 
 	glDeleteTextures(1, &texture);
 }
 
-uint8_t draw_target (void) {
+uint8_t draw_target(void) {
 	return RB_Active;
 }
 
-void draw_to_buffer (void) {
+void draw_to_buffer(void) {
 	if (RB_Active == 0) {
 		RB_Active = 1;
 		glPushMatrix();
@@ -291,7 +301,7 @@ void draw_to_buffer (void) {
 	}
 }
 
-void draw_to_screen (void) {
+void draw_to_screen(void) {
 	if (RB_Active == 1) {
 		RB_Active = 0;
 		glPopMatrix();
@@ -303,15 +313,15 @@ void draw_to_screen (void) {
 	}
 }
 
-void draw_buffer_to_screen (float x1, float y1, float x2, float y2, float z, float alpha) {
+void draw_buffer_to_screen(float x1, float y1, float x2, float y2, float z, float alpha) {
 	ESContext *esContext;
 	draw_texture_f3(esContext, x1, y1, x2, y2, z, RB_texture);
 }
 
-void draw_zylinder_f3 (ESContext *esContext, float x1, float y1, float z1, float z2, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_zylinder_f3(ESContext *esContext, float x1, float y1, float z1, float z2, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 }
 
-int glInit ( ESContext *esContext ) {
+int glInit(ESContext *esContext) {
 	esContext->width = setup.screen_w;
 	esContext->height = setup.screen_h;
 	gl_init(esContext);
@@ -320,14 +330,14 @@ int glInit ( ESContext *esContext ) {
 	return GL_TRUE;
 }
 
-void draw_circlePointer_f3 (ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_circlePointer_f3(ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	float x2 = x1 - cos(start * DEG2RAD) * radius;
 	float y2 = y1 - sin(start * DEG2RAD) * radius;
 	draw_line_f3(esContext, x1, y1, z1, x2, y2, z1, r, g, b, a);
 	draw_circleFilled_f3(esContext, x1, y1, z1, radius_inner, r, g, b, a);
 }
 
-void draw_line_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_line_f3(ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	GLfloat vVertices[6];
 	UserData *userData = esContext->userData;
 	y1 = y1 * -1;
@@ -345,7 +355,7 @@ void draw_line_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 	glDrawElements(GL_LINES, 2, GL_UNSIGNED_SHORT, indices);
 }
 
-void draw_circle_f3 (ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_circle_f3(ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	y1 = y1 * -1;
 	GLfloat vVertices[9];
 	UserData *userData = esContext->userData;
@@ -373,7 +383,7 @@ void draw_circle_f3 (ESContext *esContext, float x1, float y1, float z1, float r
 	y += ty * tangetial_factor;
 	x *= radial_factor;
 	y *= radial_factor;
-	for(ii = 0; ii < num_segments; ii++) {
+	for (ii = 0; ii < num_segments; ii++) {
 		vVertices[0] = x1;
 		vVertices[1] = y1;
 		vVertices[2] = -2.0 + z1;
@@ -399,10 +409,10 @@ void draw_circle_f3 (ESContext *esContext, float x1, float y1, float z1, float r
 	}
 }
 
-void draw_circle_f3_slow (ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_circle_f3_slow(ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 }
 
-void draw_circleFilled_f3 (ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_circleFilled_f3(ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	y1 = y1 * -1;
 	GLfloat vVertices[9];
 	UserData *userData = esContext->userData;
@@ -430,7 +440,7 @@ void draw_circleFilled_f3 (ESContext *esContext, float x1, float y1, float z1, f
 	y += ty * tangetial_factor;
 	x *= radial_factor;
 	y *= radial_factor;
-	for(ii = 0; ii < num_segments; ii++) {
+	for (ii = 0; ii < num_segments; ii++) {
 		vVertices[0] = x1;
 		vVertices[1] = y1;
 		vVertices[2] = -2.0 + z1;
@@ -457,7 +467,7 @@ void draw_circleFilled_f3 (ESContext *esContext, float x1, float y1, float z1, f
 	draw_circle_f3(esContext, x1, y1 * -1, z1, radius, r, g, b, a);
 }
 
-void draw_circleFilled_f3_slow (ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_circleFilled_f3_slow(ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	GLfloat vVertices[9];
 	UserData *userData = esContext->userData;
 	y1 = y1 * -1;
@@ -490,7 +500,7 @@ void draw_circleFilled_f3_slow (ESContext *esContext, float x1, float y1, float 
 	}
 }
 
-void draw_box_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_box_f3(ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	UserData *userData = esContext->userData;
 	y1 = y1 * -1;
 	y2 = y2 * -1;
@@ -507,7 +517,7 @@ void draw_box_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, 
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
 }
 
-void draw_box_f3c2 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a, uint8_t r2, uint8_t g2, uint8_t b2, uint8_t a2) {
+void draw_box_f3c2(ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a, uint8_t r2, uint8_t g2, uint8_t b2, uint8_t a2) {
 	UserData *userData = esContext->userData;
 	y1 = y1 * -1;
 	y2 = y2 * -1;
@@ -524,7 +534,7 @@ void draw_box_f3c2 (ESContext *esContext, float x1, float y1, float z1, float x2
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
 }
 
-void draw_tria_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_tria_f3(ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	UserData *userData = esContext->userData;
 	y1 = y1 * -1;
 	y2 = y2 * -1;
@@ -541,7 +551,7 @@ void draw_tria_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 	glDrawElements(GL_LINES, 6, GL_UNSIGNED_SHORT, indices);
 }
 
-void draw_triaFilled_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_triaFilled_f3(ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	UserData *userData = esContext->userData;
 	y1 = y1 * -1;
 	y2 = y2 * -1;
@@ -562,7 +572,8 @@ void draw_triaFilled_f3 (ESContext *esContext, float x1, float y1, float z1, flo
 	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, indices);
 }
 
-void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file, float lat1, float lon1, float lat2, float lon2, float alpha0, float alpha1, float alpha2, float grid) {
+void draw_image_srtm(ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file, float lat1, float lon1, float lat2, float lon2, float alpha0, float alpha1, float alpha2,
+					 float grid) {
 	UserData *userData = esContext->userData;
 	float x1 = (float)x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 	float y1 = (float)y / (float)esContext->height * 2.0 - 1.0;
@@ -597,13 +608,13 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 		if (tex_num == -1) {
 			tex_num = old_num;
 			SDL_Log("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
-			glDeleteTextures( 1, &TexCache[tex_num].texture );
+			glDeleteTextures(1, &TexCache[tex_num].texture);
 			TexCache[tex_num].name[0] = 0;
 			TexCache[tex_num].texture = 0;
 		}
 		if (tex_num != -1) {
-//			SDL_Log("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
-			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) {
+			//			SDL_Log("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
+			if ((TexCache[tex_num].texture = loadImage(file)) != 0) {
 				strncpy(TexCache[tex_num].name, file, 1023);
 				TexCache[tex_num].atime = time(0);
 			} else {
@@ -611,7 +622,7 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 				if (strstr(file, "/MAPS/") > 0) {
 					unlink(file);
 				}
-			}    
+			}
 		}
 	}
 	float z1 = z;
@@ -659,7 +670,7 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 			};
 			GLfloat vTex[] = {
 				tex1, tey1,         // TexCoord 3
-				tex1, tey2,         // TexCoord 0 
+				tex1, tey2,         // TexCoord 0
 				tex2, tey2,         // TexCoord 1
 				tex2, tey1,         // TexCoord 2
 			};
@@ -679,7 +690,8 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 				glDisable(GL_TEXTURE_2D);
 			}
-			if (alpha1 > 0.0 && ((float)_alt1 > ModelData[ModelActive].p_alt || (float)_alt2 > ModelData[ModelActive].p_alt || (float)_alt3 > ModelData[ModelActive].p_alt || (float)_alt4 > ModelData[ModelActive].p_alt)) {
+			if (alpha1 > 0.0 && ((float)_alt1 > ModelData[ModelActive].p_alt || (float)_alt2 > ModelData[ModelActive].p_alt || (float)_alt3 > ModelData[ModelActive].p_alt ||
+								 (float)_alt4 > ModelData[ModelActive].p_alt)) {
 				glColor4f(255.0, 0.0, 0.0, alpha1);
 				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
 			} else if (alpha2 > 0.0) {
@@ -694,10 +706,10 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 	}
 }
 
-void draw_image_f12 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, char *file) {
+void draw_image_f12(ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, char *file) {
 }
 
-void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, char *file) {
+void draw_image_f3(ESContext *esContext, float x1, float y1, float x2, float y2, float z, char *file) {
 	UserData *userData = esContext->userData;
 	y1 = y1 * -1;
 	y2 = y2 * -1;
@@ -732,8 +744,8 @@ void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2
 			TexCache[tex_num].texture = 0;
 		}
 		if (tex_num != -1) {
-//			SDL_Log("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
-			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) { 
+			//			SDL_Log("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
+			if ((TexCache[tex_num].texture = loadImage(file)) != 0) {
 				strncpy(TexCache[tex_num].name, file, 1023);
 				TexCache[tex_num].atime = time(0);
 			} else {
@@ -741,12 +753,12 @@ void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2
 				if (strstr(file, "/MAPS/") > 0) {
 					unlink(file);
 				}
-			}    
+			}
 		}
 	}
 	if (TexCache[tex_num].texture != 0) {
 		TexCache[tex_num].atime = time(0);
-//		SDL_Log("# %s = %i\n", TexCache[tex_num].name, TexCache[tex_num].texture);
+		//		SDL_Log("# %s = %i\n", TexCache[tex_num].name, TexCache[tex_num].texture);
 		GLfloat vVertices[] = {
 			x1, y1, -2.0f + z,  // Position 0
 			x1, y2, -2.0f + z,  // Position 1
@@ -754,7 +766,7 @@ void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2
 			x2, y1, -2.0f + z,   // Position 3
 		};
 		GLfloat vTex[] = {
-			0.0f,  0.0f,         // TexCoord 0 
+			0.0f,  0.0f,         // TexCoord 0
 			0.0f,  1.0f,         // TexCoord 1
 			1.0f,  1.0f,         // TexCoord 2
 			1.0f,  0.0f          // TexCoord 3
@@ -773,7 +785,7 @@ void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2
 	}
 }
 
-void draw_texture_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, GLuint texture) {
+void draw_texture_f3(ESContext *esContext, float x1, float y1, float x2, float y2, float z, GLuint texture) {
 	y1 = y1 * -1;
 	y2 = y2 * -1;
 	if (texture != 0) {
@@ -784,7 +796,7 @@ void draw_texture_f3 (ESContext *esContext, float x1, float y1, float x2, float 
 			x2, y1, -2.0f + z,   // Position 3
 		};
 		GLfloat vTex[] = {
-			0.0f,  1.0f,         // TexCoord 0 
+			0.0f,  1.0f,         // TexCoord 0
 			0.0f,  0.0f,         // TexCoord 1
 			1.0f,  0.0f,         // TexCoord 2
 			1.0f,  1.0f          // TexCoord 3
@@ -802,7 +814,7 @@ void draw_texture_f3 (ESContext *esContext, float x1, float y1, float x2, float 
 	}
 }
 
-inline void draw_char_f3_fast (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, int8_t tex_num, char num) {
+inline void draw_char_f3_fast(ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, int8_t tex_num, char num) {
 	UserData *userData = esContext->userData;
 	int nnn = 0;
 	GLfloat vVertices[20];
@@ -845,7 +857,7 @@ inline void draw_char_f3_fast (ESContext *esContext, float x1, float y1, float z
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
 }
 
-void draw_text_f3_fast (ESContext *esContext, float x1, float y1, float z1, float w, float h, char *file, char *text) {
+void draw_text_f3_fast(ESContext *esContext, float x1, float y1, float z1, float w, float h, char *file, char *text) {
 	UserData *userData = esContext->userData;
 	int16_t n = 0;
 	int16_t tex_num = -1;
@@ -873,13 +885,13 @@ void draw_text_f3_fast (ESContext *esContext, float x1, float y1, float z1, floa
 		if (tex_num == -1) {
 			tex_num = old_num;
 			SDL_Log("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
-			glDeleteTextures( 1, &TexCache[tex_num].texture );
+			glDeleteTextures(1, &TexCache[tex_num].texture);
 			TexCache[tex_num].name[0] = 0;
 			TexCache[tex_num].texture = 0;
 		}
 		if (tex_num > 0) {
-//			SDL_Log("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
-			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) { 
+			//			SDL_Log("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
+			if ((TexCache[tex_num].texture = loadImage(file)) != 0) {
 				strncpy(TexCache[tex_num].name, file, 1023);
 				TexCache[tex_num].atime = time(0);
 			} else {
@@ -887,7 +899,7 @@ void draw_text_f3_fast (ESContext *esContext, float x1, float y1, float z1, floa
 				if (strstr(file, "/MAPS/") > 0) {
 					unlink(file);
 				}
-			}    
+			}
 		}
 	}
 	if (TexCache[tex_num].texture != 0) {
@@ -904,17 +916,17 @@ void draw_text_f3_fast (ESContext *esContext, float x1, float y1, float z1, floa
 	}
 }
 
-void draw_char_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, char *file, char num) {
+void draw_char_f3(ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, char *file, char num) {
 }
 
-void draw_rect_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_rect_f3(ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	draw_line_f3(esContext, x1, y1, z1, x2, y1, z1, r, g, b, a);
 	draw_line_f3(esContext, x2, y1, z1, x2, y2, z1, r, g, b, a);
 	draw_line_f3(esContext, x2, y2, z1, x1, y2, z1, r, g, b, a);
 	draw_line_f3(esContext, x1, y2, z1, x1, y1, z1, r, g, b, a);
 }
 
-void draw_circleFilled_f3_part (ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, float stop, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_circleFilled_f3_part(ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, float stop, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	GLfloat vVertices[18];
 	UserData *userData = esContext->userData;
 	y1 = y1 * -1;
@@ -986,7 +998,6 @@ void draw_circleFilled_f3_part (ESContext *esContext, float x1, float y1, float 
 		y += ty * tangetial_factor;
 		x *= radial_factor;
 		y *= radial_factor;
-
 		last_x_inner = x1 - x_inner;
 		last_y_inner = y_inner + y1;
 		tx_inner = -y_inner;
@@ -998,7 +1009,7 @@ void draw_circleFilled_f3_part (ESContext *esContext, float x1, float y1, float 
 	}
 }
 
-void draw_circleFilled_f3_part_slow (ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, float stop, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_circleFilled_f3_part_slow(ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, float stop, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	GLfloat vVertices[18];
 	UserData *userData = esContext->userData;
 	y1 = y1 * -1;
@@ -1030,25 +1041,20 @@ void draw_circleFilled_f3_part_slow (ESContext *esContext, float x1, float y1, f
 		vVertices[15] = vVertices[6];
 		vVertices[16] = vVertices[7];
 		vVertices[17] = -2.0 + z1;
-
-
 		GLushort indices[] = { 0, 1, 2, 3, 4, 5 };
-
 		glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
 		glVertexPointer(3, GL_FLOAT, 0, vVertices);
 		glEnableClientState(GL_VERTEX_ARRAY);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
-
 		last_x = temp1;
 		last_y = temp2;
 	}
 }
 
-void draw_box_f3c2b (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a, uint8_t r2, uint8_t g2, uint8_t b2, uint8_t a2) {
+void draw_box_f3c2b(ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a, uint8_t r2, uint8_t g2, uint8_t b2, uint8_t a2) {
 	UserData *userData = esContext->userData;
 	y1 = y1 * -1;
 	y2 = y2 * -1;
-
 	GLfloat vVertices[] = {
 		x1, y1, -2.0f + z1,  // Position 0
 		x1, y2, -2.0f + z1,  // Position 1
@@ -1056,14 +1062,13 @@ void draw_box_f3c2b (ESContext *esContext, float x1, float y1, float z1, float x
 		x2, y1, -2.0f + z1,   // Position 3
 	};
 	GLushort indices[] = { 0, 1, 2, 0, 2, 3 };
-
 	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
 	glVertexPointer(3, GL_FLOAT, 0, vVertices);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices);
 }
 
-void draw_graph_value (ESContext *esContext, float px1, float py1, float px2, float py2, float pz, uint8_t *data, int16_t len, int16_t pointer, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_graph_value(ESContext *esContext, float px1, float py1, float px2, float py2, float pz, uint8_t *data, int16_t len, int16_t pointer, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	uint16_t n = 0;
 	float w = px2 - px1;
 	float h = py2 - py1;
@@ -1086,20 +1091,20 @@ void draw_graph_value (ESContext *esContext, float px1, float py1, float px2, fl
 	}
 }
 
-void draw_trifan_f3 (ESContext *esContext, float *poly_array, uint16_t len, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_trifan_f3(ESContext *esContext, float *poly_array, uint16_t len, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 }
 
-void resize_border (void) {
+void resize_border(void) {
 	glViewport(0 + setup.screen_border_x / 2, 0 + setup.screen_border_y / 2, setup.screen_w - setup.screen_border_x, setup.screen_h - setup.screen_border_y);
 }
 
-void draw_update (ESContext *esContext) {
+void draw_update(ESContext *esContext) {
 	SDL_GL_SwapWindow(state->windows[0]);
 #ifndef SDLGL
-	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	esMatrixLoadIdentity( &modelview );
-	esMatrixMultiply( &userData->mvpMatrix, &modelview, &userData->perspective);
+	esMatrixLoadIdentity(&modelview);
+	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
 #else
 	glMatrixMode(GL_MODELVIEW);
 	glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -1107,7 +1112,7 @@ void draw_update (ESContext *esContext) {
 #endif
 }
 
-void draw_init (ESContext *esContext) {
+void draw_init(ESContext *esContext) {
 	uint16_t n = 0;
 	for (n = 0; n < MAX_TEXCACHE; n++) {
 		TexCache[n].name[0] = 0;
@@ -1116,7 +1121,7 @@ void draw_init (ESContext *esContext) {
 	glInit(esContext);
 }
 
-void draw_exit (ESContext *esContext) {
+void draw_exit(ESContext *esContext) {
 #ifdef SDL2
 	SDL_DestroyWindow(MainWindow);
 #endif
@@ -1125,8 +1130,8 @@ void draw_exit (ESContext *esContext) {
 	SDL_Log("texture-cache: clear\n");
 	int16_t n = 0;
 	for (n = 0; n < MAX_TEXCACHE; n++) {
-		if (TexCache[n].name[0] != 0 && TexCache[n].texture != 0 ) {
-			glDeleteTextures( 1, &TexCache[n].texture );
+		if (TexCache[n].name[0] != 0 && TexCache[n].texture != 0) {
+			glDeleteTextures(1, &TexCache[n].texture);
 			TexCache[n].name[0] = 0;
 		}
 	}

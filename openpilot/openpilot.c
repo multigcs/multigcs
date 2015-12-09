@@ -55,7 +55,7 @@ uint8_t PIOS_CRC_updateByte(uint8_t crc, const uint8_t data) {
 	return crc_table[crc ^ data];
 }
 
-uint8_t PIOS_CRC_updateCRC(uint8_t crc, const uint8_t* data, int32_t length) {
+uint8_t PIOS_CRC_updateCRC(uint8_t crc, const uint8_t *data, int32_t length) {
 	// use registers for speed
 	register int32_t len = length;
 	register uint8_t crc8 = crc;
@@ -66,7 +66,7 @@ uint8_t PIOS_CRC_updateCRC(uint8_t crc, const uint8_t* data, int32_t length) {
 	return crc8;
 }
 
-uint8_t openpilot_connection_status (uint8_t modelid) {
+uint8_t openpilot_connection_status(uint8_t modelid) {
 	if (ModelData[modelid].serial_fd == -1) {
 		return 0;
 	}
@@ -75,7 +75,7 @@ uint8_t openpilot_connection_status (uint8_t modelid) {
 
 #ifndef WINDOWS
 #ifndef ANDROID
-int openpilot_hidraw_find (uint8_t modelid) {
+int openpilot_hidraw_find(uint8_t modelid) {
 	char device[1024];
 	int fd = -1;
 	struct udev *udev;
@@ -96,18 +96,15 @@ int openpilot_hidraw_find (uint8_t modelid) {
 		if (!dev) {
 			return -1;
 		}
-		if (strcmp("openpilot.org", udev_device_get_sysattr_value(dev,"manufacturer")) == 0 || strcmp("TauLabs.org", udev_device_get_sysattr_value(dev,"manufacturer")) == 0) {
-			SDL_Log("uavtalk: VID/PID: %s %s\n", udev_device_get_sysattr_value(dev,"idVendor"), udev_device_get_sysattr_value(dev, "idProduct"));
-			SDL_Log("uavtalk: %s\n", udev_device_get_sysattr_value(dev,"manufacturer"));
-			SDL_Log("uavtalk: %s\n", udev_device_get_sysattr_value(dev,"product"));
+		if (strcmp("openpilot.org", udev_device_get_sysattr_value(dev, "manufacturer")) == 0 || strcmp("TauLabs.org", udev_device_get_sysattr_value(dev, "manufacturer")) == 0) {
+			SDL_Log("uavtalk: VID/PID: %s %s\n", udev_device_get_sysattr_value(dev, "idVendor"), udev_device_get_sysattr_value(dev, "idProduct"));
+			SDL_Log("uavtalk: %s\n", udev_device_get_sysattr_value(dev, "manufacturer"));
+			SDL_Log("uavtalk: %s\n", udev_device_get_sysattr_value(dev, "product"));
 			SDL_Log("uavtalk: serial: %s\n", udev_device_get_sysattr_value(dev, "serial"));
 			strcpy(device, udev_device_get_devnode(udev_device_new_from_syspath(udev, udev_list_entry_get_name(dev_list_entry))));
 			SDL_Log("uavtalk: device: %s\n", device);
-
-			strcpy(ModelData[modelid].sysstr, udev_device_get_sysattr_value(dev,"product"));
-
-
-			fd = open(device, O_RDWR|O_NONBLOCK);
+			strcpy(ModelData[modelid].sysstr, udev_device_get_sysattr_value(dev, "product"));
+			fd = open(device, O_RDWR | O_NONBLOCK);
 			udev_device_unref(dev);
 			break;
 		}
@@ -118,7 +115,7 @@ int openpilot_hidraw_find (uint8_t modelid) {
 	return fd;
 }
 
-void openpilot_hidraw_write (int fd, uint8_t *data, int len) {
+void openpilot_hidraw_write(int fd, uint8_t *data, int len) {
 	uint8_t buf[512];
 	if (fd >= 0) {
 		buf[0] = 2;
@@ -130,7 +127,7 @@ void openpilot_hidraw_write (int fd, uint8_t *data, int len) {
 #endif
 #endif
 
-void openpilot_write (uint8_t modelid, uint8_t *data, int len) {
+void openpilot_write(uint8_t modelid, uint8_t *data, int len) {
 	if (ModelData[modelid].serial_fd >= 0) {
 		serial_write(ModelData[modelid].serial_fd, data, len);
 	} else {
@@ -149,17 +146,17 @@ void openpilot_write (uint8_t modelid, uint8_t *data, int len) {
 #endif
 }
 
-void uavtalk_send (uint8_t modelid, uint8_t *buf, uint32_t obj_id, uint8_t command, uint16_t len) {
+void uavtalk_send(uint8_t modelid, uint8_t *buf, uint32_t obj_id, uint8_t command, uint16_t len) {
 	uint8_t openpilot_write_buf[256];
 	uint8_t crc = 0;
 	uint8_t n = 0;
 	uint8_t oid4 = ((obj_id) & 0x000000FF);
-	uint8_t oid3 = ((obj_id>>8) & 0x000000FF);
-	uint8_t oid2 = ((obj_id>>16) & 0x000000FF);
-	uint8_t oid1 = ((obj_id>>24) & 0x000000FF);
+	uint8_t oid3 = ((obj_id >> 8) & 0x000000FF);
+	uint8_t oid2 = ((obj_id >> 16) & 0x000000FF);
+	uint8_t oid1 = ((obj_id >> 24) & 0x000000FF);
 	len += 8;
 	uint8_t len2 = ((len) & 0x000000FF);
-	uint8_t len1 = ((len>>8) & 0x000000FF);
+	uint8_t len1 = ((len >> 8) & 0x000000FF);
 	openpilot_write_buf[0] = 0x3c;	// Start
 	openpilot_write_buf[1] = command;
 	openpilot_write_buf[2] = len2;
@@ -176,11 +173,11 @@ void uavtalk_send (uint8_t modelid, uint8_t *buf, uint32_t obj_id, uint8_t comma
 	openpilot_write(modelid, openpilot_write_buf, len + 1);
 }
 
-uint16_t openpilot_add_4byte (uint8_t *buf, uint16_t pos, uint32_t value) {
+uint16_t openpilot_add_4byte(uint8_t *buf, uint16_t pos, uint32_t value) {
 	uint8_t value4 = ((value) & 0x000000FF);
-	uint8_t value3 = ((value>>8) & 0x000000FF);
-	uint8_t value2 = ((value>>16) & 0x000000FF);
-	uint8_t value1 = ((value>>24) & 0x000000FF);
+	uint8_t value3 = ((value >> 8) & 0x000000FF);
+	uint8_t value2 = ((value >> 16) & 0x000000FF);
+	uint8_t value1 = ((value >> 24) & 0x000000FF);
 	buf[pos++] = value4;
 	buf[pos++] = value3;
 	buf[pos++] = value2;
@@ -188,20 +185,20 @@ uint16_t openpilot_add_4byte (uint8_t *buf, uint16_t pos, uint32_t value) {
 	return pos;
 }
 
-uint16_t openpilot_add_2byte (uint8_t *buf, uint16_t pos, uint16_t value) {
+uint16_t openpilot_add_2byte(uint8_t *buf, uint16_t pos, uint16_t value) {
 	uint8_t value2 = ((value) & 0x000000FF);
-	uint8_t value1 = ((value>>8) & 0x000000FF);
+	uint8_t value1 = ((value >> 8) & 0x000000FF);
 	buf[pos++] = value2;
 	buf[pos++] = value1;
 	return pos;
 }
 
-uint16_t openpilot_add_1byte (uint8_t *buf, uint16_t pos, uint8_t value) {
+uint16_t openpilot_add_1byte(uint8_t *buf, uint16_t pos, uint8_t value) {
 	buf[pos++] = value;
 	return pos;
 }
 
-void uavtalk_request (uint8_t modelid, uint32_t obj_id) {
+void uavtalk_request(uint8_t modelid, uint32_t obj_id) {
 	uint8_t openpilot_write_buf[256];
 #ifdef DEBUG
 	SDL_Log("uavtalk: >> SEND_REQ\n");
@@ -209,7 +206,7 @@ void uavtalk_request (uint8_t modelid, uint32_t obj_id) {
 	uavtalk_send(modelid, openpilot_write_buf, obj_id, 0x21, 0);
 }
 
-void uavtalk_send_ack (uint8_t modelid, uint32_t obj_id) {
+void uavtalk_send_ack(uint8_t modelid, uint32_t obj_id) {
 	uint8_t openpilot_write_buf[256];
 #ifdef DEBUG
 	SDL_Log("uavtalk: >> SEND_ACK\n");
@@ -217,7 +214,7 @@ void uavtalk_send_ack (uint8_t modelid, uint32_t obj_id) {
 	uavtalk_send(modelid, openpilot_write_buf, obj_id, 0x3c, 0);
 }
 
-void openpilot_send_ack (uint8_t modelid) {
+void openpilot_send_ack(uint8_t modelid) {
 #ifdef DEBUG
 	SDL_Log("uavtalk: >> SEND_ACK\n");
 #endif
@@ -238,25 +235,23 @@ void openpilot_send_ack (uint8_t modelid) {
 	crc = 0;
 	for (n2 = 0; n2 < len; n2++) {
 		crc = PIOS_CRC_updateByte(crc, openpilot_write_buf[n2]);
-//		SDL_Log("uavtalk: %i: %x (%x)\n", n2, openpilot_write_buf[n2], crc);
+		//		SDL_Log("uavtalk: %i: %x (%x)\n", n2, openpilot_write_buf[n2], crc);
 	}
 	openpilot_write_buf[n++] = crc; 	//Checksum
 	openpilot_write(modelid, openpilot_write_buf, n);
 }
 
-void openpilot_save_to_flash (uint8_t modelid) {
+void openpilot_save_to_flash(uint8_t modelid) {
 	uint8_t openpilot_write_buf[256];
 	uint8_t crc = 0;
 	uint8_t n = 0;
 	uint8_t n2 = 0;
 	uint8_t len = 0;
 	UAVT_ObjectPersistenceData data;
-
 	data.ObjectID = STABILIZATIONSETTINGS_OBJID;
 	data.InstanceID = 0;
 	data.Operation = 2;
 	data.Selection = 1;
-
 	len = 18;
 	openpilot_write_buf[n++] = 0x3c;	// Start
 	openpilot_write_buf[n++] = 0x22;	// Command (20, 22)
@@ -266,22 +261,18 @@ void openpilot_save_to_flash (uint8_t modelid) {
 	openpilot_write_buf[n++] = 0x32;	// ObjID3
 	openpilot_write_buf[n++] = 0xC6;	// ObjID2
 	openpilot_write_buf[n++] = 0x99;	// ObjID1
-
 	memcpy(&openpilot_write_buf[8], &data, sizeof(UAVT_ObjectPersistenceData));
-
 	crc = 0;
 	for (n2 = 0; n2 < len; n2++) {
 		crc = PIOS_CRC_updateByte(crc, openpilot_write_buf[n2]);
 	}
 	openpilot_write_buf[len] = crc; 	//Checksum
 	openpilot_write(modelid, openpilot_write_buf, len + 1);
-
 }
 
-void openpilot_send_req (uint8_t modelid, uint8_t status) {
+void openpilot_send_req(uint8_t modelid, uint8_t status) {
 	uint8_t openpilot_write_buf[256];
 	uint8_t len = 0;
-
 	UAVT_GCSTelemetryStatsData data;
 	data.TxDataRate = 1.0;
 	data.RxDataRate = 2.0;
@@ -289,19 +280,17 @@ void openpilot_send_req (uint8_t modelid, uint8_t status) {
 	data.RxFailures = 4;
 	data.TxRetries = 5;
 	data.State = status;
-
 	len = openpilot_add_4byte(openpilot_write_buf, len, data.TxDataRate);
 	len = openpilot_add_4byte(openpilot_write_buf, len, data.RxDataRate);
 	len = openpilot_add_4byte(openpilot_write_buf, len, data.TxFailures);
 	len = openpilot_add_4byte(openpilot_write_buf, len, data.RxFailures);
 	len = openpilot_add_4byte(openpilot_write_buf, len, data.TxRetries);
 	len = openpilot_add_1byte(openpilot_write_buf, len, data.State);
-
 	uavtalk_send(modelid, openpilot_write_buf, GCSTELEMETRYSTATS_OBJID, 0x22, len);
 }
 
 
-void openpilot_send_setting_req (uint8_t modelid) {
+void openpilot_send_setting_req(uint8_t modelid) {
 	uint8_t openpilot_write_buf[256];
 	uint8_t crc = 0;
 	uint8_t n = 0;
@@ -315,7 +304,6 @@ void openpilot_send_setting_req (uint8_t modelid) {
 	data.InstanceID = 0;
 	data.Operation = 1;
 	data.Selection = 0;
-
 	len = 18;
 	openpilot_write_buf[n++] = 0x3c;	// Start
 	openpilot_write_buf[n++] = 0x22;	// Command (20, 22)
@@ -326,18 +314,16 @@ void openpilot_send_setting_req (uint8_t modelid) {
 	openpilot_write_buf[n++] = 0xC6;	// ObjID2
 	openpilot_write_buf[n++] = 0x99;	// ObjID1
 	memcpy(&openpilot_write_buf[8], &data, sizeof(UAVT_ObjectPersistenceData));
-
 	crc = 0;
 	for (n2 = 0; n2 < len; n2++) {
 		crc = PIOS_CRC_updateByte(crc, openpilot_write_buf[n2]);
-//		SDL_Log("uavtalk: %i: %x (%x)\n", n2, openpilot_write_buf[n2], crc);
+		//		SDL_Log("uavtalk: %i: %x (%x)\n", n2, openpilot_write_buf[n2], crc);
 	}
 	openpilot_write_buf[len] = crc; 	//Checksum
 	openpilot_write(modelid, openpilot_write_buf, len + 1);
-
 }
 
-void openpilot_request_StabilizationSettings (uint8_t modelid) {
+void openpilot_request_StabilizationSettings(uint8_t modelid) {
 	uint8_t openpilot_write_buf[256];
 	uint8_t crc = 0;
 	uint8_t n = 0;
@@ -358,10 +344,9 @@ void openpilot_request_StabilizationSettings (uint8_t modelid) {
 	}
 	openpilot_write_buf[len] = crc; 	//Checksum
 	openpilot_write(modelid, openpilot_write_buf, len + 1);
-
 }
 
-void openpilot_decode (uint8_t modelid, char c) {
+void openpilot_decode(uint8_t modelid, char c) {
 	static uint8_t openpilot_read_buf[1024];
 	static uint8_t crc = 0;
 	static uint16_t n = 0;
@@ -372,7 +357,7 @@ void openpilot_decode (uint8_t modelid, char c) {
 	static uint16_t data_len = 0;
 	if (data_start == 0) {
 		if (c == 0x3c) {
-//			SDL_Log("uavtalk: FRAME_START\n");
+			//			SDL_Log("uavtalk: FRAME_START\n");
 			openpilot_read_buf[data_num] = c;
 			data_start = 1;
 			data_num = 1;
@@ -386,10 +371,11 @@ void openpilot_decode (uint8_t modelid, char c) {
 			data_start = 0;
 			data_num = 0;
 			data_len = 0;
-		} if (data_len != 0 && data_num > data_len) {
-//			SDL_Log("uavtalk: FRAME_COMPLETE\n");
+		}
+		if (data_len != 0 && data_num > data_len) {
+			//			SDL_Log("uavtalk: FRAME_COMPLETE\n");
 			for (n = 0; n < data_len; n++) {
-//				SDL_Log("uavtalk: ## %i/%i, 0x%x (%i)\n", n, data_len, openpilot_read_buf[n], openpilot_read_buf[n]);
+				//				SDL_Log("uavtalk: ## %i/%i, 0x%x (%i)\n", n, data_len, openpilot_read_buf[n], openpilot_read_buf[n]);
 				if (openpilot_read_buf[n] == 0x3c) {
 					n2 = n + 1;
 					uint8_t msg_type = openpilot_read_buf[n2++];
@@ -400,47 +386,47 @@ void openpilot_decode (uint8_t modelid, char c) {
 					msg_obj_id3 = openpilot_read_buf[n2++];
 					msg_obj_id4 = openpilot_read_buf[n2++];
 					uint16_t msg_len = msg_len1 & 0xff;
-					msg_len |= msg_len2<<8;
+					msg_len |= msg_len2 << 8;
 					uint32_t obj_id = msg_obj_id1 & 0xff;
-					obj_id |= msg_obj_id2<<8;
-					obj_id |= msg_obj_id3<<16;
-					obj_id |= msg_obj_id4<<24;
+					obj_id |= msg_obj_id2 << 8;
+					obj_id |= msg_obj_id3 << 16;
+					obj_id |= msg_obj_id4 << 24;
 					uint8_t org_crc = openpilot_read_buf[n2 + msg_len - 8];
 					crc = 0;
 					for (n3 = 0; n3 < msg_len; n3++) {
 						crc = PIOS_CRC_updateByte(crc, openpilot_read_buf[n + n3]);
 					}
 					if (org_crc != crc) {
-//						printf("#### wrong crc: %i != %i ####\n", org_crc, crc);
+						//						printf("#### wrong crc: %i != %i ####\n", org_crc, crc);
 					} else {
 						if (msg_type == 0x23) {
 							switch (obj_id) {
 								case GCSTELEMETRYSTATS_OBJID: {
 #ifdef DEBUG
-									SDL_Log("uavtalk: << GET_ACK GCSTELEMETRYSTATS: %i (0x%x)\n", msg_type, msg_type);
+										SDL_Log("uavtalk: << GET_ACK GCSTELEMETRYSTATS: %i (0x%x)\n", msg_type, msg_type);
 #endif
-									break;
-								}
+										break;
+									}
 								case FLIGHTTELEMETRYSTATS_OBJID: {
 #ifdef DEBUG
-									SDL_Log("uavtalk: << GET_ACK FLIGHTTELEMETRYSTATS: %i (0x%x)\n", msg_type, msg_type);
+										SDL_Log("uavtalk: << GET_ACK FLIGHTTELEMETRYSTATS: %i (0x%x)\n", msg_type, msg_type);
 #endif
-									break;
-								}
+										break;
+									}
 								default: {
 #ifdef DEBUG
-									SDL_Log("uavtalk: << GET_ACK UNKNOWN: %i (0x%x)\n", obj_id, obj_id);
+										SDL_Log("uavtalk: << GET_ACK UNKNOWN: %i (0x%x)\n", obj_id, obj_id);
 #endif
-									break;
-								}
+										break;
+									}
 							}
 							break;
 						} else if (msg_type == 0x24) {
 							switch (obj_id) {
 								default: {
-									SDL_Log("uavtalk: << GET_NACK UNKNOWN: %i (0x%x)\n", obj_id, obj_id);
-									break;
-								}
+										SDL_Log("uavtalk: << GET_NACK UNKNOWN: %i (0x%x)\n", obj_id, obj_id);
+										break;
+									}
 							}
 							break;
 						} else if (msg_type == 0x22) {
@@ -455,18 +441,15 @@ void openpilot_decode (uint8_t modelid, char c) {
 						if (msg_type == 0x22) {
 							openpilot_send_ack(modelid);
 						}
-
 						// update modeldata
-
-	uavtalk_decode(obj_id, &openpilot_read_buf[n + 8]);
-
-/*
-if (obj_id == HWFLYINGF3_OBJID) {
-		for (n3 = 0; n3 < msg_len; n3++) {
-			printf("## 0x%x %i ##\n", openpilot_read_buf[n + n3], openpilot_read_buf[n + n3]);
-	}
-}
-*/
+						uavtalk_decode(obj_id, &openpilot_read_buf[n + 8]);
+						/*
+						    if (obj_id == HWFLYINGF3_OBJID) {
+								for (n3 = 0; n3 < msg_len; n3++) {
+									printf("## 0x%x %i ##\n", openpilot_read_buf[n + n3], openpilot_read_buf[n + n3]);
+							}
+						    }
+						*/
 						ModelData[modelid].roll = uavtalk_AttitudeActualData.Roll;
 						ModelData[modelid].pitch = uavtalk_AttitudeActualData.Pitch;
 						ModelData[modelid].yaw = uavtalk_AttitudeActualData.Yaw;
@@ -477,87 +460,79 @@ if (obj_id == HWFLYINGF3_OBJID) {
 						ModelData[modelid].gyro_y = uavtalk_GyrosData.y;
 						ModelData[modelid].gyro_z = uavtalk_GyrosData.z;
 						ModelData[modelid].load = uavtalk_SystemStatsData.CPULoad;
-/*
- * 						for (n2 = 0; n2 < 8; n2++) {
-							ModelData[modelid].radio[n2] = (int16_t)(uavtalk_ManualControlCommandData.Channel[n2] - 1500) / 5;
-						}
-						ModelData[modelid].radio[0] = (int16_t)(uavtalk_ManualControlCommandData.Roll * 100);
-						ModelData[modelid].radio[1] = (int16_t)(uavtalk_ManualControlCommandData.Pitch * 100);
-						ModelData[modelid].radio[2] = (int16_t)(uavtalk_ManualControlCommandData.Yaw * 100);
-						ModelData[modelid].radio[3] = (int16_t)(uavtalk_ManualControlCommandData.Throttle * 100);
-						ModelData[modelid].radio[4] = (int16_t)(uavtalk_ManualControlCommandData.Collective * 100);
-						ModelData[modelid].chancount = 8;
+						/*
+						  						for (n2 = 0; n2 < 8; n2++) {
+													ModelData[modelid].radio[n2] = (int16_t)(uavtalk_ManualControlCommandData.Channel[n2] - 1500) / 5;
+												}
+												ModelData[modelid].radio[0] = (int16_t)(uavtalk_ManualControlCommandData.Roll * 100);
+												ModelData[modelid].radio[1] = (int16_t)(uavtalk_ManualControlCommandData.Pitch * 100);
+												ModelData[modelid].radio[2] = (int16_t)(uavtalk_ManualControlCommandData.Yaw * 100);
+												ModelData[modelid].radio[3] = (int16_t)(uavtalk_ManualControlCommandData.Throttle * 100);
+												ModelData[modelid].radio[4] = (int16_t)(uavtalk_ManualControlCommandData.Collective * 100);
+												ModelData[modelid].chancount = 8;
 
-						if (uavtalk_GPSPositionData.Latitude != 0.0) {
-							ModelData[modelid].p_lat = (float)uavtalk_GPSPositionData.Latitude / 10000000.0;
-							ModelData[modelid].p_long = (float)uavtalk_GPSPositionData.Longitude / 10000000.0;
-							ModelData[modelid].p_alt = uavtalk_GPSPositionData.Altitude;
-							ModelData[modelid].speed = uavtalk_GPSPositionData.Groundspeed;
-							ModelData[modelid].numSat = uavtalk_GPSPositionData.Satellites;
-							ModelData[modelid].gpsfix = uavtalk_GPSPositionData.State;
-							ModelData[modelid].hdop = uavtalk_GPSPositionData.HDOP;
-							ModelData[modelid].vdop = uavtalk_GPSPositionData.VDOP;
-						}
-						if (uavtalk_FlightStatusData.Armed == 0) {
-							ModelData[modelid].armed = MODEL_DISARMED;
-						} else if (uavtalk_FlightStatusData.Armed == 1) {
-							ModelData[modelid].armed = MODEL_ARMING;
-						} else {
-							ModelData[modelid].armed = MODEL_ARMED;
-						}
-*/
+												if (uavtalk_GPSPositionData.Latitude != 0.0) {
+													ModelData[modelid].p_lat = (float)uavtalk_GPSPositionData.Latitude / 10000000.0;
+													ModelData[modelid].p_long = (float)uavtalk_GPSPositionData.Longitude / 10000000.0;
+													ModelData[modelid].p_alt = uavtalk_GPSPositionData.Altitude;
+													ModelData[modelid].speed = uavtalk_GPSPositionData.Groundspeed;
+													ModelData[modelid].numSat = uavtalk_GPSPositionData.Satellites;
+													ModelData[modelid].gpsfix = uavtalk_GPSPositionData.State;
+													ModelData[modelid].hdop = uavtalk_GPSPositionData.HDOP;
+													ModelData[modelid].vdop = uavtalk_GPSPositionData.VDOP;
+												}
+												if (uavtalk_FlightStatusData.Armed == 0) {
+													ModelData[modelid].armed = MODEL_DISARMED;
+												} else if (uavtalk_FlightStatusData.Armed == 1) {
+													ModelData[modelid].armed = MODEL_ARMING;
+												} else {
+													ModelData[modelid].armed = MODEL_ARMED;
+												}
+						*/
 						if (uavtalk_FlightStatusData.FlightMode == 0) {
 							ModelData[modelid].mode = MODEL_MODE_MANUAL;
 						} else {
 							ModelData[modelid].mode = MODEL_MODE_POSHOLD;
 						}
 						ModelData[modelid].heartbeat = 100;
-
-
-//uavtalk_request(modelid, MIXERSETTINGS_OBJID);
-
-
+						//uavtalk_request(modelid, MIXERSETTINGS_OBJID);
 						if (openpilot_get[modelid] == 1) {
-//							uavtalk_request(modelid, STABILIZATIONSETTINGS_OBJID);
+							//							uavtalk_request(modelid, STABILIZATIONSETTINGS_OBJID);
 							openpilot_get[modelid] = 2;
 						} else if (openpilot_get[modelid] == 2) {
-//							uavtalk_request(modelid, HWSETTINGS_OBJID);
+							//							uavtalk_request(modelid, HWSETTINGS_OBJID);
 							openpilot_get[modelid] = 0;
 						} else if (openpilot_set[modelid] == 1) {
-//							openpilot_send_StabilizationSettings(modelid, &OpenpilotStabilizationSettings);
+							//							openpilot_send_StabilizationSettings(modelid, &OpenpilotStabilizationSettings);
 							openpilot_set[modelid] = 2;
 						} else if (openpilot_set[modelid] == 2) {
-//							openpilot_send_HwSettings(modelid, &OpenpilotHwSettings);
+							//							openpilot_send_HwSettings(modelid, &OpenpilotHwSettings);
 							openpilot_set[modelid] = 0;
 						} else if (openpilot_save[modelid] == 1) {
-//							openpilot_save_to_flash(modelid);
+							//							openpilot_save_to_flash(modelid);
 							openpilot_save[modelid] = 0;
 						}
-
 						// connection handshake
 						switch (obj_id) {
 							case FLIGHTTELEMETRYSTATS_OBJID: {
-								UAVT_FlightTelemetryStatsData *data = (UAVT_FlightTelemetryStatsData *)&openpilot_read_buf[n + 8];
-								if (data->State == 0) { // -> FLIGHTTELEMETRYSTATS_STATUS_DISCONNECTED
-									SDL_Log("uavtalk: << FlightTelemetryStats: DISCONNECTED\n");
-									openpilot_send_req(modelid, 1); // <- GCSTELEMETRYSTATS_STATUS_HANDSHAKEREQ
-								} else if (data->State == 2) { // -> FLIGHTTELEMETRYSTATS_STATUS_HANDSHAKEACK
-									SDL_Log("uavtalk: << FlightTelemetryStats: HANDSHAKEACK\n");
-									openpilot_send_req(modelid, 3); // <- GCSTELEMETRYSTATS_STATUS_CONNECTED
-									redraw_flag = 1;
-								} else if (data->State == 3) {
-									SDL_Log("uavtalk: << FlightTelemetryStats: CONNECTED\n");
-
-uavtalk_request(modelid, HWFLYINGF3_OBJID);
-
-//uavtalk_request(modelid, MANUALCONTROLSETTINGS_OBJID);
-
-									openpilot_get[modelid] = 1;
-								} else {
-									SDL_Log("uavtalk: << FlightTelemetryStats: %i\n", data->State);
+									UAVT_FlightTelemetryStatsData *data = (UAVT_FlightTelemetryStatsData *)&openpilot_read_buf[n + 8];
+									if (data->State == 0) { // -> FLIGHTTELEMETRYSTATS_STATUS_DISCONNECTED
+										SDL_Log("uavtalk: << FlightTelemetryStats: DISCONNECTED\n");
+										openpilot_send_req(modelid, 1); // <- GCSTELEMETRYSTATS_STATUS_HANDSHAKEREQ
+									} else if (data->State == 2) { // -> FLIGHTTELEMETRYSTATS_STATUS_HANDSHAKEACK
+										SDL_Log("uavtalk: << FlightTelemetryStats: HANDSHAKEACK\n");
+										openpilot_send_req(modelid, 3); // <- GCSTELEMETRYSTATS_STATUS_CONNECTED
+										redraw_flag = 1;
+									} else if (data->State == 3) {
+										SDL_Log("uavtalk: << FlightTelemetryStats: CONNECTED\n");
+										uavtalk_request(modelid, HWFLYINGF3_OBJID);
+										//uavtalk_request(modelid, MANUALCONTROLSETTINGS_OBJID);
+										openpilot_get[modelid] = 1;
+									} else {
+										SDL_Log("uavtalk: << FlightTelemetryStats: %i\n", data->State);
+									}
+									break;
 								}
-								break;
-							}
 						}
 					}
 				}
@@ -567,12 +542,12 @@ uavtalk_request(modelid, HWFLYINGF3_OBJID);
 			data_len = 0;
 		} else if (data_num > 2) {
 			data_len = openpilot_read_buf[2];
-//			SDL_Log("uavtalk: LEN %i\n", data_len);
+			//			SDL_Log("uavtalk: LEN %i\n", data_len);
 		}
 	}
 }
 
-void openpilot_update (uint8_t modelid) {
+void openpilot_update(uint8_t modelid) {
 	uint8_t buf[1024];
 	int res = 0;
 	int n = 0;
@@ -596,7 +571,7 @@ void openpilot_update (uint8_t modelid) {
 #endif
 }
 
-uint8_t openpilot_init (uint8_t modelid, char *port, uint32_t baud) {
+uint8_t openpilot_init(uint8_t modelid, char *port, uint32_t baud) {
 	last_connection[modelid] = 1;
 	openpilot_get[modelid] = 1;
 	openpilot_set[modelid] = 0;
@@ -614,7 +589,7 @@ uint8_t openpilot_init (uint8_t modelid, char *port, uint32_t baud) {
 	return 0;
 }
 
-void openpilot_exit (uint8_t modelid) {
+void openpilot_exit(uint8_t modelid) {
 	static uint8_t flag = 0;
 	uint8_t n = 0;
 	if (flag == 0) {
@@ -638,33 +613,33 @@ void openpilot_exit (uint8_t modelid) {
 
 #ifndef WINDOWS
 
-int openpilot_tcp_send (uint8_t modelid, uint8_t *buf, uint16_t len) {
+int openpilot_tcp_send(uint8_t modelid, uint8_t *buf, uint16_t len) {
 	if (ModelData[modelid].netsock != -1) {
 		send(ModelData[modelid].netsock, buf, len, 0);
 	}
 	return 0;
 }
 
-int openpilot_tcp_connect (char *ip, uint16_t port) {
+int openpilot_tcp_connect(char *ip, uint16_t port) {
 	int tcp_sock = -1;
-    struct sockaddr_in server;
-    tcp_sock = socket(AF_INET , SOCK_STREAM , 0);
-    if (tcp_sock == -1) {
+	struct sockaddr_in server;
+	tcp_sock = socket(AF_INET , SOCK_STREAM , 0);
+	if (tcp_sock == -1) {
 		SDL_Log("openpilot: Could not create tcp socket\n");
-        return -1;
-    }
-    server.sin_addr.s_addr = inet_addr(ip);
-    server.sin_family = AF_INET;
-    server.sin_port = htons(port);
-    if (connect(tcp_sock , (struct sockaddr *)&server , sizeof(server)) < 0) {
-        SDL_Log("openpilot: tcp connection failed (%s:%i)\n", ip, port);
-        return -1;
-    }
+		return -1;
+	}
+	server.sin_addr.s_addr = inet_addr(ip);
+	server.sin_family = AF_INET;
+	server.sin_port = htons(port);
+	if (connect(tcp_sock , (struct sockaddr *)&server , sizeof(server)) < 0) {
+		SDL_Log("openpilot: tcp connection failed (%s:%i)\n", ip, port);
+		return -1;
+	}
 	SDL_Log("openpilot: tcp connected (%s:%i)\n", ip, port);
 	return tcp_sock;
 }
 
-int openpilot_tcp (void *data) {
+int openpilot_tcp(void *data) {
 	uint8_t modelid = 0;
 	SDL_Log("openpilot: init tcp thread\n");
 	for (modelid = 0; modelid < MODELS_MAX; modelid++) {
@@ -702,7 +677,7 @@ int openpilot_tcp (void *data) {
 					}
 					int n = 0;
 					for (n = 0; n < rv; n++) {
-//						printf("####op_tcp: 0x%x\n", buf[n]);
+						//						printf("####op_tcp: 0x%x\n", buf[n]);
 						openpilot_decode(modelid, buf[n]);
 					}
 					fflush(0);
@@ -715,19 +690,19 @@ int openpilot_tcp (void *data) {
 	return 0;
 }
 
-void openpilot_init_tcp (void) {
+void openpilot_init_tcp(void) {
 	tcp_running = 1;
 #ifdef SDL2
 	thread_tcp = SDL_CreateThread(openpilot_tcp, NULL, NULL);
 #else
 	thread_tcp = SDL_CreateThread(openpilot_tcp, NULL);
 #endif
-	if ( thread_tcp == NULL ) {
+	if (thread_tcp == NULL) {
 		fprintf(stderr, "openpilot: Thread konnte nicht gestartet werden (openpilot_tcp): %s\n", SDL_GetError());
 	}
 }
 
-void openpilot_exit_tcp (void) {
+void openpilot_exit_tcp(void) {
 	tcp_running = 0;
 	if (thread_tcp != NULL) {
 		SDL_Log("openpilot: wait tcp thread\n");
@@ -738,17 +713,17 @@ void openpilot_exit_tcp (void) {
 
 #else
 
-void openpilot_init_tcp (void) {
+void openpilot_init_tcp(void) {
 }
 
-void openpilot_exit_tcp (void) {
+void openpilot_exit_tcp(void) {
 }
 
 #endif
 
-void openpilot_xml_load (xmlDocPtr doc, xmlNodePtr cur) { 
-//	model_parseOpenPilot(doc, cur);
+void openpilot_xml_load(xmlDocPtr doc, xmlNodePtr cur) {
+	//	model_parseOpenPilot(doc, cur);
 }
 
-void openpilot_xml_save (FILE *fr) {
+void openpilot_xml_save(FILE *fr) {
 }

@@ -4,7 +4,7 @@
 
 
 
-static void map_kml_parsePoint (xmlDocPtr doc, xmlNodePtr cur, char *name) {
+static void map_kml_parsePoint(xmlDocPtr doc, xmlNodePtr cur, char *name) {
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
@@ -38,7 +38,7 @@ static void map_kml_parsePoint (xmlDocPtr doc, xmlNodePtr cur, char *name) {
 	return;
 }
 
-static void map_kml_parseLineString (xmlDocPtr doc, xmlNodePtr cur, char *name) {
+static void map_kml_parseLineString(xmlDocPtr doc, xmlNodePtr cur, char *name) {
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
@@ -77,7 +77,7 @@ static void map_kml_parseLineString (xmlDocPtr doc, xmlNodePtr cur, char *name) 
 	return;
 }
 
-static void map_kml_parsePolygon (xmlDocPtr doc, xmlNodePtr cur, char *name) {
+static void map_kml_parsePolygon(xmlDocPtr doc, xmlNodePtr cur, char *name) {
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
@@ -139,7 +139,7 @@ static void map_kml_parsePolygon (xmlDocPtr doc, xmlNodePtr cur, char *name) {
 	return;
 }
 
-static void map_kml_parseMultiGeometry (xmlDocPtr doc, xmlNodePtr cur, char *name) {
+static void map_kml_parseMultiGeometry(xmlDocPtr doc, xmlNodePtr cur, char *name) {
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
 		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"Polygon"))) {
@@ -150,7 +150,7 @@ static void map_kml_parseMultiGeometry (xmlDocPtr doc, xmlNodePtr cur, char *nam
 	return;
 }
 
-static void map_kml_parsePlacemark (xmlDocPtr doc, xmlNodePtr cur) {
+static void map_kml_parsePlacemark(xmlDocPtr doc, xmlNodePtr cur) {
 	char name[1024];
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
@@ -184,7 +184,7 @@ static void map_kml_parsePlacemark (xmlDocPtr doc, xmlNodePtr cur) {
 
 
 
-void map_overlay (ESContext *esContext, float north, float west, float south, float east, float rotate, char *file, float lat, float lon, uint8_t zoom) {
+void map_overlay(ESContext *esContext, float north, float west, float south, float east, float rotate, char *file, float lat, float lon, uint8_t zoom) {
 	int mark_x1 = long2x(west, lon, zoom);
 	int mark_y1 = lat2y(north, lat, zoom);
 	int mark_x2 = long2x(east, lon, zoom);
@@ -193,24 +193,21 @@ void map_overlay (ESContext *esContext, float north, float west, float south, fl
 	float y1 = (float)mark_y1 / (float)esContext->height * 2.0 - 1.0;
 	float x2 = (float)mark_x2 / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 	float y2 = (float)mark_y2 / (float)esContext->height * 2.0 - 1.0;
-
 	float diff_x = (x2 - x1) / 2.0;
 	float diff_y = (y2 - y1) / 2.0;
 #ifdef SDLGL
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
-
 	glTranslatef(x1 + diff_x, -(y1 + diff_y), 0.0);
 	glRotatef(rotate, 0.0, 0.0, 1.0);
 	glTranslatef(-(x1 + diff_x), y1 + diff_y, 0.0);
 	draw_image_f3(esContext, x1, y1, x2, y2, 1.0, file);
-
 	glPopMatrix();
 #endif
 }
 
 
-static void map_kml_parseGroundOverlay (xmlDocPtr doc, xmlNodePtr cur) {
+static void map_kml_parseGroundOverlay(xmlDocPtr doc, xmlNodePtr cur) {
 	float north = 0.0;
 	float south = 0.0;
 	float east = 0.0;
@@ -322,7 +319,7 @@ static void map_kml_parseGroundOverlay (xmlDocPtr doc, xmlNodePtr cur) {
 	return;
 }
 
-void map_kml_parseDoc (char *docname) {
+void map_kml_parseDoc(char *docname) {
 	xmlDocPtr doc;
 	xmlNodePtr cur;
 	if (strncmp(docname, "./", 2) == 0) {
@@ -366,7 +363,6 @@ void map_kml_parseDoc (char *docname) {
 			}
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"GroundOverlay"))) {
 			map_kml_parseGroundOverlay(doc, cur);
-
 		}
 		cur = cur->next;
 	}

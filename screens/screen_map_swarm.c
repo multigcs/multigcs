@@ -6,7 +6,7 @@ Swarm SwarmSetup;
 static uint8_t pd_open[MODELS_MAX];
 static uint8_t pd_openm = 0;
 
-void latlong_offset (float *p_lat, float *p_long, float *p_alt, float lat_om, float long_om, float alt_om) {
+void latlong_offset(float *p_lat, float *p_long, float *p_alt, float lat_om, float long_om, float alt_om) {
 	float R = 6378137.0 + *p_alt + alt_om;
 	float dLat = -lat_om / R;
 	float dLong = long_om / (R * cos(PI * lat / 180.0));
@@ -15,7 +15,7 @@ void latlong_offset (float *p_lat, float *p_long, float *p_alt, float lat_om, fl
 	*p_alt += alt_om;
 }
 
-uint8_t swarm_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t swarm_set(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	int n = 0;
 	if (strcmp(name, "swarm_setup") == 0) {
 		map_show_swarm_setup = 1 - map_show_swarm_setup;
@@ -135,7 +135,7 @@ uint8_t swarm_set (char *name, float x, float y, int8_t button, float data, uint
 	return 0;
 }
 
-void swarm_draw_setup (ESContext *esContext) {
+void swarm_draw_setup(ESContext *esContext) {
 	int n = 0;
 	int ny = 1;
 	int gx = 0;
@@ -148,13 +148,11 @@ void swarm_draw_setup (ESContext *esContext) {
 	float py2 = 0.1;
 	float sy = 0.08;
 	reset_buttons();
-
 	EntryList list[3];
 	list[0].name = "ROLE";
 	list[1].name = "OFFSET";
 	list[2].name = NULL;
 	draw_window(esContext, px1, py1, px2, py2, 0.002, "SwarmSetup.options", "Swarm-Setup", list, SwarmSetup.options, swarm_set);
-
 	if (SwarmSetup.options == 0) {
 		draw_text_button(esContext, "master_title", setup.view_mode, "Master:", FONT_WHITE, px1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, 0.0);
 		ny++;
@@ -172,19 +170,15 @@ void swarm_draw_setup (ESContext *esContext) {
 		for (n = 0; n < 4; n++) {
 			sprintf(tmp_str2, "SwarmSetup.slave%i", n);
 			draw_pulldown(esContext, px1 + 0.1, py1 + (float)ny * sy, 0.44, 0.01, tmp_str2, list, pd_open[n], SwarmSetup.slave[n] + 1, swarm_set);
-
 			sprintf(tmp_str, "X=%im", SwarmSetup.offset_x[n]);
 			sprintf(tmp_str2, "SwarmSetup.offx%i", n);
 			draw_spinbox(esContext, px1 + 0.55, py1 + (float)ny * sy, 0.34, 0.01, tmp_str2, "X=%0.0fm", SwarmSetup.offset_x[n], swarm_set);
-
 			sprintf(tmp_str, "Y=%im", SwarmSetup.offset_y[n]);
 			sprintf(tmp_str2, "SwarmSetup.offy%i", n);
 			draw_spinbox(esContext, px1 + 0.9, py1 + (float)ny * sy, 0.34, 0.01, tmp_str2, "Y=%0.0fm", SwarmSetup.offset_y[n], swarm_set);
-
 			sprintf(tmp_str, "Z=%im", SwarmSetup.offset_z[n]);
 			sprintf(tmp_str2, "SwarmSetup.offz%i", n);
 			draw_spinbox(esContext, px1 + 1.25, py1 + (float)ny * sy, 0.34, 0.01, tmp_str2, "Z=%0.0fm", SwarmSetup.offset_z[n], swarm_set);
-
 			ny++;
 		}
 		ny++;
@@ -218,7 +212,6 @@ void swarm_draw_setup (ESContext *esContext) {
 		sprintf(tmp_str, "Z=%im", SwarmSetup.offset_z[SwarmSetup.selected]);
 		draw_text_button(esContext, "SwarmSetup.offz", setup.view_mode, tmp_str, FONT_GREEN, px1 + 0.01, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, swarm_set, (float)SwarmSetup.selected);
 		ny++;
-
 		for (gx = 0; gx <= gxn; gx++) {
 			draw_line_f3(esContext, gx1 + (float)gx * ((gx2 - gx1) / (float)gxn), gy1, 0.006, gx1 + (float)gx * ((gx2 - gx1) / (float)gxn), gy2, 0.006, 255, 255, 255, 90);
 		}
@@ -226,7 +219,6 @@ void swarm_draw_setup (ESContext *esContext) {
 			draw_line_f3(esContext, gx1, gy1 + (float)gy * ((gy2 - gy1) / (float)gyn), 0.006, gx2, gy1 + (float)gy * ((gy2 - gy1) / (float)gyn), 0.006, 255, 255, 255, 90);
 		}
 		draw_circleFilled_f3(esContext, gx1 + (gx2 - gx1) / 2.0, gy1 + (gy2 - gy1) / 2.0, 0.007, 0.01, 255, 0, 0, 255);
-
 		for (n = 0; n < 4; n++) {
 			if (SwarmSetup.slave[n] == -1) {
 				continue;
@@ -239,7 +231,5 @@ void swarm_draw_setup (ESContext *esContext) {
 			}
 		}
 	}
-
 	draw_buttonbox(esContext, "swarm_setup_done", setup.view_mode, "CLOSE", px2 - 0.33, py2 - 0.1, 0.3, 0.005, swarm_set, 0.0);
-
 }

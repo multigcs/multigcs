@@ -8,6 +8,6 @@
 #define PPM1_OUTPUT_PINS		GPIO_PinSource8
 #define PPM1_OUTPUT_AF			GPIO_AF_TIM3
 
-void PPM_Config (void);
-void PPMOutput_Set (int8_t channel, int16_t value);
+void PPM_Config(void);
+void PPMOutput_Set(int8_t channel, int16_t value);
 

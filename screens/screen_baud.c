@@ -4,13 +4,13 @@
 
 static uint8_t show_baud = 0;
 static uint8_t baud_page = 0;
-static uint8_t (*save_callback) (char *, float, float, int8_t, float, uint8_t);
+static uint8_t (*save_callback)(char *, float, float, int8_t, float, uint8_t);
 
-void baud_set_callback (uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t)) {
+void baud_set_callback(uint8_t (*callback)(char *, float, float, int8_t, float, uint8_t)) {
 	save_callback = callback;
 }
 
-uint8_t baud_page_move (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t baud_page_move(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (data < 0.0) {
 		if (baud_page > 0) {
 			baud_page += (int8_t)data;
@@ -21,34 +21,32 @@ uint8_t baud_page_move (char *name, float x, float y, int8_t button, float data,
 	return 0;
 }
 
-void baud_set_mode (uint8_t mode) {
+void baud_set_mode(uint8_t mode) {
 	show_baud = mode;
 	baud_page = 0;
 }
 
-uint8_t baud_get_mode (void) {
+uint8_t baud_get_mode(void) {
 	return show_baud;
 }
 
-uint8_t baud_name_cancel (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t baud_name_cancel(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	show_baud = 0;
 	return 0;
 }
 
-uint8_t baud_name_save (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t baud_name_save(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	show_baud = 0;
 	(*save_callback)(name, x, y, button, 1.0, action);
 	return 0;
 }
 
-void screen_baud (ESContext *esContext) {
+void screen_baud(ESContext *esContext) {
 	if (show_baud != setup.view_mode) {
 		return;
 	}
-
 	reset_buttons();
 	draw_box_f3(esContext, -1.5, -1.0, 0.002, 1.5, 1.0, 0.002, 0, 0, 0, 200);
-
 	char directory[200];
 	uint8_t n = 0;
 	sprintf(directory, "%s", "/dev");
@@ -69,7 +67,6 @@ void screen_baud (ESContext *esContext) {
 	n++;
 	draw_text_button(esContext, "115200", setup.view_mode, "115200", FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, baud_name_save, 0.0);
 	n++;
-
 	draw_text_button(esContext, "show", setup.view_mode, "[CANCEL]", FONT_WHITE, 0.0, 0.9, 0.002, 0.06, 1, 0, baud_name_cancel, 0.0);
 }
 

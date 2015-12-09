@@ -3,7 +3,7 @@
 
 static uint16_t calibration_timeout = 200;
 
-void screen_calibration (ESContext *esContext) {
+void screen_calibration(ESContext *esContext) {
 	char tmp_str[100];
 #ifdef SDLGL
 	glMatrixMode(GL_MODELVIEW);
@@ -15,9 +15,7 @@ void screen_calibration (ESContext *esContext) {
 	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
-
 	draw_title(esContext, "Calibration");
-
 	tmp_str[0] = 0;
 	if (setup.calibration_mode == 1) {
 		draw_line(esContext, 60 - 20, 60 - 20, 60 + 20, 60 + 20, 255, 255, 255, 255);
@@ -46,10 +44,8 @@ void screen_calibration (ESContext *esContext) {
 		redraw_flag = 1;
 	}
 	draw_text_f(esContext, 0.0 - strlen(tmp_str) * 0.06 * 0.6 / 2 - 0.012, -0.03, 0.06, 0.06, FONT_GREEN_BG, tmp_str);
-
 #ifdef SDLGL
 	glPopMatrix();
 #endif
-
 }
 

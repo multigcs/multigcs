@@ -1,3 +1,3 @@
 
-extern void screen_model (ESContext *esContext);
+extern void screen_model(ESContext *esContext);
 

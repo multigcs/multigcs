@@ -1,18 +1,18 @@
-/* quirc -- QR-code recognition library
- * Copyright (C) 2010-2012 Daniel Beer <dlbeer@gmail.com>
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+/*  quirc -- QR-code recognition library
+    Copyright (C) 2010-2012 Daniel Beer <dlbeer@gmail.com>
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted, provided that the above
+    copyright notice and this permission notice appear in all copies.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+    WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+    MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+    ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+    WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+    ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+*/
 
 #include "quirc_internal.h"
 
@@ -22,8 +22,8 @@
 #define MAX_POLY       64
 
 /************************************************************************
- * Galois fields
- */
+    Galois fields
+*/
 
 struct galois_field {
 	int p;
@@ -124,118 +124,100 @@ const static struct galois_field gf256 = {
 };
 
 /************************************************************************
- * Polynomial operations
- */
+    Polynomial operations
+*/
 
 static void poly_mult(uint8_t *r, const uint8_t *a, const uint8_t *b,
-		      const struct galois_field *gf)
-{
+					  const struct galois_field *gf) {
 	int i;
-
 	memset(r, 0, MAX_POLY);
-
 	for (i = 0; i < MAX_POLY; i++) {
 		int j;
-
 		for (j = 0; j + i < MAX_POLY; j++) {
 			uint8_t ca = a[i];
 			uint8_t cb = b[j];
-
-			if (!(ca && cb))
+			if (!(ca && cb)) {
 				continue;
-
+			}
 			r[i + j] ^= gf->exp[(gf->log[ca] +
-					     gf->log[cb]) %
-					    gf->p];
+								 gf->log[cb]) %
+								gf->p];
 		}
 	}
 }
 
 static void poly_add(uint8_t *dst, const uint8_t *src, uint8_t c,
-		     int shift, const struct galois_field *gf)
-{
+					 int shift, const struct galois_field *gf) {
 	int i;
 	int log_c = gf->log[c];
-
-	if (!c)
+	if (!c) {
 		return;
-
+	}
 	for (i = 0; i < MAX_POLY; i++) {
 		int p = i + shift;
 		uint8_t v = src[i];
-
-		if (p < 0 || p >= MAX_POLY)
+		if (p < 0 || p >= MAX_POLY) {
 			continue;
-		if (!v)
+		}
+		if (!v) {
 			continue;
-
+		}
 		dst[p] ^= gf->exp[(gf->log[v] + log_c) % gf->p];
 	}
 }
 
 static uint8_t poly_eval(const uint8_t *s, uint8_t x,
-			 const struct galois_field *gf)
-{
+						 const struct galois_field *gf) {
 	int i;
 	uint8_t sum = 0;
 	uint8_t log_x = gf->log[x];
-
-	if (!x)
+	if (!x) {
 		return s[0];
-
+	}
 	for (i = 0; i < MAX_POLY; i++) {
 		uint8_t c = s[i];
-
-		if (!c)
+		if (!c) {
 			continue;
-
+		}
 		sum ^= gf->exp[(gf->log[c] + log_x * i) % gf->p];
 	}
-
 	return sum;
 }
 
 /************************************************************************
- * Berlekamp-Massey algorithm for finding error locator polynomials.
- */
+    Berlekamp-Massey algorithm for finding error locator polynomials.
+*/
 
 static void berlekamp_massey(const uint8_t *s, int N,
-			     const struct galois_field *gf,
-			     uint8_t *sigma)
-{
+							 const struct galois_field *gf,
+							 uint8_t *sigma) {
 	uint8_t C[MAX_POLY];
 	uint8_t B[MAX_POLY];
 	int L = 0;
 	int m = 1;
 	uint8_t b = 1;
 	int n;
-
 	memset(B, 0, sizeof(B));
 	memset(C, 0, sizeof(C));
 	B[0] = 1;
 	C[0] = 1;
-
 	for (n = 0; n < N; n++) {
 		uint8_t d = s[n];
 		uint8_t mult;
 		int i;
-
 		for (i = 1; i <= L; i++) {
-			if (!(C[i] && s[n - i]))
+			if (!(C[i] && s[n - i])) {
 				continue;
-
+			}
 			d ^= gf->exp[(gf->log[C[i]] +
-				      gf->log[s[n - i]]) %
-				     gf->p];
+						  gf->log[s[n - i]]) %
+						 gf->p];
 		}
-
 		mult = gf->exp[(gf->p - gf->log[b] + gf->log[d]) % gf->p];
-
 		if (!d) {
 			m++;
 		} else if (L * 2 <= n) {
 			uint8_t T[MAX_POLY];
-
 			memcpy(T, C, sizeof(T));
 			poly_add(C, B, mult, m, gf);
 			memcpy(B, T, sizeof(B));
@@ -247,149 +229,128 @@ static void berlekamp_massey(const uint8_t *s, int N,
 			m++;
 		}
 	}
-
 	memcpy(sigma, C, MAX_POLY);
 }
 
 /************************************************************************
- * Code stream error correction
- *
- * Generator polynomial for GF(2^8) is x^8 + x^4 + x^3 + x^2 + 1
- */
+    Code stream error correction
 
-static int block_syndromes(const uint8_t *data, int bs, int npar, uint8_t *s)
-{
+    Generator polynomial for GF(2^8) is x^8 + x^4 + x^3 + x^2 + 1
+*/
+
+static int block_syndromes(const uint8_t *data, int bs, int npar, uint8_t *s) {
 	int nonzero = 0;
 	int i;
-
 	memset(s, 0, MAX_POLY);
-
 	for (i = 0; i < npar; i++) {
 		int j;
-
 		for (j = 0; j < bs; j++) {
 			uint8_t c = data[bs - j - 1];
-
-			if (!c)
+			if (!c) {
 				continue;
-
+			}
 			s[i] ^= gf256_exp[((int)gf256_log[c] +
-					  (i + 1) * j) % 255];
+							   (i + 1) * j) % 255];
 		}
-
-		if (s[i])
+		if (s[i]) {
 			nonzero = 1;
+		}
 	}
-
 	return nonzero;
 }
 
-static quirc_decode_error_t correct_block(uint8_t *data, const struct quirc_rs_params *ecc)
-{
+static quirc_decode_error_t correct_block(uint8_t *data, const struct quirc_rs_params *ecc) {
 	int npar = ecc->ce;
 	uint8_t s[MAX_POLY];
 	uint8_t sigma[MAX_POLY];
 	uint8_t sigma_deriv[MAX_POLY];
 	uint8_t omega[MAX_POLY];
 	int i;
-
 	/* Compute syndrome vector */
-	if (!block_syndromes(data, ecc->bs, npar, s))
+	if (!block_syndromes(data, ecc->bs, npar, s)) {
 		return QUIRC_SUCCESS;
-
+	}
 	berlekamp_massey(s, npar, &gf256, sigma);
-
 	/* Compute derivative of sigma */
 	memset(sigma_deriv, 0, MAX_POLY);
-	for (i = 0; i + 1 < MAX_POLY; i += 2)
+	for (i = 0; i + 1 < MAX_POLY; i += 2) {
 		sigma_deriv[i] = sigma[i + 1];
-
+	}
 	/* Compute error evaluator polynomial */
 	poly_mult(omega, sigma, s, &gf256);
 	memset(omega + npar, 0, MAX_POLY - npar);
-
 	/* Find error locations and magnitudes */
 	for (i = 0; i < ecc->bs; i++) {
 		uint8_t xinv = gf256_exp[255 - i];
-
 		if (!poly_eval(sigma, xinv, &gf256)) {
 			uint8_t sd_x = poly_eval(sigma_deriv, xinv, &gf256);
 			uint8_t omega_x = poly_eval(omega, xinv, &gf256);
 			uint8_t error = gf256_exp[(255 - gf256_log[sd_x] +
-						   gf256_log[omega_x]) % 255];
-
+									   gf256_log[omega_x]) % 255];
 			data[ecc->bs - i - 1] ^= error;
 		}
 	}
-
-	if (block_syndromes(data, ecc->bs, npar, s))
+	if (block_syndromes(data, ecc->bs, npar, s)) {
 		return QUIRC_ERROR_DATA_ECC;
-
+	}
 	return QUIRC_SUCCESS;
 }
 
 /************************************************************************
- * Format value error correction
- *
- * Generator polynomial for GF(2^4) is x^4 + x + 1
- */
+    Format value error correction
+
+    Generator polynomial for GF(2^4) is x^4 + x + 1
+*/
 
 #define FORMAT_MAX_ERROR        3
 #define FORMAT_SYNDROMES        (FORMAT_MAX_ERROR * 2)
 #define FORMAT_BITS             15
 
-static int format_syndromes(uint16_t u, uint8_t *s)
-{
+static int format_syndromes(uint16_t u, uint8_t *s) {
 	int i;
 	int nonzero = 0;
-
 	memset(s, 0, MAX_POLY);
-
 	for (i = 0; i < FORMAT_SYNDROMES; i++) {
 		int j;
-
 		s[i] = 0;
 		for (j = 0; j < FORMAT_BITS; j++)
-			if (u & (1 << j))
+			if (u & (1 << j)) {
 				s[i] ^= gf16_exp[((i + 1) * j) % 15];
-
-		if (s[i])
+			}
+		if (s[i]) {
 			nonzero = 1;
+		}
 	}
-
 	return nonzero;
 }
 
-static quirc_decode_error_t correct_format(uint16_t *f_ret)
-{
+static quirc_decode_error_t correct_format(uint16_t *f_ret) {
 	uint16_t u = *f_ret;
 	int i;
 	uint8_t s[MAX_POLY];
 	uint8_t sigma[MAX_POLY];
-
-	/* Evaluate U (received codeword) at each of alpha_1 .. alpha_6
-	 * to get S_1 .. S_6 (but we index them from 0).
-	 */
-	if (!format_syndromes(u, s))
+	/*  Evaluate U (received codeword) at each of alpha_1 .. alpha_6
+	    to get S_1 .. S_6 (but we index them from 0).
+	*/
+	if (!format_syndromes(u, s)) {
 		return QUIRC_SUCCESS;
-
+	}
 	berlekamp_massey(s, FORMAT_SYNDROMES, &gf16, sigma);
-
 	/* Now, find the roots of the polynomial */
 	for (i = 0; i < 15; i++)
-		if (!poly_eval(sigma, gf16_exp[15 - i], &gf16))
+		if (!poly_eval(sigma, gf16_exp[15 - i], &gf16)) {
 			u ^= (1 << i);
-
-	if (format_syndromes(u, s))
+		}
+	if (format_syndromes(u, s)) {
 		return QUIRC_ERROR_FORMAT_ECC;
-
+	}
 	*f_ret = u;
 	return QUIRC_SUCCESS;
 }
 
 /************************************************************************
- * Decoder algorithm
- */
+    Decoder algorithm
+*/
 
 struct datastream {
 	uint8_t		raw[QUIRC_MAX_PAYLOAD];
@@ -399,28 +360,24 @@ struct datastream {
 	uint8_t         data[QUIRC_MAX_PAYLOAD];
 };
 
-static inline int grid_bit(const struct quirc_code *code, int x, int y)
-{
+static inline int grid_bit(const struct quirc_code *code, int x, int y) {
 	int p = y * code->size + x;
-
 	return (code->cell_bitmap[p >> 3] >> (p & 7)) & 1;
 }
 
 static quirc_decode_error_t read_format(const struct quirc_code *code,
-					struct quirc_data *data, int which)
-{
+										struct quirc_data *data, int which) {
 	int i;
 	uint16_t format = 0;
 	uint16_t fdata;
 	quirc_decode_error_t err;
-
 	if (which) {
 		for (i = 0; i < 7; i++)
 			format = (format << 1) |
-				grid_bit(code, 8, code->size - 1 - i);
+					 grid_bit(code, 8, code->size - 1 - i);
 		for (i = 0; i < 8; i++)
 			format = (format << 1) |
-				grid_bit(code, code->size - 8 + i, 8);
+					 grid_bit(code, code->size - 8 + i, 8);
 	} else {
 		static const int xs[15] = {
 			8, 8, 8, 8, 8, 8, 8, 8, 7, 5, 4, 3, 2, 1, 0
@@ -428,131 +385,131 @@ static quirc_decode_error_t read_format(const struct quirc_code *code,
 		static const int ys[15] = {
 			0, 1, 2, 3, 4, 5, 7, 8, 8, 8, 8, 8, 8, 8, 8
 		};
-
-		for (i = 14; i >= 0; i--)
+		for (i = 14; i >= 0; i--) {
 			format = (format << 1) | grid_bit(code, xs[i], ys[i]);
+		}
 	}
-
 	format ^= 0x5412;
-
 	err = correct_format(&format);
-	if (err)
+	if (err) {
 		return err;
-
+	}
 	fdata = format >> 10;
 	data->ecc_level = fdata >> 3;
 	data->mask = fdata & 7;
-
 	return QUIRC_SUCCESS;
 }
 
-static int mask_bit(int mask, int i, int j)
-{
+static int mask_bit(int mask, int i, int j) {
 	switch (mask) {
-	case 0: return !((i + j) % 2);
-	case 1: return !(i % 2);
-	case 2: return !(j % 3);
-	case 3: return !((i + j) % 3);
-	case 4: return !(((i / 2) + (j / 3)) % 2);
-	case 5: return !((i * j) % 2 + (i * j) % 3);
-	case 6: return !(((i * j) % 2 + (i * j) % 3) % 2);
-	case 7: return !(((i * j) % 3 + (i + j) % 2) % 2);
+		case 0:
+			return !((i + j) % 2);
+		case 1:
+			return !(i % 2);
+		case 2:
+			return !(j % 3);
+		case 3:
+			return !((i + j) % 3);
+		case 4:
+			return !(((i / 2) + (j / 3)) % 2);
+		case 5:
+			return !((i * j) % 2 + (i * j) % 3);
+		case 6:
+			return !(((i * j) % 2 + (i * j) % 3) % 2);
+		case 7:
+			return !(((i * j) % 3 + (i + j) % 2) % 2);
 	}
-
 	return 0;
 }
 
-static int reserved_cell(int version, int i, int j)
-{
+static int reserved_cell(int version, int i, int j) {
 	const struct quirc_version_info *ver = &quirc_version_db[version];
 	int size = version * 4 + 17;
 	int ai = -1, aj = -1, a;
-
 	/* Finder + format: top left */
-	if (i < 9 && j < 9)
+	if (i < 9 && j < 9) {
 		return 1;
-
-	/* Finder + format: bottom left */
-	if (i + 8 >= size && j < 9)
-		return 1;
-
-	/* Finder + format: top right */
-	if (i < 9 && j + 8 >= size)
-		return 1;
-
-	/* Exclude timing patterns */
-	if (i == 6 || j == 6)
-		return 1;
-
-	/* Exclude version info, if it exists. Version info sits adjacent to
-	 * the top-right and bottom-left finders in three rows, bounded by
-	 * the timing pattern.
-	 */
-	if (version >= 7) {
-		if (i < 6 && j + 11 >= size)
-			return 1;
-		if (i + 11 >= size && j < 6)
-			return 1;
 	}
-
+	/* Finder + format: bottom left */
+	if (i + 8 >= size && j < 9) {
+		return 1;
+	}
+	/* Finder + format: top right */
+	if (i < 9 && j + 8 >= size) {
+		return 1;
+	}
+	/* Exclude timing patterns */
+	if (i == 6 || j == 6) {
+		return 1;
+	}
+	/*  Exclude version info, if it exists. Version info sits adjacent to
+	    the top-right and bottom-left finders in three rows, bounded by
+	    the timing pattern.
+	*/
+	if (version >= 7) {
+		if (i < 6 && j + 11 >= size) {
+			return 1;
+		}
+		if (i + 11 >= size && j < 6) {
+			return 1;
+		}
+	}
 	/* Exclude alignment patterns */
 	for (a = 0; a < QUIRC_MAX_ALIGNMENT && ver->apat[a]; a++) {
 		int p = ver->apat[a];
-
-		if (abs(p - i) < 3)
+		if (abs(p - i) < 3) {
 			ai = a;
-		if (abs(p - j) < 3)
+		}
+		if (abs(p - j) < 3) {
 			aj = a;
+		}
 	}
-
 	if (ai >= 0 && aj >= 0) {
 		a--;
-		if (ai > 0 && ai < a)
+		if (ai > 0 && ai < a) {
 			return 1;
-		if (aj > 0 && aj < a)
+		}
+		if (aj > 0 && aj < a) {
 			return 1;
-		if (aj == a && ai == a)
+		}
+		if (aj == a && ai == a) {
 			return 1;
+		}
 	}
-
 	return 0;
 }
 
 static void read_bit(const struct quirc_code *code,
-		     struct quirc_data *data,
-		     struct datastream *ds, int i, int j)
-{
+					 struct quirc_data *data,
+					 struct datastream *ds, int i, int j) {
 	int bitpos = ds->data_bits & 7;
 	int bytepos = ds->data_bits >> 3;
 	int v = grid_bit(code, j, i);
-
-	if (mask_bit(data->mask, i, j))
+	if (mask_bit(data->mask, i, j)) {
 		v ^= 1;
-
-	if (v)
+	}
+	if (v) {
 		ds->raw[bytepos] |= (0x80 >> bitpos);
-
+	}
 	ds->data_bits++;
 }
 
 static void read_data(const struct quirc_code *code,
-		      struct quirc_data *data,
-		      struct datastream *ds)
-{
+					  struct quirc_data *data,
+					  struct datastream *ds) {
 	int y = code->size - 1;
 	int x = code->size - 1;
 	int dir = -1;
-
 	while (x > 0) {
-		if (x == 6)
+		if (x == 6) {
 			x--;
-
-		if (!reserved_cell(data->version, y, x))
+		}
+		if (!reserved_cell(data->version, y, x)) {
 			read_bit(code, data, ds, y, x);
-
-		if (!reserved_cell(data->version, y, x - 1))
+		}
+		if (!reserved_cell(data->version, y, x - 1)) {
 			read_bit(code, data, ds, y, x - 1);
-
+		}
 		y += dir;
 		if (y < 0 || y >= code->size) {
 			dir = -dir;
@@ -563,10 +520,9 @@ static void read_data(const struct quirc_code *code,
 }
 
 static quirc_decode_error_t codestream_ecc(struct quirc_data *data,
-					   struct datastream *ds)
-{
+		struct datastream *ds) {
 	const struct quirc_version_info *ver =
-		&quirc_version_db[data->version];
+				&quirc_version_db[data->version];
 	const struct quirc_rs_params *sb_ecc = &ver->ecc[data->ecc_level];
 	struct quirc_rs_params lb_ecc;
 	int bc = ver->data_bytes / sb_ecc->bs;
@@ -574,311 +530,272 @@ static quirc_decode_error_t codestream_ecc(struct quirc_data *data,
 	int lb_count = ver->data_bytes - bc * sb_ecc->bs;
 	int small_dw_total = bc * sb_ecc->dw;
 	int i;
-
 	memcpy(&lb_ecc, sb_ecc, sizeof(lb_ecc));
 	lb_ecc.dw++;
 	lb_ecc.bs++;
-
 	for (i = 0; i < bc; i++) {
 		uint8_t *dst = ds->data + dst_offset;
 		const struct quirc_rs_params *ecc = sb_ecc;
 		quirc_decode_error_t err;
 		int j = 0;
 		int k;
-
-		for (k = 0; k < sb_ecc->dw; k++)
+		for (k = 0; k < sb_ecc->dw; k++) {
 			dst[j++] = ds->raw[k * bc + i];
-
+		}
 		if (i + lb_count >= bc) {
 			dst[j++] = ds->raw[small_dw_total + i - lb_count];
 			ecc = &lb_ecc;
 		}
-
 		for (k = 0; k < sb_ecc->bs - sb_ecc->dw; k++)
 			dst[j++] = ds->raw[small_dw_total + lb_count + i +
-					   k * bc];
-
+							   k * bc];
 		err = correct_block(dst, ecc);
-		if (err)
+		if (err) {
 			return err;
-
+		}
 		dst_offset += ecc->dw;
 	}
-
 	ds->data_bits = dst_offset * 8;
-
 	return QUIRC_SUCCESS;
 }
 
-static inline int bits_remaining(const struct datastream *ds)
-{
+static inline int bits_remaining(const struct datastream *ds) {
 	return ds->data_bits - ds->ptr;
 }
 
-static int take_bits(struct datastream *ds, int len)
-{
+static int take_bits(struct datastream *ds, int len) {
 	int ret = 0;
-
 	while (len && (ds->ptr < ds->data_bits)) {
 		uint8_t b = ds->data[ds->ptr >> 3];
 		int bitpos = ds->ptr & 7;
-
 		ret <<= 1;
-		if ((b << bitpos) & 0x80)
+		if ((b << bitpos) & 0x80) {
 			ret |= 1;
-
+		}
 		ds->ptr++;
 		len--;
 	}
-
 	return ret;
 }
 
 static int numeric_tuple(struct quirc_data *data,
-			 struct datastream *ds,
-			 int bits, int digits)
-{
+						 struct datastream *ds,
+						 int bits, int digits) {
 	int tuple;
 	int i;
-
-	if (bits_remaining(ds) < bits)
+	if (bits_remaining(ds) < bits) {
 		return -1;
-
+	}
 	tuple = take_bits(ds, bits);
-
 	for (i = digits - 1; i >= 0; i--) {
 		data->payload[data->payload_len + i] = tuple % 10 + '0';
 		tuple /= 10;
 	}
-
 	data->payload_len += digits;
 	return 0;
 }
 
 static quirc_decode_error_t decode_numeric(struct quirc_data *data,
-					   struct datastream *ds)
-{
+		struct datastream *ds) {
 	int bits = 14;
 	int count;
-
-	if (data->version < 10)
+	if (data->version < 10) {
 		bits = 10;
-	else if (data->version < 27)
+	} else if (data->version < 27) {
 		bits = 12;
-
+	}
 	count = take_bits(ds, bits);
-	if (data->payload_len + count + 1 > QUIRC_MAX_PAYLOAD)
+	if (data->payload_len + count + 1 > QUIRC_MAX_PAYLOAD) {
 		return QUIRC_ERROR_DATA_OVERFLOW;
-
+	}
 	while (count >= 3) {
-		if (numeric_tuple(data, ds, 10, 3) < 0)
+		if (numeric_tuple(data, ds, 10, 3) < 0) {
 			return QUIRC_ERROR_DATA_UNDERFLOW;
+		}
 		count -= 3;
 	}
-
 	if (count >= 2) {
-		if (numeric_tuple(data, ds, 7, 2) < 0)
+		if (numeric_tuple(data, ds, 7, 2) < 0) {
 			return QUIRC_ERROR_DATA_UNDERFLOW;
+		}
 		count -= 2;
 	}
-
 	if (count) {
-		if (numeric_tuple(data, ds, 4, 1) < 0)
+		if (numeric_tuple(data, ds, 4, 1) < 0) {
 			return QUIRC_ERROR_DATA_UNDERFLOW;
+		}
 		count--;
 	}
-
 	return QUIRC_SUCCESS;
 }
 
 static int alpha_tuple(struct quirc_data *data,
-		       struct datastream *ds,
-		       int bits, int digits)
-{
+					   struct datastream *ds,
+					   int bits, int digits) {
 	int tuple;
 	int i;
-
-	if (bits_remaining(ds) < bits)
+	if (bits_remaining(ds) < bits) {
 		return -1;
-
+	}
 	tuple = take_bits(ds, bits);
-
 	for (i = 0; i < digits; i++) {
 		static const char *alpha_map =
 			"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:";
-
 		data->payload[data->payload_len + digits - i - 1] =
 			alpha_map[tuple % 45];
 		tuple /= 45;
 	}
-
 	data->payload_len += digits;
 	return 0;
 }
 
 static quirc_decode_error_t decode_alpha(struct quirc_data *data,
-					 struct datastream *ds)
-{
+		struct datastream *ds) {
 	int bits = 13;
 	int count;
-
-	if (data->version < 7)
+	if (data->version < 7) {
 		bits = 9;
-	else if (data->version < 11)
+	} else if (data->version < 11) {
 		bits = 10;
-
+	}
 	count = take_bits(ds, bits);
-	if (data->payload_len + count + 1 > QUIRC_MAX_PAYLOAD)
+	if (data->payload_len + count + 1 > QUIRC_MAX_PAYLOAD) {
 		return QUIRC_ERROR_DATA_OVERFLOW;
-
+	}
 	while (count >= 2) {
-		if (alpha_tuple(data, ds, 11, 2) < 0)
+		if (alpha_tuple(data, ds, 11, 2) < 0) {
 			return QUIRC_ERROR_DATA_UNDERFLOW;
+		}
 		count -= 2;
 	}
-
 	if (count) {
-		if (alpha_tuple(data, ds, 6, 1) < 0)
+		if (alpha_tuple(data, ds, 6, 1) < 0) {
 			return QUIRC_ERROR_DATA_UNDERFLOW;
+		}
 		count--;
 	}
-
 	return QUIRC_SUCCESS;
 }
 
 static quirc_decode_error_t decode_byte(struct quirc_data *data,
-					struct datastream *ds)
-{
+										struct datastream *ds) {
 	int bits = 16;
 	int count;
 	int i;
-
-	if (data->version < 10)
+	if (data->version < 10) {
 		bits = 8;
-
+	}
 	count = take_bits(ds, bits);
-	if (data->payload_len + count + 1 > QUIRC_MAX_PAYLOAD)
+	if (data->payload_len + count + 1 > QUIRC_MAX_PAYLOAD) {
 		return QUIRC_ERROR_DATA_OVERFLOW;
-	if (bits_remaining(ds) < count * 8)
+	}
+	if (bits_remaining(ds) < count * 8) {
 		return QUIRC_ERROR_DATA_UNDERFLOW;
-
-	for (i = 0; i < count; i++)
+	}
+	for (i = 0; i < count; i++) {
 		data->payload[data->payload_len++] = take_bits(ds, 8);
-
+	}
 	return QUIRC_SUCCESS;
 }
 
 static quirc_decode_error_t decode_kanji(struct quirc_data *data,
-					 struct datastream *ds)
-{
+		struct datastream *ds) {
 	int bits = 12;
 	int count;
 	int i;
-
-	if (data->version < 10)
+	if (data->version < 10) {
 		bits = 8;
-	else if (data->version < 27)
+	} else if (data->version < 27) {
 		bits = 10;
-
+	}
 	count = take_bits(ds, bits);
-	if (data->payload_len + count * 2 + 1 > QUIRC_MAX_PAYLOAD)
+	if (data->payload_len + count * 2 + 1 > QUIRC_MAX_PAYLOAD) {
 		return QUIRC_ERROR_DATA_OVERFLOW;
-	if (bits_remaining(ds) < count * 13)
+	}
+	if (bits_remaining(ds) < count * 13) {
 		return QUIRC_ERROR_DATA_UNDERFLOW;
-
+	}
 	for (i = 0; i < count; i++) {
 		int d = take_bits(ds, 13);
 		uint16_t sjw;
-
-		if (d + 0x8140 >= 0x9ffc)
+		if (d + 0x8140 >= 0x9ffc) {
 			sjw = d + 0x8140;
-		else
+		} else {
 			sjw = d + 0xc140;
-
+		}
 		data->payload[data->payload_len++] = sjw >> 8;
 		data->payload[data->payload_len++] = sjw & 0xff;
 	}
-
 	return QUIRC_SUCCESS;
 }
 
 static quirc_decode_error_t decode_payload(struct quirc_data *data,
-					   struct datastream *ds)
-{
+		struct datastream *ds) {
 	while (bits_remaining(ds) >= 4) {
 		quirc_decode_error_t err = QUIRC_SUCCESS;
 		int type = take_bits(ds, 4);
-
 		switch (type) {
-		case QUIRC_DATA_TYPE_NUMERIC:
-			err = decode_numeric(data, ds);
-			break;
-
-		case QUIRC_DATA_TYPE_ALPHA:
-			err = decode_alpha(data, ds);
-			break;
-
-		case QUIRC_DATA_TYPE_BYTE:
-			err = decode_byte(data, ds);
-			break;
-
-		case QUIRC_DATA_TYPE_KANJI:
-			err = decode_kanji(data, ds);
-			break;
-
-		default:
-			goto done;
+			case QUIRC_DATA_TYPE_NUMERIC:
+				err = decode_numeric(data, ds);
+				break;
+			case QUIRC_DATA_TYPE_ALPHA:
+				err = decode_alpha(data, ds);
+				break;
+			case QUIRC_DATA_TYPE_BYTE:
+				err = decode_byte(data, ds);
+				break;
+			case QUIRC_DATA_TYPE_KANJI:
+				err = decode_kanji(data, ds);
+				break;
+			default:
+				goto done;
 		}
-
-		if (err)
+		if (err) {
 			return err;
-
-		if (type > data->data_type)
+		}
+		if (type > data->data_type) {
 			data->data_type = type;
+		}
 	}
 done:
-
 	/* Add nul terminator to all payloads */
-	if (data->payload_len >= sizeof(data->payload))
+	if (data->payload_len >= sizeof(data->payload)) {
 		data->payload_len--;
+	}
 	data->payload[data->payload_len] = 0;
-
 	return QUIRC_SUCCESS;
 }
 
 quirc_decode_error_t quirc_decode(const struct quirc_code *code,
-				  struct quirc_data *data)
-{
+								  struct quirc_data *data) {
 	quirc_decode_error_t err;
 	struct datastream ds;
-
-	if ((code->size - 17) % 4)
+	if ((code->size - 17) % 4) {
 		return QUIRC_ERROR_INVALID_GRID_SIZE;
-
+	}
 	memset(data, 0, sizeof(*data));
 	memset(&ds, 0, sizeof(ds));
-
 	data->version = (code->size - 17) / 4;
-
 	if (data->version < 1 ||
-	    data->version > QUIRC_MAX_VERSION)
+			data->version > QUIRC_MAX_VERSION) {
 		return QUIRC_ERROR_INVALID_VERSION;
-
+	}
 	/* Read format information -- try both locations */
 	err = read_format(code, data, 0);
-	if (err)
+	if (err) {
 		err = read_format(code, data, 1);
-	if (err)
+	}
+	if (err) {
 		return err;
-
+	}
 	read_data(code, data, &ds);
 	err = codestream_ecc(data, &ds);
-	if (err)
+	if (err) {
 		return err;
-
+	}
 	err = decode_payload(data, &ds);
-	if (err)
+	if (err) {
 		return err;
-
+	}
 	return QUIRC_SUCCESS;
 }

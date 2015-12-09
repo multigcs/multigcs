@@ -157,7 +157,7 @@ typedef struct {
 static RcFlowPluginEmbedded RcPluginEmbedded[MAX_PLUGINS];
 static RcFlowLinkEmbedded RcLinkEmbedded[MAX_LINKS];
 
-int16_t rcflow_value_limit (int16_t value, int16_t min, int16_t max);
+int16_t rcflow_value_limit(int16_t value, int16_t min, int16_t max);
 
 static char plugintype_names[RCFLOW_PLUGIN_LAST][11] = {
 	"INPUT",
@@ -209,7 +209,7 @@ static int16_t menu_set_plugin = 0;
 static int16_t menu_set_input = 0;
 
 
-uint8_t rctransmitter_get_type_by_name (char *name) {
+uint8_t rctransmitter_get_type_by_name(char *name) {
 	if (strcmp(name, "MULTIWII_21") == 0) {
 		return TELETYPE_MULTIWII_21;
 	} else if (strcmp(name, "AUTOQUAD") == 0) {
@@ -233,7 +233,7 @@ uint8_t rctransmitter_get_type_by_name (char *name) {
 }
 
 /*
-static int rcflow_tcl_output_Cmd (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+    static int rcflow_tcl_output_Cmd (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	int n1 = 0;
 	int n2 = 0;
 	int n3 = 0;
@@ -263,27 +263,27 @@ static int rcflow_tcl_output_Cmd (ClientData cdata, Tcl_Interp *interp, int objc
 	res = Tcl_NewLongObj(n3);
 	Tcl_SetObjResult(interp, res);
 	return TCL_OK;
-}
+    }
 */
 
-static void rcflow_tcl_init (void) {
+static void rcflow_tcl_init(void) {
 	rcflow_tcl_startup = 1;
-/*
-	SDL_Log("rcflow: init RcFlow-TCL...\n");
-	rcflow_tcl_interp = Tcl_CreateInterp();
-	if (TCL_OK != Tcl_Init(rcflow_tcl_interp)) {
-		SDL_Log("rcflow: ...failed (%s)\n", Tcl_GetStringResult(rcflow_tcl_interp));
-		return;
-	}
-//	Tcl_CreateObjCommand(rcflow_tcl_interp, "ModelData[ModelActive]", ModelData[ModelActive]_Cmd, NULL, NULL);
-	Tcl_CreateObjCommand(rcflow_tcl_interp, "set_output", rcflow_tcl_output_Cmd, NULL, NULL);
-	SDL_Log("...done\n");
-*/
+	/*
+		SDL_Log("rcflow: init RcFlow-TCL...\n");
+		rcflow_tcl_interp = Tcl_CreateInterp();
+		if (TCL_OK != Tcl_Init(rcflow_tcl_interp)) {
+			SDL_Log("rcflow: ...failed (%s)\n", Tcl_GetStringResult(rcflow_tcl_interp));
+			return;
+		}
+	    //	Tcl_CreateObjCommand(rcflow_tcl_interp, "ModelData[ModelActive]", ModelData[ModelActive]_Cmd, NULL, NULL);
+		Tcl_CreateObjCommand(rcflow_tcl_interp, "set_output", rcflow_tcl_output_Cmd, NULL, NULL);
+		SDL_Log("...done\n");
+	*/
 	return;
 }
 
 /*
-static void rcflow_tcl_run (char *script) {
+    static void rcflow_tcl_run (char *script) {
 	if (rcflow_tcl_startup == 0) {
 		rcflow_tcl_init();
 	}
@@ -296,7 +296,7 @@ static void rcflow_tcl_run (char *script) {
 		SDL_Log("%s\n", Tcl_GetStringResult(rcflow_tcl_interp));
 		SDL_Log("rcflow: #######################################################\n");
 	}
-}
+    }
 */
 
 static void die(char *msg) {
@@ -304,7 +304,7 @@ static void die(char *msg) {
 	return;
 }
 
-void rcflow_parseInput (xmlDocPtr doc, xmlNodePtr cur, uint8_t plugin, uint8_t input) { 
+void rcflow_parseInput(xmlDocPtr doc, xmlNodePtr cur, uint8_t plugin, uint8_t input) {
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
@@ -350,7 +350,7 @@ void rcflow_parseInput (xmlDocPtr doc, xmlNodePtr cur, uint8_t plugin, uint8_t i
 	return;
 }
 
-void rcflow_parseOutput (xmlDocPtr doc, xmlNodePtr cur, uint8_t plugin, uint8_t output) { 
+void rcflow_parseOutput(xmlDocPtr doc, xmlNodePtr cur, uint8_t plugin, uint8_t output) {
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
@@ -396,7 +396,7 @@ void rcflow_parseOutput (xmlDocPtr doc, xmlNodePtr cur, uint8_t plugin, uint8_t 
 	return;
 }
 
-void rcflow_parsePlugin (xmlDocPtr doc, xmlNodePtr cur, uint8_t plugin) { 
+void rcflow_parsePlugin(xmlDocPtr doc, xmlNodePtr cur, uint8_t plugin) {
 	uint8_t input = 0;
 	uint8_t output = 0;
 	xmlChar *key;
@@ -460,7 +460,7 @@ void rcflow_parsePlugin (xmlDocPtr doc, xmlNodePtr cur, uint8_t plugin) {
 	return;
 }
 
-void rcflow_parseLink (xmlDocPtr doc, xmlNodePtr cur, uint8_t link) { 
+void rcflow_parseLink(xmlDocPtr doc, xmlNodePtr cur, uint8_t link) {
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
@@ -482,7 +482,7 @@ void rcflow_parseLink (xmlDocPtr doc, xmlNodePtr cur, uint8_t link) {
 	return;
 }
 
-void rcflow_parseTelemetry (xmlDocPtr doc, xmlNodePtr cur) { 
+void rcflow_parseTelemetry(xmlDocPtr doc, xmlNodePtr cur) {
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
@@ -498,7 +498,7 @@ void rcflow_parseTelemetry (xmlDocPtr doc, xmlNodePtr cur) {
 	return;
 }
 
-void rcflow_parseMavlinkParam (xmlDocPtr doc, xmlNodePtr cur, uint16_t param) { 
+void rcflow_parseMavlinkParam(xmlDocPtr doc, xmlNodePtr cur, uint16_t param) {
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
@@ -520,7 +520,7 @@ void rcflow_parseMavlinkParam (xmlDocPtr doc, xmlNodePtr cur, uint16_t param) {
 	return;
 }
 
-void rcflow_parseMavlink (xmlDocPtr doc, xmlNodePtr cur) { 
+void rcflow_parseMavlink(xmlDocPtr doc, xmlNodePtr cur) {
 	uint16_t param = 0;
 	for (param = 0; param < MAVLINK_PARAMETER_MAX; param++) {
 		MavLinkVars[ModelActive][param].name[0] = 0;
@@ -530,14 +530,14 @@ void rcflow_parseMavlink (xmlDocPtr doc, xmlNodePtr cur) {
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
 		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"param"))) {
-			rcflow_parseMavlinkParam (doc, cur, param++);
+			rcflow_parseMavlinkParam(doc, cur, param++);
 		}
 		cur = cur->next;
 	}
 	return;
 }
 
-static void rcflow_parseDoc (char *docname) {
+static void rcflow_parseDoc(char *docname) {
 	uint8_t plugin = 0;
 	uint8_t input = 0;
 	uint8_t output = 0;
@@ -545,11 +545,9 @@ static void rcflow_parseDoc (char *docname) {
 	xmlDocPtr doc;
 	xmlNodePtr cur;
 	xmlChar *key;
-
 	if (strncmp(docname, "./", 2) == 0) {
 		docname += 2;
 	}
-
 	char *buffer = NULL;
 	int len = 0;
 	SDL_RWops *ops_file = SDL_RWFromFile(docname, "r");
@@ -564,7 +562,6 @@ static void rcflow_parseDoc (char *docname) {
 	doc = xmlParseMemory(buffer, len);
 	SDL_RWclose(ops_file);
 	free(buffer);
-
 	if (doc == NULL) {
 		SDL_Log("rcflow: Document parsing failed: %s\n", docname);
 		return;
@@ -629,13 +626,13 @@ static void rcflow_parseDoc (char *docname) {
 			virt_view = atoi((char *)key);
 			xmlFree(key);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"plugin"))) {
-			rcflow_parsePlugin (doc, cur, plugin++);
+			rcflow_parsePlugin(doc, cur, plugin++);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"link"))) {
-			rcflow_parseLink (doc, cur, link++);
+			rcflow_parseLink(doc, cur, link++);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"telemetry"))) {
-//			rcflow_parseTelemetry (doc, cur);
+			//			rcflow_parseTelemetry (doc, cur);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"mavlink"))) {
-			rcflow_parseMavlink (doc, cur);
+			rcflow_parseMavlink(doc, cur);
 		}
 		cur = cur->next;
 	}
@@ -643,7 +640,7 @@ static void rcflow_parseDoc (char *docname) {
 	return;
 }
 
-void rcflow_convert_to_Embedded (void) {
+void rcflow_convert_to_Embedded(void) {
 	char tmp_str[64];
 	uint8_t plugin = 0;
 	uint8_t input = 0;
@@ -706,7 +703,7 @@ void rcflow_convert_to_Embedded (void) {
 	}
 }
 
-void rcflow_convert_from_Embedded (void) {
+void rcflow_convert_from_Embedded(void) {
 	uint8_t plugin = 0;
 	uint8_t input = 0;
 	uint8_t output = 0;
@@ -727,7 +724,8 @@ void rcflow_convert_from_Embedded (void) {
 	}
 	for (link = 0; link < MAX_LINKS; link++) {
 		if (RcLinkEmbedded[link].from[0] != 255 && RcLinkEmbedded[link].from[1] != 255) {
-			if (RcPlugin[RcLinkEmbedded[link].from[0]].type != RCFLOW_PLUGIN_ADC && RcPlugin[RcLinkEmbedded[link].from[0]].type != RCFLOW_PLUGIN_SW && RcPlugin[RcLinkEmbedded[link].from[0]].type != RCFLOW_PLUGIN_ENC) {
+			if (RcPlugin[RcLinkEmbedded[link].from[0]].type != RCFLOW_PLUGIN_ADC && RcPlugin[RcLinkEmbedded[link].from[0]].type != RCFLOW_PLUGIN_SW &&
+					RcPlugin[RcLinkEmbedded[link].from[0]].type != RCFLOW_PLUGIN_ENC) {
 				RcPlugin[RcLinkEmbedded[link].from[0]].output[RcLinkEmbedded[link].from[1]].value = RcPluginEmbedded[RcLinkEmbedded[link].from[0]].output[RcLinkEmbedded[link].from[1]].value;
 			}
 		}
@@ -737,11 +735,11 @@ void rcflow_convert_from_Embedded (void) {
 	}
 }
 
-uint8_t rcflow_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_null(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 1;
 }
 
-uint8_t rcflow_virt_view (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_virt_view(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -765,7 +763,7 @@ uint8_t rcflow_virt_view (char *name, float x, float y, int8_t button, float dat
 	return 0;
 }
 
-void rcflow_undo_save (void) {
+void rcflow_undo_save(void) {
 	int16_t n = 0;
 	char tmp_str[1024];
 	char tmp_str2[1024];
@@ -781,19 +779,19 @@ void rcflow_undo_save (void) {
 		sprintf(tmp_str2, "%s/models/rcflow_undo%i.bin", get_datadirectory(), n + 1);
 		rename(tmp_str, tmp_str2);
 	}
-        FILE *fr;
+	FILE *fr;
 	sprintf(tmp_str, "%s/models/rcflow_undo0.bin", get_datadirectory());
-        fr = fopen(tmp_str, "wb");
+	fr = fopen(tmp_str, "wb");
 	if (fr != 0) {
 		fwrite(&RcPlugin[0], sizeof(RcFlowPlugin) * MAX_PLUGINS, 1, fr);
 		fwrite(&RcLink[0], sizeof(RcFlowLink) * MAX_LINKS, 1, fr);
-	        fclose(fr);
+		fclose(fr);
 	}
 	undo = 0;
 }
 
 
-uint8_t rcflow_redo (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_redo(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -813,18 +811,18 @@ uint8_t rcflow_redo (char *name, float x, float y, int8_t button, float data, ui
 		undo--;
 	}
 	SDL_Log("rcflow: redo %i\n", undo);
-        FILE *fr;
+	FILE *fr;
 	sprintf(tmp_str, "%s/models/rcflow_undo%i.bin", get_datadirectory(), undo);
-        fr = fopen(tmp_str, "r");
+	fr = fopen(tmp_str, "r");
 	if (fr != 0) {
 		fread(&RcPlugin[0], sizeof(RcFlowPlugin) * MAX_PLUGINS, 1, fr);
 		fread(&RcLink[0], sizeof(RcFlowLink) * MAX_LINKS, 1, fr);
-	        fclose(fr);
+		fclose(fr);
 	}
 	return 0;
 }
 
-uint8_t rcflow_undo (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_undo(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -844,18 +842,18 @@ uint8_t rcflow_undo (char *name, float x, float y, int8_t button, float data, ui
 		undo++;
 	}
 	SDL_Log("rcflow: undo %i\n", undo);
-        FILE *fr;
+	FILE *fr;
 	sprintf(tmp_str, "%s/models/rcflow_undo%i.bin", get_datadirectory(), undo);
-        fr = fopen(tmp_str, "r");
+	fr = fopen(tmp_str, "r");
 	if (fr != 0) {
 		fread(&RcPlugin[0], sizeof(RcFlowPlugin) * MAX_PLUGINS, 1, fr);
 		fread(&RcLink[0], sizeof(RcFlowLink) * MAX_LINKS, 1, fr);
-	        fclose(fr);
+		fclose(fr);
 	}
 	return 0;
 }
 
-uint8_t rcflow_menu_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_menu_set(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -875,7 +873,7 @@ uint8_t rcflow_menu_set (char *name, float x, float y, int8_t button, float data
 	return 0;
 }
 
-uint8_t rcflow_menu_set_reverse_dir (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_menu_set_reverse_dir(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -901,7 +899,7 @@ uint8_t rcflow_menu_set_reverse_dir (char *name, float x, float y, int8_t button
 	return 0;
 }
 
-uint8_t rcflow_menu_set_reverse (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_menu_set_reverse(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -921,7 +919,7 @@ uint8_t rcflow_menu_set_reverse (char *name, float x, float y, int8_t button, fl
 	return 0;
 }
 
-uint8_t rcflow_menu_set_input (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_menu_set_input(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -941,7 +939,7 @@ uint8_t rcflow_menu_set_input (char *name, float x, float y, int8_t button, floa
 	return 0;
 }
 
-uint8_t rcflow_menu_set_plugin (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_menu_set_plugin(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -961,7 +959,7 @@ uint8_t rcflow_menu_set_plugin (char *name, float x, float y, int8_t button, flo
 	return 0;
 }
 
-uint8_t rcflow_menu_set_type (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_menu_set_type(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -982,7 +980,7 @@ uint8_t rcflow_menu_set_type (char *name, float x, float y, int8_t button, float
 	return 0;
 }
 
-uint8_t rcflow_test (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_test(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -1047,14 +1045,14 @@ uint8_t rcflow_test (char *name, float x, float y, int8_t button, float data, ui
 	return 0;
 }
 
-uint8_t rcflow_open (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_open(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	int id = (int)data;
 	RcPlugin[id].open = 1 - RcPlugin[id].open;
 	unsave = 1;
 	return 0;
 }
 
-uint8_t rcflow_update (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_update(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -1081,7 +1079,7 @@ uint8_t rcflow_update (char *name, float x, float y, int8_t button, float data, 
 	return 0;
 }
 
-uint8_t rcflow_update_plugin (int8_t plugin_num) {
+uint8_t rcflow_update_plugin(int8_t plugin_num) {
 #ifdef ADC_TEST
 	int16_t n = 0;
 	uint8_t start[2] = {'P', 'P'};
@@ -1090,10 +1088,10 @@ uint8_t rcflow_update_plugin (int8_t plugin_num) {
 	uint8_t *ptr = (uint8_t *)&RcPluginEmbedded[plugin_num];
 	rcflow_convert_to_Embedded();
 	for (n = 0; n < sizeof(RcFlowPluginEmbedded); n++) {
-//		SDL_Log("%i -- %i/%i: ptr = %i (%i)\n", plugin_num, n, sizeof(RcFlowPluginEmbedded), *ptr, chksum);
+		//		SDL_Log("%i -- %i/%i: ptr = %i (%i)\n", plugin_num, n, sizeof(RcFlowPluginEmbedded), *ptr, chksum);
 		chksum ^= *ptr++;
 	}
-//	SDL_Log("chksum = %i\n", chksum);
+	//	SDL_Log("chksum = %i\n", chksum);
 	write(rcflow_fd, &start, 2);
 	write(rcflow_fd, &plugin_num, sizeof(plugin_num));
 	write(rcflow_fd, &RcPluginEmbedded[plugin_num], sizeof(RcFlowPluginEmbedded));
@@ -1103,7 +1101,7 @@ uint8_t rcflow_update_plugin (int8_t plugin_num) {
 	return 0;
 }
 
-uint8_t rcflow_update_link (int8_t link_num) {
+uint8_t rcflow_update_link(int8_t link_num) {
 #ifdef ADC_TEST
 	int16_t n = 0;
 	uint8_t start[2] = {'L', 'L'};
@@ -1112,10 +1110,10 @@ uint8_t rcflow_update_link (int8_t link_num) {
 	uint8_t *ptr = (uint8_t *)&RcLinkEmbedded[link_num];
 	rcflow_convert_to_Embedded();
 	for (n = 0; n < sizeof(RcFlowLinkEmbedded); n++) {
-//		SDL_Log("%i -- %i/%i: ptr = %i (%i)\n", link_num, n, sizeof(RcFlowLinkEmbedded), *ptr, chksum);
+		//		SDL_Log("%i -- %i/%i: ptr = %i (%i)\n", link_num, n, sizeof(RcFlowLinkEmbedded), *ptr, chksum);
 		chksum ^= *ptr++;
 	}
-//	SDL_Log("chksum = %i\n", chksum);
+	//	SDL_Log("chksum = %i\n", chksum);
 	write(rcflow_fd, &start, 2);
 	write(rcflow_fd, &link_num, sizeof(link_num));
 	write(rcflow_fd, &RcLinkEmbedded[link_num], sizeof(RcFlowLinkEmbedded));
@@ -1125,7 +1123,7 @@ uint8_t rcflow_update_link (int8_t link_num) {
 	return 0;
 }
 
-uint8_t rcflow_load_xml (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_load_xml(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -1145,7 +1143,7 @@ uint8_t rcflow_load_xml (char *name, float x, float y, int8_t button, float data
 	return 0;
 }
 
-uint8_t rcflow_load (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_load(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -1171,7 +1169,7 @@ uint8_t rcflow_load (char *name, float x, float y, int8_t button, float data, ui
 	return 0;
 }
 
-uint8_t rcflow_lock (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_lock(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -1191,7 +1189,7 @@ uint8_t rcflow_lock (char *name, float x, float y, int8_t button, float data, ui
 	return 0;
 }
 
-uint8_t rcflow_save_xml (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_save_xml(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -1212,9 +1210,8 @@ uint8_t rcflow_save_xml (char *name, float x, float y, int8_t button, float data
 	uint8_t link = 0;
 	uint8_t input = 0;
 	uint8_t output = 0;
-        FILE *fr;
+	FILE *fr;
 	char tmp_str[128];
-
 	if (strstr(name, ".xml\0") <= 0) {
 		strcat(name, ".xml");
 	}
@@ -1222,7 +1219,7 @@ uint8_t rcflow_save_xml (char *name, float x, float y, int8_t button, float data
 	sprintf(tmp_str, "mkdir -p %s/models", get_datadirectory());
 	system(tmp_str);
 	sprintf(tmp_str, "%s/models/%s", get_datadirectory(), name);
-        fr = fopen(tmp_str, "wb");
+	fr = fopen(tmp_str, "wb");
 	if (fr != 0) {
 		fprintf(fr, "<rcflow>\n");
 		fprintf(fr, " <name>%s</name>\n", setup_name);
@@ -1281,13 +1278,13 @@ uint8_t rcflow_save_xml (char *name, float x, float y, int8_t button, float data
 			}
 		}
 		fprintf(fr, "</rcflow>\n");
-	        fclose(fr);
+		fclose(fr);
 	}
 	unsave = 0;
 	return 0;
 }
 
-uint8_t rcflow_save (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_save(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -1309,7 +1306,7 @@ uint8_t rcflow_save (char *name, float x, float y, int8_t button, float data, ui
 	return 0;
 }
 
-uint8_t rcflow_plugin_del (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_plugin_del(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -1329,7 +1326,7 @@ uint8_t rcflow_plugin_del (char *name, float x, float y, int8_t button, float da
 	return 0;
 }
 
-uint8_t rcflow_plugin_add (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_plugin_add(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	int n = 0;
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
@@ -1675,7 +1672,7 @@ uint8_t rcflow_plugin_add (char *name, float x, float y, int8_t button, float da
 	return 0;
 }
 
-uint8_t rcflow_plugin_select (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_plugin_select(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -1696,7 +1693,7 @@ uint8_t rcflow_plugin_select (char *name, float x, float y, int8_t button, float
 }
 
 
-uint8_t rcflow_plugin_move (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_plugin_move(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	static float move_diff_x = 0.0;
 	static float move_diff_y = 0.0;
 	if (button == 5) {
@@ -1766,16 +1763,14 @@ uint8_t rcflow_plugin_move (char *name, float x, float y, int8_t button, float d
 		RcPlugin[(int)data].x = x / scale;
 		RcPlugin[(int)data].y = y / scale;
 	}
-//	SDL_Log("rcflow: MOVE: %0.2f, %0.2f\n", x, y);
-
+	//	SDL_Log("rcflow: MOVE: %0.2f, %0.2f\n", x, y);
 	rcflow_plugin_move_id = (int)data;
 	rcflow_plugin_move_timer = 50;
-
 	unsave = 1;
 	return 0;
 }
 
-int16_t rcflow_value_limit (int16_t value, int16_t min, int16_t max) {
+int16_t rcflow_value_limit(int16_t value, int16_t min, int16_t max) {
 	if (value >= max) {
 		return max;
 	}
@@ -1785,7 +1780,7 @@ int16_t rcflow_value_limit (int16_t value, int16_t min, int16_t max) {
 	return value;
 }
 
-float rcflow_value_limit_float (float value, float min, float max) {
+float rcflow_value_limit_float(float value, float min, float max) {
 	if (value >= max) {
 		return max;
 	}
@@ -1795,7 +1790,7 @@ float rcflow_value_limit_float (float value, float min, float max) {
 	return value;
 }
 
-uint8_t rcflow_canvas_center (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_canvas_center(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -1815,7 +1810,7 @@ uint8_t rcflow_canvas_center (char *name, float x, float y, int8_t button, float
 	return 0;
 }
 
-uint8_t rcflow_canvas_move (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_canvas_move(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -1841,7 +1836,7 @@ uint8_t rcflow_canvas_move (char *name, float x, float y, int8_t button, float d
 	return 0;
 }
 
-uint8_t rcflow_link_add (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_link_add(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -1884,7 +1879,7 @@ uint8_t rcflow_link_add (char *name, float x, float y, int8_t button, float data
 	return 0;
 }
 
-uint8_t rcflow_link_mark (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_link_mark(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -1955,7 +1950,7 @@ uint8_t rcflow_link_mark (char *name, float x, float y, int8_t button, float dat
 	return 0;
 }
 
-uint8_t rcflow_plugin_title_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_plugin_title_set(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -1975,7 +1970,7 @@ uint8_t rcflow_plugin_title_set (char *name, float x, float y, int8_t button, fl
 	return 0;
 }
 
-uint8_t rcflow_plugin_title_edit (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_plugin_title_edit(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -2004,7 +1999,7 @@ uint8_t rcflow_plugin_title_edit (char *name, float x, float y, int8_t button, f
 	return 0;
 }
 
-uint8_t rcflow_plugin_max_get (uint8_t id) {
+uint8_t rcflow_plugin_max_get(uint8_t id) {
 	uint8_t input_max = 1;
 	uint8_t output_max = 1;
 	uint8_t num = 0;
@@ -2026,7 +2021,7 @@ uint8_t rcflow_plugin_max_get (uint8_t id) {
 	return num_max;
 }
 
-uint8_t rcflow_plugin_curve_preset (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_plugin_curve_preset(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -2049,7 +2044,7 @@ uint8_t rcflow_plugin_curve_preset (char *name, float x, float y, int8_t button,
 				if (RcPlugin[plugin].input[2].value == -1000 && RcPlugin[plugin].input[MAX_CURVE_POINTS / 2 + 2].value == 0 && RcPlugin[plugin].input[MAX_CURVE_POINTS + 1].value == 1000) {
 					for (n = 0; n <= MAX_CURVE_POINTS / 2; n++) {
 						RcPlugin[plugin].input[n + 2].value = n * 2000 / (MAX_CURVE_POINTS - 1) - 1000;
-						RcPlugin[plugin].input[MAX_CURVE_POINTS - n +1].value = n * 2000 / (MAX_CURVE_POINTS - 1) - 1000;
+						RcPlugin[plugin].input[MAX_CURVE_POINTS - n + 1].value = n * 2000 / (MAX_CURVE_POINTS - 1) - 1000;
 					}
 				} else if (RcPlugin[plugin].input[2].value == -1000 && RcPlugin[plugin].input[MAX_CURVE_POINTS / 2 + 2].value == 0 && RcPlugin[plugin].input[MAX_CURVE_POINTS + 1].value == -1000) {
 					for (n = 0; n <= MAX_CURVE_POINTS / 2; n++) {
@@ -2067,7 +2062,7 @@ uint8_t rcflow_plugin_curve_preset (char *name, float x, float y, int8_t button,
 	return 0;
 }
 
-uint8_t rcflow_switch_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_switch_change(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -2145,7 +2140,7 @@ uint8_t rcflow_switch_change (char *name, float x, float y, int8_t button, float
 	return 0;
 }
 
-uint8_t rcflow_slider_move (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t rcflow_slider_move(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -2240,25 +2235,21 @@ uint8_t rcflow_slider_move (char *name, float x, float y, int8_t button, float d
 					}
 				}
 			}
-
 		}
 	}
 	return 0;
 }
 
-void rcflow_draw_switch (ESContext *esContext, char *name, float x, float y, float w, float value, uint8_t type) {
+void rcflow_draw_switch(ESContext *esContext, char *name, float x, float y, float w, float value, uint8_t type) {
 	char tmp_str[1024];
 	if (value > 0) {
 #ifndef SIMPLE_DRAW
-//		draw_box_f3c2(esContext, (x - (w / 2)) * scale, (y) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.025) * scale, 0.001, 255, 255, 255, 200, 25, 25, 25, 150);
-//		draw_box_f3c2(esContext, (x - (w / 2)) * scale, (y + 0.025) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.05) * scale, 0.001, 25, 25, 25, 150, 255, 255, 255, 200);
-
+		//		draw_box_f3c2(esContext, (x - (w / 2)) * scale, (y) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.025) * scale, 0.001, 255, 255, 255, 200, 25, 25, 25, 150);
+		//		draw_box_f3c2(esContext, (x - (w / 2)) * scale, (y + 0.025) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.05) * scale, 0.001, 25, 25, 25, 150, 255, 255, 255, 200);
 		sprintf(tmp_str, "%s/textures/led-on.png", BASE_DIR);
 		draw_image_f3(esContext, (x - 0.04 - CONN_RADIUS) * scale, (y + 0.025 - CONN_RADIUS) * scale, (x - 0.04 + CONN_RADIUS) * scale, (y + 0.025 + CONN_RADIUS) * scale, 0.02, tmp_str);
-
 		sprintf(tmp_str, "%s/textures/sw-on.png", BASE_DIR);
 		draw_image_f3(esContext, (x + 0.04 - CONN_RADIUS) * scale, (y + 0.025 - CONN_RADIUS) * scale, (x + 0.04 + CONN_RADIUS) * scale, (y + 0.025 + CONN_RADIUS) * scale, 0.02, tmp_str);
-
 		sprintf(tmp_str, "sw_%s", name);
 		draw_text_button(esContext, tmp_str, setup.view_mode, "        ", FONT_GREEN, x * scale, y * scale, 0.002, 0.05 * scale, ALIGN_CENTER, ALIGN_TOP, rcflow_switch_change, 0.0);
 #else
@@ -2267,15 +2258,12 @@ void rcflow_draw_switch (ESContext *esContext, char *name, float x, float y, flo
 #endif
 	} else {
 #ifndef SIMPLE_DRAW
-//		draw_box_f3c2(esContext, (x - (w / 2)) * scale, (y) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.025) * scale, 0.001, 25, 25, 25, 150, 255, 255, 255, 200);
-//		draw_box_f3c2(esContext, (x - (w / 2)) * scale, (y + 0.025) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.05) * scale, 0.001, 255, 255, 255, 200, 25, 25, 25, 150);
-
+		//		draw_box_f3c2(esContext, (x - (w / 2)) * scale, (y) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.025) * scale, 0.001, 25, 25, 25, 150, 255, 255, 255, 200);
+		//		draw_box_f3c2(esContext, (x - (w / 2)) * scale, (y + 0.025) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.05) * scale, 0.001, 255, 255, 255, 200, 25, 25, 25, 150);
 		sprintf(tmp_str, "%s/textures/led-off.png", BASE_DIR);
 		draw_image_f3(esContext, (x - 0.04 - CONN_RADIUS) * scale, (y + 0.025 - CONN_RADIUS) * scale, (x - 0.04 + CONN_RADIUS) * scale, (y + 0.025 + CONN_RADIUS) * scale, 0.02, tmp_str);
-
 		sprintf(tmp_str, "%s/textures/sw-off.png", BASE_DIR);
 		draw_image_f3(esContext, (x + 0.04 - CONN_RADIUS) * scale, (y + 0.025 - CONN_RADIUS) * scale, (x + 0.04 + CONN_RADIUS) * scale, (y + 0.025 + CONN_RADIUS) * scale, 0.02, tmp_str);
-
 		sprintf(tmp_str, "sw_%s", name);
 		draw_text_button(esContext, tmp_str, setup.view_mode, "        ", FONT_GREEN, x * scale, y * scale, 0.002, 0.05 * scale, ALIGN_CENTER, ALIGN_TOP, rcflow_switch_change, 0.0);
 #else
@@ -2285,7 +2273,7 @@ void rcflow_draw_switch (ESContext *esContext, char *name, float x, float y, flo
 	}
 }
 
-void rcflow_draw_slider (ESContext *esContext, char *name, float x, float y, float w, float value, float value2, uint8_t type) {
+void rcflow_draw_slider(ESContext *esContext, char *name, float x, float y, float w, float value, float value2, uint8_t type) {
 	uint8_t n = 0;
 	char tmp_str[1024];
 	if (type != 3) {
@@ -2314,9 +2302,11 @@ void rcflow_draw_slider (ESContext *esContext, char *name, float x, float y, flo
 			draw_line_f3(esContext, (x - (w / 2) + w) * scale, (y + 0.009) * scale, 0.001, (x - (w / 2) + w) * scale, (y + 0.05 - 0.009) * scale, 0.001, 150, 150, 150, 255);
 			draw_box_f3(esContext, (x - (w / 2) + 0.035 - 0.001) * scale, (y + 0.025 - 0.003) * scale, 0.001, (x - (w / 2) + w - 0.035 + 0.01) * scale, (y + 0.025 + 0.003) * scale, 0.001, 0, 0, 0, 255);
 			for (n = 0; n <= 6; n++) {
-				#define SHADOW_OFFSET 0.002
-				draw_box_f3(esContext, (x - (w / 2.0) + (w * (float)n / 6.0) - 0.001 + SHADOW_OFFSET) * scale, (y + 0.001 + SHADOW_OFFSET) * scale, 0.001, (x - (w / 2.0) + (w * (float)n / 6.0) + 0.001 + SHADOW_OFFSET) * scale, (y + 0.007 + SHADOW_OFFSET) * scale, 0.001, 2, 2, 2, 255);
-				draw_box_f3(esContext, (x - (w / 2.0) + (w * (float)n / 6.0) - 0.001) * scale, (y + 0.001) * scale, 0.001, (x - (w / 2.0) + (w * (float)n / 6.0) + 0.001) * scale, (y + 0.007) * scale, 0.001, 255, 255, 255, 255);
+#define SHADOW_OFFSET 0.002
+				draw_box_f3(esContext, (x - (w / 2.0) + (w * (float)n / 6.0) - 0.001 + SHADOW_OFFSET) * scale, (y + 0.001 + SHADOW_OFFSET) * scale, 0.001,
+							(x - (w / 2.0) + (w * (float)n / 6.0) + 0.001 + SHADOW_OFFSET) * scale, (y + 0.007 + SHADOW_OFFSET) * scale, 0.001, 2, 2, 2, 255);
+				draw_box_f3(esContext, (x - (w / 2.0) + (w * (float)n / 6.0) - 0.001) * scale, (y + 0.001) * scale, 0.001, (x - (w / 2.0) + (w * (float)n / 6.0) + 0.001) * scale, (y + 0.007) * scale, 0.001, 255, 255,
+							255, 255);
 			}
 			sprintf(tmp_str, "%s/textures/slider.png", BASE_DIR);
 			draw_image_f3(esContext, (x + (value * w / 2000)) * scale, (y + 0.01) * scale, (x + (value2 * w / 2000)) * scale, (y + 0.05 - 0.01) * scale, 0.02, tmp_str);
@@ -2338,14 +2328,17 @@ void rcflow_draw_slider (ESContext *esContext, char *name, float x, float y, flo
 			draw_line_f3(esContext, (x - (w / 2) + w + 0.032) * scale, (y + 0.009) * scale, 0.001, (x - (w / 2) + w + 0.032) * scale, (y + 0.05 - 0.009) * scale, 0.001, 150, 150, 150, 255);
 			draw_box_f3(esContext, (x - (w / 2) - 0.01) * scale, (y + 0.025 - 0.003) * scale, 0.001, (x - (w / 2) + w + 0.01) * scale, (y + 0.025 + 0.003) * scale, 0.001, 0, 0, 0, 255);
 			for (n = 0; n <= 10; n++) {
-				#define SHADOW_OFFSET 0.002
-				draw_box_f3(esContext, (x - (w / 2.0) + (w * (float)n / 10.0) - 0.001 + SHADOW_OFFSET) * scale, (y + 0.001 + SHADOW_OFFSET) * scale, 0.001, (x - (w / 2.0) + (w * (float)n / 10.0) + 0.001 + SHADOW_OFFSET) * scale, (y + 0.007 + SHADOW_OFFSET) * scale, 0.001, 2, 2, 2, 255);
-				draw_box_f3(esContext, (x - (w / 2.0) + (w * (float)n / 10.0) - 0.001) * scale, (y + 0.001) * scale, 0.001, (x - (w / 2.0) + (w * (float)n / 10.0) + 0.001) * scale, (y + 0.007) * scale, 0.001, 255, 255, 255, 255);
+#define SHADOW_OFFSET 0.002
+				draw_box_f3(esContext, (x - (w / 2.0) + (w * (float)n / 10.0) - 0.001 + SHADOW_OFFSET) * scale, (y + 0.001 + SHADOW_OFFSET) * scale, 0.001,
+							(x - (w / 2.0) + (w * (float)n / 10.0) + 0.001 + SHADOW_OFFSET) * scale, (y + 0.007 + SHADOW_OFFSET) * scale, 0.001, 2, 2, 2, 255);
+				draw_box_f3(esContext, (x - (w / 2.0) + (w * (float)n / 10.0) - 0.001) * scale, (y + 0.001) * scale, 0.001, (x - (w / 2.0) + (w * (float)n / 10.0) + 0.001) * scale, (y + 0.007) * scale, 0.001, 255,
+							255, 255, 255);
 			}
 			sprintf(tmp_str, "%s/textures/slider.png", BASE_DIR);
 			draw_image_f3(esContext, (x + (value * w / 2000) - 0.03) * scale, (y + 0.01) * scale, (x + (value * w / 2000) + 0.03) * scale, (y + 0.05 - 0.01) * scale, 0.02, tmp_str);
 #else
-			draw_line_f3(esContext, (x - (w / 2) + w / 2.0 + (value2 * w / 2000)) * scale, (y - 0.001) * scale, 0.001, (x - (w / 2) + w / 2.0 + (value2 * w / 2000)) * scale, (y + 0.05 + 0.001) * scale, 0.001, 127, 127, 127, 255);
+			draw_line_f3(esContext, (x - (w / 2) + w / 2.0 + (value2 * w / 2000)) * scale, (y - 0.001) * scale, 0.001, (x - (w / 2) + w / 2.0 + (value2 * w / 2000)) * scale, (y + 0.05 + 0.001) * scale, 0.001,
+						 127, 127, 127, 255);
 			draw_line_f3(esContext, (x - (w / 2) + w / 2.0) * scale, (y - 0.001) * scale, 0.001, (x - (w / 2) + w / 2.0) * scale, (y + 0.05 + 0.001) * scale, 0.001, 127, 127, 127, 255);
 #endif
 		}
@@ -2354,7 +2347,7 @@ void rcflow_draw_slider (ESContext *esContext, char *name, float x, float y, flo
 	set_button(tmp_str, setup.view_mode, (x - (w / 2) - 0.032) * scale, (y) * scale, (x - (w / 2) + w + 0.032) * scale, (y + 0.05) * scale, rcflow_slider_move, (float)0, 1);
 }
 
-void rcflow_draw_vplugin (ESContext *esContext, uint8_t id, uint8_t vnum) {
+void rcflow_draw_vplugin(ESContext *esContext, uint8_t id, uint8_t vnum) {
 	uint8_t output = 0;
 	char tmp_str[64];
 	uint8_t num_max = rcflow_plugin_max_get(id);
@@ -2362,42 +2355,53 @@ void rcflow_draw_vplugin (ESContext *esContext, uint8_t id, uint8_t vnum) {
 	if (RcPlugin[id].type == RCFLOW_PLUGIN_MULTIPLEX_IN) {
 		num_max = 3;
 		sprintf(tmp_str, "Select:%i", RcPluginEmbedded[id].input[MAX_INPUTS - 1].value + 1);
-		draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_GREEN, RcPlugin[id].x_virt, RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE + 0.04, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_title_edit, (float)id);
+		draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_GREEN, RcPlugin[id].x_virt, RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE + 0.04, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP,
+						 rcflow_plugin_title_edit, (float)id);
 	}
-
 #ifndef SIMPLE_DRAW
 	if (RcPlugin[id].type == RCFLOW_PLUGIN_INPUT) {
-		draw_box_f3c2(esContext, RcPlugin[id].x_virt - (PLUGIN_WIDTH / 2.0), RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.001, RcPlugin[id].x_virt + (PLUGIN_WIDTH / 2.0), RcPlugin[id].y_virt + num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.001, 55, 55, 55, 127, 100, 255, 100, 120);
+		draw_box_f3c2(esContext, RcPlugin[id].x_virt - (PLUGIN_WIDTH / 2.0), RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.001, RcPlugin[id].x_virt + (PLUGIN_WIDTH / 2.0),
+					  RcPlugin[id].y_virt + num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.001, 55, 55, 55, 127, 100, 255, 100, 120);
 	} else if (RcPlugin[id].type == RCFLOW_PLUGIN_OUTPUT) {
-		draw_box_f3c2(esContext, RcPlugin[id].x_virt - (PLUGIN_WIDTH / 2.0), RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.001, RcPlugin[id].x_virt + (PLUGIN_WIDTH / 2.0), RcPlugin[id].y_virt + num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.001, 55, 55, 55, 127, 255, 100, 100, 120);
+		draw_box_f3c2(esContext, RcPlugin[id].x_virt - (PLUGIN_WIDTH / 2.0), RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.001, RcPlugin[id].x_virt + (PLUGIN_WIDTH / 2.0),
+					  RcPlugin[id].y_virt + num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.001, 55, 55, 55, 127, 255, 100, 100, 120);
 	} else if (RcPlugin[id].type == RCFLOW_PLUGIN_ADC || RcPlugin[id].type == RCFLOW_PLUGIN_SW || RcPlugin[id].type == RCFLOW_PLUGIN_ENC) {
-		draw_box_f3c2(esContext, RcPlugin[id].x_virt - (PLUGIN_WIDTH / 2.0), RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.001, RcPlugin[id].x_virt + (PLUGIN_WIDTH / 2.0), RcPlugin[id].y_virt + num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.001, 55, 55, 55, 127, 255, 255, 100, 120);
+		draw_box_f3c2(esContext, RcPlugin[id].x_virt - (PLUGIN_WIDTH / 2.0), RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.001, RcPlugin[id].x_virt + (PLUGIN_WIDTH / 2.0),
+					  RcPlugin[id].y_virt + num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.001, 55, 55, 55, 127, 255, 255, 100, 120);
 	} else {
-		draw_box_f3c2(esContext, RcPlugin[id].x_virt - (PLUGIN_WIDTH / 2.0), RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.001, RcPlugin[id].x_virt + (PLUGIN_WIDTH / 2.0), RcPlugin[id].y_virt + num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.001, 55, 55, 55, 127, 100, 100, 255, 120);
+		draw_box_f3c2(esContext, RcPlugin[id].x_virt - (PLUGIN_WIDTH / 2.0), RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.001, RcPlugin[id].x_virt + (PLUGIN_WIDTH / 2.0),
+					  RcPlugin[id].y_virt + num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.001, 55, 55, 55, 127, 100, 100, 255, 120);
 	}
 #else
-	draw_box_f3(esContext, RcPlugin[id].x_virt - (PLUGIN_WIDTH / 2.0), RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.001, RcPlugin[id].x_virt + (PLUGIN_WIDTH / 2.0), RcPlugin[id].y_virt + num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.001, 100, 100, 100, 255);
+	draw_box_f3(esContext, RcPlugin[id].x_virt - (PLUGIN_WIDTH / 2.0), RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.001, RcPlugin[id].x_virt + (PLUGIN_WIDTH / 2.0),
+				RcPlugin[id].y_virt + num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.001, 100, 100, 100, 255);
 #endif
-	draw_rect_f3(esContext, RcPlugin[id].x_virt - (PLUGIN_WIDTH / 2.0), RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.001, RcPlugin[id].x_virt + (PLUGIN_WIDTH / 2.0), RcPlugin[id].y_virt + num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.001, 200, 200, 200, 155);
+	draw_rect_f3(esContext, RcPlugin[id].x_virt - (PLUGIN_WIDTH / 2.0), RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.001, RcPlugin[id].x_virt + (PLUGIN_WIDTH / 2.0),
+				 RcPlugin[id].y_virt + num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.001, 200, 200, 200, 155);
 	if (lock == 0 || del_plugin == 1) {
-		set_button(RcPlugin[id].name, setup.view_mode, RcPlugin[id].x_virt - (PLUGIN_WIDTH / 2.0), RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - TITLE_HEIGHT, RcPlugin[id].x_virt + (PLUGIN_WIDTH / 2.0), RcPlugin[id].y_virt + num_max / 2 * LINK_SPACE - TITLE_HEIGHT, rcflow_plugin_move, (float)id, 1);
+		set_button(RcPlugin[id].name, setup.view_mode, RcPlugin[id].x_virt - (PLUGIN_WIDTH / 2.0), RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - TITLE_HEIGHT, RcPlugin[id].x_virt + (PLUGIN_WIDTH / 2.0),
+				   RcPlugin[id].y_virt + num_max / 2 * LINK_SPACE - TITLE_HEIGHT, rcflow_plugin_move, (float)id, 1);
 	}
 	sprintf(tmp_str, "name_%s", RcPlugin[id].name);
 	if (RcPlugin[id].title[0] != 0) {
-		draw_text_button(esContext, tmp_str, setup.view_mode, RcPlugin[id].title, FONT_GREEN, RcPlugin[id].x_virt, RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_title_edit, (float)id);
+		draw_text_button(esContext, tmp_str, setup.view_mode, RcPlugin[id].title, FONT_GREEN, RcPlugin[id].x_virt, RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.002, 0.04, ALIGN_CENTER,
+						 ALIGN_TOP, rcflow_plugin_title_edit, (float)id);
 	} else {
-		draw_text_button(esContext, tmp_str, setup.view_mode, RcPlugin[id].name, FONT_GREEN, RcPlugin[id].x_virt, RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_title_edit, (float)id);
+		draw_text_button(esContext, tmp_str, setup.view_mode, RcPlugin[id].name, FONT_GREEN, RcPlugin[id].x_virt, RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE - TITLE_HEIGHT, 0.002, 0.04, ALIGN_CENTER,
+						 ALIGN_TOP, rcflow_plugin_title_edit, (float)id);
 	}
-
 	// Output-Sliders
-	if (RcPlugin[id].type == RCFLOW_PLUGIN_ADC || RcPlugin[id].type == RCFLOW_PLUGIN_SW || RcPlugin[id].type == RCFLOW_PLUGIN_ENC || RcPlugin[id].type == RCFLOW_PLUGIN_VADC || RcPlugin[id].type == RCFLOW_PLUGIN_VSW || RcPlugin[id].vview == 1) {
+	if (RcPlugin[id].type == RCFLOW_PLUGIN_ADC || RcPlugin[id].type == RCFLOW_PLUGIN_SW || RcPlugin[id].type == RCFLOW_PLUGIN_ENC || RcPlugin[id].type == RCFLOW_PLUGIN_VADC ||
+			RcPlugin[id].type == RCFLOW_PLUGIN_VSW || RcPlugin[id].vview == 1) {
 		for (output = 0; output < MAX_OUTPUTS; output++) {
 			if (RcPlugin[id].output[output].name[0] != 0 && RcPlugin[id].output[output].type != RCFLOW_INOUT_TYPE_TEMP) {
 				sprintf(tmp_str, "%s;%s", RcPlugin[id].name, RcPlugin[id].output[output].name);
 				if (RcPlugin[id].output[output].type == RCFLOW_INOUT_TYPE_ONOFF) {
-					rcflow_draw_switch(esContext, tmp_str, RcPlugin[id].x_virt, RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.02, SLIDER_WIDTH, RcPlugin[id].output[output].value, RcPlugin[id].output[output].type);
+					rcflow_draw_switch(esContext, tmp_str, RcPlugin[id].x_virt, RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.02, SLIDER_WIDTH, RcPlugin[id].output[output].value,
+									   RcPlugin[id].output[output].type);
 				} else {
-					rcflow_draw_slider(esContext, tmp_str, RcPlugin[id].x_virt, RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.02, SLIDER_WIDTH, RcPlugin[id].output[output].value, 0.0, RcPlugin[id].output[output].type);
+					rcflow_draw_slider(esContext, tmp_str, RcPlugin[id].x_virt, RcPlugin[id].y_virt - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.02, SLIDER_WIDTH, RcPlugin[id].output[output].value, 0.0,
+									   RcPlugin[id].output[output].type);
 				}
 			}
 		}
@@ -2407,7 +2411,7 @@ void rcflow_draw_vplugin (ESContext *esContext, uint8_t id, uint8_t vnum) {
 static int rcflow_sript_view_flag = -1;
 static char rcflow_sript_view_text[2048];
 
-static uint8_t rcflow_sript_view (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+static uint8_t rcflow_sript_view(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -2430,11 +2434,10 @@ static uint8_t rcflow_sript_view (char *name, float x, float y, int8_t button, f
 	if (rcflow_sript_view_flag != -1) {
 		strcpy(rcflow_sript_view_text, RcPlugin[rcflow_sript_view_flag].text);
 	}
-
 	return 0;
 }
 
-static uint8_t rcflow_sript_view_save (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+static uint8_t rcflow_sript_view_save(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		if (scale > SCALE_MIN) {
 			scale -= 0.1;
@@ -2457,39 +2460,36 @@ static uint8_t rcflow_sript_view_save (char *name, float x, float y, int8_t butt
 }
 
 
-void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
+void rcflow_draw_plugin(ESContext *esContext, uint8_t id) {
 	uint8_t input = 0;
 	uint8_t output = 0;
 	char tmp_str[64];
 	uint8_t num_max = rcflow_plugin_max_get(id);
-
 	// Plugin
 #ifndef SIMPLE_DRAW
 	// Background
-/*
-	if (RcPlugin[id].open == 1) {
-		if (RcPlugin[id].type == RCFLOW_PLUGIN_INPUT) {
-			draw_box_f3c2(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1, 0.001, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y2, 0.001, 55, 55, 55, 127, 100, 255, 100, 120);
-		} else if (RcPlugin[id].type == RCFLOW_PLUGIN_OUTPUT) {
-			draw_box_f3c2(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1, 0.001, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y2, 0.001, 55, 55, 55, 127, 255, 100, 100, 120);
-		} else if (RcPlugin[id].type == RCFLOW_PLUGIN_ADC || RcPlugin[id].type == RCFLOW_PLUGIN_SW || RcPlugin[id].type == RCFLOW_PLUGIN_ENC) {
-			draw_box_f3c2(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1, 0.001, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y2, 0.001, 55, 55, 55, 127, 255, 255, 100, 120);
-		} else {
-			draw_box_f3c2(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1, 0.001, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y2, 0.001, 55, 55, 55, 127, 100, 100, 255, 120);
+	/*
+		if (RcPlugin[id].open == 1) {
+			if (RcPlugin[id].type == RCFLOW_PLUGIN_INPUT) {
+				draw_box_f3c2(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1, 0.001, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y2, 0.001, 55, 55, 55, 127, 100, 255, 100, 120);
+			} else if (RcPlugin[id].type == RCFLOW_PLUGIN_OUTPUT) {
+				draw_box_f3c2(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1, 0.001, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y2, 0.001, 55, 55, 55, 127, 255, 100, 100, 120);
+			} else if (RcPlugin[id].type == RCFLOW_PLUGIN_ADC || RcPlugin[id].type == RCFLOW_PLUGIN_SW || RcPlugin[id].type == RCFLOW_PLUGIN_ENC) {
+				draw_box_f3c2(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1, 0.001, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y2, 0.001, 55, 55, 55, 127, 255, 255, 100, 120);
+			} else {
+				draw_box_f3c2(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1, 0.001, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y2, 0.001, 55, 55, 55, 127, 100, 100, 255, 120);
+			}
 		}
-	}
-*/
-
-//	draw_box_f3(esContext, PLUGIN_X1 - (LINK_WIDTH - 0.01) * scale, PLUGIN_Y1 + (0.01 * scale), 0.001, PLUGIN_X2 + (LINK_WIDTH + 0.01) * scale, PLUGIN_Y2 + (0.01 * scale), 0.001, 0, 0, 0, 190);
-
+	*/
+	//	draw_box_f3(esContext, PLUGIN_X1 - (LINK_WIDTH - 0.01) * scale, PLUGIN_Y1 + (0.01 * scale), 0.001, PLUGIN_X2 + (LINK_WIDTH + 0.01) * scale, PLUGIN_Y2 + (0.01 * scale), 0.001, 0, 0, 0, 190);
 	if (RcPlugin[id].open == 1) {
 		draw_box_f3c2(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1, 0.001, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y2, 0.001, 50, 50, 50, 255, 90, 90, 90, 255);
 		draw_rect_f3(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1, 0.001, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y2, 0.001, 0, 0, 0, 255);
 	}
-
 	// Title-Bar
 	draw_box_f3c2(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1, 0.0011, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y1 + (TITLE_HEIGHT / 2.0 * scale), 0.0011, 5, 5, 15, 255, 45, 45, 45, 255);
-	draw_box_f3c2(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1 + (TITLE_HEIGHT / 2.0 * scale), 0.0011, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y1 + (TITLE_HEIGHT * scale), 0.0011, 45, 45, 45, 255, 5, 5, 15, 255);
+	draw_box_f3c2(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1 + (TITLE_HEIGHT / 2.0 * scale), 0.0011, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y1 + (TITLE_HEIGHT * scale), 0.0011, 45, 45, 45,
+				  255, 5, 5, 15, 255);
 	draw_line_f3(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1 + (TITLE_HEIGHT * scale), 0.0011, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y1 + (TITLE_HEIGHT * scale), 0.001, 10, 10, 10, 255);
 #else
 	if (RcPlugin[id].open == 1) {
@@ -2497,62 +2497,60 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 	}
 	draw_line_f3(esContext, PLUGIN_X1, PLUGIN_Y1 + (TITLE_HEIGHT * scale), 0.0011, PLUGIN_X2, PLUGIN_Y1 + (TITLE_HEIGHT * scale), 0.001, 10, 10, 10, 255);
 #endif
-
 	if (id == rcflow_plugin_move_id && rcflow_plugin_move_timer > 0) {
 		draw_rect_f3(esContext, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1, 0.001, PLUGIN_X2 + (LINK_WIDTH * scale), PLUGIN_Y2, 0.001, 255, 0, 0, rcflow_plugin_move_timer * 3);
 		rcflow_plugin_move_timer--;
 	}
-
 	if (lock == 0 || del_plugin == 1) {
-		set_button(RcPlugin[id].name, setup.view_mode, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1, PLUGIN_X2 + (LINK_WIDTH * scale), (RcPlugin[id].y + num_max / 2 * LINK_SPACE - TITLE_HEIGHT + canvas_y) * scale, rcflow_plugin_move, (float)id, 1);
+		set_button(RcPlugin[id].name, setup.view_mode, PLUGIN_X1 - (LINK_WIDTH * scale), PLUGIN_Y1, PLUGIN_X2 + (LINK_WIDTH * scale),
+				   (RcPlugin[id].y + num_max / 2 * LINK_SPACE - TITLE_HEIGHT + canvas_y) * scale, rcflow_plugin_move, (float)id, 1);
 	}
-
 	if (RcPlugin[id].open == 1) {
 		sprintf(tmp_str, "%s/textures/icon_up.png", BASE_DIR);
 	} else {
 		sprintf(tmp_str, "%s/textures/icon_down.png", BASE_DIR);
 	}
-	draw_image_f3(esContext, PLUGIN_X2 + (LINK_WIDTH * scale) - (0.01 + TITLE_HEIGHT - 0.02) * scale, PLUGIN_Y1 + 0.01 * scale, PLUGIN_X2 + (LINK_WIDTH * scale) - 0.01 * scale, PLUGIN_Y1 + (0.01 + TITLE_HEIGHT - 0.02) * scale, 0.002, tmp_str);
+	draw_image_f3(esContext, PLUGIN_X2 + (LINK_WIDTH * scale) - (0.01 + TITLE_HEIGHT - 0.02) * scale, PLUGIN_Y1 + 0.01 * scale, PLUGIN_X2 + (LINK_WIDTH * scale) - 0.01 * scale,
+				  PLUGIN_Y1 + (0.01 + TITLE_HEIGHT - 0.02) * scale, 0.002, tmp_str);
 	sprintf(tmp_str, "open_%i", id);
-	set_button(tmp_str, setup.view_mode, PLUGIN_X2 + (LINK_WIDTH * scale) - (0.01 + TITLE_HEIGHT - 0.02) * scale, PLUGIN_Y1 + 0.01 * scale, PLUGIN_X2 + (LINK_WIDTH * scale) - 0.01 * scale, PLUGIN_Y1 + (0.01 + TITLE_HEIGHT - 0.02) * scale, rcflow_open, (float)id, 0);
-
-	draw_line_f3(esContext, PLUGIN_X2 + (LINK_WIDTH * scale) - (TITLE_HEIGHT) * scale, PLUGIN_Y1, 0.001, PLUGIN_X2 + (LINK_WIDTH * scale) - (TITLE_HEIGHT) * scale, PLUGIN_Y1 + TITLE_HEIGHT * scale, 0.001, 10, 10, 10, 255);
-
-
-
-//	draw_rect_f3(esContext, PLUGIN_X1, PLUGIN_Y1, 0.001, PLUGIN_X2, PLUGIN_Y2, 0.001, 200, 200, 200, 155);
-
-
+	set_button(tmp_str, setup.view_mode, PLUGIN_X2 + (LINK_WIDTH * scale) - (0.01 + TITLE_HEIGHT - 0.02) * scale, PLUGIN_Y1 + 0.01 * scale, PLUGIN_X2 + (LINK_WIDTH * scale) - 0.01 * scale,
+			   PLUGIN_Y1 + (0.01 + TITLE_HEIGHT - 0.02) * scale, rcflow_open, (float)id, 0);
+	draw_line_f3(esContext, PLUGIN_X2 + (LINK_WIDTH * scale) - (TITLE_HEIGHT) * scale, PLUGIN_Y1, 0.001, PLUGIN_X2 + (LINK_WIDTH * scale) - (TITLE_HEIGHT) * scale, PLUGIN_Y1 + TITLE_HEIGHT * scale, 0.001,
+				 10, 10, 10, 255);
+	//	draw_rect_f3(esContext, PLUGIN_X1, PLUGIN_Y1, 0.001, PLUGIN_X2, PLUGIN_Y2, 0.001, 200, 200, 200, 155);
 	sprintf(tmp_str, "name_%s", RcPlugin[id].name);
 	if (RcPlugin[id].title[0] != 0) {
-		draw_text_button(esContext, tmp_str, setup.view_mode, RcPlugin[id].title, FONT_GREEN, PLUGIN_X1 - (LINK_WIDTH - 0.01) * scale, PLUGIN_Y1, 0.002, 0.04 * scale, ALIGN_LEFT, ALIGN_TOP, rcflow_plugin_title_edit, (float)id);
+		draw_text_button(esContext, tmp_str, setup.view_mode, RcPlugin[id].title, FONT_GREEN, PLUGIN_X1 - (LINK_WIDTH - 0.01) * scale, PLUGIN_Y1, 0.002, 0.04 * scale, ALIGN_LEFT, ALIGN_TOP,
+						 rcflow_plugin_title_edit, (float)id);
 	} else {
-		draw_text_button(esContext, tmp_str, setup.view_mode, RcPlugin[id].name, FONT_GREEN, PLUGIN_X1 - (LINK_WIDTH - 0.01) * scale, PLUGIN_Y1, 0.002, 0.04 * scale, ALIGN_LEFT, ALIGN_TOP, rcflow_plugin_title_edit, (float)id);
+		draw_text_button(esContext, tmp_str, setup.view_mode, RcPlugin[id].name, FONT_GREEN, PLUGIN_X1 - (LINK_WIDTH - 0.01) * scale, PLUGIN_Y1, 0.002, 0.04 * scale, ALIGN_LEFT, ALIGN_TOP,
+						 rcflow_plugin_title_edit, (float)id);
 	}
-
 	if (RcPlugin[id].open == 0) {
 		return;
 	}
-
 	// Inputs
 	for (input = 0; input < MAX_INPUTS; input++) {
 		if (RcPlugin[id].input[input].name[0] != 0 && RcPlugin[id].input[input].type != RCFLOW_INOUT_TYPE_TEMP) {
 			sprintf(tmp_str, "%s/textures/conn.png", BASE_DIR);
-			draw_image_f3(esContext, PLUGIN_X1 - (LINK_WIDTH - 0.025 + CONN_RADIUS) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + (LINK_SPACE / 2.0) - CONN_RADIUS + canvas_y) * scale, PLUGIN_X1 - (LINK_WIDTH - 0.025 - CONN_RADIUS) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + (LINK_SPACE / 2.0) + CONN_RADIUS + canvas_y) * scale, 0.02, tmp_str);
-
+			draw_image_f3(esContext, PLUGIN_X1 - (LINK_WIDTH - 0.025 + CONN_RADIUS) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + (LINK_SPACE / 2.0) - CONN_RADIUS + canvas_y) * scale,
+						  PLUGIN_X1 - (LINK_WIDTH - 0.025 - CONN_RADIUS) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + (LINK_SPACE / 2.0) + CONN_RADIUS + canvas_y) * scale, 0.02, tmp_str);
 			sprintf(tmp_str, "%s;%s", RcPlugin[id].name, RcPlugin[id].input[input].name);
 #ifndef SIMPLE_DRAW
 			if (strcmp(link_select_to, tmp_str) == 0) {
-				draw_box_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 125);
-//			} else {
-//				draw_box_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 100, 100, 100, 125);
+				draw_box_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, PLUGIN_X1,
+							(RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 125);
+				//			} else {
+				//				draw_box_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 100, 100, 100, 125);
 			}
-//			draw_rect_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 255, 255, 125);
+			//			draw_rect_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 255, 255, 125);
 #else
 			if (strcmp(link_select_to, tmp_str) == 0) {
-				draw_box_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 255);
+				draw_box_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, PLUGIN_X1,
+							(RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 255);
 			} else {
-				draw_box_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 100, 100, 100, 255);
+				draw_box_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, PLUGIN_X1,
+							(RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 100, 100, 100, 255);
 			}
 #endif
 			if (RcPlugin[id].type == RCFLOW_PLUGIN_MULTIPLEX_OUT) {
@@ -2569,48 +2567,49 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 					}
 				}
 				if (select == input) {
-					draw_rect_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 255);
+					draw_rect_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.001, PLUGIN_X1,
+								 (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 255);
 				}
 			}
-			set_button(tmp_str, setup.view_mode, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.1 + canvas_y) * scale, rcflow_link_mark, (float)1, 0);
-			draw_text_button(esContext, "#", setup.view_mode, RcPlugin[id].input[input].name, FONT_GREEN, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.002, 0.03 * scale, ALIGN_RIGHT, ALIGN_TOP, rcflow_null, 0.0);
+			set_button(tmp_str, setup.view_mode, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale,
+					   PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.1 + canvas_y) * scale, rcflow_link_mark, (float)1, 0);
+			draw_text_button(esContext, "#", setup.view_mode, RcPlugin[id].input[input].name, FONT_GREEN, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y) * scale, 0.002,
+							 0.03 * scale, ALIGN_RIGHT, ALIGN_TOP, rcflow_null, 0.0);
 #ifndef SIMPLE_DRAW
 			if (RcPlugin[id].input[input].type == RCFLOW_INOUT_TYPE_LINEAR) {
 				sprintf(tmp_str, "%i", (RcPlugin[id].input[input].value + 1000) / 2);
 			} else {
 				sprintf(tmp_str, "%i", RcPlugin[id].input[input].value);
 			}
-//			draw_text_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y + 0.04) * scale, 0.005, 0.03 * scale, 0.03 * scale, FONT_GREEN, tmp_str);
-
-
-	draw_text_button(esContext, "#", setup.view_mode, tmp_str, FONT_GREEN, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y + 0.04) * scale, 0.002, 0.03 * scale, ALIGN_RIGHT, ALIGN_TOP, rcflow_null, 0.0);
-
+			//			draw_text_f3(esContext, (RcPlugin[id].x - (PLUGIN_WIDTH / 2.0) - LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y + 0.04) * scale, 0.005, 0.03 * scale, 0.03 * scale, FONT_GREEN, tmp_str);
+			draw_text_button(esContext, "#", setup.view_mode, tmp_str, FONT_GREEN, PLUGIN_X1, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + canvas_y + 0.04) * scale, 0.002, 0.03 * scale,
+							 ALIGN_RIGHT, ALIGN_TOP, rcflow_null, 0.0);
 #endif
 		}
 	}
 	// Outputs
 	for (output = 0; output < MAX_OUTPUTS; output++) {
 		if (RcPlugin[id].output[output].name[0] != 0 && RcPlugin[id].output[output].type != RCFLOW_INOUT_TYPE_TEMP) {
-
-
 			sprintf(tmp_str, "%s/textures/conn.png", BASE_DIR);
-			draw_image_f3(esContext, PLUGIN_X2 + (LINK_WIDTH - 0.025 - CONN_RADIUS) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + (LINK_SPACE / 2.0) - CONN_RADIUS + canvas_y) * scale, PLUGIN_X2 + (LINK_WIDTH - 0.025 + CONN_RADIUS) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + (LINK_SPACE / 2.0) + CONN_RADIUS + canvas_y) * scale, 0.02, tmp_str);
-
-
+			draw_image_f3(esContext, PLUGIN_X2 + (LINK_WIDTH - 0.025 - CONN_RADIUS) * scale,
+						  (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + (LINK_SPACE / 2.0) - CONN_RADIUS + canvas_y) * scale, PLUGIN_X2 + (LINK_WIDTH - 0.025 + CONN_RADIUS) * scale,
+						  (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + (LINK_SPACE / 2.0) + CONN_RADIUS + canvas_y) * scale, 0.02, tmp_str);
 			sprintf(tmp_str, "%s;%s", RcPlugin[id].name, RcPlugin[id].output[output].name);
-
 #ifndef SIMPLE_DRAW
 			if (strcmp(link_select_from, tmp_str) == 0) {
-				draw_box_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 125);
-//			} else {
-//				draw_box_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 100, 100, 100, 125);
+				draw_box_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + LINK_WIDTH + canvas_x) * scale,
+							(RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 125);
+				//			} else {
+				//				draw_box_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 100, 100, 100, 125);
 			}
-//			draw_rect_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 255, 255, 125);
+			//			draw_rect_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 255, 255, 125);
 #else
 			if (strcmp(link_select_from, tmp_str) == 0) {
-				draw_box_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 255);
+				draw_box_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + LINK_WIDTH + canvas_x) * scale,
+							(RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 255);
 			} else {
-				draw_box_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 100, 100, 100, 255);
+				draw_box_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + LINK_WIDTH + canvas_x) * scale,
+							(RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 100, 100, 100, 255);
 			}
 #endif
 			if (RcPlugin[id].type == RCFLOW_PLUGIN_MULTIPLEX_IN) {
@@ -2627,11 +2626,14 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 					}
 				}
 				if (select == output) {
-					draw_rect_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 255);
+					draw_rect_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.001, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + LINK_WIDTH + canvas_x) * scale,
+								 (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.07 + canvas_y) * scale, 0.001, 255, 0, 0, 255);
 				}
 			}
-			set_button(tmp_str, setup.view_mode, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.1 + canvas_y) * scale, rcflow_link_mark, (float)0, 0);
-			draw_text_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.005, 0.03 * scale, 0.03 * scale, FONT_GREEN, RcPlugin[id].output[output].name);
+			set_button(tmp_str, setup.view_mode, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale,
+					   (RcPlugin[id].x + (PLUGIN_WIDTH / 2.0) + LINK_WIDTH + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.1 + canvas_y) * scale, rcflow_link_mark, (float)0, 0);
+			draw_text_f3(esContext, PLUGIN_X2, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + canvas_y) * scale, 0.005, 0.03 * scale, 0.03 * scale, FONT_GREEN,
+						 RcPlugin[id].output[output].name);
 #ifndef SIMPLE_DRAW
 			sprintf(tmp_str, "%i", RcPlugin[id].output[output].value);
 			sprintf(tmp_str, "%i", RcPlugin[id].output[output].value);
@@ -2639,13 +2641,9 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 #endif
 		}
 	}
-
-
 	if (del_plugin == 1) {
 		return;
 	}
-
-
 	if (RcPlugin[id].type == RCFLOW_PLUGIN_INPUT) {
 	} else if (RcPlugin[id].type == RCFLOW_PLUGIN_OUTPUT) {
 	} else if (RcPlugin[id].type == RCFLOW_PLUGIN_ATV) {
@@ -2654,7 +2652,8 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 	} else if (RcPlugin[id].type == RCFLOW_PLUGIN_TCL) {
 	} else if (RcPlugin[id].type == RCFLOW_PLUGIN_CURVE) {
 		sprintf(tmp_str, "preset_%s", RcPlugin[id].name);
-		draw_text_button(esContext, tmp_str, setup.view_mode, "PRESET", FONT_GREEN, (RcPlugin[id].x + canvas_x) * scale, PLUGIN_Y2 - 0.05 * scale, 0.002, 0.04 * scale, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_curve_preset, (float)id);
+		draw_text_button(esContext, tmp_str, setup.view_mode, "PRESET", FONT_GREEN, (RcPlugin[id].x + canvas_x) * scale, PLUGIN_Y2 - 0.05 * scale, 0.002, 0.04 * scale, ALIGN_CENTER, ALIGN_TOP,
+						 rcflow_plugin_curve_preset, (float)id);
 	}
 	// Input-Sliders
 	if (RcPlugin[id].type != RCFLOW_PLUGIN_TCL) {
@@ -2662,17 +2661,22 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 			if (RcPlugin[id].input[input].name[0] != 0 && RcPlugin[id].input[input].type != RCFLOW_INOUT_TYPE_TEMP) {
 				sprintf(tmp_str, "%s;%s", RcPlugin[id].name, RcPlugin[id].input[input].name);
 				if (RcPlugin[id].input[input].type == RCFLOW_INOUT_TYPE_ONOFF) {
-					rcflow_draw_switch(esContext, tmp_str, RcPlugin[id].x + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.02 + canvas_y, SLIDER_WIDTH, RcPlugin[id].input[input].value, RcPlugin[id].input[input].type);
+					rcflow_draw_switch(esContext, tmp_str, RcPlugin[id].x + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.02 + canvas_y, SLIDER_WIDTH, RcPlugin[id].input[input].value,
+									   RcPlugin[id].input[input].type);
 				} else if (RcPlugin[id].type == RCFLOW_PLUGIN_MULTIVALUE && input == 1) {
 					sprintf(tmp_str, "mode: %i", RcPlugin[id].option + 1);
-					draw_text_f3(esContext, (RcPlugin[id].x - 0.1 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.02 + canvas_y) * scale, 0.005, 0.04 * scale, 0.04 * scale, FONT_GREEN, tmp_str);
+					draw_text_f3(esContext, (RcPlugin[id].x - 0.1 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.02 + canvas_y) * scale, 0.005, 0.04 * scale, 0.04 * scale,
+								 FONT_GREEN, tmp_str);
 				} else if (RcPlugin[id].input[input].type == RCFLOW_INOUT_TYPE_TEXT) {
-					draw_text_f3(esContext, (RcPlugin[id].x - 0.1 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.02 + canvas_y) * scale, 0.005, 0.03 * scale, 0.03 * scale, FONT_GREEN, RcPlugin[id].input[input].tmp_text);
+					draw_text_f3(esContext, (RcPlugin[id].x - 0.1 + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.02 + canvas_y) * scale, 0.005, 0.03 * scale, 0.03 * scale,
+								 FONT_GREEN, RcPlugin[id].input[input].tmp_text);
 				} else {
 					if (input == 0) {
-						rcflow_draw_slider(esContext, tmp_str, RcPlugin[id].x + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.02 + canvas_y, SLIDER_WIDTH, RcPlugin[id].input[input].value, RcPlugin[id].output[0].value, RcPlugin[id].input[input].type);
+						rcflow_draw_slider(esContext, tmp_str, RcPlugin[id].x + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.02 + canvas_y, SLIDER_WIDTH, RcPlugin[id].input[input].value,
+										   RcPlugin[id].output[0].value, RcPlugin[id].input[input].type);
 					} else {
-						rcflow_draw_slider(esContext, tmp_str, RcPlugin[id].x + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.02 + canvas_y, SLIDER_WIDTH, RcPlugin[id].input[input].value, 0.0, RcPlugin[id].input[input].type);
+						rcflow_draw_slider(esContext, tmp_str, RcPlugin[id].x + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + input * LINK_SPACE + 0.02 + canvas_y, SLIDER_WIDTH, RcPlugin[id].input[input].value, 0.0,
+										   RcPlugin[id].input[input].type);
 					}
 				}
 			}
@@ -2680,29 +2684,46 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 	}
 	if (RcPlugin[id].type == RCFLOW_PLUGIN_TCL) {
 		sprintf(tmp_str, "script_view_%s", RcPlugin[id].name);
-		draw_text_button(esContext, tmp_str, setup.view_mode, "[SCRIPT]", FONT_GREEN, RcPlugin[id].x + canvas_x - 0.1, RcPlugin[id].y - num_max / 2 * LINK_SPACE + 1.0 * LINK_SPACE + 0.04 + canvas_y, 0.002, 0.04 * scale, ALIGN_LEFT, ALIGN_TOP, rcflow_sript_view, (float)id);
+		draw_text_button(esContext, tmp_str, setup.view_mode, "[SCRIPT]", FONT_GREEN, RcPlugin[id].x + canvas_x - 0.1, RcPlugin[id].y - num_max / 2 * LINK_SPACE + 1.0 * LINK_SPACE + 0.04 + canvas_y, 0.002,
+						 0.04 * scale, ALIGN_LEFT, ALIGN_TOP, rcflow_sript_view, (float)id);
 	} else if (RcPlugin[id].type == RCFLOW_PLUGIN_CURVE) {
 		float pos = 2.0 + ((float)(RcPlugin[id].input[0].value + 1000) * (MAX_CURVE_POINTS - 1) / 2000.0);
 		float pos_out = ((float)(RcPlugin[id].output[0].value) * LINK_SPACE / 1000.0);
 		float pos2 = 2.0 + ((float)(RcPlugin[id].input[1].value + 1000) * (MAX_CURVE_POINTS - 1) / 2000.0);
 		float pos2_out = ((float)(RcPlugin[id].output[1].value) * LINK_SPACE / 1000.0);
 #ifndef SIMPLE_DRAW
-		draw_box_f3c2(esContext, (RcPlugin[id].x + canvas_x - 0.1) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + 2.0 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, (RcPlugin[id].x + canvas_x + 0.1) * scale, (RcPlugin[id].y - num_max / 2.0 * LINK_SPACE + ((float)MAX_CURVE_POINTS + 1.0) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 200, 200, 200, 200, 100, 100, 100, 200);
-		draw_line_f3(esContext, (RcPlugin[id].x + canvas_x - 0.1) * scale, (RcPlugin[id].y + 0.04 + canvas_y) * scale, 0.001, (RcPlugin[id].x + canvas_x + 0.1) * scale, (RcPlugin[id].y + 0.04 + canvas_y) * scale, 0.001, 190, 190, 190, 255);
-		draw_line_f3(esContext, (RcPlugin[id].x + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + 2.0 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, (RcPlugin[id].x + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + ((float)MAX_CURVE_POINTS + 1.0) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 190, 190, 190, 255);
-		draw_line_f3(esContext, (RcPlugin[id].x + canvas_x - 0.1) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + pos * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, (RcPlugin[id].x + canvas_x + 0.1) * scale, (RcPlugin[id].y - num_max / 2.0 * LINK_SPACE + pos * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 55, 255, 255, 255);
-		draw_line_f3(esContext, (RcPlugin[id].x + canvas_x + pos_out) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + 2.0 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, (RcPlugin[id].x + canvas_x + pos_out) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + ((float)MAX_CURVE_POINTS + 1.0) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 55, 255, 255, 255);
-		draw_line_f3(esContext, (RcPlugin[id].x + canvas_x - 0.1) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + pos2 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, (RcPlugin[id].x + canvas_x + 0.1) * scale, (RcPlugin[id].y - num_max / 2.0 * LINK_SPACE + pos2 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 255, 55, 255, 255);
-		draw_line_f3(esContext, (RcPlugin[id].x + canvas_x + pos2_out) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + 2.0 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, (RcPlugin[id].x + canvas_x + pos2_out) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + ((float)MAX_CURVE_POINTS + 1.0) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 255, 55, 255, 255);
-		draw_rect_f3(esContext, (RcPlugin[id].x + canvas_x - 0.1) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + 2.0 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, (RcPlugin[id].x + canvas_x + 0.1) * scale, (RcPlugin[id].y - num_max / 2.0 * LINK_SPACE + ((float)MAX_CURVE_POINTS + 1.0) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 55, 255, 255, 255);
+		draw_box_f3c2(esContext, (RcPlugin[id].x + canvas_x - 0.1) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + 2.0 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001,
+					  (RcPlugin[id].x + canvas_x + 0.1) * scale, (RcPlugin[id].y - num_max / 2.0 * LINK_SPACE + ((float)MAX_CURVE_POINTS + 1.0) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 200, 200, 200, 200, 100, 100,
+					  100, 200);
+		draw_line_f3(esContext, (RcPlugin[id].x + canvas_x - 0.1) * scale, (RcPlugin[id].y + 0.04 + canvas_y) * scale, 0.001, (RcPlugin[id].x + canvas_x + 0.1) * scale,
+					 (RcPlugin[id].y + 0.04 + canvas_y) * scale, 0.001, 190, 190, 190, 255);
+		draw_line_f3(esContext, (RcPlugin[id].x + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + 2.0 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, (RcPlugin[id].x + canvas_x) * scale,
+					 (RcPlugin[id].y - num_max / 2 * LINK_SPACE + ((float)MAX_CURVE_POINTS + 1.0) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 190, 190, 190, 255);
+		draw_line_f3(esContext, (RcPlugin[id].x + canvas_x - 0.1) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + pos * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001,
+					 (RcPlugin[id].x + canvas_x + 0.1) * scale, (RcPlugin[id].y - num_max / 2.0 * LINK_SPACE + pos * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 55, 255, 255, 255);
+		draw_line_f3(esContext, (RcPlugin[id].x + canvas_x + pos_out) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + 2.0 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001,
+					 (RcPlugin[id].x + canvas_x + pos_out) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + ((float)MAX_CURVE_POINTS + 1.0) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 55, 255, 255, 255);
+		draw_line_f3(esContext, (RcPlugin[id].x + canvas_x - 0.1) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + pos2 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001,
+					 (RcPlugin[id].x + canvas_x + 0.1) * scale, (RcPlugin[id].y - num_max / 2.0 * LINK_SPACE + pos2 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 255, 55, 255, 255);
+		draw_line_f3(esContext, (RcPlugin[id].x + canvas_x + pos2_out) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + 2.0 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001,
+					 (RcPlugin[id].x + canvas_x + pos2_out) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + ((float)MAX_CURVE_POINTS + 1.0) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 255, 55, 255, 255);
+		draw_rect_f3(esContext, (RcPlugin[id].x + canvas_x - 0.1) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + 2.0 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001,
+					 (RcPlugin[id].x + canvas_x + 0.1) * scale, (RcPlugin[id].y - num_max / 2.0 * LINK_SPACE + ((float)MAX_CURVE_POINTS + 1.0) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 55, 255, 255, 255);
 #else
-		draw_box_f3(esContext, (RcPlugin[id].x + canvas_x - 0.1) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + 2.0 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, (RcPlugin[id].x + canvas_x + 0.1) * scale, (RcPlugin[id].y - num_max / 2.0 * LINK_SPACE + ((float)MAX_CURVE_POINTS + 1.0) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 100, 100, 255, 255);
-		draw_line_f3(esContext, (RcPlugin[id].x + canvas_x - 0.1) * scale, (RcPlugin[id].y + 0.04 + canvas_y) * scale, 0.001, (RcPlugin[id].x + canvas_x + 0.1) * scale, (RcPlugin[id].y + 0.04 + canvas_y) * scale, 0.001, 190, 190, 190, 255);
-		draw_line_f3(esContext, (RcPlugin[id].x + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + 2.0 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, (RcPlugin[id].x + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + ((float)MAX_CURVE_POINTS + 1.0) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 190, 190, 190, 255);
-		draw_line_f3(esContext, (RcPlugin[id].x + canvas_x - 0.1) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + pos * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, (RcPlugin[id].x + canvas_x + 0.1) * scale, (RcPlugin[id].y - num_max / 2.0 * LINK_SPACE + pos * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 55, 255, 255, 255);
-		draw_line_f3(esContext, (RcPlugin[id].x + canvas_x + pos_out) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + 2.0 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, (RcPlugin[id].x + canvas_x + pos_out) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + ((float)MAX_CURVE_POINTS + 1.0) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 55, 255, 255, 255);
-		draw_line_f3(esContext, (RcPlugin[id].x + canvas_x - 0.1) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + pos2 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, (RcPlugin[id].x + canvas_x + 0.1) * scale, (RcPlugin[id].y - num_max / 2.0 * LINK_SPACE + pos2 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 255, 55, 255, 255);
-		draw_line_f3(esContext, (RcPlugin[id].x + canvas_x + pos2_out) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + 2.0 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, (RcPlugin[id].x + canvas_x + pos2_out) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + ((float)MAX_CURVE_POINTS + 1.0) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 255, 55, 255, 255);
+		draw_box_f3(esContext, (RcPlugin[id].x + canvas_x - 0.1) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + 2.0 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001,
+					(RcPlugin[id].x + canvas_x + 0.1) * scale, (RcPlugin[id].y - num_max / 2.0 * LINK_SPACE + ((float)MAX_CURVE_POINTS + 1.0) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 100, 100, 255, 255);
+		draw_line_f3(esContext, (RcPlugin[id].x + canvas_x - 0.1) * scale, (RcPlugin[id].y + 0.04 + canvas_y) * scale, 0.001, (RcPlugin[id].x + canvas_x + 0.1) * scale,
+					 (RcPlugin[id].y + 0.04 + canvas_y) * scale, 0.001, 190, 190, 190, 255);
+		draw_line_f3(esContext, (RcPlugin[id].x + canvas_x) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + 2.0 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, (RcPlugin[id].x + canvas_x) * scale,
+					 (RcPlugin[id].y - num_max / 2 * LINK_SPACE + ((float)MAX_CURVE_POINTS + 1.0) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 190, 190, 190, 255);
+		draw_line_f3(esContext, (RcPlugin[id].x + canvas_x - 0.1) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + pos * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001,
+					 (RcPlugin[id].x + canvas_x + 0.1) * scale, (RcPlugin[id].y - num_max / 2.0 * LINK_SPACE + pos * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 55, 255, 255, 255);
+		draw_line_f3(esContext, (RcPlugin[id].x + canvas_x + pos_out) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + 2.0 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001,
+					 (RcPlugin[id].x + canvas_x + pos_out) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + ((float)MAX_CURVE_POINTS + 1.0) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 55, 255, 255, 255);
+		draw_line_f3(esContext, (RcPlugin[id].x + canvas_x - 0.1) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + pos2 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001,
+					 (RcPlugin[id].x + canvas_x + 0.1) * scale, (RcPlugin[id].y - num_max / 2.0 * LINK_SPACE + pos2 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 255, 55, 255, 255);
+		draw_line_f3(esContext, (RcPlugin[id].x + canvas_x + pos2_out) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + 2.0 * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001,
+					 (RcPlugin[id].x + canvas_x + pos2_out) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + ((float)MAX_CURVE_POINTS + 1.0) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 255, 55, 255, 255);
 #endif
 		float pos_out2;
 		float pos_out3;
@@ -2710,29 +2731,37 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 		for (n = 0; n < MAX_CURVE_POINTS - 1; n++) {
 			pos_out2 = ((float)(RcPlugin[id].input[n + 2].value) * LINK_SPACE / 1000.0);
 			pos_out3 = ((float)(RcPlugin[id].input[n + 3].value) * LINK_SPACE / 1000.0);
-			draw_line_f3(esContext, (RcPlugin[id].x + canvas_x + pos_out2) * scale, (RcPlugin[id].y - num_max / 2.0 * LINK_SPACE + (n + 2) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, (RcPlugin[id].x + canvas_x + pos_out3) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + (n + 3) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 0, 0, 0, 255);
+			draw_line_f3(esContext, (RcPlugin[id].x + canvas_x + pos_out2) * scale, (RcPlugin[id].y - num_max / 2.0 * LINK_SPACE + (n + 2) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001,
+						 (RcPlugin[id].x + canvas_x + pos_out3) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + (n + 3) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, 0, 0, 0, 255);
 #ifndef SIMPLE_DRAW
-			draw_circleFilled_f3(esContext, (RcPlugin[id].x + canvas_x + pos_out2) * scale, (RcPlugin[id].y - num_max / 2.0 * LINK_SPACE + (n + 2) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, (0.01) * scale, 0, 0, 0, 127);
+			draw_circleFilled_f3(esContext, (RcPlugin[id].x + canvas_x + pos_out2) * scale, (RcPlugin[id].y - num_max / 2.0 * LINK_SPACE + (n + 2) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, (0.01) * scale,
+								 0, 0, 0, 127);
 #else
-			draw_box_f3(esContext, (RcPlugin[id].x + canvas_x + pos_out2 - 0.01) * scale, (RcPlugin[id].y - num_max / 2.0 * LINK_SPACE + (n + 2) * LINK_SPACE + 0.04 + canvas_y - 0.01) * scale, 0.001, (RcPlugin[id].x + canvas_x + pos_out2 + 0.01) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + (n + 2) * LINK_SPACE + 0.04 + canvas_y + 0.01) * scale, 0.001, 10, 10, 10, 255);
+			draw_box_f3(esContext, (RcPlugin[id].x + canvas_x + pos_out2 - 0.01) * scale, (RcPlugin[id].y - num_max / 2.0 * LINK_SPACE + (n + 2) * LINK_SPACE + 0.04 + canvas_y - 0.01) * scale, 0.001,
+						(RcPlugin[id].x + canvas_x + pos_out2 + 0.01) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + (n + 2) * LINK_SPACE + 0.04 + canvas_y + 0.01) * scale, 0.001, 10, 10, 10, 255);
 #endif
 		}
 		pos_out2 = ((float)(RcPlugin[id].input[n + 2].value) * LINK_SPACE / 1000.0);
 #ifndef SIMPLE_DRAW
-		draw_circleFilled_f3(esContext, (RcPlugin[id].x + canvas_x + pos_out2) * scale, (RcPlugin[id].y - num_max / 2.0 * LINK_SPACE + (n + 2) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, (0.01) * scale, 0, 0, 0, 127);
+		draw_circleFilled_f3(esContext, (RcPlugin[id].x + canvas_x + pos_out2) * scale, (RcPlugin[id].y - num_max / 2.0 * LINK_SPACE + (n + 2) * LINK_SPACE + 0.04 + canvas_y) * scale, 0.001, (0.01) * scale,
+							 0, 0, 0, 127);
 #else
-		draw_box_f3(esContext, (RcPlugin[id].x + canvas_x + pos_out2 - 0.01) * scale, (RcPlugin[id].y - num_max / 2.0 * LINK_SPACE + (n + 2) * LINK_SPACE + 0.04 + canvas_y - 0.01) * scale, 0.001, (RcPlugin[id].x + canvas_x + pos_out2 + 0.01) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + (n + 2) * LINK_SPACE + 0.04 + canvas_y + 0.01) * scale, 0.001, 10, 10, 10, 255);
+		draw_box_f3(esContext, (RcPlugin[id].x + canvas_x + pos_out2 - 0.01) * scale, (RcPlugin[id].y - num_max / 2.0 * LINK_SPACE + (n + 2) * LINK_SPACE + 0.04 + canvas_y - 0.01) * scale, 0.001,
+					(RcPlugin[id].x + canvas_x + pos_out2 + 0.01) * scale, (RcPlugin[id].y - num_max / 2 * LINK_SPACE + (n + 2) * LINK_SPACE + 0.04 + canvas_y + 0.01) * scale, 0.001, 10, 10, 10, 255);
 #endif
 	}
 	// Output-Sliders
-	if (RcPlugin[id].type == RCFLOW_PLUGIN_ADC || RcPlugin[id].type == RCFLOW_PLUGIN_SW || RcPlugin[id].type == RCFLOW_PLUGIN_ENC || RcPlugin[id].type == RCFLOW_PLUGIN_VSW || RcPlugin[id].type == RCFLOW_PLUGIN_VADC || RcPlugin[id].type == RCFLOW_PLUGIN_MULTIPLEX_IN || RcPlugin[id].vview == 1) {
+	if (RcPlugin[id].type == RCFLOW_PLUGIN_ADC || RcPlugin[id].type == RCFLOW_PLUGIN_SW || RcPlugin[id].type == RCFLOW_PLUGIN_ENC || RcPlugin[id].type == RCFLOW_PLUGIN_VSW ||
+			RcPlugin[id].type == RCFLOW_PLUGIN_VADC || RcPlugin[id].type == RCFLOW_PLUGIN_MULTIPLEX_IN || RcPlugin[id].vview == 1) {
 		for (output = 0; output < MAX_OUTPUTS; output++) {
 			sprintf(tmp_str, "%s;%s", RcPlugin[id].name, RcPlugin[id].output[output].name);
 			if (RcPlugin[id].output[output].name[0] != 0 && RcPlugin[id].output[output].type != RCFLOW_INOUT_TYPE_TEMP) {
 				if (RcPlugin[id].output[output].type == RCFLOW_INOUT_TYPE_ONOFF) {
-					rcflow_draw_switch(esContext, tmp_str, RcPlugin[id].x + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.02 + canvas_y, SLIDER_WIDTH, RcPlugin[id].output[output].value, RcPlugin[id].output[output].type);
+					rcflow_draw_switch(esContext, tmp_str, RcPlugin[id].x + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.02 + canvas_y, SLIDER_WIDTH, RcPlugin[id].output[output].value,
+									   RcPlugin[id].output[output].type);
 				} else {
-					rcflow_draw_slider(esContext, tmp_str, RcPlugin[id].x + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.02 + canvas_y, SLIDER_WIDTH, RcPlugin[id].output[output].value, 0.0, RcPlugin[id].output[output].type);
+					rcflow_draw_slider(esContext, tmp_str, RcPlugin[id].x + canvas_x, RcPlugin[id].y - num_max / 2 * LINK_SPACE + output * LINK_SPACE + 0.02 + canvas_y, SLIDER_WIDTH, RcPlugin[id].output[output].value,
+									   0.0, RcPlugin[id].output[output].type);
 				}
 			}
 		}
@@ -2743,17 +2772,17 @@ void rcflow_draw_plugin (ESContext *esContext, uint8_t id) {
 #ifndef SIMPLE_DRAW
 float X[7];
 float Y[7];
-void draw_spline (ESContext *esContext, int start, int count, int r, int g, int b, int a) {
+void draw_spline(ESContext *esContext, int start, int count, int r, int g, int b, int a) {
 	int i = 0;
 	int j = 0;
 	float t = 0;
-	float Cx[4] = {0,0,0,0};
-	float Cy[4] = {0,0,0,0};
+	float Cx[4] = {0, 0, 0, 0};
+	float Cy[4] = {0, 0, 0, 0};
 	float Matrix[4][4] = {
 		{ 1.0,   4.0,   1.0,  0.0},
-		{-3.0,   0.0,   3.0,  0.0},
+		{ -3.0,   0.0,   3.0,  0.0},
 		{ 3.0,  -6.0,   3.0,  0.0},
-		{-1.0,   3.0,  -3.0,  1.0}
+		{ -1.0,   3.0,  -3.0,  1.0}
 	};
 	for (i = 0; i < 4; i++) {
 		for (j = 0; j < 4; j++) {
@@ -2776,7 +2805,7 @@ void draw_spline (ESContext *esContext, int start, int count, int r, int g, int 
 }
 #endif
 
-void rcflow_draw_link (ESContext *esContext, uint8_t id) {
+void rcflow_draw_link(ESContext *esContext, uint8_t id) {
 	uint8_t plugin = 0;
 	uint8_t input = 0;
 	uint8_t output = 0;
@@ -2832,10 +2861,10 @@ void rcflow_draw_link (ESContext *esContext, uint8_t id) {
 	if (flag1 != 0 && flag2 != 0) {
 #ifndef SIMPLE_DRAW
 		if (flag1 == 1) {
-//			draw_circleFilled_f3(esContext, (a_x) * scale, (a_y) * scale, 0.005, (0.005) * scale, 0, 0, 255, 128);
+			//			draw_circleFilled_f3(esContext, (a_x) * scale, (a_y) * scale, 0.005, (0.005) * scale, 0, 0, 255, 128);
 		}
 		if (flag2 == 1) {
-//			draw_circleFilled_f3(esContext, (b_x) * scale, (b_y) * scale, 0.005, (0.005) * scale, 0, 0, 255, 128);
+			//			draw_circleFilled_f3(esContext, (b_x) * scale, (b_y) * scale, 0.005, (0.005) * scale, 0, 0, 255, 128);
 		}
 		glLineWidth(3);
 		int i = 0;
@@ -2846,7 +2875,7 @@ void rcflow_draw_link (ESContext *esContext, uint8_t id) {
 		if (cavity < 0.0) {
 			cavity *= -1;
 		}
-//		cavity = 0.0;
+		//		cavity = 0.0;
 		X[n] = (a_x - 0.07) * scale;
 		Y[n++] = (a_y) * scale;
 		X[n] = (a_x) * scale;
@@ -2869,11 +2898,10 @@ void rcflow_draw_link (ESContext *esContext, uint8_t id) {
 		draw_line_f3(esContext, (a_x) * scale, (a_y) * scale, 0.005, (b_x) * scale, (b_y) * scale, 0.005, 100, 100 + (uint8_t)color, 160, 255);
 #endif
 		glLineWidth(1);
-
 	}
 }
 
-void rcflow_link (char *from, char *to) {
+void rcflow_link(char *from, char *to) {
 	uint8_t link = 0;
 	for (link = 0; link < MAX_LINKS; link++) {
 		if (RcLink[link].from[0] == 0 || RcLink[link].to[0] == 0) {
@@ -2885,21 +2913,19 @@ void rcflow_link (char *from, char *to) {
 	return;
 }
 
-void rcflow_calc_Embedded (void) {
+void rcflow_calc_Embedded(void) {
 	uint8_t plugin = 0;
 #ifdef RPI_NO_X
 	uint8_t output = 0;
 #endif
 	uint8_t link = 0;
 	uint8_t n = 0;
-
 	// Zero connected Inputs
 	for (link = 0; link < MAX_LINKS; link++) {
 		if (RcLinkEmbedded[link].to[0] != 255 && RcLinkEmbedded[link].to[1] != 255) {
 			RcPluginEmbedded[RcLinkEmbedded[link].to[0]].input[RcLinkEmbedded[link].to[1]].value = 0.0;
 		}
 	}
-
 #ifdef ____RPI_NO_X
 	for (plugin = 0; plugin < MAX_PLUGINS; plugin++) {
 		if (RcPluginEmbedded[plugin].type == RCFLOW_PLUGIN_ADC) {
@@ -2910,7 +2936,6 @@ void rcflow_calc_Embedded (void) {
 		}
 	}
 #endif
-
 #ifdef ADC_TEST
 #ifndef RPI_NO_X
 	uint8_t output = 0;
@@ -2923,11 +2948,10 @@ void rcflow_calc_Embedded (void) {
 				} else {
 					RcPluginEmbedded[plugin].output[output].value = adc[output];
 				}
-//				SDL_Log("rcflow: ## %s (%i) == %i ##\n", RcPlugin[plugin].output[output].name, output, RcPluginEmbedded[plugin].output[output].value);
+				//				SDL_Log("rcflow: ## %s (%i) == %i ##\n", RcPlugin[plugin].output[output].name, output, RcPluginEmbedded[plugin].output[output].value);
 			}
 		}
 	}
-
 	for (plugin = 0; plugin < MAX_PLUGINS; plugin++) {
 		if (RcPluginEmbedded[plugin].type == RCFLOW_PLUGIN_SW) {
 			for (output = 0; output < MAX_OUTPUTS; output++) {
@@ -2936,20 +2960,19 @@ void rcflow_calc_Embedded (void) {
 				} else {
 					RcPluginEmbedded[plugin].output[output].value = sw[output];
 				}
-//				SDL_Log("rcflow: ## %s (%i) == %i ##\n", RcPlugin[plugin].output[output].name, output, RcPluginEmbedded[plugin].output[output].value);
+				//				SDL_Log("rcflow: ## %s (%i) == %i ##\n", RcPlugin[plugin].output[output].name, output, RcPluginEmbedded[plugin].output[output].value);
 			}
 		}
 	}
 #endif
-
 	// Link-Calculation
 	for (link = 0; link < MAX_LINKS; link++) {
 		if (RcLinkEmbedded[link].to[0] != 255 && RcLinkEmbedded[link].to[1] != 255) {
 			RcPluginEmbedded[RcLinkEmbedded[link].to[0]].input[RcLinkEmbedded[link].to[1]].value += RcPluginEmbedded[RcLinkEmbedded[link].from[0]].output[RcLinkEmbedded[link].from[1]].value;
-			RcPluginEmbedded[RcLinkEmbedded[link].to[0]].input[RcLinkEmbedded[link].to[1]].value = rcflow_value_limit(RcPluginEmbedded[RcLinkEmbedded[link].to[0]].input[RcLinkEmbedded[link].to[1]].value, -1000, 1000);
+			RcPluginEmbedded[RcLinkEmbedded[link].to[0]].input[RcLinkEmbedded[link].to[1]].value = rcflow_value_limit(RcPluginEmbedded[RcLinkEmbedded[link].to[0]].input[RcLinkEmbedded[link].to[1]].value, -1000,
+					1000);
 		}
 	}
-
 	// Plugin-Calculation
 	for (plugin = 0; plugin < MAX_PLUGINS; plugin++) {
 		if (RcPluginEmbedded[plugin].type == RCFLOW_PLUGIN_INPUT) {
@@ -2982,16 +3005,16 @@ void rcflow_calc_Embedded (void) {
 			RcPluginEmbedded[plugin].output[3].value = 0;
 			RcPluginEmbedded[plugin].output[5].value = 0;
 			RcPluginEmbedded[plugin].output[0].value = RcPluginEmbedded[plugin].input[0].value;
-			RcPluginEmbedded[plugin].output[1].value = (int16_t)(  (float)RcPluginEmbedded[plugin].input[0].value * 0.6 );
-			RcPluginEmbedded[plugin].output[2].value = (int16_t)(  (float)RcPluginEmbedded[plugin].input[0].value * -0.6 );
+			RcPluginEmbedded[plugin].output[1].value = (int16_t)((float)RcPluginEmbedded[plugin].input[0].value * 0.6);
+			RcPluginEmbedded[plugin].output[2].value = (int16_t)((float)RcPluginEmbedded[plugin].input[0].value * -0.6);
 			RcPluginEmbedded[plugin].output[3].value = RcPluginEmbedded[plugin].input[0].value * -1;
 			RcPluginEmbedded[plugin].output[0].value += RcPluginEmbedded[plugin].input[1].value;
 			RcPluginEmbedded[plugin].output[1].value += RcPluginEmbedded[plugin].input[1].value;
 			RcPluginEmbedded[plugin].output[2].value += RcPluginEmbedded[plugin].input[1].value;
 			RcPluginEmbedded[plugin].output[3].value += RcPluginEmbedded[plugin].input[1].value;
 			RcPluginEmbedded[plugin].output[0].value += RcPluginEmbedded[plugin].input[3].value;
-			RcPluginEmbedded[plugin].output[1].value += (int16_t)(  (float)RcPluginEmbedded[plugin].input[3].value * 0.6 );
-			RcPluginEmbedded[plugin].output[2].value += (int16_t)(  (float)RcPluginEmbedded[plugin].input[3].value * -0.6 );
+			RcPluginEmbedded[plugin].output[1].value += (int16_t)((float)RcPluginEmbedded[plugin].input[3].value * 0.6);
+			RcPluginEmbedded[plugin].output[2].value += (int16_t)((float)RcPluginEmbedded[plugin].input[3].value * -0.6);
 			RcPluginEmbedded[plugin].output[3].value += RcPluginEmbedded[plugin].input[3].value * -1;
 			RcPluginEmbedded[plugin].output[5].value += RcPluginEmbedded[plugin].input[3].value;
 			RcPluginEmbedded[plugin].output[0].value += RcPluginEmbedded[plugin].input[4].value;
@@ -3068,7 +3091,8 @@ void rcflow_calc_Embedded (void) {
 			RcPluginEmbedded[plugin].input[MAX_INPUTS - 1].value = select;
 		} else if (RcPluginEmbedded[plugin].type == RCFLOW_PLUGIN_MIXER) {
 			if (RcPluginEmbedded[plugin].input[4].value > 0) {
-				RcPluginEmbedded[plugin].output[0].value = rcflow_value_limit((RcPluginEmbedded[plugin].input[0].value * RcPluginEmbedded[plugin].input[1].value / 1000) + (RcPluginEmbedded[plugin].input[2].value * RcPluginEmbedded[plugin].input[3].value / 1000), -1000, 1000);
+				RcPluginEmbedded[plugin].output[0].value = rcflow_value_limit((RcPluginEmbedded[plugin].input[0].value * RcPluginEmbedded[plugin].input[1].value / 1000) +
+						(RcPluginEmbedded[plugin].input[2].value * RcPluginEmbedded[plugin].input[3].value / 1000), -1000, 1000);
 			} else if (RcPluginEmbedded[plugin].input[5].value > 0) {
 				RcPluginEmbedded[plugin].output[0].value = 0;
 			}
@@ -3105,7 +3129,8 @@ void rcflow_calc_Embedded (void) {
 				range_end = (n + 1) * 2000 / (MAX_CURVE_POINTS - 1) - 1000;
 				if (RcPluginEmbedded[plugin].input[0].value >= range_begin && RcPluginEmbedded[plugin].input[0].value <= range_end && n < (MAX_CURVE_POINTS - 1)) {
 					range_pos = (float)(RcPluginEmbedded[plugin].input[0].value - range_begin) * 1.0 / (float)(range_end - range_begin);
-					RcPluginEmbedded[plugin].output[0].value = RcPluginEmbedded[plugin].input[n + 2].value + (int16_t)((float)(RcPluginEmbedded[plugin].input[n + 3].value - RcPluginEmbedded[plugin].input[n + 2].value) * range_pos);
+					RcPluginEmbedded[plugin].output[0].value = RcPluginEmbedded[plugin].input[n + 2].value + (int16_t)((float)(RcPluginEmbedded[plugin].input[n + 3].value - RcPluginEmbedded[plugin].input[n + 2].value) *
+							range_pos);
 					break;
 				}
 			}
@@ -3114,7 +3139,8 @@ void rcflow_calc_Embedded (void) {
 				range_end = (n + 1) * 2000 / (MAX_CURVE_POINTS - 1) - 1000;
 				if (RcPluginEmbedded[plugin].input[1].value >= range_begin && RcPluginEmbedded[plugin].input[1].value <= range_end && n < (MAX_CURVE_POINTS - 1)) {
 					range_pos = (float)(RcPluginEmbedded[plugin].input[1].value - range_begin) * 1.0 / (float)(range_end - range_begin);
-					RcPluginEmbedded[plugin].output[1].value = RcPluginEmbedded[plugin].input[n + 2].value + (int16_t)((float)(RcPluginEmbedded[plugin].input[n + 3].value - RcPluginEmbedded[plugin].input[n + 2].value) * range_pos);
+					RcPluginEmbedded[plugin].output[1].value = RcPluginEmbedded[plugin].input[n + 2].value + (int16_t)((float)(RcPluginEmbedded[plugin].input[n + 3].value - RcPluginEmbedded[plugin].input[n + 2].value) *
+							range_pos);
 					break;
 				}
 			}
@@ -3126,27 +3152,23 @@ void rcflow_calc_Embedded (void) {
 			if (rcflow_tcl_startup == 0) {
 				rcflow_tcl_init();
 			}
-
 			// set inital variables for tcl (input/output values)
 			char tmp_str[1024];
 			for (n = 0; n < MAX_INPUTS; n++) {
 				sprintf(tmp_str, "set Input(%i) \"%i\"", n, RcPluginEmbedded[plugin].input[n].value);
-//				Tcl_Eval(rcflow_tcl_interp, tmp_str);
+				//				Tcl_Eval(rcflow_tcl_interp, tmp_str);
 			}
 			for (n = 0; n < MAX_OUTPUTS; n++) {
 				sprintf(tmp_str, "set Output(%i) \"%i\"", n, RcPluginEmbedded[plugin].output[n].value);
-//				Tcl_Eval(rcflow_tcl_interp, tmp_str);
+				//				Tcl_Eval(rcflow_tcl_interp, tmp_str);
 			}
-
 			// eval plugin-script
-//			rcflow_tcl_run(RcPlugin[plugin].text);
-
+			//			rcflow_tcl_run(RcPlugin[plugin].text);
 			// update output values
 			for (n = 0; n < MAX_OUTPUTS; n++) {
 				sprintf(tmp_str, "set_output %i %i $Output(%i)", plugin, n, n);
-//				Tcl_Eval(rcflow_tcl_interp, tmp_str);
+				//				Tcl_Eval(rcflow_tcl_interp, tmp_str);
 			}
-
 		} else if (RcPluginEmbedded[plugin].type == RCFLOW_PLUGIN_H120) {
 			// Reset
 			RcPluginEmbedded[plugin].output[0].value = 0;
@@ -3270,14 +3292,14 @@ void rcflow_calc_Embedded (void) {
 	}
 }
 
-void rcflow_exit (void) {
+void rcflow_exit(void) {
 	if (rcflow_fd != -1) {
 		serial_close(rcflow_fd);
 		rcflow_fd = -1;
 	}
 }
 
-uint8_t rcflow_init (char *port, uint32_t baud) {
+uint8_t rcflow_init(char *port, uint32_t baud) {
 	char tmp_str[64];
 	char tmp_str2[64];
 	uint8_t plugin = 0;
@@ -3316,7 +3338,7 @@ uint8_t rcflow_init (char *port, uint32_t baud) {
 			sprintf(RcPlugin[plugin].name, "in%i", n + 1);
 			RcPlugin[plugin].type = RCFLOW_PLUGIN_INPUT;
 			RcPlugin[plugin].x = -0.86;
-//			RcPlugin[plugin].x = -0.66;
+			//			RcPlugin[plugin].x = -0.66;
 			RcPlugin[plugin].x = -1.3;
 			RcPlugin[plugin].y = -0.76 + n * 0.2;
 			strcpy(RcPlugin[plugin].input[0].name, "val");
@@ -3339,7 +3361,7 @@ uint8_t rcflow_init (char *port, uint32_t baud) {
 			sprintf(RcPlugin[plugin].name, "out%i", n + 1);
 			RcPlugin[plugin].type = RCFLOW_PLUGIN_OUTPUT;
 			RcPlugin[plugin].x = 0.86;
-//			RcPlugin[plugin].x = 0.66;
+			//			RcPlugin[plugin].x = 0.66;
 			RcPlugin[plugin].x = 1.3;
 			RcPlugin[plugin].y = -0.76 + n * 0.2;
 			strcpy(RcPlugin[plugin].input[0].name, "in");
@@ -3366,15 +3388,13 @@ uint8_t rcflow_init (char *port, uint32_t baud) {
 		strcpy(RcPlugin[10].title, "GAS");
 		strcpy(RcPlugin[11].title, "SEITE");
 		strcpy(RcPlugin[12].title, "QUER_L");
-
 		rcflow_link("in1;rev", "out5;in");
 		rcflow_link("in5;out", "out1;in");
-
 		strcpy(RcPlugin[plugin].name, "adc");
 		strcpy(RcPlugin[plugin].title, "ADC's");
 		RcPlugin[plugin].type = RCFLOW_PLUGIN_ADC;
 		RcPlugin[plugin].x = -1.52;
-//		RcPlugin[plugin].x = -1.3;
+		//		RcPlugin[plugin].x = -1.3;
 		RcPlugin[plugin].x = -2.0;
 		RcPlugin[plugin].y = -0.46;
 		strcpy(RcPlugin[plugin].output[0].name, "adc1");
@@ -3390,12 +3410,11 @@ uint8_t rcflow_init (char *port, uint32_t baud) {
 		strcpy(RcPlugin[plugin].output[10].name, "adc11");
 		strcpy(RcPlugin[plugin].output[11].name, "adc12");
 		plugin++;
-
 		strcpy(RcPlugin[plugin].name, "enc");
 		strcpy(RcPlugin[plugin].title, "Encoder");
 		RcPlugin[plugin].type = RCFLOW_PLUGIN_ENC;
 		RcPlugin[plugin].x = -1.52;
-//		RcPlugin[plugin].x = -1.3;
+		//		RcPlugin[plugin].x = -1.3;
 		RcPlugin[plugin].x = -2.0;
 		RcPlugin[plugin].y = 0.14;
 		strcpy(RcPlugin[plugin].output[0].name, "enc1");
@@ -3403,12 +3422,11 @@ uint8_t rcflow_init (char *port, uint32_t baud) {
 		strcpy(RcPlugin[plugin].output[2].name, "enc3");
 		strcpy(RcPlugin[plugin].output[3].name, "enc4");
 		plugin++;
-
 		strcpy(RcPlugin[plugin].name, "sw");
 		strcpy(RcPlugin[plugin].title, "Switches");
 		RcPlugin[plugin].type = RCFLOW_PLUGIN_SW;
 		RcPlugin[plugin].x = -1.52;
-//		RcPlugin[plugin].x = -1.3;
+		//		RcPlugin[plugin].x = -1.3;
 		RcPlugin[plugin].x = -2.0;
 		RcPlugin[plugin].y = 0.74;
 		strcpy(RcPlugin[plugin].output[0].name, "sw1");
@@ -3447,14 +3465,12 @@ uint8_t rcflow_init (char *port, uint32_t baud) {
 		strcpy(RcPlugin[plugin].output[11].name, "sw12");
 		RcPlugin[plugin].output[11].type = RCFLOW_INOUT_TYPE_SWITCH;
 		RcPlugin[plugin].output[11].value = -1000;
-
 		plugin++;
-
 		strcpy(RcPlugin[plugin].name, "ppm");
 		strcpy(RcPlugin[plugin].title, "PPM-Out");
 		RcPlugin[plugin].type = RCFLOW_PLUGIN_PPM;
 		RcPlugin[plugin].x = 1.52;
-//		RcPlugin[plugin].x = 1.3;
+		//		RcPlugin[plugin].x = 1.3;
 		RcPlugin[plugin].x = 2.0;
 		RcPlugin[plugin].y = -0.46;
 		strcpy(RcPlugin[plugin].input[0].name, "ch1");
@@ -3474,18 +3490,16 @@ uint8_t rcflow_init (char *port, uint32_t baud) {
 		rcflow_parseDoc(tmp_str);
 		rcflow_undo_save();
 	}
-
 	SDL_Log("rcflow: init serial port...\n");
 	rcflow_fd = serial_open(port, baud);
-
 	return 0;
 }
 
-uint8_t rcflow_connection_status (void) {
+uint8_t rcflow_connection_status(void) {
 	return 1;
 }
 
-void screen_rcflow (ESContext *esContext) {
+void screen_rcflow(ESContext *esContext) {
 	char tmp_str[64];
 	uint8_t plugin = 0;
 	uint8_t link = 0;
@@ -3517,8 +3531,8 @@ void screen_rcflow (ESContext *esContext) {
 						}
 					}
 					SDL_Log("\n");
-	//			} else if (buffer[0] == 'C' && buffer[1] == 'N' && buffer[2] == 'T' && buffer[3] == ':') {
-	//				SDL_Log("rcflow: ################# %s ##\n", buffer);
+					//			} else if (buffer[0] == 'C' && buffer[1] == 'N' && buffer[2] == 'T' && buffer[3] == ':') {
+					//				SDL_Log("rcflow: ################# %s ##\n", buffer);
 				}
 				start_flag = 0;
 				buffer_n = 0;
@@ -3538,8 +3552,6 @@ void screen_rcflow (ESContext *esContext) {
 	}
 	//usleep(100000);
 #endif
-
-
 	// Calculating
 	rcflow_convert_to_Embedded();
 	rcflow_calc_Embedded();
@@ -3552,9 +3564,7 @@ void screen_rcflow (ESContext *esContext) {
 	rcflow_calc_Embedded();
 	rcflow_calc_Embedded();
 	rcflow_convert_from_Embedded();
-
 	redraw_flag = 1;
-
 	if (virt_view == 1) {
 		scale = 1.0;
 		sprintf(tmp_str, "RC-Flow/Virtual-Controls (%s)", setup_name);
@@ -3562,7 +3572,8 @@ void screen_rcflow (ESContext *esContext) {
 		// Draw Virtual-Inputs
 		n = 0;
 		for (plugin = 0; plugin < MAX_PLUGINS; plugin++) {
-			if (RcPlugin[plugin].name[0] != 0 && (RcPlugin[plugin].type == RCFLOW_PLUGIN_VADC || RcPlugin[plugin].type == RCFLOW_PLUGIN_VSW || RcPlugin[plugin].type == RCFLOW_PLUGIN_MULTIPLEX_IN || RcPlugin[plugin].vview == 1)) {
+			if (RcPlugin[plugin].name[0] != 0 && (RcPlugin[plugin].type == RCFLOW_PLUGIN_VADC || RcPlugin[plugin].type == RCFLOW_PLUGIN_VSW || RcPlugin[plugin].type == RCFLOW_PLUGIN_MULTIPLEX_IN ||
+												  RcPlugin[plugin].vview == 1)) {
 				rcflow_draw_vplugin(esContext, plugin, n++);
 			}
 		}
@@ -3608,9 +3619,11 @@ void screen_rcflow (ESContext *esContext) {
 									if (tlist == 0) {
 										tlist = 1;
 										if (menu_set_type == RcPlugin[plugin].type) {
-											draw_text_button(esContext, plugintype_names[RcPlugin[plugin].type], setup.view_mode, plugintype_names[RcPlugin[plugin].type], FONT_PINK, -0.9, -0.7 + menu_y1++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_type, RcPlugin[plugin].type);
+											draw_text_button(esContext, plugintype_names[RcPlugin[plugin].type], setup.view_mode, plugintype_names[RcPlugin[plugin].type], FONT_PINK, -0.9, -0.7 + menu_y1++ * 0.08, 0.002, 0.06, ALIGN_LEFT,
+															 ALIGN_TOP, rcflow_menu_set_type, RcPlugin[plugin].type);
 										} else {
-											draw_text_button(esContext, plugintype_names[RcPlugin[plugin].type], setup.view_mode, plugintype_names[RcPlugin[plugin].type], FONT_GREEN, -0.9, -0.7 + menu_y1++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_type, RcPlugin[plugin].type);
+											draw_text_button(esContext, plugintype_names[RcPlugin[plugin].type], setup.view_mode, plugintype_names[RcPlugin[plugin].type], FONT_GREEN, -0.9, -0.7 + menu_y1++ * 0.08, 0.002, 0.06, ALIGN_LEFT,
+															 ALIGN_TOP, rcflow_menu_set_type, RcPlugin[plugin].type);
 										}
 									}
 									if (plist == 0) {
@@ -3618,24 +3631,30 @@ void screen_rcflow (ESContext *esContext) {
 										if (menu_set_type == RcPlugin[plugin].type) {
 											if (menu_set_plugin == plugin) {
 												if (RcPlugin[plugin].title[0] == 0) {
-													draw_text_button(esContext, RcPlugin[plugin].name, setup.view_mode, RcPlugin[plugin].name, FONT_PINK, -0.5, -0.7 + menu_y2++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_plugin, plugin);
+													draw_text_button(esContext, RcPlugin[plugin].name, setup.view_mode, RcPlugin[plugin].name, FONT_PINK, -0.5, -0.7 + menu_y2++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_plugin,
+																	 plugin);
 												} else {
-													draw_text_button(esContext, RcPlugin[plugin].name, setup.view_mode, RcPlugin[plugin].title, FONT_PINK, -0.5, -0.7 + menu_y2++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_plugin, plugin);
+													draw_text_button(esContext, RcPlugin[plugin].name, setup.view_mode, RcPlugin[plugin].title, FONT_PINK, -0.5, -0.7 + menu_y2++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_plugin,
+																	 plugin);
 												}
 											} else {
 												if (RcPlugin[plugin].title[0] == 0) {
-													draw_text_button(esContext, RcPlugin[plugin].name, setup.view_mode, RcPlugin[plugin].name, FONT_GREEN, -0.5, -0.7 + menu_y2++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_plugin, plugin);
+													draw_text_button(esContext, RcPlugin[plugin].name, setup.view_mode, RcPlugin[plugin].name, FONT_GREEN, -0.5, -0.7 + menu_y2++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_plugin,
+																	 plugin);
 												} else {
-													draw_text_button(esContext, RcPlugin[plugin].name, setup.view_mode, RcPlugin[plugin].title, FONT_GREEN, -0.5, -0.7 + menu_y2++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_plugin, plugin);
+													draw_text_button(esContext, RcPlugin[plugin].name, setup.view_mode, RcPlugin[plugin].title, FONT_GREEN, -0.5, -0.7 + menu_y2++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_plugin,
+																	 plugin);
 												}
 											}
 										}
 									}
 									if (menu_set_type == RcPlugin[plugin].type && menu_set_plugin == plugin) {
 										if (menu_set_input == input) {
-											draw_text_button(esContext, RcPlugin[plugin].input[input].name, setup.view_mode, RcPlugin[plugin].input[input].name, FONT_PINK, -0.1, -0.7 + menu_y3++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_input, input);
+											draw_text_button(esContext, RcPlugin[plugin].input[input].name, setup.view_mode, RcPlugin[plugin].input[input].name, FONT_PINK, -0.1, -0.7 + menu_y3++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP,
+															 rcflow_menu_set_input, input);
 										} else {
-											draw_text_button(esContext, RcPlugin[plugin].input[input].name, setup.view_mode, RcPlugin[plugin].input[input].name, FONT_GREEN, -0.1, -0.7 + menu_y3++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, rcflow_menu_set_input, input);
+											draw_text_button(esContext, RcPlugin[plugin].input[input].name, setup.view_mode, RcPlugin[plugin].input[input].name, FONT_GREEN, -0.1, -0.7 + menu_y3++ * 0.08, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP,
+															 rcflow_menu_set_input, input);
 										}
 									}
 								}
@@ -3757,7 +3776,7 @@ void screen_rcflow (ESContext *esContext) {
 		}
 	} else {
 		// Drawing
-		glDisable( GL_DEPTH_TEST );
+		glDisable(GL_DEPTH_TEST);
 #ifndef SIMPLE_DRAW
 		draw_box_f3c2(esContext, -1.5, -1.0, 0.05, 1.5, 1.0, 0.05, 2, 2, 2, 255, 0x4d, 0x56, 0x67, 255);
 #endif
@@ -3768,7 +3787,7 @@ void screen_rcflow (ESContext *esContext) {
 				rcflow_draw_plugin(esContext, plugin);
 			}
 		}
-//SDL_Log("#1: \n", times(0));
+		//SDL_Log("#1: \n", times(0));
 		// Draw Links
 		for (link = 0; link < MAX_LINKS; link++) {
 			if (RcLink[link].from[0] != 0 && RcLink[link].to[0] != 0) {
@@ -3797,7 +3816,6 @@ void screen_rcflow (ESContext *esContext) {
 		}
 		draw_text_button(esContext, "plugin_add", setup.view_mode, "[ADD]", FONT_GREEN, 0.3, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_select, 0.0);
 	}
-
 	draw_text_button(esContext, "virtview", setup.view_mode, "[VIRT]", FONT_GREEN, -1.1, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_virt_view, 0.0);
 	draw_text_button(esContext, "load", setup.view_mode, "[LOAD]", FONT_GREEN, 0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_load, 0.0);
 	if (unsave == 0) {
@@ -3855,9 +3873,11 @@ void screen_rcflow (ESContext *esContext) {
 		plugin++;
 		draw_text_button(esContext, "add_limit", setup.view_mode, "Limiter", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_LIMIT);
 		plugin++;
-		draw_text_button(esContext, "add_delay", setup.view_mode, "Delay (Slowmotion)", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_DELAY);
+		draw_text_button(esContext, "add_delay", setup.view_mode, "Delay (Slowmotion)", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add,
+						 (float)RCFLOW_PLUGIN_DELAY);
 		plugin++;
-		draw_text_button(esContext, "add_curve", setup.view_mode, "Curve (7-Point)", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_CURVE);
+		draw_text_button(esContext, "add_curve", setup.view_mode, "Curve (7-Point)", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add,
+						 (float)RCFLOW_PLUGIN_CURVE);
 		plugin++;
 		draw_text_button(esContext, "add_butter", setup.view_mode, "BUTTERFLY", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_BUTTERFLY);
 		plugin++;
@@ -3865,46 +3885,47 @@ void screen_rcflow (ESContext *esContext) {
 		plugin++;
 		draw_text_button(esContext, "add_mpxo", setup.view_mode, "MPX-Out", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_MULTIPLEX_OUT);
 		plugin++;
-		draw_text_button(esContext, "add_multiv", setup.view_mode, "Multi-Value", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_MULTIVALUE);
+		draw_text_button(esContext, "add_multiv", setup.view_mode, "Multi-Value", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add,
+						 (float)RCFLOW_PLUGIN_MULTIVALUE);
 		plugin++;
 		draw_text_button(esContext, "add_tcl", setup.view_mode, "TCL (Script)", FONT_GREEN, -0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_TCL);
 		plugin++;
-
 		plugin = 0;
 		draw_text_button(esContext, "add_expo", setup.view_mode, "Expo", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_EXPO);
 		plugin++;
-		draw_text_button(esContext, "add_heli120", setup.view_mode, "Heli-120 (Swashplate)", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_H120);
+		draw_text_button(esContext, "add_heli120", setup.view_mode, "Heli-120 (Swashplate)", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add,
+						 (float)RCFLOW_PLUGIN_H120);
 		plugin++;
-		draw_text_button(esContext, "add_switch", setup.view_mode, "Switch (Changeover)", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_SWITCH);
+		draw_text_button(esContext, "add_switch", setup.view_mode, "Switch (Changeover)", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add,
+						 (float)RCFLOW_PLUGIN_SWITCH);
 		plugin++;
-		draw_text_button(esContext, "add_range", setup.view_mode, "Range (Linear to Switch)", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_RANGESW);
+		draw_text_button(esContext, "add_range", setup.view_mode, "Range (Linear to Switch)", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add,
+						 (float)RCFLOW_PLUGIN_RANGESW);
 		plugin++;
 		draw_text_button(esContext, "add_alarm", setup.view_mode, "Alarm", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_ALARM);
 		plugin++;
-		draw_text_button(esContext, "add_timer", setup.view_mode, "Timer (Set / Reset)", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_TIMER);
+		draw_text_button(esContext, "add_timer", setup.view_mode, "Timer (Set / Reset)", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add,
+						 (float)RCFLOW_PLUGIN_TIMER);
 		plugin++;
 		draw_text_button(esContext, "add_and", setup.view_mode, "LOGIC_AND", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_AND);
 		plugin++;
 		draw_text_button(esContext, "add_or", setup.view_mode, "LOGIC_OR", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_OR);
 		plugin++;
-		draw_text_button(esContext, "add_pulse", setup.view_mode, "Pulse (Short Pulse)", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_PULSE);
+		draw_text_button(esContext, "add_pulse", setup.view_mode, "Pulse (Short Pulse)", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add,
+						 (float)RCFLOW_PLUGIN_PULSE);
 		plugin++;
-		draw_text_button(esContext, "add_sinus", setup.view_mode, "Sinus (Auto-Input)", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)RCFLOW_PLUGIN_SINUS);
+		draw_text_button(esContext, "add_sinus", setup.view_mode, "Sinus (Auto-Input)", FONT_GREEN, 0.5, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add,
+						 (float)RCFLOW_PLUGIN_SINUS);
 		plugin++;
-
 		plugin++;
 		plugin++;
 		draw_text_button(esContext, "back", setup.view_mode, "[BACK]", FONT_GREEN, 0.0, -0.8 + plugin * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_plugin_add, (float)255);
 		plugin++;
 	}
-
 	draw_text_button(esContext, "update", setup.view_mode, "[UPDATE]", FONT_GREEN, 0.0, 0.8, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_update, 0.0);
-
 	static int cursor_pos = -1;
-
 	if (rcflow_sript_view_flag != -1) {
 		draw_box_f3(esContext, -1.0, -0.7, 0.001, 1.0, 0.7, 0.001, 255, 255, 255, 255);
-
 		int n = 0;
 		int n2 = 0;
 		float txt_x = -1.0;
@@ -3912,7 +3933,6 @@ void screen_rcflow (ESContext *esContext) {
 		char new_char = 0;
 		char tmp_str[2];
 		char new_text[2048];
-
 		if (keyboard_key[0] != 0) {
 			if (strcmp(keyboard_key, "return") == 0) {
 				new_char = '\n';
@@ -3947,11 +3967,9 @@ void screen_rcflow (ESContext *esContext) {
 			}
 			keyboard_key[0] = 0;
 		}
-
 		if (cursor_pos == -1 || cursor_pos > strlen(rcflow_sript_view_text)) {
 			cursor_pos = strlen(rcflow_sript_view_text) - 1;
 		}
-
 		int last_ret = 0;
 		int last_ret2 = 0;
 		int last_pos = 0;
@@ -3979,7 +3997,6 @@ void screen_rcflow (ESContext *esContext) {
 			}
 			new_text[n2] = rcflow_sript_view_text[n];
 			new_text[n2 + 1] = 0;
-
 			if (rcflow_sript_view_text[n] == '\n') {
 				if (n2 > cursor_pos && new_char == -4) {
 					cursor_pos = n2 + last_pos + 1;
@@ -4002,30 +4019,19 @@ void screen_rcflow (ESContext *esContext) {
 		}
 		new_text[n2] = 0;
 		strcpy(rcflow_sript_view_text, new_text);
-
-		draw_text_button(esContext, "script_save", setup.view_mode, "[SAVE]", FONT_GREEN, 0.0 - 0.15, 0.6, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_sript_view_save, (float)-1);
-		draw_text_button(esContext, "script_close", setup.view_mode, "[CANCEL]", FONT_GREEN, 0.0 + 0.15, 0.6, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_sript_view, (float)-1);
+		draw_text_button(esContext, "script_save", setup.view_mode, "[SAVE]", FONT_GREEN, 0.0 - 0.15, 0.6, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_sript_view_save, (float) - 1);
+		draw_text_button(esContext, "script_close", setup.view_mode, "[CANCEL]", FONT_GREEN, 0.0 + 0.15, 0.6, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, rcflow_sript_view, (float) - 1);
 	} else {
 		cursor_pos = -1;
 	}
-
 	if (keyboard_key[0] != 0) {
 		SDL_Log("rcflow: keyboard_key(shift) = %s (%i)\n", keyboard_key, keyboard_shift);
 	}
-
-
 	screen_keyboard(esContext);
 	screen_filesystem(esContext);
-
-	glEnable( GL_DEPTH_TEST );
-
-
-//	rcflow_tcl_run("puts $ModelData[ModelActive](name)");
-
-
-//SDL_Log("%i %i %i\n", (int)sizeof(RcPluginEmbedded), (int)sizeof(RcLinkEmbedded), (int)sizeof(RcPluginEmbedded) + (int)sizeof(RcLinkEmbedded));
-
-
+	glEnable(GL_DEPTH_TEST);
+	//	rcflow_tcl_run("puts $ModelData[ModelActive](name)");
+	//SDL_Log("%i %i %i\n", (int)sizeof(RcPluginEmbedded), (int)sizeof(RcLinkEmbedded), (int)sizeof(RcPluginEmbedded) + (int)sizeof(RcLinkEmbedded));
 }
 
 

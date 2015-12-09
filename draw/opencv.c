@@ -25,7 +25,7 @@ static IplImage *gray = NULL;
 // static CvPoint2D32f corners[20];
 // static CvPoint p[4];
 
-void cvar_init (void) {
+void cvar_init(void) {
 	int b_width  = 5;
 	int b_height = 4;
 	b_squares = 20;
@@ -33,65 +33,63 @@ void cvar_init (void) {
 	warp_matrix = cvCreateMat(3, 3, CV_32FC1);
 }
 
-void cvar_run (IplImage *image) {
-//	int corner_count = 0;
+void cvar_run(IplImage *image) {
+	//	int corner_count = 0;
 	if (gray == NULL) {
 		gray = cvCreateImage(cvGetSize(image), image->depth, 1);
 	}
 	cvCvtColor(image, gray, CV_BGR2GRAY);
-/*
-	cvFindChessboardCorners(gray, b_size, corners, &corner_count, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
-	cvFindCornerSubPix(gray, corners, corner_count, cvSize(11, 11), cvSize(-1, -1), cvTermCriteria(CV_TERMCRIT_EPS+CV_TERMCRIT_ITER, 30, 0.1));
-	if (corner_count == b_squares) {
-		p[0].x = (int)corners[0].x;
-		p[0].y = (int)corners[0].y;
-		p[1].x = (int)corners[4].x;
-		p[1].y = (int)corners[4].y;
-		p[2].x = (int)corners[19].x;
-		p[2].y = (int)corners[19].y;
-		p[3].x = (int)corners[15].x;
-		p[3].y = (int)corners[15].y;
-		cvLine(image, p[0], p[1], CV_RGB(255, 0, 0), 2, 8, 0);
-		cvLine(image, p[1], p[2], CV_RGB(0, 255, 0), 2, 8, 0);
-		cvLine(image, p[2], p[3], CV_RGB(0, 0, 255), 2, 8, 0);
-		cvLine(image, p[3], p[0], CV_RGB(255, 255, 0), 2, 8, 0);
-	}
-*/
-
-/*
-	CvPoint2D32f src_pnt[4];
-	src_pnt[0] = cvPoint2D32f (p[0].x, p[0].y);
-	src_pnt[1] = cvPoint2D32f (p[1].x, p[1].y);
-	src_pnt[2] = cvPoint2D32f (p[2].x, p[2].y);
-	src_pnt[3] = cvPoint2D32f (p[3].x, p[3].y);
-	CvPoint2D32f dst_pnt[4];
-	dst_pnt[0] = cvPoint2D32f (0.0, 0.0);
-	dst_pnt[1] = cvPoint2D32f (image->width, 0.0);
-	dst_pnt[2] = cvPoint2D32f (image->width, image->height);
-	dst_pnt[3] = cvPoint2D32f (0.0, image->height);
-	CvMat *mmat = cvCreateMat(3, 3, CV_32FC1);
-	mmat = cvGetPerspectiveTransform(src_pnt, dst_pnt, mmat);
-	IplImage *tmp_img = NULL;
-	tmp_img = cvCloneImage(image);
-	cvWarpPerspective(tmp_img, image, mmat, CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS, cvScalarAll(0)); 
-*/
-
+	/*
+		cvFindChessboardCorners(gray, b_size, corners, &corner_count, CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_FILTER_QUADS);
+		cvFindCornerSubPix(gray, corners, corner_count, cvSize(11, 11), cvSize(-1, -1), cvTermCriteria(CV_TERMCRIT_EPS+CV_TERMCRIT_ITER, 30, 0.1));
+		if (corner_count == b_squares) {
+			p[0].x = (int)corners[0].x;
+			p[0].y = (int)corners[0].y;
+			p[1].x = (int)corners[4].x;
+			p[1].y = (int)corners[4].y;
+			p[2].x = (int)corners[19].x;
+			p[2].y = (int)corners[19].y;
+			p[3].x = (int)corners[15].x;
+			p[3].y = (int)corners[15].y;
+			cvLine(image, p[0], p[1], CV_RGB(255, 0, 0), 2, 8, 0);
+			cvLine(image, p[1], p[2], CV_RGB(0, 255, 0), 2, 8, 0);
+			cvLine(image, p[2], p[3], CV_RGB(0, 0, 255), 2, 8, 0);
+			cvLine(image, p[3], p[0], CV_RGB(255, 255, 0), 2, 8, 0);
+		}
+	*/
+	/*
+		CvPoint2D32f src_pnt[4];
+		src_pnt[0] = cvPoint2D32f (p[0].x, p[0].y);
+		src_pnt[1] = cvPoint2D32f (p[1].x, p[1].y);
+		src_pnt[2] = cvPoint2D32f (p[2].x, p[2].y);
+		src_pnt[3] = cvPoint2D32f (p[3].x, p[3].y);
+		CvPoint2D32f dst_pnt[4];
+		dst_pnt[0] = cvPoint2D32f (0.0, 0.0);
+		dst_pnt[1] = cvPoint2D32f (image->width, 0.0);
+		dst_pnt[2] = cvPoint2D32f (image->width, image->height);
+		dst_pnt[3] = cvPoint2D32f (0.0, image->height);
+		CvMat *mmat = cvCreateMat(3, 3, CV_32FC1);
+		mmat = cvGetPerspectiveTransform(src_pnt, dst_pnt, mmat);
+		IplImage *tmp_img = NULL;
+		tmp_img = cvCloneImage(image);
+		cvWarpPerspective(tmp_img, image, mmat, CV_INTER_LINEAR + CV_WARP_FILL_OUTLIERS, cvScalarAll(0));
+	*/
 	IplImage *edge = cvCreateImage(cvSize(image->width, image->height), 8, 1);
 	int edge_thresh = 1;
-	CvMemStorage* storage = cvCreateMemStorage(0);
+	CvMemStorage *storage = cvCreateMemStorage(0);
 	cvThreshold(gray, gray, CV_GAUSSIAN, 9, 9);
-	cvSmooth(gray, gray, CV_GAUSSIAN, 11, 11, 0, 0); 
+	cvSmooth(gray, gray, CV_GAUSSIAN, 11, 11, 0, 0);
 	cvCanny(gray, edge, (float)edge_thresh, (float)edge_thresh * 3, 5);
-	CvSeq* circles = cvHoughCircles(edge, storage, CV_HOUGH_GRADIENT, 2, gray->height / 4, 200, 100, 10, 0);
+	CvSeq *circles = cvHoughCircles(edge, storage, CV_HOUGH_GRADIENT, 2, gray->height / 4, 200, 100, 10, 0);
 	int i;
 	for (i = 0; i < circles->total; i++) {
-	float* p = (float*)cvGetSeqElem(circles, i);
-		cvCircle(image, cvPoint(cvRound(p[0]),cvRound(p[1])), 3, CV_RGB(0,255,0), -1, 8, 0 );
-		cvCircle(image, cvPoint(cvRound(p[0]),cvRound(p[1])), cvRound(p[2]), CV_RGB(255,0,0), 3, 8, 0 );
+		float *p = (float *)cvGetSeqElem(circles, i);
+		cvCircle(image, cvPoint(cvRound(p[0]), cvRound(p[1])), 3, CV_RGB(0, 255, 0), -1, 8, 0);
+		cvCircle(image, cvPoint(cvRound(p[0]), cvRound(p[1])), cvRound(p[2]), CV_RGB(255, 0, 0), 3, 8, 0);
 	}
 }
 
-void cvar_exit (void) {
+void cvar_exit(void) {
 	if (warp_matrix != NULL) {
 		cvReleaseMat(&warp_matrix);
 	}
@@ -102,18 +100,18 @@ void cvar_exit (void) {
 }
 #endif
 
-SDL_Surface *ipl_to_surface (IplImage *opencvimg) {
-	SDL_Surface *surface = SDL_CreateRGBSurfaceFrom((void*)opencvimg->imageData,
-		opencvimg->width,
-		opencvimg->height,
-		opencvimg->depth * opencvimg->nChannels,
-		opencvimg->widthStep,
-		0xff0000, 0x00ff00, 0x0000ff, 0
-	);
+SDL_Surface *ipl_to_surface(IplImage *opencvimg) {
+	SDL_Surface *surface = SDL_CreateRGBSurfaceFrom((void *)opencvimg->imageData,
+						   opencvimg->width,
+						   opencvimg->height,
+						   opencvimg->depth * opencvimg->nChannels,
+						   opencvimg->widthStep,
+						   0xff0000, 0x00ff00, 0x0000ff, 0
+												   );
 	return surface;
 }
 
-int cv_update (void *data) {
+int cv_update(void *data) {
 	IplImage *opencvimg = NULL;
 	if (cv_file[0] != 0) {
 		if ((cv_capture = cvCaptureFromAVI(cv_file)) == NULL) {
@@ -139,22 +137,20 @@ int cv_update (void *data) {
 		img_h = next_power_of_two(img_h);
 #endif
 		SDL_Surface *csf = ipl_to_surface(opencvimg);
-		cv_surface = SDL_CreateRGBSurface( csf->flags, img_w, img_h,
-			csf->format->BitsPerPixel,
-			csf->format->Rmask,
-			csf->format->Gmask,
-			csf->format->Bmask,
-			csf->format->Amask
-		);
-		cv_bg = SDL_CreateRGBSurface( csf->flags, img_w, img_h,
-			csf->format->BitsPerPixel,
-			csf->format->Rmask,
-			csf->format->Gmask,
-			csf->format->Bmask,
-			csf->format->Amask
-		);
-
-
+		cv_surface = SDL_CreateRGBSurface(csf->flags, img_w, img_h,
+										  csf->format->BitsPerPixel,
+										  csf->format->Rmask,
+										  csf->format->Gmask,
+										  csf->format->Bmask,
+										  csf->format->Amask
+										 );
+		cv_bg = SDL_CreateRGBSurface(csf->flags, img_w, img_h,
+									 csf->format->BitsPerPixel,
+									 csf->format->Rmask,
+									 csf->format->Gmask,
+									 csf->format->Bmask,
+									 csf->format->Amask
+									);
 		if (cv_surface != NULL && cv_bg != NULL) {
 			SDL_Log("opencv: running thread\n");
 #ifdef OPENCV_EFFECTS
@@ -170,7 +166,7 @@ int cv_update (void *data) {
 					}
 #endif
 #ifdef POWER_OF_TWO
-					IplImage* des_img;
+					IplImage *des_img;
 					des_img = cvCreateImage(cvSize(img_w, img_h), opencvimg->depth, opencvimg->nChannels);
 					cvResize(opencvimg, des_img, CV_INTER_LINEAR);
 					SDL_Surface *csf = ipl_to_surface(des_img);
@@ -209,7 +205,7 @@ int cv_update (void *data) {
 	return 0;
 }
 
-void openvc_init (char *opencv_file, int cam_id, int features) {
+void openvc_init(char *opencv_file, int cam_id, int features) {
 	SDL_Log("opencv: init (%i)\n", features);
 	cv_camid = cam_id;
 	strncpy(cv_file, opencv_file, 1024);
@@ -227,7 +223,7 @@ void openvc_init (char *opencv_file, int cam_id, int features) {
 #endif
 }
 
-void openvc_exit (void) {
+void openvc_exit(void) {
 	cv_running = 0;
 	SDL_WaitThread(cv_thread, NULL);
 	if (cv_bg != NULL) {
@@ -252,7 +248,7 @@ void openvc_exit (void) {
 #endif
 }
 
-SDL_Surface *openvc_get (void) {
+SDL_Surface *openvc_get(void) {
 	SDL_LockMutex(cv_mutex);
 	if (cv_bg != NULL) {
 		SDL_BlitSurface(cv_bg, NULL, cv_surface, NULL);

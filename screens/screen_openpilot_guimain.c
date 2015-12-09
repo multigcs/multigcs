@@ -3,14 +3,14 @@
 uint16_t show_num = 0;
 uint16_t msy = 0;
 
-uint8_t UAVT_gui_show_num_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-		show_num = (uint16_t)data;
-		reset_buttons();
-		sy = 0;
-		return 0;
+uint8_t UAVT_gui_show_num_change(char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	show_num = (uint16_t)data;
+	reset_buttons();
+	sy = 0;
+	return 0;
 }
 
-uint8_t UAVT_gui_main_scroll (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t UAVT_gui_main_scroll(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 4) {
 		if (msy > 0) {
 			msy--;
@@ -29,7 +29,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_ActuatorSettings_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "ActuatorSettingsShow", VIEW_MODE_FCMENU, "ActuatorSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)1);
+			draw_text_button(esContext, "ActuatorSettingsShow", VIEW_MODE_FCMENU, "ActuatorSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change,
+							 (float)1);
 		}
 	}
 	nn++;
@@ -37,7 +38,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_AirspeedSettings_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "AirspeedSettingsShow", VIEW_MODE_FCMENU, "AirspeedSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)2);
+			draw_text_button(esContext, "AirspeedSettingsShow", VIEW_MODE_FCMENU, "AirspeedSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change,
+							 (float)2);
 		}
 	}
 	nn++;
@@ -45,7 +47,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_AltitudeHoldSettings_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "AltitudeHoldSettingsShow", VIEW_MODE_FCMENU, "AltitudeHoldSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)3);
+			draw_text_button(esContext, "AltitudeHoldSettingsShow", VIEW_MODE_FCMENU, "AltitudeHoldSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change,
+							 (float)3);
 		}
 	}
 	nn++;
@@ -53,7 +56,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_AttitudeSettings_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "AttitudeSettingsShow", VIEW_MODE_FCMENU, "AttitudeSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)4);
+			draw_text_button(esContext, "AttitudeSettingsShow", VIEW_MODE_FCMENU, "AttitudeSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change,
+							 (float)4);
 		}
 	}
 	nn++;
@@ -61,7 +65,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_BrushlessGimbalSettings_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "BrushlessGimbalSettingsShow", VIEW_MODE_FCMENU, "BrushlessGimbalSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)5);
+			draw_text_button(esContext, "BrushlessGimbalSettingsShow", VIEW_MODE_FCMENU, "BrushlessGimbalSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP,
+							 UAVT_gui_show_num_change, (float)5);
 		}
 	}
 	nn++;
@@ -69,7 +74,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_CameraStabSettings_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "CameraStabSettingsShow", VIEW_MODE_FCMENU, "CameraStabSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)6);
+			draw_text_button(esContext, "CameraStabSettingsShow", VIEW_MODE_FCMENU, "CameraStabSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change,
+							 (float)6);
 		}
 	}
 	nn++;
@@ -85,7 +91,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_FixedWingAirspeeds_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "FixedWingAirspeedsShow", VIEW_MODE_FCMENU, "FixedWingAirspeeds ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)8);
+			draw_text_button(esContext, "FixedWingAirspeedsShow", VIEW_MODE_FCMENU, "FixedWingAirspeeds ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change,
+							 (float)8);
 		}
 	}
 	nn++;
@@ -93,7 +100,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_FixedWingPathFollowerSettingsCC_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "FixedWingPathFollowerSettingsCCShow", VIEW_MODE_FCMENU, "FixedWingPathFollowerSettingsCC ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)9);
+			draw_text_button(esContext, "FixedWingPathFollowerSettingsCCShow", VIEW_MODE_FCMENU, "FixedWingPathFollowerSettingsCC ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP,
+							 UAVT_gui_show_num_change, (float)9);
 		}
 	}
 	nn++;
@@ -101,7 +109,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_FixedWingPathFollowerSettings_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "FixedWingPathFollowerSettingsShow", VIEW_MODE_FCMENU, "FixedWingPathFollowerSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)10);
+			draw_text_button(esContext, "FixedWingPathFollowerSettingsShow", VIEW_MODE_FCMENU, "FixedWingPathFollowerSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP,
+							 UAVT_gui_show_num_change, (float)10);
 		}
 	}
 	nn++;
@@ -109,7 +118,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_FlightBatterySettings_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "FlightBatterySettingsShow", VIEW_MODE_FCMENU, "FlightBatterySettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)11);
+			draw_text_button(esContext, "FlightBatterySettingsShow", VIEW_MODE_FCMENU, "FlightBatterySettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP,
+							 UAVT_gui_show_num_change, (float)11);
 		}
 	}
 	nn++;
@@ -117,7 +127,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_FlightPlanSettings_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "FlightPlanSettingsShow", VIEW_MODE_FCMENU, "FlightPlanSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)12);
+			draw_text_button(esContext, "FlightPlanSettingsShow", VIEW_MODE_FCMENU, "FlightPlanSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change,
+							 (float)12);
 		}
 	}
 	nn++;
@@ -125,7 +136,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_GeoFenceSettings_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "GeoFenceSettingsShow", VIEW_MODE_FCMENU, "GeoFenceSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)13);
+			draw_text_button(esContext, "GeoFenceSettingsShow", VIEW_MODE_FCMENU, "GeoFenceSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change,
+							 (float)13);
 		}
 	}
 	nn++;
@@ -133,7 +145,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_GroundPathFollowerSettings_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "GroundPathFollowerSettingsShow", VIEW_MODE_FCMENU, "GroundPathFollowerSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)14);
+			draw_text_button(esContext, "GroundPathFollowerSettingsShow", VIEW_MODE_FCMENU, "GroundPathFollowerSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP,
+							 UAVT_gui_show_num_change, (float)14);
 		}
 	}
 	nn++;
@@ -157,7 +170,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_HwColibri_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "HwColibriShow", VIEW_MODE_FCMENU, "HwColibri (HardwareSettings)", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)17);
+			draw_text_button(esContext, "HwColibriShow", VIEW_MODE_FCMENU, "HwColibri (HardwareSettings)", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change,
+							 (float)17);
 		}
 	}
 	nn++;
@@ -165,7 +179,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_HwCopterControl_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "HwCopterControlShow", VIEW_MODE_FCMENU, "HwCopterControl (HardwareSettings)", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)18);
+			draw_text_button(esContext, "HwCopterControlShow", VIEW_MODE_FCMENU, "HwCopterControl (HardwareSettings)", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP,
+							 UAVT_gui_show_num_change, (float)18);
 		}
 	}
 	nn++;
@@ -173,7 +188,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_HwDiscoveryF4_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "HwDiscoveryF4Show", VIEW_MODE_FCMENU, "HwDiscoveryF4 (HardwareSettings)", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)19);
+			draw_text_button(esContext, "HwDiscoveryF4Show", VIEW_MODE_FCMENU, "HwDiscoveryF4 (HardwareSettings)", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP,
+							 UAVT_gui_show_num_change, (float)19);
 		}
 	}
 	nn++;
@@ -181,7 +197,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_HwFlyingF3_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "HwFlyingF3Show", VIEW_MODE_FCMENU, "HwFlyingF3 (HardwareSettings)", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)20);
+			draw_text_button(esContext, "HwFlyingF3Show", VIEW_MODE_FCMENU, "HwFlyingF3 (HardwareSettings)", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change,
+							 (float)20);
 		}
 	}
 	nn++;
@@ -189,7 +206,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_HwFlyingF4_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "HwFlyingF4Show", VIEW_MODE_FCMENU, "HwFlyingF4 (HardwareSettings)", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)21);
+			draw_text_button(esContext, "HwFlyingF4Show", VIEW_MODE_FCMENU, "HwFlyingF4 (HardwareSettings)", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change,
+							 (float)21);
 		}
 	}
 	nn++;
@@ -197,7 +215,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_HwFreedom_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "HwFreedomShow", VIEW_MODE_FCMENU, "HwFreedom (HardwareSettings)", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)22);
+			draw_text_button(esContext, "HwFreedomShow", VIEW_MODE_FCMENU, "HwFreedom (HardwareSettings)", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change,
+							 (float)22);
 		}
 	}
 	nn++;
@@ -205,7 +224,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_HwQuanton_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "HwQuantonShow", VIEW_MODE_FCMENU, "HwQuanton (HardwareSettings)", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)23);
+			draw_text_button(esContext, "HwQuantonShow", VIEW_MODE_FCMENU, "HwQuanton (HardwareSettings)", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change,
+							 (float)23);
 		}
 	}
 	nn++;
@@ -213,7 +233,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_HwRevolution_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "HwRevolutionShow", VIEW_MODE_FCMENU, "HwRevolution (HardwareSettings)", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)24);
+			draw_text_button(esContext, "HwRevolutionShow", VIEW_MODE_FCMENU, "HwRevolution (HardwareSettings)", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change,
+							 (float)24);
 		}
 	}
 	nn++;
@@ -221,7 +242,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_HwRevoMini_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "HwRevoMiniShow", VIEW_MODE_FCMENU, "HwRevoMini (HardwareSettings)", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)25);
+			draw_text_button(esContext, "HwRevoMiniShow", VIEW_MODE_FCMENU, "HwRevoMini (HardwareSettings)", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change,
+							 (float)25);
 		}
 	}
 	nn++;
@@ -229,7 +251,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_HwSparkyBGC_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "HwSparkyBGCShow", VIEW_MODE_FCMENU, "HwSparkyBGC (HardwareSettings)", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)26);
+			draw_text_button(esContext, "HwSparkyBGCShow", VIEW_MODE_FCMENU, "HwSparkyBGC (HardwareSettings)", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change,
+							 (float)26);
 		}
 	}
 	nn++;
@@ -237,7 +260,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_HwSparky_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "HwSparkyShow", VIEW_MODE_FCMENU, "HwSparky (HardwareSettings)", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)27);
+			draw_text_button(esContext, "HwSparkyShow", VIEW_MODE_FCMENU, "HwSparky (HardwareSettings)", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change,
+							 (float)27);
 		}
 	}
 	nn++;
@@ -245,7 +269,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_I2CVMUserProgram_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "I2CVMUserProgramShow", VIEW_MODE_FCMENU, "I2CVMUserProgram ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)28);
+			draw_text_button(esContext, "I2CVMUserProgramShow", VIEW_MODE_FCMENU, "I2CVMUserProgram ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change,
+							 (float)28);
 		}
 	}
 	nn++;
@@ -261,7 +286,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_LoggingSettings_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "LoggingSettingsShow", VIEW_MODE_FCMENU, "LoggingSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)30);
+			draw_text_button(esContext, "LoggingSettingsShow", VIEW_MODE_FCMENU, "LoggingSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change,
+							 (float)30);
 		}
 	}
 	nn++;
@@ -269,7 +295,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_ManualControlSettings_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "ManualControlSettingsShow", VIEW_MODE_FCMENU, "ManualControlSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)31);
+			draw_text_button(esContext, "ManualControlSettingsShow", VIEW_MODE_FCMENU, "ManualControlSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP,
+							 UAVT_gui_show_num_change, (float)31);
 		}
 	}
 	nn++;
@@ -309,7 +336,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_OveroSyncSettings_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "OveroSyncSettingsShow", VIEW_MODE_FCMENU, "OveroSyncSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)36);
+			draw_text_button(esContext, "OveroSyncSettingsShow", VIEW_MODE_FCMENU, "OveroSyncSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change,
+							 (float)36);
 		}
 	}
 	nn++;
@@ -317,7 +345,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_PathPlannerSettings_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "PathPlannerSettingsShow", VIEW_MODE_FCMENU, "PathPlannerSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)37);
+			draw_text_button(esContext, "PathPlannerSettingsShow", VIEW_MODE_FCMENU, "PathPlannerSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change,
+							 (float)37);
 		}
 	}
 	nn++;
@@ -341,7 +370,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_StabilizationSettings_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "StabilizationSettingsShow", VIEW_MODE_FCMENU, "StabilizationSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)40);
+			draw_text_button(esContext, "StabilizationSettingsShow", VIEW_MODE_FCMENU, "StabilizationSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP,
+							 UAVT_gui_show_num_change, (float)40);
 		}
 	}
 	nn++;
@@ -349,7 +379,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_StateEstimation_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "StateEstimationShow", VIEW_MODE_FCMENU, "StateEstimation ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)41);
+			draw_text_button(esContext, "StateEstimationShow", VIEW_MODE_FCMENU, "StateEstimation ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change,
+							 (float)41);
 		}
 	}
 	nn++;
@@ -373,7 +404,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_TrimAnglesSettings_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "TrimAnglesSettingsShow", VIEW_MODE_FCMENU, "TrimAnglesSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)44);
+			draw_text_button(esContext, "TrimAnglesSettingsShow", VIEW_MODE_FCMENU, "TrimAnglesSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change,
+							 (float)44);
 		}
 	}
 	nn++;
@@ -389,7 +421,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_VibrationAnalysisSettings_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "VibrationAnalysisSettingsShow", VIEW_MODE_FCMENU, "VibrationAnalysisSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)46);
+			draw_text_button(esContext, "VibrationAnalysisSettingsShow", VIEW_MODE_FCMENU, "VibrationAnalysisSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP,
+							 UAVT_gui_show_num_change, (float)46);
 		}
 	}
 	nn++;
@@ -397,7 +430,8 @@ void UAVT_gui_show(ESContext *esContext) {
 		UAVT_gui_VtolPathFollowerSettings_show(esContext);
 	} else if (show_num == 0) {
 		if (nn >= msy && nn < msy + 14) {
-			draw_text_button(esContext, "VtolPathFollowerSettingsShow", VIEW_MODE_FCMENU, "VtolPathFollowerSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)47);
+			draw_text_button(esContext, "VtolPathFollowerSettingsShow", VIEW_MODE_FCMENU, "VtolPathFollowerSettings ()", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP,
+							 UAVT_gui_show_num_change, (float)47);
 		}
 	}
 	nn++;
@@ -407,7 +441,6 @@ void UAVT_gui_show(ESContext *esContext) {
 	if (sy > nn - 14) {
 		sy = nn - 14;
 	}
-
 	if (show_num != 0) {
 		draw_text_button(esContext, "gui_scroll", VIEW_MODE_FCMENU, "[SCROLL]", FONT_WHITE, 0.9, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, UAVT_gui_scroll, 0.0);
 	}

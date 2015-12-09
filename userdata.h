@@ -23,7 +23,7 @@ typedef struct {
 #ifdef SDLGL
 
 typedef struct _escontext {
-	void*       userData;
+	void       *userData;
 	GLint       width;
 	GLint       height;
 } ESContext;

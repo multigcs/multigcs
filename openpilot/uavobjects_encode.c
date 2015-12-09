@@ -2,7 +2,7 @@
 #include <all.h>
 
 
-void UAVT_AccelDesired_Send (UAVT_AccelDesiredData *data) {
+void UAVT_AccelDesired_Send(UAVT_AccelDesiredData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->North);
@@ -12,7 +12,7 @@ void UAVT_AccelDesired_Send (UAVT_AccelDesiredData *data) {
 }
 
 
-void UAVT_Accels_Send (UAVT_AccelsData *data) {
+void UAVT_Accels_Send(UAVT_AccelsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->x);
@@ -23,7 +23,7 @@ void UAVT_Accels_Send (UAVT_AccelsData *data) {
 }
 
 
-void UAVT_AccessoryDesired_Send (UAVT_AccessoryDesiredData *data) {
+void UAVT_AccessoryDesired_Send(UAVT_AccessoryDesiredData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->AccessoryVal);
@@ -31,7 +31,7 @@ void UAVT_AccessoryDesired_Send (UAVT_AccessoryDesiredData *data) {
 }
 
 
-void UAVT_ActuatorCommand_Send (UAVT_ActuatorCommandData *data) {
+void UAVT_ActuatorCommand_Send(UAVT_ActuatorCommandData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_2byte(buf, len, data->Channel[0]);
@@ -51,7 +51,7 @@ void UAVT_ActuatorCommand_Send (UAVT_ActuatorCommandData *data) {
 }
 
 
-void UAVT_ActuatorDesired_Send (UAVT_ActuatorDesiredData *data) {
+void UAVT_ActuatorDesired_Send(UAVT_ActuatorDesiredData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Roll);
@@ -64,7 +64,7 @@ void UAVT_ActuatorDesired_Send (UAVT_ActuatorDesiredData *data) {
 }
 
 
-void UAVT_ActuatorSettings_Send (UAVT_ActuatorSettingsData *data) {
+void UAVT_ActuatorSettings_Send(UAVT_ActuatorSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_2byte(buf, len, data->ChannelUpdateFreq[0]);
@@ -128,7 +128,7 @@ void UAVT_ActuatorSettings_Send (UAVT_ActuatorSettingsData *data) {
 }
 
 
-void UAVT_AirspeedActual_Send (UAVT_AirspeedActualData *data) {
+void UAVT_AirspeedActual_Send(UAVT_AirspeedActualData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->TrueAirspeed);
@@ -139,7 +139,7 @@ void UAVT_AirspeedActual_Send (UAVT_AirspeedActualData *data) {
 }
 
 
-void UAVT_AirspeedSettings_Send (UAVT_AirspeedSettingsData *data) {
+void UAVT_AirspeedSettings_Send(UAVT_AirspeedSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Scale);
@@ -151,7 +151,7 @@ void UAVT_AirspeedSettings_Send (UAVT_AirspeedSettingsData *data) {
 }
 
 
-void UAVT_AltitudeHoldDesired_Send (UAVT_AltitudeHoldDesiredData *data) {
+void UAVT_AltitudeHoldDesired_Send(UAVT_AltitudeHoldDesiredData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Altitude);
@@ -164,7 +164,7 @@ void UAVT_AltitudeHoldDesired_Send (UAVT_AltitudeHoldDesiredData *data) {
 }
 
 
-void UAVT_AltitudeHoldSettings_Send (UAVT_AltitudeHoldSettingsData *data) {
+void UAVT_AltitudeHoldSettings_Send(UAVT_AltitudeHoldSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->PositionKp);
@@ -178,7 +178,7 @@ void UAVT_AltitudeHoldSettings_Send (UAVT_AltitudeHoldSettingsData *data) {
 }
 
 
-void UAVT_AttitudeActual_Send (UAVT_AttitudeActualData *data) {
+void UAVT_AttitudeActual_Send(UAVT_AttitudeActualData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->q1);
@@ -192,7 +192,7 @@ void UAVT_AttitudeActual_Send (UAVT_AttitudeActualData *data) {
 }
 
 
-void UAVT_AttitudeSettings_Send (UAVT_AttitudeSettingsData *data) {
+void UAVT_AttitudeSettings_Send(UAVT_AttitudeSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->MagKp);
@@ -213,7 +213,7 @@ void UAVT_AttitudeSettings_Send (UAVT_AttitudeSettingsData *data) {
 }
 
 
-void UAVT_AttitudeSimulated_Send (UAVT_AttitudeSimulatedData *data) {
+void UAVT_AttitudeSimulated_Send(UAVT_AttitudeSimulatedData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->q1);
@@ -233,7 +233,7 @@ void UAVT_AttitudeSimulated_Send (UAVT_AttitudeSimulatedData *data) {
 }
 
 
-void UAVT_BaroAirspeed_Send (UAVT_BaroAirspeedData *data) {
+void UAVT_BaroAirspeed_Send(UAVT_BaroAirspeedData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->CalibratedAirspeed);
@@ -245,7 +245,7 @@ void UAVT_BaroAirspeed_Send (UAVT_BaroAirspeedData *data) {
 }
 
 
-void UAVT_BaroAltitude_Send (UAVT_BaroAltitudeData *data) {
+void UAVT_BaroAltitude_Send(UAVT_BaroAltitudeData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Altitude);
@@ -255,7 +255,7 @@ void UAVT_BaroAltitude_Send (UAVT_BaroAltitudeData *data) {
 }
 
 
-void UAVT_BrushlessGimbalSettings_Send (UAVT_BrushlessGimbalSettingsData *data) {
+void UAVT_BrushlessGimbalSettings_Send(UAVT_BrushlessGimbalSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Damping.Roll);
@@ -279,7 +279,7 @@ void UAVT_BrushlessGimbalSettings_Send (UAVT_BrushlessGimbalSettingsData *data) 
 }
 
 
-void UAVT_CameraDesired_Send (UAVT_CameraDesiredData *data) {
+void UAVT_CameraDesired_Send(UAVT_CameraDesiredData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Roll);
@@ -291,7 +291,7 @@ void UAVT_CameraDesired_Send (UAVT_CameraDesiredData *data) {
 }
 
 
-void UAVT_CameraStabSettings_Send (UAVT_CameraStabSettingsData *data) {
+void UAVT_CameraStabSettings_Send(UAVT_CameraStabSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->MaxAxisLockRate);
@@ -321,7 +321,7 @@ void UAVT_CameraStabSettings_Send (UAVT_CameraStabSettingsData *data) {
 }
 
 
-void UAVT_FaultSettings_Send (UAVT_FaultSettingsData *data) {
+void UAVT_FaultSettings_Send(UAVT_FaultSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_1byte(buf, len, data->ActivateFault);
@@ -329,7 +329,7 @@ void UAVT_FaultSettings_Send (UAVT_FaultSettingsData *data) {
 }
 
 
-void UAVT_FirmwareIAPObj_Send (UAVT_FirmwareIAPObjData *data) {
+void UAVT_FirmwareIAPObj_Send(UAVT_FirmwareIAPObjData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->crc);
@@ -453,7 +453,7 @@ void UAVT_FirmwareIAPObj_Send (UAVT_FirmwareIAPObjData *data) {
 }
 
 
-void UAVT_FixedWingAirspeeds_Send (UAVT_FixedWingAirspeedsData *data) {
+void UAVT_FixedWingAirspeeds_Send(UAVT_FixedWingAirspeedsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->AirSpeedMax);
@@ -466,7 +466,7 @@ void UAVT_FixedWingAirspeeds_Send (UAVT_FixedWingAirspeedsData *data) {
 }
 
 
-void UAVT_FixedWingPathFollowerSettingsCC_Send (UAVT_FixedWingPathFollowerSettingsCCData *data) {
+void UAVT_FixedWingPathFollowerSettingsCC_Send(UAVT_FixedWingPathFollowerSettingsCCData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->VerticalVelMax);
@@ -501,7 +501,7 @@ void UAVT_FixedWingPathFollowerSettingsCC_Send (UAVT_FixedWingPathFollowerSettin
 }
 
 
-void UAVT_FixedWingPathFollowerSettings_Send (UAVT_FixedWingPathFollowerSettingsData *data) {
+void UAVT_FixedWingPathFollowerSettings_Send(UAVT_FixedWingPathFollowerSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->HorizontalPosP);
@@ -534,7 +534,7 @@ void UAVT_FixedWingPathFollowerSettings_Send (UAVT_FixedWingPathFollowerSettings
 }
 
 
-void UAVT_FixedWingPathFollowerStatus_Send (UAVT_FixedWingPathFollowerStatusData *data) {
+void UAVT_FixedWingPathFollowerStatus_Send(UAVT_FixedWingPathFollowerStatusData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Error.Bearing);
@@ -561,7 +561,7 @@ void UAVT_FixedWingPathFollowerStatus_Send (UAVT_FixedWingPathFollowerStatusData
 }
 
 
-void UAVT_FlightBatterySettings_Send (UAVT_FlightBatterySettingsData *data) {
+void UAVT_FlightBatterySettings_Send(UAVT_FlightBatterySettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Capacity);
@@ -581,7 +581,7 @@ void UAVT_FlightBatterySettings_Send (UAVT_FlightBatterySettingsData *data) {
 }
 
 
-void UAVT_FlightPlanControl_Send (UAVT_FlightPlanControlData *data) {
+void UAVT_FlightPlanControl_Send(UAVT_FlightPlanControlData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_1byte(buf, len, data->Command);
@@ -589,7 +589,7 @@ void UAVT_FlightPlanControl_Send (UAVT_FlightPlanControlData *data) {
 }
 
 
-void UAVT_FlightPlanSettings_Send (UAVT_FlightPlanSettingsData *data) {
+void UAVT_FlightPlanSettings_Send(UAVT_FlightPlanSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Test);
@@ -597,7 +597,7 @@ void UAVT_FlightPlanSettings_Send (UAVT_FlightPlanSettingsData *data) {
 }
 
 
-void UAVT_FlightPlanStatus_Send (UAVT_FlightPlanStatusData *data) {
+void UAVT_FlightPlanStatus_Send(UAVT_FlightPlanStatusData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->ErrorFileID);
@@ -610,7 +610,7 @@ void UAVT_FlightPlanStatus_Send (UAVT_FlightPlanStatusData *data) {
 }
 
 
-void UAVT_FlightStatus_Send (UAVT_FlightStatusData *data) {
+void UAVT_FlightStatus_Send(UAVT_FlightStatusData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_1byte(buf, len, data->Armed);
@@ -620,7 +620,7 @@ void UAVT_FlightStatus_Send (UAVT_FlightStatusData *data) {
 }
 
 
-void UAVT_FlightTelemetryStats_Send (UAVT_FlightTelemetryStatsData *data) {
+void UAVT_FlightTelemetryStats_Send(UAVT_FlightTelemetryStatsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->TxDataRate);
@@ -633,7 +633,7 @@ void UAVT_FlightTelemetryStats_Send (UAVT_FlightTelemetryStatsData *data) {
 }
 
 
-void UAVT_GCSReceiver_Send (UAVT_GCSReceiverData *data) {
+void UAVT_GCSReceiver_Send(UAVT_GCSReceiverData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_2byte(buf, len, data->Channel[0]);
@@ -648,7 +648,7 @@ void UAVT_GCSReceiver_Send (UAVT_GCSReceiverData *data) {
 }
 
 
-void UAVT_GCSTelemetryStats_Send (UAVT_GCSTelemetryStatsData *data) {
+void UAVT_GCSTelemetryStats_Send(UAVT_GCSTelemetryStatsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->TxDataRate);
@@ -661,7 +661,7 @@ void UAVT_GCSTelemetryStats_Send (UAVT_GCSTelemetryStatsData *data) {
 }
 
 
-void UAVT_GeoFenceSettings_Send (UAVT_GeoFenceSettingsData *data) {
+void UAVT_GeoFenceSettings_Send(UAVT_GeoFenceSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_2byte(buf, len, data->WarningRadius);
@@ -670,7 +670,7 @@ void UAVT_GeoFenceSettings_Send (UAVT_GeoFenceSettingsData *data) {
 }
 
 
-void UAVT_GPSPosition_Send (UAVT_GPSPositionData *data) {
+void UAVT_GPSPosition_Send(UAVT_GPSPositionData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Latitude);
@@ -688,7 +688,7 @@ void UAVT_GPSPosition_Send (UAVT_GPSPositionData *data) {
 }
 
 
-void UAVT_GPSSatellites_Send (UAVT_GPSSatellitesData *data) {
+void UAVT_GPSSatellites_Send(UAVT_GPSSatellitesData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Elevation[0]);
@@ -760,7 +760,7 @@ void UAVT_GPSSatellites_Send (UAVT_GPSSatellitesData *data) {
 }
 
 
-void UAVT_GPSTime_Send (UAVT_GPSTimeData *data) {
+void UAVT_GPSTime_Send(UAVT_GPSTimeData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_2byte(buf, len, data->Year);
@@ -773,7 +773,7 @@ void UAVT_GPSTime_Send (UAVT_GPSTimeData *data) {
 }
 
 
-void UAVT_GPSVelocity_Send (UAVT_GPSVelocityData *data) {
+void UAVT_GPSVelocity_Send(UAVT_GPSVelocityData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->North);
@@ -783,7 +783,7 @@ void UAVT_GPSVelocity_Send (UAVT_GPSVelocityData *data) {
 }
 
 
-void UAVT_GroundPathFollowerSettings_Send (UAVT_GroundPathFollowerSettingsData *data) {
+void UAVT_GroundPathFollowerSettings_Send(UAVT_GroundPathFollowerSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->HorizontalPosPI.Kp);
@@ -806,7 +806,7 @@ void UAVT_GroundPathFollowerSettings_Send (UAVT_GroundPathFollowerSettingsData *
 }
 
 
-void UAVT_GroundTruth_Send (UAVT_GroundTruthData *data) {
+void UAVT_GroundTruth_Send(UAVT_GroundTruthData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->AccelerationXYZ[0]);
@@ -832,7 +832,7 @@ void UAVT_GroundTruth_Send (UAVT_GroundTruthData *data) {
 }
 
 
-void UAVT_GyrosBias_Send (UAVT_GyrosBiasData *data) {
+void UAVT_GyrosBias_Send(UAVT_GyrosBiasData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->x);
@@ -842,7 +842,7 @@ void UAVT_GyrosBias_Send (UAVT_GyrosBiasData *data) {
 }
 
 
-void UAVT_Gyros_Send (UAVT_GyrosData *data) {
+void UAVT_Gyros_Send(UAVT_GyrosData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->x);
@@ -853,7 +853,7 @@ void UAVT_Gyros_Send (UAVT_GyrosData *data) {
 }
 
 
-void UAVT_HomeLocation_Send (UAVT_HomeLocationData *data) {
+void UAVT_HomeLocation_Send(UAVT_HomeLocationData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Latitude);
@@ -869,7 +869,7 @@ void UAVT_HomeLocation_Send (UAVT_HomeLocationData *data) {
 }
 
 
-void UAVT_HoTTSettings_Send (UAVT_HoTTSettingsData *data) {
+void UAVT_HoTTSettings_Send(UAVT_HoTTSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Limit.MinSpeed);
@@ -936,7 +936,7 @@ void UAVT_HoTTSettings_Send (UAVT_HoTTSettingsData *data) {
 }
 
 
-void UAVT_HwColibri_Send (UAVT_HwColibriData *data) {
+void UAVT_HwColibri_Send(UAVT_HwColibriData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_1byte(buf, len, data->Frame);
@@ -958,7 +958,7 @@ void UAVT_HwColibri_Send (UAVT_HwColibriData *data) {
 }
 
 
-void UAVT_HwCopterControl_Send (UAVT_HwCopterControlData *data) {
+void UAVT_HwCopterControl_Send(UAVT_HwCopterControlData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_1byte(buf, len, data->RcvrPort);
@@ -975,7 +975,7 @@ void UAVT_HwCopterControl_Send (UAVT_HwCopterControlData *data) {
 }
 
 
-void UAVT_HwDiscoveryF4_Send (UAVT_HwDiscoveryF4Data *data) {
+void UAVT_HwDiscoveryF4_Send(UAVT_HwDiscoveryF4Data *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_1byte(buf, len, data->MainPort);
@@ -985,7 +985,7 @@ void UAVT_HwDiscoveryF4_Send (UAVT_HwDiscoveryF4Data *data) {
 }
 
 
-void UAVT_HwFlyingF3_Send (UAVT_HwFlyingF3Data *data) {
+void UAVT_HwFlyingF3_Send(UAVT_HwFlyingF3Data *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_1byte(buf, len, data->RcvrPort);
@@ -1005,7 +1005,7 @@ void UAVT_HwFlyingF3_Send (UAVT_HwFlyingF3Data *data) {
 }
 
 
-void UAVT_HwFlyingF4_Send (UAVT_HwFlyingF4Data *data) {
+void UAVT_HwFlyingF4_Send(UAVT_HwFlyingF4Data *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_1byte(buf, len, data->RcvrPort);
@@ -1025,7 +1025,7 @@ void UAVT_HwFlyingF4_Send (UAVT_HwFlyingF4Data *data) {
 }
 
 
-void UAVT_HwFreedom_Send (UAVT_HwFreedomData *data) {
+void UAVT_HwFreedom_Send(UAVT_HwFreedomData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_1byte(buf, len, data->Output);
@@ -1044,7 +1044,7 @@ void UAVT_HwFreedom_Send (UAVT_HwFreedomData *data) {
 }
 
 
-void UAVT_HwQuanton_Send (UAVT_HwQuantonData *data) {
+void UAVT_HwQuanton_Send(UAVT_HwQuantonData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_1byte(buf, len, data->RcvrPort);
@@ -1066,7 +1066,7 @@ void UAVT_HwQuanton_Send (UAVT_HwQuantonData *data) {
 }
 
 
-void UAVT_HwRevolution_Send (UAVT_HwRevolutionData *data) {
+void UAVT_HwRevolution_Send(UAVT_HwRevolutionData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_1byte(buf, len, data->RcvrPort);
@@ -1086,7 +1086,7 @@ void UAVT_HwRevolution_Send (UAVT_HwRevolutionData *data) {
 }
 
 
-void UAVT_HwRevoMini_Send (UAVT_HwRevoMiniData *data) {
+void UAVT_HwRevoMini_Send(UAVT_HwRevoMiniData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_1byte(buf, len, data->RcvrPort);
@@ -1104,7 +1104,7 @@ void UAVT_HwRevoMini_Send (UAVT_HwRevoMiniData *data) {
 }
 
 
-void UAVT_HwSparkyBGC_Send (UAVT_HwSparkyBGCData *data) {
+void UAVT_HwSparkyBGC_Send(UAVT_HwSparkyBGCData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_1byte(buf, len, data->RcvrPort);
@@ -1120,7 +1120,7 @@ void UAVT_HwSparkyBGC_Send (UAVT_HwSparkyBGCData *data) {
 }
 
 
-void UAVT_HwSparky_Send (UAVT_HwSparkyData *data) {
+void UAVT_HwSparky_Send(UAVT_HwSparkyData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_1byte(buf, len, data->RcvrPort);
@@ -1138,7 +1138,7 @@ void UAVT_HwSparky_Send (UAVT_HwSparkyData *data) {
 }
 
 
-void UAVT_I2CVMUserProgram_Send (UAVT_I2CVMUserProgramData *data) {
+void UAVT_I2CVMUserProgram_Send(UAVT_I2CVMUserProgramData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Program[0]);
@@ -1165,7 +1165,7 @@ void UAVT_I2CVMUserProgram_Send (UAVT_I2CVMUserProgramData *data) {
 }
 
 
-void UAVT_INSSettings_Send (UAVT_INSSettingsData *data) {
+void UAVT_INSSettings_Send(UAVT_INSSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->accel_var.X);
@@ -1187,7 +1187,7 @@ void UAVT_INSSettings_Send (UAVT_INSSettingsData *data) {
 }
 
 
-void UAVT_INSState_Send (UAVT_INSStateData *data) {
+void UAVT_INSState_Send(UAVT_INSStateData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->State[0]);
@@ -1220,7 +1220,7 @@ void UAVT_INSState_Send (UAVT_INSStateData *data) {
 }
 
 
-void UAVT_LoggingSettings_Send (UAVT_LoggingSettingsData *data) {
+void UAVT_LoggingSettings_Send(UAVT_LoggingSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_1byte(buf, len, data->LogBehavior);
@@ -1228,7 +1228,7 @@ void UAVT_LoggingSettings_Send (UAVT_LoggingSettingsData *data) {
 }
 
 
-void UAVT_LoggingStats_Send (UAVT_LoggingStatsData *data) {
+void UAVT_LoggingStats_Send(UAVT_LoggingStatsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->BytesLogged);
@@ -1369,7 +1369,7 @@ void UAVT_LoggingStats_Send (UAVT_LoggingStatsData *data) {
 }
 
 
-void UAVT_LoiterCommand_Send (UAVT_LoiterCommandData *data) {
+void UAVT_LoiterCommand_Send(UAVT_LoiterCommandData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Forward);
@@ -1380,7 +1380,7 @@ void UAVT_LoiterCommand_Send (UAVT_LoiterCommandData *data) {
 }
 
 
-void UAVT_MagBias_Send (UAVT_MagBiasData *data) {
+void UAVT_MagBias_Send(UAVT_MagBiasData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->x);
@@ -1390,7 +1390,7 @@ void UAVT_MagBias_Send (UAVT_MagBiasData *data) {
 }
 
 
-void UAVT_Magnetometer_Send (UAVT_MagnetometerData *data) {
+void UAVT_Magnetometer_Send(UAVT_MagnetometerData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->x);
@@ -1400,7 +1400,7 @@ void UAVT_Magnetometer_Send (UAVT_MagnetometerData *data) {
 }
 
 
-void UAVT_ManualControlCommand_Send (UAVT_ManualControlCommandData *data) {
+void UAVT_ManualControlCommand_Send(UAVT_ManualControlCommandData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Throttle);
@@ -1425,7 +1425,7 @@ void UAVT_ManualControlCommand_Send (UAVT_ManualControlCommandData *data) {
 }
 
 
-void UAVT_ManualControlSettings_Send (UAVT_ManualControlSettingsData *data) {
+void UAVT_ManualControlSettings_Send(UAVT_ManualControlSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Deadband);
@@ -1506,7 +1506,7 @@ void UAVT_ManualControlSettings_Send (UAVT_ManualControlSettingsData *data) {
 }
 
 
-void UAVT_MixerSettings_Send (UAVT_MixerSettingsData *data) {
+void UAVT_MixerSettings_Send(UAVT_MixerSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->MaxAccel);
@@ -1534,7 +1534,7 @@ void UAVT_MixerSettings_Send (UAVT_MixerSettingsData *data) {
 }
 
 
-void UAVT_MixerStatus_Send (UAVT_MixerStatusData *data) {
+void UAVT_MixerStatus_Send(UAVT_MixerStatusData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Mixer1);
@@ -1551,7 +1551,7 @@ void UAVT_MixerStatus_Send (UAVT_MixerStatusData *data) {
 }
 
 
-void UAVT_ModuleSettings_Send (UAVT_ModuleSettingsData *data) {
+void UAVT_ModuleSettings_Send(UAVT_ModuleSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_1byte(buf, len, data->AdminState.Airspeed);
@@ -1590,7 +1590,7 @@ void UAVT_ModuleSettings_Send (UAVT_ModuleSettingsData *data) {
 }
 
 
-void UAVT_MWRateSettings_Send (UAVT_MWRateSettingsData *data) {
+void UAVT_MWRateSettings_Send(UAVT_MWRateSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->RollRatePID.Kp);
@@ -1612,7 +1612,7 @@ void UAVT_MWRateSettings_Send (UAVT_MWRateSettingsData *data) {
 }
 
 
-void UAVT_NedAccel_Send (UAVT_NedAccelData *data) {
+void UAVT_NedAccel_Send(UAVT_NedAccelData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->North);
@@ -1622,7 +1622,7 @@ void UAVT_NedAccel_Send (UAVT_NedAccelData *data) {
 }
 
 
-void UAVT_NEDPosition_Send (UAVT_NEDPositionData *data) {
+void UAVT_NEDPosition_Send(UAVT_NEDPositionData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->North);
@@ -1632,7 +1632,7 @@ void UAVT_NEDPosition_Send (UAVT_NEDPositionData *data) {
 }
 
 
-void UAVT_ObjectPersistence_Send (UAVT_ObjectPersistenceData *data) {
+void UAVT_ObjectPersistence_Send(UAVT_ObjectPersistenceData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->ObjectID);
@@ -1643,7 +1643,7 @@ void UAVT_ObjectPersistence_Send (UAVT_ObjectPersistenceData *data) {
 }
 
 
-void UAVT_OPLinkSettings_Send (UAVT_OPLinkSettingsData *data) {
+void UAVT_OPLinkSettings_Send(UAVT_OPLinkSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->PairID);
@@ -1695,7 +1695,7 @@ void UAVT_OPLinkSettings_Send (UAVT_OPLinkSettingsData *data) {
 }
 
 
-void UAVT_OveroSyncSettings_Send (UAVT_OveroSyncSettingsData *data) {
+void UAVT_OveroSyncSettings_Send(UAVT_OveroSyncSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_1byte(buf, len, data->LogOn);
@@ -1703,7 +1703,7 @@ void UAVT_OveroSyncSettings_Send (UAVT_OveroSyncSettingsData *data) {
 }
 
 
-void UAVT_OveroSyncStats_Send (UAVT_OveroSyncStatsData *data) {
+void UAVT_OveroSyncStats_Send(UAVT_OveroSyncStatsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Send);
@@ -1717,7 +1717,7 @@ void UAVT_OveroSyncStats_Send (UAVT_OveroSyncStatsData *data) {
 }
 
 
-void UAVT_PathDesired_Send (UAVT_PathDesiredData *data) {
+void UAVT_PathDesired_Send(UAVT_PathDesiredData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Start.North);
@@ -1734,7 +1734,7 @@ void UAVT_PathDesired_Send (UAVT_PathDesiredData *data) {
 }
 
 
-void UAVT_PathPlannerSettings_Send (UAVT_PathPlannerSettingsData *data) {
+void UAVT_PathPlannerSettings_Send(UAVT_PathPlannerSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_1byte(buf, len, data->PreprogrammedPath);
@@ -1743,7 +1743,7 @@ void UAVT_PathPlannerSettings_Send (UAVT_PathPlannerSettingsData *data) {
 }
 
 
-void UAVT_PathStatus_Send (UAVT_PathStatusData *data) {
+void UAVT_PathStatus_Send(UAVT_PathStatusData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->fractional_progress);
@@ -1753,7 +1753,7 @@ void UAVT_PathStatus_Send (UAVT_PathStatusData *data) {
 }
 
 
-void UAVT_PicoCSettings_Send (UAVT_PicoCSettingsData *data) {
+void UAVT_PicoCSettings_Send(UAVT_PicoCSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->MaxFileSize);
@@ -1767,7 +1767,7 @@ void UAVT_PicoCSettings_Send (UAVT_PicoCSettingsData *data) {
 }
 
 
-void UAVT_PicoCStatus_Send (UAVT_PicoCStatusData *data) {
+void UAVT_PicoCStatus_Send(UAVT_PicoCStatusData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_2byte(buf, len, data->ExitValue);
@@ -1812,7 +1812,7 @@ void UAVT_PicoCStatus_Send (UAVT_PicoCStatusData *data) {
 }
 
 
-void UAVT_PoiLocation_Send (UAVT_PoiLocationData *data) {
+void UAVT_PoiLocation_Send(UAVT_PoiLocationData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->North);
@@ -1822,7 +1822,7 @@ void UAVT_PoiLocation_Send (UAVT_PoiLocationData *data) {
 }
 
 
-void UAVT_PositionActual_Send (UAVT_PositionActualData *data) {
+void UAVT_PositionActual_Send(UAVT_PositionActualData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->North);
@@ -1832,7 +1832,7 @@ void UAVT_PositionActual_Send (UAVT_PositionActualData *data) {
 }
 
 
-void UAVT_RateDesired_Send (UAVT_RateDesiredData *data) {
+void UAVT_RateDesired_Send(UAVT_RateDesiredData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Roll);
@@ -1842,7 +1842,7 @@ void UAVT_RateDesired_Send (UAVT_RateDesiredData *data) {
 }
 
 
-void UAVT_SensorSettings_Send (UAVT_SensorSettingsData *data) {
+void UAVT_SensorSettings_Send(UAVT_SensorSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->AccelBias.X);
@@ -1877,7 +1877,7 @@ void UAVT_SensorSettings_Send (UAVT_SensorSettingsData *data) {
 }
 
 
-void UAVT_SessionManaging_Send (UAVT_SessionManagingData *data) {
+void UAVT_SessionManaging_Send(UAVT_SessionManagingData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->ObjectID);
@@ -1889,7 +1889,7 @@ void UAVT_SessionManaging_Send (UAVT_SessionManagingData *data) {
 }
 
 
-void UAVT_SonarAltitude_Send (UAVT_SonarAltitudeData *data) {
+void UAVT_SonarAltitude_Send(UAVT_SonarAltitudeData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Altitude);
@@ -1897,7 +1897,7 @@ void UAVT_SonarAltitude_Send (UAVT_SonarAltitudeData *data) {
 }
 
 
-void UAVT_StabilizationDesired_Send (UAVT_StabilizationDesiredData *data) {
+void UAVT_StabilizationDesired_Send(UAVT_StabilizationDesiredData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Roll);
@@ -1911,7 +1911,7 @@ void UAVT_StabilizationDesired_Send (UAVT_StabilizationDesiredData *data) {
 }
 
 
-void UAVT_StabilizationSettings_Send (UAVT_StabilizationSettingsData *data) {
+void UAVT_StabilizationSettings_Send(UAVT_StabilizationSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->ManualRate.Roll);
@@ -1987,7 +1987,7 @@ void UAVT_StabilizationSettings_Send (UAVT_StabilizationSettingsData *data) {
 }
 
 
-void UAVT_StateEstimation_Send (UAVT_StateEstimationData *data) {
+void UAVT_StateEstimation_Send(UAVT_StateEstimationData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_1byte(buf, len, data->AttitudeFilter);
@@ -1996,7 +1996,7 @@ void UAVT_StateEstimation_Send (UAVT_StateEstimationData *data) {
 }
 
 
-void UAVT_SystemAlarms_Send (UAVT_SystemAlarmsData *data) {
+void UAVT_SystemAlarms_Send(UAVT_SystemAlarmsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_1byte(buf, len, data->Alarm.OutOfMemory);
@@ -2026,7 +2026,7 @@ void UAVT_SystemAlarms_Send (UAVT_SystemAlarmsData *data) {
 }
 
 
-void UAVT_SystemSettings_Send (UAVT_SystemSettingsData *data) {
+void UAVT_SystemSettings_Send(UAVT_SystemSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->AirframeCategorySpecificConfiguration[0]);
@@ -2038,7 +2038,7 @@ void UAVT_SystemSettings_Send (UAVT_SystemSettingsData *data) {
 }
 
 
-void UAVT_SystemStats_Send (UAVT_SystemStatsData *data) {
+void UAVT_SystemStats_Send(UAVT_SystemStatsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->FlightTime);
@@ -2053,7 +2053,7 @@ void UAVT_SystemStats_Send (UAVT_SystemStatsData *data) {
 }
 
 
-void UAVT_TabletInfo_Send (UAVT_TabletInfoData *data) {
+void UAVT_TabletInfo_Send(UAVT_TabletInfoData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Latitude);
@@ -2066,7 +2066,7 @@ void UAVT_TabletInfo_Send (UAVT_TabletInfoData *data) {
 }
 
 
-void UAVT_TaskInfo_Send (UAVT_TaskInfoData *data) {
+void UAVT_TaskInfo_Send(UAVT_TaskInfoData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_2byte(buf, len, data->StackRemaining.System);
@@ -2178,7 +2178,7 @@ void UAVT_TaskInfo_Send (UAVT_TaskInfoData *data) {
 }
 
 
-void UAVT_TrimAnglesSettings_Send (UAVT_TrimAnglesSettingsData *data) {
+void UAVT_TrimAnglesSettings_Send(UAVT_TrimAnglesSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Roll);
@@ -2187,7 +2187,7 @@ void UAVT_TrimAnglesSettings_Send (UAVT_TrimAnglesSettingsData *data) {
 }
 
 
-void UAVT_TrimAngles_Send (UAVT_TrimAnglesData *data) {
+void UAVT_TrimAngles_Send(UAVT_TrimAnglesData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Roll);
@@ -2196,7 +2196,7 @@ void UAVT_TrimAngles_Send (UAVT_TrimAnglesData *data) {
 }
 
 
-void UAVT_TxPIDSettings_Send (UAVT_TxPIDSettingsData *data) {
+void UAVT_TxPIDSettings_Send(UAVT_TxPIDSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->ThrottleRange[0]);
@@ -2218,7 +2218,7 @@ void UAVT_TxPIDSettings_Send (UAVT_TxPIDSettingsData *data) {
 }
 
 
-void UAVT_UBloxInfo_Send (UAVT_UBloxInfoData *data) {
+void UAVT_UBloxInfo_Send(UAVT_UBloxInfoData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->swVersion);
@@ -2235,7 +2235,7 @@ void UAVT_UBloxInfo_Send (UAVT_UBloxInfoData *data) {
 }
 
 
-void UAVT_VelocityActual_Send (UAVT_VelocityActualData *data) {
+void UAVT_VelocityActual_Send(UAVT_VelocityActualData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->North);
@@ -2245,7 +2245,7 @@ void UAVT_VelocityActual_Send (UAVT_VelocityActualData *data) {
 }
 
 
-void UAVT_VelocityDesired_Send (UAVT_VelocityDesiredData *data) {
+void UAVT_VelocityDesired_Send(UAVT_VelocityDesiredData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->North);
@@ -2255,7 +2255,7 @@ void UAVT_VelocityDesired_Send (UAVT_VelocityDesiredData *data) {
 }
 
 
-void UAVT_VibrationAnalysisOutput_Send (UAVT_VibrationAnalysisOutputData *data) {
+void UAVT_VibrationAnalysisOutput_Send(UAVT_VibrationAnalysisOutputData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->x);
@@ -2265,7 +2265,7 @@ void UAVT_VibrationAnalysisOutput_Send (UAVT_VibrationAnalysisOutputData *data) 
 }
 
 
-void UAVT_VibrationAnalysisSettings_Send (UAVT_VibrationAnalysisSettingsData *data) {
+void UAVT_VibrationAnalysisSettings_Send(UAVT_VibrationAnalysisSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_2byte(buf, len, data->SampleRate);
@@ -2275,7 +2275,7 @@ void UAVT_VibrationAnalysisSettings_Send (UAVT_VibrationAnalysisSettingsData *da
 }
 
 
-void UAVT_VtolPathFollowerSettings_Send (UAVT_VtolPathFollowerSettingsData *data) {
+void UAVT_VtolPathFollowerSettings_Send(UAVT_VtolPathFollowerSettingsData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->HorizontalPosPI.Kp);
@@ -2299,7 +2299,7 @@ void UAVT_VtolPathFollowerSettings_Send (UAVT_VtolPathFollowerSettingsData *data
 }
 
 
-void UAVT_VtolPathFollowerStatus_Send (UAVT_VtolPathFollowerStatusData *data) {
+void UAVT_VtolPathFollowerStatus_Send(UAVT_VtolPathFollowerStatusData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_1byte(buf, len, data->FSM_State);
@@ -2307,7 +2307,7 @@ void UAVT_VtolPathFollowerStatus_Send (UAVT_VtolPathFollowerStatusData *data) {
 }
 
 
-void UAVT_WatchdogStatus_Send (UAVT_WatchdogStatusData *data) {
+void UAVT_WatchdogStatus_Send(UAVT_WatchdogStatusData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_2byte(buf, len, data->BootupFlags);
@@ -2316,7 +2316,7 @@ void UAVT_WatchdogStatus_Send (UAVT_WatchdogStatusData *data) {
 }
 
 
-void UAVT_WaypointActive_Send (UAVT_WaypointActiveData *data) {
+void UAVT_WaypointActive_Send(UAVT_WaypointActiveData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_2byte(buf, len, data->Index);
@@ -2324,7 +2324,7 @@ void UAVT_WaypointActive_Send (UAVT_WaypointActiveData *data) {
 }
 
 
-void UAVT_Waypoint_Send (UAVT_WaypointData *data) {
+void UAVT_Waypoint_Send(UAVT_WaypointData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->Position.North);
@@ -2337,7 +2337,7 @@ void UAVT_Waypoint_Send (UAVT_WaypointData *data) {
 }
 
 
-void UAVT_WindVelocityActual_Send (UAVT_WindVelocityActualData *data) {
+void UAVT_WindVelocityActual_Send(UAVT_WindVelocityActualData *data) {
 	uint8_t buf[256];
 	uint8_t len = 0;
 	len = openpilot_add_4byte(buf, len, data->North);

@@ -120,7 +120,7 @@ typedef struct {
 	uint8_t status;
 	float start_x;
 	float start_y;
-	uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t);
+	uint8_t (*callback)(char *, float, float, int8_t, float, uint8_t);
 } Button;
 
 struct list_element {
@@ -247,26 +247,26 @@ extern char statetypes[MAV_STATE_ENUM_END][16];
 
 extern ESContext *GlobalesContext;
 
-void draw_text_f (ESContext *esContext, float x1, float y1, float w, float h, char *file, char *text);
-void reset_telemetry (uint8_t modelid);
-void stop_telemetry (uint8_t modelid);
-void set_telemetry (uint8_t modelid, char *device, uint32_t baud);
-uint8_t need_bluetooth (void);
-void reset_buttons (void);
-uint8_t set_button (char *name, uint8_t view_mode, float x1, float y1, float x2, float y2, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t), float data, uint8_t type);
-int8_t check_button (uint8_t view_mode, float x, float y, uint8_t button, uint8_t event);
-void setup_waypoints (void);
-void sys_message (char *msg);
-void setup_save (void);
-void setup_load (void);
-void check_events (ESContext *esContext, SDL_Event event);
-int touchscreen (void *data);
-void transition_rotate_begin (ESContext *esContext, float trans_count);
-void transition_rotate_end (ESContext *esContext, float trans_count);
-void ShutDown (ESContext *esContext);
-void Draw (ESContext *esContext);
-void next_point (float x_origin, float y_origin, float winkel, float r1, float *nx1, float *ny1);
-void next_point_ll (ESContext *esContext, float x_origin, float y_origin, float winkel, float r1, float *nx1, float *ny1);
+void draw_text_f(ESContext *esContext, float x1, float y1, float w, float h, char *file, char *text);
+void reset_telemetry(uint8_t modelid);
+void stop_telemetry(uint8_t modelid);
+void set_telemetry(uint8_t modelid, char *device, uint32_t baud);
+uint8_t need_bluetooth(void);
+void reset_buttons(void);
+uint8_t set_button(char *name, uint8_t view_mode, float x1, float y1, float x2, float y2, uint8_t (*callback)(char *, float, float, int8_t, float, uint8_t), float data, uint8_t type);
+int8_t check_button(uint8_t view_mode, float x, float y, uint8_t button, uint8_t event);
+void setup_waypoints(void);
+void sys_message(char *msg);
+void setup_save(void);
+void setup_load(void);
+void check_events(ESContext *esContext, SDL_Event event);
+int touchscreen(void *data);
+void transition_rotate_begin(ESContext *esContext, float trans_count);
+void transition_rotate_end(ESContext *esContext, float trans_count);
+void ShutDown(ESContext *esContext);
+void Draw(ESContext *esContext);
+void next_point(float x_origin, float y_origin, float winkel, float r1, float *nx1, float *ny1);
+void next_point_ll(ESContext *esContext, float x_origin, float y_origin, float winkel, float r1, float *nx1, float *ny1);
 
 #endif
 
@@ -274,4 +274,4 @@ void next_point_ll (ESContext *esContext, float x_origin, float y_origin, float 
 extern SDL_Window *MainWindow;
 #endif
 
-char *get_datadirectory (void);
+char *get_datadirectory(void);

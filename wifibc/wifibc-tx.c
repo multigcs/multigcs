@@ -1,19 +1,19 @@
 // (c)2015 befinitiv
 
 /*
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; version 2.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License along
- *   with this program; if not, write to the Free Software Foundation, Inc.,
- *   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
- */
+     This program is free software; you can redistribute it and/or modify
+     it under the terms of the GNU General Public License as published by
+     the Free Software Foundation; version 2.
+
+     This program is distributed in the hope that it will be useful,
+     but WITHOUT ANY WARRANTY; without even the implied warranty of
+     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+     GNU General Public License for more details.
+
+     You should have received a copy of the GNU General Public License along
+     with this program; if not, write to the Free Software Foundation, Inc.,
+     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*/
 
 #include <all.h>
 #include <model-minimal.h>
@@ -57,7 +57,7 @@ typedef struct {
 
 int flagHelp = 0;
 
-void usage (void) {
+void usage(void) {
 	printf(
 		"(c)2015 befinitiv. Based on packetspammer by Andy Green.  Licensed under GPL2\n"
 		"\n"
@@ -91,10 +91,10 @@ static char param_serial_port[1024];
 Model ModelData[MODELS_MAX];
 ModelMinimal ModelDataMinimal;
 
-void sys_message (char *msg) {
+void sys_message(char *msg) {
 }
 
-int file_exists (char *fileName) {
+int file_exists(char *fileName) {
 	struct stat buf;
 	int i = stat(fileName, &buf);
 	if (i == 0) {
@@ -104,43 +104,43 @@ int file_exists (char *fileName) {
 }
 
 
-void set_port_no (uint8_t *pu, uint8_t port) {
+void set_port_no(uint8_t *pu, uint8_t port) {
 	//dirty hack: the last byte of the mac address is the port number. this makes it easy to filter out specific ports via wireshark
 	pu[sizeof(u8aRadiotapHeader) + SRC_MAC_LASTBYTE] = port;
 	pu[sizeof(u8aRadiotapHeader) + DST_MAC_LASTBYTE] = port;
 }
 
-int packet_header_init (uint8_t *packet_header) {
+int packet_header_init(uint8_t *packet_header) {
 	u8 *pu8 = packet_header;
 	memcpy(packet_header, u8aRadiotapHeader, sizeof(u8aRadiotapHeader));
 	pu8 += sizeof(u8aRadiotapHeader);
-	memcpy(pu8, u8aIeeeHeader, sizeof (u8aIeeeHeader));
-	pu8 += sizeof (u8aIeeeHeader);
+	memcpy(pu8, u8aIeeeHeader, sizeof(u8aIeeeHeader));
+	pu8 += sizeof(u8aIeeeHeader);
 	//determine the length of the header
 	return pu8 - packet_header;
 }
 
-void fifo_init (fifo_t *fifo, int fifo_count, int block_size) {
+void fifo_init(fifo_t *fifo, int fifo_count, int block_size) {
 	int i;
-	for (i=0; i<fifo_count; ++i) {
+	for (i = 0; i < fifo_count; ++i) {
 		int j;
 		fifo[i].seq_nr = 0;
 		fifo[i].fd = -1;
 		fifo[i].curr_pb = 0;
 		fifo[i].pbl = lib_alloc_packet_buffer_list(block_size, MAX_PACKET_LENGTH);
 		//prepare the buffers with headers
-		for (j=0; j<block_size; ++j) {
+		for (j = 0; j < block_size; ++j) {
 			fifo[i].pbl[j].len = 0;
 		}
 	}
 }
 
-void fifo_open (fifo_t *fifo, int fifo_count) {
+void fifo_open(fifo_t *fifo, int fifo_count) {
 	int i;
 	if (fifo_count > 1) {
 		//new FIFO style
 		//first, create all required fifos
-		for (i=0; i<fifo_count; ++i) {
+		for (i = 0; i < fifo_count; ++i) {
 			char fn[256];
 			sprintf(fn, FIFO_NAME, i);
 			unlink(fn);
@@ -150,7 +150,7 @@ void fifo_open (fifo_t *fifo, int fifo_count) {
 			}
 		}
 		//second: wait for the data sources to connect
-		for (i=0; i<fifo_count; ++i) {
+		for (i = 0; i < fifo_count; ++i) {
 			char fn[256];
 			sprintf(fn, FIFO_NAME, i);
 			printf("Waiting for \"%s\" being opened from the data source... \n", fn);
@@ -166,10 +166,10 @@ void fifo_open (fifo_t *fifo, int fifo_count) {
 	}
 }
 
-void fifo_create_select_set (fifo_t *fifo, int fifo_count, fd_set *fifo_set, int *max_fifo_fd) {
+void fifo_create_select_set(fifo_t *fifo, int fifo_count, fd_set *fifo_set, int *max_fifo_fd) {
 	int i;
 	FD_ZERO(fifo_set);
-	for (i=0; i<fifo_count; ++i) {
+	for (i = 0; i < fifo_count; ++i) {
 		FD_SET(fifo[i].fd, fifo_set);
 		if (fifo[i].fd > *max_fifo_fd) {
 			*max_fifo_fd = fifo[i].fd;
@@ -177,9 +177,9 @@ void fifo_create_select_set (fifo_t *fifo, int fifo_count, fd_set *fifo_set, int
 	}
 }
 
-void pb_transmit_packet (pcap_t *ppcap, int seq_nr, uint8_t *packet_transmit_buffer, int packet_header_len, const uint8_t *packet_data, int packet_length) {
+void pb_transmit_packet(pcap_t *ppcap, int seq_nr, uint8_t *packet_transmit_buffer, int packet_header_len, const uint8_t *packet_data, int packet_length) {
 	//add header outside of FEC
-	wifi_packet_header_t *wph = (wifi_packet_header_t*)(packet_transmit_buffer + packet_header_len);
+	wifi_packet_header_t *wph = (wifi_packet_header_t *)(packet_transmit_buffer + packet_header_len);
 	wph->sequence_number = seq_nr;
 	//copy data
 	memcpy(packet_transmit_buffer + packet_header_len + sizeof(wifi_packet_header_t), packet_data, packet_length);
@@ -191,7 +191,8 @@ void pb_transmit_packet (pcap_t *ppcap, int seq_nr, uint8_t *packet_transmit_buf
 	}
 }
 
-void pb_transmit_block (packet_buffer_t *pbl, pcap_t *ppcap, int *seq_nr, int port, int packet_length, uint8_t *packet_transmit_buffer, int packet_header_len, int data_packets_per_block, int fec_packets_per_block, int transmission_count) {
+void pb_transmit_block(packet_buffer_t *pbl, pcap_t *ppcap, int *seq_nr, int port, int packet_length, uint8_t *packet_transmit_buffer, int packet_header_len, int data_packets_per_block,
+					   int fec_packets_per_block, int transmission_count) {
 	int i;
 	uint8_t *data_blocks[MAX_DATA_OR_FEC_PACKETS_PER_BLOCK];
 	uint8_t fec_pool[MAX_DATA_OR_FEC_PACKETS_PER_BLOCK][MAX_USER_PACKET_LENGTH];
@@ -229,12 +230,12 @@ void pb_transmit_block (packet_buffer_t *pbl, pcap_t *ppcap, int *seq_nr, int po
 	}
 	*seq_nr += data_packets_per_block + fec_packets_per_block;
 	//reset the length back
-	for (i=0; i< data_packets_per_block; ++i) {
+	for (i = 0; i < data_packets_per_block; ++i) {
 		pbl[i].len = 0;
 	}
 }
 
-int wifibc_update_telemetry (void *data) {
+int wifibc_update_telemetry(void *data) {
 	while (running == 1) {
 		mavlink_update(0);
 		SDL_Delay(1);
@@ -242,7 +243,7 @@ int wifibc_update_telemetry (void *data) {
 	return 0;
 }
 
-int main (int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
 	char szErrbuf[PCAP_ERRBUF_SIZE];
 	int i;
 	pcap_t *ppcap = NULL;
@@ -263,7 +264,6 @@ int main (int argc, char *argv[]) {
 	int param_fifo_count = 1;
 	strcpy(param_serial_port, "/dev/ttyUSB0");
 	running = 1;
-
 	printf("Raw data transmitter (c) 2015 befinitiv  GPL2\n");
 	while (1) {
 		int nOptionIndex;
@@ -278,46 +278,35 @@ int main (int argc, char *argv[]) {
 		switch (c) {
 			case 0: // long option
 				break;
-
 			case 'h': // help
 				usage();
-
 			case 'r': // retransmissions
 				param_fec_packets_per_block = atoi(optarg);
 				break;
-
 			case 'f': // MTU
 				param_packet_length = atoi(optarg);
 				break;
-
 			case 'p': //port
 				param_port = atoi(optarg);
 				break;
-
 			case 'b': //retransmission block size
 				param_data_packets_per_block = atoi(optarg);
 				break;
-
 			case 'm'://minimum packet length
 				param_min_packet_length = atoi(optarg);
 				break;
-
 			case 's': //how many streams (fifos) do we have in parallel
 				param_fifo_count = atoi(optarg);
 				break;
-
 			case 'x': //how often is a block transmitted
 				param_transmission_count = atoi(optarg);
 				break;
-
 			case 'P': //Serial-Port
 				strcpy(param_serial_port, optarg);
 				break;
-
 			case 'B': //Serial-Baud
 				param_serial_baud = atoi(optarg);
 				break;
-
 			default:
 				printf("unknown switch %c\n", c);
 				usage();
@@ -327,15 +316,12 @@ int main (int argc, char *argv[]) {
 	if (optind >= argc) {
 		usage();
 	}
-
 	mavlink_init(0, param_serial_port, param_serial_baud);
-
 #ifdef SDL2
 	wifibc_thread_telemetry = SDL_CreateThread(wifibc_update_telemetry, NULL, NULL);
 #else
 	wifibc_thread_telemetry = SDL_CreateThread(wifibc_update_telemetry, NULL);
 #endif
-
 	if (param_packet_length > MAX_USER_PACKET_LENGTH) {
 		printf("Packet length is limited to %d bytes (you requested %d bytes)\n", MAX_USER_PACKET_LENGTH, param_packet_length);
 		return (1);
@@ -380,7 +366,7 @@ int main (int argc, char *argv[]) {
 			return (1);
 		}
 		//cycle through all fifos and look for new data
-		for (i=0; i<param_fifo_count && ret; ++i) {
+		for (i = 0; i < param_fifo_count && ret; ++i) {
 			if (!FD_ISSET(fifo[i].fd, &rdfs)) {
 				continue;
 			}
@@ -419,12 +405,13 @@ int main (int argc, char *argv[]) {
 			pb->len += sizeof(ModelDataMinimal);
 			//check if this packet is finished
 			if (pb->len >= param_min_packet_length) {
-				payload_header_t *ph = (payload_header_t*)pb->data;
-				ph->data_length = pb->len - sizeof(payload_header_t); //write the length into the packet. this is needed since with fec we cannot use the wifi packet lentgh anymore. We could also set the user payload to a fixed size but this would introduce additional latency since tx would need to wait until that amount of data has been received
+				payload_header_t *ph = (payload_header_t *)pb->data;
+				ph->data_length = pb->len - sizeof(
+									  payload_header_t); //write the length into the packet. this is needed since with fec we cannot use the wifi packet lentgh anymore. We could also set the user payload to a fixed size but this would introduce additional latency since tx would need to wait until that amount of data has been received
 				pcnt++;
 				//check if this block is finished
-				if (fifo[i].curr_pb == param_data_packets_per_block-1) {
-					pb_transmit_block(fifo[i].pbl, ppcap, &(fifo[i].seq_nr), i+param_port, param_packet_length, packet_transmit_buffer, packet_header_length,
+				if (fifo[i].curr_pb == param_data_packets_per_block - 1) {
+					pb_transmit_block(fifo[i].pbl, ppcap, &(fifo[i].seq_nr), i + param_port, param_packet_length, packet_transmit_buffer, packet_header_length,
 									  param_data_packets_per_block, param_fec_packets_per_block, param_transmission_count);
 					fifo[i].curr_pb = 0;
 				} else {

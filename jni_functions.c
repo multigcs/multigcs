@@ -10,7 +10,7 @@ char bt_devices[100][1023];
 uint8_t aserbuffer[2048];
 int aserbuffer_pos = 0;
 
-void Java_org_libsdl_app_mylocationlistener_gpsSetPosition (JNIEnv* env, jclass cls, jfloat lat, jfloat lon, jfloat alt, jfloat speed) {
+void Java_org_libsdl_app_mylocationlistener_gpsSetPosition(JNIEnv *env, jclass cls, jfloat lat, jfloat lon, jfloat alt, jfloat speed) {
 	if (lat != 0.0 && lon != 0.0) {
 		if (ModelData[ModelActive].heartbeat == 0) {
 			ModelData[ModelActive].p_lat = lat;
@@ -26,7 +26,7 @@ void Java_org_libsdl_app_mylocationlistener_gpsSetPosition (JNIEnv* env, jclass 
 	return;
 }
 
-void Java_org_libsdl_app_SDLSurface_attitudeSetPosition (JNIEnv* env, jclass cls, jfloat pitch, jfloat roll, jfloat yaw) {
+void Java_org_libsdl_app_SDLSurface_attitudeSetPosition(JNIEnv *env, jclass cls, jfloat pitch, jfloat roll, jfloat yaw) {
 	if (ModelData[ModelActive].heartbeat == 0) {
 		float jni_att_roll = 0.0;
 		float jni_att_pitch = 0.0;
@@ -56,7 +56,7 @@ ssize_t bt_read(int fd, void *data, size_t len) {
 	return retlen;
 }
 
-void Java_org_libsdl_app_ConnectBT_serialReceive (JNIEnv* env, jclass cls, jbyte c) {
+void Java_org_libsdl_app_ConnectBT_serialReceive(JNIEnv *env, jclass cls, jbyte c) {
 	int n = 0;
 	if (aserbuffer_pos < 2000) {
 		aserbuffer[aserbuffer_pos++] = c;
@@ -64,7 +64,7 @@ void Java_org_libsdl_app_ConnectBT_serialReceive (JNIEnv* env, jclass cls, jbyte
 	return;
 }
 
-void Java_org_libsdl_app_SDLActivity_serialReceive (JNIEnv* env, jclass cls, jbyte c) {
+void Java_org_libsdl_app_SDLActivity_serialReceive(JNIEnv *env, jclass cls, jbyte c) {
 	int n = 0;
 	if (aserbuffer_pos < 2000) {
 		aserbuffer[aserbuffer_pos++] = c;
@@ -72,7 +72,7 @@ void Java_org_libsdl_app_SDLActivity_serialReceive (JNIEnv* env, jclass cls, jby
 	return;
 }
 
-void Java_org_libsdl_app_ConnectBT_deviceList (JNIEnv* env, jclass cls, jstring dlist) {
+void Java_org_libsdl_app_ConnectBT_deviceList(JNIEnv *env, jclass cls, jstring dlist) {
 	const char *nativeString = (*env)->GetStringUTFChars(env, dlist, 0);
 	SDL_Log("BT DEVICE_LIST: %s", nativeString);
 	int n = 0;
@@ -91,7 +91,8 @@ void Java_org_libsdl_app_ConnectBT_deviceList (JNIEnv* env, jclass cls, jstring 
 	return;
 }
 
-void Java_org_libsdl_app_SDLActivity_batterySetStatus (JNIEnv* env, jclass cls, jboolean present, jint level, jint health, jint plugged, jint status, jint temperature, jint voltage, jstring technology) {
+void Java_org_libsdl_app_SDLActivity_batterySetStatus(JNIEnv *env, jclass cls, jboolean present, jint level, jint health, jint plugged, jint status, jint temperature, jint voltage,
+		jstring technology) {
 	const char *type = (*env)->GetStringUTFChars(env, technology, 0);
 	SDL_Log("BATTERY (%s): %0.2fV (%i%%)", type, (float)voltage / 1000.0, level);
 	if (ModelData[ModelActive].heartbeat == 0) {

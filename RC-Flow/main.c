@@ -11,12 +11,12 @@
 
 
 void Delay(__IO uint32_t nCount) {
-	while(nCount--) {
-		__ASM volatile ("nop");
+	while (nCount--) {
+		__ASM volatile("nop");
 	}
 }
 
-static void SysTickConfig (void) {
+static void SysTickConfig(void) {
 	if (SysTick_Config(SystemCoreClock / 100)) {
 	}
 	NVIC_SetPriority(SysTick_IRQn, 0x0);
@@ -38,18 +38,18 @@ static void SysTickConfig (void) {
 #define DATA_ID 515161
 
 
-void flash_write (void) {
+void flash_write(void) {
 	uint32_t Address = ADDR_FLASH_SECTOR_10;
 	uint32_t SectorCounter = 0;
 	uint32_t *data = (uint32_t *)&RcData;
 	uint32_t pos = 0;
 	RcData.id = DATA_ID;
 	FLASH_Unlock();
-	FLASH_ClearFlag(FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR | FLASH_FLAG_PGAERR | FLASH_FLAG_PGPERR | FLASH_FLAG_PGSERR); 
+	FLASH_ClearFlag(FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR | FLASH_FLAG_PGAERR | FLASH_FLAG_PGPERR | FLASH_FLAG_PGSERR);
 	for (SectorCounter = FLASH_Sector_10; SectorCounter < FLASH_Sector_11; SectorCounter += 8) {
-		if (FLASH_EraseSector(SectorCounter, VoltageRange_3) != FLASH_COMPLETE) { 
+		if (FLASH_EraseSector(SectorCounter, VoltageRange_3) != FLASH_COMPLETE) {
 			Serial_SendText("Error: FLASH_EraseSector\n\r");
-			FLASH_Lock(); 
+			FLASH_Lock();
 			return;
 		}
 	}
@@ -57,36 +57,36 @@ void flash_write (void) {
 		if (FLASH_ProgramWord(Address, data[pos]) == FLASH_COMPLETE) {
 			Address += 4;
 			pos++;
-		} else { 
+		} else {
 			Serial_SendText("Error: FLASH_ProgramWord\n\r");
-			FLASH_Lock(); 
+			FLASH_Lock();
 			return;
 		}
 	}
-	FLASH_Lock(); 
+	FLASH_Lock();
 }
 
 
 
-void flash_read (void) {
+void flash_read(void) {
 	uint32_t Address = ADDR_FLASH_SECTOR_10;
 	uint32_t *data = (uint32_t *)&RcData;
 	uint32_t pos = 0;
 	RcData.id = 0;
 	while (Address < ADDR_FLASH_SECTOR_11 && pos < sizeof(RcData)) {
-		data[pos] = *(__IO uint32_t*)Address;
+		data[pos] = *(__IO uint32_t *)Address;
 		Address += 4;
 		pos++;
-	}  
+	}
 	if (RcData.id != DATA_ID) {
 		Serial_SendText("DATA_ERROR\n\r");
 		rcflow_init();
 	}
-}  
- 
+}
 
 
-int main (void) {
+
+int main(void) {
 	rcflow_init();
 	SysTickConfig();
 	USART_Config();
@@ -95,12 +95,9 @@ int main (void) {
 	SW_Config();
 	SW_Update();
 	flash_read();
-
-
 	int n = 0;
 	while (1) {
 		SW_Update();
-
 		char tmp_str[100];
 		Serial_SendText("ADC:");
 		for (n = 0; n < ADC_MAX; n++) {
@@ -108,18 +105,15 @@ int main (void) {
 			Serial_SendText(tmp_str);
 		}
 		Serial_SendText("\n\r");
-
 		Serial_SendText("SW:");
 		for (n = 0; n < SW_MAX; n++) {
 			sprintf(tmp_str, "%i;", switches[n]);
 			Serial_SendText(tmp_str);
 		}
 		Serial_SendText("\n\r");
-
 		for (n = 0; n < 100; n++) {
 			rcflow_calc_Embedded();
 		}
-
 		uint8_t plugin = 0;
 		uint8_t output = 0;
 		Serial_SendText("OUT:");

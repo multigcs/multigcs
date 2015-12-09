@@ -1,11 +1,11 @@
 
 /*************************************************************************************************
- Filename: acceldesired.xml
- Object: AccelDesired
- Comment: The desired acceleration from navigation
+    Filename: acceldesired.xml
+    Object: AccelDesired
+    Comment: The desired acceleration from navigation
 *************************************************************************************************/
 
-#define ACCELDESIRED_OBJID 0x3b7c5b62 
+#define ACCELDESIRED_OBJID 0x3b7c5b62
 
 typedef struct {
 	float North;
@@ -17,12 +17,12 @@ extern UAVT_AccelDesiredData uavtalk_AccelDesiredData;
 
 
 /*************************************************************************************************
- Filename: accels.xml
- Object: Accels
- Comment: The accelerometer sensor data, rotated into body frame.
+    Filename: accels.xml
+    Object: Accels
+    Comment: The accelerometer sensor data, rotated into body frame.
 *************************************************************************************************/
 
-#define ACCELS_OBJID 0xdd9d5fc0 
+#define ACCELS_OBJID 0xdd9d5fc0
 
 typedef struct {
 	float x;
@@ -35,12 +35,12 @@ extern UAVT_AccelsData uavtalk_AccelsData;
 
 
 /*************************************************************************************************
- Filename: accessorydesired.xml
- Object: AccessoryDesired
- Comment: Desired Auxillary actuator settings.  Comes from @ref ManualControlModule.
+    Filename: accessorydesired.xml
+    Object: AccessoryDesired
+    Comment: Desired Auxillary actuator settings.  Comes from @ref ManualControlModule.
 *************************************************************************************************/
 
-#define ACCESSORYDESIRED_OBJID 0xc409985a 
+#define ACCESSORYDESIRED_OBJID 0xc409985a
 
 typedef struct {
 	float AccessoryVal;
@@ -50,12 +50,12 @@ extern UAVT_AccessoryDesiredData uavtalk_AccessoryDesiredData;
 
 
 /*************************************************************************************************
- Filename: actuatorcommand.xml
- Object: ActuatorCommand
- Comment: Contains the pulse duration sent to each of the channels.  Set by @ref ActuatorModule
+    Filename: actuatorcommand.xml
+    Object: ActuatorCommand
+    Comment: Contains the pulse duration sent to each of the channels.  Set by @ref ActuatorModule
 *************************************************************************************************/
 
-#define ACTUATORCOMMAND_OBJID 0x5324cb8 
+#define ACTUATORCOMMAND_OBJID 0x5324cb8
 
 typedef struct {
 	int16_t Channel[10];
@@ -68,12 +68,12 @@ extern UAVT_ActuatorCommandData uavtalk_ActuatorCommandData;
 
 
 /*************************************************************************************************
- Filename: actuatordesired.xml
- Object: ActuatorDesired
- Comment: Desired raw, pitch and yaw actuator settings.  Comes from either @ref StabilizationModule or @ref ManualControlModule depending on FlightMode.
+    Filename: actuatordesired.xml
+    Object: ActuatorDesired
+    Comment: Desired raw, pitch and yaw actuator settings.  Comes from either @ref StabilizationModule or @ref ManualControlModule depending on FlightMode.
 *************************************************************************************************/
 
-#define ACTUATORDESIRED_OBJID 0xca4bc4a4 
+#define ACTUATORDESIRED_OBJID 0xca4bc4a4
 
 typedef struct {
 	float Roll;
@@ -88,12 +88,12 @@ extern UAVT_ActuatorDesiredData uavtalk_ActuatorDesiredData;
 
 
 /*************************************************************************************************
- Filename: actuatorsettings.xml
- Object: ActuatorSettings
- Comment: Settings for the @ref ActuatorModule that controls the channel assignments for the mixer based on AircraftType
+    Filename: actuatorsettings.xml
+    Object: ActuatorSettings
+    Comment: Settings for the @ref ActuatorModule that controls the channel assignments for the mixer based on AircraftType
 *************************************************************************************************/
 
-#define ACTUATORSETTINGS_OBJID 0xa3c64272 
+#define ACTUATORSETTINGS_OBJID 0xa3c64272
 
 enum {
 	ACTUATORSETTINGS_CHANNELTYPE_PWM = 0,
@@ -127,12 +127,12 @@ extern UAVT_ActuatorSettingsData uavtalk_ActuatorSettingsData;
 
 
 /*************************************************************************************************
- Filename: airspeedactual.xml
- Object: AirspeedActual
- Comment: UAVO for true airspeed, calibrated airspeed, angle of attack, and angle of slip
+    Filename: airspeedactual.xml
+    Object: AirspeedActual
+    Comment: UAVO for true airspeed, calibrated airspeed, angle of attack, and angle of slip
 *************************************************************************************************/
 
-#define AIRSPEEDACTUAL_OBJID 0x133a3280 
+#define AIRSPEEDACTUAL_OBJID 0x133a3280
 
 typedef struct {
 	float TrueAirspeed;
@@ -145,12 +145,12 @@ extern UAVT_AirspeedActualData uavtalk_AirspeedActualData;
 
 
 /*************************************************************************************************
- Filename: airspeedsettings.xml
- Object: AirspeedSettings
- Comment: Settings for the @ref BaroAirspeed module used on CopterControl or Revolution
+    Filename: airspeedsettings.xml
+    Object: AirspeedSettings
+    Comment: Settings for the @ref BaroAirspeed module used on CopterControl or Revolution
 *************************************************************************************************/
 
-#define AIRSPEEDSETTINGS_OBJID 0x63f679c 
+#define AIRSPEEDSETTINGS_OBJID 0x63f679c
 
 enum {
 	AIRSPEEDSETTINGS_AIRSPEEDSENSORTYPE_EAGLETREEAIRSPEEDV3 = 0,
@@ -188,12 +188,12 @@ extern UAVT_AirspeedSettingsData uavtalk_AirspeedSettingsData;
 
 
 /*************************************************************************************************
- Filename: altitudeholddesired.xml
- Object: AltitudeHoldDesired
- Comment: Holds the desired altitude (from manual control) as well as the desired attitude to pass through
+    Filename: altitudeholddesired.xml
+    Object: AltitudeHoldDesired
+    Comment: Holds the desired altitude (from manual control) as well as the desired attitude to pass through
 *************************************************************************************************/
 
-#define ALTITUDEHOLDDESIRED_OBJID 0xe7b9c87a 
+#define ALTITUDEHOLDDESIRED_OBJID 0xe7b9c87a
 
 enum {
 	ALTITUDEHOLDDESIRED_LAND_FALSE = 0,
@@ -215,12 +215,12 @@ extern UAVT_AltitudeHoldDesiredData uavtalk_AltitudeHoldDesiredData;
 
 
 /*************************************************************************************************
- Filename: altitudeholdsettings.xml
- Object: AltitudeHoldSettings
- Comment: Settings for the @ref AltitudeHold module
+    Filename: altitudeholdsettings.xml
+    Object: AltitudeHoldSettings
+    Comment: Settings for the @ref AltitudeHold module
 *************************************************************************************************/
 
-#define ALTITUDEHOLDSETTINGS_OBJID 0x93e52e4c 
+#define ALTITUDEHOLDSETTINGS_OBJID 0x93e52e4c
 
 typedef struct {
 	float PositionKp;
@@ -236,12 +236,12 @@ extern UAVT_AltitudeHoldSettingsData uavtalk_AltitudeHoldSettingsData;
 
 
 /*************************************************************************************************
- Filename: attitudeactual.xml
- Object: AttitudeActual
- Comment: The updated Attitude estimation from @ref AHRSCommsModule.
+    Filename: attitudeactual.xml
+    Object: AttitudeActual
+    Comment: The updated Attitude estimation from @ref AHRSCommsModule.
 *************************************************************************************************/
 
-#define ATTITUDEACTUAL_OBJID 0x33dad5e6 
+#define ATTITUDEACTUAL_OBJID 0x33dad5e6
 
 typedef struct {
 	float q1;
@@ -257,12 +257,12 @@ extern UAVT_AttitudeActualData uavtalk_AttitudeActualData;
 
 
 /*************************************************************************************************
- Filename: attitudesettings.xml
- Object: AttitudeSettings
- Comment: Settings for the @ref Attitude module used on CopterControl
+    Filename: attitudesettings.xml
+    Object: AttitudeSettings
+    Comment: Settings for the @ref Attitude module used on CopterControl
 *************************************************************************************************/
 
-#define ATTITUDESETTINGS_OBJID 0x2257cf36 
+#define ATTITUDESETTINGS_OBJID 0x2257cf36
 
 enum {
 	ATTITUDESETTINGS_ZERODURINGARMING_FALSE = 0,
@@ -319,12 +319,12 @@ extern UAVT_AttitudeSettingsData uavtalk_AttitudeSettingsData;
 
 
 /*************************************************************************************************
- Filename: attitudesimulated.xml
- Object: AttitudeSimulated
- Comment: The simulated Attitude estimation from @ref Sensors.
+    Filename: attitudesimulated.xml
+    Object: AttitudeSimulated
+    Comment: The simulated Attitude estimation from @ref Sensors.
 *************************************************************************************************/
 
-#define ATTITUDESIMULATED_OBJID 0x9266ce74 
+#define ATTITUDESIMULATED_OBJID 0x9266ce74
 
 typedef struct {
 	float North;
@@ -354,12 +354,12 @@ extern UAVT_AttitudeSimulatedData uavtalk_AttitudeSimulatedData;
 
 
 /*************************************************************************************************
- Filename: baroairspeed.xml
- Object: BaroAirspeed
- Comment: The raw data from the dynamic pressure sensor with pressure, temperature and airspeed.
+    Filename: baroairspeed.xml
+    Object: BaroAirspeed
+    Comment: The raw data from the dynamic pressure sensor with pressure, temperature and airspeed.
 *************************************************************************************************/
 
-#define BAROAIRSPEED_OBJID 0x10d6bd7c 
+#define BAROAIRSPEED_OBJID 0x10d6bd7c
 
 enum {
 	BAROAIRSPEED_BAROCONNECTED_FALSE = 0,
@@ -380,12 +380,12 @@ extern UAVT_BaroAirspeedData uavtalk_BaroAirspeedData;
 
 
 /*************************************************************************************************
- Filename: baroaltitude.xml
- Object: BaroAltitude
- Comment: The raw data from the barometric sensor with pressure, temperature and altitude estimate.
+    Filename: baroaltitude.xml
+    Object: BaroAltitude
+    Comment: The raw data from the barometric sensor with pressure, temperature and altitude estimate.
 *************************************************************************************************/
 
-#define BAROALTITUDE_OBJID 0x99622e6a 
+#define BAROALTITUDE_OBJID 0x99622e6a
 
 typedef struct {
 	float Altitude;
@@ -397,12 +397,12 @@ extern UAVT_BaroAltitudeData uavtalk_BaroAltitudeData;
 
 
 /*************************************************************************************************
- Filename: brushlessgimbalsettings.xml
- Object: BrushlessGimbalSettings
- Comment: Settings for the @ref BrushlessGimbal module
+    Filename: brushlessgimbalsettings.xml
+    Object: BrushlessGimbalSettings
+    Comment: Settings for the @ref BrushlessGimbal module
 *************************************************************************************************/
 
-#define BRUSHLESSGIMBALSETTINGS_OBJID 0xb50ddc74 
+#define BRUSHLESSGIMBALSETTINGS_OBJID 0xb50ddc74
 
 enum {
 	BRUSHLESSGIMBALSETTINGS_POWERUPSEQUENCE_FALSE = 0,
@@ -455,12 +455,12 @@ extern UAVT_BrushlessGimbalSettingsData uavtalk_BrushlessGimbalSettingsData;
 
 
 /*************************************************************************************************
- Filename: cameradesired.xml
- Object: CameraDesired
- Comment: Desired camera outputs.  Comes from @ref CameraStabilization module.
+    Filename: cameradesired.xml
+    Object: CameraDesired
+    Comment: Desired camera outputs.  Comes from @ref CameraStabilization module.
 *************************************************************************************************/
 
-#define CAMERADESIRED_OBJID 0x4622ec88 
+#define CAMERADESIRED_OBJID 0x4622ec88
 
 typedef struct {
 	float Roll;
@@ -474,12 +474,12 @@ extern UAVT_CameraDesiredData uavtalk_CameraDesiredData;
 
 
 /*************************************************************************************************
- Filename: camerastabsettings.xml
- Object: CameraStabSettings
- Comment: Settings for the @ref CameraStab mmodule
+    Filename: camerastabsettings.xml
+    Object: CameraStabSettings
+    Comment: Settings for the @ref CameraStab mmodule
 *************************************************************************************************/
 
-#define CAMERASTABSETTINGS_OBJID 0xfa09a51a 
+#define CAMERASTABSETTINGS_OBJID 0xfa09a51a
 
 enum {
 	CAMERASTABSETTINGS_INPUT_ACCESSORY0 = 0,
@@ -555,12 +555,12 @@ extern UAVT_CameraStabSettingsData uavtalk_CameraStabSettingsData;
 
 
 /*************************************************************************************************
- Filename: faultsettings.xml
- Object: FaultSettings
- Comment: Allows testers to simulate various fault scenarios.
+    Filename: faultsettings.xml
+    Object: FaultSettings
+    Comment: Allows testers to simulate various fault scenarios.
 *************************************************************************************************/
 
-#define FAULTSETTINGS_OBJID 0x2778ba3c 
+#define FAULTSETTINGS_OBJID 0x2778ba3c
 
 enum {
 	FAULTSETTINGS_ACTIVATEFAULT_NOFAULT = 0,
@@ -581,12 +581,12 @@ extern UAVT_FaultSettingsData uavtalk_FaultSettingsData;
 
 
 /*************************************************************************************************
- Filename: firmwareiapobj.xml
- Object: FirmwareIAPObj
- Comment: Queries board for SN, model, revision, and sends reset command
+    Filename: firmwareiapobj.xml
+    Object: FirmwareIAPObj
+    Comment: Queries board for SN, model, revision, and sends reset command
 *************************************************************************************************/
 
-#define FIRMWAREIAPOBJ_OBJID 0x5e6e8fdc 
+#define FIRMWAREIAPOBJ_OBJID 0x5e6e8fdc
 
 typedef struct {
 	uint32_t crc;
@@ -602,12 +602,12 @@ extern UAVT_FirmwareIAPObjData uavtalk_FirmwareIAPObjData;
 
 
 /*************************************************************************************************
- Filename: fixedwingairspeeds.xml
- Object: FixedWingAirspeeds
- Comment: Settings for the @ref FixedWingPathFollowerModule
+    Filename: fixedwingairspeeds.xml
+    Object: FixedWingAirspeeds
+    Comment: Settings for the @ref FixedWingPathFollowerModule
 *************************************************************************************************/
 
-#define FIXEDWINGAIRSPEEDS_OBJID 0x3fcf7f6 
+#define FIXEDWINGAIRSPEEDS_OBJID 0x3fcf7f6
 
 typedef struct {
 	float AirSpeedMax;
@@ -622,12 +622,12 @@ extern UAVT_FixedWingAirspeedsData uavtalk_FixedWingAirspeedsData;
 
 
 /*************************************************************************************************
- Filename: fixedwingpathfollowersettingscc.xml
- Object: FixedWingPathFollowerSettingsCC
- Comment: Settings for the @ref FixedWingPathFollowerModule
+    Filename: fixedwingpathfollowersettingscc.xml
+    Object: FixedWingPathFollowerSettingsCC
+    Comment: Settings for the @ref FixedWingPathFollowerModule
 *************************************************************************************************/
 
-#define FIXEDWINGPATHFOLLOWERSETTINGSCC_OBJID 0xc4623504 
+#define FIXEDWINGPATHFOLLOWERSETTINGSCC_OBJID 0xc4623504
 
 typedef struct {
 	float Kp;
@@ -660,12 +660,12 @@ extern UAVT_FixedWingPathFollowerSettingsCCData uavtalk_FixedWingPathFollowerSet
 
 
 /*************************************************************************************************
- Filename: fixedwingpathfollowersettings.xml
- Object: FixedWingPathFollowerSettings
- Comment: Settings for the @ref FixedWingPathFollowerModule
+    Filename: fixedwingpathfollowersettings.xml
+    Object: FixedWingPathFollowerSettings
+    Comment: Settings for the @ref FixedWingPathFollowerModule
 *************************************************************************************************/
 
-#define FIXEDWINGPATHFOLLOWERSETTINGS_OBJID 0x56c316da 
+#define FIXEDWINGPATHFOLLOWERSETTINGS_OBJID 0x56c316da
 
 typedef struct {
 	float Kp;
@@ -696,12 +696,12 @@ extern UAVT_FixedWingPathFollowerSettingsData uavtalk_FixedWingPathFollowerSetti
 
 
 /*************************************************************************************************
- Filename: fixedwingpathfollowerstatus.xml
- Object: FixedWingPathFollowerStatus
- Comment: Object Storing Debugging Information on PID internals
+    Filename: fixedwingpathfollowerstatus.xml
+    Object: FixedWingPathFollowerStatus
+    Comment: Object Storing Debugging Information on PID internals
 *************************************************************************************************/
 
-#define FIXEDWINGPATHFOLLOWERSTATUS_OBJID 0xaca80808 
+#define FIXEDWINGPATHFOLLOWERSTATUS_OBJID 0xaca80808
 
 typedef struct {
 	float Bearing;
@@ -746,12 +746,12 @@ extern UAVT_FixedWingPathFollowerStatusData uavtalk_FixedWingPathFollowerStatusD
 
 
 /*************************************************************************************************
- Filename: flightbatterysettings.xml
- Object: FlightBatterySettings
- Comment: Flight Battery configuration.
+    Filename: flightbatterysettings.xml
+    Object: FlightBatterySettings
+    Comment: Flight Battery configuration.
 *************************************************************************************************/
 
-#define FLIGHTBATTERYSETTINGS_OBJID 0x94474ece 
+#define FLIGHTBATTERYSETTINGS_OBJID 0x94474ece
 
 enum {
 	FLIGHTBATTERYSETTINGS_CURRENTPIN_ADC0 = 0,
@@ -836,12 +836,12 @@ extern UAVT_FlightBatterySettingsData uavtalk_FlightBatterySettingsData;
 
 
 /*************************************************************************************************
- Filename: flightbatterystate.xml
- Object: FlightBatteryState
- Comment: Battery status information.
+    Filename: flightbatterystate.xml
+    Object: FlightBatteryState
+    Comment: Battery status information.
 *************************************************************************************************/
 
-#define FLIGHTBATTERYSTATE_OBJID 0xd2083596 
+#define FLIGHTBATTERYSTATE_OBJID 0xd2083596
 
 typedef struct {
 	float Voltage;
@@ -857,12 +857,12 @@ extern UAVT_FlightBatteryStateData uavtalk_FlightBatteryStateData;
 
 
 /*************************************************************************************************
- Filename: flightplancontrol.xml
- Object: FlightPlanControl
- Comment: Control the flight plan script
+    Filename: flightplancontrol.xml
+    Object: FlightPlanControl
+    Comment: Control the flight plan script
 *************************************************************************************************/
 
-#define FLIGHTPLANCONTROL_OBJID 0x53e3f180 
+#define FLIGHTPLANCONTROL_OBJID 0x53e3f180
 
 enum {
 	FLIGHTPLANCONTROL_COMMAND_START = 0,
@@ -880,12 +880,12 @@ extern UAVT_FlightPlanControlData uavtalk_FlightPlanControlData;
 
 
 /*************************************************************************************************
- Filename: flightplansettings.xml
- Object: FlightPlanSettings
- Comment: Settings for the flight plan module, control the execution of the script
+    Filename: flightplansettings.xml
+    Object: FlightPlanSettings
+    Comment: Settings for the flight plan module, control the execution of the script
 *************************************************************************************************/
 
-#define FLIGHTPLANSETTINGS_OBJID 0x92e9ff76 
+#define FLIGHTPLANSETTINGS_OBJID 0x92e9ff76
 
 typedef struct {
 	float Test;
@@ -895,12 +895,12 @@ extern UAVT_FlightPlanSettingsData uavtalk_FlightPlanSettingsData;
 
 
 /*************************************************************************************************
- Filename: flightplanstatus.xml
- Object: FlightPlanStatus
- Comment: Status of the flight plan script
+    Filename: flightplanstatus.xml
+    Object: FlightPlanStatus
+    Comment: Status of the flight plan script
 *************************************************************************************************/
 
-#define FLIGHTPLANSTATUS_OBJID 0x3391ec96 
+#define FLIGHTPLANSTATUS_OBJID 0x3391ec96
 
 enum {
 	FLIGHTPLANSTATUS_STATE_STOPPED = 0,
@@ -946,12 +946,12 @@ extern UAVT_FlightPlanStatusData uavtalk_FlightPlanStatusData;
 
 
 /*************************************************************************************************
- Filename: flightstatus.xml
- Object: FlightStatus
- Comment: Contains major flight status information for other modules.
+    Filename: flightstatus.xml
+    Object: FlightStatus
+    Comment: Contains major flight status information for other modules.
 *************************************************************************************************/
 
-#define FLIGHTSTATUS_OBJID 0xc2e431ba 
+#define FLIGHTSTATUS_OBJID 0xc2e431ba
 
 enum {
 	FLIGHTSTATUS_ARMED_DISARMED = 0,
@@ -999,12 +999,12 @@ extern UAVT_FlightStatusData uavtalk_FlightStatusData;
 
 
 /*************************************************************************************************
- Filename: flighttelemetrystats.xml
- Object: FlightTelemetryStats
- Comment: Maintains the telemetry statistics from the OpenPilot flight computer.
+    Filename: flighttelemetrystats.xml
+    Object: FlightTelemetryStats
+    Comment: Maintains the telemetry statistics from the OpenPilot flight computer.
 *************************************************************************************************/
 
-#define FLIGHTTELEMETRYSTATS_OBJID 0x9e5ba136 
+#define FLIGHTTELEMETRYSTATS_OBJID 0x9e5ba136
 
 enum {
 	FLIGHTTELEMETRYSTATS_STATE_DISCONNECTED = 0,
@@ -1028,12 +1028,12 @@ extern UAVT_FlightTelemetryStatsData uavtalk_FlightTelemetryStatsData;
 
 
 /*************************************************************************************************
- Filename: gcsreceiver.xml
- Object: GCSReceiver
- Comment: A receiver channel group carried over the telemetry link.
+    Filename: gcsreceiver.xml
+    Object: GCSReceiver
+    Comment: A receiver channel group carried over the telemetry link.
 *************************************************************************************************/
 
-#define GCSRECEIVER_OBJID 0xcc7e1470 
+#define GCSRECEIVER_OBJID 0xcc7e1470
 
 typedef struct {
 	uint16_t Channel[8];
@@ -1043,12 +1043,12 @@ extern UAVT_GCSReceiverData uavtalk_GCSReceiverData;
 
 
 /*************************************************************************************************
- Filename: gcstelemetrystats.xml
- Object: GCSTelemetryStats
- Comment: The telemetry statistics from the ground computer
+    Filename: gcstelemetrystats.xml
+    Object: GCSTelemetryStats
+    Comment: The telemetry statistics from the ground computer
 *************************************************************************************************/
 
-#define GCSTELEMETRYSTATS_OBJID 0x708d0a90 
+#define GCSTELEMETRYSTATS_OBJID 0x708d0a90
 
 enum {
 	GCSTELEMETRYSTATS_STATE_DISCONNECTED = 0,
@@ -1072,12 +1072,12 @@ extern UAVT_GCSTelemetryStatsData uavtalk_GCSTelemetryStatsData;
 
 
 /*************************************************************************************************
- Filename: geofencesettings.xml
- Object: GeoFenceSettings
- Comment: Radius for simple geofence boundaries
+    Filename: geofencesettings.xml
+    Object: GeoFenceSettings
+    Comment: Radius for simple geofence boundaries
 *************************************************************************************************/
 
-#define GEOFENCESETTINGS_OBJID 0xdf5ea7fe 
+#define GEOFENCESETTINGS_OBJID 0xdf5ea7fe
 
 typedef struct {
 	uint16_t WarningRadius;
@@ -1088,12 +1088,12 @@ extern UAVT_GeoFenceSettingsData uavtalk_GeoFenceSettingsData;
 
 
 /*************************************************************************************************
- Filename: gpsposition.xml
- Object: GPSPosition
- Comment: Raw GPS data from @ref GPSModule.  Should only be used by @ref AHRSCommsModule.
+    Filename: gpsposition.xml
+    Object: GPSPosition
+    Comment: Raw GPS data from @ref GPSModule.  Should only be used by @ref AHRSCommsModule.
 *************************************************************************************************/
 
-#define GPSPOSITION_OBJID 0x628ba538 
+#define GPSPOSITION_OBJID 0x628ba538
 
 enum {
 	GPSPOSITION_STATE_NOGPS = 0,
@@ -1123,12 +1123,12 @@ extern UAVT_GPSPositionData uavtalk_GPSPositionData;
 
 
 /*************************************************************************************************
- Filename: gpssatellites.xml
- Object: GPSSatellites
- Comment: Contains information about the GPS satellites in view from @ref GPSModule.
+    Filename: gpssatellites.xml
+    Object: GPSSatellites
+    Comment: Contains information about the GPS satellites in view from @ref GPSModule.
 *************************************************************************************************/
 
-#define GPSSATELLITES_OBJID 0x920d998 
+#define GPSSATELLITES_OBJID 0x920d998
 
 typedef struct {
 	float Elevation[16];
@@ -1142,12 +1142,12 @@ extern UAVT_GPSSatellitesData uavtalk_GPSSatellitesData;
 
 
 /*************************************************************************************************
- Filename: gpstime.xml
- Object: GPSTime
- Comment: Contains the GPS time from @ref GPSModule.  Required to compute the world magnetic model correctly when setting the home location.
+    Filename: gpstime.xml
+    Object: GPSTime
+    Comment: Contains the GPS time from @ref GPSModule.  Required to compute the world magnetic model correctly when setting the home location.
 *************************************************************************************************/
 
-#define GPSTIME_OBJID 0xd4478084 
+#define GPSTIME_OBJID 0xd4478084
 
 typedef struct {
 	int16_t Year;
@@ -1162,12 +1162,12 @@ extern UAVT_GPSTimeData uavtalk_GPSTimeData;
 
 
 /*************************************************************************************************
- Filename: gpsvelocity.xml
- Object: GPSVelocity
- Comment: Raw GPS data from @ref GPSModule.
+    Filename: gpsvelocity.xml
+    Object: GPSVelocity
+    Comment: Raw GPS data from @ref GPSModule.
 *************************************************************************************************/
 
-#define GPSVELOCITY_OBJID 0x8245dc80 
+#define GPSVELOCITY_OBJID 0x8245dc80
 
 typedef struct {
 	float North;
@@ -1179,12 +1179,12 @@ extern UAVT_GPSVelocityData uavtalk_GPSVelocityData;
 
 
 /*************************************************************************************************
- Filename: groundpathfollowersettings.xml
- Object: GroundPathFollowerSettings
- Comment: Settings for the @ref GroundPathFollowerModule
+    Filename: groundpathfollowersettings.xml
+    Object: GroundPathFollowerSettings
+    Comment: Settings for the @ref GroundPathFollowerModule
 *************************************************************************************************/
 
-#define GROUNDPATHFOLLOWERSETTINGS_OBJID 0x9090c16 
+#define GROUNDPATHFOLLOWERSETTINGS_OBJID 0x9090c16
 
 enum {
 	GROUNDPATHFOLLOWERSETTINGS_MANUALOVERRIDE_FALSE = 0,
@@ -1247,12 +1247,12 @@ extern UAVT_GroundPathFollowerSettingsData uavtalk_GroundPathFollowerSettingsDat
 
 
 /*************************************************************************************************
- Filename: groundtruth.xml
- Object: GroundTruth
- Comment: Ground truth data output by a simulator.
+    Filename: groundtruth.xml
+    Object: GroundTruth
+    Comment: Ground truth data output by a simulator.
 *************************************************************************************************/
 
-#define GROUNDTRUTH_OBJID 0xf178dca8 
+#define GROUNDTRUTH_OBJID 0xf178dca8
 
 typedef struct {
 	float AccelerationXYZ[3];
@@ -1270,12 +1270,12 @@ extern UAVT_GroundTruthData uavtalk_GroundTruthData;
 
 
 /*************************************************************************************************
- Filename: gyrosbias.xml
- Object: GyrosBias
- Comment: The online-estimate of gyro bias.
+    Filename: gyrosbias.xml
+    Object: GyrosBias
+    Comment: The online-estimate of gyro bias.
 *************************************************************************************************/
 
-#define GYROSBIAS_OBJID 0xe4b6f980 
+#define GYROSBIAS_OBJID 0xe4b6f980
 
 typedef struct {
 	float x;
@@ -1287,12 +1287,12 @@ extern UAVT_GyrosBiasData uavtalk_GyrosBiasData;
 
 
 /*************************************************************************************************
- Filename: gyros.xml
- Object: Gyros
- Comment: The rate gyroscope sensor data, in body frame.
+    Filename: gyros.xml
+    Object: Gyros
+    Comment: The rate gyroscope sensor data, in body frame.
 *************************************************************************************************/
 
-#define GYROS_OBJID 0x4228af6 
+#define GYROS_OBJID 0x4228af6
 
 typedef struct {
 	float x;
@@ -1305,12 +1305,12 @@ extern UAVT_GyrosData uavtalk_GyrosData;
 
 
 /*************************************************************************************************
- Filename: homelocation.xml
- Object: HomeLocation
- Comment: HomeLocation setting which contains the constants to tranlate from longitutde and latitude to NED reference frame.  Automatically set by @ref GPSModule after acquiring a 3D lock.  Used by @ref AHRSCommsModule.
+    Filename: homelocation.xml
+    Object: HomeLocation
+    Comment: HomeLocation setting which contains the constants to tranlate from longitutde and latitude to NED reference frame.  Automatically set by @ref GPSModule after acquiring a 3D lock.  Used by @ref AHRSCommsModule.
 *************************************************************************************************/
 
-#define HOMELOCATION_OBJID 0xca32b032 
+#define HOMELOCATION_OBJID 0xca32b032
 
 enum {
 	HOMELOCATION_SET_FALSE = 0,
@@ -1333,12 +1333,12 @@ extern UAVT_HomeLocationData uavtalk_HomeLocationData;
 
 
 /*************************************************************************************************
- Filename: hottsettings.xml
- Object: HoTTSettings
- Comment: Settings for the @ref HoTT Telemetry Module
+    Filename: hottsettings.xml
+    Object: HoTTSettings
+    Comment: Settings for the @ref HoTT Telemetry Module
 *************************************************************************************************/
 
-#define HOTTSETTINGS_OBJID 0x6cbc1102 
+#define HOTTSETTINGS_OBJID 0x6cbc1102
 
 enum {
 	HOTTSETTINGS_SENSOR_DISABLED = 0,
@@ -1433,12 +1433,12 @@ extern UAVT_HoTTSettingsData uavtalk_HoTTSettingsData;
 
 
 /*************************************************************************************************
- Filename: hwcolibri.xml
- Object: HwColibri
- Comment: Selection of optional hardware configurations.
+    Filename: hwcolibri.xml
+    Object: HwColibri
+    Comment: Selection of optional hardware configurations.
 *************************************************************************************************/
 
-#define HWCOLIBRI_OBJID 0xa0c92448 
+#define HWCOLIBRI_OBJID 0xa0c92448
 
 enum {
 	HWCOLIBRI_FRAME_GEMINI = 0,
@@ -1646,12 +1646,12 @@ extern UAVT_HwColibriData uavtalk_HwColibriData;
 
 
 /*************************************************************************************************
- Filename: hwcoptercontrol.xml
- Object: HwCopterControl
- Comment: Selection of optional hardware configurations.
+    Filename: hwcoptercontrol.xml
+    Object: HwCopterControl
+    Comment: Selection of optional hardware configurations.
 *************************************************************************************************/
 
-#define HWCOPTERCONTROL_OBJID 0xd599c916 
+#define HWCOPTERCONTROL_OBJID 0xd599c916
 
 enum {
 	HWCOPTERCONTROL_RCVRPORT_DISABLED = 0,
@@ -1772,12 +1772,12 @@ extern UAVT_HwCopterControlData uavtalk_HwCopterControlData;
 
 
 /*************************************************************************************************
- Filename: hwdiscoveryf4.xml
- Object: HwDiscoveryF4
- Comment: Selection of optional hardware configurations.
+    Filename: hwdiscoveryf4.xml
+    Object: HwDiscoveryF4
+    Comment: Selection of optional hardware configurations.
 *************************************************************************************************/
 
-#define HWDISCOVERYF4_OBJID 0x416d89a8 
+#define HWDISCOVERYF4_OBJID 0x416d89a8
 
 enum {
 	HWDISCOVERYF4_MAINPORT_DISABLED = 0,
@@ -1814,12 +1814,12 @@ extern UAVT_HwDiscoveryF4Data uavtalk_HwDiscoveryF4Data;
 
 
 /*************************************************************************************************
- Filename: hwflyingf3.xml
- Object: HwFlyingF3
- Comment: Selection of optional hardware configurations.
+    Filename: hwflyingf3.xml
+    Object: HwFlyingF3
+    Comment: Selection of optional hardware configurations.
 *************************************************************************************************/
 
-#define HWFLYINGF3_OBJID 0x472fae5a 
+#define HWFLYINGF3_OBJID 0x472fae5a
 
 enum {
 	HWFLYINGF3_RCVRPORT_DISABLED = 0,
@@ -2003,12 +2003,12 @@ extern UAVT_HwFlyingF3Data uavtalk_HwFlyingF3Data;
 
 
 /*************************************************************************************************
- Filename: hwflyingf4.xml
- Object: HwFlyingF4
- Comment: Selection of optional hardware configurations.
+    Filename: hwflyingf4.xml
+    Object: HwFlyingF4
+    Comment: Selection of optional hardware configurations.
 *************************************************************************************************/
 
-#define HWFLYINGF4_OBJID 0x5796bcc6 
+#define HWFLYINGF4_OBJID 0x5796bcc6
 
 enum {
 	HWFLYINGF4_RCVRPORT_DISABLED = 0,
@@ -2172,12 +2172,12 @@ extern UAVT_HwFlyingF4Data uavtalk_HwFlyingF4Data;
 
 
 /*************************************************************************************************
- Filename: hwfreedom.xml
- Object: HwFreedom
- Comment: Selection of optional hardware configurations.
+    Filename: hwfreedom.xml
+    Object: HwFreedom
+    Comment: Selection of optional hardware configurations.
 *************************************************************************************************/
 
-#define HWFREEDOM_OBJID 0x2db9d4f0 
+#define HWFREEDOM_OBJID 0x2db9d4f0
 
 enum {
 	HWFREEDOM_OUTPUT_DISABLED = 0,
@@ -2325,12 +2325,12 @@ extern UAVT_HwFreedomData uavtalk_HwFreedomData;
 
 
 /*************************************************************************************************
- Filename: hwquanton.xml
- Object: HwQuanton
- Comment: Selection of optional hardware configurations.
+    Filename: hwquanton.xml
+    Object: HwQuanton
+    Comment: Selection of optional hardware configurations.
 *************************************************************************************************/
 
-#define HWQUANTON_OBJID 0x176384a6 
+#define HWQUANTON_OBJID 0x176384a6
 
 enum {
 	HWQUANTON_RCVRPORT_DISABLED = 0,
@@ -2556,12 +2556,12 @@ extern UAVT_HwQuantonData uavtalk_HwQuantonData;
 
 
 /*************************************************************************************************
- Filename: hwrevolution.xml
- Object: HwRevolution
- Comment: Selection of optional hardware configurations.
+    Filename: hwrevolution.xml
+    Object: HwRevolution
+    Comment: Selection of optional hardware configurations.
 *************************************************************************************************/
 
-#define HWREVOLUTION_OBJID 0xd9ac7e1a 
+#define HWREVOLUTION_OBJID 0xd9ac7e1a
 
 enum {
 	HWREVOLUTION_RCVRPORT_DISABLED = 0,
@@ -2724,12 +2724,12 @@ extern UAVT_HwRevolutionData uavtalk_HwRevolutionData;
 
 
 /*************************************************************************************************
- Filename: hwrevomini.xml
- Object: HwRevoMini
- Comment: Selection of optional hardware configurations.
+    Filename: hwrevomini.xml
+    Object: HwRevoMini
+    Comment: Selection of optional hardware configurations.
 *************************************************************************************************/
 
-#define HWREVOMINI_OBJID 0xb265ad64 
+#define HWREVOMINI_OBJID 0xb265ad64
 
 enum {
 	HWREVOMINI_RCVRPORT_DISABLED = 0,
@@ -2870,12 +2870,12 @@ extern UAVT_HwRevoMiniData uavtalk_HwRevoMiniData;
 
 
 /*************************************************************************************************
- Filename: hwsparkybgc.xml
- Object: HwSparkyBGC
- Comment: Selection of optional hardware configurations.
+    Filename: hwsparkybgc.xml
+    Object: HwSparkyBGC
+    Comment: Selection of optional hardware configurations.
 *************************************************************************************************/
 
-#define HWSPARKYBGC_OBJID 0xd76f3a36 
+#define HWSPARKYBGC_OBJID 0xd76f3a36
 
 enum {
 	HWSPARKYBGC_RCVRPORT_DISABLED = 0,
@@ -2983,12 +2983,12 @@ extern UAVT_HwSparkyBGCData uavtalk_HwSparkyBGCData;
 
 
 /*************************************************************************************************
- Filename: hwsparky.xml
- Object: HwSparky
- Comment: Selection of optional hardware configurations.
+    Filename: hwsparky.xml
+    Object: HwSparky
+    Comment: Selection of optional hardware configurations.
 *************************************************************************************************/
 
-#define HWSPARKY_OBJID 0x858c848a 
+#define HWSPARKY_OBJID 0x858c848a
 
 enum {
 	HWSPARKY_RCVRPORT_DISABLED = 0,
@@ -3126,12 +3126,12 @@ extern UAVT_HwSparkyData uavtalk_HwSparkyData;
 
 
 /*************************************************************************************************
- Filename: i2cvmuserprogram.xml
- Object: I2CVMUserProgram
- Comment: Allows GCS to provide a user-defined program to the I2C Virtual Machine
+    Filename: i2cvmuserprogram.xml
+    Object: I2CVMUserProgram
+    Comment: Allows GCS to provide a user-defined program to the I2C Virtual Machine
 *************************************************************************************************/
 
-#define I2CVMUSERPROGRAM_OBJID 0xed9cc1ac 
+#define I2CVMUSERPROGRAM_OBJID 0xed9cc1ac
 
 typedef struct {
 	uint32_t Program[20];
@@ -3141,12 +3141,12 @@ extern UAVT_I2CVMUserProgramData uavtalk_I2CVMUserProgramData;
 
 
 /*************************************************************************************************
- Filename: i2cvm.xml
- Object: I2CVM
- Comment: Snapshot of the register and RAM state of the I2C Virtual Machine
+    Filename: i2cvm.xml
+    Object: I2CVM
+    Comment: Snapshot of the register and RAM state of the I2C Virtual Machine
 *************************************************************************************************/
 
-#define I2CVM_OBJID 0x2a6a5146 
+#define I2CVM_OBJID 0x2a6a5146
 
 typedef struct {
 	int32_t r0;
@@ -3164,12 +3164,12 @@ extern UAVT_I2CVMData uavtalk_I2CVMData;
 
 
 /*************************************************************************************************
- Filename: inssettings.xml
- Object: INSSettings
- Comment: Settings for the INS to control the algorithm and what is updated
+    Filename: inssettings.xml
+    Object: INSSettings
+    Comment: Settings for the INS to control the algorithm and what is updated
 *************************************************************************************************/
 
-#define INSSETTINGS_OBJID 0x8ccff752 
+#define INSSETTINGS_OBJID 0x8ccff752
 
 enum {
 	INSSETTINGS_COMPUTEGYROBIAS_FALSE = 0,
@@ -3216,12 +3216,12 @@ extern UAVT_INSSettingsData uavtalk_INSSettingsData;
 
 
 /*************************************************************************************************
- Filename: insstate.xml
- Object: INSState
- Comment: Contains the INS state estimate
+    Filename: insstate.xml
+    Object: INSState
+    Comment: Contains the INS state estimate
 *************************************************************************************************/
 
-#define INSSTATE_OBJID 0xae367e26 
+#define INSSTATE_OBJID 0xae367e26
 
 typedef struct {
 	float State[13];
@@ -3232,12 +3232,12 @@ extern UAVT_INSStateData uavtalk_INSStateData;
 
 
 /*************************************************************************************************
- Filename: loggingsettings.xml
- Object: LoggingSettings
- Comment: Settings for the logging module
+    Filename: loggingsettings.xml
+    Object: LoggingSettings
+    Comment: Settings for the logging module
 *************************************************************************************************/
 
-#define LOGGINGSETTINGS_OBJID 0xa1b7f8a2 
+#define LOGGINGSETTINGS_OBJID 0xa1b7f8a2
 
 enum {
 	LOGGINGSETTINGS_LOGBEHAVIOR_LOGONSTART = 0,
@@ -3255,12 +3255,12 @@ extern UAVT_LoggingSettingsData uavtalk_LoggingSettingsData;
 
 
 /*************************************************************************************************
- Filename: loggingstats.xml
- Object: LoggingStats
- Comment: Information about logging
+    Filename: loggingstats.xml
+    Object: LoggingStats
+    Comment: Information about logging
 *************************************************************************************************/
 
-#define LOGGINGSTATS_OBJID 0x4c859a62 
+#define LOGGINGSTATS_OBJID 0x4c859a62
 
 enum {
 	LOGGINGSTATS_OPERATION_LOGGING = 0,
@@ -3286,12 +3286,12 @@ extern UAVT_LoggingStatsData uavtalk_LoggingStatsData;
 
 
 /*************************************************************************************************
- Filename: loitercommand.xml
- Object: LoiterCommand
- Comment: Requested movement while in loiter mode
+    Filename: loitercommand.xml
+    Object: LoiterCommand
+    Comment: Requested movement while in loiter mode
 *************************************************************************************************/
 
-#define LOITERCOMMAND_OBJID 0x80d8d4ba 
+#define LOITERCOMMAND_OBJID 0x80d8d4ba
 
 enum {
 	LOITERCOMMAND_FRAME_BODY = 0,
@@ -3311,12 +3311,12 @@ extern UAVT_LoiterCommandData uavtalk_LoiterCommandData;
 
 
 /*************************************************************************************************
- Filename: magbias.xml
- Object: MagBias
- Comment: The gyro data.
+    Filename: magbias.xml
+    Object: MagBias
+    Comment: The gyro data.
 *************************************************************************************************/
 
-#define MAGBIAS_OBJID 0x5043e510 
+#define MAGBIAS_OBJID 0x5043e510
 
 typedef struct {
 	float x;
@@ -3328,12 +3328,12 @@ extern UAVT_MagBiasData uavtalk_MagBiasData;
 
 
 /*************************************************************************************************
- Filename: magnetometer.xml
- Object: Magnetometer
- Comment: The mag data.
+    Filename: magnetometer.xml
+    Object: Magnetometer
+    Comment: The mag data.
 *************************************************************************************************/
 
-#define MAGNETOMETER_OBJID 0x813b55de 
+#define MAGNETOMETER_OBJID 0x813b55de
 
 typedef struct {
 	float x;
@@ -3345,12 +3345,12 @@ extern UAVT_MagnetometerData uavtalk_MagnetometerData;
 
 
 /*************************************************************************************************
- Filename: manualcontrolcommand.xml
- Object: ManualControlCommand
- Comment: The output from the @ref ManualControlModule which decodes the receiver inputs.
+    Filename: manualcontrolcommand.xml
+    Object: ManualControlCommand
+    Comment: The output from the @ref ManualControlModule which decodes the receiver inputs.
 *************************************************************************************************/
 
-#define MANUALCONTROLCOMMAND_OBJID 0x5c2f58ac 
+#define MANUALCONTROLCOMMAND_OBJID 0x5c2f58ac
 
 enum {
 	MANUALCONTROLCOMMAND_CONNECTED_FALSE = 0,
@@ -3388,12 +3388,12 @@ extern UAVT_ManualControlCommandData uavtalk_ManualControlCommandData;
 
 
 /*************************************************************************************************
- Filename: manualcontrolsettings.xml
- Object: ManualControlSettings
- Comment: Settings to indicate how to decode receiver input by @ref ManualControlModule.
+    Filename: manualcontrolsettings.xml
+    Object: ManualControlSettings
+    Comment: Settings to indicate how to decode receiver input by @ref ManualControlModule.
 *************************************************************************************************/
 
-#define MANUALCONTROLSETTINGS_OBJID 0x837ed6ca 
+#define MANUALCONTROLSETTINGS_OBJID 0x837ed6ca
 
 enum {
 	MANUALCONTROLSETTINGS_CHANNELGROUPS_PWM = 0,
@@ -3606,12 +3606,12 @@ extern UAVT_ManualControlSettingsData uavtalk_ManualControlSettingsData;
 
 
 /*************************************************************************************************
- Filename: mixersettings.xml
- Object: MixerSettings
- Comment: Settings for the @ref ActuatorModule that controls the channel assignments for the mixer based on AircraftType
+    Filename: mixersettings.xml
+    Object: MixerSettings
+    Comment: Settings for the @ref ActuatorModule that controls the channel assignments for the mixer based on AircraftType
 *************************************************************************************************/
 
-#define MIXERSETTINGS_OBJID 0x20e376cc 
+#define MIXERSETTINGS_OBJID 0x20e376cc
 
 enum {
 	MIXERSETTINGS_CURVE2SOURCE_THROTTLE = 0,
@@ -3704,12 +3704,12 @@ extern UAVT_MixerSettingsData uavtalk_MixerSettingsData;
 
 
 /*************************************************************************************************
- Filename: mixerstatus.xml
- Object: MixerStatus
- Comment: Status for the matrix mixer showing the output of each mixer after all scaling
+    Filename: mixerstatus.xml
+    Object: MixerStatus
+    Comment: Status for the matrix mixer showing the output of each mixer after all scaling
 *************************************************************************************************/
 
-#define MIXERSTATUS_OBJID 0x124e28a 
+#define MIXERSTATUS_OBJID 0x124e28a
 
 typedef struct {
 	float Mixer1;
@@ -3728,12 +3728,12 @@ extern UAVT_MixerStatusData uavtalk_MixerStatusData;
 
 
 /*************************************************************************************************
- Filename: modulesettings.xml
- Object: ModuleSettings
- Comment: Optional module enable/disable configuration.
+    Filename: modulesettings.xml
+    Object: ModuleSettings
+    Comment: Optional module enable/disable configuration.
 *************************************************************************************************/
 
-#define MODULESETTINGS_OBJID 0x50780700 
+#define MODULESETTINGS_OBJID 0x50780700
 
 enum {
 	MODULESETTINGS_ADMINSTATE_DISABLED = 0,
@@ -3871,12 +3871,12 @@ extern UAVT_ModuleSettingsData uavtalk_ModuleSettingsData;
 
 
 /*************************************************************************************************
- Filename: mwratesettings.xml
- Object: MWRateSettings
- Comment: PID settings used by the MWRate stabilization settings
+    Filename: mwratesettings.xml
+    Object: MWRateSettings
+    Comment: PID settings used by the MWRate stabilization settings
 *************************************************************************************************/
 
-#define MWRATESETTINGS_OBJID 0xbd3b5f28 
+#define MWRATESETTINGS_OBJID 0xbd3b5f28
 
 typedef struct {
 	float Kp;
@@ -3912,12 +3912,12 @@ extern UAVT_MWRateSettingsData uavtalk_MWRateSettingsData;
 
 
 /*************************************************************************************************
- Filename: nedaccel.xml
- Object: NedAccel
- Comment: The projection of acceleration in the NED reference frame used by @ref Guidance.
+    Filename: nedaccel.xml
+    Object: NedAccel
+    Comment: The projection of acceleration in the NED reference frame used by @ref Guidance.
 *************************************************************************************************/
 
-#define NEDACCEL_OBJID 0x7c7f5bc0 
+#define NEDACCEL_OBJID 0x7c7f5bc0
 
 typedef struct {
 	float North;
@@ -3929,12 +3929,12 @@ extern UAVT_NedAccelData uavtalk_NedAccelData;
 
 
 /*************************************************************************************************
- Filename: nedposition.xml
- Object: NEDPosition
- Comment: Contains the current position relative to @ref HomeLocation
+    Filename: nedposition.xml
+    Object: NEDPosition
+    Comment: Contains the current position relative to @ref HomeLocation
 *************************************************************************************************/
 
-#define NEDPOSITION_OBJID 0x1fb15a00 
+#define NEDPOSITION_OBJID 0x1fb15a00
 
 typedef struct {
 	float North;
@@ -3946,12 +3946,12 @@ extern UAVT_NEDPositionData uavtalk_NEDPositionData;
 
 
 /*************************************************************************************************
- Filename: objectpersistence.xml
- Object: ObjectPersistence
- Comment: Someone who knows please enter this
+    Filename: objectpersistence.xml
+    Object: ObjectPersistence
+    Comment: Someone who knows please enter this
 *************************************************************************************************/
 
-#define OBJECTPERSISTENCE_OBJID 0x99c63292 
+#define OBJECTPERSISTENCE_OBJID 0x99c63292
 
 enum {
 	OBJECTPERSISTENCE_OPERATION_NOP = 0,
@@ -3985,12 +3985,12 @@ extern UAVT_ObjectPersistenceData uavtalk_ObjectPersistenceData;
 
 
 /*************************************************************************************************
- Filename: oplinksettings.xml
- Object: OPLinkSettings
- Comment: OPLink configurations options.
+    Filename: oplinksettings.xml
+    Object: OPLinkSettings
+    Comment: OPLink configurations options.
 *************************************************************************************************/
 
-#define OPLINKSETTINGS_OBJID 0x449737bc 
+#define OPLINKSETTINGS_OBJID 0x449737bc
 
 enum {
 	OPLINKSETTINGS_COORDINATOR_FALSE = 0,
@@ -4079,12 +4079,12 @@ extern UAVT_OPLinkSettingsData uavtalk_OPLinkSettingsData;
 
 
 /*************************************************************************************************
- Filename: oplinkstatus.xml
- Object: OPLinkStatus
- Comment: OPLink device status.
+    Filename: oplinkstatus.xml
+    Object: OPLinkStatus
+    Comment: OPLink device status.
 *************************************************************************************************/
 
-#define OPLINKSTATUS_OBJID 0x25e223f0 
+#define OPLINKSTATUS_OBJID 0x25e223f0
 
 enum {
 	OPLINKSTATUS_LINKSTATE_DISCONNECTED = 0,
@@ -4127,12 +4127,12 @@ extern UAVT_OPLinkStatusData uavtalk_OPLinkStatusData;
 
 
 /*************************************************************************************************
- Filename: overosyncsettings.xml
- Object: OveroSyncSettings
- Comment: Settings to control the behavior of the overo sync module
+    Filename: overosyncsettings.xml
+    Object: OveroSyncSettings
+    Comment: Settings to control the behavior of the overo sync module
 *************************************************************************************************/
 
-#define OVEROSYNCSETTINGS_OBJID 0xa1abc278 
+#define OVEROSYNCSETTINGS_OBJID 0xa1abc278
 
 enum {
 	OVEROSYNCSETTINGS_LOGON_NEVER = 0,
@@ -4150,12 +4150,12 @@ extern UAVT_OveroSyncSettingsData uavtalk_OveroSyncSettingsData;
 
 
 /*************************************************************************************************
- Filename: overosyncstats.xml
- Object: OveroSyncStats
- Comment: Maintains statistics on transfer rate to and from over
+    Filename: overosyncstats.xml
+    Object: OveroSyncStats
+    Comment: Maintains statistics on transfer rate to and from over
 *************************************************************************************************/
 
-#define OVEROSYNCSTATS_OBJID 0xd2085fac 
+#define OVEROSYNCSTATS_OBJID 0xd2085fac
 
 enum {
 	OVEROSYNCSTATS_CONNECTED_FALSE = 0,
@@ -4178,12 +4178,12 @@ extern UAVT_OveroSyncStatsData uavtalk_OveroSyncStatsData;
 
 
 /*************************************************************************************************
- Filename: pathdesired.xml
- Object: PathDesired
- Comment: The endpoint or path the craft is trying to achieve.  Can come from @ref ManualControl or @ref PathPlanner 
+    Filename: pathdesired.xml
+    Object: PathDesired
+    Comment: The endpoint or path the craft is trying to achieve.  Can come from @ref ManualControl or @ref PathPlanner
 *************************************************************************************************/
 
-#define PATHDESIRED_OBJID 0x8f1cd118 
+#define PATHDESIRED_OBJID 0x8f1cd118
 
 enum {
 	PATHDESIRED_MODE_FLYENDPOINT = 0,
@@ -4227,12 +4227,12 @@ extern UAVT_PathDesiredData uavtalk_PathDesiredData;
 
 
 /*************************************************************************************************
- Filename: pathplannersettings.xml
- Object: PathPlannerSettings
- Comment: Settings for the @ref PathPlanner Module
+    Filename: pathplannersettings.xml
+    Object: PathPlannerSettings
+    Comment: Settings for the @ref PathPlanner Module
 *************************************************************************************************/
 
-#define PATHPLANNERSETTINGS_OBJID 0x77a9e8f0 
+#define PATHPLANNERSETTINGS_OBJID 0x77a9e8f0
 
 enum {
 	PATHPLANNERSETTINGS_PREPROGRAMMEDPATH_NONE = 0,
@@ -4269,12 +4269,12 @@ extern UAVT_PathPlannerSettingsData uavtalk_PathPlannerSettingsData;
 
 
 /*************************************************************************************************
- Filename: pathstatus.xml
- Object: PathStatus
- Comment: Status of the current path mode  Can come from any @ref PathFollower module
+    Filename: pathstatus.xml
+    Object: PathStatus
+    Comment: Status of the current path mode  Can come from any @ref PathFollower module
 *************************************************************************************************/
 
-#define PATHSTATUS_OBJID 0x1cfb185a 
+#define PATHSTATUS_OBJID 0x1cfb185a
 
 enum {
 	PATHSTATUS_STATE_INPROGRESS = 0,
@@ -4295,12 +4295,12 @@ extern UAVT_PathStatusData uavtalk_PathStatusData;
 
 
 /*************************************************************************************************
- Filename: picocsettings.xml
- Object: PicoCSettings
- Comment: Settings for the @ref PicoC Interpreter Module
+    Filename: picocsettings.xml
+    Object: PicoCSettings
+    Comment: Settings for the @ref PicoC Interpreter Module
 *************************************************************************************************/
 
-#define PICOCSETTINGS_OBJID 0x5db16ffe 
+#define PICOCSETTINGS_OBJID 0x5db16ffe
 
 enum {
 	PICOCSETTINGS_STARTUP_DISABLED = 0,
@@ -4345,12 +4345,12 @@ extern UAVT_PicoCSettingsData uavtalk_PicoCSettingsData;
 
 
 /*************************************************************************************************
- Filename: picocstatus.xml
- Object: PicoCStatus
- Comment: status information of the @ref PicoC Interpreter Module.
+    Filename: picocstatus.xml
+    Object: PicoCStatus
+    Comment: status information of the @ref PicoC Interpreter Module.
 *************************************************************************************************/
 
-#define PICOCSTATUS_OBJID 0xf132538a 
+#define PICOCSTATUS_OBJID 0xf132538a
 
 enum {
 	PICOCSTATUS_COMMAND_IDLE = 0,
@@ -4380,12 +4380,12 @@ extern UAVT_PicoCStatusData uavtalk_PicoCStatusData;
 
 
 /*************************************************************************************************
- Filename: poilocation.xml
- Object: PoiLocation
- Comment: Contains the current Point of interest relative to @ref HomeLocation
+    Filename: poilocation.xml
+    Object: PoiLocation
+    Comment: Contains the current Point of interest relative to @ref HomeLocation
 *************************************************************************************************/
 
-#define POILOCATION_OBJID 0x17e829b8 
+#define POILOCATION_OBJID 0x17e829b8
 
 typedef struct {
 	float North;
@@ -4397,12 +4397,12 @@ extern UAVT_PoiLocationData uavtalk_PoiLocationData;
 
 
 /*************************************************************************************************
- Filename: positionactual.xml
- Object: PositionActual
- Comment: Contains the current position relative to @ref HomeLocation
+    Filename: positionactual.xml
+    Object: PositionActual
+    Comment: Contains the current position relative to @ref HomeLocation
 *************************************************************************************************/
 
-#define POSITIONACTUAL_OBJID 0xfa9e2d42 
+#define POSITIONACTUAL_OBJID 0xfa9e2d42
 
 typedef struct {
 	float North;
@@ -4414,12 +4414,12 @@ extern UAVT_PositionActualData uavtalk_PositionActualData;
 
 
 /*************************************************************************************************
- Filename: ratedesired.xml
- Object: RateDesired
- Comment: Status for the matrix mixer showing the output of each mixer after all scaling
+    Filename: ratedesired.xml
+    Object: RateDesired
+    Comment: Status for the matrix mixer showing the output of each mixer after all scaling
 *************************************************************************************************/
 
-#define RATEDESIRED_OBJID 0xce8c826 
+#define RATEDESIRED_OBJID 0xce8c826
 
 typedef struct {
 	float Roll;
@@ -4431,12 +4431,12 @@ extern UAVT_RateDesiredData uavtalk_RateDesiredData;
 
 
 /*************************************************************************************************
- Filename: receiveractivity.xml
- Object: ReceiverActivity
- Comment: Monitors which receiver channels have been active within the last second.
+    Filename: receiveractivity.xml
+    Object: ReceiverActivity
+    Comment: Monitors which receiver channels have been active within the last second.
 *************************************************************************************************/
 
-#define RECEIVERACTIVITY_OBJID 0xc02377e6 
+#define RECEIVERACTIVITY_OBJID 0xc02377e6
 
 enum {
 	RECEIVERACTIVITY_ACTIVEGROUP_PWM = 0,
@@ -4460,12 +4460,12 @@ extern UAVT_ReceiverActivityData uavtalk_ReceiverActivityData;
 
 
 /*************************************************************************************************
- Filename: sensorsettings.xml
- Object: SensorSettings
- Comment: Settings for the @ref Attitude module
+    Filename: sensorsettings.xml
+    Object: SensorSettings
+    Comment: Settings for the @ref Attitude module
 *************************************************************************************************/
 
-#define SENSORSETTINGS_OBJID 0xadb3b106 
+#define SENSORSETTINGS_OBJID 0xadb3b106
 
 typedef struct {
 	float X;
@@ -4534,12 +4534,12 @@ extern UAVT_SensorSettingsData uavtalk_SensorSettingsData;
 
 
 /*************************************************************************************************
- Filename: sessionmanaging.xml
- Object: SessionManaging
- Comment: Provides session managing to uavtalk
+    Filename: sessionmanaging.xml
+    Object: SessionManaging
+    Comment: Provides session managing to uavtalk
 *************************************************************************************************/
 
-#define SESSIONMANAGING_OBJID 0x89034e4a 
+#define SESSIONMANAGING_OBJID 0x89034e4a
 
 typedef struct {
 	uint32_t ObjectID;
@@ -4553,12 +4553,12 @@ extern UAVT_SessionManagingData uavtalk_SessionManagingData;
 
 
 /*************************************************************************************************
- Filename: sonaraltitude.xml
- Object: SonarAltitude
- Comment: The raw data from the ultrasound sonar sensor with altitude estimate.
+    Filename: sonaraltitude.xml
+    Object: SonarAltitude
+    Comment: The raw data from the ultrasound sonar sensor with altitude estimate.
 *************************************************************************************************/
 
-#define SONARALTITUDE_OBJID 0x6c5a0cbc 
+#define SONARALTITUDE_OBJID 0x6c5a0cbc
 
 typedef struct {
 	float Altitude;
@@ -4568,12 +4568,12 @@ extern UAVT_SonarAltitudeData uavtalk_SonarAltitudeData;
 
 
 /*************************************************************************************************
- Filename: stabilizationdesired.xml
- Object: StabilizationDesired
- Comment: The desired attitude that @ref StabilizationModule will try and achieve if FlightMode is Stabilized.  Comes from @ref ManaulControlModule.
+    Filename: stabilizationdesired.xml
+    Object: StabilizationDesired
+    Comment: The desired attitude that @ref StabilizationModule will try and achieve if FlightMode is Stabilized.  Comes from @ref ManaulControlModule.
 *************************************************************************************************/
 
-#define STABILIZATIONDESIRED_OBJID 0xa237dd8e 
+#define STABILIZATIONDESIRED_OBJID 0xa237dd8e
 
 enum {
 	STABILIZATIONDESIRED_STABILIZATIONMODE_NONE = 0,
@@ -4609,12 +4609,12 @@ extern UAVT_StabilizationDesiredData uavtalk_StabilizationDesiredData;
 
 
 /*************************************************************************************************
- Filename: stabilizationsettings.xml
- Object: StabilizationSettings
- Comment: PID settings used by the Stabilization module to combine the @ref AttitudeActual and @ref AttitudeDesired to compute @ref ActuatorDesired
+    Filename: stabilizationsettings.xml
+    Object: StabilizationSettings
+    Comment: PID settings used by the Stabilization module to combine the @ref AttitudeActual and @ref AttitudeDesired to compute @ref ActuatorDesired
 *************************************************************************************************/
 
-#define STABILIZATIONSETTINGS_OBJID 0x89f756cc 
+#define STABILIZATIONSETTINGS_OBJID 0x89f756cc
 
 enum {
 	STABILIZATIONSETTINGS_VBARPIROCOMP_FALSE = 0,
@@ -4778,12 +4778,12 @@ extern UAVT_StabilizationSettingsData uavtalk_StabilizationSettingsData;
 
 
 /*************************************************************************************************
- Filename: stateestimation.xml
- Object: StateEstimation
- Comment: Settings for how to estimate the state
+    Filename: stateestimation.xml
+    Object: StateEstimation
+    Comment: Settings for how to estimate the state
 *************************************************************************************************/
 
-#define STATEESTIMATION_OBJID 0xba09f7c2 
+#define STATEESTIMATION_OBJID 0xba09f7c2
 
 enum {
 	STATEESTIMATION_ATTITUDEFILTER_COMPLEMENTARY = 0,
@@ -4810,12 +4810,12 @@ extern UAVT_StateEstimationData uavtalk_StateEstimationData;
 
 
 /*************************************************************************************************
- Filename: systemalarms.xml
- Object: SystemAlarms
- Comment: Alarms from OpenPilot to indicate failure conditions or warnings.  Set by various modules.
+    Filename: systemalarms.xml
+    Object: SystemAlarms
+    Comment: Alarms from OpenPilot to indicate failure conditions or warnings.  Set by various modules.
 *************************************************************************************************/
 
-#define SYSTEMALARMS_OBJID 0xe25dd70e 
+#define SYSTEMALARMS_OBJID 0xe25dd70e
 
 enum {
 	SYSTEMALARMS_ALARM_UNINITIALISED = 0,
@@ -4904,12 +4904,12 @@ extern UAVT_SystemAlarmsData uavtalk_SystemAlarmsData;
 
 
 /*************************************************************************************************
- Filename: systemident.xml
- Object: SystemIdent
- Comment: The input to the relay tuning.
+    Filename: systemident.xml
+    Object: SystemIdent
+    Comment: The input to the relay tuning.
 *************************************************************************************************/
 
-#define SYSTEMIDENT_OBJID 0xadafddf2 
+#define SYSTEMIDENT_OBJID 0xadafddf2
 
 typedef struct {
 	float Roll;
@@ -4941,12 +4941,12 @@ extern UAVT_SystemIdentData uavtalk_SystemIdentData;
 
 
 /*************************************************************************************************
- Filename: systemsettings.xml
- Object: SystemSettings
- Comment: Select airframe type.  Currently used by @ref ActuatorModule to choose mixing from @ref ActuatorDesired to @ref ActuatorCommand
+    Filename: systemsettings.xml
+    Object: SystemSettings
+    Comment: Select airframe type.  Currently used by @ref ActuatorModule to choose mixing from @ref ActuatorDesired to @ref ActuatorCommand
 *************************************************************************************************/
 
-#define SYSTEMSETTINGS_OBJID 0x6f3bb6b0 
+#define SYSTEMSETTINGS_OBJID 0x6f3bb6b0
 
 enum {
 	SYSTEMSETTINGS_AIRFRAMETYPE_FIXEDWING = 0,
@@ -4981,12 +4981,12 @@ extern UAVT_SystemSettingsData uavtalk_SystemSettingsData;
 
 
 /*************************************************************************************************
- Filename: systemstats.xml
- Object: SystemStats
- Comment: CPU and memory usage from OpenPilot computer. 
+    Filename: systemstats.xml
+    Object: SystemStats
+    Comment: CPU and memory usage from OpenPilot computer.
 *************************************************************************************************/
 
-#define SYSTEMSTATS_OBJID 0x74e632d4 
+#define SYSTEMSTATS_OBJID 0x74e632d4
 
 typedef struct {
 	uint32_t FlightTime;
@@ -5003,12 +5003,12 @@ extern UAVT_SystemStatsData uavtalk_SystemStatsData;
 
 
 /*************************************************************************************************
- Filename: tabletinfo.xml
- Object: TabletInfo
- Comment: The information from the tablet to the UAVO.
+    Filename: tabletinfo.xml
+    Object: TabletInfo
+    Comment: The information from the tablet to the UAVO.
 *************************************************************************************************/
 
-#define TABLETINFO_OBJID 0xb80cc3b2 
+#define TABLETINFO_OBJID 0xb80cc3b2
 
 enum {
 	TABLETINFO_CONNECTED_FALSE = 0,
@@ -5049,12 +5049,12 @@ extern UAVT_TabletInfoData uavtalk_TabletInfoData;
 
 
 /*************************************************************************************************
- Filename: taskinfo.xml
- Object: TaskInfo
- Comment: Task information
+    Filename: taskinfo.xml
+    Object: TaskInfo
+    Comment: Task information
 *************************************************************************************************/
 
-#define TASKINFO_OBJID 0xc6f6d160 
+#define TASKINFO_OBJID 0xc6f6d160
 
 enum {
 	TASKINFO_RUNNING_FALSE = 0,
@@ -5187,12 +5187,12 @@ extern UAVT_TaskInfoData uavtalk_TaskInfoData;
 
 
 /*************************************************************************************************
- Filename: trimanglessettings.xml
- Object: TrimAnglesSettings
- Comment: The trim angle required for the UAV to fly straight and level.
+    Filename: trimanglessettings.xml
+    Object: TrimAnglesSettings
+    Comment: The trim angle required for the UAV to fly straight and level.
 *************************************************************************************************/
 
-#define TRIMANGLESSETTINGS_OBJID 0x4e09a748 
+#define TRIMANGLESSETTINGS_OBJID 0x4e09a748
 
 typedef struct {
 	float Roll;
@@ -5203,12 +5203,12 @@ extern UAVT_TrimAnglesSettingsData uavtalk_TrimAnglesSettingsData;
 
 
 /*************************************************************************************************
- Filename: trimangles.xml
- Object: TrimAngles
- Comment: The trim angle required for the UAV to fly straight and level.
+    Filename: trimangles.xml
+    Object: TrimAngles
+    Comment: The trim angle required for the UAV to fly straight and level.
 *************************************************************************************************/
 
-#define TRIMANGLES_OBJID 0x90b8c0de 
+#define TRIMANGLES_OBJID 0x90b8c0de
 
 typedef struct {
 	float Roll;
@@ -5219,12 +5219,12 @@ extern UAVT_TrimAnglesData uavtalk_TrimAnglesData;
 
 
 /*************************************************************************************************
- Filename: txpidsettings.xml
- Object: TxPIDSettings
- Comment: Settings used by @ref TxPID optional module to tune PID settings using R/C transmitter
+    Filename: txpidsettings.xml
+    Object: TxPIDSettings
+    Comment: Settings used by @ref TxPID optional module to tune PID settings using R/C transmitter
 *************************************************************************************************/
 
-#define TXPIDSETTINGS_OBJID 0xf25577cc 
+#define TXPIDSETTINGS_OBJID 0xf25577cc
 
 enum {
 	TXPIDSETTINGS_UPDATEMODE_NEVER = 0,
@@ -5334,12 +5334,12 @@ extern UAVT_TxPIDSettingsData uavtalk_TxPIDSettingsData;
 
 
 /*************************************************************************************************
- Filename: ubloxinfo.xml
- Object: UBloxInfo
- Comment: UBlox specific information
+    Filename: ubloxinfo.xml
+    Object: UBloxInfo
+    Comment: UBlox specific information
 *************************************************************************************************/
 
-#define UBLOXINFO_OBJID 0xc5302b12 
+#define UBLOXINFO_OBJID 0xc5302b12
 
 typedef struct {
 	float swVersion;
@@ -5351,12 +5351,12 @@ extern UAVT_UBloxInfoData uavtalk_UBloxInfoData;
 
 
 /*************************************************************************************************
- Filename: velocityactual.xml
- Object: VelocityActual
- Comment: Updated by @ref AHRSCommsModule and used within @ref GuidanceModule for velocity control
+    Filename: velocityactual.xml
+    Object: VelocityActual
+    Comment: Updated by @ref AHRSCommsModule and used within @ref GuidanceModule for velocity control
 *************************************************************************************************/
 
-#define VELOCITYACTUAL_OBJID 0x5a08f61a 
+#define VELOCITYACTUAL_OBJID 0x5a08f61a
 
 typedef struct {
 	float North;
@@ -5368,12 +5368,12 @@ extern UAVT_VelocityActualData uavtalk_VelocityActualData;
 
 
 /*************************************************************************************************
- Filename: velocitydesired.xml
- Object: VelocityDesired
- Comment: Used within @ref GuidanceModule to communicate between the task computing the desired velocity and the PID loop to achieve it (running at different rates).
+    Filename: velocitydesired.xml
+    Object: VelocityDesired
+    Comment: Used within @ref GuidanceModule to communicate between the task computing the desired velocity and the PID loop to achieve it (running at different rates).
 *************************************************************************************************/
 
-#define VELOCITYDESIRED_OBJID 0x9e946992 
+#define VELOCITYDESIRED_OBJID 0x9e946992
 
 typedef struct {
 	float North;
@@ -5385,12 +5385,12 @@ extern UAVT_VelocityDesiredData uavtalk_VelocityDesiredData;
 
 
 /*************************************************************************************************
- Filename: vibrationanalysisoutput.xml
- Object: VibrationAnalysisOutput
- Comment: FFT output from @VibrationTest module.
+    Filename: vibrationanalysisoutput.xml
+    Object: VibrationAnalysisOutput
+    Comment: FFT output from @VibrationTest module.
 *************************************************************************************************/
 
-#define VIBRATIONANALYSISOUTPUT_OBJID 0xd02b0a44 
+#define VIBRATIONANALYSISOUTPUT_OBJID 0xd02b0a44
 
 typedef struct {
 	float x;
@@ -5402,12 +5402,12 @@ extern UAVT_VibrationAnalysisOutputData uavtalk_VibrationAnalysisOutputData;
 
 
 /*************************************************************************************************
- Filename: vibrationanalysissettings.xml
- Object: VibrationAnalysisSettings
- Comment: Settings for the @ref VibrationTest Module
+    Filename: vibrationanalysissettings.xml
+    Object: VibrationAnalysisSettings
+    Comment: Settings for the @ref VibrationTest Module
 *************************************************************************************************/
 
-#define VIBRATIONANALYSISSETTINGS_OBJID 0x5c5c96b6 
+#define VIBRATIONANALYSISSETTINGS_OBJID 0x5c5c96b6
 
 enum {
 	VIBRATIONANALYSISSETTINGS_FFTWINDOWSIZE_16 = 0,
@@ -5435,12 +5435,12 @@ extern UAVT_VibrationAnalysisSettingsData uavtalk_VibrationAnalysisSettingsData;
 
 
 /*************************************************************************************************
- Filename: vtolpathfollowersettings.xml
- Object: VtolPathFollowerSettings
- Comment: Settings for the @ref VtolPathFollowerModule
+    Filename: vtolpathfollowersettings.xml
+    Object: VtolPathFollowerSettings
+    Comment: Settings for the @ref VtolPathFollowerModule
 *************************************************************************************************/
 
-#define VTOLPATHFOLLOWERSETTINGS_OBJID 0xc10e2a3e 
+#define VTOLPATHFOLLOWERSETTINGS_OBJID 0xc10e2a3e
 
 enum {
 	VTOLPATHFOLLOWERSETTINGS_THROTTLECONTROL_FALSE = 0,
@@ -5498,12 +5498,12 @@ extern UAVT_VtolPathFollowerSettingsData uavtalk_VtolPathFollowerSettingsData;
 
 
 /*************************************************************************************************
- Filename: vtolpathfollowerstatus.xml
- Object: VtolPathFollowerStatus
- Comment: Monitoring of the VTOL path follower
+    Filename: vtolpathfollowerstatus.xml
+    Object: VtolPathFollowerStatus
+    Comment: Monitoring of the VTOL path follower
 *************************************************************************************************/
 
-#define VTOLPATHFOLLOWERSTATUS_OBJID 0x3238594c 
+#define VTOLPATHFOLLOWERSTATUS_OBJID 0x3238594c
 
 typedef struct {
 	uint8_t FSM_State;
@@ -5513,12 +5513,12 @@ extern UAVT_VtolPathFollowerStatusData uavtalk_VtolPathFollowerStatusData;
 
 
 /*************************************************************************************************
- Filename: watchdogstatus.xml
- Object: WatchdogStatus
- Comment: For monitoring the flags in the watchdog and especially the bootup flags
+    Filename: watchdogstatus.xml
+    Object: WatchdogStatus
+    Comment: For monitoring the flags in the watchdog and especially the bootup flags
 *************************************************************************************************/
 
-#define WATCHDOGSTATUS_OBJID 0xa207fa7c 
+#define WATCHDOGSTATUS_OBJID 0xa207fa7c
 
 typedef struct {
 	uint16_t BootupFlags;
@@ -5529,12 +5529,12 @@ extern UAVT_WatchdogStatusData uavtalk_WatchdogStatusData;
 
 
 /*************************************************************************************************
- Filename: waypointactive.xml
- Object: WaypointActive
- Comment: Indicates the currently active waypoint
+    Filename: waypointactive.xml
+    Object: WaypointActive
+    Comment: Indicates the currently active waypoint
 *************************************************************************************************/
 
-#define WAYPOINTACTIVE_OBJID 0x1ea5b19c 
+#define WAYPOINTACTIVE_OBJID 0x1ea5b19c
 
 typedef struct {
 	int16_t Index;
@@ -5544,12 +5544,12 @@ extern UAVT_WaypointActiveData uavtalk_WaypointActiveData;
 
 
 /*************************************************************************************************
- Filename: waypoint.xml
- Object: Waypoint
- Comment: A waypoint the aircraft can try and hit.  Used by the @ref PathPlanner module
+    Filename: waypoint.xml
+    Object: Waypoint
+    Comment: A waypoint the aircraft can try and hit.  Used by the @ref PathPlanner module
 *************************************************************************************************/
 
-#define WAYPOINT_OBJID 0xa6c50a74 
+#define WAYPOINT_OBJID 0xa6c50a74
 
 enum {
 	WAYPOINT_MODE_FLYENDPOINT = 0,
@@ -5587,12 +5587,12 @@ extern UAVT_WaypointData uavtalk_WaypointData;
 
 
 /*************************************************************************************************
- Filename: windvelocityactual.xml
- Object: WindVelocityActual
- Comment: Stores 3D wind speed estimation.
+    Filename: windvelocityactual.xml
+    Object: WindVelocityActual
+    Comment: Stores 3D wind speed estimation.
 *************************************************************************************************/
 
-#define WINDVELOCITYACTUAL_OBJID 0x6d31d2f8 
+#define WINDVELOCITYACTUAL_OBJID 0x6d31d2f8
 
 typedef struct {
 	float North;

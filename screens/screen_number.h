@@ -1,5 +1,5 @@
 
-extern void screen_number (ESContext *esContext);
+extern void screen_number(ESContext *esContext);
 
 
 enum {
@@ -12,6 +12,6 @@ enum {
 	NUMBER_TYPE_FLOAT,
 };
 
-void edit_number (uint8_t mode, uint8_t type, void *ptr, float min, float max);
-uint8_t screen_number_check (ESContext *esContext);
+void edit_number(uint8_t mode, uint8_t type, void *ptr, float min, float max);
+uint8_t screen_number_check(ESContext *esContext);
 

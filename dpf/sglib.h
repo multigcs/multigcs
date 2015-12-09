@@ -3,7 +3,7 @@
 
 /* generic device wrapper: */
 
-const char* dev_errstr(int error);
+const char *dev_errstr(int error);
 
 
 /* generic SCSI device stuff: */

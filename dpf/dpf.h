@@ -1,8 +1,8 @@
 /** libdpf header file
- *
- * (c) 2010, 2011 <hackfin@section5.ch>
- *
- */
+
+    (c) 2010, 2011 <hackfin@section5.ch>
+
+*/
 
 #include <usb.h>
 
@@ -34,8 +34,8 @@ struct dpf_context {
 	unsigned int height;
 	int bpp;
 	int proto;
-	char* buff;
-	unsigned char* oldpix;
+	char *buff;
+	unsigned char *oldpix;
 	int offx;
 	int offy;
 } DPFContext;
@@ -43,29 +43,29 @@ struct dpf_context {
 #define DPFHANDLE struct dpf_context *
 
 /**
- Opens the DPF device. if dev is not NULL, open device, otherwise, look for
- USB device.
- */
+    Opens the DPF device. if dev is not NULL, open device, otherwise, look for
+    USB device.
+*/
 int dpf_open(const char *dev, DPFHANDLE *h);
 
 /** Close DPF device */
 void dpf_close(DPFHANDLE h);
 
 /*
- */
+*/
 void dpf_writefb(DPFHANDLE h, unsigned char *fb);
 
 int dpf_screen_blit(DPFHANDLE h, const unsigned char *buf, short rect[4]);
 
 /*
-Turn the backlight on or off
+    Turn the backlight on or off
 */
 void dpf_backlight(DPFHANDLE h, int on);
 
 /* USB raw */
 
 int emulate_scsi(usb_dev_handle *d, unsigned char *cmd, int cmdlen, char out,
-	unsigned char *data, unsigned long block_len);
+				 unsigned char *data, unsigned long block_len);
 
 const char *dev_errstr(int err);
 
@@ -89,11 +89,11 @@ int flash_erase(DPFHANDLE h, ADDR offset);
 int flash_write(DPFHANDLE h, const unsigned char *buf, ADDR offset, int len);
 int flash_read(DPFHANDLE h, unsigned char *buf, ADDR offset, int len);
 
-int load_ihx(const char *fname, unsigned char *data, 
-	unsigned int *buflen, unsigned int reloc);
+int load_ihx(const char *fname, unsigned char *data,
+			 unsigned int *buflen, unsigned int reloc);
 
 int patch_sector(DPFHANDLE h,
-	ADDR reloc, unsigned long addr, const char *hexfile);
+				 ADDR reloc, unsigned long addr, const char *hexfile);
 
 ////////////////////////////////////////////////////////////////////////////
 /* DPF specific stuff: */

@@ -10,7 +10,7 @@
 #define SPM_PP                0x02    // Page program
 #define SPM_DP                0xb9    // Deep power down
 #define SPM_RES               0xab    // Release from deep power down
-                                      // and read signature
+// and read signature
 #define SPM_FLASH_SE          0xd8    // Sector erase
 #define SPM_FLASH_BE          0xc7    // Bulk erase
 #define SPM_FLASH_FAST_READ   0x0B    // Read data bytes fast

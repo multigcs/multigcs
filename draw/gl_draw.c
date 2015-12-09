@@ -43,22 +43,22 @@ void esMatrixLoadIdentity(ESMatrix *result) {
 void esMatrixMultiply(ESMatrix *result, ESMatrix *srcA, ESMatrix *srcB) {
 }
 
-void object3d_load_data (Object3d *o3d, char *filename) {
+void object3d_load_data(Object3d *o3d, char *filename) {
 	FILE *fr;
 	char line[1025];
 	o3d->cords = malloc(sizeof(Object3dCord));
 	o3d->faces = malloc(sizeof(Object3dFace));
 	o3d->cords_num = 0;
 	o3d->faces_num = 0;
-	fr = fopen (filename, "rb");
+	fr = fopen(filename, "rb");
 	if (fr != 0) {
 		strncpy(o3d->name, filename, 1023);
-	        while(fgets(line, 1024, fr) != NULL) {
+		while (fgets(line, 1024, fr) != NULL) {
 			if (strncmp(line, "v ", 2) == 0) {
 				float px = 0.0;
 				float py = 0.0;
 				float pz = 0.0;
-				sscanf (line + 2, "%f %f %f", &px, &py, &pz);
+				sscanf(line + 2, "%f %f %f", &px, &py, &pz);
 				o3d->cords = realloc(o3d->cords, sizeof(Object3dCord) * (o3d->cords_num + 1));
 				o3d->cords[o3d->cords_num].x = px;
 				o3d->cords[o3d->cords_num].y = py;
@@ -100,22 +100,22 @@ void object3d_load_data (Object3d *o3d, char *filename) {
 	}
 }
 
-void object3d_load (Object3d *o3d, char *filename) {
+void object3d_load(Object3d *o3d, char *filename) {
 	FILE *fr;
 	char line[1025];
 	o3d->cords = malloc(sizeof(Object3dCord));
 	o3d->faces = malloc(sizeof(Object3dFace));
 	o3d->cords_num = 0;
 	o3d->faces_num = 0;
-	fr = fopen (filename, "rb");
+	fr = fopen(filename, "rb");
 	if (fr != 0) {
 		strncpy(o3d->name, filename, 1023);
-	        while(fgets(line, 1024, fr) != NULL) {
+		while (fgets(line, 1024, fr) != NULL) {
 			if (strncmp(line, "v ", 2) == 0) {
 				float px = 0.0;
 				float py = 0.0;
 				float pz = 0.0;
-				sscanf (line + 2, "%f %f %f", &px, &py, &pz);
+				sscanf(line + 2, "%f %f %f", &px, &py, &pz);
 				o3d->cords = realloc(o3d->cords, sizeof(Object3dCord) * (o3d->cords_num + 1));
 				o3d->cords[o3d->cords_num].x = px;
 				o3d->cords[o3d->cords_num].y = py;
@@ -154,7 +154,6 @@ void object3d_load (Object3d *o3d, char *filename) {
 			}
 		}
 		fclose(fr);
-
 		int num = 0;
 		float minx = 0.0;
 		float maxx = 0.0;
@@ -182,19 +181,15 @@ void object3d_load (Object3d *o3d, char *filename) {
 				maxz = o3d->cords[num].z;
 			}
 		}
-
 		float diffx = maxx - minx;
 		float diffy = maxy - miny;
 		float diffz = maxz - minz;
-
 		float offx = minx + (diffx / 2.0);
 		float offy = miny + (diffy / 2.0);
 		float offz = minz + (diffz / 2.0);
-
 		float scalex = diffx;
 		float scaley = diffy;
 		float scalez = diffz;
-
 		float scale = scalex;
 		if (scale < scaley) {
 			scale = scaley;
@@ -210,7 +205,6 @@ void object3d_load (Object3d *o3d, char *filename) {
 			o3d->cords[num].y /= scale;
 			o3d->cords[num].z /= scale;
 		}
-
 #ifdef GL_OBJECT_USING_BUFFER
 		glGenBuffersARB(1, &o3d->cordsID);
 		glBindBufferARB(GL_ARRAY_BUFFER_ARB, o3d->cordsID);
@@ -222,19 +216,18 @@ void object3d_load (Object3d *o3d, char *filename) {
 	}
 }
 
-void object3d_save_as_collada (Object3d *o3d, char *filename) {
+void object3d_save_as_collada(Object3d *o3d, char *filename) {
 	FILE *fr2;
 	float collada_scale = 1.0;
 	time_t liczba_sekund;
 	struct tm strukt;
 	time(&liczba_sekund);
 #ifndef WINDOWS
-	localtime_r(&liczba_sekund, &strukt); 
+	localtime_r(&liczba_sekund, &strukt);
 #endif
 	fr2 = fopen(filename, "wb");
 	fprintf(fr2, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\" ?>\n");
 	fprintf(fr2, "<COLLADA xmlns=\"http://www.collada.org/2005/11/COLLADASchema\" version=\"1.4.1\">\n");
-
 	fprintf(fr2, "    <asset>\n");
 	fprintf(fr2, "        <contributor>\n");
 	fprintf(fr2, "            <authoring_tool>MultiGCS</authoring_tool>\n");
@@ -242,7 +235,6 @@ void object3d_save_as_collada (Object3d *o3d, char *filename) {
 	fprintf(fr2, "        <created>%d-%d-%dT%d:%d:%dZ</created>\n", strukt.tm_year + 1900, strukt.tm_mon + 1, strukt.tm_mday, strukt.tm_hour, strukt.tm_min, strukt.tm_sec);
 	fprintf(fr2, "        <up_axis>Z_UP</up_axis>\n");
 	fprintf(fr2, "    </asset>\n");
-
 	fprintf(fr2, "    <library_effects>\n");
 	fprintf(fr2, "      <effect id=\"EFFECT1\">\n");
 	fprintf(fr2, "        <profile_COMMON>\n");
@@ -259,13 +251,11 @@ void object3d_save_as_collada (Object3d *o3d, char *filename) {
 	fprintf(fr2, "        </profile_COMMON>\n");
 	fprintf(fr2, "      </effect>\n");
 	fprintf(fr2, "    </library_effects>\n");
-
 	fprintf(fr2, "    <library_materials>\n");
 	fprintf(fr2, "      <material id=\"MATERIAL1\">\n");
 	fprintf(fr2, "        <instance_effect url=\"#EFFECT1\"/>\n");
 	fprintf(fr2, "      </material>\n");
 	fprintf(fr2, "    </library_materials>\n");
-
 	fprintf(fr2, "    <library_geometries>\n");
 	fprintf(fr2, "        <geometry id=\"GEOMETRY1\">\n");
 	fprintf(fr2, "            <mesh>\n");
@@ -298,14 +288,12 @@ void object3d_save_as_collada (Object3d *o3d, char *filename) {
 	fprintf(fr2, "            </mesh>\n");
 	fprintf(fr2, "        </geometry>\n");
 	fprintf(fr2, "    </library_geometries>\n");
-
 	fprintf(fr2, "    <library_nodes>\n");
 	fprintf(fr2, "        <node id=\"NODE1\">\n");
 	fprintf(fr2, "            <instance_geometry url=\"#GEOMETRY1\">\n");
 	fprintf(fr2, "            </instance_geometry>\n");
 	fprintf(fr2, "        </node>\n");
 	fprintf(fr2, "    </library_nodes>\n");
-
 	fprintf(fr2, "    <library_visual_scenes>\n");
 	fprintf(fr2, "        <visual_scene id=\"SCENE1\">\n");
 	fprintf(fr2, "            <node name=\"MultiGCS\">\n");
@@ -315,16 +303,14 @@ void object3d_save_as_collada (Object3d *o3d, char *filename) {
 	fprintf(fr2, "            </node>\n");
 	fprintf(fr2, "        </visual_scene>\n");
 	fprintf(fr2, "    </library_visual_scenes>\n");
-
 	fprintf(fr2, "    <scene>\n");
 	fprintf(fr2, "        <instance_visual_scene url=\"#SCENE1\" />\n");
 	fprintf(fr2, "    </scene>\n");
-
 	fprintf(fr2, "</COLLADA>\n");
 	fclose(fr2);
 }
 
-void object3d_free (Object3d *o3d) {
+void object3d_free(Object3d *o3d) {
 #ifdef GL_OBJECT_USING_BUFFER
 	if (o3d->cordsID != 0 && o3d->facesID != 0) {
 		glDeleteBuffersARB(1, &o3d->cordsID);
@@ -340,7 +326,7 @@ void object3d_free (Object3d *o3d) {
 	o3d->name[0] = 0;
 }
 
-void object3d_draw (Object3d *o3d, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void object3d_draw(Object3d *o3d, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
 #ifdef GL_OBJECT_USING_BUFFER
 	if (o3d->cordsID != 0 && o3d->facesID != 0) {
@@ -368,7 +354,7 @@ void object3d_draw (Object3d *o3d, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #endif
 }
 
-void draw_line_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_line_f3(ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef HTML_DRAWING
 	char tmp_str[1024];
 	sprintf(tmp_str, "	draw_line(context, %0.0f, %0.0f, %0.0f, %0.0f, '#%0.2x%0.2x%0.2x');\n", x1 * X_CAL, y1 * Y_CAL, x2 * X_CAL, y2 * Y_CAL, r, g, b);
@@ -386,7 +372,7 @@ void draw_line_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 	glEnd();
 }
 
-void draw_circle_f3 (ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_circle_f3(ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -405,7 +391,7 @@ void draw_circle_f3 (ESContext *esContext, float x1, float y1, float z1, float r
 	float y = 0;
 	glBegin(GL_LINE_LOOP);
 	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
-	for(ii = 0; ii < num_segments; ii++) {
+	for (ii = 0; ii < num_segments; ii++) {
 		glVertex3f(x + x1, y + y1, -2.0 + z1);
 		float tx = -y;
 		float ty = x;
@@ -417,7 +403,7 @@ void draw_circle_f3 (ESContext *esContext, float x1, float y1, float z1, float r
 	glEnd();
 }
 
-void draw_circleSS_f3 (ESContext *esContext, float x1, float y1, float z1, float radius, float start, float stop, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_circleSS_f3(ESContext *esContext, float x1, float y1, float z1, float radius, float start, float stop, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -439,7 +425,6 @@ void draw_circleSS_f3 (ESContext *esContext, float x1, float y1, float z1, float
 	for (ii = 0; ii <= (float)num_segments * stop / 360.0; ii++) {
 		if (ii >= (float)num_segments * start / 360.0) {
 			glVertex3f(x1 - x, y + y1, -2.0 + z1);
-
 		}
 		float tx = -y;
 		float ty = x;
@@ -451,7 +436,7 @@ void draw_circleSS_f3 (ESContext *esContext, float x1, float y1, float z1, float
 	glEnd();
 }
 
-void draw_circleSS_strip_f3 (ESContext *esContext, float x1, float y1, float z1, float radius, float start, float stop) {
+void draw_circleSS_strip_f3(ESContext *esContext, float x1, float y1, float z1, float radius, float start, float stop) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -470,7 +455,6 @@ void draw_circleSS_strip_f3 (ESContext *esContext, float x1, float y1, float z1,
 	for (ii = 0; ii <= (float)num_segments * stop / 360.0; ii++) {
 		if (ii >= (float)num_segments * start / 360.0) {
 			glVertex3f(x1 - x, y + y1, -2.0 + z1);
-
 		}
 		float tx = -y;
 		float ty = x;
@@ -481,7 +465,7 @@ void draw_circleSS_strip_f3 (ESContext *esContext, float x1, float y1, float z1,
 	}
 }
 
-void draw_circleFilled_f3 (ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_circleFilled_f3(ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -507,7 +491,7 @@ void draw_circleFilled_f3 (ESContext *esContext, float x1, float y1, float z1, f
 	glBegin(GL_TRIANGLE_FAN);
 	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
 	glVertex3f(x1, y1, -2.0 + z1);
-	for(ii = 0; ii <= num_segments; ii++) {
+	for (ii = 0; ii <= num_segments; ii++) {
 		glVertex3f(x + x1, y + y1, -2.0 + z1);
 		tx = -y;
 		ty = x;
@@ -520,7 +504,7 @@ void draw_circleFilled_f3 (ESContext *esContext, float x1, float y1, float z1, f
 	draw_circle_f3(esContext, x1, y1 * -1, z1, radius, r, g, b, a);
 }
 
-void draw_zylinder_f3 (ESContext *esContext, float x1, float y1, float z1, float z2, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_zylinder_f3(ESContext *esContext, float x1, float y1, float z1, float z2, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -536,7 +520,7 @@ void draw_zylinder_f3 (ESContext *esContext, float x1, float y1, float z1, float
 	}
 }
 
-void draw_circleFilled_f3_part (ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, float stop, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_circleFilled_f3_part(ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, float stop, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -574,7 +558,6 @@ void draw_circleFilled_f3_part (ESContext *esContext, float x1, float y1, float 
 	y_inner += ty_inner * tangetial_factor;
 	x_inner *= radial_factor;
 	y_inner *= radial_factor;
-
 	float x_inner3 = radius_inner - radius_inner / 2.0;
 	float y_inner3 = 0;
 	float last_x_inner3 = x1 - x_inner3;
@@ -585,7 +568,6 @@ void draw_circleFilled_f3_part (ESContext *esContext, float x1, float y1, float 
 	y_inner3 += ty_inner3 * tangetial_factor;
 	x_inner3 *= radial_factor;
 	y_inner3 *= radial_factor;
-
 	glBegin(GL_TRIANGLES);
 	for (ii = 0; ii < (float)num_segments * stop / 360.0; ii++) {
 		if (ii >= (float)num_segments * start / 360.0) {
@@ -617,7 +599,6 @@ void draw_circleFilled_f3_part (ESContext *esContext, float x1, float y1, float 
 		y += ty * tangetial_factor;
 		x *= radial_factor;
 		y *= radial_factor;
-
 		last_x_inner = x1 - x_inner;
 		last_y_inner = y_inner + y1;
 		tx_inner = -y_inner;
@@ -626,7 +607,6 @@ void draw_circleFilled_f3_part (ESContext *esContext, float x1, float y1, float 
 		y_inner += ty_inner * tangetial_factor;
 		x_inner *= radial_factor;
 		y_inner *= radial_factor;
-
 		last_x_inner3 = x1 - x_inner3;
 		last_y_inner3 = y_inner3 + y1;
 		tx_inner3 = -y_inner3;
@@ -635,14 +615,13 @@ void draw_circleFilled_f3_part (ESContext *esContext, float x1, float y1, float 
 		y_inner3 += ty_inner3 * tangetial_factor;
 		x_inner3 *= radial_factor;
 		y_inner3 *= radial_factor;
-
 	}
 	glEnd();
 	draw_circleSS_f3(esContext, x1, y1 * -1, z1, radius, start, stop, r, g, b, a);
 	draw_circleSS_f3(esContext, x1, y1 * -1, z1, radius_inner, start, stop, r, g, b, a);
 }
 
-void draw_circleFilled_f3_part_slow (ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, float stop, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_circleFilled_f3_part_slow(ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, float stop, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -662,7 +641,7 @@ void draw_circleFilled_f3_part_slow (ESContext *esContext, float x1, float y1, f
 	glEnd();
 }
 
-void draw_circlePointer_f3 (ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_circlePointer_f3(ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -684,7 +663,7 @@ void draw_circlePointer_f3 (ESContext *esContext, float x1, float y1, float z1, 
 	draw_circleFilled_f3(esContext, x1, -y1, 0.0, radius_inner, r, g, b, a);
 }
 
-void draw_trifan_f3 (ESContext *esContext, float *poly_array, uint16_t len, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_trifan_f3(ESContext *esContext, float *poly_array, uint16_t len, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -697,7 +676,7 @@ void draw_trifan_f3 (ESContext *esContext, float *poly_array, uint16_t len, uint
 	glEnd();
 }
 
-void draw_rect_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_rect_f3(ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef HTML_DRAWING
 	char tmp_str[1024];
 	sprintf(tmp_str, "	draw_rect(context, %0.0f, %0.0f, %0.0f, %0.0f, 'rgba(%i,%i,%i,%0.3f)');\n", x1 * X_CAL, y1 * Y_CAL, x2 * X_CAL, y2 * Y_CAL, r, g, b, (float)a / 255.0);
@@ -721,7 +700,7 @@ void draw_rect_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 	glEnd();
 }
 
-void draw_box_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_box_f3(ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef HTML_DRAWING
 	char tmp_str[1024];
 	sprintf(tmp_str, "	draw_box(context, %0.0f, %0.0f, %0.0f, %0.0f, 'rgba(%i,%i,%i,%0.3f)');\n", x1 * X_CAL, y1 * Y_CAL, x2 * X_CAL, y2 * Y_CAL, r, g, b, (float)a / 255.0);
@@ -741,7 +720,7 @@ void draw_box_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, 
 	glEnd();
 }
 
-void draw_box_rounded_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_box_rounded_f3(ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef HTML_DRAWING
 	char tmp_str[1024];
 	sprintf(tmp_str, "	draw_box(context, %0.0f, %0.0f, %0.0f, %0.0f, 'rgba(%i,%i,%i,%0.3f)');\n", x1 * X_CAL, y1 * Y_CAL, x2 * X_CAL, y2 * Y_CAL, r, g, b, (float)a / 255.0);
@@ -761,7 +740,7 @@ void draw_box_rounded_f3 (ESContext *esContext, float x1, float y1, float z1, fl
 	glEnd();
 }
 
-void draw_rect_rounded_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_rect_rounded_f3(ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef HTML_DRAWING
 	char tmp_str[1024];
 	sprintf(tmp_str, "	draw_box(context, %0.0f, %0.0f, %0.0f, %0.0f, 'rgba(%i,%i,%i,%0.3f)');\n", x1 * X_CAL, y1 * Y_CAL, x2 * X_CAL, y2 * Y_CAL, r, g, b, (float)a / 255.0);
@@ -781,7 +760,7 @@ void draw_rect_rounded_f3 (ESContext *esContext, float x1, float y1, float z1, f
 	glEnd();
 }
 
-void draw_box_f3c2 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a, uint8_t r2, uint8_t g2, uint8_t b2, uint8_t a2) {
+void draw_box_f3c2(ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a, uint8_t r2, uint8_t g2, uint8_t b2, uint8_t a2) {
 #ifdef HTML_DRAWING
 	char tmp_str[1024];
 	sprintf(tmp_str, "	draw_box(context, %0.0f, %0.0f, %0.0f, %0.0f, '#%0.2x%0.2x%0.2x');\n", x1 * X_CAL, y1 * Y_CAL, x2 * X_CAL, y2 * Y_CAL, r, g, b);
@@ -802,7 +781,7 @@ void draw_box_f3c2 (ESContext *esContext, float x1, float y1, float z1, float x2
 	glEnd();
 }
 
-void draw_box_f3c2b (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a, uint8_t r2, uint8_t g2, uint8_t b2, uint8_t a2) {
+void draw_box_f3c2b(ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, uint8_t r, uint8_t g, uint8_t b, uint8_t a, uint8_t r2, uint8_t g2, uint8_t b2, uint8_t a2) {
 #ifdef HTML_DRAWING
 	char tmp_str[1024];
 	sprintf(tmp_str, "	draw_box(context, %0.0f, %0.0f, %0.0f, %0.0f, '#%0.2x%0.2x%0.2x');\n", x1 * X_CAL, y1 * Y_CAL, x2 * X_CAL, y2 * Y_CAL, r, g, b);
@@ -825,7 +804,7 @@ void draw_box_f3c2b (ESContext *esContext, float x1, float y1, float z1, float x
 	glEnd();
 }
 
-void draw_tria_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_tria_f3(ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef HTML_DRAWING
 	char tmp_str[1024];
 	sprintf(tmp_str, "	draw_tria(context, %0.0f, %0.0f, %0.0f, %0.0f, %0.0f, %0.0f, '#%0.2x%0.2x%0.2x');\n", x1 * X_CAL, y1 * Y_CAL, x2 * X_CAL, y2 * Y_CAL, x3 * X_CAL, y3 * Y_CAL, r, g, b);
@@ -845,7 +824,7 @@ void draw_tria_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 	glEnd();
 }
 
-void draw_triaFilled_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_triaFilled_f3(ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef HTML_DRAWING
 	char tmp_str[1024];
 	sprintf(tmp_str, "	draw_triaFilled(context, %0.0f, %0.0f, %0.0f, %0.0f, %0.0f, %0.0f, '#%0.2x%0.2x%0.2x');\n", x1 * X_CAL, y1 * Y_CAL, x2 * X_CAL, y2 * Y_CAL, x3 * X_CAL, y3 * Y_CAL, r, g, b);
@@ -863,11 +842,10 @@ void draw_triaFilled_f3 (ESContext *esContext, float x1, float y1, float z1, flo
 	glVertex3f(x2, y2, -2.0 + z2);
 	glVertex3f(x3, y3, -2.0 + z3);
 	glEnd();
-
 	draw_tria_f3(esContext, x1, y1 * -1, z1, x2, y2 * -1, z2, x3, y3 * -1, z3, r, g, b, a);
 }
 
-void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, float alpha, SDL_Surface *screen) {
+void draw_surface_f3(ESContext *esContext, float x1, float y1, float x2, float y2, float z, float alpha, SDL_Surface *screen) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -879,47 +857,46 @@ void draw_surface_f3 (ESContext *esContext, float x1, float y1, float x2, float 
 	GLuint texture;
 	GLenum texture_format;
 	GLint  nOfColors;
-        nOfColors = screen->format->BytesPerPixel;
-        if (nOfColors == 4) {
-                if (screen->format->Rmask == 0x000000ff) {
-                        texture_format = GL_RGBA;
-                } else {
-                        texture_format = GL_BGRA;
+	nOfColors = screen->format->BytesPerPixel;
+	if (nOfColors == 4) {
+		if (screen->format->Rmask == 0x000000ff) {
+			texture_format = GL_RGBA;
+		} else {
+			texture_format = GL_BGRA;
 		}
-        } else if (nOfColors == 3) {
-                if (screen->format->Rmask == 0x000000ff) {
-                        texture_format = GL_RGB;
-                } else {
-                        texture_format = GL_BGR;
-                }
-        } else {
-                SDL_Log("warning: the image is not truecolor..  this will probably break\n");
+	} else if (nOfColors == 3) {
+		if (screen->format->Rmask == 0x000000ff) {
+			texture_format = GL_RGB;
+		} else {
+			texture_format = GL_BGR;
+		}
+	} else {
+		SDL_Log("warning: the image is not truecolor..  this will probably break\n");
 		return;
-        }
-
+	}
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_2D, texture);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexImage2D(GL_TEXTURE_2D, 0, nOfColors, screen->w, screen->h, 0, texture_format, GL_UNSIGNED_BYTE, screen->pixels);
 	glColor4f(1.0, 1.0, 1.0, alpha);
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glBegin(GL_QUADS);
-		glTexCoord2i( 0, 0 );
-		glVertex3f(x1, y1, -2.0 + z);
-		glTexCoord2i( 1, 0 );
-		glVertex3f(x2, y1, -2.0 + z);
-		glTexCoord2i( 1, 1 );
-		glVertex3f(x2, y2, -2.0 + z);
-		glTexCoord2i( 0, 1 );
-		glVertex3f(x1, y2, -2.0 + z);
+	glTexCoord2i(0, 0);
+	glVertex3f(x1, y1, -2.0 + z);
+	glTexCoord2i(1, 0);
+	glVertex3f(x2, y1, -2.0 + z);
+	glTexCoord2i(1, 1);
+	glVertex3f(x2, y2, -2.0 + z);
+	glTexCoord2i(0, 1);
+	glVertex3f(x1, y2, -2.0 + z);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 	glDeleteTextures(1, &texture);
 }
 
-void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, char *file) {
+void draw_image_f3(ESContext *esContext, float x1, float y1, float x2, float y2, float z, char *file) {
 #ifdef HTML_DRAWING
 	char tmp_str[1024];
 	char tmp_str2[1024];
@@ -975,44 +952,44 @@ void draw_image_f3 (ESContext *esContext, float x1, float y1, float x2, float y2
 		}
 		if (tex_num == -1) {
 			tex_num = old_num;
-//			SDL_Log("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
-			glDeleteTextures( 1, &TexCache[tex_num].texture );
+			//			SDL_Log("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
+			glDeleteTextures(1, &TexCache[tex_num].texture);
 			TexCache[tex_num].name[0] = 0;
 			TexCache[tex_num].texture = 0;
 		}
 		if (tex_num != -1) {
-//			SDL_Log("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
-//			if ( (TexCache[tex_num].texture = loadPNG(file)) != 0 ) { 
-			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) { 
+			//			SDL_Log("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
+			//			if ( (TexCache[tex_num].texture = loadPNG(file)) != 0 ) {
+			if ((TexCache[tex_num].texture = loadImage(file)) != 0) {
 				strncpy(TexCache[tex_num].name, file, 1023);
 				TexCache[tex_num].atime = time(0);
 			} else {
-//				SDL_Log("could not load image: %s\n", file);
+				//				SDL_Log("could not load image: %s\n", file);
 				unlink(file);
 			}
 		}
 	}
 	if (TexCache[tex_num].texture != 0) {
 		TexCache[tex_num].atime = time(0);
-//		SDL_Log("# %s = %i\n", TexCache[tex_num].name, TexCache[tex_num].texture);
+		//		SDL_Log("# %s = %i\n", TexCache[tex_num].name, TexCache[tex_num].texture);
 		glColor4f(1.0, 1.0, 1.0, 1.0);
-		glEnable( GL_TEXTURE_2D );
-		glBindTexture( GL_TEXTURE_2D, TexCache[tex_num].texture );
-		glBegin( GL_QUADS );
-			glTexCoord2i( 0, 0 );
-			glVertex3f(x1, y1, -2.0 + z);
-			glTexCoord2i( 1, 0 );
-			glVertex3f(x2, y1, -2.0 + z);
-			glTexCoord2i( 1, 1 );
-			glVertex3f(x2, y2, -2.0 + z);
-			glTexCoord2i( 0, 1 );
-			glVertex3f(x1, y2, -2.0 + z);
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, TexCache[tex_num].texture);
+		glBegin(GL_QUADS);
+		glTexCoord2i(0, 0);
+		glVertex3f(x1, y1, -2.0 + z);
+		glTexCoord2i(1, 0);
+		glVertex3f(x2, y1, -2.0 + z);
+		glTexCoord2i(1, 1);
+		glVertex3f(x2, y2, -2.0 + z);
+		glTexCoord2i(0, 1);
+		glVertex3f(x1, y2, -2.0 + z);
 		glEnd();
-		glDisable( GL_TEXTURE_2D );
+		glDisable(GL_TEXTURE_2D);
 	}
 }
 
-void draw_image_f12 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, char *file) {
+void draw_image_f12(ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3, float x4, float y4, float z4, char *file) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -1045,44 +1022,45 @@ void draw_image_f12 (ESContext *esContext, float x1, float y1, float z1, float x
 		}
 		if (tex_num == -1) {
 			tex_num = old_num;
-//			SDL_Log("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
-			glDeleteTextures( 1, &TexCache[tex_num].texture );
+			//			SDL_Log("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
+			glDeleteTextures(1, &TexCache[tex_num].texture);
 			TexCache[tex_num].name[0] = 0;
 			TexCache[tex_num].texture = 0;
 		}
 		if (tex_num != -1) {
-//			SDL_Log("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
-//			if ( (TexCache[tex_num].texture = loadPNG(file)) != 0 ) { 
-			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) { 
+			//			SDL_Log("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
+			//			if ( (TexCache[tex_num].texture = loadPNG(file)) != 0 ) {
+			if ((TexCache[tex_num].texture = loadImage(file)) != 0) {
 				strncpy(TexCache[tex_num].name, file, 1023);
 				TexCache[tex_num].atime = time(0);
 			} else {
-//				SDL_Log("could not load image: %s\n", file);
+				//				SDL_Log("could not load image: %s\n", file);
 				unlink(file);
 			}
 		}
 	}
 	if (TexCache[tex_num].texture != 0) {
 		TexCache[tex_num].atime = time(0);
-//		SDL_Log("# %s = %i\n", TexCache[tex_num].name, TexCache[tex_num].texture);
+		//		SDL_Log("# %s = %i\n", TexCache[tex_num].name, TexCache[tex_num].texture);
 		glColor4f(1.0, 1.0, 1.0, 1.0);
-		glEnable( GL_TEXTURE_2D );
-		glBindTexture( GL_TEXTURE_2D, TexCache[tex_num].texture );
-		glBegin( GL_QUADS );
-			glTexCoord2i( 0, 1 );
-			glVertex3f(x1, y1, -2.0 + z1);
-			glTexCoord2i( 1, 1 );
-			glVertex3f(x2, y2, -2.0 + z2);
-			glTexCoord2i( 1, 0 );
-			glVertex3f(x3, y3, -2.0 + z3);
-			glTexCoord2i( 0, 0 );
-			glVertex3f(x4, y4, -2.0 + z4);
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, TexCache[tex_num].texture);
+		glBegin(GL_QUADS);
+		glTexCoord2i(0, 1);
+		glVertex3f(x1, y1, -2.0 + z1);
+		glTexCoord2i(1, 1);
+		glVertex3f(x2, y2, -2.0 + z2);
+		glTexCoord2i(1, 0);
+		glVertex3f(x3, y3, -2.0 + z3);
+		glTexCoord2i(0, 0);
+		glVertex3f(x4, y4, -2.0 + z4);
 		glEnd();
-		glDisable( GL_TEXTURE_2D );
+		glDisable(GL_TEXTURE_2D);
 	}
 }
 
-void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file, float lat1, float lon1, float lat2, float lon2, float alpha0, float alpha1, float alpha2, float grid) {
+void draw_image_srtm(ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file, float lat1, float lon1, float lat2, float lon2, float alpha0, float alpha1, float alpha2,
+					 float grid) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -1095,14 +1073,11 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 	int16_t tex_num = -1;
 	int16_t old_num = -1;
 	uint32_t atime_min = 0xFFFFFFFF;
-
 	y1 = y1 * -1;
 	y2 = y2 * -1;
-
 	if (file == NULL || file[0] == 0) {
 		file = NULL;
 	}
-
 	if (file != NULL) {
 		for (n = 0; n < MAX_TEXCACHE; n++) {
 			if (strcmp(TexCache[n].name, file) == 0) {
@@ -1126,19 +1101,19 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 		}
 		if (tex_num == -1) {
 			tex_num = old_num;
-//			SDL_Log("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
-			glDeleteTextures( 1, &TexCache[tex_num].texture );
+			//			SDL_Log("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
+			glDeleteTextures(1, &TexCache[tex_num].texture);
 			TexCache[tex_num].name[0] = 0;
 			TexCache[tex_num].texture = 0;
 		}
 		if (tex_num != -1) {
-//			SDL_Log("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
-//			if ( (TexCache[tex_num].texture = loadPNG(file)) != 0 ) {
-			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) {
+			//			SDL_Log("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
+			//			if ( (TexCache[tex_num].texture = loadPNG(file)) != 0 ) {
+			if ((TexCache[tex_num].texture = loadImage(file)) != 0) {
 				strncpy(TexCache[tex_num].name, file, 1023);
 				TexCache[tex_num].atime = time(0);
 			} else {
-//				SDL_Log("could not load image: %s\n", file);
+				//				SDL_Log("could not load image: %s\n", file);
 				unlink(file);
 			}
 		}
@@ -1164,58 +1139,54 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 		float _dhx = _hx2 - _hx1;
 		float _dhy = _hy2 - _hy1;
 		uint8_t subtiles = 5;
-/*
-		subtiles = (int)((lat1 -  lat2) * 400);
-		if (subtiles < 2) {
-			subtiles = 2;
-		} else if (subtiles > 7) {
-			subtiles = 7;
-		}
-*/
+		/*
+				subtiles = (int)((lat1 -  lat2) * 400);
+				if (subtiles < 2) {
+					subtiles = 2;
+				} else if (subtiles > 7) {
+					subtiles = 7;
+				}
+		*/
 		for (ty = 0; ty < subtiles; ty++) {
 			for (tx = 0; tx < subtiles; tx++) {
 				float tx1 = x1 + dx / (float)subtiles * (float)tx;
 				float tx2 = x1 + dx / (float)subtiles * (float)(tx + 1);
 				float ty1 = y1 + dy / (float)subtiles * (float)ty;
 				float ty2 = y1 + dy / (float)subtiles * (float)(ty + 1);
-
 				float tex1 = 1.0 / (float)subtiles * (float)tx;
 				float tex2 = 1.0 / (float)subtiles * (float)(tx + 1);
 				float tey1 = 1.0 / (float)subtiles * (float)ty;
 				float tey2 = 1.0 / (float)subtiles * (float)(ty + 1);
-
 				float _thx1 = _hx1 + _dhx / (float)subtiles * (float)tx;
 				float _thx2 = _hx1 + _dhx / (float)subtiles * (float)(tx + 1);
 				float _thy1 = _hy1 + _dhy / (float)subtiles * (float)ty;
 				float _thy2 = _hy1 + _dhy / (float)subtiles * (float)(ty + 1);
-
 				int16_t _alt1 = get_altitude(_thy1, _thx1);
 				int16_t _alt2 = get_altitude(_thy1, _thx2);
 				int16_t _alt3 = get_altitude(_thy2, _thx2);
 				int16_t _alt4 = get_altitude(_thy2, _thx1);
-
 				z1 = z + (float)_alt1 / alt_zoom;
 				z2 = z + (float)_alt2 / alt_zoom;
 				z3 = z + (float)_alt3 / alt_zoom;
 				z4 = z + (float)_alt4 / alt_zoom;
 				if (file != NULL) {
-					glEnable( GL_TEXTURE_2D );
-					glBindTexture( GL_TEXTURE_2D, TexCache[tex_num].texture );
-					glBegin( GL_QUADS );
+					glEnable(GL_TEXTURE_2D);
+					glBindTexture(GL_TEXTURE_2D, TexCache[tex_num].texture);
+					glBegin(GL_QUADS);
 					glColor4f(1.0, 1.0, 1.0, alpha0);
-					glTexCoord2f( tex1, tey1 );
+					glTexCoord2f(tex1, tey1);
 					glVertex3f(tx1, ty1, -2.0 + z1);
-					glTexCoord2f( tex2, tey1 );
+					glTexCoord2f(tex2, tey1);
 					glVertex3f(tx2, ty1, -2.0 + z2);
-					glTexCoord2f( tex2, tey2 );
+					glTexCoord2f(tex2, tey2);
 					glVertex3f(tx2, ty2, -2.0 + z3);
-					glTexCoord2f( tex1, tey2 );
+					glTexCoord2f(tex1, tey2);
 					glVertex3f(tx1, ty2, -2.0 + z4);
 					glEnd();
-					glDisable( GL_TEXTURE_2D );
+					glDisable(GL_TEXTURE_2D);
 				}
 				if ((float)_alt1 > ModelData[ModelActive].p_alt || (float)_alt2 > ModelData[ModelActive].p_alt || (float)_alt3 > ModelData[ModelActive].p_alt || (float)_alt4 > ModelData[ModelActive].p_alt) {
-					glBegin( GL_QUADS );
+					glBegin(GL_QUADS);
 					if ((float)_alt1 > ModelData[ModelActive].p_alt) {
 						glColor4f(1.0, 0.0, 0.0, alpha1);
 					} else {
@@ -1242,7 +1213,7 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 					glVertex3f(tx1, ty2, -2.0 + z4);
 					glEnd();
 				} else if (alpha2 > 0.0) {
-					glBegin( GL_QUADS );
+					glBegin(GL_QUADS);
 					glColor4f(0.0, 1.0, 0.0, alpha2);
 					glVertex3f(tx1, ty1, -2.0 + z1);
 					glVertex3f(tx2, ty1, -2.0 + z2);
@@ -1259,13 +1230,12 @@ void draw_image_srtm (ESContext *esContext, int16_t x, int16_t y, int16_t w, int
 					glVertex3f(tx1, ty2, -2.0 + z4 + 0.001);
 					glEnd();
 				}
-
 			}
 		}
 	}
 }
 
-void draw_char_f3_fast (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, int8_t tex_num, char num) {
+void draw_char_f3_fast(ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, int8_t tex_num, char num) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -1273,7 +1243,7 @@ void draw_char_f3_fast (ESContext *esContext, float x1, float y1, float z1, floa
 	y2 = y2 * -1;
 	if (TexCache[tex_num].texture != 0) {
 		TexCache[tex_num].atime = time(0);
-//		SDL_Log("# %s = %i\n", TexCache[tex_num].name, TexCache[tex_num].texture);
+		//		SDL_Log("# %s = %i\n", TexCache[tex_num].name, TexCache[tex_num].texture);
 		float tpos_x = (float)(num % 16) * 0.0625;
 		float tpos_y = (float)(num / 16) * 0.0625;
 		if (num < 0) {
@@ -1286,23 +1256,23 @@ void draw_char_f3_fast (ESContext *esContext, float x1, float y1, float z1, floa
 			return;
 		}
 		glColor4f(1.0, 1.0, 1.0, 1.0);
-		glEnable( GL_TEXTURE_2D );
-		glBindTexture( GL_TEXTURE_2D, TexCache[tex_num].texture );
-		glBegin( GL_QUADS );
-			glTexCoord2f( tpos_x, tpos_y + 0.005 );
-			glVertex3f(x1, y1, -2.0 + z1);
-			glTexCoord2f( tpos_x + 0.0625, tpos_y + 0.005 );
-			glVertex3f(x2, y1, -2.0 + z1);
-			glTexCoord2f( tpos_x + 0.0625, tpos_y + 0.0625 );
-			glVertex3f(x2, y2, -2.0 + z1);
-			glTexCoord2f( tpos_x, tpos_y + 0.0625 );
-			glVertex3f(x1, y2, -2.0 + z1);
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, TexCache[tex_num].texture);
+		glBegin(GL_QUADS);
+		glTexCoord2f(tpos_x, tpos_y + 0.005);
+		glVertex3f(x1, y1, -2.0 + z1);
+		glTexCoord2f(tpos_x + 0.0625, tpos_y + 0.005);
+		glVertex3f(x2, y1, -2.0 + z1);
+		glTexCoord2f(tpos_x + 0.0625, tpos_y + 0.0625);
+		glVertex3f(x2, y2, -2.0 + z1);
+		glTexCoord2f(tpos_x, tpos_y + 0.0625);
+		glVertex3f(x1, y2, -2.0 + z1);
 		glEnd();
-		glDisable( GL_TEXTURE_2D );
+		glDisable(GL_TEXTURE_2D);
 	}
 }
 
-void draw_text_f3_fast (ESContext *esContext, float x1, float y1, float z1, float w, float h, char *file, char *text) {
+void draw_text_f3_fast(ESContext *esContext, float x1, float y1, float z1, float w, float h, char *file, char *text) {
 #ifdef HTML_DRAWING
 	char color[100];
 	if (strcmp(file, FONT_GREEN_BG) == 0) {
@@ -1352,21 +1322,20 @@ void draw_text_f3_fast (ESContext *esContext, float x1, float y1, float z1, floa
 		}
 		if (tex_num == -1) {
 			tex_num = old_num;
-//			SDL_Log("remove font %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
-			glDeleteTextures( 1, &TexCache[tex_num].texture );
+			//			SDL_Log("remove font %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
+			glDeleteTextures(1, &TexCache[tex_num].texture);
 			TexCache[tex_num].name[0] = 0;
 			TexCache[tex_num].texture = 0;
 		}
 		if (tex_num >= 0) {
-//			SDL_Log("loading font %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
-			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) { 
+			//			SDL_Log("loading font %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
+			if ((TexCache[tex_num].texture = loadImage(file)) != 0) {
 				strncpy(TexCache[tex_num].name, file, 1023);
 				TexCache[tex_num].atime = time(0);
-
 			} else {
 				SDL_Log("could not load image: %s\n", file);
 				unlink(file);
-			}    
+			}
 		}
 	}
 	for (n = 0; n < strlen(text); n++) {
@@ -1374,7 +1343,7 @@ void draw_text_f3_fast (ESContext *esContext, float x1, float y1, float z1, floa
 	}
 }
 
-void draw_char_f3 (ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, char *file, char num) {
+void draw_char_f3(ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, char *file, char num) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -1408,15 +1377,15 @@ void draw_char_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 		}
 		if (tex_num == -1) {
 			tex_num = old_num;
-//			SDL_Log("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
-			glDeleteTextures( 1, &TexCache[tex_num].texture );
+			//			SDL_Log("remove image %s from cache %i (%i)\n", TexCache[tex_num].name, old_num, TexCache[tex_num].atime);
+			glDeleteTextures(1, &TexCache[tex_num].texture);
 			TexCache[tex_num].name[0] = 0;
 			TexCache[tex_num].texture = 0;
 		}
 		if (tex_num != -1) {
-//			SDL_Log("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
-//			if ( (TexCache[tex_num].texture = loadPNG(file)) != 0 ) { 
-			if ( (TexCache[tex_num].texture = loadImage(file)) != 0 ) { 
+			//			SDL_Log("loading image %s in to texture-cache %i %i\n", file, tex_num, TexCache[tex_num].atime);
+			//			if ( (TexCache[tex_num].texture = loadPNG(file)) != 0 ) {
+			if ((TexCache[tex_num].texture = loadImage(file)) != 0) {
 				strncpy(TexCache[tex_num].name, file, 1023);
 				TexCache[tex_num].atime = time(0);
 			} else {
@@ -1427,9 +1396,7 @@ void draw_char_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 	}
 	if (TexCache[tex_num].texture != 0) {
 		TexCache[tex_num].atime = time(0);
-
-//		SDL_Log("# %s = %i\n", TexCache[tex_num].name, TexCache[tex_num].texture);
-
+		//		SDL_Log("# %s = %i\n", TexCache[tex_num].name, TexCache[tex_num].texture);
 		float tpos_x = (float)(num % 16) * 0.0625;
 		float tpos_y = (float)(num / 16) * 0.0625;
 		if (num < 0) {
@@ -1442,73 +1409,64 @@ void draw_char_f3 (ESContext *esContext, float x1, float y1, float z1, float x2,
 			return;
 		}
 		glColor4f(1.0, 1.0, 1.0, 1.0);
-		glEnable( GL_TEXTURE_2D );
-		glBindTexture( GL_TEXTURE_2D, TexCache[tex_num].texture );
-		glBegin( GL_QUADS );
-			glTexCoord2f( tpos_x, tpos_y + 0.005 );
-			glVertex3f(x1, y1, -2.0 + z1);
-			glTexCoord2f( tpos_x + 0.0625, tpos_y + 0.005 );
-			glVertex3f(x2, y1, -2.0 + z1);
-			glTexCoord2f( tpos_x + 0.0625, tpos_y + 0.0625 );
-			glVertex3f(x2, y2, -2.0 + z1);
-			glTexCoord2f( tpos_x, tpos_y + 0.0625 );
-			glVertex3f(x1, y2, -2.0 + z1);
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, TexCache[tex_num].texture);
+		glBegin(GL_QUADS);
+		glTexCoord2f(tpos_x, tpos_y + 0.005);
+		glVertex3f(x1, y1, -2.0 + z1);
+		glTexCoord2f(tpos_x + 0.0625, tpos_y + 0.005);
+		glVertex3f(x2, y1, -2.0 + z1);
+		glTexCoord2f(tpos_x + 0.0625, tpos_y + 0.0625);
+		glVertex3f(x2, y2, -2.0 + z1);
+		glTexCoord2f(tpos_x, tpos_y + 0.0625);
+		glVertex3f(x1, y2, -2.0 + z1);
 		glEnd();
-		glDisable( GL_TEXTURE_2D );
+		glDisable(GL_TEXTURE_2D);
 	}
 }
 
-int gl_init (uint16_t w, uint16_t h) {
+int gl_init(uint16_t w, uint16_t h) {
 #ifndef OSX
 #ifndef WINDOWS
 	glewInit();
 #endif
 #endif
-
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-	glMatrixMode( GL_PROJECTION );
+	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-
 	glViewport(0 + setup.screen_border_x / 2, 0 + setup.screen_border_y / 2, w - setup.screen_border_x, h - setup.screen_border_y);
 	gluPerspective(53.0, aspect, 0.001, 7.0);
-//	glOrtho(-1.0 * aspect, 1.0 * aspect, -1.0, 1.0, -5.5, 5.5);
-
+	//	glOrtho(-1.0 * aspect, 1.0 * aspect, -1.0, 1.0, -5.5, 5.5);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-
 	glClearDepth(1.0);
 	glClearStencil(0);
 	glEnable(GL_DEPTH_TEST);
 	glDepthMask(GL_TRUE);
 	glDepthFunc(GL_LEQUAL);
-
-/*
-	glClearStencil(0x0);
-	glEnable(GL_STENCIL_TEST);
-	glStencilFunc (GL_EQUAL, 0x1, 0x1);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-	glClear(GL_STENCIL_BUFFER_BIT);
-	glStencilMask(GL_TRUE);
-*/
-
+	/*
+		glClearStencil(0x0);
+		glEnable(GL_STENCIL_TEST);
+		glStencilFunc (GL_EQUAL, 0x1, 0x1);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+		glClear(GL_STENCIL_BUFFER_BIT);
+		glStencilMask(GL_TRUE);
+	*/
 	glEnable(GL_VERTEX_ARRAY);
-
 	// Transparenz-Aktivieren
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 	// Anti-Alias
-//	glEnable(GL_POLYGON_SMOOTH);
+	//	glEnable(GL_POLYGON_SMOOTH);
 	glEnable(GL_POINT_SMOOTH);
 	glEnable(GL_LINE_SMOOTH);
-
 #ifndef WINDOWS
 	// create Render-Buffer
 	glGenFramebuffers(1, &RB_FramebufferName);
 	glBindFramebuffer(GL_FRAMEBUFFER, RB_FramebufferName);
 	glGenTextures(1, &RB_renderedTexture);
- 	glBindTexture(GL_TEXTURE_2D, RB_renderedTexture);
-	glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, setup.screen_w, setup.screen_h, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+	glBindTexture(GL_TEXTURE_2D, RB_renderedTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, setup.screen_w, setup.screen_h, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glGenRenderbuffers(1, &RB_depthrenderbuffer);
@@ -1519,11 +1477,10 @@ int gl_init (uint16_t w, uint16_t h) {
 	glDrawBuffers(1, RB_DrawBuffers);
 	draw_to_screen();
 #endif
-
 	return 0;
 }
 
-void glExit (ESContext *esContext) {
+void glExit(ESContext *esContext) {
 	// Delete Render-Buffer
 #ifndef WINDOWS
 	glDeleteTextures(1, &RB_renderedTexture);
@@ -1531,7 +1488,7 @@ void glExit (ESContext *esContext) {
 #endif
 }
 
-void glResize (ESContext *esContext, int w, int h) {
+void glResize(ESContext *esContext, int w, int h) {
 #ifndef GLUTINIT
 #ifndef SDL2
 	const SDL_PixelFormat fmt = *(WinScreen->format);
@@ -1558,18 +1515,16 @@ void glResize (ESContext *esContext, int w, int h) {
 	setup.screen_h = h;
 	esContext->width = setup.screen_w;
 	esContext->height = setup.screen_h;
-
 #ifdef GLUTINIT
 	glutReshapeWindow((int)setup.screen_w, (int)setup.screen_h);
 #endif
-
 	char tmp_str[100];
 	sprintf(tmp_str, "Resize: %ix%i", setup.screen_w, setup.screen_h);
 	sys_message(tmp_str);
 }
 
 #ifdef GLUTINIT
-void glut_reshape (int w, int h) {
+void glut_reshape(int w, int h) {
 	if (setup.keep_ratio == 0.0) {
 		aspect = (GLfloat)w / (GLfloat)h;
 	} else {
@@ -1588,15 +1543,15 @@ void glut_reshape (int w, int h) {
 }
 
 int glut_button_last = 0;
-void glut_event (int button, int state, int x, int y) {
+void glut_event(int button, int state, int x, int y) {
 	SDL_Event user_event;
 	if (state == GLUT_UP) {
 		user_event.type = SDL_MOUSEBUTTONUP;
-//		printf("event up: %i %i -- %i %i\n", x, y, button, state);
+		//		printf("event up: %i %i -- %i %i\n", x, y, button, state);
 		glut_button_last = -1;
 	} else {
 		user_event.type = SDL_MOUSEBUTTONDOWN;
-//		printf("event down: %i %i -- %i %i\n", x, y, button, state);
+		//		printf("event down: %i %i -- %i %i\n", x, y, button, state);
 		glut_button_last = button;
 	}
 	user_event.button.x = x;
@@ -1605,7 +1560,7 @@ void glut_event (int button, int state, int x, int y) {
 	check_events(GlobalesContext, user_event);
 }
 
-void glut_motion (int x, int y) {
+void glut_motion(int x, int y) {
 	SDL_Event user_event;
 	user_event.type = SDL_MOUSEMOTION;
 	user_event.button.x = x;
@@ -1614,12 +1569,12 @@ void glut_motion (int x, int y) {
 	check_events(GlobalesContext, user_event);
 }
 
-void glut_display (void) {
+void glut_display(void) {
 }
 
 #endif
 
-int glInit ( ESContext *esContext ) {
+int glInit(ESContext *esContext) {
 #ifdef GLUTINIT
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_STENCIL | GLUT_ACCUM);
 	glutInitWindowPosition(0, 0);
@@ -1635,12 +1590,12 @@ int glInit ( ESContext *esContext ) {
 	int rgb_size[3];
 	Uint32 video_flags;
 #ifdef SDL2
-	if( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0 ) {
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER) < 0) {
 #else
-	if( SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTTHREAD | SDL_INIT_TIMER) < 0 ) {
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTTHREAD | SDL_INIT_TIMER) < 0) {
 #endif
-		fprintf(stderr,"* Couldn't initialize SDL: %s\n",SDL_GetError());
-		exit( 1 );
+		fprintf(stderr, "* Couldn't initialize SDL: %s\n", SDL_GetError());
+		exit(1);
 	}
 #ifdef SDL2
 	if (setup.fullscreen == 1) {
@@ -1656,20 +1611,18 @@ int glInit ( ESContext *esContext ) {
 		SDL_Quit();
 		exit(1);
 	}
-
 	char icon_file[1024];
 	SDL_Surface *icon_surface;
 	sprintf(icon_file, "%s/textures/icon.png", BASE_DIR);
 	if ((icon_surface = IMG_Load(icon_file)) != NULL) {
-		SDL_SetWindowIcon(MainWindow, icon_surface); 
+		SDL_SetWindowIcon(MainWindow, icon_surface);
 		SDL_FreeSurface(icon_surface);
 	}
-
 	WinScreen = SDL_GetWindowSurface(MainWindow);
 	MainGLcontext = SDL_GL_CreateContext(MainWindow);
 #else
 	int bpp = 0;
-	if ( SDL_GetVideoInfo()->vfmt->BitsPerPixel <= 8 ) {
+	if (SDL_GetVideoInfo()->vfmt->BitsPerPixel <= 8) {
 		bpp = 8;
 	} else {
 		bpp = 16;
@@ -1687,28 +1640,28 @@ int glInit ( ESContext *esContext ) {
 	}
 #endif
 	switch (WinScreen->format->BitsPerPixel) {
-	    case 8:
-		rgb_size[0] = 3;
-		rgb_size[1] = 3;
-		rgb_size[2] = 2;
-		break;
-	    case 15:
-	    case 16:
-		rgb_size[0] = 5;
-		rgb_size[1] = 5;
-		rgb_size[2] = 5;
-		break;
-            default:
-		rgb_size[0] = 8;
-		rgb_size[1] = 8;
-		rgb_size[2] = 8;
-		break;
+		case 8:
+			rgb_size[0] = 3;
+			rgb_size[1] = 3;
+			rgb_size[2] = 2;
+			break;
+		case 15:
+		case 16:
+			rgb_size[0] = 5;
+			rgb_size[1] = 5;
+			rgb_size[2] = 5;
+			break;
+		default:
+			rgb_size[0] = 8;
+			rgb_size[1] = 8;
+			rgb_size[2] = 8;
+			break;
 	}
-	SDL_GL_SetAttribute( SDL_GL_RED_SIZE, rgb_size[0] );
-	SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, rgb_size[1] );
-	SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, rgb_size[2] );
-	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );
-	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
+	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, rgb_size[0]);
+	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, rgb_size[1]);
+	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, rgb_size[2]);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_Log("* GL-Screen BPP: %d\n", WinScreen->format->BitsPerPixel);
 #endif
 	if (setup.keep_ratio == 0.0) {
@@ -1718,14 +1671,12 @@ int glInit ( ESContext *esContext ) {
 	}
 	SDL_Log("* aspect: %f\n", aspect);
 	gl_init(setup.screen_w, setup.screen_h);
-
 	esContext->width = setup.screen_w;
 	esContext->height = setup.screen_h;
-
 	return GL_TRUE;
 }
 
-void draw_graph_value (ESContext *esContext, float px1, float py1, float px2, float py2, float pz, uint8_t *data, int16_t len, int16_t pointer, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_graph_value(ESContext *esContext, float px1, float py1, float px2, float py2, float pz, uint8_t *data, int16_t len, int16_t pointer, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef CONSOLE_ONLY
 	return;
 #endif
@@ -1751,11 +1702,11 @@ void draw_graph_value (ESContext *esContext, float px1, float py1, float px2, fl
 	}
 }
 
-void resize_border (void) {
+void resize_border(void) {
 	glViewport(0 + setup.screen_border_x / 2, 0 + setup.screen_border_y / 2, setup.screen_w - setup.screen_border_x, setup.screen_h - setup.screen_border_y);
 }
 
-void draw_to_buffer (void) {
+void draw_to_buffer(void) {
 	RB_Active = 1;
 #ifndef WINDOWS
 	glBindFramebuffer(GL_FRAMEBUFFER, RB_FramebufferName);
@@ -1766,7 +1717,7 @@ void draw_to_buffer (void) {
 #endif
 }
 
-void draw_to_screen (void) {
+void draw_to_screen(void) {
 	RB_Active = 0;
 #ifndef WINDOWS
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -1774,11 +1725,11 @@ void draw_to_screen (void) {
 #endif
 }
 
-uint8_t draw_target (void) {
+uint8_t draw_target(void) {
 	return RB_Active;
 }
 
-void draw_buffer_to_screen (float x1, float y1, float x2, float y2, float z, float alpha) {
+void draw_buffer_to_screen(float x1, float y1, float x2, float y2, float z, float alpha) {
 #ifndef WINDOWS
 	y1 = y1 * -1;
 	y2 = y2 * -1;
@@ -1786,21 +1737,21 @@ void draw_buffer_to_screen (float x1, float y1, float x2, float y2, float z, flo
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, RB_renderedTexture);
 	glBegin(GL_QUADS);
-		glTexCoord2i( 0, 0 );
-		glVertex3f(x1, y2, -2.0 + z);
-		glTexCoord2i( 1, 0 );
-		glVertex3f(x2, y2, -2.0 + z);
-		glTexCoord2i( 1, 1 );
-		glVertex3f(x2, y1, -2.0 + z);
-		glTexCoord2i( 0, 1 );
-		glVertex3f(x1, y1, -2.0 + z);
+	glTexCoord2i(0, 0);
+	glVertex3f(x1, y2, -2.0 + z);
+	glTexCoord2i(1, 0);
+	glVertex3f(x2, y2, -2.0 + z);
+	glTexCoord2i(1, 1);
+	glVertex3f(x2, y1, -2.0 + z);
+	glTexCoord2i(0, 1);
+	glVertex3f(x1, y1, -2.0 + z);
 	glEnd();
 	glDisable(GL_TEXTURE_2D);
 #endif
 }
 
-void draw_update (ESContext *esContext) {
-	GLdouble cPlaneLeft[4] = {-1.0, 0.0, 0.0, 0.0};
+void draw_update(ESContext *esContext) {
+	GLdouble cPlaneLeft[4] = { -1.0, 0.0, 0.0, 0.0};
 	GLdouble cPlaneRight[4] = {1.0, 0.0, 0.0, 0.0};
 	if (setup.side_by_side == 1) {
 		static int n = 0;
@@ -1850,7 +1801,7 @@ void draw_update (ESContext *esContext) {
 	}
 }
 
-void draw_init (ESContext *esContext) {
+void draw_init(ESContext *esContext) {
 	uint16_t n = 0;
 	for (n = 0; n < MAX_TEXCACHE; n++) {
 		TexCache[n].name[0] = 0;
@@ -1859,7 +1810,7 @@ void draw_init (ESContext *esContext) {
 	glInit(esContext);
 }
 
-void draw_exit (ESContext *esContext) {
+void draw_exit(ESContext *esContext) {
 #ifdef SDL2
 	SDL_DestroyWindow(MainWindow);
 #endif
@@ -1867,8 +1818,8 @@ void draw_exit (ESContext *esContext) {
 	SDL_Log("texture-cache: clear\n");
 	int16_t n = 0;
 	for (n = 0; n < MAX_TEXCACHE; n++) {
-		if (TexCache[n].name[0] != 0 && TexCache[n].texture != 0 ) {
-			glDeleteTextures( 1, &TexCache[n].texture );
+		if (TexCache[n].name[0] != 0 && TexCache[n].texture != 0) {
+			glDeleteTextures(1, &TexCache[n].texture);
 			TexCache[n].name[0] = 0;
 		}
 	}

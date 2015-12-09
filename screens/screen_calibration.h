@@ -1,5 +1,5 @@
 
 
-void screen_calibration (ESContext *esContext);
+void screen_calibration(ESContext *esContext);
 
 

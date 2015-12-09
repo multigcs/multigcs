@@ -1,3 +1,3 @@
 
-void screen_openpilot (ESContext *esContext);
+void screen_openpilot(ESContext *esContext);
 

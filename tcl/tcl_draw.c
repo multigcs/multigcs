@@ -1,9 +1,9 @@
 
 /* void draw_title (ESContext *esContext, char *text) { */
-int tclcmd_draw_title (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+int tclcmd_draw_title(ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	int len = 0;
 	if (objc != 2) {
-		Tcl_WrongNumArgs (interp, 1, objv, "{ESContext *esContext} { char *text}");
+		Tcl_WrongNumArgs(interp, 1, objv, "{ESContext *esContext} { char *text}");
 		return TCL_ERROR;
 	}
 	char arg_text[1024];
@@ -13,10 +13,10 @@ int tclcmd_draw_title (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *
 }
 
 /* void draw_image_uncache (char *file) { */
-int tclcmd_draw_image_uncache (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+int tclcmd_draw_image_uncache(ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	int len = 0;
 	if (objc != 1) {
-		Tcl_WrongNumArgs (interp, 1, objv, "{char *file}");
+		Tcl_WrongNumArgs(interp, 1, objv, "{char *file}");
 		return TCL_ERROR;
 	}
 	char arg_file[1024];
@@ -26,9 +26,9 @@ int tclcmd_draw_image_uncache (ClientData cdata, Tcl_Interp *interp, int objc, T
 }
 
 /* void draw_line_f (ESContext *esContext, float x1, float y1, float x2, float y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) { */
-int tclcmd_draw_line_f (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+int tclcmd_draw_line_f(ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	if (objc != 9) {
-		Tcl_WrongNumArgs (interp, 1, objv, "{ESContext *esContext} { float x1} { float y1} { float x2} { float y2} { uint8_t r} { uint8_t g} { uint8_t b} { uint8_t a}");
+		Tcl_WrongNumArgs(interp, 1, objv, "{ESContext *esContext} { float x1} { float y1} { float x2} { float y2} { uint8_t r} { uint8_t g} { uint8_t b} { uint8_t a}");
 		return TCL_ERROR;
 	}
 	double arg_x1;
@@ -68,9 +68,9 @@ int tclcmd_draw_line_f (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj 
 }
 
 /* void draw_line (ESContext *esContext, int16_t px1, int16_t py1, int16_t px2, int16_t py2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) { */
-int tclcmd_draw_line (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+int tclcmd_draw_line(ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	if (objc != 9) {
-		Tcl_WrongNumArgs (interp, 1, objv, "{ESContext *esContext} { int16_t px1} { int16_t py1} { int16_t px2} { int16_t py2} { uint8_t r} { uint8_t g} { uint8_t b} { uint8_t a}");
+		Tcl_WrongNumArgs(interp, 1, objv, "{ESContext *esContext} { int16_t px1} { int16_t py1} { int16_t px2} { int16_t py2} { uint8_t r} { uint8_t g} { uint8_t b} { uint8_t a}");
 		return TCL_ERROR;
 	}
 	int16_t arg_px1;
@@ -110,9 +110,9 @@ int tclcmd_draw_line (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *c
 }
 
 /* void draw_circle_f (ESContext *esContext, float x1, float y1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) { */
-int tclcmd_draw_circle_f (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+int tclcmd_draw_circle_f(ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	if (objc != 8) {
-		Tcl_WrongNumArgs (interp, 1, objv, "{ESContext *esContext} { float x1} { float y1} { float radius} { uint8_t r} { uint8_t g} { uint8_t b} { uint8_t a}");
+		Tcl_WrongNumArgs(interp, 1, objv, "{ESContext *esContext} { float x1} { float y1} { float radius} { uint8_t r} { uint8_t g} { uint8_t b} { uint8_t a}");
 		return TCL_ERROR;
 	}
 	double arg_x1;
@@ -148,9 +148,9 @@ int tclcmd_draw_circle_f (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Ob
 }
 
 /* void draw_circle (ESContext *esContext, int16_t x, int16_t y, int16_t radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) { */
-int tclcmd_draw_circle (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+int tclcmd_draw_circle(ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	if (objc != 8) {
-		Tcl_WrongNumArgs (interp, 1, objv, "{ESContext *esContext} { int16_t x} { int16_t y} { int16_t radius} { uint8_t r} { uint8_t g} { uint8_t b} { uint8_t a}");
+		Tcl_WrongNumArgs(interp, 1, objv, "{ESContext *esContext} { int16_t x} { int16_t y} { int16_t radius} { uint8_t r} { uint8_t g} { uint8_t b} { uint8_t a}");
 		return TCL_ERROR;
 	}
 	int16_t arg_x;
@@ -186,9 +186,9 @@ int tclcmd_draw_circle (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj 
 }
 
 /* void draw_circleFilled_f (ESContext *esContext, float x1, float y1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) { */
-int tclcmd_draw_circleFilled_f (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+int tclcmd_draw_circleFilled_f(ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	if (objc != 8) {
-		Tcl_WrongNumArgs (interp, 1, objv, "{ESContext *esContext} { float x1} { float y1} { float radius} { uint8_t r} { uint8_t g} { uint8_t b} { uint8_t a}");
+		Tcl_WrongNumArgs(interp, 1, objv, "{ESContext *esContext} { float x1} { float y1} { float radius} { uint8_t r} { uint8_t g} { uint8_t b} { uint8_t a}");
 		return TCL_ERROR;
 	}
 	double arg_x1;
@@ -224,9 +224,9 @@ int tclcmd_draw_circleFilled_f (ClientData cdata, Tcl_Interp *interp, int objc, 
 }
 
 /* void draw_circleFilled (ESContext *esContext, int16_t x, int16_t y, int16_t radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) { */
-int tclcmd_draw_circleFilled (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+int tclcmd_draw_circleFilled(ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	if (objc != 8) {
-		Tcl_WrongNumArgs (interp, 1, objv, "{ESContext *esContext} { int16_t x} { int16_t y} { int16_t radius} { uint8_t r} { uint8_t g} { uint8_t b} { uint8_t a}");
+		Tcl_WrongNumArgs(interp, 1, objv, "{ESContext *esContext} { int16_t x} { int16_t y} { int16_t radius} { uint8_t r} { uint8_t g} { uint8_t b} { uint8_t a}");
 		return TCL_ERROR;
 	}
 	int16_t arg_x;
@@ -262,9 +262,9 @@ int tclcmd_draw_circleFilled (ClientData cdata, Tcl_Interp *interp, int objc, Tc
 }
 
 /* void draw_box_f (ESContext *esContext, float x1, float y1, float x2, float y2, uint8_t r, uint8_t g, uint8_t b, uint8_t a) { */
-int tclcmd_draw_box_f (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+int tclcmd_draw_box_f(ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	if (objc != 9) {
-		Tcl_WrongNumArgs (interp, 1, objv, "{ESContext *esContext} { float x1} { float y1} { float x2} { float y2} { uint8_t r} { uint8_t g} { uint8_t b} { uint8_t a}");
+		Tcl_WrongNumArgs(interp, 1, objv, "{ESContext *esContext} { float x1} { float y1} { float x2} { float y2} { uint8_t r} { uint8_t g} { uint8_t b} { uint8_t a}");
 		return TCL_ERROR;
 	}
 	double arg_x1;
@@ -304,9 +304,9 @@ int tclcmd_draw_box_f (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *
 }
 
 /* void draw_box (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, uint8_t r, uint8_t g, uint8_t b, uint8_t a) { */
-int tclcmd_draw_box (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+int tclcmd_draw_box(ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	if (objc != 9) {
-		Tcl_WrongNumArgs (interp, 1, objv, "{ESContext *esContext} { int16_t x} { int16_t y} { int16_t w} { int16_t h} { uint8_t r} { uint8_t g} { uint8_t b} { uint8_t a}");
+		Tcl_WrongNumArgs(interp, 1, objv, "{ESContext *esContext} { int16_t x} { int16_t y} { int16_t w} { int16_t h} { uint8_t r} { uint8_t g} { uint8_t b} { uint8_t a}");
 		return TCL_ERROR;
 	}
 	int16_t arg_x;
@@ -346,9 +346,9 @@ int tclcmd_draw_box (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *co
 }
 
 /* void draw_tria_f (ESContext *esContext, float x1, float y1, float x2, float y2, float x3, float y3, uint8_t r, uint8_t g, uint8_t b, uint8_t a) { */
-int tclcmd_draw_tria_f (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+int tclcmd_draw_tria_f(ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	if (objc != 11) {
-		Tcl_WrongNumArgs (interp, 1, objv, "{ESContext *esContext} { float x1} { float y1} { float x2} { float y2} { float x3} { float y3} { uint8_t r} { uint8_t g} { uint8_t b} { uint8_t a}");
+		Tcl_WrongNumArgs(interp, 1, objv, "{ESContext *esContext} { float x1} { float y1} { float x2} { float y2} { float x3} { float y3} { uint8_t r} { uint8_t g} { uint8_t b} { uint8_t a}");
 		return TCL_ERROR;
 	}
 	double arg_x1;
@@ -396,9 +396,9 @@ int tclcmd_draw_tria_f (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj 
 }
 
 /* void draw_triaFilled_f (ESContext *esContext, float x1, float y1, float x2, float y2, float x3, float y3, uint8_t r, uint8_t g, uint8_t b, uint8_t a) { */
-int tclcmd_draw_triaFilled_f (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+int tclcmd_draw_triaFilled_f(ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	if (objc != 11) {
-		Tcl_WrongNumArgs (interp, 1, objv, "{ESContext *esContext} { float x1} { float y1} { float x2} { float y2} { float x3} { float y3} { uint8_t r} { uint8_t g} { uint8_t b} { uint8_t a}");
+		Tcl_WrongNumArgs(interp, 1, objv, "{ESContext *esContext} { float x1} { float y1} { float x2} { float y2} { float x3} { float y3} { uint8_t r} { uint8_t g} { uint8_t b} { uint8_t a}");
 		return TCL_ERROR;
 	}
 	double arg_x1;
@@ -446,9 +446,10 @@ int tclcmd_draw_triaFilled_f (ClientData cdata, Tcl_Interp *interp, int objc, Tc
 }
 
 /* void draw_circleFilled_f3_part_end (ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, uint8_t r, uint8_t g, uint8_t b, uint8_t a) { */
-int tclcmd_draw_circleFilled_f3_part_end (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+int tclcmd_draw_circleFilled_f3_part_end(ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	if (objc != 11) {
-		Tcl_WrongNumArgs (interp, 1, objv, "{ESContext *esContext} { float x1} { float y1} { float z1} { float radius} { float radius_inner} { float start} { uint8_t r} { uint8_t g} { uint8_t b} { uint8_t a}");
+		Tcl_WrongNumArgs(interp, 1, objv,
+						 "{ESContext *esContext} { float x1} { float y1} { float z1} { float radius} { float radius_inner} { float start} { uint8_t r} { uint8_t g} { uint8_t b} { uint8_t a}");
 		return TCL_ERROR;
 	}
 	double arg_x1;
@@ -496,10 +497,11 @@ int tclcmd_draw_circleFilled_f3_part_end (ClientData cdata, Tcl_Interp *interp, 
 }
 
 /* void draw_circleMeter_f3 (ESContext *esContext, float x, float y, float z, float radius, float start1, float start2, float start3, float start4, float value, char *text, char *text2, uint8_t type) { */
-int tclcmd_draw_circleMeter_f3 (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+int tclcmd_draw_circleMeter_f3(ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	int len = 0;
 	if (objc != 13) {
-		Tcl_WrongNumArgs (interp, 1, objv, "{ESContext *esContext} { float x} { float y} { float z} { float radius} { float start1} { float start2} { float start3} { float start4} { float value} { char *text} { char *text2} { uint8_t type}");
+		Tcl_WrongNumArgs(interp, 1, objv,
+						 "{ESContext *esContext} { float x} { float y} { float z} { float radius} { float start1} { float start2} { float start3} { float start4} { float value} { char *text} { char *text2} { uint8_t type}");
 		return TCL_ERROR;
 	}
 	double arg_x;
@@ -546,15 +548,16 @@ int tclcmd_draw_circleMeter_f3 (ClientData cdata, Tcl_Interp *interp, int objc, 
 	if (Tcl_GetIntFromObj(interp, objv[12], (int *)&arg_type) != TCL_OK) {
 		return TCL_ERROR;
 	}
-	draw_circleMeter_f3(GlobalesContext, (float)arg_x, (float)arg_y, (float)arg_z, (float)arg_radius, (float)arg_start1, (float)arg_start2, (float)arg_start3, (float)arg_start4, (float)arg_value, arg_text, arg_text2, arg_type);
+	draw_circleMeter_f3(GlobalesContext, (float)arg_x, (float)arg_y, (float)arg_z, (float)arg_radius, (float)arg_start1, (float)arg_start2, (float)arg_start3, (float)arg_start4, (float)arg_value,
+						arg_text, arg_text2, arg_type);
 	return TCL_OK;
 }
 
 /* void draw_image_f (ESContext *esContext, float x1, float y1, float x2, float y2, char *file) { */
-int tclcmd_draw_image_f (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+int tclcmd_draw_image_f(ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	int len = 0;
 	if (objc != 6) {
-		Tcl_WrongNumArgs (interp, 1, objv, "{ESContext *esContext} { float x1} { float y1} { float x2} { float y2} { char *file}");
+		Tcl_WrongNumArgs(interp, 1, objv, "{ESContext *esContext} { float x1} { float y1} { float x2} { float y2} { char *file}");
 		return TCL_ERROR;
 	}
 	double arg_x1;
@@ -580,10 +583,10 @@ int tclcmd_draw_image_f (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj
 }
 
 /* void draw_image (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file) { */
-int tclcmd_draw_image (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+int tclcmd_draw_image(ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	int len = 0;
 	if (objc != 6) {
-		Tcl_WrongNumArgs (interp, 1, objv, "{ESContext *esContext} { int16_t x} { int16_t y} { int16_t w} { int16_t h} { char *file}");
+		Tcl_WrongNumArgs(interp, 1, objv, "{ESContext *esContext} { int16_t x} { int16_t y} { int16_t w} { int16_t h} { char *file}");
 		return TCL_ERROR;
 	}
 	int16_t arg_x;
@@ -609,10 +612,10 @@ int tclcmd_draw_image (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *
 }
 
 /* void draw_pointer (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file) { */
-int tclcmd_draw_pointer (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+int tclcmd_draw_pointer(ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	int len = 0;
 	if (objc != 6) {
-		Tcl_WrongNumArgs (interp, 1, objv, "{ESContext *esContext} { int16_t x} { int16_t y} { int16_t w} { int16_t h} { char *file}");
+		Tcl_WrongNumArgs(interp, 1, objv, "{ESContext *esContext} { int16_t x} { int16_t y} { int16_t w} { int16_t h} { char *file}");
 		return TCL_ERROR;
 	}
 	int16_t arg_x;
@@ -638,10 +641,10 @@ int tclcmd_draw_pointer (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj
 }
 
 /* void draw_text_f3 (ESContext *esContext, float x1, float y1, float z1, float w, float h, char *file, char *text) { */
-int tclcmd_draw_text_f3 (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+int tclcmd_draw_text_f3(ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	int len = 0;
 	if (objc != 8) {
-		Tcl_WrongNumArgs (interp, 1, objv, "{ESContext *esContext} { float x1} { float y1} { float z1} { float w} { float h} { char *file} { char *text}");
+		Tcl_WrongNumArgs(interp, 1, objv, "{ESContext *esContext} { float x1} { float y1} { float z1} { float w} { float h} { char *file} { char *text}");
 		return TCL_ERROR;
 	}
 	double arg_x1;
@@ -673,10 +676,10 @@ int tclcmd_draw_text_f3 (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj
 }
 
 /* void draw_text_f (ESContext *esContext, float x1, float y1, float w, float h, char *file, char *text) { */
-int tclcmd_draw_text_f (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+int tclcmd_draw_text_f(ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	int len = 0;
 	if (objc != 7) {
-		Tcl_WrongNumArgs (interp, 1, objv, "{ESContext *esContext} { float x1} { float y1} { float w} { float h} { char *file} { char *text}");
+		Tcl_WrongNumArgs(interp, 1, objv, "{ESContext *esContext} { float x1} { float y1} { float w} { float h} { char *file} { char *text}");
 		return TCL_ERROR;
 	}
 	double arg_x1;
@@ -704,10 +707,10 @@ int tclcmd_draw_text_f (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj 
 }
 
 /* void draw_text (ESContext *esContext, int16_t x, int16_t y, int16_t w, int16_t h, char *file, char *text) { */
-int tclcmd_draw_text (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
+int tclcmd_draw_text(ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *const objv[]) {
 	int len = 0;
 	if (objc != 7) {
-		Tcl_WrongNumArgs (interp, 1, objv, "{ESContext *esContext} { int16_t x} { int16_t y} { int16_t w} { int16_t h} { char *file} { char *text}");
+		Tcl_WrongNumArgs(interp, 1, objv, "{ESContext *esContext} { int16_t x} { int16_t y} { int16_t w} { int16_t h} { char *file} { char *text}");
 		return TCL_ERROR;
 	}
 	int16_t arg_x;
@@ -734,7 +737,7 @@ int tclcmd_draw_text (ClientData cdata, Tcl_Interp *interp, int objc, Tcl_Obj *c
 	return TCL_OK;
 }
 
-void tcl_draw_init (Tcl_Interp *interp) {
+void tcl_draw_init(Tcl_Interp *interp) {
 	Tcl_CreateObjCommand(interp, "draw_title", tclcmd_draw_title, NULL, NULL);
 	Tcl_CreateObjCommand(interp, "draw_image_uncache", tclcmd_draw_image_uncache, NULL, NULL);
 	Tcl_CreateObjCommand(interp, "draw_line_f", tclcmd_draw_line_f, NULL, NULL);

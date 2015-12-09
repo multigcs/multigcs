@@ -12,10 +12,10 @@ typedef struct {
 
 extern AprsPos aprs_pos[APRS_MAX];
 
-int aprs_init (char *server_ip, int port);
-int aprs_exit (void);
+int aprs_init(char *server_ip, int port);
+int aprs_exit(void);
 void aprs_pos_update(char *id, float lat, float lon);
-int aprs_loop (void);
+int aprs_loop(void);
 
 #endif
 

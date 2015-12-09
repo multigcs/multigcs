@@ -5,59 +5,59 @@ Survey SurveySetup;
 alist list[PMAX + 2];
 uint8_t alt_abs_open = 0;
 
-float f_max (float a, float b) {
+float f_max(float a, float b) {
 	if (a > b) {
 		return a;
 	}
 	return b;
 }
 
-float f_min (float a, float b) {
+float f_min(float a, float b) {
 	if (a < b) {
 		return a;
 	}
 	return b;
 }
 
-uint8_t onSegment (float px, float py, float qx, float qy, float rx, float ry) {
+uint8_t onSegment(float px, float py, float qx, float qy, float rx, float ry) {
 	if (qx <= f_max(px, rx) && qx >= f_min(px, rx) && qy <= f_max(py, ry) && qy >= f_min(py, ry)) {
 		return 1;
 	}
 	return 0;
 }
 
-int orientation (float px, float py, float qx, float qy, float rx, float ry) {
+int orientation(float px, float py, float qx, float qy, float rx, float ry) {
 	float val = (qy - py) * (rx - qx) - (qx - px) * (ry - qy);
-    if (val == 0.0) {
+	if (val == 0.0) {
 		return 0;
 	}
-    return (val > 0.0) ? 1: 2;
-}
- 
-uint8_t intersect_check (float p1x, float p1y, float q1x, float q1y, float p2x, float p2y, float q2x, float q2y) {
-    int o1 = orientation(p1x, p1y, q1x, q1y, p2x, p2y);
-    int o2 = orientation(p1x, p1y, q1x, q1y, q2x, q2y);
-    int o3 = orientation(p2x, p2y, q2x, q2y, p1x, p1y);
-    int o4 = orientation(p2x, p2y, q2x, q2y, q1x, q1y);
-    if (o1 != o2 && o3 != o4) {
-        return 1;
-	}
-    if (o1 == 0 && onSegment(p1x, p1y, p2x, p2y, q1x, q1y))  {
-		return 1;
-	}
-    if (o2 == 0 && onSegment(p1x, p1y, q2x, q2y, q1x, q1y)) {
-		return 1;
-	}
-    if (o3 == 0 && onSegment(p2x, p2y, p1x, p1y, q2x, q2y)) {
-		return 1;
-	}
-    if (o4 == 0 && onSegment(p2x, p2y, q1x, q1y, q2x, q2y)) {
-		return 1;
-	}
-    return 0;
+	return (val > 0.0) ? 1 : 2;
 }
 
-int8_t survey_check_intersect_nofly (ESContext *esContext, float lastn_x, float lastn_y, float px1, float py1) {
+uint8_t intersect_check(float p1x, float p1y, float q1x, float q1y, float p2x, float p2y, float q2x, float q2y) {
+	int o1 = orientation(p1x, p1y, q1x, q1y, p2x, p2y);
+	int o2 = orientation(p1x, p1y, q1x, q1y, q2x, q2y);
+	int o3 = orientation(p2x, p2y, q2x, q2y, p1x, p1y);
+	int o4 = orientation(p2x, p2y, q2x, q2y, q1x, q1y);
+	if (o1 != o2 && o3 != o4) {
+		return 1;
+	}
+	if (o1 == 0 && onSegment(p1x, p1y, p2x, p2y, q1x, q1y))  {
+		return 1;
+	}
+	if (o2 == 0 && onSegment(p1x, p1y, q2x, q2y, q1x, q1y)) {
+		return 1;
+	}
+	if (o3 == 0 && onSegment(p2x, p2y, p1x, p1y, q2x, q2y)) {
+		return 1;
+	}
+	if (o4 == 0 && onSegment(p2x, p2y, q1x, q1y, q2x, q2y)) {
+		return 1;
+	}
+	return 0;
+}
+
+int8_t survey_check_intersect_nofly(ESContext *esContext, float lastn_x, float lastn_y, float px1, float py1) {
 	int nfn = 0;
 	for (nfn = 0; nfn < 255; nfn++) {
 		int num = 0;
@@ -84,7 +84,7 @@ int8_t survey_check_intersect_nofly (ESContext *esContext, float lastn_x, float 
 	return -1;
 }
 
-int8_t survey_check_intersect_nofly2point (ESContext *esContext, int nfn, float px, float py, float px2, float py2) {
+int8_t survey_check_intersect_nofly2point(ESContext *esContext, int nfn, float px, float py, float px2, float py2) {
 	int num = 0;
 	float pmark_x = 0.0;
 	float pmark_y = 0.0;
@@ -120,7 +120,7 @@ int8_t survey_check_intersect_nofly2point (ESContext *esContext, int nfn, float 
 	return 0;
 }
 
-float dist (Point2D p1, Point2D p2) {
+float dist(Point2D p1, Point2D p2) {
 	float dx = p1.x - p2.x;
 	float dy = p1.y - p2.y;
 	if (dx < 0.0) {
@@ -132,7 +132,7 @@ float dist (Point2D p1, Point2D p2) {
 	return sqrt((dx * dx) + (dy * dy));
 }
 
-void olist_add (Point2D p, Point2D from, int f) {
+void olist_add(Point2D p, Point2D from, int f) {
 	int n = 0;
 	for (n = 0; n < 100; n++) {
 		if (list[n].p.x == p.x && list[n].p.y == p.y) {
@@ -154,7 +154,7 @@ void olist_add (Point2D p, Point2D from, int f) {
 	}
 }
 
-void olist_mv2close (Point2D p, Point2D from, int f) {
+void olist_mv2close(Point2D p, Point2D from, int f) {
 	int n = 0;
 	for (n = 0; n < 100; n++) {
 		if (list[n].p.x == p.x && list[n].p.y == p.y && list[n].t != IN_CLOSE) {
@@ -167,7 +167,7 @@ void olist_mv2close (Point2D p, Point2D from, int f) {
 	}
 }
 
-uint16_t survey_reroute (ESContext *esContext, float x1, float y1, float x2, float y2, float alt, int nfzone, uint8_t do_write, uint16_t nwp, FILE *fr) {
+uint16_t survey_reroute(ESContext *esContext, float x1, float y1, float x2, float y2, float alt, int nfzone, uint8_t do_write, uint16_t nwp, FILE *fr) {
 	Point2D active;
 	Point2D mypoly[PMAX];
 	Point2D mypoly_sort[PMAX];
@@ -291,7 +291,7 @@ uint16_t survey_reroute (ESContext *esContext, float x1, float y1, float x2, flo
 	return nwp;
 }
 
-int point_in_poly (float testx, float testy) {
+int point_in_poly(float testx, float testy) {
 	int result = 0;
 	int num = 0;
 	float pmark_x = 0.0;
@@ -316,7 +316,7 @@ int point_in_poly (float testx, float testy) {
 			float y2 = pmark_y;
 			if (y2 == testy) {
 				if ((x2 == testx) || (y1 == testy && ((x2 > testx) == (x1 < testx)))) {
-//					fprintf(stderr, "Point on line\n");
+					//					fprintf(stderr, "Point on line\n");
 					return 1;
 				}
 			}
@@ -352,7 +352,7 @@ int point_in_poly (float testx, float testy) {
 	return result;
 }
 
-int point_in_polynf (float testx, float testy) {
+int point_in_polynf(float testx, float testy) {
 	int result = 0;
 	int num = 0;
 	float pmark_x = 0.0;
@@ -379,7 +379,7 @@ int point_in_polynf (float testx, float testy) {
 				float y2 = pmark_y;
 				if (y2 == testy) {
 					if ((x2 == testx) || (y1 == testy && ((x2 > testx) == (x1 < testx)))) {
-//						fprintf(stderr, "Point on line\n");
+						//						fprintf(stderr, "Point on line\n");
 						return 1;
 					}
 				}
@@ -416,7 +416,7 @@ int point_in_polynf (float testx, float testy) {
 	return result;
 }
 
-void survey_parsePolypoint (xmlDocPtr doc, xmlNodePtr cur, int n) { 
+void survey_parsePolypoint(xmlDocPtr doc, xmlNodePtr cur, int n) {
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
@@ -438,7 +438,7 @@ void survey_parsePolypoint (xmlDocPtr doc, xmlNodePtr cur, int n) {
 	return;
 }
 
-void survey_parsePolypointNoFly (xmlDocPtr doc, xmlNodePtr cur, int n) { 
+void survey_parsePolypointNoFly(xmlDocPtr doc, xmlNodePtr cur, int n) {
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
@@ -460,7 +460,7 @@ void survey_parsePolypointNoFly (xmlDocPtr doc, xmlNodePtr cur, int n) {
 	return;
 }
 
-void survey_parseDoc (char *docname) {
+void survey_parseDoc(char *docname) {
 	int n = 0;
 	int nnf = 0;
 	xmlDocPtr doc;
@@ -628,13 +628,13 @@ void survey_parseDoc (char *docname) {
 	return;
 }
 
-uint8_t survey_load_xml (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t survey_load_xml(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	survey_parseDoc(name);
 	reset_buttons();
 	return 0;
 }
 
-uint8_t survey_load (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t survey_load(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	reset_buttons();
 	char tmp_str[128];
 	sprintf(tmp_str, "%s/survey", get_datadirectory());
@@ -646,7 +646,7 @@ uint8_t survey_load (char *name, float x, float y, int8_t button, float data, ui
 	return 0;
 }
 
-uint8_t survey_save_xml (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t survey_save_xml(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	FILE *fr;
 	int n = 0;
 	char tmp_str[128];
@@ -698,7 +698,7 @@ uint8_t survey_save_xml (char *name, float x, float y, int8_t button, float data
 	return 0;
 }
 
-uint8_t survey_save (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t survey_save(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	char tmp_str[200];
 	reset_buttons();
 	keyboard_set_callback(survey_save_xml);
@@ -712,19 +712,19 @@ uint8_t survey_save (char *name, float x, float y, int8_t button, float data, ui
 	return 0;
 }
 
-uint8_t survey_name_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t survey_name_set(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	strncpy(SurveySetup.name, name, 1000);
 	return 0;
 }
 
-uint8_t survey_name_edit (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t survey_name_edit(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	keyboard_set_callback(survey_name_set);
 	keyboard_set_text(SurveySetup.name);
 	keyboard_set_mode(setup.view_mode);
 	return 0;
 }
 
-void draw_fov (ESContext *esContext, float p_lat, float p_long, float p_alt, float angle) {
+void draw_fov(ESContext *esContext, float p_lat, float p_long, float p_alt, float angle) {
 #ifdef SDLGL
 	float mpp = get_m_per_pixel(lat, zoom);
 	float pos_alt = get_altitude(p_lat, p_long);
@@ -748,7 +748,7 @@ void draw_fov (ESContext *esContext, float p_lat, float p_long, float p_alt, flo
 #endif
 }
 
-uint8_t survey_export_kml (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t survey_export_kml(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	int n = 0;
 	int pmark_x = long2x(PolyPoints[1].p_long, lon, zoom);
 	int pmark_y = lat2y(PolyPoints[1].p_lat, lat, zoom);
@@ -864,7 +864,6 @@ uint8_t survey_export_kml (char *name, float x, float y, int8_t button, float da
 	fprintf(kmlout, "        </coordinates>\n");
 	fprintf(kmlout, "      </LineString>\n");
 	fprintf(kmlout, "    </Placemark>\n");
-
 	// drawing Grid
 	float h = 0.0;
 	float w = 0.0;
@@ -1051,7 +1050,7 @@ uint8_t survey_export_kml (char *name, float x, float y, int8_t button, float da
 	return 0;
 }
 
-uint16_t survey_add_wp (FILE *fr, uint16_t n, float lat, float lon, float alt, uint8_t mode) {
+uint16_t survey_add_wp(FILE *fr, uint16_t n, float lat, float lon, float alt, uint8_t mode) {
 	WayPoints[ModelActive][n].p_lat = lat;
 	WayPoints[ModelActive][n].p_long = lon;
 	WayPoints[ModelActive][n].p_alt = alt;
@@ -1061,13 +1060,11 @@ uint16_t survey_add_wp (FILE *fr, uint16_t n, float lat, float lon, float alt, u
 	WayPoints[ModelActive][n].param4 = 0.0;
 	WayPoints[ModelActive][n].type = 0;
 	WayPoints[ModelActive][n].frametype = 0;
-
 	if (mode == 1) {
 		sprintf(WayPoints[ModelActive][n].name, "RE%i", n);
 	} else {
 		sprintf(WayPoints[ModelActive][n].name, "WP%i", n);
 	}
-
 	strcpy(WayPoints[ModelActive][n].command, "WAYPOINT");
 	if (fr != NULL) {
 		fprintf(fr, "WAYPOINT;%f;%f;%f\n", lat, lon, alt);
@@ -1109,7 +1106,7 @@ uint16_t survey_add_wp (FILE *fr, uint16_t n, float lat, float lon, float alt, u
 	return n;
 }
 
-uint8_t survey_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t survey_set(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (strncmp(name, "cam_lense_", 10) == 0) {
 		SurveySetup.lense = atof(name + 10);
 	} else if (strncmp(name, "SurveySetup.options", 19) == 0) {
@@ -1285,7 +1282,7 @@ uint8_t survey_set (char *name, float x, float y, int8_t button, float data, uin
 	return 0;
 }
 
-void survey_draw_setup (ESContext *esContext) {
+void survey_draw_setup(ESContext *esContext) {
 	int ny = 1;
 	char tmp_str[128];
 	float px1 = -0.8;
@@ -1294,18 +1291,14 @@ void survey_draw_setup (ESContext *esContext) {
 	float py2 = 0.4;
 	float sy = 0.08;
 	reset_buttons();
-
 	EntryList list[3];
 	list[0].name = "GRID";
 	list[1].name = "TRIGGER";
 	list[2].name = NULL;
-
 	draw_window(esContext, px1, py1, px2, py2, 0.002, "SurveySetup.options", "Survey-Setup", list, SurveySetup.options, survey_set);
-
 	sprintf(tmp_str, "Name: %s", SurveySetup.name);
 	draw_text_button(esContext, "survey_name", setup.view_mode, tmp_str, FONT_WHITE, px1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_name_edit, 0.0);
 	ny++;
-
 	if (SurveySetup.options == 1) {
 		draw_text_button(esContext, "trigger_title", setup.view_mode, "Trigger:", FONT_WHITE, px1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
 		ny++;
@@ -1338,14 +1331,12 @@ void survey_draw_setup (ESContext *esContext) {
 		}
 		ny++;
 	} else {
-
 		EntryList list2[3];
 		list2[0].name = "CAM";
 		list2[1].name = "GRID";
 		list2[2].name = NULL;
 		draw_pulldown(esContext, px1 + 0.1, py1 + (float)ny * sy, 0.44, 0.01, "SurveySetup.mode", list2, alt_abs_open, SurveySetup.mode, survey_set);
-			ny++;
-
+		ny++;
 		if (SurveySetup.mode == 1) {
 			// fixed grid
 			draw_text_button(esContext, "cam_grid", setup.view_mode, "Grid:", FONT_WHITE, px1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
@@ -1359,13 +1350,11 @@ void survey_draw_setup (ESContext *esContext) {
 			ny++;
 			draw_text_button(esContext, "SurveySetup.grid_y_", setup.view_mode, "grid_y", FONT_WHITE, px1 + 0.1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
 			draw_spinbox(esContext, px1 + 0.6, py1 + (float)ny * sy, 0.4, 0.01, "SurveySetup.grid_y", "%0.0fm", SurveySetup.grid_y, survey_set);
-
 			ny++;
 			draw_text_button(esContext, "cam_alt", setup.view_mode, "Misc:", FONT_WHITE, px1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
 			ny++;
 			draw_text_button(esContext, "SurveySetup.alt_", setup.view_mode, "Alt", FONT_WHITE, px1 + 0.1, py1 + (float)ny * sy, 0.005, 0.06, ALIGN_LEFT, ALIGN_TOP, survey_set, 0.0);
 			draw_spinbox(esContext, px1 + 0.6, py1 + (float)ny * sy, 0.4, 0.01, "SurveySetup.alt", "%0.2fm", SurveySetup.alt, survey_set);
-
 			EntryList list2[3];
 			list2[0].name = "REL";
 			list2[1].name = "ABS";

@@ -27,20 +27,17 @@ static int8_t temp_buffer[sizeof(RcFlowPluginEmbedded) + 10];
 extern void flash_write(void);
 
 
-void USART_Config (void) {
+void USART_Config(void) {
 	USART_InitTypeDef USART_InitStructure;
 	GPIO_InitTypeDef GPIO_InitStructure;
 	NVIC_InitTypeDef NVIC_InitStructure;
-
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_InitStructure.NVIC_IRQChannel = USART3_IRQn;
 	NVIC_Init(&NVIC_InitStructure);
-
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_USART3, ENABLE);
-
 	// TX-Pin
 	GPIO_PinAFConfig(GPIOC, GPIO_PinSource10, GPIO_AF_USART3);
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
@@ -49,7 +46,6 @@ void USART_Config (void) {
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10;
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
-
 	// RX-Pin
 	GPIO_PinAFConfig(GPIOC, GPIO_PinSource11, GPIO_AF_USART3);
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
@@ -58,7 +54,6 @@ void USART_Config (void) {
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_11;
 	GPIO_Init(GPIOC, &GPIO_InitStructure);
-
 	USART_InitStructure.USART_BaudRate = 115200;
 	USART_InitStructure.USART_WordLength = USART_WordLength_8b;
 	USART_InitStructure.USART_StopBits = USART_StopBits_1;
@@ -67,7 +62,6 @@ void USART_Config (void) {
 	USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
 	USART_Init(USART3, &USART_InitStructure);
 	USART_Cmd(USART3, ENABLE);
-
 	USART_ITConfig(USART3, USART_IT_RXNE, ENABLE);
 }
 
@@ -168,28 +162,26 @@ void USART3_IRQHandler(void) {
 			rx_flag = 0;
 		}
 		rxc_last = rxc;
-	}     
+	}
 }
 
-void Serial_StartSend (void) {
+void Serial_StartSend(void) {
 	USART_ITConfig(USART3, USART_IT_TXE, ENABLE);
 }
 
-void Serial_SendText (char *text) {
+void Serial_SendText(char *text) {
 	uint32_t timeout = 0xFFFF;
 	uint16_t len = strlen((char *)text);
 	while (NbrOfDataToTransfer > 0 && timeout-- > 1);
 	if (timeout > 2 && len < 300) {
 		strcpy((char *)TxBuffer, (char *)text);
-
 		NbrOfDataToTransfer = len;
-
 		TxCounter = 0;
 		Serial_StartSend();
 	}
 }
 
-char *int2str (char *str, int16_t value, uint8_t mode, uint8_t digit, uint8_t close_str) {
+char *int2str(char *str, int16_t value, uint8_t mode, uint8_t digit, uint8_t close_str) {
 	char tmp_str[12];
 	uint8_t n = 0;
 	uint8_t n2 = 0;
@@ -217,7 +209,7 @@ char *int2str (char *str, int16_t value, uint8_t mode, uint8_t digit, uint8_t cl
 	return str;
 }
 
-void Serial_SendInt (int16_t value) {
+void Serial_SendInt(int16_t value) {
 	char text[16];
 	int2str(text, value, 0, 0, 1);
 	Serial_SendText(text);

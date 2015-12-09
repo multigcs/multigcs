@@ -2,7 +2,7 @@
 #include <all.h>
 
 extern GLuint RB_texture;
-void draw_texture_f3 (ESContext *esContext, float x1, float y1, float x2, float y2, float z, GLuint texture);
+void draw_texture_f3(ESContext *esContext, float x1, float y1, float x2, float y2, float z, GLuint texture);
 float mapcamscale = 1.8;
 
 #ifdef USE_VISTA2D
@@ -21,7 +21,7 @@ static float gimbal_pitch = 0.0;
 static float gimbal_roll = 0.0;
 static float gimbal_yaw = 0.0;
 
-uint8_t hud_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t hud_null(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 0;
 }
 
@@ -30,12 +30,12 @@ uint8_t hud_null (char *name, float x, float y, int8_t button, float data, uint8
 static uint8_t wifibc_scann = 0;
 static uint8_t wifibc_scann_n = 0;
 
-uint8_t hud_wifibc_record (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t hud_wifibc_record(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	setup.wifibc_record = 1 - setup.wifibc_record;
 	return 0;
 }
 
-uint8_t hud_wifibc_channel (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t hud_wifibc_channel(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	char cmd_str[1024];
 	if (button == 5) {
 		setup.wifibc_channel--;
@@ -53,7 +53,7 @@ uint8_t hud_wifibc_channel (char *name, float x, float y, int8_t button, float d
 }
 #endif
 
-uint8_t gimbal_set_pitch (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t gimbal_set_pitch(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 4) {
 		gimbal_pitch++;
 	} else if (button == 5) {
@@ -63,7 +63,7 @@ uint8_t gimbal_set_pitch (char *name, float x, float y, int8_t button, float dat
 	return 0;
 }
 
-uint8_t gimbal_set_roll (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t gimbal_set_roll(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 4) {
 		gimbal_roll++;
 	} else if (button == 5) {
@@ -73,7 +73,7 @@ uint8_t gimbal_set_roll (char *name, float x, float y, int8_t button, float data
 	return 0;
 }
 
-uint8_t gimbal_set_yaw (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t gimbal_set_yaw(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 4) {
 		gimbal_yaw++;
 	} else if (button == 5) {
@@ -86,7 +86,7 @@ uint8_t gimbal_set_yaw (char *name, float x, float y, int8_t button, float data,
 
 #ifdef USE_VISTA2D
 
-uint8_t vista2d_cmd (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t vista2d_cmd(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 4) {
 		z += 0.01;
 		return 0;
@@ -128,11 +128,11 @@ uint8_t vista2d_cmd (char *name, float x, float y, int8_t button, float data, ui
 	return 0;
 }
 
-void screen_hud_vista2d (ESContext *esContext) {
+void screen_hud_vista2d(ESContext *esContext) {
 	static uint8_t startup = 0;
 	if (startup == 0) {
 		startup = 1;
-		vdView = vdViewLoad ("External/vista2d/views/view1.v");
+		vdView = vdViewLoad("External/vista2d/views/view1.v");
 		vdViewStartAnim(vdView);
 	}
 	char tmp_str[128];
@@ -151,15 +151,13 @@ void screen_hud_vista2d (ESContext *esContext) {
 	vdVarSetStr(vdView, "POS_LAT", tmp_str);
 	sprintf(tmp_str, "%f", ModelData[ModelActive].p_long);
 	vdVarSetStr(vdView, "POS_LON", tmp_str);
-
 	int w = (int)vdViewWidth(vdView);
 	int h = (int)vdViewHeight(vdView);
-	glMatrixMode( GL_PROJECTION );
+	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();
-	glMatrixMode( GL_MODELVIEW );
+	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-
 	if (ratio == 1) {
 		glPushMatrix();
 		glScalef(2.0 / w, 2.0 / h, 1.0);
@@ -175,11 +173,10 @@ void screen_hud_vista2d (ESContext *esContext) {
 	}
 	vdViewDrawWindow(vdView);
 	glPopMatrix();
-	glMatrixMode( GL_PROJECTION );
+	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glEnable(GL_BLEND);
-
-	glDisable( GL_DEPTH_TEST );
+	glDisable(GL_DEPTH_TEST);
 	draw_text_button(esContext, "tVIEW1", setup.view_mode, "VIEW1", FONT_WHITE, -0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, vista2d_cmd, 0.0);
 	draw_text_button(esContext, "tVIEW2", setup.view_mode, "VIEW2", FONT_WHITE, -0.4, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, vista2d_cmd, 0.0);
 	draw_text_button(esContext, "tVIEW3", setup.view_mode, "VIEW3", FONT_WHITE, -0.2, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, vista2d_cmd, 0.0);
@@ -187,18 +184,18 @@ void screen_hud_vista2d (ESContext *esContext) {
 	draw_text_button(esContext, "tVIEW5", setup.view_mode, "VIEW5", FONT_WHITE, 0.2, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, vista2d_cmd, 0.0);
 	draw_text_button(esContext, "tRATIO", setup.view_mode, "RATIO", FONT_WHITE, 0.6, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, vista2d_cmd, 0.0);
 	draw_text_button(esContext, "tINTERNAL", setup.view_mode, "INTERNAL", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, vista2d_cmd, 0.0);
-	glEnable( GL_DEPTH_TEST );
+	glEnable(GL_DEPTH_TEST);
 }
 
 #endif
 
-uint8_t hud_goto_screen (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t hud_goto_screen(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	setup.view_mode = (int)data;
 	view_mode_next = (int)data;
 	return 0;
 }
 
-uint8_t hud_altitude_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t hud_altitude_null(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	float ground_alt = (float)get_altitude(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long);
 	if (ModelData[ModelActive].alt_offset != 0.0) {
 		ModelData[ModelActive].alt_offset = 0.0;
@@ -208,7 +205,7 @@ uint8_t hud_altitude_null (char *name, float x, float y, int8_t button, float da
 	return 0;
 }
 
-uint8_t view_hud (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t view_hud(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (setup.hud_view_screen == 0) {
 		setup.hud_view_screen = 1;
 	} else if (setup.hud_view_screen == 1) {
@@ -220,7 +217,7 @@ uint8_t view_hud (char *name, float x, float y, int8_t button, float data, uint8
 }
 
 
-uint8_t view_hud_stab (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t view_hud_stab(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (setup.hud_view_stab < 2) {
 		setup.hud_view_stab++;
 	} else {
@@ -229,22 +226,22 @@ uint8_t view_hud_stab (char *name, float x, float y, int8_t button, float data, 
 	return 0;
 }
 
-uint8_t view_hud_bw (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t view_hud_bw(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	setup.contrast = 1 - setup.contrast;
 	return 0;
 }
 
-uint8_t view_hud_mark (char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	setup.hud_view_mark = 1;	
+uint8_t view_hud_mark(char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	setup.hud_view_mark = 1;
 	return 0;
 }
 
-uint8_t view_hud_tunnel (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t view_hud_tunnel(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	setup.hud_view_tunnel = 1 - setup.hud_view_tunnel;
 	return 0;
 }
 
-uint8_t view_hud_map (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t view_hud_map(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 4) {
 		mapcamscale += 0.01;
 		return 0;
@@ -263,12 +260,12 @@ uint8_t view_hud_map (char *name, float x, float y, int8_t button, float data, u
 	return 0;
 }
 
-uint8_t view_hud_video (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t view_hud_video(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	setup.hud_view_video = 1 - setup.hud_view_video;
 	return 0;
 }
 
-void draw_gcs (ESContext *esContext, float x1, float y1, float roll, float pitch, float yaw) {
+void draw_gcs(ESContext *esContext, float x1, float y1, float roll, float pitch, float yaw) {
 	ESMatrix modelview;
 #ifdef SDLGL
 	glMatrixMode(GL_MODELVIEW);
@@ -277,14 +274,13 @@ void draw_gcs (ESContext *esContext, float x1, float y1, float roll, float pitch
 	UserData *userData = esContext->userData;
 	esMatrixLoadIdentity(&modelview);
 #endif
-	esTranslate( &modelview, x1, -y1, -1.9 );
-	esRotate( &modelview, roll, 0.0, 1.0, 0.0 );
-	esRotate( &modelview, pitch, 1.0, 0.0, 0.0 );
-	esTranslate( &modelview, -x1, y1, 1.9 );
+	esTranslate(&modelview, x1, -y1, -1.9);
+	esRotate(&modelview, roll, 0.0, 1.0, 0.0);
+	esRotate(&modelview, pitch, 1.0, 0.0, 0.0);
+	esTranslate(&modelview, -x1, y1, 1.9);
 #ifndef SDLGL
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
-
 	// Transmitter
 	float rc_roll = ModelData[ModelActive].radio[0];
 	float rc_pitch = -ModelData[ModelActive].radio[1];
@@ -298,14 +294,13 @@ void draw_gcs (ESContext *esContext, float x1, float y1, float roll, float pitch
 	draw_circleFilled_f3(esContext, x1 - 0.05 + (rc_yaw * 0.02 / 100.0), y1 + (rc_throttle * 0.02 / 100.0), 0.112, 0.01, 255, 0, 0, 255);
 	draw_line_f3(esContext, x1 + 0.05, y1, 0.1012, x1 + 0.05 + (rc_roll * 0.02 / 100.0), y1 + (rc_pitch * 0.02 / 100.0), 0.112, 255, 0, 0, 255);
 	draw_circleFilled_f3(esContext, x1 + 0.05 + (rc_roll * 0.02 / 100.0), y1 + (rc_pitch * 0.02 / 100.0), 0.112, 0.01, 255, 0, 0, 255);
-
 #ifdef SDLGL
 	glPopMatrix();
 #endif
 }
 
 
-void draw_turning_indicator (ESContext *esContext, float ti_x, float ti_y, float w, float h) {
+void draw_turning_indicator(ESContext *esContext, float ti_x, float ti_y, float w, float h) {
 	ESMatrix modelview;
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
@@ -378,27 +373,24 @@ void draw_turning_indicator (ESContext *esContext, float ti_x, float ti_y, float
 
 
 
-void draw_altiude_rule (ESContext *esContext, float ti_x, float ti_y, float w, float h) {
+void draw_altiude_rule(ESContext *esContext, float ti_x, float ti_y, float w, float h) {
 #ifndef SDLGL
 	ESMatrix modelview;
 	UserData *userData = esContext->userData;
 #endif
 	char tmp_str[100];
 	int n = 0;
-
 	// Alt
 #ifndef SDLGL
 	esMatrixLoadIdentity(&modelview);
 	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
-
 	float ax1 = ti_x;
 	if (setup.hud_view_screen == 0 || setup.hud_view_screen == 1) {
 		ax1 = 0.65;
 	}
 	float ax = ax1 + 0.04;
-
 	if (setup.contrast == 1) {
 		draw_box_f3(esContext, ax1, 0.0, 0.001, ax1 + 0.17, 0.0 + 7 * 0.1, 0.001, 0, 0, 0, 255);
 		draw_box_f3(esContext, ax1, 0.0, 0.001, ax1 + 0.17, 0.0 - 7 * 0.1, 0.001, 0, 0, 0, 255);
@@ -406,8 +398,6 @@ void draw_altiude_rule (ESContext *esContext, float ti_x, float ti_y, float w, f
 		draw_box_f3c2(esContext, ax1, 0.0, 0.001, ax1 + 0.17, 0.0 + 7 * 0.1, 0.001, 50, 50, 50, 128, 50, 50, 50, 64);
 		draw_box_f3c2(esContext, ax1, 0.0, 0.001, ax1 + 0.17, 0.0 - 7 * 0.1, 0.001, 50, 50, 50, 128, 50, 50, 50, 64);
 	}
-
-
 #ifdef SDLGL
 	float ground_alt = (float)get_altitude(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long);
 	if (ground_alt - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) > -7.0) {
@@ -423,17 +413,17 @@ void draw_altiude_rule (ESContext *esContext, float ti_x, float ti_y, float w, f
 			y1a = -0.7;
 		}
 		draw_box_f3c2(esContext
-			, ax1, y1a, 0.0015
-			, ax1 + 0.17, y2a, 0.0015
-			, 0, 255, 0, 0
-			, 255, 0, 0, 128
-		);
+					  , ax1, y1a, 0.0015
+					  , ax1 + 0.17, y2a, 0.0015
+					  , 0, 255, 0, 0
+					  , 255, 0, 0, 128
+					 );
 		draw_box_f3c2(esContext
-			, ax1, y1b, 0.0015
-			, ax1 + 0.17, y2b, 0.0015
-			, 255, 0, 0, 128
-			, 255, 0, 0, 128
-		);
+					  , ax1, y1b, 0.0015
+					  , ax1 + 0.17, y2b, 0.0015
+					  , 255, 0, 0, 128
+					  , 255, 0, 0, 128
+					 );
 		draw_line_f3(esContext, ax1 - 0.05, y2a, 0.0015, ax1 + 0.25, y2a, 0.002, 255, 255, 255, 255);
 	} else if ((ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) - ground_alt > 100.0 - 7.0) {
 		float y1a = 0.0 - (ground_alt + 100.0 - 2.0 - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset)) * 0.1;
@@ -448,28 +438,26 @@ void draw_altiude_rule (ESContext *esContext, float ti_x, float ti_y, float w, f
 			y1a = 0.7;
 		}
 		draw_box_f3c2(esContext
-			, ax1, y1a, 0.0015
-			, ax1 + 0.17, y2a, 0.0015
-			, 0, 255, 0, 0
-			, 255, 0, 0, 128
-		);
+					  , ax1, y1a, 0.0015
+					  , ax1 + 0.17, y2a, 0.0015
+					  , 0, 255, 0, 0
+					  , 255, 0, 0, 128
+					 );
 		draw_box_f3c2(esContext
-			, ax1, y1b, 0.0015
-			, ax1 + 0.17, y2b, 0.0015
-			, 255, 0, 0, 128
-			, 255, 0, 0, 128
-		);
+					  , ax1, y1b, 0.0015
+					  , ax1 + 0.17, y2b, 0.0015
+					  , 255, 0, 0, 128
+					  , 255, 0, 0, 128
+					 );
 		draw_line_f3(esContext, ax1 - 0.05, y2a, 0.0015, ax1 + 0.25, y2a, 0.002, 255, 255, 255, 255);
 	}
-
 	if (ground_alt - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) > 0.0) {
 		draw_text_f3(esContext, 0.0 - (float)strlen("GROUND CONTACT") * 0.07 * 0.6 / 2.0, -0.75, 0.002, 0.07, 0.07, FONT_GREEN, "GROUND CONTACT");
 	} else if (ground_alt - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) > -2.0) {
 		draw_text_f3(esContext, 0.0 - (float)strlen("LOW ALT") * 0.07 * 0.6 / 2.0, -0.75, 0.002, 0.07, 0.07, FONT_GREEN, "LOW ALT");
-//	} else if ((ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) - ground_alt > 100.0) {
-//		draw_text_f3(esContext, 0.0 - (float)strlen("PUBLIC AIRSPACE") * 0.07 * 0.6 / 2.0, -0.75, 0.002, 0.07, 0.07, FONT_GREEN, "PUBLIC AIRSPACE");
+		//	} else if ((ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) - ground_alt > 100.0) {
+		//		draw_text_f3(esContext, 0.0 - (float)strlen("PUBLIC AIRSPACE") * 0.07 * 0.6 / 2.0, -0.75, 0.002, 0.07, 0.07, FONT_GREEN, "PUBLIC AIRSPACE");
 	}
-
 	sprintf(tmp_str, "%0.1f", (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) - ground_alt);
 	if (setup.contrast == 1) {
 		draw_text_f3(esContext, ax + 0.15 - strlen(tmp_str) * 0.07 * 0.6 - 0.05, 0.7, 0.0025, 0.07, 0.07, FONT_WHITE, tmp_str);
@@ -477,16 +465,17 @@ void draw_altiude_rule (ESContext *esContext, float ti_x, float ti_y, float w, f
 		draw_text_f3(esContext, ax + 0.15 - strlen(tmp_str) * 0.07 * 0.6 - 0.05, 0.7, 0.0025, 0.07, 0.07, FONT_PINK, tmp_str);
 	}
 #endif
-
 	draw_rect_f3(esContext, ax1, 0.0 - 7 * 0.1, 0.002, ax1 + 0.17, 0.0 + 7 * 0.1, 0.002, 255, 255, 255, 127);
 	for (n = (int)(ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) - 5; n <= (int)(ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) + 6; n += 1) {
 		float tsize = 0.05;
 		sprintf(tmp_str, "%i", n);
 		draw_text_f3(esContext, ax1 + 0.02, 0.0 - 0.025 - ((float)n - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset)) * 0.1, 0.0015, tsize, tsize, FONT_WHITE, tmp_str);
-		draw_line_f3(esContext, ax1, 0.0 - ((float)n - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset)) * 0.1, 0.0015, ax1 + 0.02, 0.0 - ((float)n - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset)) * 0.1, 0.0015, 255, 255, 255, 255);
+		draw_line_f3(esContext, ax1, 0.0 - ((float)n - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset)) * 0.1, 0.0015, ax1 + 0.02,
+					 0.0 - ((float)n - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset)) * 0.1, 0.0015, 255, 255, 255, 255);
 	}
 	for (n = (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) + 0.3 - 5; n <= (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) - 0.3 + 7; n += 1) {
-		draw_line_f3(esContext, ax1, 0.0 - ((float)n - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset)) * 0.1 + 0.05, 0.0015, ax1 + 0.01, 0.0 - ((float)n - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset)) * 0.1 + 0.05, 0.0015, 255, 255, 255, 255);
+		draw_line_f3(esContext, ax1, 0.0 - ((float)n - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset)) * 0.1 + 0.05, 0.0015, ax1 + 0.01,
+					 0.0 - ((float)n - (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset)) * 0.1 + 0.05, 0.0015, 255, 255, 255, 255);
 	}
 	draw_box_f3(esContext, ax, -0.05, 0.002, ax + 0.28, 0.05, 0.002, 0, 0, 0, 255);
 	draw_triaFilled_f3(esContext, ax, -0.02, 0.002, ax - 0.02, 0.0, 0.002, ax, 0.02, 0.002, 0, 0, 0, 255);
@@ -497,48 +486,41 @@ void draw_altiude_rule (ESContext *esContext, float ti_x, float ti_y, float w, f
 	draw_line_f3(esContext, ax, 0.05, 0.002, ax, 0.019, 0.002, 255, 255, 255, 255);
 	draw_line_f3(esContext, ax - 0.02, 0.0, 0.002, ax, -0.02, 0.002, 255, 255, 255, 255);
 	draw_line_f3(esContext, ax - 0.02, 0.0, 0.002, ax, 0.02, 0.002, 255, 255, 255, 255);
-
 	sprintf(tmp_str, "%0.1f", (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset));
 	if (setup.contrast == 1) {
 		draw_text_f3(esContext, ax + 0.15 - strlen(tmp_str) * 0.07 * 0.6 - 0.05, -0.77, 0.0025, 0.07, 0.07, FONT_WHITE, tmp_str);
 	} else {
 		draw_text_f3(esContext, ax + 0.15 - strlen(tmp_str) * 0.07 * 0.6 - 0.05, -0.77, 0.0025, 0.07, 0.07, FONT_PINK, tmp_str);
 	}
-
 	sprintf(tmp_str, "%0.1fm", (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset));
 	draw_text_f3(esContext, ax + 0.28 - strlen(tmp_str) * 0.05 * 0.6 - 0.05, 0.0 - 0.025, 0.0025, 0.05, 0.05, FONT_WHITE, tmp_str);
 	set_button("alt_null", VIEW_MODE_HUD, ax, -0.05, ax + 0.28, 0.05, hud_altitude_null, ModelData[ModelActive].p_alt, 0);
-
 	sprintf(tmp_str, "%0.2f", ModelData[ModelActive].press_abs);
 	draw_text_button(esContext, "hud_alt_press", VIEW_MODE_HUD, tmp_str, FONT_WHITE, ax + 0.27, 0.015, 0.05, 0.035, 2, 0, hud_null, 0);
 }
 
 
 
-void draw_speed_rule (ESContext *esContext, float ti_x, float ti_y, float w, float h) {
+void draw_speed_rule(ESContext *esContext, float ti_x, float ti_y, float w, float h) {
 #ifndef SDLGL
 	ESMatrix modelview;
 	UserData *userData = esContext->userData;
 #endif
 	char tmp_str[100];
 	int n = 0;
-
 	float speed = ModelData[ModelActive].speed * 1000.0 / 60.0 / 60.0; // km/h -> m/s
-
 	// Speed
 #ifndef SDLGL
 	esMatrixLoadIdentity(&modelview);
 	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
-
 	float ax1 = ti_x;
 	if (setup.hud_view_screen == 0 || setup.hud_view_screen == 1) {
 		ax1 = -0.65;
 	}
 	float ax = ax1 - 0.04;
 	ax1 -= 0.17;
-
 	if (setup.contrast == 1) {
 		draw_box_f3(esContext, ax1, 0.0, 0.001, ax1 + 0.17, 0.0 + 7 * 0.1, 0.001, 0, 0, 0, 255);
 		draw_box_f3(esContext, ax1, 0.0, 0.001, ax1 + 0.17, 0.0 - 7 * 0.1, 0.001, 0, 0, 0, 255);
@@ -546,7 +528,6 @@ void draw_speed_rule (ESContext *esContext, float ti_x, float ti_y, float w, flo
 		draw_box_f3c2(esContext, ax1, 0.0, 0.001, ax1 + 0.17, 0.0 + 7 * 0.1, 0.001, 50, 50, 50, 128, 50, 50, 50, 64);
 		draw_box_f3c2(esContext, ax1, 0.0, 0.001, ax1 + 0.17, 0.0 - 7 * 0.1, 0.001, 50, 50, 50, 128, 50, 50, 50, 64);
 	}
-
 	draw_rect_f3(esContext, ax1, 0.0 - 7 * 0.1, 0.002, ax1 + 0.17, 0.0 + 7 * 0.1, 0.002, 255, 255, 255, 127);
 	for (n = (int)speed - 5; n <= (int)speed + 6; n += 1) {
 		float tsize = 0.05;
@@ -557,7 +538,6 @@ void draw_speed_rule (ESContext *esContext, float ti_x, float ti_y, float w, flo
 	for (n = speed + 0.3 - 5; n <= speed - 0.3 + 7; n += 1) {
 		draw_line_f3(esContext, ax1 + 0.17, 0.0 - ((float)n - speed) * 0.1 + 0.05, 0.0015, ax1 + 0.17 - 0.01, 0.0 - ((float)n - speed) * 0.1 + 0.05, 0.0015, 255, 255, 255, 255);
 	}
-
 	draw_box_f3(esContext, ax - 0.28, -0.05, 0.002, ax, 0.05, 0.002, 0, 0, 0, 255);
 	draw_triaFilled_f3(esContext, ax + 0.02, 0.0, 0.002, ax, -0.02, 0.002, ax, 0.02, 0.002, 0, 0, 0, 255);
 	draw_line_f3(esContext, ax, -0.05, 0.002, ax - 0.28, -0.05, 0.002, 255, 255, 255, 255);
@@ -567,62 +547,58 @@ void draw_speed_rule (ESContext *esContext, float ti_x, float ti_y, float w, flo
 	draw_line_f3(esContext, ax, 0.05, 0.002, ax, 0.019, 0.002, 255, 255, 255, 255);
 	draw_line_f3(esContext, ax + 0.02, 0.0, 0.002, ax, -0.02, 0.002, 255, 255, 255, 255);
 	draw_line_f3(esContext, ax + 0.02, 0.0, 0.002, ax, 0.02, 0.002, 255, 255, 255, 255);
-
 	sprintf(tmp_str, "%0.1f", speed);
 	if (setup.contrast == 1) {
 		draw_text_f3(esContext, ax1, -0.77, 0.0025, 0.07, 0.07, FONT_WHITE, tmp_str);
 	} else {
 		draw_text_f3(esContext, ax1, -0.77, 0.0025, 0.07, 0.07, FONT_PINK, tmp_str);
 	}
-
 	sprintf(tmp_str, "%0.1fm/s", speed);
 	draw_text_f3(esContext, ax - strlen(tmp_str) * 0.05 * 0.6 - 0.05, 0.0 - 0.025, 0.0025, 0.05, 0.05, FONT_WHITE, tmp_str);
 }
 
-void hud_draw_horizon (ESContext *esContext, uint8_t type) {
+void hud_draw_horizon(ESContext *esContext, uint8_t type) {
 	ESMatrix modelview;
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
 #endif
 	char tmp_str[400];
 	int n = 0;
-
 #ifdef SDLGL
 	glDisable(GL_DEPTH_TEST);
 	if (setup.hud_view_video == 1) {
-
 #if defined USE_VLC
-	if (vlc_is_playing() == 0) {
-		vlc_exit();
-		vlc_init(setup.videocapture_device);
-	}
-	draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, vlc_update());
+		if (vlc_is_playing() == 0) {
+			vlc_exit();
+			vlc_init(setup.videocapture_device);
+		}
+		draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, vlc_update());
 #elif defined USE_WIFIBC
-	SDL_Surface *vidsurf = wifibc_get();
-	if (vidsurf != NULL) {
+		SDL_Surface *vidsurf = wifibc_get();
+		if (vidsurf != NULL) {
 #ifdef _ANDROID
-		SDL_Surface *imageSurface = convert_to_power_of_two(vidsurf);
-		draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, imageSurface);
-		SDL_FreeSurface(imageSurface);
+			SDL_Surface *imageSurface = convert_to_power_of_two(vidsurf);
+			draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, imageSurface);
+			SDL_FreeSurface(imageSurface);
 #else
-		draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, vidsurf);
+			draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, vidsurf);
 #endif
-	}
+		}
 #elif defined USE_OPENCV
-	SDL_Surface *vidsurf = openvc_get();
-	if (vidsurf != NULL) {
+		SDL_Surface *vidsurf = openvc_get();
+		if (vidsurf != NULL) {
 #ifdef _ANDROID
-		SDL_Surface *imageSurface = convert_to_power_of_two(vidsurf);
-		draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, imageSurface);
-		SDL_FreeSurface(imageSurface);
+			SDL_Surface *imageSurface = convert_to_power_of_two(vidsurf);
+			draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, imageSurface);
+			SDL_FreeSurface(imageSurface);
 #else
-		draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, vidsurf);
+			draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, vidsurf);
 #endif
-	}
+		}
 #else
 #ifndef OSX
 #if defined USE_V4L
-	draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, videodev_loop());
+		draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, videodev_loop());
 #endif
 #endif
 #endif
@@ -771,13 +747,13 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 			esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
 			uint8_t alpha = 255;
-/*
-			if ((n) < 0) {
-				alpha = 255 - -(n) * 255 / 45;
-			} else {
-				alpha = 255 - (n) * 255 / 45;
-			}
-*/
+			/*
+						if ((n) < 0) {
+							alpha = 255 - -(n) * 255 / 45;
+						} else {
+							alpha = 255 - (n) * 255 / 45;
+						}
+			*/
 			if ((n) > -45 && (n) < 45) {
 				draw_line_f(esContext, 0.0, -0.65, 0.0, -0.6, 255, 255, 255, alpha);
 			}
@@ -799,13 +775,13 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 			esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
 			uint8_t alpha = 255;
-/*
-			if ((n) < 0) {
-				alpha = 255 - -(n) * 255 / 45;
-			} else {
-				alpha = 255 - (n) * 255 / 45;
-			}
-*/
+			/*
+						if ((n) < 0) {
+							alpha = 255 - -(n) * 255 / 45;
+						} else {
+							alpha = 255 - (n) * 255 / 45;
+						}
+			*/
 			if ((n) > -45 && (n) < 45) {
 				draw_line_f(esContext, 0.0, -0.63, 0.0, -0.6, 255, 255, 255, alpha);
 			}
@@ -902,7 +878,7 @@ void hud_draw_horizon (ESContext *esContext, uint8_t type) {
 }
 
 #ifdef CAR_MODE
-void draw_circleMarker_f3 (ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_circleMarker_f3(ESContext *esContext, float x1, float y1, float z1, float radius, float radius_inner, float start, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 #ifdef SDLGL
 	y1 = y1 * -1;
 	float i = start;
@@ -915,14 +891,14 @@ void draw_circleMarker_f3 (ESContext *esContext, float x1, float y1, float z1, f
 }
 #endif
 
-void draw_circleText_f3 (ESContext *esContext, float x1, float y1, float z1, float radius, float start, float size, char *text, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+void draw_circleText_f3(ESContext *esContext, float x1, float y1, float z1, float radius, float start, float size, char *text, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 	float i = start;
 	x1 -= cos(i * DEG2RAD) * radius;
 	y1 -= sin(i * DEG2RAD) * radius;
 	draw_text_f3(esContext, x1 - strlen(text) * size * 0.6 / 2.0 - 0.015, y1 - size / 2.0, z1, size, size, FONT_WHITE, text);
 }
 
-void screen_hud_internal (ESContext *esContext) {
+void screen_hud_internal(ESContext *esContext) {
 	ESMatrix modelview;
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
@@ -937,9 +913,6 @@ void screen_hud_internal (ESContext *esContext) {
 #endif
 #endif
 	glDisable(GL_DEPTH_TEST);
-
-
-
 #ifdef CAR_MODE
 	static int pointer_pm = 0;
 	static float pointer_val = 0.0;
@@ -957,7 +930,6 @@ void screen_hud_internal (ESContext *esContext) {
 		}
 	}
 	float upm = (pointer_val + 54.0) * 8000.0 / 288;
-
 	if (setup.hud_view_screen != 2 && draw_target() == 0) {
 		if (upm < 800.0) {
 			draw_image_f3(esContext, 0.0 - 0.2, 0.0 - 0.3, 0.0 + 0.2, 0.0 + 0.1, 0.012, "car-door.png");
@@ -967,28 +939,23 @@ void screen_hud_internal (ESContext *esContext) {
 			draw_buffer_to_screen(0.0 - 0.6, -0.1 - 0.4, 0.0 + 0.6, -0.1 + 0.4, 0.0, 1.0);
 		}
 		glLineWidth(7);
-		draw_line_f3 (esContext, 0.0 - 0.6, -0.1 - 0.4, 0.001, 0.0 + 0.6, -0.1 - 0.4, 0.001, 75, 75, 75, 255);
-		draw_line_f3 (esContext, 0.0 - 0.6, -0.1 + 0.4, 0.001, 0.0 + 0.6, -0.1 + 0.4, 0.001, 75, 75, 75, 255);
+		draw_line_f3(esContext, 0.0 - 0.6, -0.1 - 0.4, 0.001, 0.0 + 0.6, -0.1 - 0.4, 0.001, 75, 75, 75, 255);
+		draw_line_f3(esContext, 0.0 - 0.6, -0.1 + 0.4, 0.001, 0.0 + 0.6, -0.1 + 0.4, 0.001, 75, 75, 75, 255);
 		glLineWidth(3);
-		draw_line_f3 (esContext, 0.0 - 0.6, -0.1 - 0.4, 0.001, 0.0 + 0.6, -0.1 - 0.4, 0.001, 200, 200, 200, 255);
-		draw_line_f3 (esContext, 0.0 - 0.6, -0.1 + 0.4, 0.001, 0.0 + 0.6, -0.1 + 0.4, 0.001, 200, 200, 200, 255);
+		draw_line_f3(esContext, 0.0 - 0.6, -0.1 - 0.4, 0.001, 0.0 + 0.6, -0.1 - 0.4, 0.001, 200, 200, 200, 255);
+		draw_line_f3(esContext, 0.0 - 0.6, -0.1 + 0.4, 0.001, 0.0 + 0.6, -0.1 + 0.4, 0.001, 200, 200, 200, 255);
 	}
-
 	float i1x = -0.8;
 	float i2x = 0.8;
-
-//	draw_image_f3(esContext, -1.2, -0.62, -0.19, 0.42, 0.012, "tacho.png");
-//	draw_image_f3(esContext, 0.21, -0.62, 1.21, 0.42, 0.012, "tacho2.png");
-
+	//	draw_image_f3(esContext, -1.2, -0.62, -0.19, 0.42, 0.012, "tacho.png");
+	//	draw_image_f3(esContext, 0.21, -0.62, 1.21, 0.42, 0.012, "tacho2.png");
 	draw_circleFilled_f(esContext, i1x, -0.1, 0.5, 0, 0, 0, 255);
-//	draw_circleFilled_f(esContext, i1x, -0.1, 0.5, 40, 40, 40, 255);
-//	draw_circleFilled_f3_part(esContext, i1x, -0.1, 0.0005, 0.5, 0.5, 0.0, 360.0, 60, 60, 255, 255);
-
+	//	draw_circleFilled_f(esContext, i1x, -0.1, 0.5, 40, 40, 40, 255);
+	//	draw_circleFilled_f3_part(esContext, i1x, -0.1, 0.0005, 0.5, 0.5, 0.0, 360.0, 60, 60, 255, 255);
 	draw_text_f3(esContext, -0.6, 0.05, 0.002, 0.04, 0.04, FONT_WHITE, "1/min*1000");
 	draw_circleFilled_f(esContext, i2x, -0.1, 0.5, 0, 0, 0, 255);
-//	draw_circleFilled_f(esContext, i2x, -0.1, 0.5, 40, 40, 40, 255);
-//	draw_circleFilled_f3_part(esContext, i2x, -0.1, 0.0005, 0.5, 0.5, 0.0, 360.0, 60, 60, 255, 255);
-
+	//	draw_circleFilled_f(esContext, i2x, -0.1, 0.5, 40, 40, 40, 255);
+	//	draw_circleFilled_f3_part(esContext, i2x, -0.1, 0.0005, 0.5, 0.5, 0.0, 360.0, 60, 60, 255, 255);
 	char tmp_str3[10];
 	float a = 0.0;
 	glLineWidth(3);
@@ -1011,7 +978,6 @@ void screen_hud_internal (ESContext *esContext) {
 		draw_circleText_f3(esContext, i1x, -0.1, 0.0002, 0.365, a, 0.07, tmp_str3, 255, 255, 255, 255);
 		nt += 1;
 	}
-
 	glLineWidth(3);
 	for (a = -54.0; a <= 234.0; a += 9.0) {
 		draw_circleMarker_f3(esContext, i2x, -0.1, 0.0002, 0.5, 0.45, a, 255, 255, 255, 255);
@@ -1028,41 +994,30 @@ void screen_hud_internal (ESContext *esContext) {
 			nt += 20;
 		}
 	}
-
-//	draw_box_f3(esContext, i1x - 0.15, -0.1 + 0.3 - 0.09, 0.001, i1x + 0.15, -0.1 + 0.3 + 0.09, 0.001, 0, 0, 0, 255);
-//	draw_text_f(esContext, i1x - 0.12, -0.1 + 0.33 - 0.1, 0.07, 0.07, FONT_GREEN, "09:47");
-//	draw_text_f(esContext, i1x - 0.135, -0.1 + 0.4 - 0.1, 0.07, 0.07, FONT_GREEN, "001145");
-
-
-//	draw_circleFilled_f(esContext, i1x + 0.005, -0.1 + 0.005, 0.075, 30, 30, 30, 255);
-//	draw_circlePointer_f3(esContext, i1x, -0.1, 0.0001, 0.45, 0.02, pointer_val, 255, 255, 255, 255);
-//	draw_circleFilled_f(esContext, i1x, -0.1, 0.07, 127, 127, 127, 255);
-//	draw_circle_f3(esContext, i1x, -0.1, 0.002, 0.07, 155, 155, 155, 255);
-
-
-//	draw_box_f3(esContext, i2x - 0.15, -0.1 + 0.3 - 0.09, 0.001, i2x + 0.15, -0.1 + 0.3 + 0.09, 0.001, 0, 0, 0, 255);
-//	draw_text_f(esContext, i2x - 0.12, -0.1 + 0.33 - 0.1, 0.07, 0.07, FONT_GREEN, "02547");
-//	draw_text_f(esContext, i2x - 0.135, -0.1 + 0.4 - 0.1, 0.07, 0.07, FONT_GREEN, "006287");
-
-
-//	draw_circleFilled_f(esContext, i2x + 0.005, -0.1 + 0.005, 0.075, 30, 30, 30, 255);
-//	draw_circlePointer_f3(esContext, i2x, -0.1, 0.0001, 0.45, 0.02, pointer_val, 255, 255, 255, 255);
-//	draw_circleFilled_f(esContext, i2x, -0.1, 0.07, 127, 127, 127, 255);
-//	draw_circle_f3(esContext, i2x, -0.1, 0.002, 0.07, 155, 155, 155, 255);
-
-
+	//	draw_box_f3(esContext, i1x - 0.15, -0.1 + 0.3 - 0.09, 0.001, i1x + 0.15, -0.1 + 0.3 + 0.09, 0.001, 0, 0, 0, 255);
+	//	draw_text_f(esContext, i1x - 0.12, -0.1 + 0.33 - 0.1, 0.07, 0.07, FONT_GREEN, "09:47");
+	//	draw_text_f(esContext, i1x - 0.135, -0.1 + 0.4 - 0.1, 0.07, 0.07, FONT_GREEN, "001145");
+	//	draw_circleFilled_f(esContext, i1x + 0.005, -0.1 + 0.005, 0.075, 30, 30, 30, 255);
+	//	draw_circlePointer_f3(esContext, i1x, -0.1, 0.0001, 0.45, 0.02, pointer_val, 255, 255, 255, 255);
+	//	draw_circleFilled_f(esContext, i1x, -0.1, 0.07, 127, 127, 127, 255);
+	//	draw_circle_f3(esContext, i1x, -0.1, 0.002, 0.07, 155, 155, 155, 255);
+	//	draw_box_f3(esContext, i2x - 0.15, -0.1 + 0.3 - 0.09, 0.001, i2x + 0.15, -0.1 + 0.3 + 0.09, 0.001, 0, 0, 0, 255);
+	//	draw_text_f(esContext, i2x - 0.12, -0.1 + 0.33 - 0.1, 0.07, 0.07, FONT_GREEN, "02547");
+	//	draw_text_f(esContext, i2x - 0.135, -0.1 + 0.4 - 0.1, 0.07, 0.07, FONT_GREEN, "006287");
+	//	draw_circleFilled_f(esContext, i2x + 0.005, -0.1 + 0.005, 0.075, 30, 30, 30, 255);
+	//	draw_circlePointer_f3(esContext, i2x, -0.1, 0.0001, 0.45, 0.02, pointer_val, 255, 255, 255, 255);
+	//	draw_circleFilled_f(esContext, i2x, -0.1, 0.07, 127, 127, 127, 255);
+	//	draw_circle_f3(esContext, i2x, -0.1, 0.002, 0.07, 155, 155, 155, 255);
 	glLineWidth(4);
 	draw_circleMarker_f3(esContext, i1x, -0.1, 0.0002, 0.43, 0.3, pointer_val, 255, 55, 55, 255);
 	draw_circleMarker_f3(esContext, i2x, -0.1, 0.0002, 0.43, 0.3, pointer_val, 255, 55, 55, 255);
 	glLineWidth(1);
-
 	if (upm > 6000.0) {
 		draw_circleFilled_f3_part(esContext, i1x, -0.1, 0.0005, 0.3, 0.3, 0.0, 360.0, 160, 60, 60, 255);
 	} else {
 		draw_circleFilled_f3_part(esContext, i1x, -0.1, 0.0005, 0.3, 0.3, 0.0, 360.0, 60, 60, 160, 255);
 	}
 	draw_circleFilled_f3_part(esContext, i2x, -0.1, 0.0005, 0.3, 0.3, 0.0, 360.0, 60, 60, 160, 255);
-
 	sprintf(tmp_str3, "%0.0fupm", upm);
 	if (upm > 6000.0) {
 		draw_text_f(esContext, i1x - strlen(tmp_str3) * 0.07 * 0.6 / 2.0 - 0.015, -0.1 - 0.05 - 0.035, 0.07, 0.07, FONT_PINK, tmp_str3);
@@ -1071,30 +1026,22 @@ void screen_hud_internal (ESContext *esContext) {
 	}
 	sprintf(tmp_str3, "%0.0fl", 46.0);
 	draw_text_f(esContext, i1x - strlen(tmp_str3) * 0.07 * 0.6 / 2.0 - 0.015, -0.1 - 0.05 - 0.035 + 0.1, 0.07, 0.07, FONT_GREEN, tmp_str3);
-
 	sprintf(tmp_str3, "%0.0fkm/h", (pointer_val + 54.0) * 260.0 / 288);
 	draw_text_f(esContext, i2x - strlen(tmp_str3) * 0.07 * 0.6 / 2.0 - 0.015, -0.1 - 0.05 - 0.035, 0.07, 0.07, FONT_GREEN, tmp_str3);
 	sprintf(tmp_str3, "10.6l/100km");
 	draw_text_f(esContext, i2x - strlen(tmp_str3) * 0.05 * 0.6 / 2.0 - 0.015, -0.1 - 0.05 - 0.035 + 0.1, 0.05, 0.05, FONT_GREEN, tmp_str3);
-
 	glLineWidth(7);
 	draw_circle_f3(esContext, i1x, -0.1, 0.001, 0.5, 75, 75, 75, 255);
 	draw_circle_f3(esContext, i2x, -0.1, 0.001, 0.5, 75, 75, 75, 255);
-
 	draw_circle_f3(esContext, i1x, -0.1, 0.001, 0.3, 75, 75, 75, 255);
 	draw_circle_f3(esContext, i2x, -0.1, 0.001, 0.3, 75, 75, 75, 255);
-
 	glLineWidth(3);
 	draw_circle_f3(esContext, i1x, -0.1, 0.001, 0.5, 255, 255, 255, 255);
 	draw_circle_f3(esContext, i2x, -0.1, 0.001, 0.5, 255, 255, 255, 255);
-
 	draw_circle_f3(esContext, i1x, -0.1, 0.001, 0.3, 200, 200, 200, 255);
 	draw_circle_f3(esContext, i2x, -0.1, 0.001, 0.3, 200, 200, 200, 255);
-
 	glLineWidth(1);
-
 	draw_image_f3(esContext, i1x - 0.1, 0.3 - 0.05, i1x + 0.1, 0.3 + 0.05, 0.012, "s6-logo.png");
-
 	char icons[20][50];
 	strcpy(icons[0], "textures/tacho-abs.png");
 	strcpy(icons[1], "textures/tacho-bat.png");
@@ -1116,15 +1063,13 @@ void screen_hud_internal (ESContext *esContext) {
 			draw_box_f3(esContext, (nn1 * 0.12 - 0.65) - 0.05, -0.65 - 0.05, 0.012, (nn1 * 0.12 - 0.65) + 0.05, -0.65 + 0.05, 0.012, 0, 0, 0, 200);
 		}
 	}
-
-
 #ifdef SDLGL
 #ifndef WINDOWS
 	if (setup.hud_view_screen != 2 && draw_target() == 0) {
-//		draw_buffer_to_screen(0.9, 0.4, 1.4, 0.85, 0.0, 1.0);
-//		draw_rect_f3(esContext, 0.9, 0.4, 0.002, 1.4, 0.85, 0.002, 0, 0, 0, 255);
-//		draw_rect_f3(esContext, 0.9 - 0.005, 0.4 - 0.005, 0.002, 1.4 + 0.005, 0.85 + 0.005, 0.002, 255, 255, 255, 255);
-//		set_button("goto_map", setup.view_mode, 0.9, 0.4, 1.4, 0.85, hud_goto_screen, (float)VIEW_MODE_MAP, 0);
+		//		draw_buffer_to_screen(0.9, 0.4, 1.4, 0.85, 0.0, 1.0);
+		//		draw_rect_f3(esContext, 0.9, 0.4, 0.002, 1.4, 0.85, 0.002, 0, 0, 0, 255);
+		//		draw_rect_f3(esContext, 0.9 - 0.005, 0.4 - 0.005, 0.002, 1.4 + 0.005, 0.85 + 0.005, 0.002, 255, 255, 255, 255);
+		//		set_button("goto_map", setup.view_mode, 0.9, 0.4, 1.4, 0.85, hud_goto_screen, (float)VIEW_MODE_MAP, 0);
 	}
 #endif
 #endif
@@ -1134,7 +1079,6 @@ void screen_hud_internal (ESContext *esContext) {
 	glEnable(GL_DEPTH_TEST);
 	return;
 #endif
-
 	char tmp_str[400];
 	char tmp_str2[400];
 	int n = 0;
@@ -1146,20 +1090,20 @@ void screen_hud_internal (ESContext *esContext) {
 	float dist2 = 0.0;
 	float angle2 = 0.0;
 	float angle_home = 0.0;
-
-	get_dir(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].p_alt, WayPoints[ModelActive][waypoint_active].p_lat, WayPoints[ModelActive][waypoint_active].p_long, WayPoints[ModelActive][waypoint_active].p_alt, &angle_wp, &dist1, &angle_up, &dist2);
+	get_dir(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].p_alt, WayPoints[ModelActive][waypoint_active].p_lat, WayPoints[ModelActive][waypoint_active].p_long,
+			WayPoints[ModelActive][waypoint_active].p_alt, &angle_wp, &dist1, &angle_up, &dist2);
 	angle2 = angle_wp - ModelData[ModelActive].yaw;
 	if (angle2 > 180.0) {
 		angle2 = angle2 - 360.0;
 	}
-	get_dir(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].p_alt, WayPoints[ModelActive][0].p_lat, WayPoints[ModelActive][0].p_long, WayPoints[ModelActive][0].p_alt, &angle, &dist1, &angle_up, &dist2);
+	get_dir(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].p_alt, WayPoints[ModelActive][0].p_lat, WayPoints[ModelActive][0].p_long, WayPoints[ModelActive][0].p_alt,
+			&angle, &dist1, &angle_up, &dist2);
 	angle_home = angle - ModelData[ModelActive].yaw;
 	if (angle_home > 180.0) {
 		angle_home = angle_home - 360.0;
 	}
 	hud_draw_horizon(esContext, 1);
 	glDisable(GL_DEPTH_TEST);
-
 	// Rahmen
 #ifndef SDLGL
 	esMatrixLoadIdentity(&modelview);
@@ -1169,19 +1113,14 @@ void screen_hud_internal (ESContext *esContext) {
 	if (setup.hud_view_screen == 0) {
 		draw_image(esContext, 0, 0, esContext->width, esContext->height, TEXTURE_HUD_FRAME);
 	}
-
 	// Alt
 	draw_altiude_rule(esContext, 1.0, -0.6, 0.0, 0.0);
-
 	// Speed
 	draw_speed_rule(esContext, -1.0, -0.6, 0.0, 0.0);
-
 	//SDL_Log("hud#6\n");
-
 	// Status
-//	draw_text_f3(esContext, -1.0 - strlen(statetypes[ModelData[ModelActive].armed]) * 0.07 * 0.6 / 2.0, -0.92, 0.002, 0.07, 0.07, FONT_GREEN, statetypes[ModelData[ModelActive].armed]);
-//	draw_line_f3(esContext, -0.8, -0.94, 0.002, -0.8, -0.83, 0.002, 255, 255, 255, 255);
-
+	//	draw_text_f3(esContext, -1.0 - strlen(statetypes[ModelData[ModelActive].armed]) * 0.07 * 0.6 / 2.0, -0.92, 0.002, 0.07, 0.07, FONT_GREEN, statetypes[ModelData[ModelActive].armed]);
+	//	draw_line_f3(esContext, -0.8, -0.94, 0.002, -0.8, -0.83, 0.002, 255, 255, 255, 255);
 	if (ModelData[ModelActive].mode == 0) {
 		sprintf(tmp_str, "MANUAL");
 	} else if (ModelData[ModelActive].mode == 1) {
@@ -1213,9 +1152,8 @@ void screen_hud_internal (ESContext *esContext) {
 	} else {
 		sprintf(tmp_str, "UNKNOWN%i", ModelData[ModelActive].mode);
 	}
-//	draw_text_f3(esContext, -0.6 - strlen(tmp_str) * 0.07 * 0.6 / 2.0, -0.92, 0.002, 0.07, 0.07, FONT_GREEN, tmp_str);
-//	draw_line_f3(esContext, -0.4, -0.94, 0.002, -0.4, -0.83, 0.002, 255, 255, 255, 255);
-
+	//	draw_text_f3(esContext, -0.6 - strlen(tmp_str) * 0.07 * 0.6 / 2.0, -0.92, 0.002, 0.07, 0.07, FONT_GREEN, tmp_str);
+	//	draw_line_f3(esContext, -0.4, -0.94, 0.002, -0.4, -0.83, 0.002, 255, 255, 255, 255);
 	// Yaw
 	float compas_r = 0.9;
 	float compas_y = 1.5;
@@ -1237,9 +1175,7 @@ void screen_hud_internal (ESContext *esContext) {
 	} else {
 		draw_text_f(esContext, 0.2 - strlen(tmp_str) * 0.07 * 0.6 / 2.0 - 0.01, 0.9, 0.07, 0.07, FONT_GREEN, tmp_str);
 	}
-
 	//SDL_Log("hud#7\n");
-
 	// Yaw-Arrow
 	if (setup.contrast == 1) {
 		draw_line_f(esContext, -0.05, compas_y - compas_r - 0.05, 0.0, compas_y - compas_r - 0.05 + 0.05, 0, 0, 0, 255);
@@ -1250,7 +1186,6 @@ void screen_hud_internal (ESContext *esContext) {
 		draw_line_f(esContext, 0.05, compas_y - compas_r - 0.05, 0.0, compas_y - compas_r - 0.05 + 0.05, 255, 255, 255, 255);
 		draw_line_f(esContext, -0.05, compas_y - compas_r - 0.05, 0.05, compas_y - compas_r - 0.05, 255, 255, 255, 255);
 	}
-
 	for (n = (int)ModelData[ModelActive].yaw / 10 * 10 - 60; n <= (int)ModelData[ModelActive].yaw / 10 * 10 + 60; n += 10) {
 #ifdef SDLGL
 		glMatrixMode(GL_MODELVIEW);
@@ -1293,12 +1228,10 @@ void screen_hud_internal (ESContext *esContext) {
 		esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
 		draw_line_f(esContext, 0.0, compas_y - compas_r, 0.0, compas_y - compas_r + 0.03, 255, 255, 255, 255);
-
 #ifdef SDLGL
 		glPopMatrix();
 #endif
 	}
-
 	if (setup.weather_enable == 1) {
 		double C = angle_wp - weather.wind_direction; // Wind/Plane-Angle-Diff
 		if (C > 180.0) {
@@ -1318,10 +1251,8 @@ void screen_hud_internal (ESContext *esContext) {
 			A *= -1.0;
 		}
 		double NewDir = angle_wp - A;
-
 		weather_draw_wind(esContext, -0.26, 0.76, 1);
-
-	// Waypoint-Dir (Wind-Correction)
+		// Waypoint-Dir (Wind-Correction)
 #ifdef SDLGL
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
@@ -1339,14 +1270,13 @@ void screen_hud_internal (ESContext *esContext) {
 		draw_line_f(esContext, -0.05, compas_y - compas_r - 0.05, 0.0, compas_y - compas_r, 255, 0, 0, 255);
 		draw_line_f(esContext, 0.05, compas_y - compas_r - 0.05, 0.0, compas_y - compas_r, 255, 0, 0, 255);
 		draw_line_f(esContext, -0.05, compas_y - compas_r - 0.05, 0.05, compas_y - compas_r - 0.05, 255, 0, 0, 255);
-
 		draw_line_f(esContext, -0.05, compas_y - compas_r + 0.05, 0.0, compas_y - compas_r + 0.05 - 0.05, 255, 0, 0, 255);
 		draw_line_f(esContext, 0.05, compas_y - compas_r + 0.05, 0.0, compas_y - compas_r + 0.05 - 0.05, 255, 0, 0, 255);
 		draw_line_f(esContext, -0.05, compas_y - compas_r + 0.05, 0.05, compas_y - compas_r + 0.05, 255, 0, 0, 255);
 #ifdef SDLGL
 		glPopMatrix();
 #endif
-	// Route-Dir Arrow (Waypoint) (Wind-Correction)
+		// Route-Dir Arrow (Waypoint) (Wind-Correction)
 #ifndef SDLGL
 		esMatrixLoadIdentity(&modelview);
 		esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
@@ -1372,8 +1302,6 @@ void screen_hud_internal (ESContext *esContext) {
 			draw_text_f3(esContext, -0.11 - strlen(tmp_str) * 0.04 * 0.6 - 0.01, 0.88 - 0.02, 0.002, 0.04, 0.04, FONT_GREEN, tmp_str);
 		}
 	}
-
-
 	// Home & Waypoint-Dir
 #ifdef SDLGL
 	glMatrixMode(GL_MODELVIEW);
@@ -1393,7 +1321,6 @@ void screen_hud_internal (ESContext *esContext) {
 		draw_line_f(esContext, -0.05, compas_y - compas_r - 0.05, 0.0, compas_y - compas_r, 255, 255, 255, 255);
 		draw_line_f(esContext, 0.05, compas_y - compas_r - 0.05, 0.0, compas_y - compas_r, 255, 255, 255, 255);
 		draw_line_f(esContext, -0.05, compas_y - compas_r - 0.05, 0.05, compas_y - compas_r - 0.05, 255, 255, 255, 255);
-
 		draw_line_f(esContext, -0.05, compas_y - compas_r + 0.05, 0.0, compas_y - compas_r + 0.05 - 0.05, 255, 255, 255, 255);
 		draw_line_f(esContext, 0.05, compas_y - compas_r + 0.05, 0.0, compas_y - compas_r + 0.05 - 0.05, 255, 255, 255, 255);
 		draw_line_f(esContext, -0.05, compas_y - compas_r + 0.05, 0.05, compas_y - compas_r + 0.05, 0, 255, 0, 255);
@@ -1401,7 +1328,6 @@ void screen_hud_internal (ESContext *esContext) {
 		draw_line_f(esContext, -0.05, compas_y - compas_r - 0.05, 0.0, compas_y - compas_r, 0, 255, 0, 255);
 		draw_line_f(esContext, 0.05, compas_y - compas_r - 0.05, 0.0, compas_y - compas_r, 0, 255, 0, 255);
 		draw_line_f(esContext, -0.05, compas_y - compas_r - 0.05, 0.05, compas_y - compas_r - 0.05, 0, 255, 0, 255);
-
 		draw_line_f(esContext, -0.05, compas_y - compas_r + 0.05, 0.0, compas_y - compas_r + 0.05 - 0.05, 0, 255, 0, 255);
 		draw_line_f(esContext, 0.05, compas_y - compas_r + 0.05, 0.0, compas_y - compas_r + 0.05 - 0.05, 0, 255, 0, 255);
 		draw_line_f(esContext, -0.05, compas_y - compas_r + 0.05, 0.05, compas_y - compas_r + 0.05, 0, 255, 0, 255);
@@ -1409,7 +1335,6 @@ void screen_hud_internal (ESContext *esContext) {
 #ifdef SDLGL
 	glPopMatrix();
 #endif
-
 	// Route-Dir Arrow (Waypoint)
 #ifndef SDLGL
 	esMatrixLoadIdentity(&modelview);
@@ -1449,9 +1374,6 @@ void screen_hud_internal (ESContext *esContext) {
 			draw_text_f3(esContext, -0.11 - strlen(tmp_str) * 0.04 * 0.6 - 0.01, 0.85 - 0.02, 0.002, 0.04, 0.04, FONT_GREEN, tmp_str);
 		}
 	}
-
-
-
 #ifdef SDLGL
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
@@ -1476,10 +1398,7 @@ void screen_hud_internal (ESContext *esContext) {
 #ifdef SDLGL
 	glPopMatrix();
 #endif
-
-
 	//SDL_Log("hud#9\n");
-
 	// Route-Dir Arrow (Home)
 #ifndef SDLGL
 	esMatrixLoadIdentity(&modelview);
@@ -1507,9 +1426,7 @@ void screen_hud_internal (ESContext *esContext) {
 			draw_line_f(esContext, -0.025, 0.95 + 0.01, -0.05, 0.95, 0xff, 0x33, 0xfc, 255);
 		}
 	}
-
 	//SDL_Log("hud#9a\n");
-
 #ifdef SDLGL
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
@@ -1519,13 +1436,10 @@ void screen_hud_internal (ESContext *esContext) {
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
 	//SDL_Log("hud#9b\n");
-
 	if (setup.hud_view_screen == 0 || setup.hud_view_screen == 1) {
 		// Turn-Indicator
 		draw_turning_indicator(esContext, 1.15, 0.25, 0.4, 0.1);
-
-	//SDL_Log("hud#9c\n");
-
+		//SDL_Log("hud#9c\n");
 		// CPU, Voltage & Speed
 		float volt_mind = 4.0;
 		float volt_max = 6.0;
@@ -1547,10 +1461,8 @@ void screen_hud_internal (ESContext *esContext) {
 				voltage_max += 1.2;
 			}
 		}
-
 		sprintf(tmp_str, "%0.0fkm/h", ModelData[ModelActive].speed);
 		draw_circleMeter_f3(esContext, -1.05, -0.6, 0.001, 0.14, 0.0, 25.0, 50.0, 180.0, (ModelData[ModelActive].speed * 100.0 / 250.0), "Speed", tmp_str, 0);
-
 		if (ModelData[ModelActive].found_rc == 1) {
 			sprintf(tmp_str, "%0.1fV", ModelData[ModelActive].voltage_rx);
 			draw_circleMeter_f3(esContext, -1.05, -0.3, 0.001, 0.14, 0.0, 25.0, 50.0, 180.0, percent, "Volt-RX", tmp_str, 0);
@@ -1558,37 +1470,29 @@ void screen_hud_internal (ESContext *esContext) {
 			sprintf(tmp_str, "%0.1fV", ModelData[ModelActive].voltage);
 			draw_circleMeter_f3(esContext, -1.05, -0.3, 0.001, 0.14, 0.0, 25.0, 50.0, 180.0, percent, "Volt", tmp_str, 0);
 		}
-
 		if (voltage_max != 0.0) {
 			sprintf(tmp_str, "%0.1fV", voltage_real);
 			draw_circleMeter_f3(esContext, -1.05, 0.3, 0.001, 0.14, 0.0, 25.0, 50.0, 180.0, voltage_all * 100.0 / voltage_max, "Volt", tmp_str, 0);
 		}
-
 		if (ModelData[ModelActive].found_rc == 1) {
 			sprintf(tmp_str, "%0.1fA", ModelData[ModelActive].ampere);
 			draw_circleMeter_f3(esContext, -1.05, 0.6, 0.001, 0.14, 0.0, 25.0, 50.0, 180.0, ModelData[ModelActive].ampere, "Strom", tmp_str, 0);
 		}
-
-	//SDL_Log("hud#9e\n");
-
+		//SDL_Log("hud#9e\n");
 		if (ModelData[ModelActive].teletype != TELETYPE_MULTIWII_21 && ModelData[ModelActive].teletype != TELETYPE_BASEFLIGHT) {
 			sprintf(tmp_str, "CPU %0.0f%%", ModelData[ModelActive].load);
 			draw_circleMeter_f3(esContext, -1.05, -0.1, 0.001, 0.06, 20.0, 33.0, 66.0, 160.0, ModelData[ModelActive].load, "", "", 3);
 			draw_text_button(esContext, "hud_load", VIEW_MODE_HUD, tmp_str, FONT_WHITE, -1.05, -0.1, 0.003, 0.035, 1, 0, hud_null, 0);
 		}
-
 		sprintf(tmp_str, "PRESS %0.2f", ModelData[ModelActive].press_abs);
 		draw_circleMeter_f3(esContext, -1.05, 0.1, 0.001, 0.06, 20.0, 33.0, 66.0, 160.0, ModelData[ModelActive].press_abs / 20.0, "", "", 3);
 		draw_text_button(esContext, "hud_press", VIEW_MODE_HUD, tmp_str, FONT_WHITE, -1.05, 0.1, 0.003, 0.035, 1, 0, hud_null, 0);
-
 		sprintf(tmp_str, "VARIO %0.2f", ModelData[ModelActive].press_diff);
 		draw_circleMeter_f3(esContext, -1.05, 0.2, 0.001, 0.06, 20.0, 33.0, 66.0, 160.0, ModelData[ModelActive].press_diff + 50.0, "", "", 3);
 		draw_text_button(esContext, "hud_press", VIEW_MODE_HUD, tmp_str, FONT_WHITE, -1.05, 0.2, 0.003, 0.035, 1, 0, hud_null, 0);
-
 		sprintf(tmp_str, "TEMP %0.1f'C", ModelData[ModelActive].temperature[0]);
 		draw_circleMeter_f3(esContext, -1.05, 0.3, 0.001, 0.06, 20.0, 33.0, 66.0, 160.0, ModelData[ModelActive].temperature[0], "", "", 3);
 		draw_text_button(esContext, "hud_press", VIEW_MODE_HUD, tmp_str, FONT_WHITE, -1.05, 0.3, 0.003, 0.035, 1, 0, hud_null, 0);
-
 #ifdef USE_WIFIBC
 		if (wifibc_channels_max > 0) {
 			char cmd_str[1024];
@@ -1634,9 +1538,7 @@ void screen_hud_internal (ESContext *esContext) {
 			}
 		}
 #endif
-
-	//SDL_Log("hud#9f\n");
-
+		//SDL_Log("hud#9f\n");
 		// RC-Values
 		for (n = 0; n < ModelData[ModelActive].chancount && n < 16; n++) {
 			float x1 = -1.3;
@@ -1725,14 +1627,10 @@ void screen_hud_internal (ESContext *esContext) {
 		}
 		static float min_g = 1.0;
 		static float max_g = 0.0;
-
 		if (setup.weather_enable == 1) {
 			weather_draw(esContext, 1.0, -0.15);
 		}
-
-
-	//SDL_Log("hud#9g\n");
-
+		//SDL_Log("hud#9g\n");
 		float all_g = ModelData[ModelActive].acc_z * -1;
 		if (ModelData[ModelActive].teletype == TELETYPE_MULTIWII_21 || ModelData[ModelActive].teletype == TELETYPE_BASEFLIGHT) {
 			all_g = (float)ModelData[ModelActive].acc_z / 256.0;
@@ -1747,8 +1645,6 @@ void screen_hud_internal (ESContext *esContext) {
 		sprintf(tmp_str2, "%0.1fg %0.1fg", min_g, max_g);
 		draw_circleMeter_f3(esContext, 1.15, -0.6, 0.001, 0.14, 0.0, 0.0, 50.0, 180.0, 50.0, tmp_str, tmp_str2, 0);
 		draw_circleMeter_f3(esContext, 1.15, -0.3, 0.001, 0.14, 0.0, 50.0, 50.0, 180.0, 50.0, "Vario", "-1.2m/s", 0);
-
-
 		if (ModelData[ModelActive].found_rc == 1) {
 			// Lipo-Watch
 			for (i = 0; i < 6; i++) {
@@ -1759,7 +1655,6 @@ void screen_hud_internal (ESContext *esContext) {
 					draw_text_button(esContext, tmp_str2, VIEW_MODE_HUD, tmp_str, FONT_WHITE, -1.3, 0.3 + (i * 0.1), 0.003, 0.035, 1, 0, hud_null, 0);
 				}
 			}
-
 			// Temperature
 			draw_circleMeter_f3(esContext, 1.07, 0.025, 0.001, 0.06, 20.0, 50.0, 50.0, 160.0, ((float)ModelData[ModelActive].temperature[0] + 30) * 100 / 280, "", "", 3);
 			sprintf(tmp_str, "%0.1f°C", ModelData[ModelActive].temperature[0]);
@@ -1767,7 +1662,6 @@ void screen_hud_internal (ESContext *esContext) {
 			draw_circleMeter_f3(esContext, 1.23, 0.025, 0.001, 0.06, 20.0, 50.0, 50.0, 160.0, 50.0, "", "", 3);
 			sprintf(tmp_str, "%0.1f°C", ModelData[ModelActive].temperature[1]);
 			draw_text_button(esContext, "temp2", VIEW_MODE_HUD, tmp_str, FONT_WHITE, 1.23, 0.025, 0.003, 0.035, 1, 0, hud_null, 0);
-
 			// Test-Graph
 			graph1_data[0][graph1_pointer] = ModelData[ModelActive].rssi_rx;
 			graph1_data[1][graph1_pointer] = ModelData[ModelActive].rssi_tx;
@@ -1789,9 +1683,7 @@ void screen_hud_internal (ESContext *esContext) {
 			draw_image_f3(esContext, 0.8, 0.85, 1.0, 0.96, 0.002, ModelData[ModelActive].image);
 		}
 	}
-
 	//SDL_Log("hud#10\n");
-
 	// Draw Jeti-Telemetrie
 	if (jeti_ok == 1) {
 		float jetibox_x = -1.15;
@@ -1804,7 +1696,6 @@ void screen_hud_internal (ESContext *esContext) {
 		draw_text_button(esContext, "jeti_down", VIEW_MODE_HUD, "v", FONT_GREEN_BG, jetibox_x + 0.27, jetibox_y + 0.15, 0.002, 0.05, 0, 0, jeti_down, 0);
 		draw_text_button(esContext, "jeti_right", VIEW_MODE_HUD, ">", FONT_GREEN_BG, jetibox_x + 0.37, jetibox_y + 0.15, 0.002, 0.05, 0, 0, jeti_right, 0);
 	}
-
 	if (setup.hud_view_screen == 0) {
 		draw_text_button(esContext, "view_hud", VIEW_MODE_HUD, "VIEW", FONT_WHITE, -1.35, 0.9, 0.002, 0.06, 0, 0, view_hud, 0);
 	} else if (setup.hud_view_screen == 1) {
@@ -1822,11 +1713,11 @@ void screen_hud_internal (ESContext *esContext) {
 		} else {
 			draw_text_button(esContext, "view_hud_map", VIEW_MODE_HUD, "MAP", FONT_PINK, -1.15, 0.9, 0.002, 0.06, 0, 0, view_hud_map, 0);
 		}
-//		if (setup.hud_view_tunnel == 1) {
-//			draw_text_button(esContext, "view_map_tunnel", VIEW_MODE_HUD, "TUNNEL", FONT_GREEN, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_tunnel, 0);
-//		} else {
-//			draw_text_button(esContext, "view_map_tunnel", VIEW_MODE_HUD, "TUNNEL", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_tunnel, 0);
-//		}
+		//		if (setup.hud_view_tunnel == 1) {
+		//			draw_text_button(esContext, "view_map_tunnel", VIEW_MODE_HUD, "TUNNEL", FONT_GREEN, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_tunnel, 0);
+		//		} else {
+		//			draw_text_button(esContext, "view_map_tunnel", VIEW_MODE_HUD, "TUNNEL", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_tunnel, 0);
+		//		}
 		setup.hud_view_tunnel = 0;
 		if (setup.hud_view_stab == 1) {
 			draw_text_button(esContext, "view_hud_stab", VIEW_MODE_HUD, "STAB", FONT_GREEN, -1.0, 0.8, 0.002, 0.06, 0, 0, view_hud_stab, 0);
@@ -1844,13 +1735,11 @@ void screen_hud_internal (ESContext *esContext) {
 	} else {
 		draw_text_button(esContext, "view_hud_video", VIEW_MODE_HUD, "VID", FONT_WHITE, -1.15, 0.8, 0.002, 0.06, 0, 0, view_hud_video, 0);
 	}
-
 	if (ModelData[ModelActive].dronetype == 26) {
 		draw_text_button(esContext, "gimbal_pitch", VIEW_MODE_HUD, "PITCH", FONT_WHITE, -1.2, 0.5, 0.002, 0.06, 0, 0, gimbal_set_pitch, 0);
 		draw_text_button(esContext, "gimbal_roll", VIEW_MODE_HUD, "ROLL", FONT_WHITE, -1.2, 0.6, 0.002, 0.06, 0, 0, gimbal_set_roll, 0);
 		draw_text_button(esContext, "gimbal_yaw", VIEW_MODE_HUD, "YAW", FONT_WHITE, -1.2, 0.7, 0.002, 0.06, 0, 0, gimbal_set_yaw, 0);
 	}
-
 #else
 	draw_text_button(esContext, "view_map_bw", VIEW_MODE_HUD, "BW", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 0, 0, view_hud_bw, 0);
 #endif
@@ -1896,7 +1785,6 @@ void screen_hud_internal (ESContext *esContext) {
 		sprintf(tmp_str, "UNKNOWN(%i)", ModelData[ModelActive].dronetype);
 	}
 	draw_text_button(esContext, "view_hud_v", VIEW_MODE_HUD, tmp_str, FONT_GREEN, 0.0, -0.99, 0.002, 0.06, 1, 0, hud_null, 0);
-
 #ifdef SDLGL
 #ifndef WINDOWS
 	if (setup.hud_view_screen != 2 && draw_target() == 0) {
@@ -1913,7 +1801,7 @@ void screen_hud_internal (ESContext *esContext) {
 	glEnable(GL_DEPTH_TEST);
 }
 
-void screen_hud (ESContext *esContext) {
+void screen_hud(ESContext *esContext) {
 #ifdef USE_VISTA2D
 	if (hud_use_vista2d == 1) {
 		screen_hud_vista2d(esContext);

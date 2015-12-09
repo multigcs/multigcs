@@ -12,15 +12,12 @@ INCDIR += $(shell pkg-config --cflags libxml-2.0) $(shell pkg-config --cflags x1
 LIBS += -lm -ltcl8.5
 LIBS += $(shell pkg-config --libs libxml-2.0) $(shell pkg-config --libs x11) $(shell pkg-config --libs libpng) $(shell pkg-config --libs zlib)
 
-
-
 GCS = $(EXTRA_OBJECTS) main.o serial.o draw/draw.o draw/videocapture.o draw/map.o geomag70.o \
 	minizip/ioapi.o minizip/unzip.o net/htmlget-sdl.o \
 	screens/screen_rcflow.o screens/screen_keyboard.o screens/screen_filesystem.o screens/screen_device.o screens/screen_baud.o screens/screen_number.o screens/screen_model.o screens/screen_background.o screens/screen_wpedit.o screens/screen_hud.o screens/screen_map.o screens/screen_map_survey.o screens/screen_map_swarm.o screens/screen_calibration.o screens/screen_fms.o screens/screen_system.o screens/screen_tcl.o screens/screen_mavlink_menu.o screens/screen_tracker.o screens/screen_mwi_menu.o screens/screen_openpilot_menu.o screens/screen_videolist.o screens/screen_graph.o screens/screen_telemetry.o \
 	mavlink/my_mavlink.o mavlink/my_mavlink_rewrite.o gps/my_gps.o mwi21/mwi21.o jeti/jeti.o openpilot/openpilot.o openpilot/openpilot_xml.o frsky/frsky.o tracker/tracker.o net/savepng.o net/webserv.o net/webclient.o logging.o kml.o \
 	openpilot/uavobjects_store.o openpilot/uavobjects_encode.o openpilot/uavobjects_decode.o \
 	weather.o
-
 
 default: all
 
@@ -153,4 +150,7 @@ gcs: ${COMMONSRC} ${COMMONHDR} ${GCS}
 font-generator: font-generator.c
 	$(COMP) -DBASE_DIR="\"$(BASE_DIR)\"" -o font-generator font-generator.c -Wall -O -I/usr/include/SDL -lSDL_ttf -lpng
 
+astyle:
+	astyle --lineend=linux --mode=c --max-code-length=200 --break-after-logical --add-brackets --indent-switches --indent-cases --indent-col1-comments --indent=tab --indent=force-tab --unpad-paren --pad-oper --pad-header --delete-empty-lines --align-pointer=name --align-reference=name --remove-comment-prefix --style=google */*.c */*.h *.c *.h
+	rm -rf */*.c.orig */*.h*.orig *.c.orig *.h.orig
 

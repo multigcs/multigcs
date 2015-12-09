@@ -3,7 +3,7 @@
 
 #ifndef WINDOWS
 
-extern void save_screenshot2 (void);
+extern void save_screenshot2(void);
 extern volatile uint8_t zoom;
 
 #define BUFSIZE 298096
@@ -12,15 +12,15 @@ extern volatile uint8_t zoom;
 #define MENU "<TABLE class=\"menubar\" id=\"menubar\" width=\"100%\" border=\"0\"><TR bgcolor=\"#AAAAAA\"><TH width=\"10%\"><A href=\"/hud.html\">[HUD]</A></TH><TH width=\"10%\"><A href=\"/map.html\">[MAP]</A></TH><TH width=\"10%\"><A href=\"/waypoints.html\">[WAYPOINTS]</A></TH><TH width=\"10%\"><A href=\"/mavlink.html\">[MAVLINK]</A></TH><TH width=\"10%\"><A href=\"/mwii.html\">[MWII]</A></TH><TH width=\"10%\"><A href=\"/logfiles/\">[LOGFILES]</A></TH><TH width=\"10%\"><A href=\"/gcssetup.html\">[SETUP]</A></TH><TH width=\"10%\"><A href=\"/misc.html\">[MISC]</A></TH></TR></TABLE>\n"
 
 static char menu_entrys[16][2][128] = {
-	{"/hud.html", "HUD"}, 
-	{"/map.html", "MAP"}, 
-	{"/waypoints.html", "WAYPOINTS"}, 
-	{"/mavlink.html", "MAVLINK"}, 
-	{"/mwii.html", "MWII"}, 
-	{"/logfiles/", "LOGFILES"}, 
-	{"/gcssetup.html", "SETUP"}, 
-	{"/misc.html", "MISC"}, 
-	{"", ""}, 
+	{"/hud.html", "HUD"},
+	{"/map.html", "MAP"},
+	{"/waypoints.html", "WAYPOINTS"},
+	{"/mavlink.html", "MAVLINK"},
+	{"/mwii.html", "MWII"},
+	{"/logfiles/", "LOGFILES"},
+	{"/gcssetup.html", "SETUP"},
+	{"/misc.html", "MISC"},
+	{"", ""},
 };
 
 static Object3d obj3d_collada;
@@ -34,7 +34,7 @@ int listenfd;
 
 #define header_str "HTTP/1.1 200 OK\nServer: multigcs\nContent-Length: %i\nConnection: close\nContent-Type: %s\n\n"
 
-void webserv_html_head (char *content, char *title) {
+void webserv_html_head(char *content, char *title) {
 	char tmp_str[1024];
 	strcat(content, "<HTML>\n");
 	strcat(content, "<HEAD>\n");
@@ -45,7 +45,7 @@ void webserv_html_head (char *content, char *title) {
 	strcpy(last_title, title);
 }
 
-void webserv_html_start (char *content, uint8_t init) {
+void webserv_html_start(char *content, uint8_t init) {
 	char tmp_str[1024];
 	int n = 0;
 	if (init == 0) {
@@ -54,8 +54,7 @@ void webserv_html_start (char *content, uint8_t init) {
 		strcat(content, "<BODY onload=\"init();\">\n");
 	}
 	strcat(content, "<DIV class=\"background\"></DIV>\n");
-//	strcat(content, MENU);
-
+	//	strcat(content, MENU);
 	strcat(content, "<TABLE class=\"menubar\" id=\"menubar\" width=\"100%\" border=\"0\"><TR bgcolor=\"#AAAAAA\">");
 	for (n = 0; n < 16 && menu_entrys[n][0][0] != 0; n++) {
 		if (strcmp(menu_entrys[n][1], last_title) == 0) {
@@ -69,19 +68,19 @@ void webserv_html_start (char *content, uint8_t init) {
 	strcat(content, "<BR><BR>\n");
 }
 
-void webserv_html_stop (char *content) {
+void webserv_html_stop(char *content) {
 	strcat(content, "<BR><BR>\n");
 	strcat(content, "</BODY>\n");
 	strcat(content, "</HTML>\n");
 }
 
-void webserv_child_dump_screen (int fd) {
+void webserv_child_dump_screen(int fd) {
 	char buffer[BUFSIZE + 1];
 	int file_fd;
 	int len;
 	int ret;
 	save_screenshot2();
-	if ((file_fd = open("/tmp/dump.png",O_RDONLY)) == -1) {
+	if ((file_fd = open("/tmp/dump.png", O_RDONLY)) == -1) {
 		return;
 	}
 	len = lseek(file_fd, (off_t)0, SEEK_END);
@@ -89,12 +88,12 @@ void webserv_child_dump_screen (int fd) {
 	sprintf(buffer, header_str, len, "image/png");
 	write(fd, buffer, strlen(buffer));
 	while ((ret = read(file_fd, buffer, BUFSIZE)) > 0) {
-		write(fd,buffer,ret);
+		write(fd, buffer, ret);
 	}
 	close(file_fd);
 }
 
-void webserv_child_dump_file (int fd, char *file, char *type) {
+void webserv_child_dump_file(int fd, char *file, char *type) {
 	char buffer[BUFSIZE + 1];
 	char content[1024];
 	int len;
@@ -124,7 +123,7 @@ void webserv_child_dump_file (int fd, char *file, char *type) {
 	SDL_RWclose(ops_file);
 }
 
-void webserv_child_dump_blender (int fd) {
+void webserv_child_dump_blender(int fd) {
 	char buffer[1024];
 	char content[BUFSIZE + 1];
 	char tmp_str[100];
@@ -134,15 +133,15 @@ void webserv_child_dump_blender (int fd) {
 		blender_first_alt = ModelData[ModelActive].p_alt;
 	}
 	content[0] = 0;
-	sprintf(tmp_str, "%f %f %f %f %f %f\n", ModelData[ModelActive].pitch, ModelData[ModelActive].roll, ModelData[ModelActive].yaw, (ModelData[ModelActive].p_lat - blender_first_lat), (ModelData[ModelActive].p_long - blender_first_long), (ModelData[ModelActive].p_alt - blender_first_alt));
+	sprintf(tmp_str, "%f %f %f %f %f %f\n", ModelData[ModelActive].pitch, ModelData[ModelActive].roll, ModelData[ModelActive].yaw, (ModelData[ModelActive].p_lat - blender_first_lat),
+			(ModelData[ModelActive].p_long - blender_first_long), (ModelData[ModelActive].p_alt - blender_first_alt));
 	strcat(content, tmp_str);
-
 	sprintf(buffer, header_str, (int)strlen(content), "text/plain");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
 
-void webserv_child_dump_modeldata (int fd) {
+void webserv_child_dump_modeldata(int fd) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[100];
@@ -275,13 +274,12 @@ void webserv_child_dump_modeldata (int fd) {
 	strcat(content, tmp_str);
 	sprintf(tmp_str, "mavlink_update=%i\n", ModelData[ModelActive].mavlink_update);
 	strcat(content, tmp_str);
-
 	sprintf(buffer, header_str, (int)strlen(content), "text/plain");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
 
-void webserv_child_show_lonlat (int fd) {
+void webserv_child_show_lonlat(int fd) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	sprintf(content, "%f, %f, %.1f, %0.1f", ModelData[ModelActive].p_long, ModelData[ModelActive].p_lat, ModelData[ModelActive].p_alt, ModelData[ModelActive].yaw);
@@ -290,19 +288,17 @@ void webserv_child_show_lonlat (int fd) {
 	write(fd, content, strlen(content));
 }
 
-void webserv_child_show_map (int fd) {
+void webserv_child_show_map(int fd) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
 	content[0] = 0;
 	webserv_html_head(content, "MAP");
-
 #ifdef ANDROID
 	strcat(content, "<SCRIPT src=\"http://openlayers.org/api/OpenLayers.js\"></SCRIPT>\n");
 #else
 	strcat(content, "<SCRIPT src=\"/map.js\"></SCRIPT>\n");
 #endif
-
 	strcat(content, "<SCRIPT>\n");
 	strcat(content, "function HUDxmlhttpGet() {\n");
 	strcat(content, "    var xmlHttpReq = false;\n");
@@ -482,7 +478,8 @@ void webserv_child_show_map (int fd) {
 	int n = 0;
 	for (n = 0; n < MAX_WAYPOINTS; n++) {
 		if (WayPoints[ModelActive][n].p_lat != 0.0) {
-			sprintf(tmp_str, " marker%i = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(%f, %f).transform(map.displayProjection,map.projection));\n", n, WayPoints[ModelActive][n].p_long, WayPoints[ModelActive][n].p_lat);
+			sprintf(tmp_str, " marker%i = new OpenLayers.Feature.Vector(new OpenLayers.Geometry.Point(%f, %f).transform(map.displayProjection,map.projection));\n", n, WayPoints[ModelActive][n].p_long,
+					WayPoints[ModelActive][n].p_lat);
 			strcat(content, tmp_str);
 			sprintf(tmp_str, " marker%i.attributes.name = \"%s\";\n", n, WayPoints[ModelActive][n].name);
 			strcat(content, tmp_str);
@@ -492,7 +489,7 @@ void webserv_child_show_map (int fd) {
 			strcat(content, tmp_str);
 			sprintf(tmp_str, " markerlayer.addFeatures([marker%i]);\n", n);
 			strcat(content, tmp_str);
-           	}
+		}
 	}
 	strcat(content, " var lineLayer = new OpenLayers.Layer.Vector(\"Line Layer\");\n");
 	strcat(content, " map.addLayer(lineLayer);\n");
@@ -558,13 +555,12 @@ void webserv_child_show_map (int fd) {
 	strcat(content, tmp_str);
 	strcat(content, "<canvas class=\"small_hudcanvas\" id=\"small_hudcanvas\" width=\"640\" height=\"640\"></canvas>\n");
 	webserv_html_stop(content);
-
 	sprintf(buffer, header_str, (int)strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
 
-void webserv_child_show_hud (int fd) {
+void webserv_child_show_hud(int fd) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
@@ -768,19 +764,17 @@ void webserv_child_show_hud (int fd) {
 	strcat(content, "}\n");
 	strcat(content, "</SCRIPT>\n");
 	webserv_html_start(content, 1);
-
 	strcat(content, "<CENTER><TABLE width=\"90%\" border=\"0\">\n");
 	strcat(content, "<TR><TH>HUD</TH></TR>\n");
 	strcat(content, "<TR><TD class=\"hudbg\" align=\"center\"><canvas class=\"hudcanvas\" id=\"hudcanvas\" width=\"600\" height=\"720\"></canvas></TD></TR>\n");
 	strcat(content, "</TABLE></CENTER>\n");
 	webserv_html_stop(content);
-
 	sprintf(buffer, header_str, (int)strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
 
-void webserv_child_show_misc (int fd) {
+void webserv_child_show_misc(int fd) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	content[0] = 0;
@@ -809,13 +803,12 @@ void webserv_child_show_misc (int fd) {
 	strcat(content, "<A href=\"/GPLv2.txt\">/GPLv2.txt</A> (GPL v2 or later)<BR>\n");
 	strcat(content, "</CENTER>\n");
 	webserv_html_stop(content);
-
 	sprintf(buffer, header_str, (int)strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
 
-void webserv_child_hud_redraw (int fd) {
+void webserv_child_hud_redraw(int fd) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
@@ -838,7 +831,7 @@ void webserv_child_hud_redraw (int fd) {
 	write(fd, content, strlen(content));
 }
 
-void webserv_child_hud_redraw_small (int fd) {
+void webserv_child_hud_redraw_small(int fd) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
@@ -853,7 +846,7 @@ void webserv_child_hud_redraw_small (int fd) {
 	write(fd, content, strlen(content));
 }
 
-void webserv_child_kml_wp (int fd, char *servername) {
+void webserv_child_kml_wp(int fd, char *servername) {
 	char buffer[BUFSIZE + 1];
 	int n = 0;
 	char content[BUFSIZE + 1];
@@ -908,13 +901,12 @@ void webserv_child_kml_wp (int fd, char *servername) {
 	strcat(content, "    </Placemark>\n");
 	strcat(content, "  </Document>\n");
 	strcat(content, "</kml>\n");
-
 	sprintf(buffer, header_str, (int)strlen(content), "text/xml");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
 
-void webserv_child_kml_index (int fd, char *servername) {
+void webserv_child_kml_index(int fd, char *servername) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
@@ -975,7 +967,7 @@ void webserv_child_kml_index (int fd, char *servername) {
 			if (dir_entry->d_name[1] != '.') {
 				sprintf(new_path, "%s/%s", directory, dir_entry->d_name);
 				if (lstat(new_path, &statbuf) == 0) {
-					if (statbuf.st_mode&S_IFDIR) {
+					if (statbuf.st_mode & S_IFDIR) {
 					} else {
 						time_t liczba_sekund = (time_t)(atoi(dir_entry->d_name));
 						localtime_r(&liczba_sekund, &strukt);
@@ -1014,13 +1006,12 @@ void webserv_child_kml_index (int fd, char *servername) {
 	strcat(content, "	</Folder>\n");
 	strcat(content, "  </Document>\n");
 	strcat(content, "</kml>\n");
-
 	sprintf(buffer, header_str, (int)strlen(content), "application/vnd.google-earth.kml+xml");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
 
-void webserv_child_kml_live (int fd, uint8_t mode, char *servername) {
+void webserv_child_kml_live(int fd, uint8_t mode, char *servername) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
@@ -1046,13 +1037,12 @@ void webserv_child_kml_live (int fd, uint8_t mode, char *servername) {
 	strcat(content, "		</Link>\n");
 	strcat(content, "	</NetworkLink>\n");
 	strcat(content, "</kml>\n");
-
 	sprintf(buffer, header_str, (int)strlen(content), "text/xml");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
 
-void webserv_child_kml_feed (int fd, uint8_t mode, char *servername) {
+void webserv_child_kml_feed(int fd, uint8_t mode, char *servername) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
@@ -1112,13 +1102,12 @@ void webserv_child_kml_feed (int fd, uint8_t mode, char *servername) {
 	strcat(content, "		</Placemark>\n");
 	strcat(content, "	</Document>\n");
 	strcat(content, "</kml>\n");
-
 	sprintf(buffer, header_str, (int)strlen(content), "text/xml");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
 
-void webserv_child_waypoints (int fd, char *servername) {
+void webserv_child_waypoints(int fd, char *servername) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
@@ -1229,13 +1218,13 @@ void webserv_child_waypoints (int fd, char *servername) {
 			float winkel_up = 0.0;
 			if (last_lat != 0.0) {
 				/* Distance - Ground-Level */
-				distance1 = acos( 
-					cos(toRad(last_lat))
-					* cos(toRad(WayPoints[ModelActive][n].p_lat))
-					* cos(toRad(last_lon) - toRad(WayPoints[ModelActive][n].p_long))
-					+ sin(toRad(last_lat)) 
-					* sin(toRad(WayPoints[ModelActive][n].p_lat))
-				) * 6378.137 * 1000.0;
+				distance1 = acos(
+								cos(toRad(last_lat))
+								* cos(toRad(WayPoints[ModelActive][n].p_lat))
+								* cos(toRad(last_lon) - toRad(WayPoints[ModelActive][n].p_long))
+								+ sin(toRad(last_lat))
+								* sin(toRad(WayPoints[ModelActive][n].p_lat))
+							) * 6378.137 * 1000.0;
 				alt = WayPoints[ModelActive][n].p_alt - last_alt;
 				/* Distance - Sichtverbindung */
 				distance2 = sqrt(((distance1) * (distance1)) + (alt * alt));
@@ -1249,32 +1238,31 @@ void webserv_child_waypoints (int fd, char *servername) {
 			last_lat = WayPoints[ModelActive][n].p_lat;
 			last_lon = WayPoints[ModelActive][n].p_long;
 			last_alt = WayPoints[ModelActive][n].p_alt;
-
 			if (n != 0) {
 				sprintf(tmp_str, "<TD><A href=\"/waypoint_set?wp%i&DEL=1\">DEL</A></TD>", n);
 			} else {
 				strcpy(tmp_str, "<TD>&nbsp;</TD>");
 			}
 			strcat(content, tmp_str);
-
-			sprintf(tmp_str, "<TD><A target=\"map\" href=\"https://maps.google.de/maps?q=%f,%f%%28%s%%29&t=k&z=17\">SHOW</A></TD>", WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long, WayPoints[ModelActive][n].name);
+			sprintf(tmp_str, "<TD><A target=\"map\" href=\"https://maps.google.de/maps?q=%f,%f%%28%s%%29&t=k&z=17\">SHOW</A></TD>", WayPoints[ModelActive][n].p_lat, WayPoints[ModelActive][n].p_long,
+					WayPoints[ModelActive][n].name);
 			strcat(content, tmp_str);
-
 			strcat(content, "</TR>\n");
 			n2 = n + 1;
 		}
 	}
-	sprintf(tmp_str, "<TR bgcolor=\"#111111\"><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD><A href=\"/waypoint_set?wp%i&ADD=1\">ADD</A></TD><TD>&nbsp;</TD></TR>", n2);
+	sprintf(tmp_str,
+			"<TR bgcolor=\"#111111\"><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD>&nbsp;</TD><TD><A href=\"/waypoint_set?wp%i&ADD=1\">ADD</A></TD><TD>&nbsp;</TD></TR>",
+			n2);
 	strcat(content, tmp_str);
 	strcat(content, "</TABLE></CENTER>\n");
 	webserv_html_stop(content);
-
 	sprintf(buffer, header_str, (int)strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
 
-void webserv_child_kml_logfiles (int fd, char *servername, char *buffer2) {
+void webserv_child_kml_logfiles(int fd, char *servername, char *buffer2) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[512];
@@ -1286,7 +1274,7 @@ void webserv_child_kml_logfiles (int fd, char *servername, char *buffer2) {
 			break;
 		}
 	}
-	if ((strncmp(buffer2 + 4,"/logkml/", 8) == 0 && buffer2[12] == 0) || (strncmp(buffer2 + 4,"/logfiles/", 10) == 0 && buffer2[14] == 0)) {
+	if ((strncmp(buffer2 + 4, "/logkml/", 8) == 0 && buffer2[12] == 0) || (strncmp(buffer2 + 4, "/logfiles/", 10) == 0 && buffer2[14] == 0)) {
 		struct tm strukt;
 		DIR *dir = NULL;
 		struct dirent *dir_entry = NULL;
@@ -1305,7 +1293,7 @@ void webserv_child_kml_logfiles (int fd, char *servername, char *buffer2) {
 				if (dir_entry->d_name[1] != '.') {
 					sprintf(new_path, "%s/%s", directory, dir_entry->d_name);
 					if (lstat(new_path, &statbuf) == 0) {
-						if (statbuf.st_mode&S_IFDIR) {
+						if (statbuf.st_mode & S_IFDIR) {
 						} else {
 							lc = 1 - lc;
 							if (lc == 0) {
@@ -1324,9 +1312,11 @@ void webserv_child_kml_logfiles (int fd, char *servername, char *buffer2) {
 							end = ftell(f);
 							fclose(f);
 							if ((end - pos) < 1024) {
-								sprintf(tmp_str, "<TD><A href=\"%s\">%02d.%02d.%d %02d:%02d:%02d</A></TD><TD>%iB</TD><TD><A href=\"/logfiles/%s\">RAW</A> <A href=\"/logkml/%s\">KML</A></TD>", dir_entry->d_name, strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, (end - pos), dir_entry->d_name, dir_entry->d_name);
+								sprintf(tmp_str, "<TD><A href=\"%s\">%02d.%02d.%d %02d:%02d:%02d</A></TD><TD>%iB</TD><TD><A href=\"/logfiles/%s\">RAW</A> <A href=\"/logkml/%s\">KML</A></TD>", dir_entry->d_name, strukt.tm_mday,
+										strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, (end - pos), dir_entry->d_name, dir_entry->d_name);
 							} else {
-								sprintf(tmp_str, "<TD><A href=\"%s\">%02d.%02d.%d %02d:%02d:%02d</A></TD><TD>%iKB</TD><TD><A href=\"/logfiles/%s\">RAW</A> <A href=\"/logkml/%s\">KML</A></TD>", dir_entry->d_name, strukt.tm_mday, strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, (end - pos) / 1024, dir_entry->d_name, dir_entry->d_name);
+								sprintf(tmp_str, "<TD><A href=\"%s\">%02d.%02d.%d %02d:%02d:%02d</A></TD><TD>%iKB</TD><TD><A href=\"/logfiles/%s\">RAW</A> <A href=\"/logkml/%s\">KML</A></TD>", dir_entry->d_name, strukt.tm_mday,
+										strukt.tm_mon + 1, strukt.tm_year + 1900, strukt.tm_hour, strukt.tm_min, strukt.tm_sec, (end - pos) / 1024, dir_entry->d_name, dir_entry->d_name);
 							}
 							strcat(content, tmp_str);
 							strcat(content, "</TR>");
@@ -1339,13 +1329,12 @@ void webserv_child_kml_logfiles (int fd, char *servername, char *buffer2) {
 		}
 		strcat(content, "</TABLE>\n");
 		webserv_html_stop(content);
-
 		sprintf(buffer, header_str, (int)strlen(content), "text/html");
 		write(fd, buffer, strlen(buffer));
 		write(fd, content, strlen(content));
 	} else {
 		char tmp_str2[1024];
-		if (strncmp(buffer2 + 4,"/logkml/", 8) == 0) {
+		if (strncmp(buffer2 + 4, "/logkml/", 8) == 0) {
 			sprintf(tmp_str, "%s/logs/%s", get_datadirectory(), buffer2 + 12);
 			sprintf(tmp_str2, "/tmp/%s.kml", buffer2 + 12);
 			logplay_export_kml(tmp_str, tmp_str2, 255);
@@ -1359,7 +1348,7 @@ void webserv_child_kml_logfiles (int fd, char *servername, char *buffer2) {
 
 
 
-void gcssetup_set (char *name, char *value) {
+void gcssetup_set(char *name, char *value) {
 	if (strcmp("gcs_gps_port", name) == 0) {
 		strcpy(setup.gcs_gps_port, value);
 	}
@@ -1494,7 +1483,7 @@ void gcssetup_set (char *name, char *value) {
 	}
 }
 
-void webserv_child_gcssetup (int fd, uint8_t mode) {
+void webserv_child_gcssetup(int fd, uint8_t mode) {
 	DIR *dir = NULL;
 	struct dirent *dir_entry = NULL;
 	struct stat statbuf;
@@ -1530,10 +1519,8 @@ void webserv_child_gcssetup (int fd, uint8_t mode) {
 	strcat(content, "}\n");
 	strcat(content, "</SCRIPT>\n");
 	webserv_html_start(content, 0);
-
 	strcat(content, "<TABLE class=\"main\">\n");
 	strcat(content, "<TR class=\"main\"><TD width=\"160px\" valign=\"top\">\n");
-
 	strcat(content, "<TABLE width=\"100%\">\n");
 	strcat(content, "<TR class=\"thead\"><TH>MODE</TH></TR>\n");
 	strcat(content, "<TR class=\"first\"><TD><A href=\"/gcssetup.html\">Ports</A></TD></TR>");
@@ -1541,14 +1528,10 @@ void webserv_child_gcssetup (int fd, uint8_t mode) {
 	strcat(content, "<TR class=\"first\"><TD><A href=\"/gcssetup2.html\">TOUCH</A></TD></TR>");
 	strcat(content, "<TR class=\"first\"><TD><A href=\"/gcssetup3.html\">ETC</A></TD></TR>");
 	strcat(content, "</TABLE>\n");
-
 	strcat(content, "</TD><TD valign=\"top\" width=\"20px\">&nbsp;</TD><TD valign=\"top\">\n");
-
 	strcat(content, "<TABLE width=\"100%\">\n");
 	strcat(content, "<TR class=\"thead\"><TH>NAME</TH><TH>VALUE</TH></TR>\n");
 	int lc = 0;
-
-
 	if (mode == 0) {
 		lc = 1 - lc;
 		if (lc == 0) {
@@ -1565,7 +1548,7 @@ void webserv_child_gcssetup (int fd, uint8_t mode) {
 				if (dir_entry->d_name[0] != '.') {
 					sprintf(new_path, "%s/%s", "/dev", dir_entry->d_name);
 					if (lstat(new_path, &statbuf) == 0) {
-						if ( statbuf.st_mode & S_IFDIR) {
+						if (statbuf.st_mode & S_IFDIR) {
 						} else {
 							if (strstr(new_path, "ttyS") > 0 || strstr(new_path, "ttyUSB") > 0 || strstr(new_path, "ttyACM") > 0) {
 								if (strcmp(new_path, setup.gcs_gps_port) == 0) {
@@ -1675,7 +1658,7 @@ void webserv_child_gcssetup (int fd, uint8_t mode) {
 				if (dir_entry->d_name[0] != '.') {
 					sprintf(new_path, "%s/%s", "/dev", dir_entry->d_name);
 					if (lstat(new_path, &statbuf) == 0) {
-						if ( statbuf.st_mode & S_IFDIR) {
+						if (statbuf.st_mode & S_IFDIR) {
 						} else {
 							if (strstr(new_path, "ttyS") > 0 || strstr(new_path, "ttyUSB") > 0 || strstr(new_path, "ttyACM") > 0) {
 								if (strcmp(new_path, setup.rcflow_port) == 0) {
@@ -1785,7 +1768,7 @@ void webserv_child_gcssetup (int fd, uint8_t mode) {
 				if (dir_entry->d_name[0] != '.') {
 					sprintf(new_path, "%s/%s", "/dev", dir_entry->d_name);
 					if (lstat(new_path, &statbuf) == 0) {
-						if ( statbuf.st_mode & S_IFDIR) {
+						if (statbuf.st_mode & S_IFDIR) {
 						} else {
 							if (strstr(new_path, "ttyS") > 0 || strstr(new_path, "ttyUSB") > 0 || strstr(new_path, "ttyACM") > 0) {
 								if (strcmp(new_path, ModelData[ModelActive].telemetry_port) == 0) {
@@ -1895,7 +1878,7 @@ void webserv_child_gcssetup (int fd, uint8_t mode) {
 				if (dir_entry->d_name[0] != '.') {
 					sprintf(new_path, "%s/%s", "/dev", dir_entry->d_name);
 					if (lstat(new_path, &statbuf) == 0) {
-						if ( statbuf.st_mode & S_IFDIR) {
+						if (statbuf.st_mode & S_IFDIR) {
 						} else {
 							if (strstr(new_path, "ttyS") > 0 || strstr(new_path, "ttyUSB") > 0 || strstr(new_path, "ttyACM") > 0) {
 								if (strcmp(new_path, setup.jeti_port) == 0) {
@@ -2005,7 +1988,7 @@ void webserv_child_gcssetup (int fd, uint8_t mode) {
 				if (dir_entry->d_name[0] != '.') {
 					sprintf(new_path, "%s/%s", "/dev", dir_entry->d_name);
 					if (lstat(new_path, &statbuf) == 0) {
-						if ( statbuf.st_mode & S_IFDIR) {
+						if (statbuf.st_mode & S_IFDIR) {
 						} else {
 							if (strstr(new_path, "ttyS") > 0 || strstr(new_path, "ttyUSB") > 0 || strstr(new_path, "ttyACM") > 0) {
 								if (strcmp(new_path, setup.frsky_port) == 0) {
@@ -2115,7 +2098,7 @@ void webserv_child_gcssetup (int fd, uint8_t mode) {
 				if (dir_entry->d_name[0] != '.') {
 					sprintf(new_path, "%s/%s", "/dev", dir_entry->d_name);
 					if (lstat(new_path, &statbuf) == 0) {
-						if ( statbuf.st_mode & S_IFDIR) {
+						if (statbuf.st_mode & S_IFDIR) {
 						} else {
 							if (strstr(new_path, "ttyS") > 0 || strstr(new_path, "ttyUSB") > 0 || strstr(new_path, "ttyACM") > 0) {
 								if (strcmp(new_path, setup.tracker_port) == 0) {
@@ -2500,7 +2483,7 @@ void webserv_child_gcssetup (int fd, uint8_t mode) {
 				if (dir_entry->d_name[0] != '.') {
 					sprintf(new_path, "%s/%s", "/dev", dir_entry->d_name);
 					if (lstat(new_path, &statbuf) == 0) {
-						if ( statbuf.st_mode & S_IFDIR) {
+						if (statbuf.st_mode & S_IFDIR) {
 						} else {
 							if (strstr(new_path, "/dev/video") > 0) {
 								if (strcmp(new_path, setup.videocapture_device) == 0) {
@@ -2575,32 +2558,25 @@ void webserv_child_gcssetup (int fd, uint8_t mode) {
 		strcat(content, tmp_str);
 		strcat(content, "</TR>");
 	}
-
 	strcat(content, "</TABLE><BR><BR>");
-
 	strcat(content, "</TD></TR></TABLE>\n");
-
 	webserv_html_stop(content);
-
 	sprintf(buffer, header_str, (int)strlen(content), "text/html");
 	write(fd, buffer, strlen(buffer));
 	write(fd, content, strlen(content));
 }
 
 
-void webserv_child (int fd) {
+void webserv_child(int fd) {
 	char buffer[BUFSIZE + 1];
 	char content[BUFSIZE + 1];
 	char tmp_str[BUFSIZE + 1];
 	char servername[1024];
 	char type[100];
 	content[0] = 0;
-
 	SDL_Delay(10);
-
 	int size = 0;
 	read(fd, buffer + size, BUFSIZE);
-
 	char *host = NULL;
 	if ((host = strstr(buffer, "\nHost: ")) > 0) {
 		strncpy(servername, host + 7, 1023);
@@ -2613,8 +2589,8 @@ void webserv_child (int fd) {
 	} else {
 		servername[0] = 0;
 	}
-	if (strncmp(buffer,"POST ", 5) == 0 || strncmp(buffer,"post ", 5) == 0) {
-		if (strncmp(buffer + 5,"/setdata", 8) == 0) {
+	if (strncmp(buffer, "POST ", 5) == 0 || strncmp(buffer, "post ", 5) == 0) {
+		if (strncmp(buffer + 5, "/setdata", 8) == 0) {
 			int n = 0;
 			int l = 0;
 			int l2 = 0;
@@ -2774,16 +2750,15 @@ void webserv_child (int fd) {
 			write(fd, buffer, strlen(buffer));
 			write(fd, content, strlen(content));
 		}
-	} else if (strncmp(buffer,"GET ", 4) == 0 || strncmp(buffer,"get ", 4) == 0) {
+	} else if (strncmp(buffer, "GET ", 4) == 0 || strncmp(buffer, "get ", 4) == 0) {
 #ifdef ANDROID
 		SDL_Log("###################\n");
 		SDL_Log("%s", buffer);
 		SDL_Log("\n###################\n");
 #endif
-		if (strncmp(buffer + 4,"/modeldata", 10) == 0) {
+		if (strncmp(buffer + 4, "/modeldata", 10) == 0) {
 			webserv_child_dump_modeldata(fd);
-
-		} else if (strncmp(buffer + 4,"/waypoint_new?", 14) == 0) {
+		} else if (strncmp(buffer + 4, "/waypoint_new?", 14) == 0) {
 			int wp_num = 0;
 			float lat = 0.0;
 			float lon = 0.0;
@@ -2795,7 +2770,7 @@ void webserv_child (int fd) {
 			WayPoints[ModelActive][wp_num].p_alt = WayPoints[ModelActive][0].p_alt;
 			sprintf(content, "done");
 			sprintf(buffer, header_str, (int)strlen(content), "text/plain");
-		} else if (strncmp(buffer + 4,"/waypoint_set?", 14) == 0) {
+		} else if (strncmp(buffer + 4, "/waypoint_set?", 14) == 0) {
 			int n = 0;
 			int wp_num = 0;
 			char name[20];
@@ -2832,34 +2807,32 @@ void webserv_child (int fd) {
 			}
 			write(fd, buffer, strlen(buffer));
 			write(fd, content, strlen(content));
-		} else if (strncmp(buffer + 4,"/waypoints.html", 15) == 0) {
+		} else if (strncmp(buffer + 4, "/waypoints.html", 15) == 0) {
 			webserv_child_waypoints(fd, servername);
-		} else if (strncmp(buffer + 4,"/blender.txt", 12) == 0) {
+		} else if (strncmp(buffer + 4, "/blender.txt", 12) == 0) {
 			webserv_child_dump_blender(fd);
-		} else if (strncmp(buffer + 4,"/blender-export.py", 18) == 0) {
+		} else if (strncmp(buffer + 4, "/blender-export.py", 18) == 0) {
 			sprintf(tmp_str, "%s/webserv/blender-export.py", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/plain");
 			blender_first_lat = ModelData[ModelActive].p_lat;
 			blender_first_long = ModelData[ModelActive].p_long;
 			blender_first_alt = ModelData[ModelActive].p_alt;
-		} else if (strncmp(buffer + 4,"/screenshot", 11) == 0) {
+		} else if (strncmp(buffer + 4, "/screenshot", 11) == 0) {
 			webserv_child_dump_screen(fd);
-
-		// Google-Earth Live-Feed (Model-Position)
-		} else if (strncmp(buffer + 4,"/index.kml", 10) == 0) {
+			// Google-Earth Live-Feed (Model-Position)
+		} else if (strncmp(buffer + 4, "/index.kml", 10) == 0) {
 			webserv_child_kml_index(fd, servername);
-		} else if (strncmp(buffer + 4,"/wp.kml", 7) == 0) {
+		} else if (strncmp(buffer + 4, "/wp.kml", 7) == 0) {
 			webserv_child_kml_wp(fd, servername);
-		} else if (strncmp(buffer + 4,"/live.kml", 9) == 0) {
+		} else if (strncmp(buffer + 4, "/live.kml", 9) == 0) {
 			webserv_child_kml_live(fd, 0, servername);
-		} else if (strncmp(buffer + 4,"/live-pilot.kml", 15) == 0) {
+		} else if (strncmp(buffer + 4, "/live-pilot.kml", 15) == 0) {
 			webserv_child_kml_live(fd, 1, servername);
-		} else if (strncmp(buffer + 4,"/model.kml", 8) == 0) {
+		} else if (strncmp(buffer + 4, "/model.kml", 8) == 0) {
 			webserv_child_kml_feed(fd, 0, servername);
-		} else if (strncmp(buffer + 4,"/pilot.kml", 8) == 0) {
+		} else if (strncmp(buffer + 4, "/pilot.kml", 8) == 0) {
 			webserv_child_kml_feed(fd, 1, servername);
-
-		} else if (strncmp(buffer + 4,"/simple.dae", 11) == 0) {
+		} else if (strncmp(buffer + 4, "/simple.dae", 11) == 0) {
 #ifdef SDLGL
 			sprintf(tmp_str, "%s/webserv/simple.dae", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/xml");
@@ -2867,7 +2840,7 @@ void webserv_child (int fd) {
 			sprintf(tmp_str, "%s/webserv/plane.dae", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/xml");
 #endif
-		} else if (strncmp(buffer + 4,"/plane.dae", 10) == 0) {
+		} else if (strncmp(buffer + 4, "/plane.dae", 10) == 0) {
 #ifdef SDLGL
 			if (get_background_model(ModelActive, tmp_str) == 0) {
 				if (obj3d_collada.name[0] == 0) {
@@ -2884,13 +2857,10 @@ void webserv_child (int fd) {
 			sprintf(tmp_str, "%s/webserv/plane.dae", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/xml");
 #endif
-
-
-		} else if (strncmp(buffer + 4,"/logkml/", 8) == 0 || strncmp(buffer + 4,"/logfiles/", 10) == 0) {
+		} else if (strncmp(buffer + 4, "/logkml/", 8) == 0 || strncmp(buffer + 4, "/logfiles/", 10) == 0) {
 			webserv_child_kml_logfiles(fd, servername, buffer);
-
 #ifdef HTML_DRAWING
-		} else if (strncmp(buffer + 4,"/gui.html", 9) == 0) {
+		} else if (strncmp(buffer + 4, "/gui.html", 9) == 0) {
 			char display_html3[10000];
 			display_html3[0] = 0;
 			strcat(display_html3, "	<script>\n");
@@ -2965,12 +2935,12 @@ void webserv_child (int fd) {
 			sprintf(buffer, header_str, strlen(display_html3), "text/html");
 			write(fd, buffer, strlen(buffer));
 			write(fd, display_html3, strlen(display_html3));
-		} else if (strncmp(buffer + 4,"/gui-update.js", 14) == 0) {
+		} else if (strncmp(buffer + 4, "/gui-update.js", 14) == 0) {
 			sprintf(buffer, header_str, strlen(display_html2), "text/plain");
 			write(fd, buffer, strlen(buffer));
 			write(fd, display_html2, strlen(display_html2));
 #endif
-		} else if (strncmp(buffer + 4,"/usr/share/multigcs/", 20) == 0) {
+		} else if (strncmp(buffer + 4, "/usr/share/multigcs/", 20) == 0) {
 			int n;
 			for (n = 5; n < strlen(buffer); n++) {
 				if (buffer[n] == ' ') {
@@ -2980,22 +2950,21 @@ void webserv_child (int fd) {
 			}
 			SDL_Log("## %s ##\n", buffer + 4);
 			webserv_child_dump_file(fd, buffer + 4, "image/jpg");
-		} else if (strncmp(buffer + 4,"/multigcs.html", 14) == 0) {
+		} else if (strncmp(buffer + 4, "/multigcs.html", 14) == 0) {
 			sprintf(tmp_str, "%s/webserv/multigcs.html", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/html");
-
-		// HTML5 HUD-View + Map
-		} else if (strncmp(buffer + 4,"/map.html", 9) == 0) {
+			// HTML5 HUD-View + Map
+		} else if (strncmp(buffer + 4, "/map.html", 9) == 0) {
 			webserv_child_show_map(fd);
-		} else if (strncmp(buffer + 4,"/hud.html", 9) == 0) {
+		} else if (strncmp(buffer + 4, "/hud.html", 9) == 0) {
 			webserv_child_show_hud(fd);
-		} else if (strncmp(buffer + 4,"/misc.html", 10) == 0) {
+		} else if (strncmp(buffer + 4, "/misc.html", 10) == 0) {
 			webserv_child_show_misc(fd);
-		} else if (strncmp(buffer + 4,"/hudredraw.js", 13) == 0) {
+		} else if (strncmp(buffer + 4, "/hudredraw.js", 13) == 0) {
 			webserv_child_hud_redraw(fd);
-		} else if (strncmp(buffer + 4,"/hudredraw_small.js", 19) == 0) {
+		} else if (strncmp(buffer + 4, "/hudredraw_small.js", 19) == 0) {
 			webserv_child_hud_redraw_small(fd);
-		} else if (strncmp(buffer + 4,"/gcssetup.html?", 15) == 0) {
+		} else if (strncmp(buffer + 4, "/gcssetup.html?", 15) == 0) {
 			char name[1024];
 			char value[1024];
 			sscanf(buffer + 4 + 15, "%[0-9a-zA-Z_]=%s", name, value);
@@ -3004,19 +2973,18 @@ void webserv_child (int fd) {
 			sprintf(buffer, header_str, (int)strlen(content), "text/html");
 			write(fd, buffer, strlen(buffer));
 			write(fd, content, strlen(content));
-
-		} else if (strncmp(buffer + 4,"/gcssetup.html", 14) == 0) {
+		} else if (strncmp(buffer + 4, "/gcssetup.html", 14) == 0) {
 			webserv_child_gcssetup(fd, 0);
-		} else if (strncmp(buffer + 4,"/gcssetup1.html", 15) == 0) {
+		} else if (strncmp(buffer + 4, "/gcssetup1.html", 15) == 0) {
 			webserv_child_gcssetup(fd, 1);
-		} else if (strncmp(buffer + 4,"/gcssetup2.html", 15) == 0) {
+		} else if (strncmp(buffer + 4, "/gcssetup2.html", 15) == 0) {
 			webserv_child_gcssetup(fd, 2);
-		} else if (strncmp(buffer + 4,"/gcssetup3.html", 15) == 0) {
+		} else if (strncmp(buffer + 4, "/gcssetup3.html", 15) == 0) {
 			webserv_child_gcssetup(fd, 3);
-		} else if (strncmp(buffer + 4,"/map.js", 7) == 0) {
+		} else if (strncmp(buffer + 4, "/map.js", 7) == 0) {
 			sprintf(tmp_str, "%s/webserv/map.js", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/plain");
-		} else if (strncmp(buffer + 4,"/tile/", 6) == 0) {
+		} else if (strncmp(buffer + 4, "/tile/", 6) == 0) {
 			int tx = 0;
 			int ty = 0;
 			int zoom = 0;
@@ -3027,95 +2995,91 @@ void webserv_child (int fd) {
 			} else {
 				webserv_child_dump_file(fd, tmp_str, "image/png");
 			}
-		} else if (strncmp(buffer + 4,"/lonlat.txt", 11) == 0) {
+		} else if (strncmp(buffer + 4, "/lonlat.txt", 11) == 0) {
 			webserv_child_show_lonlat(fd);
-		} else if (strncmp(buffer + 4,"/marker.png", 11) == 0) {
+		} else if (strncmp(buffer + 4, "/marker.png", 11) == 0) {
 			sprintf(tmp_str, "%s/webserv/marker.png", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "image/png");
-		} else if (strncmp(buffer + 4,"/model.png", 10) == 0) {
+		} else if (strncmp(buffer + 4, "/model.png", 10) == 0) {
 			sprintf(tmp_str, "%s/textures/%s.png", BASE_DIR, dronetypes[ModelData[ModelActive].dronetype]);
 			webserv_child_dump_file(fd, tmp_str, "image/png");
-		} else if (strncmp(buffer + 4,"/img/marker.png", 15) == 0) {
+		} else if (strncmp(buffer + 4, "/img/marker.png", 15) == 0) {
 			sprintf(tmp_str, "%s/webserv/marker.png", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "image/png");
-		} else if (strncmp(buffer + 4,"/img/model.png", 14) == 0) {
+		} else if (strncmp(buffer + 4, "/img/model.png", 14) == 0) {
 			sprintf(tmp_str, "%s/webserv/model.png", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "image/png");
-		} else if (strncmp(buffer + 4,"/style.css", 10) == 0) {
+		} else if (strncmp(buffer + 4, "/style.css", 10) == 0) {
 			sprintf(tmp_str, "%s/webserv/style.css", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/plain");
-		} else if (strncmp(buffer + 4,"/bg.png", 7) == 0) {
+		} else if (strncmp(buffer + 4, "/bg.png", 7) == 0) {
 			sprintf(tmp_str, "%s/webserv/bg.png", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "image/png");
-		} else if (strncmp(buffer + 4,"/favicon.ico", 12) == 0) {
+		} else if (strncmp(buffer + 4, "/favicon.ico", 12) == 0) {
 			sprintf(tmp_str, "%s/webserv/favicon.ico", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "image/png");
-
-		} else if (strncmp(buffer + 4,"/copyright", 10) == 0) {
+		} else if (strncmp(buffer + 4, "/copyright", 10) == 0) {
 			sprintf(tmp_str, "%s/webserv/copyright", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/plain");
-		} else if (strncmp(buffer + 4,"/GPLv2.txt", 10) == 0) {
+		} else if (strncmp(buffer + 4, "/GPLv2.txt", 10) == 0) {
 			sprintf(tmp_str, "%s/webserv/GPLv2.txt", BASE_DIR);
 			webserv_child_dump_file(fd, tmp_str, "text/plain");
-		} else if (strncmp(buffer + 4,"/video.png", 10) == 0) {
+		} else if (strncmp(buffer + 4, "/video.png", 10) == 0) {
 #if defined USE_VLC
-	if (vlc_is_playing() == 0) {
-		vlc_exit();
-		vlc_init(setup.videocapture_device);
-	}
-	SDL_SavePNG(vlc_update(), "/tmp/video.png");
-	webserv_child_dump_file(fd, "/tmp/video.png", "image/png");
+			if (vlc_is_playing() == 0) {
+				vlc_exit();
+				vlc_init(setup.videocapture_device);
+			}
+			SDL_SavePNG(vlc_update(), "/tmp/video.png");
+			webserv_child_dump_file(fd, "/tmp/video.png", "image/png");
 #elif defined USE_WIFIBC
-	SDL_Surface *vidsurf = wifibc_get();
-	if (vidsurf != NULL) {
+			SDL_Surface *vidsurf = wifibc_get();
+			if (vidsurf != NULL) {
 #ifdef _ANDROID
-		SDL_Surface *imageSurface = convert_to_power_of_two(vidsurf);
-		draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, imageSurface);
-		SDL_FreeSurface(imageSurface);
+				SDL_Surface *imageSurface = convert_to_power_of_two(vidsurf);
+				draw_surface_f3(esContext, -1.42, -1.0, 1.42, 1.0, -2.0, 1.0, imageSurface);
+				SDL_FreeSurface(imageSurface);
 #else
-		SDL_SavePNG(vidsurf, "/tmp/video.png");
-		webserv_child_dump_file(fd, "/tmp/video.png", "image/png");
+				SDL_SavePNG(vidsurf, "/tmp/video.png");
+				webserv_child_dump_file(fd, "/tmp/video.png", "image/png");
 #endif
-	}
+			}
 #elif defined USE_OPENCV
-	SDL_Surface *vidsurf = openvc_get();
-	if (vidsurf != NULL) {
+			SDL_Surface *vidsurf = openvc_get();
+			if (vidsurf != NULL) {
 #ifdef _ANDROID
-		SDL_Surface *imageSurface = convert_to_power_of_two(vidsurf);
-		SDL_SavePNG(vidsurf, "/tmp/video.png");
-		webserv_child_dump_file(fd, "/tmp/video.png", "image/png");
-		SDL_FreeSurface(imageSurface);
+				SDL_Surface *imageSurface = convert_to_power_of_two(vidsurf);
+				SDL_SavePNG(vidsurf, "/tmp/video.png");
+				webserv_child_dump_file(fd, "/tmp/video.png", "image/png");
+				SDL_FreeSurface(imageSurface);
 #else
-		SDL_SavePNG(vidsurf, "/tmp/video.png");
-		webserv_child_dump_file(fd, "/tmp/video.png", "image/png");
+				SDL_SavePNG(vidsurf, "/tmp/video.png");
+				webserv_child_dump_file(fd, "/tmp/video.png", "image/png");
 #endif
-	}
+			}
 #else
 #ifndef OSX
 #if defined USE_V4L
-	SDL_SavePNG(videodev_loop(), "/tmp/video.png");
-	webserv_child_dump_file(fd, "/tmp/video.png", "image/png");
+			SDL_SavePNG(videodev_loop(), "/tmp/video.png");
+			webserv_child_dump_file(fd, "/tmp/video.png", "image/png");
 #endif
 #endif
 #endif
 		} else {
 			type[0] = 0;
 			content[0] = 0;
-
 			mwi21_web_get(ModelActive, buffer + 4, content, type);
 			if (type[0] != 0 && content[0] != 0) {
 				sprintf(buffer, header_str, (int)strlen(content), type);
 				write(fd, buffer, strlen(buffer));
 				write(fd, content, strlen(content));
 			}
-
 			mavlink_web_get(ModelActive, buffer + 4, content, type);
 			if (type[0] != 0 && content[0] != 0) {
 				sprintf(buffer, header_str, (int)strlen(content), type);
 				write(fd, buffer, strlen(buffer));
 				write(fd, content, strlen(content));
 			}
-
 			if (type[0] == 0 || content[0] == 0) {
 				SDL_Log("###################\n");
 				SDL_Log("%s", buffer);
@@ -3130,7 +3094,7 @@ void webserv_child (int fd) {
 }
 
 #ifndef WINDOWS
-int webserv_thread (void *data) {
+int webserv_thread(void *data) {
 	int listenfd;
 	int socketfd;
 	socklen_t length;
@@ -3139,8 +3103,8 @@ int webserv_thread (void *data) {
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 	serv_addr.sin_port = htons(setup.webport);
-	if ((listenfd = socket(AF_INET, SOCK_STREAM,0)) < 0) {
-		return(1);
+	if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+		return (1);
 	}
 	int flags = fcntl(listenfd, F_GETFL);
 	flags |= O_NONBLOCK;
@@ -3148,10 +3112,10 @@ int webserv_thread (void *data) {
 	int opt = 1;
 	setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
 	if (bind(listenfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
-		return(1);
+		return (1);
 	}
 	if (listen(listenfd, 64) < 0) {
-		return(1);
+		return (1);
 	}
 	while (webserv_running == 1) {
 		length = sizeof(cli_addr);
@@ -3162,11 +3126,11 @@ int webserv_thread (void *data) {
 	}
 	close(listenfd);
 	SDL_Log("webserv: exit thread\n");
-	return(0);
+	return (0);
 }
 #endif
 
-void webserv_init (void) {
+void webserv_init(void) {
 	SDL_Log("webserv: init thread\n");
 	obj3d_collada.name[0] = 0;
 	webserv_running = 1;
@@ -3181,7 +3145,7 @@ void webserv_init (void) {
 	SDL_Log("webserv: running on Port: %i\n", setup.webport);
 }
 
-void webserv_exit (void) {
+void webserv_exit(void) {
 	webserv_running = 0;
 	if (thread_webserv != NULL) {
 		SDL_Log("webserv: wait thread\n");
@@ -3198,28 +3162,28 @@ void webserv_exit (void) {
 #endif
 }
 
-uint8_t webserv_is_running (void) {
+uint8_t webserv_is_running(void) {
 	return webserv_running;
 }
 
 #else
-uint8_t webserv_is_running (void) {
+uint8_t webserv_is_running(void) {
 	return 0;
 }
 
-void webserv_init (void) {
+void webserv_init(void) {
 }
 
-void webserv_exit (void) {
+void webserv_exit(void) {
 }
 
-void webserv_html_head (char *content, char *title) {
+void webserv_html_head(char *content, char *title) {
 }
 
-void webserv_html_start (char *content, uint8_t init) {
+void webserv_html_start(char *content, uint8_t init) {
 }
 
-void webserv_html_stop (char *content) {
+void webserv_html_stop(char *content) {
 }
 #endif
 

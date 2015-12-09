@@ -1,3 +1,3 @@
 
-void screen_graph (ESContext *esContext);
+void screen_graph(ESContext *esContext);
 

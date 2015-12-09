@@ -4,11 +4,11 @@
 int16_t fms_pos = 0;
 uint16_t fms_sel = 0;
 
-uint8_t fms_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t fms_null(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 0;
 }
 
-uint8_t save_gpx (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t save_gpx(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	char filename[2048];
 	FILE *fd = NULL;
 	sprintf(filename, "mkdir -p %s/gpx", get_datadirectory());
@@ -48,7 +48,7 @@ uint8_t save_gpx (char *name, float x, float y, int8_t button, float data, uint8
 	return 0;
 }
 
-void wp_save_mission (char *filename) {
+void wp_save_mission(char *filename) {
 	FILE *fd = NULL;
 	int cmd = 0;
 	SDL_Log("write Mission to %s\n", filename);
@@ -101,7 +101,7 @@ void wp_save_mission (char *filename) {
 	}
 }
 
-void wp_load_mission (char *filename) {
+void wp_load_mission(char *filename) {
 	char line[1024];
 	FILE *fd = NULL;
 	int n = 0;
@@ -130,7 +130,7 @@ void wp_load_mission (char *filename) {
 		WayPoints[ModelActive][n].type = 0;
 	}
 	if ((fd = fopen(filename, "r")) > 0) {
-        while(fgets(line, 1000, fd) != NULL) {
+		while (fgets(line, 1000, fd) != NULL) {
 			if (strncmp(line, "QGC WPL ", 8) == 0) {
 			} else {
 				sscanf(line, "%i\t%i\t%i\t%i\t%f\t%f\t%f\t%f\t%f\t%f\t%f\t%i", &n, &current, &frametype, &cmd, &param1, &param2, &param3, &param4, &p_lat, &p_long, &p_alt, &cont);
@@ -145,93 +145,91 @@ void wp_load_mission (char *filename) {
 				WayPoints[ModelActive][n].p_alt = p_alt;
 				switch (cmd) {
 					case MAV_CMD_NAV_WAYPOINT: {
-						strcpy(WayPoints[ModelActive][n].command, "WAYPOINT");
-						break;
-					}
+							strcpy(WayPoints[ModelActive][n].command, "WAYPOINT");
+							break;
+						}
 					case MAV_CMD_NAV_LOITER_UNLIM: {
-						strcpy(WayPoints[ModelActive][n].command, "LOITER_UNLIM");
-						break;
-					}
+							strcpy(WayPoints[ModelActive][n].command, "LOITER_UNLIM");
+							break;
+						}
 					case MAV_CMD_NAV_LOITER_TURNS: {
-						strcpy(WayPoints[ModelActive][n].command, "LOITER_TURNS");
-						break;
-					}
+							strcpy(WayPoints[ModelActive][n].command, "LOITER_TURNS");
+							break;
+						}
 					case MAV_CMD_NAV_LOITER_TIME: {
-						strcpy(WayPoints[ModelActive][n].command, "LOITER_TIME");
-						break;
-					}
+							strcpy(WayPoints[ModelActive][n].command, "LOITER_TIME");
+							break;
+						}
 					case MAV_CMD_NAV_RETURN_TO_LAUNCH: {
-						strcpy(WayPoints[ModelActive][n].command, "RTL");
-						break;
-					}
+							strcpy(WayPoints[ModelActive][n].command, "RTL");
+							break;
+						}
 					case MAV_CMD_NAV_LAND: {
-						strcpy(WayPoints[ModelActive][n].command, "LAND");
-						break;
-					}
+							strcpy(WayPoints[ModelActive][n].command, "LAND");
+							break;
+						}
 					case MAV_CMD_NAV_TAKEOFF: {
-						strcpy(WayPoints[ModelActive][n].command, "TAKEOFF");
-						break;
-					}
+							strcpy(WayPoints[ModelActive][n].command, "TAKEOFF");
+							break;
+						}
 					case MAV_CMD_DO_DIGICAM_CONTROL: {
-						strcpy(WayPoints[ModelActive][n].command, "SHUTTER");
-						break;
-					}
+							strcpy(WayPoints[ModelActive][n].command, "SHUTTER");
+							break;
+						}
 					case MAV_CMD_DO_SET_CAM_TRIGG_DIST: {
-						strcpy(WayPoints[ModelActive][n].command, "SHUTTER_INT");
-						break;
-					}
+							strcpy(WayPoints[ModelActive][n].command, "SHUTTER_INT");
+							break;
+						}
 					case MAV_CMD_DO_SET_RELAY: {
-						strcpy(WayPoints[ModelActive][n].command, "RELAY");
-						break;
-					}
+							strcpy(WayPoints[ModelActive][n].command, "RELAY");
+							break;
+						}
 					case MAV_CMD_DO_REPEAT_RELAY: {
-						strcpy(WayPoints[ModelActive][n].command, "RELAY_REP");
-						break;
-					}
+							strcpy(WayPoints[ModelActive][n].command, "RELAY_REP");
+							break;
+						}
 					case MAV_CMD_DO_SET_SERVO: {
-						strcpy(WayPoints[ModelActive][n].command, "SERVO");
-						break;
-					}
+							strcpy(WayPoints[ModelActive][n].command, "SERVO");
+							break;
+						}
 					case MAV_CMD_DO_REPEAT_SERVO: {
-						strcpy(WayPoints[ModelActive][n].command, "SERVO_REP");
-						break;
-					}
+							strcpy(WayPoints[ModelActive][n].command, "SERVO_REP");
+							break;
+						}
 					case MAV_CMD_NAV_ROI: {
-						strcpy(WayPoints[ModelActive][n].command, "SET_ROI");
-						break;
-					}
+							strcpy(WayPoints[ModelActive][n].command, "SET_ROI");
+							break;
+						}
 					case 201: {
-						strcpy(WayPoints[ModelActive][n].command, "SET_ROI");
-						break;
-					}
+							strcpy(WayPoints[ModelActive][n].command, "SET_ROI");
+							break;
+						}
 					default: {
-						sprintf(WayPoints[ModelActive][n].command, "CMD:%i", cmd);
-						break;
-					}
+							sprintf(WayPoints[ModelActive][n].command, "CMD:%i", cmd);
+							break;
+						}
 				}
-
-
 			}
 		}
 		fclose(fd);
 	}
 }
 
-uint8_t fms_add (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t fms_add(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 0;
 }
 
-uint8_t fms_rtl (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t fms_rtl(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	mavlink_send_cmd_rtl(ModelActive);
 	return 0;
 }
 
-uint8_t fms_start_mission (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t fms_start_mission(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	mavlink_send_cmd_mission(ModelActive);
 	return 0;
 }
 
-uint8_t fms_del (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t fms_del(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	reset_buttons();
 	uint16_t n = 0;
 	uint16_t n2 = waypoint_active + 1;
@@ -255,7 +253,7 @@ uint8_t fms_del (char *name, float x, float y, int8_t button, float data, uint8_
 	return 0;
 }
 
-uint8_t fms_scroll (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t fms_scroll(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 5) {
 		fms_pos += (int)1;
 	} else if (button == 4) {
@@ -271,13 +269,13 @@ uint8_t fms_scroll (char *name, float x, float y, int8_t button, float data, uin
 	return 0;
 }
 
-uint8_t fms_select (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t fms_select(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	reset_buttons();
 	waypoint_active = (int)data;
 	return 0;
 }
 
-void screen_fms (ESContext *esContext) {
+void screen_fms(ESContext *esContext) {
 #ifndef SDLGL
 	ESMatrix modelview;
 	UserData *userData = esContext->userData;
@@ -321,13 +319,13 @@ void screen_fms (ESContext *esContext) {
 			if (strcmp(WayPoints[ModelActive][n].command, "WAYPOINT") == 0) {
 				if (last_lat != 0.0) {
 					/* Distance - Ground-Level */
-					distance1 = acos( 
-						cos(toRad(last_lat))
-						* cos(toRad(WayPoints[ModelActive][n].p_lat))
-						* cos(toRad(last_lon) - toRad(WayPoints[ModelActive][n].p_long))
-						+ sin(toRad(last_lat)) 
-						* sin(toRad(WayPoints[ModelActive][n].p_lat))
-					) * 6378.137 * 1000.0;
+					distance1 = acos(
+									cos(toRad(last_lat))
+									* cos(toRad(WayPoints[ModelActive][n].p_lat))
+									* cos(toRad(last_lon) - toRad(WayPoints[ModelActive][n].p_long))
+									+ sin(toRad(last_lat))
+									* sin(toRad(WayPoints[ModelActive][n].p_lat))
+								) * 6378.137 * 1000.0;
 					alt = WayPoints[ModelActive][n].p_alt - last_alt;
 					/* Distance - Sichtverbindung */
 					distance2 = sqrt(((distance1) * (distance1)) + (alt * alt));
@@ -340,12 +338,9 @@ void screen_fms (ESContext *esContext) {
 				last_lon = WayPoints[ModelActive][n].p_long;
 				last_alt = WayPoints[ModelActive][n].p_alt;
 			}
-
 			draw_line_f(esContext, ss, -0.55 + ((n2 - 1) * step_y), ss, -0.55 + (n2 * step_y), 0, 255, 0, 255);
 			draw_circleFilled_f(esContext, ss, -0.55 + ((n2 - 1) * step_y), 0.01, 0, 255, 0, 128);
 			draw_circleFilled_f(esContext, ss, -0.55 + (n2 * step_y), 0.01, 0, 255, 0, 128);
-
-
 			sprintf(tmp_str, "%s", WayPoints[ModelActive][n].name);
 			draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, -1.2, -0.7 + (n2 * step_y), 0.002, 0.1, 0, 0, fms_select, (float)n);
 			if (WayPoints[ModelActive][n].command[0] == 0) {
@@ -354,7 +349,6 @@ void screen_fms (ESContext *esContext) {
 				sprintf(tmp_str, "%s", WayPoints[ModelActive][n].command);
 			}
 			draw_text_f3(esContext, -1.2 + 0.01, -0.7 + (n2 * step_y) - 0.04, 0.002, 0.05, 0.05, FONT_GREEN, tmp_str);
-
 			int nny = 0;
 			int nny2 = 0;
 			if (strcmp(WayPoints[ModelActive][n].command, "SHUTTER") == 0) {
@@ -418,10 +412,8 @@ void screen_fms (ESContext *esContext) {
 				}
 				draw_text_button(esContext, "-", VIEW_MODE_FMS, tmp_str, FONT_GREEN, 1.25, -0.7 + (n2 * step_y), 0.002, 0.1, 2, 0, fms_select, (float)n);
 			}
-
 			sprintf(tmp_str2, "%s-%i-d", WayPoints[ModelActive][n].name, n);
 			set_button(tmp_str2, VIEW_MODE_FMS, -1.2, -0.55 + ((n2 - 1) * step_y), 1.3, -0.55 + (n2 * step_y), fms_select, (float)n, 0);
-
 			n2++;
 		}
 	}
@@ -433,7 +425,6 @@ void screen_fms (ESContext *esContext) {
 	} else if (fms_pos > (num_waypoints + 1) / 7) {
 		fms_pos = (num_waypoints + 1) / 7;
 	}
-
 	draw_text_button(esContext, "fms_mission", VIEW_MODE_FMS, "START", FONT_GREEN_BG, -1.0, 0.9, 0.005, 0.06, 1, 0, fms_start_mission, 0.0);
 	draw_text_button(esContext, "fms_edit", VIEW_MODE_FMS, "EDIT", FONT_GREEN_BG, -0.7, 0.9, 0.005, 0.06, ALIGN_CENTER, ALIGN_TOP, wpedit_waypoint_edit, (float)VIEW_MODE_FMS);
 	draw_text_button(esContext, "fms_add", VIEW_MODE_FMS, "ADD", FONT_GREEN_BG, -0.5, 0.9, 0.005, 0.06, 1, 0, fms_add, 0.0);

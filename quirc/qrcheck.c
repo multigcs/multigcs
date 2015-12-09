@@ -4,7 +4,7 @@
 #if defined USE_OPENCV
 #if defined USE_QUIRC
 
-static void rgb32_to_luma (const uint8_t *src, int src_pitch, int w, int h, uint8_t *dst, int dst_pitch) {
+static void rgb32_to_luma(const uint8_t *src, int src_pitch, int w, int h, uint8_t *dst, int dst_pitch) {
 	int i = 0;
 	int y = 0;
 	for (y = 0; y < h; y++) {
@@ -21,7 +21,7 @@ static void rgb32_to_luma (const uint8_t *src, int src_pitch, int w, int h, uint
 	}
 }
 
-void qrcode_check (SDL_Surface *screen, char *payload) {
+void qrcode_check(SDL_Surface *screen, char *payload) {
 	struct quirc *qr;
 	int count = 0;
 	int i = 0;

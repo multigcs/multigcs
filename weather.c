@@ -6,7 +6,7 @@ SpaceWeather spaceweather;
 
 SDL_Thread *thread_weather = NULL;
 
-void weather_parseDoc (char *docname) {
+void weather_parseDoc(char *docname) {
 	xmlDocPtr doc;
 	xmlNodePtr cur;
 	xmlNodePtr wcur;
@@ -100,7 +100,7 @@ void weather_parseDoc (char *docname) {
 	return;
 }
 
-void weatherfc_parseDoc (char *docname) {
+void weatherfc_parseDoc(char *docname) {
 	xmlDocPtr doc;
 	xmlNodePtr cur;
 	xmlNodePtr wcur;
@@ -197,16 +197,16 @@ void weatherfc_parseDoc (char *docname) {
 	return;
 }
 
-void spaceweather_parseTxt (char *filename) {
+void spaceweather_parseTxt(char *filename) {
 	FILE *fr;
 	int n = 0;
 	char line[1024];
 	char last_line[1024];
-	fr = fopen (filename, "r");
+	fr = fopen(filename, "r");
 	if (fr != 0) {
-		while(fgets(line, 1000, fr) != NULL) {
+		while (fgets(line, 1000, fr) != NULL) {
 			if (line[0] >= '0' && line[0] <= '9' && strncmp(line + 5, "UT", 2) == 0) {
-//				printf("##%s\n", line);
+				//				printf("##%s\n", line);
 				if (n == 0) {
 					strncpy(spaceweather.date[0], last_line + 12, 6);
 					strncpy(spaceweather.date[1], last_line + 23, 6);
@@ -225,7 +225,7 @@ void spaceweather_parseTxt (char *filename) {
 	}
 }
 
-int weather_thread (void *data) {
+int weather_thread(void *data) {
 	int n = 0;
 	SDL_Log("weather: init thread\n");
 	while (gui_running == 1) {
@@ -233,38 +233,36 @@ int weather_thread (void *data) {
 		char cmd[1024];
 		sprintf(url, "http://api.openweathermap.org/data/2.5/weather?lat=%f&lon=%f&mode=xml&APPID=1be90e8af7cce1504db3fdb0a727e06c", ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long);
 		SDL_Log("weather: get %s\n", url);
-//		file_download("/tmp/weather.xml.tmp", url);
+		//		file_download("/tmp/weather.xml.tmp", url);
 		sprintf(cmd, "wget -q -O/tmp/weather.xml.tmp \"%s\"", url);
 		system(cmd);
 		weather_parseDoc("/tmp/weather.xml.tmp");
-//		SDL_Log("weather: temperature %f\n", weather.temperature);
-//		SDL_Log("weather: humidity %f\n", weather.humidity);
-//		SDL_Log("weather: pressure %f\n", weather.pressure);
-//		SDL_Log("weather: wind_speed %f\n", weather.wind_speed);
-//		SDL_Log("weather: wind_direction %f\n", weather.wind_direction);
-//		SDL_Log("weather: sun_rise %s\n", weather.sun_rise);
-//		SDL_Log("weather: sun_set %s\n", weather.sun_set);
+		//		SDL_Log("weather: temperature %f\n", weather.temperature);
+		//		SDL_Log("weather: humidity %f\n", weather.humidity);
+		//		SDL_Log("weather: pressure %f\n", weather.pressure);
+		//		SDL_Log("weather: wind_speed %f\n", weather.wind_speed);
+		//		SDL_Log("weather: wind_direction %f\n", weather.wind_direction);
+		//		SDL_Log("weather: sun_rise %s\n", weather.sun_rise);
+		//		SDL_Log("weather: sun_set %s\n", weather.sun_set);
+		/*
 
-/*
-
-		sprintf(url, "http://api.openweathermap.org/data/2.5/forecast?lat=%f&lon=%f&mode=xml&APPID=1be90e8af7cce1504db3fdb0a727e06c", ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long);
-		SDL_Log("weather: get %s\n", url);
-//		file_download("/tmp/weatherfc.xml.tmp", url);
-		sprintf(cmd, "wget -q -O/tmp/weatherfc.xml.tmp \"%s\"", url);
-		system(cmd);
-		weatherfc_parseDoc("/tmp/weatherfc.xml.tmp");
-
+				sprintf(url, "http://api.openweathermap.org/data/2.5/forecast?lat=%f&lon=%f&mode=xml&APPID=1be90e8af7cce1504db3fdb0a727e06c", ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long);
+				SDL_Log("weather: get %s\n", url);
+		    //		file_download("/tmp/weatherfc.xml.tmp", url);
+				sprintf(cmd, "wget -q -O/tmp/weatherfc.xml.tmp \"%s\"", url);
+				system(cmd);
+				weatherfc_parseDoc("/tmp/weatherfc.xml.tmp");
 
 
-		sprintf(url, "http://services.swpc.noaa.gov/text/3-day-forecast.txt");
-		SDL_Log("spaceweather: get %s\n", url);
-		file_download("/tmp/spaceweather.txt.tmp", url);
-//		sprintf(cmd, "wget -q -O/tmp/spaceweather.txt.tmp \"%s\"", url);
-//		system(cmd);
-		spaceweather_parseTxt("/tmp/spaceweather.txt.tmp");
 
-*/
+				sprintf(url, "http://services.swpc.noaa.gov/text/3-day-forecast.txt");
+				SDL_Log("spaceweather: get %s\n", url);
+				file_download("/tmp/spaceweather.txt.tmp", url);
+		    //		sprintf(cmd, "wget -q -O/tmp/spaceweather.txt.tmp \"%s\"", url);
+		    //		system(cmd);
+				spaceweather_parseTxt("/tmp/spaceweather.txt.tmp");
 
+		*/
 		for (n = 0; n < 600 && gui_running == 1; n++) {
 			SDL_Delay(1000);
 		}
@@ -273,7 +271,7 @@ int weather_thread (void *data) {
 	return 0;
 }
 
-int weather_init (void) {
+int weather_init(void) {
 #ifndef WINDOWS
 #ifndef ANDROID
 	SDL_Log("weather: Weather-Data copyright by http://www.openweathermap.org\n");
@@ -287,16 +285,16 @@ int weather_init (void) {
 	return 0;
 }
 
-int weather_exit (void) {
+int weather_exit(void) {
 	SDL_WaitThread(thread_weather, NULL);
 	return 0;
 }
 
-uint8_t weather_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t weather_null(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 0;
 }
 
-void weather_draw (ESContext *esContext, float x1, float y1) {
+void weather_draw(ESContext *esContext, float x1, float y1) {
 	char tmp_str[128];
 	int yn = 0;
 	sprintf(tmp_str, "temp %0.1f^C", weather.temperature);
@@ -309,13 +307,13 @@ void weather_draw (ESContext *esContext, float x1, float y1) {
 	draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
 	sprintf(tmp_str, "w-dir %0.1f^", weather.wind_direction);
 	draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
-//	sprintf(tmp_str, "sun_rise %s", weather.sun_rise);
-//	draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
-//	sprintf(tmp_str, "sun_set %s", weather.sun_set);
-//	draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
+	//	sprintf(tmp_str, "sun_rise %s", weather.sun_rise);
+	//	draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
+	//	sprintf(tmp_str, "sun_set %s", weather.sun_set);
+	//	draw_text_button(esContext, "w_temp", VIEW_MODE_HUD, tmp_str, FONT_WHITE, x1, y1 + yn++ * 0.05, 0.003, 0.04, 0, 0, weather_null, 0);
 }
 
-void weather_draw_wind (ESContext *esContext, float x1, float y1, uint8_t mode) {
+void weather_draw_wind(ESContext *esContext, float x1, float y1, uint8_t mode) {
 	char tmp_str[128];
 	int yn = 0;
 	float arrow_w = 20.0;
@@ -339,11 +337,15 @@ void weather_draw_wind (ESContext *esContext, float x1, float y1, uint8_t mode) 
 	draw_circleFilled_f3(esContext, x1, y1, 0.002, c_radius, 255, 255, 255, 128);
 	draw_circle_f3(esContext, x1, y1, 0.002, c_radius, 255, 255, 255, 255);
 	draw_line_f3(esContext, x1 - cos(i2 * DEG2RAD) * radius, y1 - sin(i2 * DEG2RAD) * radius, 0.002, x1 + cos(i2 * DEG2RAD) * radius, y1 + sin(i2 * DEG2RAD) * radius, 0.002, 128, 128, 128, 255);
-	draw_line_f3(esContext, x1 + cos(i2 * DEG2RAD) * radius, y1 + sin(i2 * DEG2RAD) * radius, 0.002, x1 + cos((i2 + arrow_w) * DEG2RAD) * (radius - arrow_l), y1 + sin((i2 + arrow_w) * DEG2RAD) * (radius - arrow_l), 0.002, 128, 128, 128, 255);
-	draw_line_f3(esContext, x1 + cos(i2 * DEG2RAD) * radius, y1 + sin(i2 * DEG2RAD) * radius, 0.002, x1 + cos((i2 - arrow_w) * DEG2RAD) * (radius - arrow_l), y1 + sin((i2 - arrow_w) * DEG2RAD) * (radius - arrow_l), 0.002, 128, 128, 128, 255);
+	draw_line_f3(esContext, x1 + cos(i2 * DEG2RAD) * radius, y1 + sin(i2 * DEG2RAD) * radius, 0.002, x1 + cos((i2 + arrow_w) * DEG2RAD) * (radius - arrow_l),
+				 y1 + sin((i2 + arrow_w) * DEG2RAD) * (radius - arrow_l), 0.002, 128, 128, 128, 255);
+	draw_line_f3(esContext, x1 + cos(i2 * DEG2RAD) * radius, y1 + sin(i2 * DEG2RAD) * radius, 0.002, x1 + cos((i2 - arrow_w) * DEG2RAD) * (radius - arrow_l),
+				 y1 + sin((i2 - arrow_w) * DEG2RAD) * (radius - arrow_l), 0.002, 128, 128, 128, 255);
 	draw_line_f3(esContext, x1 - cos(i * DEG2RAD) * radius, y1 - sin(i * DEG2RAD) * radius, 0.002, x1 + cos(i * DEG2RAD) * radius, y1 + sin(i * DEG2RAD) * radius, 0.002, 255, 0, 0, 255);
-	draw_line_f3(esContext, x1 + cos(i * DEG2RAD) * radius, y1 + sin(i * DEG2RAD) * radius, 0.002, x1 + cos((i + arrow_w) * DEG2RAD) * (radius - arrow_l), y1 + sin((i + arrow_w) * DEG2RAD) * (radius - arrow_l), 0.002, 255, 0, 0, 255);
-	draw_line_f3(esContext, x1 + cos(i * DEG2RAD) * radius, y1 + sin(i * DEG2RAD) * radius, 0.002, x1 + cos((i - arrow_w) * DEG2RAD) * (radius - arrow_l), y1 + sin((i - arrow_w) * DEG2RAD) * (radius - arrow_l), 0.002, 255, 0, 0, 255);
+	draw_line_f3(esContext, x1 + cos(i * DEG2RAD) * radius, y1 + sin(i * DEG2RAD) * radius, 0.002, x1 + cos((i + arrow_w) * DEG2RAD) * (radius - arrow_l),
+				 y1 + sin((i + arrow_w) * DEG2RAD) * (radius - arrow_l), 0.002, 255, 0, 0, 255);
+	draw_line_f3(esContext, x1 + cos(i * DEG2RAD) * radius, y1 + sin(i * DEG2RAD) * radius, 0.002, x1 + cos((i - arrow_w) * DEG2RAD) * (radius - arrow_l),
+				 y1 + sin((i - arrow_w) * DEG2RAD) * (radius - arrow_l), 0.002, 255, 0, 0, 255);
 }
 
 

@@ -1,4 +1,4 @@
 
 #include <stdint.h>
 
-void screen_mwi_menu (ESContext *esContext);
+void screen_mwi_menu(ESContext *esContext);

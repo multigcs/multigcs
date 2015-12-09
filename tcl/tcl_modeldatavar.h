@@ -1,8 +1,6 @@
 
 
-void tcl_update_modeldata (void) {
-
-
+void tcl_update_modeldata(void) {
 	TclUpdateVarString("ModelData(name)", ModelData[ModelActive].name);
 	TclUpdateVarString("ModelData(sysstr)", ModelData[ModelActive].sysstr);
 	TclUpdateVarString("ModelData(image)", ModelData[ModelActive].image);
@@ -89,7 +87,6 @@ void tcl_update_modeldata (void) {
 	TclUpdateVarString("ModelData(telemetry_port)", ModelData[ModelActive].telemetry_port);
 	TclUpdateVarInt("ModelData(telemetry_baud)", ModelData[ModelActive].telemetry_baud);
 	TclUpdateVarInt("ModelData(serial_fd)", ModelData[ModelActive].serial_fd);
-
 }
 
 

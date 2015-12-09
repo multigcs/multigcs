@@ -1,3 +1,3 @@
 
-void model_save_xml_OpenPilot (FILE *fr);
+void model_save_xml_OpenPilot(FILE *fr);
 

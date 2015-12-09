@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <dpf.h>
 
-int demo (DPFHANDLE h) {
+int demo(DPFHANDLE h) {
 	static unsigned char image[2 * 320 * 240];
 	int x, y;
 	int i;
@@ -20,7 +20,7 @@ int demo (DPFHANDLE h) {
 	return 0;
 }
 
-int main (int argc, char **argv) {
+int main(int argc, char **argv) {
 	int ret;
 	DPFHANDLE h;
 	ret = dpf_open(NULL, &h);

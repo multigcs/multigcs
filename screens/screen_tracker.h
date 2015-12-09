@@ -1,2 +1,2 @@
 
-extern void screen_tracker (ESContext *esContext);
+extern void screen_tracker(ESContext *esContext);

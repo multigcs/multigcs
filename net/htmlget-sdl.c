@@ -1,11 +1,11 @@
- 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
- 
+
 #include <SDL_net.h>
- 
-int htmlget (char *url, char *file) {
+
+int htmlget(char *url, char *file) {
 	IPaddress ip;		/* Server address */
 	TCPsocket sd;		/* Socket descriptor */
 	int len;
@@ -13,10 +13,9 @@ int htmlget (char *url, char *file) {
 	char host[1024];
 	char page[1024];
 	sscanf(url, "http://%[a-zA-Z0-9-_.]/%s", host, page);
-
 	if (SDLNet_Init() < 0) {
 		fprintf(stderr, "SDLNet_Init: %s\n", SDLNet_GetError());
-//		return -1;
+		//		return -1;
 	}
 	if (SDLNet_ResolveHost(&ip, host, 80) < 0) {
 		fprintf(stderr, "SDLNet_ResolveHost: %s\n", SDLNet_GetError());
@@ -41,8 +40,8 @@ int htmlget (char *url, char *file) {
 		if ((cl2 = strstr(buffer, "\r\n\r\n")) != NULL) {
 			len -= (cl2 + 4) - buffer;
 			maxlen = atoi(cl + 16);
-		        FILE *fd = NULL;
-		        fd = fopen(file, "wb");
+			FILE *fd = NULL;
+			fd = fopen(file, "wb");
 			if (fd == NULL) {
 				printf("Error open file to write: %s\n", file);
 				return -1;
@@ -68,7 +67,7 @@ int htmlget (char *url, char *file) {
 }
 
 /*
-void main () {
+    void main () {
 	htmlget("http://maps.google.com/mapfiles/kml/pal3/icon21.png", "/tmp/test.png");
-}
+    }
 */

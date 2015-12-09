@@ -150,7 +150,7 @@ void SDL_KillThread(SDL_Thread *thread) {
 }
 #endif
 
-char *get_datadirectory (void) {
+char *get_datadirectory(void) {
 	static char datradir[1024];
 #if defined WINDOWS
 	strcpy(datradir, "MultiGCS");
@@ -166,7 +166,7 @@ char *get_datadirectory (void) {
 	return datradir;
 }
 
-void system_say (char *text) {
+void system_say(char *text) {
 	char cmd_str[1024];
 	sys_message(text);
 #ifndef ANDROID
@@ -183,7 +183,7 @@ void system_say (char *text) {
 }
 
 #ifdef SDLGL
-void save_screenshot (void) {
+void save_screenshot(void) {
 	char name[100];
 	char tmp_str[100];
 	if (setup.view_mode == VIEW_MODE_HUD) {
@@ -224,22 +224,22 @@ void save_screenshot (void) {
 }
 #endif
 
-void save_screenshot2 (void) {
+void save_screenshot2(void) {
 	char tmp_str[100];
 	sprintf(tmp_str, "xwd -name \"Multi-GCS\" -out /tmp/screen.dump; ./utils/save_screenshot.sh /tmp/screen.dump dump");
 	system(tmp_str);
 }
 
-SDL_Surface* CreateSurface(int width,int height) {
+SDL_Surface *CreateSurface(int width, int height) {
 #ifdef SDLGL
 	const SDL_PixelFormat fmt = *(WinScreen->format);
-	return SDL_CreateRGBSurface(0,width,height, fmt.BitsPerPixel, fmt.Rmask,fmt.Gmask,fmt.Bmask,fmt.Amask );
+	return SDL_CreateRGBSurface(0, width, height, fmt.BitsPerPixel, fmt.Rmask, fmt.Gmask, fmt.Bmask, fmt.Amask);
 #else
 	return NULL;
 #endif
 }
 
-void reset_buttons (void) {
+void reset_buttons(void) {
 	uint16_t n = 0;
 	for (n = 0; n < MAX_BUTTONS; n++) {
 		Buttons[n].name[0] = 0;
@@ -254,12 +254,11 @@ void reset_buttons (void) {
 	}
 }
 
-uint8_t set_button (char *name, uint8_t view_mode, float x1, float y1, float x2, float y2, uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t), float data, uint8_t type) {
+uint8_t set_button(char *name, uint8_t view_mode, float x1, float y1, float x2, float y2, uint8_t (*callback)(char *, float, float, int8_t, float, uint8_t), float data, uint8_t type) {
 	uint16_t n = 0;
 	if (gui_ov_lock == 1) {
 		return 0;
 	}
-
 	for (n = 0; n < MAX_BUTTONS; n++) {
 		if (strcmp(Buttons[n].name, name) == 0) {
 			Buttons[n].view_mode = view_mode;
@@ -288,7 +287,7 @@ uint8_t set_button (char *name, uint8_t view_mode, float x1, float y1, float x2,
 	return 2;
 }
 
-int8_t check_button (uint8_t view_mode, float x, float y, uint8_t button, uint8_t event) {
+int8_t check_button(uint8_t view_mode, float x, float y, uint8_t button, uint8_t event) {
 	int16_t n = 0;
 	if (event == BUTTON_RELEASE) {
 		for (n = 0; n < MAX_BUTTONS; n++) {
@@ -320,7 +319,7 @@ int8_t check_button (uint8_t view_mode, float x, float y, uint8_t button, uint8_
 	for (n = MAX_BUTTONS - 1; n >= 0; n--) {
 		if (Buttons[n].name[0] != 0 && Buttons[n].view_mode == view_mode && x > Buttons[n].x1 && x < Buttons[n].x2 && y > Buttons[n].y1 && y < Buttons[n].y2) {
 			if (Buttons[n].type == 0 && event == BUTTON_PRESS) {
-//				SDL_Log("CB: %s\n", Buttons[n].name);
+				//				SDL_Log("CB: %s\n", Buttons[n].name);
 				if ((*Buttons[n].callback)(Buttons[n].name, x, y, button, Buttons[n].data, BUTTON_PRESSED) == 0) {
 					return n;
 				}
@@ -348,14 +347,14 @@ int8_t check_button (uint8_t view_mode, float x, float y, uint8_t button, uint8_
 	return -1;
 }
 
-uint8_t need_bluetooth (void) {
+uint8_t need_bluetooth(void) {
 	if (strstr(ModelData[ModelActive].telemetry_port, "/dev/rfcomm") > 0) {
 		return 1;
 	}
 	return 0;
 }
 
-void stop_telemetry (uint8_t modelid) {
+void stop_telemetry(uint8_t modelid) {
 	mwi21_exit(modelid);
 	mavlink_exit(modelid);
 	gps_exit(modelid);
@@ -363,7 +362,7 @@ void stop_telemetry (uint8_t modelid) {
 	frsky_mode(0);
 }
 
-void reset_telemetry (uint8_t modelid) {
+void reset_telemetry(uint8_t modelid) {
 	stop_telemetry(modelid);
 	if (clientmode == 1) {
 		return;
@@ -382,7 +381,7 @@ void reset_telemetry (uint8_t modelid) {
 	}
 }
 
-void setup_waypoints (void) {
+void setup_waypoints(void) {
 	int n = 0;
 	int modeln = 0;
 	for (n = 0; n < MAX_POLYPOINTS; n++) {
@@ -456,7 +455,7 @@ void setup_waypoints (void) {
 	SurveySetup.alt_abs = 0;
 }
 
-void sys_message (char *msg) {
+void sys_message(char *msg) {
 	strncpy(message_txt, msg, 1023);
 	if (message_txt[strlen(message_txt) - 1] == '\n') {
 		message_txt[strlen(message_txt) - 1] = 0;
@@ -465,7 +464,7 @@ void sys_message (char *msg) {
 	redraw_flag = 1;
 }
 
-void setup_save (void) {
+void setup_save(void) {
 	if (clientmode == 1) {
 		return;
 	}
@@ -475,7 +474,7 @@ void setup_save (void) {
 	if (setup.calibration_mode > 0) {
 		setup.calibration_mode = 1;
 	}
-//	SDL_Log("** saving file\n");
+	//	SDL_Log("** saving file\n");
 	char filename[1024];
 	sprintf(filename, "%s/setup.cfg", get_datadirectory());
 	fr = fopen(filename, "wb");
@@ -638,7 +637,7 @@ void setup_save (void) {
 			fprintf(fr, "\n");
 			fprintf(fr, "[waypoints]\n");
 			for (nn = 0; nn < MAX_WAYPOINTS; nn++) {
-			if (WayPoints[ModelActive][nn].p_lat != 0.0) {
+				if (WayPoints[ModelActive][nn].p_lat != 0.0) {
 					fprintf(fr, "name	%s\n", WayPoints[n][nn].name);
 					fprintf(fr, "command	%s\n", WayPoints[n][nn].command);
 					fprintf(fr, "lat	%0.8f\n", WayPoints[n][nn].p_lat);
@@ -681,7 +680,7 @@ void setup_save (void) {
 	}
 }
 
-void setup_load (void) {
+void setup_load(void) {
 	FILE *fr;
 	char line[1024];
 	char var[1024];
@@ -738,7 +737,6 @@ void setup_load (void) {
 	setup.mavlink_forward_udp_remote_port = 14560;
 	strcpy(setup.mavlink_forward_udp_remote_ip, "127.0.0.1");
 	map_type = 1;
-
 #ifdef USE_WIFIBC
 	strcpy(setup.wifibc_device, "wlan1");
 	setup.wifibc_channel = 13;
@@ -747,7 +745,6 @@ void setup_load (void) {
 	setup.wifibc_packetlen = 1024;
 	setup.wifibc_record = 0;
 #endif
-
 #if defined USE_APRS
 	setup.aprs_server[0] = 0;
 	strcpy(setup.aprs_server, "146.229.162.182");
@@ -781,394 +778,390 @@ void setup_load (void) {
 		ModelData[model_n].use_deviceid = 0;
 		ModelData[model_n].mavlink_sysid = 0;
 		ModelData[model_n].mavlink_forward = 1;
-
 		ModelData[model_n].sysid = 250;
 		ModelData[model_n].compid = 0;
 		ModelData[model_n].p_lat = 50.2942581;
 		ModelData[model_n].p_long = 9.1228580;
 		ModelData[model_n].p_alt = 150.0;
 		ModelData[model_n].alt_offset = 0.0;
-
 		ModelData[model_n].next_lat = 0.0;
 		ModelData[model_n].next_long = 0.0;
 		ModelData[model_n].next_alt = 0.0;
 		ModelData[model_n].next_count = 0;
-
 		strcpy(ModelData[model_n].netip, "127.0.0.1");
 		ModelData[model_n].netport = 5760;
 		ModelData[model_n].get_param = 0;
 		ModelData[model_n].heartbeat = 0;
-
 		ModelData[model_n].follow = 0;
 	}
 	model_n = 0;
 	char filename[1024];
 	sprintf(filename, "%s/setup.cfg", get_datadirectory());
-	fr = fopen (filename, "r");
+	fr = fopen(filename, "r");
 	if (fr != 0) {
-	        while(fgets(line, 100, fr) != NULL) {
-	                var[0] = 0;
-	                val[0] = 0;
-	                sscanf (line, "%s %s", (char *)&var, (char *)&val);
-	                if (mode == 0) {
-	                        if (strcmp(var, "view_mode") == 0) {
+		while (fgets(line, 100, fr) != NULL) {
+			var[0] = 0;
+			val[0] = 0;
+			sscanf(line, "%s %s", (char *)&var, (char *)&val);
+			if (mode == 0) {
+				if (strcmp(var, "view_mode") == 0) {
 					setup.view_mode = atoi(val);
 					view_mode_next = setup.view_mode;
-	                        } else if (strcmp(var, "volt_min") == 0) {
+				} else if (strcmp(var, "volt_min") == 0) {
 					setup.volt_min = atof(val);
-	                        } else if (strcmp(var, "contrast") == 0) {
+				} else if (strcmp(var, "contrast") == 0) {
 					setup.contrast = atoi(val);
-	                        } else if (strcmp(var, "screen_w") == 0) {
+				} else if (strcmp(var, "screen_w") == 0) {
 					setup.screen_w = atoi(val);
-	                        } else if (strcmp(var, "screen_h") == 0) {
+				} else if (strcmp(var, "screen_h") == 0) {
 					setup.screen_h = atoi(val);
-	                        } else if (strcmp(var, "screen_border_x") == 0) {
+				} else if (strcmp(var, "screen_border_x") == 0) {
 					setup.screen_border_x = atoi(val);
-	                        } else if (strcmp(var, "screen_border_y") == 0) {
+				} else if (strcmp(var, "screen_border_y") == 0) {
 					setup.screen_border_y = atoi(val);
-	                        } else if (strcmp(var, "keep_ratio") == 0) {
+				} else if (strcmp(var, "keep_ratio") == 0) {
 					setup.keep_ratio = atof(val);
-	                        } else if (strcmp(var, "speak") == 0) {
+				} else if (strcmp(var, "speak") == 0) {
 					setup.speak = atoi(val);
-	                        } else if (strcmp(var, "fullscreen") == 0) {
+				} else if (strcmp(var, "fullscreen") == 0) {
 					setup.fullscreen = atoi(val);
-	                        } else if (strcmp(var, "borderless") == 0) {
+				} else if (strcmp(var, "borderless") == 0) {
 					setup.borderless = atoi(val);
-	                        } else if (strcmp(var, "side_by_side") == 0) {
+				} else if (strcmp(var, "side_by_side") == 0) {
 					setup.side_by_side = atoi(val);
-	                        } else if (strcmp(var, "lat") == 0) {
+				} else if (strcmp(var, "lat") == 0) {
 					lat = atof(val);
-	                        } else if (strcmp(var, "lon") == 0) {
-	                                lon = atof(val);
-	                        } else if (strcmp(var, "zoom") == 0) {
-	                                zoom = atoi(val);
-	                        } else if (strcmp(var, "waypoint_active") == 0) {
-	                                waypoint_active = atoi(val);
-	                        } else if (strcmp(var, "gcs_gps_port") == 0) {
-	                                strncpy(setup.gcs_gps_port, val, 1023);
-	                        } else if (strcmp(var, "gcs_gps_baud") == 0) {
-	                                setup.gcs_gps_baud = atoi(val);
-	                        } else if (strcmp(var, "rcflow_port") == 0) {
-	                                strncpy(setup.rcflow_port, val, 1023);
-	                        } else if (strcmp(var, "rcflow_baud") == 0) {
-	                                setup.rcflow_baud = atoi(val);
-	                        } else if (strcmp(var, "jeti_port") == 0) {
-	                                strncpy(setup.jeti_port, val, 1023);
-	                        } else if (strcmp(var, "jeti_baud") == 0) {
-	                                setup.jeti_baud = atoi(val);
-	                        } else if (strcmp(var, "frsky_port") == 0) {
-	                                strncpy(setup.frsky_port, val, 1023);
-	                        } else if (strcmp(var, "frsky_baud") == 0) {
-	                                setup.frsky_baud = atoi(val);
-	                        } else if (strcmp(var, "tracker_port") == 0) {
-	                                strncpy(setup.tracker_port, val, 1023);
-	                        } else if (strcmp(var, "tracker_baud") == 0) {
-	                                setup.tracker_baud = atoi(val);
-	                        } else if (strcmp(var, "map_type") == 0) {
-	                                map_type = atoi(val);
-	                        } else if (strcmp(var, "omap_type") == 0) {
-	                                omap_type = atoi(val);
-	                        } else if (strcmp(var, "center_map") == 0) {
-	                                center_map = atoi(val);
-	                        } else if (strcmp(var, "touchscreen_device") == 0) {
-	                                strncpy(setup.touchscreen_device, val, 200);
-	                        } else if (strcmp(var, "calibration_mode") == 0) {
-	                                setup.calibration_mode = atoi(val);
-	                        } else if (strcmp(var, "calibration_min_x") == 0) {
-	                                setup.calibration_min_x = atoi(val);
-	                        } else if (strcmp(var, "calibration_max_x") == 0) {
-	                                setup.calibration_max_x = atoi(val);
-	                        } else if (strcmp(var, "calibration_min_y") == 0) {
-	                                setup.calibration_min_y = atoi(val);
-	                        } else if (strcmp(var, "calibration_max_y") == 0) {
-	                                setup.calibration_max_y = atoi(val);
-	                        } else if (strcmp(var, "videolist_lastfile") == 0) {
-	                                strncpy(videolist_lastfile, val, 1023);
-	                        } else if (strcmp(var, "hud_view_screen") == 0) {
-	                                setup.hud_view_screen = atoi(val);
-	                        } else if (strcmp(var, "hud_view_map") == 0) {
-	                                setup.hud_view_map = atoi(val);
-	                                setup.hud_view_map = atoi(val);
-	                        } else if (strcmp(var, "hud_view_video") == 0) {
-	                                setup.hud_view_video = atoi(val);
-	                        } else if (strcmp(var, "hud_view_tunnel") == 0) {
-	                                setup.hud_view_tunnel = atoi(val);
-	                        } else if (strcmp(var, "map_view") == 0) {
-	                                map_view = atoi(val);
-	                        } else if (strcmp(var, "map_show_profile") == 0) {
-	                                map_show_profile = atoi(val);
-	                        } else if (strcmp(var, "webport") == 0) {
-	                                setup.webport = atoi(val);
-	                        } else if (strcmp(var, "gearth_interval") == 0) {
-	                                setup.gearth_interval = atoi(val);
+				} else if (strcmp(var, "lon") == 0) {
+					lon = atof(val);
+				} else if (strcmp(var, "zoom") == 0) {
+					zoom = atoi(val);
+				} else if (strcmp(var, "waypoint_active") == 0) {
+					waypoint_active = atoi(val);
+				} else if (strcmp(var, "gcs_gps_port") == 0) {
+					strncpy(setup.gcs_gps_port, val, 1023);
+				} else if (strcmp(var, "gcs_gps_baud") == 0) {
+					setup.gcs_gps_baud = atoi(val);
+				} else if (strcmp(var, "rcflow_port") == 0) {
+					strncpy(setup.rcflow_port, val, 1023);
+				} else if (strcmp(var, "rcflow_baud") == 0) {
+					setup.rcflow_baud = atoi(val);
+				} else if (strcmp(var, "jeti_port") == 0) {
+					strncpy(setup.jeti_port, val, 1023);
+				} else if (strcmp(var, "jeti_baud") == 0) {
+					setup.jeti_baud = atoi(val);
+				} else if (strcmp(var, "frsky_port") == 0) {
+					strncpy(setup.frsky_port, val, 1023);
+				} else if (strcmp(var, "frsky_baud") == 0) {
+					setup.frsky_baud = atoi(val);
+				} else if (strcmp(var, "tracker_port") == 0) {
+					strncpy(setup.tracker_port, val, 1023);
+				} else if (strcmp(var, "tracker_baud") == 0) {
+					setup.tracker_baud = atoi(val);
+				} else if (strcmp(var, "map_type") == 0) {
+					map_type = atoi(val);
+				} else if (strcmp(var, "omap_type") == 0) {
+					omap_type = atoi(val);
+				} else if (strcmp(var, "center_map") == 0) {
+					center_map = atoi(val);
+				} else if (strcmp(var, "touchscreen_device") == 0) {
+					strncpy(setup.touchscreen_device, val, 200);
+				} else if (strcmp(var, "calibration_mode") == 0) {
+					setup.calibration_mode = atoi(val);
+				} else if (strcmp(var, "calibration_min_x") == 0) {
+					setup.calibration_min_x = atoi(val);
+				} else if (strcmp(var, "calibration_max_x") == 0) {
+					setup.calibration_max_x = atoi(val);
+				} else if (strcmp(var, "calibration_min_y") == 0) {
+					setup.calibration_min_y = atoi(val);
+				} else if (strcmp(var, "calibration_max_y") == 0) {
+					setup.calibration_max_y = atoi(val);
+				} else if (strcmp(var, "videolist_lastfile") == 0) {
+					strncpy(videolist_lastfile, val, 1023);
+				} else if (strcmp(var, "hud_view_screen") == 0) {
+					setup.hud_view_screen = atoi(val);
+				} else if (strcmp(var, "hud_view_map") == 0) {
+					setup.hud_view_map = atoi(val);
+					setup.hud_view_map = atoi(val);
+				} else if (strcmp(var, "hud_view_video") == 0) {
+					setup.hud_view_video = atoi(val);
+				} else if (strcmp(var, "hud_view_tunnel") == 0) {
+					setup.hud_view_tunnel = atoi(val);
+				} else if (strcmp(var, "map_view") == 0) {
+					map_view = atoi(val);
+				} else if (strcmp(var, "map_show_profile") == 0) {
+					map_show_profile = atoi(val);
+				} else if (strcmp(var, "webport") == 0) {
+					setup.webport = atoi(val);
+				} else if (strcmp(var, "gearth_interval") == 0) {
+					setup.gearth_interval = atoi(val);
 #ifdef USE_WIFIBC
-	                        } else if (strcmp(var, "wifibc_device") == 0) {
-	                                strncpy(setup.wifibc_device, val, 127);
-	                        } else if (strcmp(var, "wifibc_channel") == 0) {
-	                                setup.wifibc_channel = atoi(val);
-	                        } else if (strcmp(var, "wifibc_port") == 0) {
-	                                setup.wifibc_port = atoi(val);
-	                        } else if (strcmp(var, "wifibc_blocksize") == 0) {
-	                                setup.wifibc_blocksize = atoi(val);
-	                        } else if (strcmp(var, "wifibc_packetlen") == 0) {
-	                                setup.wifibc_packetlen = atoi(val);
-	                        } else if (strcmp(var, "wifibc_record") == 0) {
-	                                setup.wifibc_record = atoi(val);
+				} else if (strcmp(var, "wifibc_device") == 0) {
+					strncpy(setup.wifibc_device, val, 127);
+				} else if (strcmp(var, "wifibc_channel") == 0) {
+					setup.wifibc_channel = atoi(val);
+				} else if (strcmp(var, "wifibc_port") == 0) {
+					setup.wifibc_port = atoi(val);
+				} else if (strcmp(var, "wifibc_blocksize") == 0) {
+					setup.wifibc_blocksize = atoi(val);
+				} else if (strcmp(var, "wifibc_packetlen") == 0) {
+					setup.wifibc_packetlen = atoi(val);
+				} else if (strcmp(var, "wifibc_record") == 0) {
+					setup.wifibc_record = atoi(val);
 #endif
-	                        } else if (strcmp(var, "videocapture_device") == 0) {
-	                                strncpy(setup.videocapture_device, val, 1023);
-	                        } else if (strcmp(var, "qrcheck") == 0) {
-	                                setup.qrcheck = atoi(val);
-	                        } else if (strcmp(var, "opencv_file") == 0) {
-	                                strncpy(setup.opencv_file, val, 1024);
-	                        } else if (strcmp(var, "opencv_device") == 0) {
-	                                setup.opencv_device = atoi(val);
-	                        } else if (strcmp(var, "opencv_features") == 0) {
-	                                setup.opencv_features = atoi(val);
-	                        } else if (strcmp(var, "videocapture_width") == 0) {
-	                                setup.videocapture_width = atoi(val);
-	                        } else if (strcmp(var, "videocapture_height") == 0) {
-	                                setup.videocapture_height = atoi(val);
-	                        } else if (strcmp(var, "Ground_lat") == 0) {
-	                                GroundData.p_lat = atof(val);
-	                        } else if (strcmp(var, "Ground_long") == 0) {
-	                                GroundData.p_long = atof(val);
-	                        } else if (strcmp(var, "Ground_alt") == 0) {
-	                                GroundData.p_alt = atof(val);
-	                        } else if (strcmp(var, "Ground_dir") == 0) {
-	                                GroundData.dir = atof(val);
-	                        } else if (strcmp(var, "Ground_fm_alt") == 0) {
-	                                GroundData.fm_alt = atof(val);
-	                        } else if (strcmp(var, "Ground_fm_radius") == 0) {
-	                                GroundData.fm_radius = atof(val);
-	                        } else if (strcmp(var, "Ground_sp_alt") == 0) {
-	                                GroundData.sp_alt = atof(val);
-	                        } else if (strcmp(var, "Ground_sp_radius") == 0) {
-	                                GroundData.sp_radius = atof(val);
-	                        } else if (strcmp(var, "weather_enable") == 0) {
-	                                setup.weather_enable = atoi(val);
-	                        } else if (strcmp(var, "mavlink_tcp_server") == 0) {
-	                                strncpy(setup.mavlink_tcp_server, val, 128);
-	                        } else if (strcmp(var, "mavlink_tcp_port") == 0) {
-	                                setup.mavlink_tcp_port = atoi(val);
-	                        } else if (strcmp(var, "mavlink_udp_port") == 0) {
-	                                setup.mavlink_udp_port = atoi(val);
-	                        } else if (strcmp(var, "mavlink_forward_udp_local_port") == 0) {
-	                                setup.mavlink_forward_udp_local_port = atoi(val);
-	                        } else if (strcmp(var, "mavlink_forward_udp_remote_port") == 0) {
-	                                setup.mavlink_forward_udp_remote_port = atoi(val);
-	                        } else if (strcmp(var, "mavlink_forward_udp_remote_ip") == 0) {
-	                                strcpy(setup.mavlink_forward_udp_remote_ip, val);
+				} else if (strcmp(var, "videocapture_device") == 0) {
+					strncpy(setup.videocapture_device, val, 1023);
+				} else if (strcmp(var, "qrcheck") == 0) {
+					setup.qrcheck = atoi(val);
+				} else if (strcmp(var, "opencv_file") == 0) {
+					strncpy(setup.opencv_file, val, 1024);
+				} else if (strcmp(var, "opencv_device") == 0) {
+					setup.opencv_device = atoi(val);
+				} else if (strcmp(var, "opencv_features") == 0) {
+					setup.opencv_features = atoi(val);
+				} else if (strcmp(var, "videocapture_width") == 0) {
+					setup.videocapture_width = atoi(val);
+				} else if (strcmp(var, "videocapture_height") == 0) {
+					setup.videocapture_height = atoi(val);
+				} else if (strcmp(var, "Ground_lat") == 0) {
+					GroundData.p_lat = atof(val);
+				} else if (strcmp(var, "Ground_long") == 0) {
+					GroundData.p_long = atof(val);
+				} else if (strcmp(var, "Ground_alt") == 0) {
+					GroundData.p_alt = atof(val);
+				} else if (strcmp(var, "Ground_dir") == 0) {
+					GroundData.dir = atof(val);
+				} else if (strcmp(var, "Ground_fm_alt") == 0) {
+					GroundData.fm_alt = atof(val);
+				} else if (strcmp(var, "Ground_fm_radius") == 0) {
+					GroundData.fm_radius = atof(val);
+				} else if (strcmp(var, "Ground_sp_alt") == 0) {
+					GroundData.sp_alt = atof(val);
+				} else if (strcmp(var, "Ground_sp_radius") == 0) {
+					GroundData.sp_radius = atof(val);
+				} else if (strcmp(var, "weather_enable") == 0) {
+					setup.weather_enable = atoi(val);
+				} else if (strcmp(var, "mavlink_tcp_server") == 0) {
+					strncpy(setup.mavlink_tcp_server, val, 128);
+				} else if (strcmp(var, "mavlink_tcp_port") == 0) {
+					setup.mavlink_tcp_port = atoi(val);
+				} else if (strcmp(var, "mavlink_udp_port") == 0) {
+					setup.mavlink_udp_port = atoi(val);
+				} else if (strcmp(var, "mavlink_forward_udp_local_port") == 0) {
+					setup.mavlink_forward_udp_local_port = atoi(val);
+				} else if (strcmp(var, "mavlink_forward_udp_remote_port") == 0) {
+					setup.mavlink_forward_udp_remote_port = atoi(val);
+				} else if (strcmp(var, "mavlink_forward_udp_remote_ip") == 0) {
+					strcpy(setup.mavlink_forward_udp_remote_ip, val);
 #if defined USE_APRS
-	                        } else if (strcmp(var, "aprs_server") == 0) {
-	                                strncpy(setup.aprs_server, val, 128);
-	                        } else if (strcmp(var, "aprs_port") == 0) {
-	                                setup.aprs_port = atoi(val);
-	                        } else if (strcmp(var, "aprs_filter") == 0) {
-	                                strncpy(setup.aprs_filter, val, 128);
-	                        } else if (strcmp(var, "aprs_enable") == 0) {
-	                                setup.aprs_enable = atoi(val);
+				} else if (strcmp(var, "aprs_server") == 0) {
+					strncpy(setup.aprs_server, val, 128);
+				} else if (strcmp(var, "aprs_port") == 0) {
+					setup.aprs_port = atoi(val);
+				} else if (strcmp(var, "aprs_filter") == 0) {
+					strncpy(setup.aprs_filter, val, 128);
+				} else if (strcmp(var, "aprs_enable") == 0) {
+					setup.aprs_enable = atoi(val);
 #endif
-	                        } else if (strcmp(var, "SurveySetup.name") == 0) {
-	                                strncpy(SurveySetup.name, val, 1000);
-	                        } else if (strcmp(var, "SurveySetup.interval") == 0) {
-	                               SurveySetup.interval  = atoi(val);
-	                        } else if (strcmp(var, "SurveySetup.pos") == 0) {
-	                                SurveySetup.pos = atoi(val);
-	                        } else if (strcmp(var, "SurveySetup.type") == 0) {
-	                                SurveySetup.type = atoi(val);
-	                        } else if (strcmp(var, "SurveySetup.num") == 0) {
-	                                SurveySetup.num = atoi(val);
-	                        } else if (strcmp(var, "SurveySetup.triggermode") == 0) {
-	                                SurveySetup.triggermode = atoi(val);
-	                        } else if (strcmp(var, "SurveySetup.options") == 0) {
-	                                SurveySetup.options = atoi(val);
-	                        } else if (strcmp(var, "SurveySetup.mode") == 0) {
-	                                SurveySetup.mode = atoi(val);
-	                        } else if (strcmp(var, "SurveySetup.angle") == 0) {
-	                                SurveySetup.angle = atof(val);
-	                        } else if (strcmp(var, "SurveySetup.grid_x") == 0) {
-	                                SurveySetup.grid_x = atof(val);
-	                        } else if (strcmp(var, "SurveySetup.grid_y") == 0) {
-	                                SurveySetup.grid_y = atof(val);
-	                        } else if (strcmp(var, "SurveySetup.film_width") == 0) {
-	                                SurveySetup.film_width = atof(val);
-	                        } else if (strcmp(var, "SurveySetup.film_height") == 0) {
-	                                SurveySetup.film_height = atof(val);
-	                        } else if (strcmp(var, "SurveySetup.sensor_mult") == 0) {
-	                                SurveySetup.sensor_mult = atof(val);
-	                        } else if (strcmp(var, "SurveySetup.lense") == 0) {
-	                                SurveySetup.lense = atof(val);
-	                        } else if (strcmp(var, "SurveySetup.overlap") == 0) {
-	                                SurveySetup.overlap = atof(val);
-	                        } else if (strcmp(var, "SurveySetup.alt") == 0) {
-	                                SurveySetup.alt = atof(val);
-	                        } else if (strcmp(var, "SurveySetup.alt_abs") == 0) {
-	                                SurveySetup.alt_abs = atoi(val);
-	                        } else if (strcmp(var, "SwarmSetup.master") == 0) {
-	                                SwarmSetup.master = atoi(val);
-	                        } else if (strcmp(var, "SwarmSetup.yaw_mode") == 0) {
-	                                SwarmSetup.yaw_mode = atoi(val);
-	                        } else if (strcmp(var, "SwarmSetup.rotate") == 0) {
-	                                SwarmSetup.rotate = atoi(val);
-	                        } else if (strncmp(var, "SwarmSetup.slave", 16) == 0) {
-									int nn = atoi(var + 16);
-	                                SwarmSetup.slave[nn] = atoi(val);
-	                        } else if (strncmp(var, "SwarmSetup.offset_x", 19) == 0) {
-									int nn = atoi(var + 19);
-	                                SwarmSetup.offset_x[nn] = atoi(val);
-	                        } else if (strncmp(var, "SwarmSetup.offset_y", 19) == 0) {
-									int nn = atoi(var + 19);
-	                                SwarmSetup.offset_y[nn] = atoi(val);
-	                        } else if (strncmp(var, "SwarmSetup.offset_z", 19) == 0) {
-									int nn = atoi(var + 19);
-	                                SwarmSetup.offset_z[nn] = atoi(val);
-	                        } else if (strcmp(var, "ModelActive") == 0) {
-	                                ModelActive = atoi(val);
-	                        } else if (strcmp(var, "model_name") == 0) {
-	                                strncpy(ModelData[model_n].name, val, 199);
-	                        } else if (strcmp(var, "model_sysstr") == 0) {
-	                                strncpy(ModelData[model_n].sysstr, val, 199);
-	                        } else if (strcmp(var, "telemetry_port") == 0) {
-	                                strncpy(ModelData[model_n].telemetry_port, val, 1023);
-	                        } else if (strcmp(var, "telemetry_baud") == 0) {
-	                                ModelData[model_n].telemetry_baud = atoi(val);
-	                        } else if (strcmp(var, "telemetry_type") == 0) {
-	                                ModelData[model_n].teletype = atoi(val);
-	                        } else if (strcmp(var, "pilottype") == 0) {
-	                                ModelData[model_n].pilottype = atoi(val);
-	                        } else if (strcmp(var, "dronetype") == 0) {
-	                                ModelData[model_n].dronetype = atoi(val);
-	                        } else if (strcmp(var, "deviceid") == 0) {
-	                                strcpy(ModelData[model_n].deviceid, val);
-	                        } else if (strcmp(var, "use_deviceid") == 0) {
-	                                ModelData[model_n].use_deviceid = atoi(val);
-	                        } else if (strcmp(var, "mavlink_sysid") == 0) {
-	                                ModelData[model_n].mavlink_sysid = atoi(val);
-	                        } else if (strcmp(var, "mavlink_forward") == 0) {
-	                                ModelData[model_n].mavlink_forward = atoi(val);
-	                        } else if (strcmp(var, "Model_lat") == 0) {
-	                                ModelData[model_n].p_lat = atof(val);
-	                        } else if (strcmp(var, "Model_long") == 0) {
-	                                ModelData[model_n].p_long = atof(val);
-	                        } else if (strcmp(var, "Model_alt") == 0) {
-	                                ModelData[model_n].p_alt = atof(val);
-	                        } else if (strcmp(var, "Model_alt_offset") == 0) {
-	                                ModelData[model_n].alt_offset = atof(val);
-	                        } else if (strcmp(var, "Model_netip") == 0) {
-	                                strcpy(ModelData[model_n].netip, val);
-	                        } else if (strcmp(var, "Model_netport") == 0) {
-	                                ModelData[model_n].netport = atoi(val);
-	                        } else if (strcmp(var, "Model_get_param") == 0) {
-	                                ModelData[model_n].get_param = atoi(val);
-	                        } else if (strcmp(var, "[waypoints]") == 0) {
-	                                mode = 1;
-									wp_num = 0;
-	                        } else if (strcmp(var, "[polypoints]") == 0) {
-	                                mode = 2;
-	                        } else if (strcmp(var, "[polypoints_nofly]") == 0) {
-	                                mode = 3;
-	                        } else if (var[0] == '[') {
-	                                model_n = atoi(var + 1);
-	                                mode = 0;
-	                        }
-	                } else if (mode == 1) {
-	                        if (var[0] == 0) {
-									wp_num++;
-									WayPoints[model_n][wp_num].p_lat = 0.0;
-									WayPoints[model_n][wp_num].p_long = 0.0;
-									WayPoints[model_n][wp_num].p_alt = 0.0;
-									WayPoints[model_n][wp_num].param1 = 0.0;
-									WayPoints[model_n][wp_num].param2 = 0.0;
-									WayPoints[model_n][wp_num].param3 = 0.0;
-									WayPoints[model_n][wp_num].param4 = 0.0;
-									WayPoints[model_n][wp_num].name[0] = 0;
-									WayPoints[model_n][wp_num].command[0] = 0;
-									WayPoints[model_n][wp_num].type = 0;
-									WayPoints[model_n][wp_num].frametype = 0;
-	                        } else if (strcmp(var, "name") == 0) {
-	                                strncpy(WayPoints[model_n][wp_num].name, val, 127);
-	                        } else if (strcmp(var, "command") == 0) {
-	                                strncpy(WayPoints[model_n][wp_num].command, val, 127);
-	                        } else if (strcmp(var, "lat") == 0) {
-	                                WayPoints[model_n][wp_num].p_lat = atof(val);
-	                        } else if (strcmp(var, "lon") == 0) {
-	                                WayPoints[model_n][wp_num].p_long = atof(val);
-	                        } else if (strcmp(var, "alt") == 0) {
-	                                WayPoints[model_n][wp_num].p_alt = atof(val);
-	                        } else if (strcmp(var, "param1") == 0) {
-	                                WayPoints[model_n][wp_num].param1 = atof(val);
-	                        } else if (strcmp(var, "param2") == 0) {
-	                                WayPoints[model_n][wp_num].param2 = atof(val);
-	                        } else if (strcmp(var, "param3") == 0) {
-	                                WayPoints[model_n][wp_num].param3 = atof(val);
-	                        } else if (strcmp(var, "param4") == 0) {
-	                                WayPoints[model_n][wp_num].param4 = atof(val);
-	                        } else if (strcmp(var, "type") == 0) {
-	                                WayPoints[model_n][wp_num].type = atoi(val);
-	                        } else if (strcmp(var, "frametype") == 0) {
-	                                WayPoints[model_n][wp_num].frametype = atoi(val);
-	                        } else if (strcmp(var, "[polypoints]") == 0) {
-	                                mode = 2;
-	                        } else if (strcmp(var, "[polypoints_nofly]") == 0) {
-	                                mode = 3;
-	                        } else if (strcmp(var, "[waypoints]") == 0) {
-	                                mode = 1;
-									wp_num = 0;
-	                        } else if (var[0] == '[') {
-	                                model_n = atoi(var + 1);
-	                                mode = 0;
-	                        }
-	                } else if (mode == 2) {
-	                        if (var[0] == 0) {
-	                                if (PolyPoints[pp_num].p_lat != 0.0) {
-	                                        pp_num++;
-	                                        PolyPoints[pp_num].p_lat = 0.0;
-	                                        PolyPoints[pp_num].p_long = 0.0;
-	                                }
-	                        } else if (strcmp(var, "lat") == 0) {
-	                                PolyPoints[pp_num].p_lat = atof(val);
-	                        } else if (strcmp(var, "lon") == 0) {
-	                                PolyPoints[pp_num].p_long = atof(val);
-	                        } else if (strcmp(var, "[polypoints_nofly]") == 0) {
-	                                mode = 3;
-	                        } else if (strcmp(var, "[waypoints]") == 0) {
-	                                mode = 1;
-									wp_num = 0;
-	                        } else if (var[0] == '[') {
-	                                model_n = atoi(var + 1);
-	                                mode = 0;
-	                        }
-	                } else if (mode == 3) {
-	                        if (var[0] == 0) {
-	                                if (PolyPointsNoFly[ppnf_num].p_lat != 0.0) {
-	                                        ppnf_num++;
-	                                        PolyPointsNoFly[ppnf_num].p_lat = 0.0;
-	                                        PolyPointsNoFly[ppnf_num].p_long = 0.0;
-	                                }
-	                        } else if (strcmp(var, "lat") == 0) {
-	                                PolyPointsNoFly[ppnf_num].p_lat = atof(val);
-	                        } else if (strcmp(var, "lon") == 0) {
-	                                PolyPointsNoFly[ppnf_num].p_long = atof(val);
-	                        } else if (strcmp(var, "alt") == 0) {
-	                                PolyPointsNoFly[ppnf_num].p_alt = atof(val);
-	                        } else if (strcmp(var, "mode") == 0) {
-	                                PolyPointsNoFly[ppnf_num].mode = atoi(val);
-	                        } else if (strcmp(var, "num") == 0) {
-	                                PolyPointsNoFly[ppnf_num].num = atoi(val);
-									map_polynf_num = PolyPointsNoFly[ppnf_num].num + 1;
-	                        } else if (strcmp(var, "[polypoints]") == 0) {
-	                                mode = 2;
-	                        } else if (strcmp(var, "[waypoints]") == 0) {
-	                                mode = 1;
-									wp_num = 0;
-	                        } else if (var[0] == '[') {
-	                                model_n = atoi(var + 1);
-	                                mode = 0;
-	                        }
-	                }
-	        }
-	        fclose(fr);
+				} else if (strcmp(var, "SurveySetup.name") == 0) {
+					strncpy(SurveySetup.name, val, 1000);
+				} else if (strcmp(var, "SurveySetup.interval") == 0) {
+					SurveySetup.interval  = atoi(val);
+				} else if (strcmp(var, "SurveySetup.pos") == 0) {
+					SurveySetup.pos = atoi(val);
+				} else if (strcmp(var, "SurveySetup.type") == 0) {
+					SurveySetup.type = atoi(val);
+				} else if (strcmp(var, "SurveySetup.num") == 0) {
+					SurveySetup.num = atoi(val);
+				} else if (strcmp(var, "SurveySetup.triggermode") == 0) {
+					SurveySetup.triggermode = atoi(val);
+				} else if (strcmp(var, "SurveySetup.options") == 0) {
+					SurveySetup.options = atoi(val);
+				} else if (strcmp(var, "SurveySetup.mode") == 0) {
+					SurveySetup.mode = atoi(val);
+				} else if (strcmp(var, "SurveySetup.angle") == 0) {
+					SurveySetup.angle = atof(val);
+				} else if (strcmp(var, "SurveySetup.grid_x") == 0) {
+					SurveySetup.grid_x = atof(val);
+				} else if (strcmp(var, "SurveySetup.grid_y") == 0) {
+					SurveySetup.grid_y = atof(val);
+				} else if (strcmp(var, "SurveySetup.film_width") == 0) {
+					SurveySetup.film_width = atof(val);
+				} else if (strcmp(var, "SurveySetup.film_height") == 0) {
+					SurveySetup.film_height = atof(val);
+				} else if (strcmp(var, "SurveySetup.sensor_mult") == 0) {
+					SurveySetup.sensor_mult = atof(val);
+				} else if (strcmp(var, "SurveySetup.lense") == 0) {
+					SurveySetup.lense = atof(val);
+				} else if (strcmp(var, "SurveySetup.overlap") == 0) {
+					SurveySetup.overlap = atof(val);
+				} else if (strcmp(var, "SurveySetup.alt") == 0) {
+					SurveySetup.alt = atof(val);
+				} else if (strcmp(var, "SurveySetup.alt_abs") == 0) {
+					SurveySetup.alt_abs = atoi(val);
+				} else if (strcmp(var, "SwarmSetup.master") == 0) {
+					SwarmSetup.master = atoi(val);
+				} else if (strcmp(var, "SwarmSetup.yaw_mode") == 0) {
+					SwarmSetup.yaw_mode = atoi(val);
+				} else if (strcmp(var, "SwarmSetup.rotate") == 0) {
+					SwarmSetup.rotate = atoi(val);
+				} else if (strncmp(var, "SwarmSetup.slave", 16) == 0) {
+					int nn = atoi(var + 16);
+					SwarmSetup.slave[nn] = atoi(val);
+				} else if (strncmp(var, "SwarmSetup.offset_x", 19) == 0) {
+					int nn = atoi(var + 19);
+					SwarmSetup.offset_x[nn] = atoi(val);
+				} else if (strncmp(var, "SwarmSetup.offset_y", 19) == 0) {
+					int nn = atoi(var + 19);
+					SwarmSetup.offset_y[nn] = atoi(val);
+				} else if (strncmp(var, "SwarmSetup.offset_z", 19) == 0) {
+					int nn = atoi(var + 19);
+					SwarmSetup.offset_z[nn] = atoi(val);
+				} else if (strcmp(var, "ModelActive") == 0) {
+					ModelActive = atoi(val);
+				} else if (strcmp(var, "model_name") == 0) {
+					strncpy(ModelData[model_n].name, val, 199);
+				} else if (strcmp(var, "model_sysstr") == 0) {
+					strncpy(ModelData[model_n].sysstr, val, 199);
+				} else if (strcmp(var, "telemetry_port") == 0) {
+					strncpy(ModelData[model_n].telemetry_port, val, 1023);
+				} else if (strcmp(var, "telemetry_baud") == 0) {
+					ModelData[model_n].telemetry_baud = atoi(val);
+				} else if (strcmp(var, "telemetry_type") == 0) {
+					ModelData[model_n].teletype = atoi(val);
+				} else if (strcmp(var, "pilottype") == 0) {
+					ModelData[model_n].pilottype = atoi(val);
+				} else if (strcmp(var, "dronetype") == 0) {
+					ModelData[model_n].dronetype = atoi(val);
+				} else if (strcmp(var, "deviceid") == 0) {
+					strcpy(ModelData[model_n].deviceid, val);
+				} else if (strcmp(var, "use_deviceid") == 0) {
+					ModelData[model_n].use_deviceid = atoi(val);
+				} else if (strcmp(var, "mavlink_sysid") == 0) {
+					ModelData[model_n].mavlink_sysid = atoi(val);
+				} else if (strcmp(var, "mavlink_forward") == 0) {
+					ModelData[model_n].mavlink_forward = atoi(val);
+				} else if (strcmp(var, "Model_lat") == 0) {
+					ModelData[model_n].p_lat = atof(val);
+				} else if (strcmp(var, "Model_long") == 0) {
+					ModelData[model_n].p_long = atof(val);
+				} else if (strcmp(var, "Model_alt") == 0) {
+					ModelData[model_n].p_alt = atof(val);
+				} else if (strcmp(var, "Model_alt_offset") == 0) {
+					ModelData[model_n].alt_offset = atof(val);
+				} else if (strcmp(var, "Model_netip") == 0) {
+					strcpy(ModelData[model_n].netip, val);
+				} else if (strcmp(var, "Model_netport") == 0) {
+					ModelData[model_n].netport = atoi(val);
+				} else if (strcmp(var, "Model_get_param") == 0) {
+					ModelData[model_n].get_param = atoi(val);
+				} else if (strcmp(var, "[waypoints]") == 0) {
+					mode = 1;
+					wp_num = 0;
+				} else if (strcmp(var, "[polypoints]") == 0) {
+					mode = 2;
+				} else if (strcmp(var, "[polypoints_nofly]") == 0) {
+					mode = 3;
+				} else if (var[0] == '[') {
+					model_n = atoi(var + 1);
+					mode = 0;
+				}
+			} else if (mode == 1) {
+				if (var[0] == 0) {
+					wp_num++;
+					WayPoints[model_n][wp_num].p_lat = 0.0;
+					WayPoints[model_n][wp_num].p_long = 0.0;
+					WayPoints[model_n][wp_num].p_alt = 0.0;
+					WayPoints[model_n][wp_num].param1 = 0.0;
+					WayPoints[model_n][wp_num].param2 = 0.0;
+					WayPoints[model_n][wp_num].param3 = 0.0;
+					WayPoints[model_n][wp_num].param4 = 0.0;
+					WayPoints[model_n][wp_num].name[0] = 0;
+					WayPoints[model_n][wp_num].command[0] = 0;
+					WayPoints[model_n][wp_num].type = 0;
+					WayPoints[model_n][wp_num].frametype = 0;
+				} else if (strcmp(var, "name") == 0) {
+					strncpy(WayPoints[model_n][wp_num].name, val, 127);
+				} else if (strcmp(var, "command") == 0) {
+					strncpy(WayPoints[model_n][wp_num].command, val, 127);
+				} else if (strcmp(var, "lat") == 0) {
+					WayPoints[model_n][wp_num].p_lat = atof(val);
+				} else if (strcmp(var, "lon") == 0) {
+					WayPoints[model_n][wp_num].p_long = atof(val);
+				} else if (strcmp(var, "alt") == 0) {
+					WayPoints[model_n][wp_num].p_alt = atof(val);
+				} else if (strcmp(var, "param1") == 0) {
+					WayPoints[model_n][wp_num].param1 = atof(val);
+				} else if (strcmp(var, "param2") == 0) {
+					WayPoints[model_n][wp_num].param2 = atof(val);
+				} else if (strcmp(var, "param3") == 0) {
+					WayPoints[model_n][wp_num].param3 = atof(val);
+				} else if (strcmp(var, "param4") == 0) {
+					WayPoints[model_n][wp_num].param4 = atof(val);
+				} else if (strcmp(var, "type") == 0) {
+					WayPoints[model_n][wp_num].type = atoi(val);
+				} else if (strcmp(var, "frametype") == 0) {
+					WayPoints[model_n][wp_num].frametype = atoi(val);
+				} else if (strcmp(var, "[polypoints]") == 0) {
+					mode = 2;
+				} else if (strcmp(var, "[polypoints_nofly]") == 0) {
+					mode = 3;
+				} else if (strcmp(var, "[waypoints]") == 0) {
+					mode = 1;
+					wp_num = 0;
+				} else if (var[0] == '[') {
+					model_n = atoi(var + 1);
+					mode = 0;
+				}
+			} else if (mode == 2) {
+				if (var[0] == 0) {
+					if (PolyPoints[pp_num].p_lat != 0.0) {
+						pp_num++;
+						PolyPoints[pp_num].p_lat = 0.0;
+						PolyPoints[pp_num].p_long = 0.0;
+					}
+				} else if (strcmp(var, "lat") == 0) {
+					PolyPoints[pp_num].p_lat = atof(val);
+				} else if (strcmp(var, "lon") == 0) {
+					PolyPoints[pp_num].p_long = atof(val);
+				} else if (strcmp(var, "[polypoints_nofly]") == 0) {
+					mode = 3;
+				} else if (strcmp(var, "[waypoints]") == 0) {
+					mode = 1;
+					wp_num = 0;
+				} else if (var[0] == '[') {
+					model_n = atoi(var + 1);
+					mode = 0;
+				}
+			} else if (mode == 3) {
+				if (var[0] == 0) {
+					if (PolyPointsNoFly[ppnf_num].p_lat != 0.0) {
+						ppnf_num++;
+						PolyPointsNoFly[ppnf_num].p_lat = 0.0;
+						PolyPointsNoFly[ppnf_num].p_long = 0.0;
+					}
+				} else if (strcmp(var, "lat") == 0) {
+					PolyPointsNoFly[ppnf_num].p_lat = atof(val);
+				} else if (strcmp(var, "lon") == 0) {
+					PolyPointsNoFly[ppnf_num].p_long = atof(val);
+				} else if (strcmp(var, "alt") == 0) {
+					PolyPointsNoFly[ppnf_num].p_alt = atof(val);
+				} else if (strcmp(var, "mode") == 0) {
+					PolyPointsNoFly[ppnf_num].mode = atoi(val);
+				} else if (strcmp(var, "num") == 0) {
+					PolyPointsNoFly[ppnf_num].num = atoi(val);
+					map_polynf_num = PolyPointsNoFly[ppnf_num].num + 1;
+				} else if (strcmp(var, "[polypoints]") == 0) {
+					mode = 2;
+				} else if (strcmp(var, "[waypoints]") == 0) {
+					mode = 1;
+					wp_num = 0;
+				} else if (var[0] == '[') {
+					model_n = atoi(var + 1);
+					mode = 0;
+				}
+			}
+		}
+		fclose(fr);
 	} else {
 		SDL_Log("setup: Can not load setup-file: %s\n", filename);
 	}
@@ -1186,7 +1179,7 @@ void setup_load (void) {
 	}
 }
 
-void next_point (float x_origin, float y_origin, float winkel, float r1, float *nx1, float *ny1) {
+void next_point(float x_origin, float y_origin, float winkel, float r1, float *nx1, float *ny1) {
 	float angle = toRad((winkel) * -1.0);
 	float x1 = r1 * cos(angle);
 	float y1 = r1 * sin(angle);
@@ -1194,7 +1187,7 @@ void next_point (float x_origin, float y_origin, float winkel, float r1, float *
 	*ny1 = y_origin + y1;
 }
 
-void next_point_ll (ESContext *esContext, float mark_long, float mark_lat, float winkel, float r1, float *nx1, float *ny1) {
+void next_point_ll(ESContext *esContext, float mark_long, float mark_lat, float winkel, float r1, float *nx1, float *ny1) {
 	float angle = toRad((winkel) * -1.0);
 	int mark_x = long2x(mark_long, lon, zoom);
 	int mark_y = lat2y(mark_lat, lat, zoom);
@@ -1206,7 +1199,7 @@ void next_point_ll (ESContext *esContext, float mark_long, float mark_lat, float
 	*ny1 = y2lat(new_y, lat, zoom);
 }
 
-int calc_fov (float film_width, float film_height, float sensor_mult, float lense, float dist, float *w, float *h) {
+int calc_fov(float film_width, float film_height, float sensor_mult, float lense, float dist, float *w, float *h) {
 	float sensor_width = film_width / sensor_mult;
 	float sensor_height = film_height / sensor_mult;
 	float dist_mm = dist * 1000;
@@ -1217,14 +1210,13 @@ int calc_fov (float film_width, float film_height, float sensor_mult, float lens
 	return 0;
 }
 
-void check_events (ESContext *esContext, SDL_Event event) {
+void check_events(ESContext *esContext, SDL_Event event) {
 	static uint8_t mousemode = 0;
 	static uint8_t mousewheel_flag = 0;
 	static float mousestart_x = 0.0;
 	static float mousestart_y = 0.0;
-
 	if (event.type == SDL_QUIT) {
-		ShutDown( esContext );
+		ShutDown(esContext);
 		exit(0);
 #ifdef SDL2
 	} else if (event.type == SDL_DROPFILE) {
@@ -1243,28 +1235,28 @@ void check_events (ESContext *esContext, SDL_Event event) {
 #else
 	} else if (event.type == SDL_VIDEORESIZE) {
 #ifdef SDLGL
-//		glResize(esContext, event.resize.w, event.resize.h);
+		//		glResize(esContext, event.resize.w, event.resize.h);
 #endif
 #endif
 	} else if (event.type == SDL_KEYUP) {
 		char keyname[1024];
 		strncpy(keyname, SDL_GetKeyName(event.key.keysym.sym), 1023);
 		int n = 0;
-		for(n = 0; n < strlen(keyname); n++ ) {
+		for (n = 0; n < strlen(keyname); n++) {
 			keyname[n] = tolower(keyname[n]);
 		}
 		if (strcmp(keyname, "right") == 0) {
-			key_pressed &= ~(1<<0);
+			key_pressed &= ~(1 << 0);
 		} else if (strcmp(keyname, "left") == 0) {
-			key_pressed &= ~(1<<1);
+			key_pressed &= ~(1 << 1);
 		} else if (strcmp(keyname, "up") == 0) {
-			key_pressed &= ~(1<<2);
+			key_pressed &= ~(1 << 2);
 		} else if (strcmp(keyname, "down") == 0) {
-			key_pressed &= ~(1<<3);
+			key_pressed &= ~(1 << 3);
 		} else if (strcmp(keyname, "[+]") == 0 || strcmp(keyname, "keypad +") == 0) {
-			key_pressed &= ~(1<<4);
+			key_pressed &= ~(1 << 4);
 		} else if (strcmp(keyname, "[-]") == 0 || strcmp(keyname, "keypad -") == 0) {
-			key_pressed &= ~(1<<5);
+			key_pressed &= ~(1 << 5);
 		} else if (strcmp(keyname, "[4]") == 0 || strcmp(keyname, "keypad 4") == 0) {
 			ModelData[ModelActive].roll -= 3.0;
 		} else if (strcmp(keyname, "[6]") == 0 || strcmp(keyname, "keypad 6") == 0) {
@@ -1282,7 +1274,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 		char keyname[1024];
 		strncpy(keyname, SDL_GetKeyName(event.key.keysym.sym), 1023);
 		int n = 0;
-		for(n = 0; n < strlen(keyname); n++ ) {
+		for (n = 0; n < strlen(keyname); n++) {
 			keyname[n] = tolower(keyname[n]);
 		}
 		event.type = 0;
@@ -1362,12 +1354,11 @@ void check_events (ESContext *esContext, SDL_Event event) {
 		} else {
 			strncpy(keyboard_key, keyname, 99);
 			int n = 0;
-			for(n = 0; n < strlen(keyboard_key); n++ ) {
+			for (n = 0; n < strlen(keyboard_key); n++) {
 				keyboard_key[n] = tolower(keyboard_key[n]);
 			}
 		}
 		redraw_flag = 1;
-
 #ifdef ANDROID
 	} else if (event.type == SDL_MOUSEMOTION) {
 	} else if (event.type == SDL_FINGERMOTION) {
@@ -1498,11 +1489,11 @@ void check_events (ESContext *esContext, SDL_Event event) {
 				mapdata->offset_y1 -= 256.0 / (float)esContext->height * 2.0;
 				mousestart_y = 0.0;
 			}
-		}		mousemode = 0;
+		}
+		mousemode = 0;
 		if (waypoint_active < 1) {
 			waypoint_active = 1;
 		}
-
 #ifdef ANDROID
 	} else if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEWHEEL) {
 	} else if (event.type == SDL_FINGERDOWN) {
@@ -1531,15 +1522,15 @@ void check_events (ESContext *esContext, SDL_Event event) {
 		float bx = (float)event.button.x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
 		float by = (float)event.button.y / (float)esContext->height * 2.0 - 1.0;
 #ifdef SDL2
-//		if (event.type != SDL_MOUSEWHEEL) {
-			if (check_button(setup.view_mode, bx, by, event.button.button, BUTTON_PRESS) != -1) {
-				return;
-			}
-//		}
-#else
-//		printf("EVENT: %f %f \n", bx, by);
+		//		if (event.type != SDL_MOUSEWHEEL) {
 		if (check_button(setup.view_mode, bx, by, event.button.button, BUTTON_PRESS) != -1) {
-//			printf("BUTTON_CLICKED: %f %f \n", bx, by);
+			return;
+		}
+		//		}
+#else
+		//		printf("EVENT: %f %f \n", bx, by);
+		if (check_button(setup.view_mode, bx, by, event.button.button, BUTTON_PRESS) != -1) {
+			//			printf("BUTTON_CLICKED: %f %f \n", bx, by);
 			return;
 		}
 #endif
@@ -1563,26 +1554,25 @@ void check_events (ESContext *esContext, SDL_Event event) {
 			float mouse_long = x2long(bx, lon, zoom);
 			float mouse_lat = y2lat(by, lat, zoom);
 			if (event.button.button == 1) {
-/*
-				if (by > 0 && by < 80) {
-					int tile_y = lat2tiley(lat, zoom);
-					tile_y--;
-					lat = tiley2lat(tile_y, zoom);
-				} else if (by > esContext->height - 80 && by < esContext->height) {
-					int tile_y = lat2tiley(lat, zoom);
-					tile_y+= 2;
-					lat = tiley2lat(tile_y, zoom);
-				} else if (bx > 0 && bx < 80) {
-					int tile_x = long2tilex(lon, zoom);
-					tile_x--;
-					lon = tilex2long(tile_x, zoom);
-				} else if (bx > esContext->width - 80 && bx < esContext->width) {
-					int tile_x = long2tilex(lon, zoom);
-					tile_x++;
-					lon = tilex2long(tile_x, zoom);
-				} else
-*/
-
+				/*
+								if (by > 0 && by < 80) {
+									int tile_y = lat2tiley(lat, zoom);
+									tile_y--;
+									lat = tiley2lat(tile_y, zoom);
+								} else if (by > esContext->height - 80 && by < esContext->height) {
+									int tile_y = lat2tiley(lat, zoom);
+									tile_y+= 2;
+									lat = tiley2lat(tile_y, zoom);
+								} else if (bx > 0 && bx < 80) {
+									int tile_x = long2tilex(lon, zoom);
+									tile_x--;
+									lon = tilex2long(tile_x, zoom);
+								} else if (bx > esContext->width - 80 && bx < esContext->width) {
+									int tile_x = long2tilex(lon, zoom);
+									tile_x++;
+									lon = tilex2long(tile_x, zoom);
+								} else
+				*/
 				if (map_addmode == 1 && map_show_wp == 1) {
 					uint16_t n = 0;
 					int16_t nz = get_altitude(mouse_lat, mouse_long);
@@ -1664,7 +1654,6 @@ void check_events (ESContext *esContext, SDL_Event event) {
 							}
 						}
 					}
-
 				} else if (map_sethome == 1) {
 					int16_t nz = get_altitude(mouse_lat, mouse_long);
 					WayPoints[ModelActive][0].p_lat = mouse_lat;
@@ -1763,7 +1752,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 							WayPoints[ModelActive][n].frametype = 0;
 							sprintf(WayPoints[ModelActive][n].name, "WP%i", n);
 							strncpy(WayPoints[ModelActive][n].command, "WAYPOINT", 127);
-//						SDL_Log("GPS;%i;%f;%f;%0.1f;%0.1f\n", time(0), mouse_lat, mouse_long, 25.0, 10.0);
+							//						SDL_Log("GPS;%i;%f;%f;%0.1f;%0.1f\n", time(0), mouse_lat, mouse_long, 25.0, 10.0);
 							break;
 						}
 					}
@@ -1826,7 +1815,7 @@ void check_events (ESContext *esContext, SDL_Event event) {
 	}
 }
 
-int telemetry_thread (void *data) {
+int telemetry_thread(void *data) {
 	int modelid = 0;
 	while (gui_running == 1) {
 		for (modelid = 0; modelid < MODELS_MAX; modelid++) {
@@ -1892,10 +1881,10 @@ int telemetry_thread (void *data) {
 		SDL_Delay(1);
 	}
 	SDL_Log("telemetry: exit thread\n");
-	return(0);
+	return (0);
 }
 
-int touchscreen_thread (void *data) {
+int touchscreen_thread(void *data) {
 #ifdef RPI_NO_X
 	while (gui_running == 1) {
 		if (touch_fd >= 0) {
@@ -1931,7 +1920,7 @@ int touchscreen_thread (void *data) {
 							diff_x = setup.calibration_max_x - setup.calibration_min_x;
 							last_x = setup.screen_w - ((int)ev[i].value - setup.calibration_min_x) * (setup.screen_w - 120) / diff_x - 60;
 							if (touch == 0) {
-								user_event.type=SDL_MOUSEMOTION;
+								user_event.type = SDL_MOUSEMOTION;
 								user_event.button.x = last_x;
 								user_event.button.y = last_y;
 								SDL_PushEvent(&user_event);
@@ -1946,7 +1935,7 @@ int touchscreen_thread (void *data) {
 							diff_y = setup.calibration_max_y - setup.calibration_min_y;
 							last_y = setup.screen_h - ((int)ev[i].value - setup.calibration_min_y) * (setup.screen_h - 120) / diff_y - 60;
 							if (touch == 0) {
-								user_event.type=SDL_MOUSEMOTION;
+								user_event.type = SDL_MOUSEMOTION;
 								user_event.button.x = last_x;
 								user_event.button.y = last_y;
 								SDL_PushEvent(&user_event);
@@ -1954,7 +1943,7 @@ int touchscreen_thread (void *data) {
 							touch_y = 1;
 						}
 						if (touch == 2) {
-							user_event.type=SDL_MOUSEBUTTONUP;
+							user_event.type = SDL_MOUSEBUTTONUP;
 							user_event.button.x = last_x;
 							user_event.button.y = last_y;
 							user_event.button.button = 1;
@@ -1970,7 +1959,7 @@ int touchscreen_thread (void *data) {
 									setup_save();
 								}
 							} else {
-								user_event.type=SDL_MOUSEBUTTONDOWN;
+								user_event.type = SDL_MOUSEBUTTONDOWN;
 								user_event.button.x = last_x;
 								user_event.button.y = last_y;
 								user_event.button.button = 1;
@@ -1980,7 +1969,7 @@ int touchscreen_thread (void *data) {
 							touch_x = 0;
 							touch_y = 0;
 						}
-//						SDL_Log("%i,%i\n", last_x, last_y);
+						//						SDL_Log("%i,%i\n", last_x, last_y);
 					}
 				}
 			}
@@ -1988,46 +1977,46 @@ int touchscreen_thread (void *data) {
 	}
 #endif
 	SDL_Log("touch: exit thread\n");
-	return(0);
+	return (0);
 }
 
 
-void transition_rotate_begin (ESContext *esContext, float trans_count) {
+void transition_rotate_begin(ESContext *esContext, float trans_count) {
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
 #endif
 #ifndef SDLGL
-	esTranslate( &userData->perspective, 0.0, 0.0, -2.0 );
-	esRotate( &userData->perspective, trans_count, 1.0, 1.0, 1.0 );
-	esTranslate( &userData->perspective, 0.0, 0.0, 2.0 );
+	esTranslate(&userData->perspective, 0.0, 0.0, -2.0);
+	esRotate(&userData->perspective, trans_count, 1.0, 1.0, 1.0);
+	esTranslate(&userData->perspective, 0.0, 0.0, 2.0);
 #else
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
-	glTranslatef( 0.0, 0.0, -2.0 );
-	glRotatef( trans_count, 1.0, 1.0, 1.0 );
-	glTranslatef( 0.0, 0.0, 2.0 );
+	glTranslatef(0.0, 0.0, -2.0);
+	glRotatef(trans_count, 1.0, 1.0, 1.0);
+	glTranslatef(0.0, 0.0, 2.0);
 #endif
 }
 
-void transition_rotate_end (ESContext *esContext, float trans_count) {
+void transition_rotate_end(ESContext *esContext, float trans_count) {
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
 #endif
 #ifndef SDLGL
-	esTranslate( &userData->perspective, 0.0, 0.0, -2.0 );
-	esRotate( &userData->perspective, -trans_count, 1.0, 1.0, 1.0 );
-	esTranslate( &userData->perspective, 0.0, 0.0, 2.0 );
+	esTranslate(&userData->perspective, 0.0, 0.0, -2.0);
+	esRotate(&userData->perspective, -trans_count, 1.0, 1.0, 1.0);
+	esTranslate(&userData->perspective, 0.0, 0.0, 2.0);
 #else
 	glPopMatrix();
 #endif
 }
 
-static uint8_t overview_show (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+static uint8_t overview_show(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	view_overview = 1 - view_overview;
 	return 0;
 }
 
-static uint8_t screen_last (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+static uint8_t screen_last(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (view_mode_next > 0) {
 		view_mode_next = setup.view_mode - 1;
 	} else {
@@ -2038,7 +2027,7 @@ static uint8_t screen_last (char *name, float x, float y, int8_t button, float d
 	return 0;
 }
 
-static uint8_t screen_next (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+static uint8_t screen_next(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	view_mode_next = setup.view_mode + 1;
 	if (view_mode_next > VIEW_MODE_LAST - 1) {
 		view_mode_next = 0;
@@ -2048,7 +2037,7 @@ static uint8_t screen_next (char *name, float x, float y, int8_t button, float d
 	return 0;
 }
 
-uint8_t screen_select (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t screen_select(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (data == -1.0) {
 		if (button == 4) {
 			screen_last(name, x, y, button, data, action);
@@ -2063,13 +2052,13 @@ uint8_t screen_select (char *name, float x, float y, int8_t button, float data, 
 		} else {
 			setup.view_mode = (uint8_t)data;
 		}
-//		trans_count = 1.0;
+		//		trans_count = 1.0;
 		setup_save();
 	}
 	return 0;
 }
 
-static uint8_t model_select (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+static uint8_t model_select(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (data == 0.0) {
 		if (button == 4) {
 			if (ModelActive > 0) {
@@ -2113,7 +2102,7 @@ static uint8_t model_select (char *name, float x, float y, int8_t button, float 
 #ifdef SDLGL
 SDL_Joystick *joy1 = NULL;
 
-int8_t joystick_init (void) {
+int8_t joystick_init(void) {
 	printf("search for joysticks\n");
 	if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) < 0) {
 		fprintf(stderr, "Unable to initialize Joystick: %s\n", SDL_GetError());
@@ -2140,27 +2129,27 @@ int8_t joystick_init (void) {
 
 
 
-void gimbal_update (float lat_from, float lon_from, float alt_from, float lat_to, float lon_to, float alt_to, float *pitch, float *yaw) {
+void gimbal_update(float lat_from, float lon_from, float alt_from, float lat_to, float lon_to, float alt_to, float *pitch, float *yaw) {
 	/* Alt - Diff */
 	float alt = alt_to - alt_from;
 	/* Bearing/Heading/Richtung */
-	float heading = toDeg(atan2(cos(toRad(lat_from)) * sin(toRad(lat_to)) - sin(toRad(lat_from)) * cos(toRad(lat_to)) * cos(toRad(lon_to) - toRad(lon_from)), sin(toRad(lon_to) - toRad(lon_from)) * cos(toRad(lat_to)))) + 270;
+	float heading = toDeg(atan2(cos(toRad(lat_from)) * sin(toRad(lat_to)) - sin(toRad(lat_from)) * cos(toRad(lat_to)) * cos(toRad(lon_to) - toRad(lon_from)),
+								sin(toRad(lon_to) - toRad(lon_from)) * cos(toRad(lat_to)))) + 270;
 	if (heading > 180) {
 		heading -= 360;
 	}
 	/* Distance - Grund */
-	float distance1 =   acos( 
-		cos(toRad( lat_from ))
-		* cos(toRad(lat_to))
-		* cos(toRad(lon_from) - toRad(lon_to))
-		+ sin(toRad(lat_from)) 
-		* sin(toRad(lat_to))
-	) * 6378.137;
+	float distance1 =   acos(
+							cos(toRad(lat_from))
+							* cos(toRad(lat_to))
+							* cos(toRad(lon_from) - toRad(lon_to))
+							+ sin(toRad(lat_from))
+							* sin(toRad(lat_to))
+						) * 6378.137;
 	/* Distance - Sichtverbindung */
 	float distance2 = sqrt(((distance1 * 1000) * (distance1 * 1000)) + (alt * alt));
 	/* Steigung */
 	float angle_up = (asin(alt / distance2)) * 180 / PI;
-
 	*pitch = angle_up * -1.0;
 	*yaw = heading;
 }
@@ -2168,7 +2157,7 @@ void gimbal_update (float lat_from, float lon_from, float alt_from, float lat_to
 
 
 
-void Draw (ESContext *esContext) {
+void Draw(ESContext *esContext) {
 	int n = 0;
 	char tmp_str[1024];
 	char tmp_str2[1024];
@@ -2188,13 +2177,13 @@ void Draw (ESContext *esContext) {
 				if (ModelData[n].follow >= 0) {
 					float pitch = 0.0;
 					float yaw = 0.0;
-					gimbal_update(ModelData[n].p_lat, ModelData[n].p_long, ModelData[n].p_alt, ModelData[ModelData[n].follow].p_lat, ModelData[ModelData[n].follow].p_long, ModelData[ModelData[n].follow].p_alt, &pitch, &yaw);
+					gimbal_update(ModelData[n].p_lat, ModelData[n].p_long, ModelData[n].p_alt, ModelData[ModelData[n].follow].p_lat, ModelData[ModelData[n].follow].p_long, ModelData[ModelData[n].follow].p_alt, &pitch,
+								  &yaw);
 					mavlink_set_gimbal_pos(n, pitch, 0.0, yaw);
 				}
 			}
 		}
 	}
-
 #ifdef SDLGL
 	static uint16_t timu = 0;
 	int16_t values[8];
@@ -2205,20 +2194,17 @@ void Draw (ESContext *esContext) {
 			for (n = 0; n < SDL_JoystickNumAxes(joy1) && n < 8; ++n) {
 				int16_t value = SDL_JoystickGetAxis(joy1, n);
 				values[n] = value / 66 + 1500;
-//				fprintf(stderr, "%i ", values[n]);
+				//				fprintf(stderr, "%i ", values[n]);
 			}
-//			fprintf(stderr, "\n");
+			//			fprintf(stderr, "\n");
 			mavlink_send_channels(ModelActive, values);
 		}
-
-//		for (n = 0; n < 8; ++n) {
-//			values[n] = 1500;
-//		}
-//		mavlink_send_channels(ModelActive, values);
-
+		//		for (n = 0; n < 8; ++n) {
+		//			values[n] = 1500;
+		//		}
+		//		mavlink_send_channels(ModelActive, values);
 	}
 #endif
-
 	Logging();
 	// set RTL-Waypoints to HOME-Position
 	if (setup.view_mode != VIEW_MODE_WPEDIT) {
@@ -2242,20 +2228,20 @@ void Draw (ESContext *esContext) {
 		}
 	}
 	if (strcmp(keyboard_key, "escape") == 0) {
-		ShutDown( esContext );
+		ShutDown(esContext);
 		exit(0);
 	} else if (strcmp(keyboard_key, "right") == 0) {
-		key_pressed |= (1<<0);
+		key_pressed |= (1 << 0);
 	} else if (strcmp(keyboard_key, "left") == 0) {
-		key_pressed |= (1<<1);
+		key_pressed |= (1 << 1);
 	} else if (strcmp(keyboard_key, "up") == 0) {
-		key_pressed |= (1<<2);
+		key_pressed |= (1 << 2);
 	} else if (strcmp(keyboard_key, "down") == 0) {
-		key_pressed |= (1<<3);
+		key_pressed |= (1 << 3);
 	} else if (strcmp(keyboard_key, "[+]") == 0 || strcmp(keyboard_key, "keypad +") == 0) {
-		key_pressed |= (1<<4);
+		key_pressed |= (1 << 4);
 	} else if (strcmp(keyboard_key, "[-]") == 0 || strcmp(keyboard_key, "keypad -") == 0) {
-		key_pressed |= (1<<5);
+		key_pressed |= (1 << 5);
 	} else if (strcmp(keyboard_key, "h") == 0) {
 		int tile_y = lat2tiley(WayPoints[ModelActive][0].p_lat, zoom) - 1;
 		int tile_x = long2tilex(WayPoints[ModelActive][0].p_long, zoom) - 1;
@@ -2294,26 +2280,25 @@ void Draw (ESContext *esContext) {
 	} else if (keyboard_key[0] != 0) {
 		SDL_Log("## keyboard_key: %s ##\n", keyboard_key);
 	}
-
 	keyboard_key[0] = 0;
-	while(SDL_PollEvent(&event)) {
+	while (SDL_PollEvent(&event)) {
 		check_events(esContext, event);
 	}
-	if (key_pressed & (1<<0)) {
+	if (key_pressed & (1 << 0)) {
 		ModelData[ModelActive].yaw++;
 		if (ModelData[ModelActive].yaw >= 360.0) {
 			ModelData[ModelActive].yaw = 0.0;
 		}
 		redraw_flag = 1;
 	}
-	if (key_pressed & (1<<1)) {
+	if (key_pressed & (1 << 1)) {
 		ModelData[ModelActive].yaw--;
 		if (ModelData[ModelActive].yaw < 0.0) {
 			ModelData[ModelActive].yaw = 359.0;
 		}
 		redraw_flag = 1;
 	}
-	if (key_pressed & (1<<2)) {
+	if (key_pressed & (1 << 2)) {
 		float nx1 = 0.0;
 		float ny1 = 0.0;
 		next_point(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].yaw + 180.0, 0.000016, &nx1, &ny1);
@@ -2325,7 +2310,7 @@ void Draw (ESContext *esContext) {
 		}
 		redraw_flag = 1;
 	}
-	if (key_pressed & (1<<3)) {
+	if (key_pressed & (1 << 3)) {
 		float nx1 = 0.0;
 		float ny1 = 0.0;
 		next_point(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ModelData[ModelActive].yaw, 0.000016, &nx1, &ny1);
@@ -2337,15 +2322,14 @@ void Draw (ESContext *esContext) {
 		}
 		redraw_flag = 1;
 	}
-	if (key_pressed & (1<<4)) {
+	if (key_pressed & (1 << 4)) {
 		ModelData[ModelActive].p_alt++;
 		redraw_flag = 1;
 	}
-	if (key_pressed & (1<<5)) {
+	if (key_pressed & (1 << 5)) {
 		ModelData[ModelActive].p_alt--;
 		redraw_flag = 1;
 	}
-
 	// Status-Messages
 	if (timer - msg_timer > 20 || timer < msg_timer) {
 		if (message > 20) {
@@ -2429,12 +2413,10 @@ void Draw (ESContext *esContext) {
 	}
 #endif
 	redraw_flag = 0;
-
 	if (view_mode_last != setup.view_mode) {
 		view_mode_last = setup.view_mode;
 		reset_buttons();
 	}
-
 #ifndef CONSOLE_ONLY
 #ifdef RPI_NO_X
 	if (setup.calibration_mode > 0) {
@@ -2464,7 +2446,6 @@ void Draw (ESContext *esContext) {
 #else
 	setup.view_mode = view_mode_next;
 #endif
-
 #ifndef CONSOLE_ONLY
 	if (view_overview == 1) {
 		screen_overview(esContext);
@@ -2477,7 +2458,7 @@ void Draw (ESContext *esContext) {
 		screen_background(esContext);
 		screen_model(esContext);
 	} else if (setup.view_mode == VIEW_MODE_RCFLOW) {
-//		screen_background(esContext);
+		//		screen_background(esContext);
 		screen_rcflow(esContext);
 	} else if (setup.view_mode == VIEW_MODE_FMS) {
 		screen_fms(esContext);
@@ -2536,8 +2517,7 @@ void Draw (ESContext *esContext) {
 		}
 	}
 #endif
-
-	glDisable( GL_DEPTH_TEST );
+	glDisable(GL_DEPTH_TEST);
 	draw_circleFilled_f3(esContext, 1.29, 0.955, 0.0002, (float)ModelData[ModelActive].heartbeat / 3000.0, 255, 0, 0, ModelData[ModelActive].heartbeat * 2);
 	if (ModelData[ModelActive].found_rc == 1) {
 		draw_circleFilled_f3(esContext, 1.3, 0.87, 0.01, (float)ModelData[ModelActive].heartbeat_rc / 4000.0, 0, 0, 255, ModelData[ModelActive].heartbeat_rc * 2);
@@ -2609,12 +2589,10 @@ void Draw (ESContext *esContext) {
 					sprintf(tmp_str2, "UNKNOWN_UAV(%i)", ModelData[n].dronetype);
 					strcpy(tmp_str3, "");
 				}
-//				if (tmp_str3[0] != 0) {
-//					draw_image_f3(esContext, 0.8 - 0.04, -0.84 + n * 0.1 - 0.04, 0.8 + 0.04, -0.84 + n * 0.1 + 0.04, 0.003, tmp_str3);
-//				}
-
+				//				if (tmp_str3[0] != 0) {
+				//					draw_image_f3(esContext, 0.8 - 0.04, -0.84 + n * 0.1 - 0.04, 0.8 + 0.04, -0.84 + n * 0.1 + 0.04, 0.003, tmp_str3);
+				//				}
 				strcpy(tmp_str2, ModelData[n].sysstr);
-
 				sprintf(tmp_str, "%s", ModelData[n].name);
 				if (n == ModelActive) {
 					draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_GREEN, 1.0, -0.87 + n * 0.1, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, model_select, n + 1);
@@ -2645,12 +2623,10 @@ void Draw (ESContext *esContext) {
 				}
 			}
 		}
-
-
 	}
 	if (message > 0) {
 		draw_text_f(esContext, 0.0 - strlen(message_txt) * 0.05 * 0.6 / 2 - 0.012, -0.99, 0.05, 0.05, FONT_PINK, message_txt);
-//		draw_text_f(esContext, -1.35, -0.99, 0.04, 0.04, FONT_PINK, message_txt);
+		//		draw_text_f(esContext, -1.35, -0.99, 0.04, 0.04, FONT_PINK, message_txt);
 	}
 	if (blink > 128) {
 		if (ModelData[ModelActive].found_rc == 1 && ModelData[ModelActive].heartbeat_rc == 0) {
@@ -2666,18 +2642,15 @@ void Draw (ESContext *esContext) {
 	} else {
 		draw_text_button(esContext, "M", setup.view_mode, "[M]", FONT_WHITE, 1.29, 0.93, 0.003, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_show, 0.0);
 	}
-
 	// LogPlay
 	if (logplay == 1) {
 		logplay_draw_control(esContext, 0.0, 0.85);
 	}
-
 #ifndef ANDROID
 	// Mouse-Pointer
 	draw_pointer(esContext, mouse_x, mouse_y, 16, 16, TEXTURE_POINTER);
 #endif
-	glEnable( GL_DEPTH_TEST );
-
+	glEnable(GL_DEPTH_TEST);
 #ifdef HTML_DRAWING
 	strncpy(display_html2, display_html, HTML_MAX - 1);
 	display_html[0] = 0;
@@ -2696,17 +2669,14 @@ void Draw (ESContext *esContext) {
 	strcat(display_html, "	context2.fillStyle = '#000000'; context2.fill();\n");
 	strcat(display_html, "	context2.closePath();\n");
 #endif
-
 #ifndef CONSOLE_ONLY
 	draw_update(esContext);
 #endif
-
 	gui_ov_lock = 0;
-
 	SDL_Delay(15);
 }
 
-void ShutDown ( ESContext *esContext ) {
+void ShutDown(ESContext *esContext) {
 	int n = 0;
 #ifdef USE_VLC
 	vlc_exit();
@@ -2718,7 +2688,6 @@ void ShutDown ( ESContext *esContext ) {
 	wifibc_exit();
 #endif
 	serial_monitor_exit();
-
 	SDL_Log("Shutdown\n");
 	gui_running = 0;
 	SDL_Delay(600);
@@ -2727,7 +2696,6 @@ void ShutDown ( ESContext *esContext ) {
 	for (n = 0; n < MODELS_MAX; n++) {
 		stop_telemetry(n);
 	}
-
 	mavlink_exit_udp();
 	mavlink_exit_tcp();
 #ifndef WINDOWS
@@ -2739,19 +2707,16 @@ void ShutDown ( ESContext *esContext ) {
 	gcs_gps_exit();
 	webserv_exit();
 	map_exit();
-
 #ifdef DPF_DISPLAY
 	SDL_WaitThread(thread_dpf, NULL);
 	dpf_exit();
 #endif
-
 	SDL_Log("telemetry: thread kill\n");
 	SDL_KillThread(thread_telemetry);
 #ifdef RPI_NO_X
 	SDL_Log("touch: thread kill\n");
 	SDL_KillThread(thread);
 #endif
-
 #ifndef OSX
 #ifdef SDLGL
 #if defined USE_V4L
@@ -2764,7 +2729,6 @@ void ShutDown ( ESContext *esContext ) {
 	system("killall -9 espeak 2> /dev/null > /dev/null");
 #endif
 #endif
-
 	SDL_Log("draw: exit\n");
 	draw_exit(esContext);
 	unlink("/tmp/gcs.run");
@@ -2772,25 +2736,22 @@ void ShutDown ( ESContext *esContext ) {
 
 #ifdef DPF_DISPLAY
 
-void dpf_fill (uint8_t r, uint8_t g, uint8_t b);
-void dpf_set (uint16_t x, uint16_t y, uint8_t r, uint8_t g, uint8_t b);
-uint16_t dpf_draw_string (uint16_t x, uint16_t y, char *string, uint8_t r, uint8_t g, uint8_t b);
+void dpf_fill(uint8_t r, uint8_t g, uint8_t b);
+void dpf_set(uint16_t x, uint16_t y, uint8_t r, uint8_t g, uint8_t b);
+uint16_t dpf_draw_string(uint16_t x, uint16_t y, char *string, uint8_t r, uint8_t g, uint8_t b);
 
-int dpf_thread (void *data) {
+int dpf_thread(void *data) {
 	char tmp_str[100];
 	uint8_t y = 0;
 	uint8_t x = 0;
 	while (gui_running == 1) {
 		dpf_fill(0, 0, 0);
-
 		time_t liczba_sekund;
 		struct tm strukt;
 		time(&liczba_sekund);
-		localtime_r(&liczba_sekund, &strukt); 
+		localtime_r(&liczba_sekund, &strukt);
 		sprintf(tmp_str, "%02i:%02i:%02i", strukt.tm_hour, strukt.tm_min, strukt.tm_sec);
-
 		sprintf(tmp_str, "%s", message_txt);
-
 		dpf_draw_string(10, 10, tmp_str, 0, 255, x);
 		x += 20;
 		dpf_update();
@@ -2800,17 +2761,15 @@ int dpf_thread (void *data) {
 #endif
 
 #ifdef USE_VISTA2D
-void glut_timer (int t) {
+void glut_timer(int t) {
 	Draw(GlobalesContext);
 	glutTimerFunc(10, glut_timer, 0);
 }
 #endif
 
 
-int main ( int argc, char *argv[] ) {
-
-//glutInit (&argc, argv);
-
+int main(int argc, char *argv[]) {
+	//glutInit (&argc, argv);
 	int n = 0;
 	char dir[1024];
 #ifndef WINDOWS
@@ -2819,7 +2778,7 @@ int main ( int argc, char *argv[] ) {
 	ESContext esContext;
 	GlobalesContext = &esContext;
 #ifdef USE_VISTA2D
-	glutInit (&argc, argv);
+	glutInit(&argc, argv);
 #endif
 #ifdef WINDOWS
 	sprintf(dir, "%s", get_datadirectory());
@@ -2852,7 +2811,6 @@ int main ( int argc, char *argv[] ) {
 	sprintf(dir, "%s/mavlink", get_datadirectory());
 	mkdir(dir, 0755);
 #endif
-
 	if (argc >= 3 && strcmp(argv[1], "-c") == 0) {
 		strncpy(clientmode_server, argv[2], 1023);
 		if (argc >= 4) {
@@ -2861,16 +2819,14 @@ int main ( int argc, char *argv[] ) {
 		SDL_Log("clientmode: %s:%i\n", clientmode_server, clientmode_port);
 		clientmode = 1;
 	}
-
 #ifndef WINDOWS
 	time_t liczba_sekund;
 	struct tm strukt;
 	time(&liczba_sekund);
-	localtime_r(&liczba_sekund, &strukt); 
+	localtime_r(&liczba_sekund, &strukt);
 	sprintf(tmp_name, "%s/WMM.COF", BASE_DIR);
 	init_declination(tmp_name, strukt.tm_year + 1900, strukt.tm_mon + 1, strukt.tm_mday);
 #endif
-
 #ifdef DPF_DISPLAY
 	dpf_init();
 	SDL_Log("dpf: init thread\n");
@@ -2880,10 +2836,8 @@ int main ( int argc, char *argv[] ) {
 	thread_dpf = SDL_CreateThread(dpf_thread, NULL);
 #endif
 #endif
-
 	setup_waypoints();
 	setup_load();
-
 #if defined USE_APRS
 	if (setup.aprs_enable == 1) {
 		aprs_init(setup.aprs_server, setup.aprs_port);
@@ -2893,9 +2847,9 @@ int main ( int argc, char *argv[] ) {
 	SDL_Log("init GL\n");
 	draw_init(&esContext);
 	SDL_ShowCursor(0);
-	printf( "* Vendor     : %s\n", glGetString( GL_VENDOR ) );
-	printf( "* Renderer   : %s\n", glGetString( GL_RENDERER ) );
-	printf( "* Version    : %s\n", glGetString( GL_VERSION ) );
+	printf("* Vendor     : %s\n", glGetString(GL_VENDOR));
+	printf("* Renderer   : %s\n", glGetString(GL_RENDERER));
+	printf("* Version    : %s\n", glGetString(GL_VERSION));
 #ifndef OSX
 #ifdef SDLGL
 #if defined USE_V4L
@@ -2904,7 +2858,6 @@ int main ( int argc, char *argv[] ) {
 #endif
 #endif
 #endif
-
 #ifdef USE_WIFIBC
 	wifibc_init();
 #endif
@@ -2913,7 +2866,6 @@ int main ( int argc, char *argv[] ) {
 #elif defined USE_VLC
 	vlc_init(setup.videocapture_device);
 #endif
-
 #ifdef RPI_NO_X
 	if ((touch_fd = open(setup.touchscreen_device, O_RDONLY)) >= 0) {
 		SDL_Log("touch: init thread\n");
@@ -2922,7 +2874,7 @@ int main ( int argc, char *argv[] ) {
 #else
 		thread = SDL_CreateThread(touchscreen_thread, NULL);
 #endif
-		if ( thread == NULL ) {
+		if (thread == NULL) {
 			fprintf(stderr, "touch: Thread konnte nicht gestartet werden: %s\n", SDL_GetError());
 			return 0;
 		}
@@ -2930,7 +2882,6 @@ int main ( int argc, char *argv[] ) {
 		setup.calibration_mode = 0;
 	}
 #endif
-
 #ifndef CONSOLE_ONLY
 	// preload map on startup for faster view-changes
 	draw_text_f3(&esContext, -1.4, -0.95, 0.003, 0.06, 0.06, FONT_WHITE, "PreLoading Maps...");
@@ -2939,18 +2890,15 @@ int main ( int argc, char *argv[] ) {
 #else
 	init_map(NULL, lat, lon, zoom, map_view, 1, 1.0, 0.0, 0.0, 0.0);
 #endif
-
 	int16_t zz = get_altitude(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long);
 	if (ModelData[ModelActive].p_alt < zz + 10) {
 		ModelData[ModelActive].p_alt = zz + 10;
 	}
-
 #ifdef SDLGL
 	joystick_init();
 #endif
-
 #ifndef ANDROID
-//	openpilot_init_tcp();
+	//	openpilot_init_tcp();
 	mavlink_init_udp();
 	mavlink_init_tcp();
 	mavlink_forward_udp_init();
@@ -2961,32 +2909,27 @@ int main ( int argc, char *argv[] ) {
 	tracker_init(setup.tracker_port, setup.tracker_baud);
 	serial_monitor_init();
 #endif
-
 	if (setup.weather_enable == 1) {
 		weather_init();
 	}
-
 	SDL_Log("telemetry: init thread\n");
 	for (n = 0; n < MODELS_MAX; n++) {
 		reset_telemetry(n);
 	}
-
 #ifdef SDL2
 	thread_telemetry = SDL_CreateThread(telemetry_thread, NULL, NULL);
 #else
 	thread_telemetry = SDL_CreateThread(telemetry_thread, NULL);
 #endif
-	if ( thread_telemetry == NULL ) {
+	if (thread_telemetry == NULL) {
 		fprintf(stderr, "telemetry: thread konnte nicht gestartet werden: %s\n", SDL_GetError());
 		return 0;
 	}
-
 	SDL_Log("main: start loop\n");
 #ifdef CONSOLE_ONLY
 	webserv_init();
 	SDL_Log("main: now you can connect via Browser or Google-Earth to port :%i\n", setup.webport);
 #endif
-
 #ifdef USE_VISTA2D
 	glutTimerFunc(30, glut_timer, 0);
 	glutMainLoop();

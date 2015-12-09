@@ -5,29 +5,29 @@
 static uint8_t show_keyboard = 0;
 static char new_name[200];
 static uint8_t new_name_cnt = 0;
-static uint8_t (*save_callback) (char *, float, float, int8_t, float, uint8_t);
+static uint8_t (*save_callback)(char *, float, float, int8_t, float, uint8_t);
 static uint8_t type = 0;
 
 
-void keyboard_set_callback (uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t)) {
+void keyboard_set_callback(uint8_t (*callback)(char *, float, float, int8_t, float, uint8_t)) {
 	save_callback = callback;
 }
 
-void keyboard_set_mode (uint8_t mode) {
+void keyboard_set_mode(uint8_t mode) {
 	show_keyboard = mode;
 }
 
-uint8_t keyboard_get_mode (void) {
+uint8_t keyboard_get_mode(void) {
 	return show_keyboard;
 }
 
-void keyboard_set_text (char *text) {
+void keyboard_set_text(char *text) {
 	type = 0;
 	strcpy(new_name, text);
 	new_name_cnt = 0;
 }
 
-void keyboard_set_number (char *text, uint8_t dot) {
+void keyboard_set_number(char *text, uint8_t dot) {
 	if (dot == 1) {
 		type = 2;
 	} else {
@@ -37,27 +37,27 @@ void keyboard_set_number (char *text, uint8_t dot) {
 	new_name_cnt = 0;
 }
 
-char *keyboard_get_text (void) {
+char *keyboard_get_text(void) {
 	return new_name;
 }
 
-uint8_t keyboard_name_cancel (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t keyboard_name_cancel(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	show_keyboard = 0;
 	return 0;
 }
 
-uint8_t keyboard_name_save (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t keyboard_name_save(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	show_keyboard = 0;
 	(*save_callback)(new_name, x, y, button, 1.0, 0);
 	return 0;
 }
 
-uint8_t keyboard_pos_char (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t keyboard_pos_char(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	new_name_cnt = (int)data;
 	return 0;
 }
 
-uint8_t keyboard_add_char (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t keyboard_add_char(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (data == 0) {
 		new_name[new_name_cnt] = data;
 		new_name_cnt--;
@@ -72,7 +72,7 @@ uint8_t keyboard_add_char (char *name, float x, float y, int8_t button, float da
 	return 0;
 }
 
-void screen_keyboard (ESContext *esContext) {
+void screen_keyboard(ESContext *esContext) {
 #ifdef SDLGL
 	if (draw_target() != 0) {
 		return;
@@ -82,27 +82,20 @@ void screen_keyboard (ESContext *esContext) {
 	ESMatrix modelview;
 	UserData *userData = esContext->userData;
 #endif
-
 	if (show_keyboard != setup.view_mode) {
 		return;
 	}
-
-
 	reset_buttons();
 	draw_box_f3(esContext, -1.5, -1.0, 0.02, 1.5, 1.0, 0.02, 0, 0, 0, 200);
-
 	draw_title(esContext, "Keyboard");
-
 	char tmp_str[100];
 	char tmp_str2[100];
 	int n = 0;
-
 #ifndef SDLGL
 	esMatrixLoadIdentity(&modelview);
 	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
-
 	for (n = 0; n < strlen(new_name) + 1; n++) {
 		if (new_name[n] != 0) {
 			sprintf(tmp_str2, "%c", new_name[n]);
@@ -167,8 +160,6 @@ void screen_keyboard (ESContext *esContext) {
 	sprintf(tmp_str2, "[END]");
 	sprintf(tmp_str, "add_char_%i", 0);
 	draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str2, FONT_WHITE, -1.1 + x * 0.14, -0.3 + y * 0.14, 0.02, 0.06, ALIGN_CENTER, ALIGN_TOP, keyboard_add_char, 0);
-
-
 	if (keyboard_key[0] != 0) {
 		if (strcmp(keyboard_key, "return") == 0) {
 			keyboard_name_save("", 0.0, 0.0, 0, 0.0, 0);
@@ -194,6 +185,5 @@ void screen_keyboard (ESContext *esContext) {
 		}
 		keyboard_key[0] = 0;
 	}
-
 }
 

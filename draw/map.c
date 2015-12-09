@@ -15,11 +15,11 @@ extern int fdMap;
 #endif
 
 int long2tilex(float lon, int z) {
-	return (int)(floor((lon + 180.0) / 360.0 * pow(2.0, z))); 
+	return (int)(floor((lon + 180.0) / 360.0 * pow(2.0, z)));
 }
 
 int lat2tiley(float lat, int z) {
-	return (int)(floor((1.0 - log( tan(lat * M_PI/180.0) + 1.0 / cos(lat * M_PI/180.0)) / M_PI) / 2.0 * pow(2.0, z))); 
+	return (int)(floor((1.0 - log(tan(lat * M_PI / 180.0) + 1.0 / cos(lat * M_PI / 180.0)) / M_PI) / 2.0 * pow(2.0, z)));
 }
 
 float tilex2long(int x, int z) {
@@ -31,7 +31,7 @@ float tiley2lat(int y, int z) {
 	return 180.0 / M_PI * atan(0.5 * (exp(n) - exp(-n)));
 }
 
-float y2lat (int y, float lat, float zoom) {
+float y2lat(int y, float lat, float zoom) {
 	int tile_ny = y / 256;
 	int tile_y = lat2tiley(lat, zoom);
 	float t_lat = tiley2lat(tile_y + tile_ny, zoom);
@@ -42,7 +42,7 @@ float y2lat (int y, float lat, float zoom) {
 	return mouse_lat;
 }
 
-float x2long (int x, float lon, float zoom) {
+float x2long(int x, float lon, float zoom) {
 	int tile_nx = x / 256;
 	int tile_x = long2tilex(lon, zoom);
 	float t_long = tilex2long(tile_x + tile_nx, zoom);
@@ -53,7 +53,7 @@ float x2long (int x, float lon, float zoom) {
 	return mouse_long;
 }
 
-int lat2y (float mark_lat, float lat, float zoom) {
+int lat2y(float mark_lat, float lat, float zoom) {
 #ifdef USE_FMAP
 	if (strcmp(mapnames[map_type][MAP_TYPE], "FMAP") == 0) {
 		float vx;
@@ -73,7 +73,7 @@ int lat2y (float mark_lat, float lat, float zoom) {
 	return (int)mark_y;
 }
 
-int long2x (float mark_long, float lon, float zoom) {
+int long2x(float mark_long, float lon, float zoom) {
 #ifdef USE_FMAP
 	if (strcmp(mapnames[map_type][MAP_TYPE], "FMAP") == 0) {
 		float vx;
@@ -98,21 +98,21 @@ char *BingtileXYZToQuadKey(char *quadKey, int x, int y, int z) {
 	int n = 0;
 	for (i = z; i > 0; i--) {
 		int digit = 0;
-	        uint8_t mask = 1<<(i - 1);
+		uint8_t mask = 1 << (i - 1);
 		if ((x & mask) != 0) {
-	            digit += 1;
+			digit += 1;
 		}
 		if ((y & mask) != 0) {
-	            digit += 2;
+			digit += 2;
 		}
-//		SDL_Log("map: __ %i __\n", digit);
+		//		SDL_Log("map: __ %i __\n", digit);
 		quadKey[n++] = (digit + 48);
 		quadKey[n] = 0;
 	}
 	return quadKey;
 }
 
-static void map_parseMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t map_service) { 
+static void map_parseMapService(xmlDocPtr doc, xmlNodePtr cur, uint8_t map_service) {
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
@@ -178,7 +178,7 @@ static void map_parseMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t map_serv
 	return;
 }
 
-static void map_parseOverlayMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t omap_service) { 
+static void map_parseOverlayMapService(xmlDocPtr doc, xmlNodePtr cur, uint8_t omap_service) {
 	xmlChar *key;
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
@@ -228,10 +228,10 @@ static void map_parseOverlayMapService (xmlDocPtr doc, xmlNodePtr cur, uint8_t o
 	return;
 }
 
-void map_parseDoc (char *docname) {
+void map_parseDoc(char *docname) {
 	xmlDocPtr doc;
 	xmlNodePtr cur;
-//	xmlChar *key;
+	//	xmlChar *key;
 	maplen = 0;
 	omaplen = 0;
 	if (strncmp(docname, "./", 2) == 0) {
@@ -264,9 +264,9 @@ void map_parseDoc (char *docname) {
 	cur = cur->xmlChildrenNode;
 	while (cur != NULL) {
 		if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"service"))) {
-			map_parseMapService (doc, cur, maplen++);
+			map_parseMapService(doc, cur, maplen++);
 		} else if ((!xmlStrcasecmp(cur->name, (const xmlChar *)"overlay_service"))) {
-			map_parseOverlayMapService (doc, cur, omaplen++);
+			map_parseOverlayMapService(doc, cur, omaplen++);
 		}
 		cur = cur->next;
 	}
@@ -274,7 +274,7 @@ void map_parseDoc (char *docname) {
 	return;
 }
 
-void download_map_range (float from_lat, float from_lon, float to_lat, float to_lon, uint8_t zoom) {
+void download_map_range(float from_lat, float from_lon, float to_lat, float to_lon, uint8_t zoom) {
 	int tile_x = long2tilex(from_lon, zoom);
 	int tile_y = lat2tiley(from_lat, zoom);
 	int tile_x_max = long2tilex(to_lon, zoom);
@@ -302,7 +302,6 @@ void download_map_range (float from_lat, float from_lon, float to_lat, float to_
 						google_tile_long2 = tilex2long(tile_x + x_n + 1, zoom);
 						google_tile_long = google_tile_long1 + (google_tile_long2 - google_tile_long1) / 2;
 						google_tile_lat = tiley2lat(tile_y + y_n + 1, zoom);
-
 						sprintf(tile_name, "%s/MAPS/tobig_google_%i_%i_%i.png", get_datadirectory(), zoom, tile_x + x_n, tile_y + y_n);
 						sprintf(tile_url, mapnames[map_type][MAP_URL], google_tile_lat, google_tile_long, zoom, 256, 356);
 						SDL_Log("map: %s -> %s\n", tile_url, tile_name);
@@ -323,7 +322,7 @@ void download_map_range (float from_lat, float from_lon, float to_lat, float to_
 							} else if (strcmp(mapnames[map_type][MAP_TYPE], "XYZ") == 0) {
 								sprintf(tile_url, mapnames[map_type][MAP_URL], tile_x + x_n, tile_y + y_n, zoom);
 							} else if (strcmp(mapnames[map_type][MAP_TYPE], "TMS") == 0) {
-								int ymax = (1<<mapdata->zoom);
+								int ymax = (1 << mapdata->zoom);
 								int y = ymax - (tile_y + y_n) - 1;
 								sprintf(tile_url, mapnames[map_type][MAP_URL], zoom, tile_x + x_n, y);
 							} else if (strcmp(mapnames[map_type][MAP_TYPE], "BING") == 0) {
@@ -342,20 +341,20 @@ void download_map_range (float from_lat, float from_lon, float to_lat, float to_
 	}
 }
 
-uint8_t map_downloader (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t map_downloader(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	uint8_t zoom = 0;
 	float lat = 50.2;
 	float lon = 9.0;
 	for (zoom = 10; zoom < 18; zoom++) {
 		download_map_range(lat, lon, lat + 0.5, lon + 0.5, zoom);
 	}
-//      DE: 47.0 -> 57.0, 5.8 -> 15.3
-//	download_map_range(47.0, 5.7, 57.0, 15.4, 11);
-//	download_map_range(47.0, 5.7, 57.0, 15.4, 10);
+	//      DE: 47.0 -> 57.0, 5.8 -> 15.3
+	//	download_map_range(47.0, 5.7, 57.0, 15.4, 11);
+	//	download_map_range(47.0, 5.7, 57.0, 15.4, 10);
 	return 0;
 }
 
-void get_maps (uint8_t mode, GeoMap *mapdata) {
+void get_maps(uint8_t mode, GeoMap *mapdata) {
 	int tile_x = long2tilex(mapdata->lon, mapdata->zoom);
 	int tile_y = lat2tiley(mapdata->lat, mapdata->zoom);
 	int x_n = 0;
@@ -439,7 +438,7 @@ void get_maps (uint8_t mode, GeoMap *mapdata) {
 								} else if (strcmp(mapnames[map_type][MAP_TYPE], "ZMS") == 0) {
 									sprintf(tile_url, url_string, mapdata->zoom, tile_x + x_n, tile_y + y_n);
 								} else if (strcmp(mapnames[map_type][MAP_TYPE], "TMS") == 0) {
-									int ymax = (1<<mapdata->zoom);
+									int ymax = (1 << mapdata->zoom);
 									int y = ymax - (tile_y + y_n) - 1;
 									sprintf(tile_url, url_string, mapdata->zoom, tile_x + x_n, y);
 								} else if (strcmp(mapnames[map_type][MAP_TYPE], "BING") == 0) {
@@ -474,7 +473,7 @@ void get_maps (uint8_t mode, GeoMap *mapdata) {
 								} else if (strcmp(omapnames[omap_type][MAP_TYPE], "ZMS") == 0) {
 									sprintf(tile_url, url_string, mapdata->zoom, tile_x + x_n, tile_y + y_n);
 								} else if (strcmp(omapnames[omap_type][MAP_TYPE], "TMS") == 0) {
-									int ymax = (1<<mapdata->zoom);
+									int ymax = (1 << mapdata->zoom);
 									int y = ymax - (tile_y + y_n) - 1;
 									sprintf(tile_url, url_string, mapdata->zoom, tile_x + x_n, y);
 								} else if (strcmp(omapnames[omap_type][MAP_TYPE], "BING") == 0) {
@@ -495,7 +494,7 @@ void get_maps (uint8_t mode, GeoMap *mapdata) {
 	}
 }
 
-void get_srtm (GeoMap *mapdata) {
+void get_srtm(GeoMap *mapdata) {
 	char LON[128];
 	char LAT[128];
 	char file[1024];
@@ -528,9 +527,9 @@ void get_srtm (GeoMap *mapdata) {
 		source[0] = 0;
 		FILE *fr = NULL;
 		sprintf(listfile, "%s/SRTM.list", BASE_DIR);
-		fr = fopen (listfile, "r");
+		fr = fopen(listfile, "r");
 		if (fr != NULL) {
-			while(fgets(line, 1000, fr) != NULL) {
+			while (fgets(line, 1000, fr) != NULL) {
 				if (strstr(line, file) > 0) {
 					line[strlen(line) - 1] = 0;
 					sprintf(source, "%s", line);
@@ -538,9 +537,7 @@ void get_srtm (GeoMap *mapdata) {
 			}
 			fclose(fr);
 		} else {
-
 			SDL_Log("srtm: list not found: %s\n", listfile);
-
 			sprintf(source, "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/Eurasia/%s.zip", file);
 		}
 		if (source[0] != 0) {
@@ -559,7 +556,7 @@ void get_srtm (GeoMap *mapdata) {
 	}
 }
 
-int thread_get_maps1 (void *data) {
+int thread_get_maps1(void *data) {
 	GeoMap *mapdata = (GeoMap *)data;
 	while (mapdata->mapthread_running == 1) {
 		get_maps(0, mapdata);
@@ -570,7 +567,7 @@ int thread_get_maps1 (void *data) {
 	return 0;
 }
 
-int thread_get_maps2 (void *data) {
+int thread_get_maps2(void *data) {
 	GeoMap *mapdata = (GeoMap *)data;
 	while (mapdata->mapthread_running == 1) {
 		get_maps(1, mapdata);
@@ -580,7 +577,7 @@ int thread_get_maps2 (void *data) {
 	return 0;
 }
 
-void draw_model (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, float roll, float pitch, float yaw, uint8_t modelid, uint8_t mode, float lat, float lon, uint8_t zoom) {
+void draw_model(ESContext *esContext, float mark_lat, float mark_long, float mark_alt, float roll, float pitch, float yaw, uint8_t modelid, uint8_t mode, float lat, float lon, uint8_t zoom) {
 	ESMatrix modelview;
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
@@ -629,7 +626,7 @@ void draw_model (ESContext *esContext, float mark_lat, float mark_long, float ma
 #else
 	esMatrixLoadIdentity(&modelview);
 	if (map_view != 1 && map_view != 3) {
-		esTranslate( &modelview, -mapdata->offset_x1, mapdata->offset_y1, 0.0 );
+		esTranslate(&modelview, -mapdata->offset_x1, mapdata->offset_y1, 0.0);
 	}
 #endif
 	if (mode != 2) {
@@ -638,11 +635,11 @@ void draw_model (ESContext *esContext, float mark_lat, float mark_long, float ma
 		draw_text_f3(esContext, x1 + 0.04, y1 + 0.0, mark_z, 0.04, 0.04, FONT_WHITE, tmp_str);
 		draw_line_f3(esContext, x1, y1, mark_z, x1 + 0.2, y1, mark_z, 255, 255, 255, 127);
 	}
-	esTranslate( &modelview, x1, -y1, -2.0 + mark_z);
-	esRotate( &modelview, yaw, 0.0, 0.0, 1.0 );
-	esRotate( &modelview, roll, 0.0, 1.0, 0.0 );
-	esRotate( &modelview, pitch, 1.0, 0.0, 0.0 );
-	esTranslate( &modelview, -x1, y1, 2.0 - mark_z);
+	esTranslate(&modelview, x1, -y1, -2.0 + mark_z);
+	esRotate(&modelview, yaw, 0.0, 0.0, 1.0);
+	esRotate(&modelview, roll, 0.0, 1.0, 0.0);
+	esRotate(&modelview, pitch, 1.0, 0.0, 0.0);
+	esTranslate(&modelview, -x1, y1, 2.0 - mark_z);
 #ifndef SDLGL
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
@@ -669,14 +666,14 @@ void draw_model (ESContext *esContext, float mark_lat, float mark_long, float ma
 			}
 			object3d_load(&obj3d[modelid], tmp_str);
 		}
-		esTranslate( &modelview, x1, -y1, -2.0 + mark_z);
+		esTranslate(&modelview, x1, -y1, -2.0 + mark_z);
 		glScalef(0.1, 0.1, 0.1);
 		if (mode == 0) {
 			object3d_draw(&obj3d[modelid], 0, 255, 0, 127);
 		} else {
 			object3d_draw(&obj3d[modelid], 255, 255, 255, 50);
 		}
-		esTranslate( &modelview, -x1, y1, 2.0 - mark_z);
+		esTranslate(&modelview, -x1, y1, 2.0 - mark_z);
 	} else
 #endif
 	{
@@ -704,7 +701,7 @@ void draw_model (ESContext *esContext, float mark_lat, float mark_long, float ma
 #else
 	esMatrixLoadIdentity(&modelview);
 	if (map_view != 1 && map_view != 3) {
-		esTranslate( &modelview, -mapdata->offset_x1, mapdata->offset_y1, 0.0 );
+		esTranslate(&modelview, -mapdata->offset_x1, mapdata->offset_y1, 0.0);
 	}
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
@@ -713,7 +710,7 @@ void draw_model (ESContext *esContext, float mark_lat, float mark_long, float ma
 #endif
 }
 
-void draw_tracker (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, float pitch, float yaw, float lat, float lon, uint8_t zoom) {
+void draw_tracker(ESContext *esContext, float mark_lat, float mark_long, float mark_alt, float pitch, float yaw, float lat, float lon, uint8_t zoom) {
 	ESMatrix modelview;
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
@@ -732,13 +729,13 @@ void draw_tracker (ESContext *esContext, float mark_lat, float mark_long, float 
 #else
 	esMatrixLoadIdentity(&modelview);
 	if (map_view != 1 && map_view != 3) {
-		esTranslate( &modelview, -mapdata->offset_x1, mapdata->offset_y1, 0.0 );
+		esTranslate(&modelview, -mapdata->offset_x1, mapdata->offset_y1, 0.0);
 	}
 #endif
-	esTranslate( &modelview, x1, -y1, -2.0 + mark_z);
-	esRotate( &modelview, yaw, 0.0, 0.0, 1.0 );
-	esRotate( &modelview, pitch, 1.0, 0.0, 0.0 );
-	esTranslate( &modelview, -x1, y1, 2.02 - mark_z);
+	esTranslate(&modelview, x1, -y1, -2.0 + mark_z);
+	esRotate(&modelview, yaw, 0.0, 0.0, 1.0);
+	esRotate(&modelview, pitch, 1.0, 0.0, 0.0);
+	esTranslate(&modelview, -x1, y1, 2.02 - mark_z);
 #ifndef SDLGL
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
@@ -759,7 +756,7 @@ void draw_tracker (ESContext *esContext, float mark_lat, float mark_long, float 
 #else
 	esMatrixLoadIdentity(&modelview);
 	if (map_view != 1 && map_view != 3) {
-		esTranslate( &modelview, -mapdata->offset_x1, mapdata->offset_y1, 0.0 );
+		esTranslate(&modelview, -mapdata->offset_x1, mapdata->offset_y1, 0.0);
 	}
 	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
@@ -771,23 +768,24 @@ void draw_tracker (ESContext *esContext, float mark_lat, float mark_long, float 
 
 /* http://www.movable-type.co.uk/scripts/latlong.html */
 /* http://www.kompf.de/gps/distcalc.html */
-void get_dir (float lat_from, float lon_from, float alt_from, float lat_to, float lon_to, float alt_to, float *angle, float *dist1, float *angle_up, float *dist2) {
+void get_dir(float lat_from, float lon_from, float alt_from, float lat_to, float lon_to, float alt_to, float *angle, float *dist1, float *angle_up, float *dist2) {
 	/* Alt - Diff */
 	float alt = alt_to - alt_from;
 	/* Bearing/Heading/Richtung */
-	float heading = toDeg(atan2(cos(toRad(lat_from)) * sin(toRad(lat_to)) - sin(toRad(lat_from)) * cos(toRad(lat_to)) * cos(toRad(lon_to) - toRad(lon_from)), sin(toRad(lon_to) - toRad(lon_from)) * cos(toRad(lat_to)))) + 270.0;
+	float heading = toDeg(atan2(cos(toRad(lat_from)) * sin(toRad(lat_to)) - sin(toRad(lat_from)) * cos(toRad(lat_to)) * cos(toRad(lon_to) - toRad(lon_from)),
+								sin(toRad(lon_to) - toRad(lon_from)) * cos(toRad(lat_to)))) + 270.0;
 	if (heading > 360.0) {
 		heading -= 360.0;
 	}
 	heading = 360.0 - heading;
 	/* Distance - Grund */
 	float distance1 =   acos(
-		cos(toRad( lat_from ))
-		* cos(toRad(lat_to))
-		* cos(toRad(lon_from) - toRad(lon_to))
-		+ sin(toRad(lat_from))
-		* sin(toRad(lat_to))
-	) * 6378.137;
+							cos(toRad(lat_from))
+							* cos(toRad(lat_to))
+							* cos(toRad(lon_from) - toRad(lon_to))
+							+ sin(toRad(lat_from))
+							* sin(toRad(lat_to))
+						) * 6378.137;
 	/* Distance - Sichtverbindung */
 	float distance2 = sqrt(((distance1 * 1000) * (distance1 * 1000)) + (alt * alt));
 	*angle = heading;
@@ -797,7 +795,7 @@ void get_dir (float lat_from, float lon_from, float alt_from, float lat_to, floa
 	*angle_up = (asin(alt / distance2)) * 180 / PI;
 }
 
-void winkel_line (ESContext *esContext, float x_origin, float y_origin, float winkel, float r1, uint8_t r, uint8_t g, uint8_t b, uint8_t a, float *nx1, float *ny1) {
+void winkel_line(ESContext *esContext, float x_origin, float y_origin, float winkel, float r1, uint8_t r, uint8_t g, uint8_t b, uint8_t a, float *nx1, float *ny1) {
 	float angle = toRad((winkel + 90.0) * -1.0);
 	float x1 = r1 * cos(angle);
 	float y1 = r1 * sin(angle);
@@ -806,7 +804,7 @@ void winkel_line (ESContext *esContext, float x_origin, float y_origin, float wi
 	*ny1 = y_origin + y1;
 }
 
-void mark_route (ESContext *esContext, float last_lat, float last_long, float last_alt, float mark_lat, float mark_long, float mark_alt, int8_t type, float lat, float lon, uint8_t zoom) {
+void mark_route(ESContext *esContext, float last_lat, float last_long, float last_alt, float mark_lat, float mark_long, float mark_alt, int8_t type, float lat, float lon, uint8_t zoom) {
 	int mark_x = long2x(last_long, lon, zoom);
 	int mark_y = lat2y(last_lat, lat, zoom);
 	float x1 = (float)mark_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
@@ -858,7 +856,7 @@ void mark_route (ESContext *esContext, float last_lat, float last_long, float la
 	glLineWidth(1);
 }
 
-void mark_tunnel (ESContext *esContext, float last_lat, float last_long, float last_alt, float mark_lat, float mark_long, float mark_alt, uint8_t type, float lat, float lon, uint8_t zoom) {
+void mark_tunnel(ESContext *esContext, float last_lat, float last_long, float last_alt, float mark_lat, float mark_long, float mark_alt, uint8_t type, float lat, float lon, uint8_t zoom) {
 	int mark_x = long2x(last_long, lon, zoom);
 	int mark_y = lat2y(last_lat, lat, zoom);
 	float x1 = (float)mark_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
@@ -904,7 +902,7 @@ void mark_tunnel (ESContext *esContext, float last_lat, float last_long, float l
 	}
 }
 
-void mark_plane (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, char *text, float lat, float lon, uint8_t zoom) {
+void mark_plane(ESContext *esContext, float mark_lat, float mark_long, float mark_alt, char *text, float lat, float lon, uint8_t zoom) {
 	int mark_x = long2x(mark_long, lon, zoom);
 	int mark_y = lat2y(mark_lat, lat, zoom);
 	float x1 = (float)mark_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
@@ -917,7 +915,7 @@ void mark_plane (ESContext *esContext, float mark_lat, float mark_long, float ma
 	draw_circleFilled_f3(esContext, x1, y1, z, 0.01, 255, 255, 0, 255);
 }
 
-void mark_point (ESContext *esContext, float mark_lat, float mark_long, float mark_alt, char *text, char *command, uint8_t type, float radius, float orbit, float lat, float lon, uint8_t zoom) {
+void mark_point(ESContext *esContext, float mark_lat, float mark_long, float mark_alt, char *text, char *command, uint8_t type, float radius, float orbit, float lat, float lon, uint8_t zoom) {
 	char tmp_str[1024];
 	int mark_x = long2x(mark_long, lon, zoom);
 	int mark_y = lat2y(mark_lat, lat, zoom);
@@ -961,7 +959,7 @@ void mark_point (ESContext *esContext, float mark_lat, float mark_long, float ma
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
 		glTranslatef(x1, -y1, 0.0);
-//		glRotatef(-roty, 0.0, 0.0, 1.0);
+		//		glRotatef(-roty, 0.0, 0.0, 1.0);
 		draw_text_f3(esContext, 0.0, 0.0, z, 0.05, 0.05, FONT_GREEN, text);
 		draw_zylinder_f3(esContext, 0.0, 0.0, z2, z2 + 0.01, 0.01, 255, 0, 0, 255);
 		draw_line_f3(esContext, 0.0, 0.0, z, 0.0, 0.0, z2, 0, 255, 0, 255);
@@ -973,10 +971,9 @@ void mark_point (ESContext *esContext, float mark_lat, float mark_long, float ma
 			glMatrixMode(GL_MODELVIEW);
 			glPushMatrix();
 			glRotatef(rotate++, 0.0, 0.0, 1.0);
-//			draw_circleFilled_f3(esContext, 0.0 + orbit / 200.0, 0.0, z, 0.01, 255, 0, 0, 255);
+			//			draw_circleFilled_f3(esContext, 0.0 + orbit / 200.0, 0.0, z, 0.01, 255, 0, 0, 255);
 			draw_zylinder_f3(esContext, 0.0 + orbit / 200.0, 0.0, z + 0.01, z, 0.01, 255, 0, 0, 255);
 			draw_zylinder_f3(esContext, 0.0 + orbit / 200.0, 0.0, z - 0.01, z, 0.01, 255, 0, 0, 255);
-
 			if (orbit < 0.0) {
 				rotate -= 2.0;
 			} else {
@@ -1006,7 +1003,7 @@ void mark_point (ESContext *esContext, float mark_lat, float mark_long, float ma
 	}
 }
 
-void mark_poi (ESContext *esContext, float mark_lat, float mark_long, char *text, uint8_t type, float lat, float lon, uint8_t zoom) {
+void mark_poi(ESContext *esContext, float mark_lat, float mark_long, char *text, uint8_t type, float lat, float lon, uint8_t zoom) {
 	int mark_x = long2x(mark_long, lon, zoom);
 	int mark_y = lat2y(mark_lat, lat, zoom);
 	float x1 = (float)mark_x / (float)esContext->width * 2.0 * aspect - 1.0 * aspect;
@@ -1024,25 +1021,25 @@ void mark_poi (ESContext *esContext, float mark_lat, float mark_long, char *text
 	draw_text_f3(esContext, x1, y1, z2, 0.04, 0.04, FONT_GREEN, text);
 }
 
-float get_distance (float from_lat, float from_lon, float to_lat, float to_lon, float alt) {
+float get_distance(float from_lat, float from_lon, float to_lat, float to_lon, float alt) {
 	// 6378.137 == Radius of earth in Km (add UAV-Altitude to calc ???)
-	float distance = acos( 
-		cos(toRad(from_lat))
-		* cos(toRad(to_lat))
-		* cos(toRad(from_lon) - toRad(to_lon))
-		+ sin(toRad(from_lat)) 
-		* sin(toRad(to_lat))
-	) * 6378.137 * 1000.0 + alt;
+	float distance = acos(
+						 cos(toRad(from_lat))
+						 * cos(toRad(to_lat))
+						 * cos(toRad(from_lon) - toRad(to_lon))
+						 + sin(toRad(from_lat))
+						 * sin(toRad(to_lat))
+					 ) * 6378.137 * 1000.0 + alt;
 	return distance;
 }
 
-float get_m_per_pixel (float lat, int zoomlevel) {
+float get_m_per_pixel(float lat, int zoomlevel) {
 	float m = 0.0;
 	m = (6372798.2 * 2 * M_PI) * cos(toRad(lat)) / pow(2, (zoomlevel + 8));
 	return m;
 }
 
-void GeoMap_exit (GeoMap *mapdata) {
+void GeoMap_exit(GeoMap *mapdata) {
 	if (mapdata->sdl_thread_get_maps1 != NULL) {
 		SDL_Log("map: wait thread (get_maps1)\n");
 	}
@@ -1062,7 +1059,7 @@ void GeoMap_exit (GeoMap *mapdata) {
 	mapdata = NULL;
 }
 
-GeoMap *GeoMap_init (void) {
+GeoMap *GeoMap_init(void) {
 	int16_t n = 0;
 	GeoMap *mapdata = NULL;
 	mapdata = malloc(sizeof(GeoMap));
@@ -1118,16 +1115,16 @@ GeoMap *GeoMap_init (void) {
 	return mapdata;
 }
 
-void GeoMap_draw (GeoMap *mapdata) {
+void GeoMap_draw(GeoMap *mapdata) {
 	ESMatrix modelview;
 #ifndef SDLGL
 	UserData *userData = GlobalesContext->userData;
 	esMatrixLoadIdentity(&modelview);
-	esMatrixMultiply( &userData->mvpMatrix, &modelview, &userData->perspective );
-	esMatrixMultiply( &userData->mvpMatrix2, &modelview, &userData->perspective );
+	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
+	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
 	// calculate Altitude-Zoom
-	uint32_t zz = (1<<mapdata->zoom);
+	uint32_t zz = (1 << mapdata->zoom);
 	alt_zoom = 25500000 / (float)zz;
 	int tile_x = long2tilex(mapdata->lon, mapdata->zoom);
 	int tile_y = lat2tiley(mapdata->lat, mapdata->zoom);
@@ -1137,14 +1134,13 @@ void GeoMap_draw (GeoMap *mapdata) {
 	uint8_t tiles_x = (setup.screen_w + 255) / 256;
 	uint8_t tiles_y = (setup.screen_h + 255) / 256;
 	uint8_t tiles_num = 0;
-
 	// move map offset
 	if (mapdata->map_view != 1 && mapdata->map_view != 3 && mapdata->map_view != 4 && mapdata->map_view != 5) {
-		esTranslate( &modelview, -mapdata->offset_x1, mapdata->offset_y1, 0.0 );
+		esTranslate(&modelview, -mapdata->offset_x1, mapdata->offset_y1, 0.0);
 	}
 #ifndef SDLGL
-	esMatrixMultiply( &userData->mvpMatrix, &modelview, &userData->perspective );
-	esMatrixMultiply( &userData->mvpMatrix2, &modelview, &userData->perspective );
+	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
+	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
 #endif
 	// draw Sky in 3D-Mode
 	if (setup.hud_view_video == 0) {
@@ -1169,7 +1165,7 @@ void GeoMap_draw (GeoMap *mapdata) {
 					} else if (strcmp(mapnames[map_type][MAP_TYPE], "XYZ") == 0) {
 						sprintf(tile_name, mapnames[map_type][MAP_URL] + 6, tile_x + x_n, tile_y + y_n, mapdata->zoom);
 					} else if (strcmp(mapnames[map_type][MAP_TYPE], "TMS") == 0) {
-						int ymax = (1<<mapdata->zoom);
+						int ymax = (1 << mapdata->zoom);
 						int y = ymax - (tile_y + y_n) - 1;
 						sprintf(tile_name, mapnames[map_type][MAP_URL] + 6, mapdata->zoom, tile_x + x_n, y);
 					}
@@ -1188,9 +1184,11 @@ void GeoMap_draw (GeoMap *mapdata) {
 					mapdata->alpha2 = 0.5;
 				}
 				if (mapdata->map_view == 3 || mapdata->map_view == 4 || mapdata->map_view == 5) {
-					draw_image_srtm(mapdata->esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, mapdata->zoom), tilex2long(tile_x + x_n, mapdata->zoom), tiley2lat(tile_y + y_n + 1, mapdata->zoom), tilex2long(tile_x + x_n + 1, mapdata->zoom), mapdata->alpha0, mapdata->alpha1, mapdata->alpha2, _grid);
+					draw_image_srtm(mapdata->esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, mapdata->zoom), tilex2long(tile_x + x_n, mapdata->zoom), tiley2lat(tile_y + y_n + 1,
+									mapdata->zoom), tilex2long(tile_x + x_n + 1, mapdata->zoom), mapdata->alpha0, mapdata->alpha1, mapdata->alpha2, _grid);
 				} else if (mapdata->map_view == 1) {
-					draw_image_srtm(mapdata->esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, mapdata->zoom), tilex2long(tile_x + x_n, mapdata->zoom), tiley2lat(tile_y + y_n + 1, mapdata->zoom), tilex2long(tile_x + x_n + 1, mapdata->zoom), mapdata->alpha0, mapdata->alpha1, mapdata->alpha2, _grid);
+					draw_image_srtm(mapdata->esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, mapdata->zoom), tilex2long(tile_x + x_n, mapdata->zoom), tiley2lat(tile_y + y_n + 1,
+									mapdata->zoom), tilex2long(tile_x + x_n + 1, mapdata->zoom), mapdata->alpha0, mapdata->alpha1, mapdata->alpha2, _grid);
 				} else {
 					if (tile_name[0] != 0) {
 						draw_image(mapdata->esContext, x_n * 256, y_n * 256, 256, 256, tile_name);
@@ -1207,7 +1205,7 @@ void GeoMap_draw (GeoMap *mapdata) {
 						} else if (strcmp(omapnames[map_type][MAP_TYPE], "XYZ") == 0) {
 							sprintf(tile_name, omapnames[map_type][MAP_URL] + 6, tile_x + x_n, tile_y + y_n, mapdata->zoom);
 						} else if (strcmp(omapnames[map_type][MAP_TYPE], "TMS") == 0) {
-							int ymax = (1<<mapdata->zoom);
+							int ymax = (1 << mapdata->zoom);
 							int y = ymax - (tile_y + y_n) - 1;
 							sprintf(tile_name, omapnames[map_type][MAP_URL] + 6, mapdata->zoom, tile_x + x_n, y);
 						}
@@ -1216,7 +1214,8 @@ void GeoMap_draw (GeoMap *mapdata) {
 					}
 					if (file_exists(tile_name) != 0) {
 						if (mapdata->map_view == 1) {
-							draw_image_srtm(mapdata->esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, mapdata->zoom), tilex2long(tile_x + x_n, mapdata->zoom), tiley2lat(tile_y + y_n + 1, mapdata->zoom), tilex2long(tile_x + x_n + 1, mapdata->zoom), 0.5, 0.0, 0.0, 0.0);
+							draw_image_srtm(mapdata->esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, mapdata->zoom), tilex2long(tile_x + x_n, mapdata->zoom), tiley2lat(tile_y + y_n + 1,
+											mapdata->zoom), tilex2long(tile_x + x_n + 1, mapdata->zoom), 0.5, 0.0, 0.0, 0.0);
 						} else {
 							draw_image(mapdata->esContext, x_n * 256, y_n * 256, 256, 256, tile_name);
 						}

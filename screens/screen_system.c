@@ -27,7 +27,7 @@ static char view_names[VIEW_MODE_LAST][100] = {
 
 extern uint8_t view_overview;
 
-uint8_t option_cmd (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t option_cmd(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (strcmp(name, "WEBSERV") == 0) {
 		if (clientmode != 1 && setup.webport != 0) {
 			if (webserv_is_running() == 1) {
@@ -45,20 +45,20 @@ uint8_t option_cmd (char *name, float x, float y, int8_t button, float data, uin
 		view_overview = 0;
 	} else if (strcmp(name, "EXIT") == 0) {
 		SDL_Event user_event;
-		user_event.type=SDL_QUIT;
+		user_event.type = SDL_QUIT;
 		SDL_PushEvent(&user_event);
 	}
 	return 0;
 }
 
-uint8_t overview_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t overview_set(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	view_overview = 0;
 	setup.view_mode = (int)data;
 	view_mode_next = (int)data;
 	return 0;
 }
 
-uint8_t system_baud_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t system_baud_set(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	SDL_Log("BAUD: %s_baud = %s\n", baud_selected, name);
 	if (strcmp(baud_selected, "gcs_gps") == 0) {
 		setup.gcs_gps_baud = atoi(name);
@@ -81,17 +81,17 @@ uint8_t system_baud_set (char *name, float x, float y, int8_t button, float data
 		tracker_exit();
 		tracker_init(setup.tracker_port, setup.tracker_baud);
 	}
-return 0;
+	return 0;
 }
 
-uint8_t system_baud_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t system_baud_change(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	strncpy(baud_selected, name, 99);
 	baud_set_callback(system_baud_set);
 	baud_set_mode(VIEW_MODE_SYSTEM);
 	return 0;
 }
 
-uint8_t system_device_set (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t system_device_set(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	SDL_Log("DEVICE: %s_port = %s\n", port_selected, name);
 	if (strcmp(port_selected, "gcs_gps") == 0) {
 		strncpy(setup.gcs_gps_port, name, 1023);
@@ -113,7 +113,7 @@ uint8_t system_device_set (char *name, float x, float y, int8_t button, float da
 	return 0;
 }
 
-uint8_t system_device_change (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t system_device_change(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	strncpy(port_selected, name, 99);
 	device_set_callback(system_device_set);
 	device_reset_filter();
@@ -125,12 +125,12 @@ uint8_t system_device_change (char *name, float x, float y, int8_t button, float
 	return 0;
 }
 
-uint8_t system_dhclient (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t system_dhclient(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	system("dhclient eth0");
 	return 0;
 }
 
-uint8_t system_update (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t system_update(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	system("echo \"cd /tmp/ ; wget http://www.multixmedia.org/test/AutoQuad/gl-gcs/gl-gcs_last.deb && dpkg -i gl-gcs_last.deb\" > /tmp/gcs.execute");
 	SDL_Event user_event;
 	user_event.type = SDL_QUIT;
@@ -138,16 +138,16 @@ uint8_t system_update (char *name, float x, float y, int8_t button, float data, 
 	return 0;
 }
 
-uint8_t system_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t system_null(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 0;
 }
 
-uint8_t system_set_side_by_side (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t system_set_side_by_side(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	setup.side_by_side = 1 - setup.side_by_side;
 	return 0;
 }
 
-uint8_t system_set_ratio (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t system_set_ratio(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (data == 0.0) {
 		if (setup.keep_ratio == 0.0) {
 			setup.keep_ratio = 1.422;
@@ -171,7 +171,7 @@ uint8_t system_set_ratio (char *name, float x, float y, int8_t button, float dat
 	return 0;
 }
 
-uint8_t system_set_fullscreen (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t system_set_fullscreen(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 #ifdef SDL2
 	if (setup.fullscreen == 0) {
 		setup.fullscreen = 1;
@@ -185,7 +185,7 @@ uint8_t system_set_fullscreen (char *name, float x, float y, int8_t button, floa
 	return 0;
 }
 
-uint8_t system_set_border_x (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t system_set_border_x(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int)data == 0) {
 		setup.screen_border_x = 0;
 	} else if ((int)data > 0) {
@@ -197,7 +197,7 @@ uint8_t system_set_border_x (char *name, float x, float y, int8_t button, float 
 	return 0;
 }
 
-uint8_t system_set_border_y (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t system_set_border_y(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if ((int)data == 0) {
 		setup.screen_border_y = 0;
 	} else if ((int)data > 0) {
@@ -210,21 +210,18 @@ uint8_t system_set_border_y (char *name, float x, float y, int8_t button, float 
 }
 
 #ifdef SDLGL
-void screen_overview (ESContext *esContext) {
+void screen_overview(ESContext *esContext) {
 #ifndef SDLGL
 	ESMatrix modelview;
 	UserData *userData = esContext->userData;
 #endif
 	char tmp_str[1024];
 	uint8_t n = 0;
-
 #ifndef SDLGL
-	esMatrixLoadIdentity( &modelview );
+	esMatrixLoadIdentity(&modelview);
 	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
 #endif
-
 	reset_buttons();
-
 	int x = 0;
 	int y = 0;
 	for (n = 0; n < VIEW_MODE_LAST; n++) {
@@ -300,13 +297,12 @@ void screen_overview (ESContext *esContext) {
 			x = 0;
 			y += 1;
 		}
-//		draw_rect_f3(esContext, -1.3 + x * 0.5, -0.8 + y * 0.4, 0.002, -1.3 + x * 0.5 + 0.5, -0.8 + y * 0.4 + 0.4, 0.002, 255, 255, 255, 255);
-//		set_button(view_names[n], setup.view_mode, -1.3 + x * 0.5, -0.8 + y * 0.4, -1.3 + x * 0.5 + 0.5, -0.8 + y * 0.4 + 0.4, overview_set, (float)n, 0);
+		//		draw_rect_f3(esContext, -1.3 + x * 0.5, -0.8 + y * 0.4, 0.002, -1.3 + x * 0.5 + 0.5, -0.8 + y * 0.4 + 0.4, 0.002, 255, 255, 255, 255);
+		//		set_button(view_names[n], setup.view_mode, -1.3 + x * 0.5, -0.8 + y * 0.4, -1.3 + x * 0.5 + 0.5, -0.8 + y * 0.4 + 0.4, overview_set, (float)n, 0);
 		draw_rect_f3(esContext, -1.422 + x * 0.71, -0.99 + y * 0.66, 0.002, -1.422 + x * 0.71 + 0.71, -0.99 + y * 0.66 + 0.66, 0.002, 255, 255, 255, 255);
 		set_button(view_names[n], setup.view_mode, -1.422 + x * 0.71, -0.99 + y * 0.66, -1.422 + x * 0.71 + 0.71, -0.99 + y * 0.66 + 0.66, overview_set, (float)n, 0);
 		x++;
 	}
-
 	draw_text_button(esContext, "Options", setup.view_mode, "Options", FONT_PINK, 1.05, 0.55 + -2 * 0.1, 0.002, 0.08, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)0);
 	n = 0;
 	if (setup.speak == 1) {
@@ -336,21 +332,18 @@ void screen_overview (ESContext *esContext) {
 	draw_text_button(esContext, "EXIT", setup.view_mode, "EXIT", FONT_GREEN, 1.05, 0.45 + n++ * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, option_cmd, 0.0);
 }
 #else
-void screen_overview (ESContext *esContext) {
+void screen_overview(ESContext *esContext) {
 #ifndef SDLGL
 	ESMatrix modelview;
 	UserData *userData = esContext->userData;
 #endif
 	char tmp_str[1024];
 	uint8_t n = 0;
-
 #ifndef SDLGL
-	esMatrixLoadIdentity( &modelview );
+	esMatrixLoadIdentity(&modelview);
 	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
 #endif
-
 	reset_buttons();
-
 	draw_text_button(esContext, "Screens", setup.view_mode, "Screens", FONT_PINK, -0.8, -0.6 + -2 * 0.1, 0.002, 0.08, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)0);
 	for (n = 0; n < VIEW_MODE_LAST; n++) {
 		sprintf(tmp_str, "%s", view_names[n]);
@@ -360,7 +353,6 @@ void screen_overview (ESContext *esContext) {
 			draw_text_button(esContext, tmp_str, setup.view_mode, tmp_str, FONT_WHITE, -0.8, -0.6 + n * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)n);
 		}
 	}
-
 	draw_text_button(esContext, "Options", setup.view_mode, "Options", FONT_PINK, 0.8, -0.6 + -2 * 0.1, 0.002, 0.08, ALIGN_CENTER, ALIGN_TOP, overview_set, (float)0);
 	n = 0;
 	if (setup.speak == 1) {
@@ -389,7 +381,7 @@ void screen_overview (ESContext *esContext) {
 
 
 
-void screen_system (ESContext *esContext) {
+void screen_system(ESContext *esContext) {
 #ifndef SDLGL
 	ESMatrix modelview;
 	UserData *userData = esContext->userData;
@@ -404,64 +396,59 @@ void screen_system (ESContext *esContext) {
 	static char hostname[30];
 	static char dnsserver[30];
 	static char gateway[30];
-
 	uint32_t now_time = time(0);
 	static uint32_t last_time = 0;
-
 #ifndef SDLGL
-	esMatrixLoadIdentity( &modelview );
+	esMatrixLoadIdentity(&modelview);
 	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
 #endif
-
 	draw_title(esContext, "System");
-
 	if (last_time != now_time) {
 		strcpy(ip, "---.---.---.---");
 		strcpy(bcast, "---.---.---.---");
 		strcpy(mask, "---.---.---.---");
 		strcpy(dnsserver, "---.---.---.---");
 		strcpy(gateway, "---.---.---.---");
-
 #ifndef WINDOWS
 #ifndef ANDROID
 #ifdef OSX
-		if((cmd = popen("LANG=C ifconfig en0 | grep \"inet \" | sed \"s|[a-zA-Z:]||g\"", "r")) != NULL) {
-			while(!feof(cmd)) {
-				if(fgets(buffer, 1024, cmd) != NULL) {
+		if ((cmd = popen("LANG=C ifconfig en0 | grep \"inet \" | sed \"s|[a-zA-Z:]||g\"", "r")) != NULL) {
+			while (!feof(cmd)) {
+				if (fgets(buffer, 1024, cmd) != NULL) {
 					sscanf(buffer, "%s %s %s", (char *)&ip, (char *)&bcast, (char *)&mask);
-		//			SDL_Log("## %s, %s, %s ##\n", ip, bcast, mask);
+					//			SDL_Log("## %s, %s, %s ##\n", ip, bcast, mask);
 				}
 			}
 			pclose(cmd);
 		}
 #else
-		if((cmd = popen("LANG=C ifconfig eth0 | grep \"inet addr:\" | sed \"s|[a-zA-Z:]||g\"", "r")) != NULL) {
-			while(!feof(cmd)) {
-				if(fgets(buffer, 1024, cmd) != NULL) {
+		if ((cmd = popen("LANG=C ifconfig eth0 | grep \"inet addr:\" | sed \"s|[a-zA-Z:]||g\"", "r")) != NULL) {
+			while (!feof(cmd)) {
+				if (fgets(buffer, 1024, cmd) != NULL) {
 					sscanf(buffer, "%s %s %s", (char *)&ip, (char *)&bcast, (char *)&mask);
-		//			SDL_Log("## %s, %s, %s ##\n", ip, bcast, mask);
+					//			SDL_Log("## %s, %s, %s ##\n", ip, bcast, mask);
 				}
 			}
 			pclose(cmd);
 		}
-		if((cmd = popen("grep \"^nameserver \" /etc/resolv.conf | cut -d\" \" -f2", "r")) != NULL) {
-			while(!feof(cmd)) {
-				if(fgets(dnsserver, 1024, cmd) != NULL) {
+		if ((cmd = popen("grep \"^nameserver \" /etc/resolv.conf | cut -d\" \" -f2", "r")) != NULL) {
+			while (!feof(cmd)) {
+				if (fgets(dnsserver, 1024, cmd) != NULL) {
 				}
 			}
 		}
 		pclose(cmd);
-		if((cmd = popen("route -n | grep \" 0.0.0.0.*255.255.255.0 \" | cut -d\" \" -f1", "r")) != NULL) {
-			while(!feof(cmd)) {
-				if(fgets(gateway, 1024, cmd) != NULL) {
+		if ((cmd = popen("route -n | grep \" 0.0.0.0.*255.255.255.0 \" | cut -d\" \" -f1", "r")) != NULL) {
+			while (!feof(cmd)) {
+				if (fgets(gateway, 1024, cmd) != NULL) {
 				}
 			}
 		}
 		pclose(cmd);
 #endif
-		if((cmd = popen("hostname", "r")) != NULL) {
-			while(!feof(cmd)) {
-				if(fgets(hostname, 1024, cmd) != NULL) {
+		if ((cmd = popen("hostname", "r")) != NULL) {
+			while (!feof(cmd)) {
+				if (fgets(hostname, 1024, cmd) != NULL) {
 				}
 			}
 		}
@@ -482,10 +469,8 @@ void screen_system (ESContext *esContext) {
 	draw_text_f(esContext, -0.5, -0.8 + 6 * 0.1, 0.06, 0.06, FONT_GREEN, buffer);
 	sprintf(buffer, "GATE  : %s", gateway);
 	draw_text_f(esContext, -0.5, -0.8 + 7 * 0.1, 0.06, 0.06, FONT_GREEN, buffer);
-
 	draw_text_button(esContext, "system_dhclient", VIEW_MODE_SYSTEM, "<GET IP OVER DHCP>", FONT_GREEN, 0.0, -0.8 + 9 * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, system_dhclient, 0.0);
-//	draw_text_button(esContext, "system_gcs", VIEW_MODE_SYSTEM, "<UPDATE GCS>", FONT_GREEN, 0.0, -0.8 + 10 * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, system_update, 0.0);
-
+	//	draw_text_button(esContext, "system_gcs", VIEW_MODE_SYSTEM, "<UPDATE GCS>", FONT_GREEN, 0.0, -0.8 + 10 * 0.1, 0.002, 0.06, ALIGN_CENTER, ALIGN_TOP, system_update, 0.0);
 	// Connections-Status
 	char tmp_str[100];
 	uint8_t n = 0;
@@ -544,7 +529,6 @@ void screen_system (ESContext *esContext) {
 	} else {
 		draw_text_button(esContext, "gps_connection_status", VIEW_MODE_SYSTEM, "NMEA-GPS", FONT_TRANS, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 	}
-
 	if (frsky_connection_status() != 0) {
 		sprintf(tmp_str, "FRSKY %s (%i / %i)", setup.frsky_port, setup.frsky_baud, (uint8_t)(time(0)) - frsky_connection_status());
 		draw_text_button(esContext, "frsky", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
@@ -580,27 +564,21 @@ void screen_system (ESContext *esContext) {
 		sprintf(tmp_str, "TRACKER %s (%i)", setup.tracker_port, setup.tracker_baud);
 		draw_text_button(esContext, "tracker", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
 	}
-
 	draw_text_button(esContext, "_border_x", VIEW_MODE_SYSTEM, "X-Border", FONT_GREEN, 0.55, 0.4, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_x, 0.0);
 	draw_text_button(esContext, "_border_x--", VIEW_MODE_SYSTEM, "[-]", FONT_GREEN, 0.85, 0.4, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_x, -2.0);
 	draw_text_button(esContext, "_border_x++", VIEW_MODE_SYSTEM, "[+]", FONT_GREEN, 0.95, 0.4, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_x, 2.0);
-
 	draw_text_button(esContext, "_border_y", VIEW_MODE_SYSTEM, "Y-Border", FONT_GREEN, 0.55, 0.5, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_y, 0.0);
 	draw_text_button(esContext, "_border_y--", VIEW_MODE_SYSTEM, "[-]", FONT_GREEN, 0.85, 0.5, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_y, -2.0);
 	draw_text_button(esContext, "_border_y++", VIEW_MODE_SYSTEM, "[+]", FONT_GREEN, 0.95, 0.5, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_y, 2.0);
-
 	sprintf(tmp_str, "Ratio(%0.1f)", setup.keep_ratio);
 	draw_text_button(esContext, "ratio", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, 0.55, 0.6, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_ratio, 0.0);
 	draw_text_button(esContext, "ratio--", VIEW_MODE_SYSTEM, "[-]", FONT_GREEN, 0.85, 0.6, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_ratio, -0.1);
 	draw_text_button(esContext, "ratio++", VIEW_MODE_SYSTEM, "[+]", FONT_GREEN, 0.95, 0.6, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_ratio, 0.1);
-
 	if (setup.side_by_side == 1) {
 		draw_text_button(esContext, "side_by_side", VIEW_MODE_SYSTEM, "SideBySide", FONT_PINK, 0.55, 0.7, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_side_by_side, 0.1);
 	} else {
 		draw_text_button(esContext, "side_by_side", VIEW_MODE_SYSTEM, "SideBySide", FONT_GREEN, 0.55, 0.7, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_side_by_side, 0.1);
 	}
-
-
 #ifndef ANDROID
 #ifdef SDL2
 	if (setup.fullscreen == 0) {
@@ -610,22 +588,18 @@ void screen_system (ESContext *esContext) {
 	}
 #endif
 #endif
-
 	if (setup.weather_enable == 1) {
 		draw_text_button(esContext, "copyright", VIEW_MODE_SYSTEM, "Weather-Data copyright by http://www.openweathermap.org", FONT_PINK, 0.0, 0.88, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, system_null, 0.0);
 	}
 	draw_text_button(esContext, "copyright", VIEW_MODE_SYSTEM, "Copyright by Oliver Dippel (oliver@multixmedia.org)", FONT_PINK, 0.0, 0.93, 0.002, 0.04, ALIGN_CENTER, ALIGN_TOP, system_null, 0.0);
-
 	screen_device(esContext);
 	screen_baud(esContext);
-
 	if (resize != 0) {
 		resize = 0;
 #ifdef SDL2
 		glResize(esContext, setup.screen_w, setup.screen_h);
 #endif
 	}
-
 }
 
 

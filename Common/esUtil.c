@@ -56,90 +56,72 @@ static Display *x_display = NULL;
 //
 //    Creates an EGL rendering context and all associated elements
 //
-EGLBoolean CreateEGLContext ( EGLNativeWindowType hWnd, EGLDisplay* eglDisplay,
-                              EGLContext* eglContext, EGLSurface* eglSurface,
-                              EGLint attribList[])
-{
-   EGLint numConfigs;
-   EGLint majorVersion;
-   EGLint minorVersion;
-   EGLDisplay display;
-   EGLContext context;
-   EGLSurface surface;
-   EGLConfig config;
-   #ifndef RPI_NO_X
-   EGLint contextAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE, EGL_NONE };
-   #else
-   EGLint contextAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE };
-   #endif
-   
-   
-   // Get Display
-   #ifndef RPI_NO_X
-   display = eglGetDisplay((EGLNativeDisplayType)x_display);
-   if ( display == EGL_NO_DISPLAY )
-   {
-	SDL_Log("gles: eglGetDisplay failed\n");
-      return EGL_FALSE;
-   }
-   #else
-   display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
-   if ( display == EGL_NO_DISPLAY )
-   {
-	SDL_Log("gles: eglGetDisplay failed\n");
-      return EGL_FALSE;
-   }
-   #endif
-
-   // Initialize EGL
-   if ( !eglInitialize(display, &majorVersion, &minorVersion) )
-   {
-	SDL_Log("gles: eglInitialize failed\n");
-      return EGL_FALSE;
-   }
-
-   // Get configs
-   if ( !eglGetConfigs(display, NULL, 0, &numConfigs) )
-   {
-	SDL_Log("gles: eglGetConfigs failed\n");
-      return EGL_FALSE;
-   }
-
-   // Choose config
-   if ( !eglChooseConfig(display, attribList, &config, 1, &numConfigs) )
-   {
-	SDL_Log("gles: eglChooseConfig failed\n");
-      return EGL_FALSE;
-   }
-
-   // Create a surface
-   surface = eglCreateWindowSurface(display, config, (EGLNativeWindowType)hWnd, NULL);
-   if ( surface == EGL_NO_SURFACE )
-   {
-	SDL_Log("gles: eglCreateWindowSurface failed\n");
-      return EGL_FALSE;
-   }
-
-   // Create a GL context
-   context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs );
-   if ( context == EGL_NO_CONTEXT )
-   {
-	SDL_Log("gles: eglCreateContext failed\n");
-      return EGL_FALSE;
-   }   
-   
-   // Make the context current
-   if ( !eglMakeCurrent(display, surface, surface, context) )
-   {
-	SDL_Log("gles: eglMakeCurrent failed\n");
-      return EGL_FALSE;
-   }
-   
-   *eglDisplay = display;
-   *eglSurface = surface;
-   *eglContext = context;
-   return EGL_TRUE;
-} 
+EGLBoolean CreateEGLContext(EGLNativeWindowType hWnd, EGLDisplay *eglDisplay,
+							EGLContext *eglContext, EGLSurface *eglSurface,
+							EGLint attribList[]) {
+	EGLint numConfigs;
+	EGLint majorVersion;
+	EGLint minorVersion;
+	EGLDisplay display;
+	EGLContext context;
+	EGLSurface surface;
+	EGLConfig config;
+#ifndef RPI_NO_X
+	EGLint contextAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE, EGL_NONE };
+#else
+	EGLint contextAttribs[] = { EGL_CONTEXT_CLIENT_VERSION, 2, EGL_NONE };
+#endif
+	// Get Display
+#ifndef RPI_NO_X
+	display = eglGetDisplay((EGLNativeDisplayType)x_display);
+	if (display == EGL_NO_DISPLAY) {
+		SDL_Log("gles: eglGetDisplay failed\n");
+		return EGL_FALSE;
+	}
+#else
+	display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+	if (display == EGL_NO_DISPLAY) {
+		SDL_Log("gles: eglGetDisplay failed\n");
+		return EGL_FALSE;
+	}
+#endif
+	// Initialize EGL
+	if (!eglInitialize(display, &majorVersion, &minorVersion)) {
+		SDL_Log("gles: eglInitialize failed\n");
+		return EGL_FALSE;
+	}
+	// Get configs
+	if (!eglGetConfigs(display, NULL, 0, &numConfigs)) {
+		SDL_Log("gles: eglGetConfigs failed\n");
+		return EGL_FALSE;
+	}
+	// Choose config
+	if (!eglChooseConfig(display, attribList, &config, 1, &numConfigs)) {
+		SDL_Log("gles: eglChooseConfig failed\n");
+		return EGL_FALSE;
+	}
+	// Create a surface
+	surface = eglCreateWindowSurface(display, config, (EGLNativeWindowType)hWnd, NULL);
+	if (surface == EGL_NO_SURFACE) {
+		SDL_Log("gles: eglCreateWindowSurface failed\n");
+		return EGL_FALSE;
+	}
+	// Create a GL context
+	context = eglCreateContext(display, config, EGL_NO_CONTEXT, contextAttribs);
+	if (context == EGL_NO_CONTEXT) {
+		SDL_Log("gles: eglCreateContext failed\n");
+		return EGL_FALSE;
+	}
+	// Make the context current
+	if (!eglMakeCurrent(display, surface, surface, context)) {
+		SDL_Log("gles: eglMakeCurrent failed\n");
+		return EGL_FALSE;
+	}
+	*eglDisplay = display;
+	*eglSurface = surface;
+	*eglContext = context;
+	return EGL_TRUE;
+}
 
 #ifdef RPI_NO_X
 ///
@@ -147,75 +129,57 @@ EGLBoolean CreateEGLContext ( EGLNativeWindowType hWnd, EGLDisplay* eglDisplay,
 //
 //      This function initialized the display and window for EGL
 //
-EGLBoolean WinCreate(ESContext *esContext, const char *title) 
-{
-   int32_t success = 0;
-
-   static EGL_DISPMANX_WINDOW_T nativewindow;
-
-   DISPMANX_ELEMENT_HANDLE_T dispman_element;
-   DISPMANX_DISPLAY_HANDLE_T dispman_display;
-   DISPMANX_UPDATE_HANDLE_T dispman_update;
-   VC_RECT_T dst_rect;
-   VC_RECT_T src_rect;
-
-   uint32_t display_width;
-   uint32_t display_height;
-  SDL_VideoInfo* videoInfo;
-
-   SDL_Log("gles: init sdl\n");
-   SDL_Init(SDL_INIT_VIDEO);
-   if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-      SDL_Log("gles: SDL_Init failed\n");
-      return EGL_FALSE;
-   }
-
-   SDL_Log("gles: sdl get VideoInfo\n");
-   videoInfo = SDL_GetVideoInfo () ;
-   int systemZ = videoInfo->vfmt->BitsPerPixel ;
-   SDL_Log("gles: videoInfo: %ix%i\n", esContext->width, esContext->height);
-
-   SDL_SetVideoMode(0, 0, 16, SDL_SWSURFACE);
-   SDL_Log("gles: init sdl ok\n");
-
-   // create an EGL window surface, passing context width/height
-   success = graphics_get_display_size(0, &display_width, &display_height);
-   if ( success < 0 )
-   {
-      SDL_Log("gles: graphics_get_display_size failed\n");
-      return EGL_FALSE;
-   }
-   
-   // You can hardcode the resolution here:
-   display_width = display_width;
-   display_height = display_height;
-
-   SDL_Log("## %i, %i ##\n", display_width, display_height);
-
-   dst_rect.x = 0;
-   dst_rect.y = 0;
-   dst_rect.width = display_width;
-   dst_rect.height = display_height;
-      
-   src_rect.x = 0;
-   src_rect.y = 0;
-   src_rect.width = display_width << 16;
-   src_rect.height = display_height << 16;   
-
-   dispman_display = vc_dispmanx_display_open( 0 /* LCD */);
-   dispman_update = vc_dispmanx_update_start( 0 );
-         
-   dispman_element = vc_dispmanx_element_add ( dispman_update, dispman_display,
-      0/*layer*/, &dst_rect, 0/*src*/,
-      &src_rect, DISPMANX_PROTECTION_NONE, 0 /*alpha*/, 0/*clamp*/, 0/*transform*/);
-      
-   nativewindow.element = dispman_element;
-   nativewindow.width = display_width;
-   nativewindow.height = display_height;
-   vc_dispmanx_update_submit_sync( dispman_update );
-   
-   esContext->hWnd = &nativewindow;
-
+EGLBoolean WinCreate(ESContext *esContext, const char *title) {
+	int32_t success = 0;
+	static EGL_DISPMANX_WINDOW_T nativewindow;
+	DISPMANX_ELEMENT_HANDLE_T dispman_element;
+	DISPMANX_DISPLAY_HANDLE_T dispman_display;
+	DISPMANX_UPDATE_HANDLE_T dispman_update;
+	VC_RECT_T dst_rect;
+	VC_RECT_T src_rect;
+	uint32_t display_width;
+	uint32_t display_height;
+	SDL_VideoInfo *videoInfo;
+	SDL_Log("gles: init sdl\n");
+	SDL_Init(SDL_INIT_VIDEO);
+	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+		SDL_Log("gles: SDL_Init failed\n");
+		return EGL_FALSE;
+	}
+	SDL_Log("gles: sdl get VideoInfo\n");
+	videoInfo = SDL_GetVideoInfo() ;
+	int systemZ = videoInfo->vfmt->BitsPerPixel ;
+	SDL_Log("gles: videoInfo: %ix%i\n", esContext->width, esContext->height);
+	SDL_SetVideoMode(0, 0, 16, SDL_SWSURFACE);
+	SDL_Log("gles: init sdl ok\n");
+	// create an EGL window surface, passing context width/height
+	success = graphics_get_display_size(0, &display_width, &display_height);
+	if (success < 0) {
+		SDL_Log("gles: graphics_get_display_size failed\n");
+		return EGL_FALSE;
+	}
+	// You can hardcode the resolution here:
+	display_width = display_width;
+	display_height = display_height;
+	SDL_Log("## %i, %i ##\n", display_width, display_height);
+	dst_rect.x = 0;
+	dst_rect.y = 0;
+	dst_rect.width = display_width;
+	dst_rect.height = display_height;
+	src_rect.x = 0;
+	src_rect.y = 0;
+	src_rect.width = display_width << 16;
+	src_rect.height = display_height << 16;
+	dispman_display = vc_dispmanx_display_open(0 /* LCD */);
+	dispman_update = vc_dispmanx_update_start(0);
+	dispman_element = vc_dispmanx_element_add(dispman_update, dispman_display,
+					  0/*layer*/, &dst_rect, 0/*src*/,
+					  &src_rect, DISPMANX_PROTECTION_NONE, 0 /*alpha*/, 0/*clamp*/, 0/*transform*/);
+	nativewindow.element = dispman_element;
+	nativewindow.width = display_width;
+	nativewindow.height = display_height;
+	vc_dispmanx_update_submit_sync(dispman_update);
+	esContext->hWnd = &nativewindow;
 	return EGL_TRUE;
 }
 ///
@@ -224,48 +188,43 @@ EGLBoolean WinCreate(ESContext *esContext, const char *title)
 //      Reads from X11 event loop and interrupt program if there is a keypress, or
 //      window close action.
 //
-GLboolean userInterrupt(ESContext *esContext)
-{
+GLboolean userInterrupt(ESContext *esContext) {
 	//GLboolean userinterrupt = GL_FALSE;
-    //return userinterrupt;
-    
-    // Ctrl-C for now to stop
-
+	//return userinterrupt;
+	// Ctrl-C for now to stop
 	int flags = fcntl(0, F_GETFL, 0);
 	flags |= O_NONBLOCK;
 	fcntl(0, F_SETFL, flags);
-
 	struct termios oldT, newT;
 	char c = 0;
-	ioctl(0,TCGETS,&oldT); /*get current mode */
-	newT=oldT;
+	ioctl(0, TCGETS, &oldT); /*get current mode */
+	newT = oldT;
 	newT.c_lflag &= ~ECHO; /* echo off */
 	newT.c_lflag &= ~ICANON; /*one char @ a time*/
-	ioctl(0,TCSETS,&newT); /* set new terminal mode */
-	read(0,&c,1); /*read 1 char @ a time from stdin*/
-	ioctl(0,TCSETS,&oldT); /* restore previous terminal mode */
+	ioctl(0, TCSETS, &newT); /* set new terminal mode */
+	read(0, &c, 1); /*read 1 char @ a time from stdin*/
+	ioctl(0, TCSETS, &oldT); /* restore previous terminal mode */
 	if (c != 0) {
-//		SDL_Log("%c - %i\n", c, c);
+		//		SDL_Log("%c - %i\n", c, c);
 		if (esContext->keyFunc != NULL) {
 			esContext->keyFunc(esContext, c, 0, 0);
 		}
 	}
-
 	return GL_FALSE;
 }
 #else
 
 
 SDL_SysWMinfo get_sdl_wm_info(void) {
-  SDL_SysWMinfo sdl_info;
-  memset(&sdl_info, 0, sizeof(sdl_info));
-  SDL_VERSION(&sdl_info.version);
-  if (SDL_GetWMInfo(&sdl_info) <= 0 || sdl_info.subsystem != SDL_SYSWM_X11) {
-    fprintf(stderr, "This is not X11\n");
-    memset(&sdl_info, 0, sizeof (sdl_info));
-    return sdl_info;
-  }
-  return sdl_info;
+	SDL_SysWMinfo sdl_info;
+	memset(&sdl_info, 0, sizeof(sdl_info));
+	SDL_VERSION(&sdl_info.version);
+	if (SDL_GetWMInfo(&sdl_info) <= 0 || sdl_info.subsystem != SDL_SYSWM_X11) {
+		fprintf(stderr, "This is not X11\n");
+		memset(&sdl_info, 0, sizeof(sdl_info));
+		return sdl_info;
+	}
+	return sdl_info;
 }
 
 ///
@@ -274,76 +233,65 @@ SDL_SysWMinfo get_sdl_wm_info(void) {
 //      This function initialized the native X11 display and window for EGL
 //
 EGLBoolean WinCreate(ESContext *esContext, const char *title) {
-    XSetWindowAttributes  xattr;
-    Atom wm_state;
-    XWMHints hints;
-    XEvent xev;
-    Window win;
+	XSetWindowAttributes  xattr;
+	Atom wm_state;
+	XWMHints hints;
+	XEvent xev;
+	Window win;
+	/*
+	    X11 native display initialization
+	*/
+	x_display = XOpenDisplay(NULL);
+	if (x_display == NULL) {
+		return EGL_FALSE;
+	}
+	/*
+	    root = DefaultRootWindow(x_display);
 
-    /*
-     * X11 native display initialization
-     */
+	    swa.event_mask  =  ExposureMask | PointerMotionMask | KeyPressMask;
+	    win = XCreateWindow(
+	               x_display, root,
+	               0, 0, esContext->width, esContext->height, 0,
+	               CopyFromParent, InputOutput,
+	               CopyFromParent, CWEventMask,
+	               &swa );
 
-    x_display = XOpenDisplay(NULL);
-    if ( x_display == NULL )
-    {
-        return EGL_FALSE;
-    }
-
-/*
-    root = DefaultRootWindow(x_display);
-
-    swa.event_mask  =  ExposureMask | PointerMotionMask | KeyPressMask;
-    win = XCreateWindow(
-               x_display, root,
-               0, 0, esContext->width, esContext->height, 0,
-               CopyFromParent, InputOutput,
-               CopyFromParent, CWEventMask,
-               &swa );
-
-*/
-
-    SDL_Init(SDL_INIT_AUDIO | SDL_INIT_JOYSTICK);
-    SDL_SetVideoMode(esContext->width, esContext->height, 16, SDL_HWPALETTE | SDL_HWACCEL);
-
-    SDL_SysWMinfo sdl_info;
-    sdl_info = get_sdl_wm_info();
-    if (!sdl_info.version.major)
-        return EGL_FALSE;
-    sdl_info.info.x11.lock_func();
-    win = sdl_info.info.x11.window;
-    sdl_info.info.x11.unlock_func();
-
-    xattr.override_redirect = FALSE;
-    XChangeWindowAttributes ( x_display, win, CWOverrideRedirect, &xattr );
-
-    hints.input = TRUE;
-    hints.flags = InputHint;
-    XSetWMHints(x_display, win, &hints);
-
-    // make the window visible on the screen
-    XMapWindow (x_display, win);
-    XStoreName (x_display, win, title);
-
-    // get identifiers for the provided atom name strings
-    wm_state = XInternAtom (x_display, "_NET_WM_STATE", FALSE);
-
-    memset ( &xev, 0, sizeof(xev) );
-    xev.type                 = ClientMessage;
-    xev.xclient.window       = win;
-    xev.xclient.message_type = wm_state;
-    xev.xclient.format       = 32;
-    xev.xclient.data.l[0]    = 1;
-    xev.xclient.data.l[1]    = FALSE;
-    XSendEvent (
-       x_display,
-       DefaultRootWindow ( x_display ),
-       FALSE,
-       SubstructureNotifyMask,
-       &xev );
-
-    esContext->hWnd = (EGLNativeWindowType) win;
-    return EGL_TRUE;
+	*/
+	SDL_Init(SDL_INIT_AUDIO | SDL_INIT_JOYSTICK);
+	SDL_SetVideoMode(esContext->width, esContext->height, 16, SDL_HWPALETTE | SDL_HWACCEL);
+	SDL_SysWMinfo sdl_info;
+	sdl_info = get_sdl_wm_info();
+	if (!sdl_info.version.major) {
+		return EGL_FALSE;
+	}
+	sdl_info.info.x11.lock_func();
+	win = sdl_info.info.x11.window;
+	sdl_info.info.x11.unlock_func();
+	xattr.override_redirect = FALSE;
+	XChangeWindowAttributes(x_display, win, CWOverrideRedirect, &xattr);
+	hints.input = TRUE;
+	hints.flags = InputHint;
+	XSetWMHints(x_display, win, &hints);
+	// make the window visible on the screen
+	XMapWindow(x_display, win);
+	XStoreName(x_display, win, title);
+	// get identifiers for the provided atom name strings
+	wm_state = XInternAtom(x_display, "_NET_WM_STATE", FALSE);
+	memset(&xev, 0, sizeof(xev));
+	xev.type                 = ClientMessage;
+	xev.xclient.window       = win;
+	xev.xclient.message_type = wm_state;
+	xev.xclient.format       = 32;
+	xev.xclient.data.l[0]    = 1;
+	xev.xclient.data.l[1]    = FALSE;
+	XSendEvent(
+		x_display,
+		DefaultRootWindow(x_display),
+		FALSE,
+		SubstructureNotifyMask,
+		&xev);
+	esContext->hWnd = (EGLNativeWindowType) win;
+	return EGL_TRUE;
 }
 
 
@@ -353,29 +301,26 @@ EGLBoolean WinCreate(ESContext *esContext, const char *title) {
 //      Reads from X11 event loop and interrupt program if there is a keypress, or
 //      window close action.
 //
-GLboolean userInterrupt(ESContext *esContext)
-{
-    XEvent xev;
-    KeySym key;
-    GLboolean userinterrupt = GL_FALSE;
-    char text;
-
-    // Pump all messages from X server. Keypresses are directed to keyfunc (if defined)
-    while ( XPending ( x_display ) )
-    {
-        XNextEvent( x_display, &xev );
-        if ( xev.type == KeyPress )
-        {
-            if (XLookupString(&xev.xkey,&text,1,&key,0)==1)
-            {
-                if (esContext->keyFunc != NULL)
-                    esContext->keyFunc(esContext, text, 0, 0);
-            }
-        }
-        if ( xev.type == DestroyNotify )
-            userinterrupt = GL_TRUE;
-    }
-    return userinterrupt;
+GLboolean userInterrupt(ESContext *esContext) {
+	XEvent xev;
+	KeySym key;
+	GLboolean userinterrupt = GL_FALSE;
+	char text;
+	// Pump all messages from X server. Keypresses are directed to keyfunc (if defined)
+	while (XPending(x_display)) {
+		XNextEvent(x_display, &xev);
+		if (xev.type == KeyPress) {
+			if (XLookupString(&xev.xkey, &text, 1, &key, 0) == 1) {
+				if (esContext->keyFunc != NULL) {
+					esContext->keyFunc(esContext, text, 0, 0);
+				}
+			}
+		}
+		if (xev.type == DestroyNotify) {
+			userinterrupt = GL_TRUE;
+		}
+	}
+	return userinterrupt;
 }
 #endif
 
@@ -391,15 +336,13 @@ GLboolean userInterrupt(ESContext *esContext)
 //      Initialize ES utility context.  This must be called before calling any other
 //      functions.
 //
-void ESUTIL_API esInitContext ( ESContext *esContext )
-{
+void ESUTIL_API esInitContext(ESContext *esContext) {
 #ifdef RPI_NO_X
-   bcm_host_init();
+	bcm_host_init();
 #endif
-   if ( esContext != NULL )
-   {
-      memset( esContext, 0, sizeof( ESContext) );
-   }
+	if (esContext != NULL) {
+		memset(esContext, 0, sizeof(ESContext));
+	}
 }
 
 
@@ -409,56 +352,44 @@ void ESUTIL_API esInitContext ( ESContext *esContext )
 //      title - name for title bar of window
 //      width - width of window to create
 //      height - height of window to create
-//      flags  - bitwise or of window creation flags 
+//      flags  - bitwise or of window creation flags
 //          ES_WINDOW_ALPHA       - specifies that the framebuffer should have alpha
 //          ES_WINDOW_DEPTH       - specifies that a depth buffer should be created
 //          ES_WINDOW_STENCIL     - specifies that a stencil buffer should be created
 //          ES_WINDOW_MULTISAMPLE - specifies that a multi-sample buffer should be created
 //
-GLboolean ESUTIL_API esCreateWindow ( ESContext *esContext, const char* title, GLint width, GLint height, GLuint flags )
-{
-   EGLint attribList[] =
-   {
-       EGL_RED_SIZE,       5,
-       EGL_GREEN_SIZE,     6,
-       EGL_BLUE_SIZE,      5,
-       EGL_ALPHA_SIZE,     (flags & ES_WINDOW_ALPHA) ? 8 : EGL_DONT_CARE,
-       EGL_DEPTH_SIZE,     16,
-       EGL_STENCIL_SIZE,   (flags & ES_WINDOW_STENCIL) ? 8 : EGL_DONT_CARE,
-       EGL_SAMPLE_BUFFERS, (flags & ES_WINDOW_MULTISAMPLE) ? 1 : 0,
-       EGL_NONE
-   };
-   
-   if ( esContext == NULL )
-   {
-      SDL_Log("gles: esContext failed\n");
-      return GL_FALSE;
-   }
-
-   esContext->width = width;
-   esContext->height = height;
-
-   if ( !WinCreate ( esContext, title) )
-   {
-      SDL_Log("gles: WinCreate failed\n");
-      return GL_FALSE;
-   }
-      SDL_Log("gles: WinCreate ok\n");
-
-  
-   if ( !CreateEGLContext ( esContext->hWnd,
-                            &esContext->eglDisplay,
-                            &esContext->eglContext,
-                            &esContext->eglSurface,
-                            attribList) )
-   {
-      SDL_Log("gles: CreateEGLContext failed\n");
-      return GL_FALSE;
-   }
-      SDL_Log("gles: CreateEGLContext ok\n");
-   
-
-   return GL_TRUE;
+GLboolean ESUTIL_API esCreateWindow(ESContext *esContext, const char *title, GLint width, GLint height, GLuint flags) {
+	EGLint attribList[] = {
+		EGL_RED_SIZE,       5,
+		EGL_GREEN_SIZE,     6,
+		EGL_BLUE_SIZE,      5,
+		EGL_ALPHA_SIZE, (flags & ES_WINDOW_ALPHA) ? 8 : EGL_DONT_CARE,
+		EGL_DEPTH_SIZE,     16,
+		EGL_STENCIL_SIZE, (flags & ES_WINDOW_STENCIL) ? 8 : EGL_DONT_CARE,
+		EGL_SAMPLE_BUFFERS, (flags & ES_WINDOW_MULTISAMPLE) ? 1 : 0,
+		EGL_NONE
+	};
+	if (esContext == NULL) {
+		SDL_Log("gles: esContext failed\n");
+		return GL_FALSE;
+	}
+	esContext->width = width;
+	esContext->height = height;
+	if (!WinCreate(esContext, title)) {
+		SDL_Log("gles: WinCreate failed\n");
+		return GL_FALSE;
+	}
+	SDL_Log("gles: WinCreate ok\n");
+	if (!CreateEGLContext(esContext->hWnd,
+						  &esContext->eglDisplay,
+						  &esContext->eglContext,
+						  &esContext->eglSurface,
+						  attribList)) {
+		SDL_Log("gles: CreateEGLContext failed\n");
+		return GL_FALSE;
+	}
+	SDL_Log("gles: CreateEGLContext ok\n");
+	return GL_TRUE;
 }
 
 
@@ -468,65 +399,56 @@ GLboolean ESUTIL_API esCreateWindow ( ESContext *esContext, const char* title, G
 //    Start the main loop for the OpenGL ES application
 //
 
-void ESUTIL_API esMainLoop ( ESContext *esContext )
-{
-    struct timeval t1, t2;
-    struct timezone tz;
-    float deltatime;
-    float totaltime = 0.0f;
-    unsigned int frames = 0;
-
-    gettimeofday ( &t1 , &tz );
-
-    while(userInterrupt(esContext) == GL_FALSE) {
-        gettimeofday(&t2, &tz);
-        deltatime = (float)(t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec) * 1e-6);
-        t1 = t2;
-
-        if (esContext->updateFunc != NULL) {
-            esContext->updateFunc(esContext, deltatime);
+void ESUTIL_API esMainLoop(ESContext *esContext) {
+	struct timeval t1, t2;
+	struct timezone tz;
+	float deltatime;
+	float totaltime = 0.0f;
+	unsigned int frames = 0;
+	gettimeofday(&t1 , &tz);
+	while (userInterrupt(esContext) == GL_FALSE) {
+		gettimeofday(&t2, &tz);
+		deltatime = (float)(t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec) * 1e-6);
+		t1 = t2;
+		if (esContext->updateFunc != NULL) {
+			esContext->updateFunc(esContext, deltatime);
+		}
+		if (esContext->drawFunc != NULL) {
+			esContext->drawFunc(esContext);
+		}
+		totaltime += deltatime;
+		frames++;
+		if (totaltime >  2.0f) {
+			SDL_Log("%4d frames rendered in %1.4f seconds -> FPS=%3.4f\n", frames, totaltime, frames / totaltime);
+			totaltime -= 2.0f;
+			frames = 0;
+		}
 	}
-        if (esContext->drawFunc != NULL) {
-            esContext->drawFunc(esContext);
-	}
-
-        totaltime += deltatime;
-        frames++;
-        if (totaltime >  2.0f)
-        {
-            SDL_Log("%4d frames rendered in %1.4f seconds -> FPS=%3.4f\n", frames, totaltime, frames/totaltime);
-            totaltime -= 2.0f;
-            frames = 0;
-        }
-    }
 }
 
 
 ///
 //  esRegisterDrawFunc()
 //
-void ESUTIL_API esRegisterDrawFunc ( ESContext *esContext, void (ESCALLBACK *drawFunc) (ESContext* ) )
-{
-   esContext->drawFunc = drawFunc;
+void ESUTIL_API esRegisterDrawFunc(ESContext *esContext, void (ESCALLBACK *drawFunc)(ESContext *)) {
+	esContext->drawFunc = drawFunc;
 }
 
 
 ///
 //  esRegisterUpdateFunc()
 //
-void ESUTIL_API esRegisterUpdateFunc ( ESContext *esContext, void (ESCALLBACK *updateFunc) ( ESContext*, float ) )
-{
-   esContext->updateFunc = updateFunc;
+void ESUTIL_API esRegisterUpdateFunc(ESContext *esContext, void (ESCALLBACK *updateFunc)(ESContext *, float)) {
+	esContext->updateFunc = updateFunc;
 }
 
 
 ///
 //  esRegisterKeyFunc()
 //
-void ESUTIL_API esRegisterKeyFunc ( ESContext *esContext,
-                                    void (ESCALLBACK *keyFunc) (ESContext*, unsigned char, int, int ) )
-{
-   esContext->keyFunc = keyFunc;
+void ESUTIL_API esRegisterKeyFunc(ESContext *esContext,
+								  void (ESCALLBACK *keyFunc)(ESContext *, unsigned char, int, int)) {
+	esContext->keyFunc = keyFunc;
 }
 
 
@@ -535,17 +457,13 @@ void ESUTIL_API esRegisterKeyFunc ( ESContext *esContext,
 //
 //    Log an error message to the debug output for the platform
 //
-void ESUTIL_API esLogMessage ( const char *formatStr, ... )
-{
-    va_list params;
-    char buf[BUFSIZ];
-
-    va_start ( params, formatStr );
-    vsprintf ( buf, formatStr, params );
-    
-    printf ( "%s", buf );
-    
-    va_end ( params );
+void ESUTIL_API esLogMessage(const char *formatStr, ...) {
+	va_list params;
+	char buf[BUFSIZ];
+	va_start(params, formatStr);
+	vsprintf(buf, formatStr, params);
+	printf("%s", buf);
+	va_end(params);
 }
 
 
@@ -557,44 +475,36 @@ void ESUTIL_API esLogMessage ( const char *formatStr, ... )
 //    sake of the examples, this is sufficient.
 //
 
-char* ESUTIL_API esLoadTGA ( char *fileName, int *width, int *height )
-{
-    char *buffer = NULL;
-    FILE *f;
-    unsigned char tgaheader[12];
-    unsigned char attributes[6];
-    unsigned int imagesize;
-
-    f = fopen(fileName, "rb");
-    if(f == NULL) return NULL;
-
-    if(fread(&tgaheader, sizeof(tgaheader), 1, f) == 0)
-    {
-        fclose(f);
-        return NULL;
-    }
-
-    if(fread(attributes, sizeof(attributes), 1, f) == 0)
-    {
-        fclose(f);
-        return 0;
-    }
-
-    *width = attributes[1] * 256 + attributes[0];
-    *height = attributes[3] * 256 + attributes[2];
-    imagesize = attributes[4] / 8 * *width * *height;
-    buffer = malloc(imagesize);
-    if (buffer == NULL)
-    {
-        fclose(f);
-        return 0;
-    }
-
-    if(fread(buffer, 1, imagesize, f) != imagesize)
-    {
-        free(buffer);
-        return NULL;
-    }
-    fclose(f);
-    return buffer;
+char *ESUTIL_API esLoadTGA(char *fileName, int *width, int *height) {
+	char *buffer = NULL;
+	FILE *f;
+	unsigned char tgaheader[12];
+	unsigned char attributes[6];
+	unsigned int imagesize;
+	f = fopen(fileName, "rb");
+	if (f == NULL) {
+		return NULL;
+	}
+	if (fread(&tgaheader, sizeof(tgaheader), 1, f) == 0) {
+		fclose(f);
+		return NULL;
+	}
+	if (fread(attributes, sizeof(attributes), 1, f) == 0) {
+		fclose(f);
+		return 0;
+	}
+	*width = attributes[1] * 256 + attributes[0];
+	*height = attributes[3] * 256 + attributes[2];
+	imagesize = attributes[4] / 8 * *width **height;
+	buffer = malloc(imagesize);
+	if (buffer == NULL) {
+		fclose(f);
+		return 0;
+	}
+	if (fread(buffer, 1, imagesize, f) != imagesize) {
+		free(buffer);
+		return NULL;
+	}
+	fclose(f);
+	return buffer;
 }

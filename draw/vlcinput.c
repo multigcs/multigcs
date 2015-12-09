@@ -51,13 +51,13 @@ void on_end_vlc(const libvlc_event_t *event, void *data) {
 	playing = 0;
 }
 
-void vlc_init (char *url) {
+void vlc_init(char *url) {
 	playing = 1;
 	char location[1024];
 	char const *vlc_argv[] = {
 		"--no-xlib",
 		"--no-osd",
-//		"--input-repeat=-1",
+		//		"--input-repeat=-1",
 	};
 	data_sf = SDL_CreateRGBSurface(SDL_SWSURFACE, VIDEOWIDTH, VIDEOHEIGHT, 24, 0x00ff0000, 0x0000ff00, 0x000000ff, 0);
 	ctx.surf = SDL_CreateRGBSurface(SDL_SWSURFACE, VIDEOWIDTH, VIDEOHEIGHT, 24, 0x00ff0000, 0x0000ff00, 0x000000ff, 0);
@@ -72,11 +72,11 @@ void vlc_init (char *url) {
 	libvlc_event_attach(evtman, libvlc_MediaPlayerEncounteredError, on_error_vlc, NULL);
 	libvlc_media_release(m);
 	libvlc_video_set_callbacks(mp, lock, unlock, display, &ctx);
-	libvlc_video_set_format(mp, "RV24", VIDEOWIDTH, VIDEOHEIGHT, VIDEOWIDTH*3);
+	libvlc_video_set_format(mp, "RV24", VIDEOWIDTH, VIDEOHEIGHT, VIDEOWIDTH * 3);
 	libvlc_media_player_play(mp);
 }
 
-void vlc_exit (void) {
+void vlc_exit(void) {
 	libvlc_event_detach(evtman, libvlc_MediaPlayerEncounteredError, on_error_vlc, NULL);
 	libvlc_event_detach(evtman, libvlc_MediaPlayerEndReached, on_end_vlc, NULL);
 	libvlc_media_player_stop(mp);
@@ -87,14 +87,14 @@ void vlc_exit (void) {
 	SDL_FreeSurface(data_sf);
 }
 
-SDL_Surface *vlc_update (void) {
+SDL_Surface *vlc_update(void) {
 	SDL_LockMutex(ctx.mutex);
 	SDL_BlitSurface(ctx.surf, NULL, data_sf, NULL);
 	SDL_UnlockMutex(ctx.mutex);
 	return data_sf;
 }
 
-uint8_t vlc_is_playing (void) {
+uint8_t vlc_is_playing(void) {
 	return playing;
 }
 

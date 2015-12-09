@@ -64,7 +64,7 @@ char fieldtype_tnames[][16] = {
 };
 
 uint32_t updateHash_int(uint32_t value, uint32_t hash) {
-	return (hash ^ ((hash<<5) + (hash>>2) + value));
+	return (hash ^ ((hash << 5) + (hash >> 2) + value));
 }
 
 uint32_t updateHash_str(uint8_t *value, uint32_t hash) {
@@ -91,9 +91,9 @@ void trim(char *input) {
 	}
 }
 
-void parseParamsGetAttr (xmlDocPtr doc, xmlNodePtr cur, char *attrName, char *attrValue) {
+void parseParamsGetAttr(xmlDocPtr doc, xmlNodePtr cur, char *attrName, char *attrValue) {
 	xmlAttrPtr attribute = NULL;
-	for (attribute = cur->properties; attribute != NULL; attribute = attribute->next){
+	for (attribute = cur->properties; attribute != NULL; attribute = attribute->next) {
 		if (!(xmlStrcasecmp(attribute->name, (const xmlChar *)attrName))) {
 			xmlChar *content = xmlNodeListGetString(doc, attribute->children, 1);
 			strcpy(attrValue, (char *)content);
@@ -105,7 +105,7 @@ void parseParamsGetAttr (xmlDocPtr doc, xmlNodePtr cur, char *attrName, char *at
 	attrValue[0] = 0;
 }
 
-int main (int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
 	xmlDocPtr doc;
 	xmlNodePtr cur;
 	xmlNodePtr cur2;
@@ -147,58 +147,44 @@ int main (int argc, char *argv[]) {
 				object_name_uc[n] = toupper(object_name_uc[n]);
 			}
 			parseParamsGetAttr(doc, cur, "category", category);
-
 			char f_struct_name[1024];
 			sprintf(f_struct_name, "openpilot/uavobject_struct.h", object_name);
 			FILE *f_struct = fopen(f_struct_name, "w");
-
 			char f_otypes_name[1024];
 			sprintf(f_otypes_name, "openpilot/uavobject_otypes.h");
 			FILE *f_otypes = fopen(f_otypes_name, "w");
-
 			char f_options_name[1024];
 			sprintf(f_options_name, "openpilot/uavobject_options.h");
 			FILE *f_options = fopen(f_options_name, "w");
-
 			char f_defs_name[1024];
 			sprintf(f_defs_name, "openpilot/uavobject_defs.h");
 			FILE *f_defs = fopen(f_defs_name, "w");
-
 			char f_ids_name[1024];
 			sprintf(f_ids_name, "openpilot/uavobject_ids.h");
 			FILE *f_ids = fopen(f_ids_name, "w");
-
 			char f_comment_name[1024];
 			sprintf(f_comment_name, "openpilot/uavobject_comment.h");
 			FILE *f_comment = fopen(f_comment_name, "w");
-
 			char f_examples_name[1024];
 			sprintf(f_examples_name, "openpilot/uavobject_examples.h");
 			FILE *f_examples = fopen(f_examples_name, "w");
-
 			char f_save_name[1024];
 			sprintf(f_save_name, "openpilot/uavobject_save.h");
 			FILE *f_save = fopen(f_save_name, "w");
-
 			char f_examplessend_name[1024];
 			sprintf(f_examplessend_name, "openpilot/uavobject_examplessend.h");
 			FILE *f_examplessend = fopen(f_examplessend_name, "w");
-
 			char f_guihelper_name[1024];
 			sprintf(f_guihelper_name, "openpilot/uavobject_guihelper.h");
 			FILE *f_guihelper = fopen(f_guihelper_name, "w");
-
 			char f_gui_name[1024];
 			sprintf(f_gui_name, "openpilot/uavobject_gui.h");
 			FILE *f_gui = fopen(f_gui_name, "w");
-
 			char f_guimain_name[1024];
 			sprintf(f_guimain_name, "openpilot/uavobject_guimain.h");
 			FILE *f_guimain = fopen(f_guimain_name, "w");
-
 			fprintf(f_comment, " Object: %s\n", object_name);
 			fprintf(f_struct, "typedef struct {\n");
-
 			parseParamsGetAttr(doc, cur, "settings", attrValue);
 			if (strcmp(attrValue, "true") == 0) {
 				hash = updateHash_int(1, hash);
@@ -261,7 +247,6 @@ int main (int argc, char *argv[]) {
 			if (mread == 1) {
 				fprintf(f_save, "extern UAVT_%sData uavtalk_%sData;\n", object_name, object_name);
 				fprintf(f_save, "UAVT_%sData uavtalk_%sData;\n", object_name, object_name);
-
 				fprintf(f_examples, "case %s_OBJID: {\n", object_name_uc);
 				fprintf(f_examples, "	UAVT_%sData *data = (UAVT_%sData *)buf;\n", object_name, object_name);
 				fprintf(f_examples, "	//memcpy(&uavtalk_%sData, data, sizeof(UAVT_%sData));\n", object_name, object_name);
@@ -283,7 +268,9 @@ int main (int argc, char *argv[]) {
 				fprintf(f_guimain, "		UAVT_gui_%s_show(esContext);\n", object_name);
 				fprintf(f_guimain, "	} else if (show_num == 0) {\n");
 				fprintf(f_guimain, "		if (nn >= msy && nn < msy + 14) {\n");
-				fprintf(f_guimain, "			draw_text_button(esContext, \"%sShow\", VIEW_MODE_FCMENU, \"%s (%s)\", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)SNUM);\n", object_name, object_name, category);
+				fprintf(f_guimain,
+						"			draw_text_button(esContext, \"%sShow\", VIEW_MODE_FCMENU, \"%s (%s)\", FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_show_num_change, (float)SNUM);\n",
+						object_name, object_name, category);
 				fprintf(f_guimain, "		}\n");
 				fprintf(f_guimain, "	}\n");
 				fprintf(f_guimain, "	nn++;\n");
@@ -310,14 +297,13 @@ int main (int argc, char *argv[]) {
 							if (strcmp(fieldname, "Status") == 0) {
 								strcpy(fieldname, "State");
 							}
-
 							for (n = 0; n < strlen(fieldname); n++) {
 								fieldname_uc[n] = toupper(fieldname[n]);
 								fieldname_uc[n + 1] = 0;
 							}
 							parseParamsGetAttr(doc, cur2, "defaultvalue", attrValue);
 							if (attrValue[0] != 0) {
-//								printf("## %s ##\n", attrValue);
+								//								printf("## %s ##\n", attrValue);
 							}
 							uint8_t enum_start = 0;
 							uint8_t type_start = 0;
@@ -331,7 +317,8 @@ int main (int argc, char *argv[]) {
 										fprintf(f_struct, "	%s %s[%i];\t// %s\n", fieldtype_tnames[type_n], fieldname, elements, fieldtype_names[type_n]);
 										for (nn = 0; nn < elements; nn++) {
 											if (mread == 1) {
-												fprintf(f_examples, "	SDL_Log(\"uavtalk: 	%s[%i]: %%%s (%%s)\\n\", data->%s[%i], UAVT_%s%sOption[data->%s[%i]]);\n", fieldname, nn, fieldtype_ptypes[type_n], fieldname, nn, object_name, fieldname, fieldname, nn);
+												fprintf(f_examples, "	SDL_Log(\"uavtalk: 	%s[%i]: %%%s (%%s)\\n\", data->%s[%i], UAVT_%s%sOption[data->%s[%i]]);\n", fieldname, nn, fieldtype_ptypes[type_n], fieldname, nn, object_name, fieldname,
+														fieldname, nn);
 											}
 											if (mwrite == 1) {
 												fprintf(f_examplessend, "	len = openpilot_add_%ibyte(buf, len, data->%s[%i]);\n", size_n, fieldname, nn);
@@ -352,7 +339,8 @@ int main (int argc, char *argv[]) {
 													fprintf(f_guihelper, "}\n");
 													fprintf(f_gui, "	if (nn >= sy && nn < sy + 14) {\n");
 													fprintf(f_gui, "		sprintf(tmp_str, \"%s%i = %%%s\", uavtalk_%sData.%s[%i]);\n", fieldname, nn, fieldtype_ptypes[type_n], object_name, fieldname, nn);
-													fprintf(f_gui, "		draw_text_button(esContext, \"%s%s%iChange\", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_%s%s_%i_change, 0.0);\n", object_name, fieldname, nn, object_name, fieldname, nn);
+													fprintf(f_gui, "		draw_text_button(esContext, \"%s%s%iChange\", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_%s%s_%i_change, 0.0);\n",
+															object_name, fieldname, nn, object_name, fieldname, nn);
 													fprintf(f_gui, "	}\n");
 													fprintf(f_gui, "	nn++;\n");
 													fprintf(f_gui, "\n");
@@ -381,7 +369,8 @@ int main (int argc, char *argv[]) {
 													fprintf(f_guihelper, "}\n");
 													fprintf(f_gui, "	if (nn >= sy && nn < sy + 14) {\n");
 													fprintf(f_gui, "		sprintf(tmp_str, \"%s%i = %%%s\", uavtalk_%sData.%s[%i]);\n", fieldname, nn, fieldtype_ptypes[type_n], object_name, fieldname, nn);
-													fprintf(f_gui, "		draw_text_button(esContext, \"%s%s%iChange\", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_%s%s_%i_change, 0.0);\n", object_name, fieldname, nn, object_name, fieldname, nn);
+													fprintf(f_gui, "		draw_text_button(esContext, \"%s%s%iChange\", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_%s%s_%i_change, 0.0);\n",
+															object_name, fieldname, nn, object_name, fieldname, nn);
 													fprintf(f_gui, "	}\n");
 													fprintf(f_gui, "	nn++;\n");
 													fprintf(f_gui, "\n");
@@ -418,7 +407,8 @@ int main (int argc, char *argv[]) {
 												fprintf(f_guihelper, "}\n");
 												fprintf(f_gui, "	if (nn >= sy && nn < sy + 14) {\n");
 												fprintf(f_gui, "		sprintf(tmp_str, \"%s = %%i (%%s)\", %s, %s);\n", fieldname, optionvar, storevar);
-												fprintf(f_gui, "		draw_text_button(esContext, \"%s%sChange\", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_%s%s_change, 0.0);\n", object_name, fieldname, object_name, fieldname);
+												fprintf(f_gui, "		draw_text_button(esContext, \"%s%sChange\", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_%s%s_change, 0.0);\n",
+														object_name, fieldname, object_name, fieldname);
 												fprintf(f_gui, "	}\n");
 												fprintf(f_gui, "	nn++;\n");
 												fprintf(f_gui, "\n");
@@ -445,7 +435,8 @@ int main (int argc, char *argv[]) {
 												fprintf(f_guihelper, "}\n");
 												fprintf(f_gui, "	if (nn >= sy && nn < sy + 14) {\n");
 												fprintf(f_gui, "		sprintf(tmp_str, \"%s = %%%s\", uavtalk_%sData.%s);\n", fieldname, fieldtype_ptypes[type_n], object_name, fieldname);
-												fprintf(f_gui, "		draw_text_button(esContext, \"%s%sChange\", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_%s%s_change, 0.0);\n", object_name, fieldname, object_name, fieldname);
+												fprintf(f_gui, "		draw_text_button(esContext, \"%s%sChange\", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_%s%s_change, 0.0);\n",
+														object_name, fieldname, object_name, fieldname);
 												fprintf(f_gui, "	}\n");
 												fprintf(f_gui, "	nn++;\n");
 												fprintf(f_gui, "\n");
@@ -461,30 +452,30 @@ int main (int argc, char *argv[]) {
 								if (attrValue[0] != 0) {
 									strcat(attrValue, ",");
 								} else {
-										cur3 = cur2->xmlChildrenNode;
-										while (cur3 != NULL) {
-											if ((xmlStrcasecmp(cur3->name, (const xmlChar *)"elementnames")) == 0) {
-												cur4 = cur3->xmlChildrenNode;
-												while (cur4 != NULL) {
-													if ((xmlStrcasecmp(cur4->name, (const xmlChar *)"elementname")) == 0) {
-														xmlChar *key;
-														key = xmlNodeListGetString(doc, cur4->xmlChildrenNode, 1);
-														if (key != NULL) {
-															for (nn = 0; nn < strlen((char *)key); nn++) {
-																if ((char *)key[nn] == ',') {
-																	key[nn] = '/';
-																}
+									cur3 = cur2->xmlChildrenNode;
+									while (cur3 != NULL) {
+										if ((xmlStrcasecmp(cur3->name, (const xmlChar *)"elementnames")) == 0) {
+											cur4 = cur3->xmlChildrenNode;
+											while (cur4 != NULL) {
+												if ((xmlStrcasecmp(cur4->name, (const xmlChar *)"elementname")) == 0) {
+													xmlChar *key;
+													key = xmlNodeListGetString(doc, cur4->xmlChildrenNode, 1);
+													if (key != NULL) {
+														for (nn = 0; nn < strlen((char *)key); nn++) {
+															if ((char *)key[nn] == ',') {
+																key[nn] = '/';
 															}
-															strcat(attrValue, (char *)key);
-															strcat(attrValue, ",");
-															xmlFree(key);
 														}
+														strcat(attrValue, (char *)key);
+														strcat(attrValue, ",");
+														xmlFree(key);
 													}
-													cur4 = cur4->next;
 												}
+												cur4 = cur4->next;
 											}
-											cur3 = cur3->next;
 										}
+										cur3 = cur3->next;
+									}
 								}
 								for (n = 0; n < strlen(attrValue); n++) {
 									if (attrValue[n] == ',') {
@@ -522,7 +513,8 @@ int main (int argc, char *argv[]) {
 												fprintf(f_guihelper, "}\n");
 												fprintf(f_gui, "	if (nn >= sy && nn < sy + 14) {\n");
 												fprintf(f_gui, "		sprintf(tmp_str, \"%s.%s = %%%s\", uavtalk_%sData.%s.%s);\n", fieldname, element_name, fieldtype_ptypes[type_n], object_name, fieldname, element_name);
-												fprintf(f_gui, "		draw_text_button(esContext, \"%s%s%sChange\", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_%s%s_%s_change, 0.0);\n", object_name, fieldname, element_name, object_name, fieldname, element_name);
+												fprintf(f_gui, "		draw_text_button(esContext, \"%s%s%sChange\", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_%s%s_%s_change, 0.0);\n",
+														object_name, fieldname, element_name, object_name, fieldname, element_name);
 												fprintf(f_gui, "	}\n");
 												fprintf(f_gui, "	nn++;\n");
 												fprintf(f_gui, "\n");
@@ -545,7 +537,8 @@ int main (int argc, char *argv[]) {
 												fprintf(f_guihelper, "}\n");
 												fprintf(f_gui, "	if (nn >= sy && nn < sy + 14) {\n");
 												fprintf(f_gui, "		sprintf(tmp_str, \"%s.%s = %%%s\", uavtalk_%sData.%s.%s);\n", fieldname, element_name, fieldtype_ptypes[type_n], object_name, fieldname, element_name);
-												fprintf(f_gui, "		draw_text_button(esContext, \"%s%s%sChange\", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_%s%s_%s_change, 0.0);\n", object_name, fieldname, element_name, object_name, fieldname, element_name);
+												fprintf(f_gui, "		draw_text_button(esContext, \"%s%s%sChange\", VIEW_MODE_FCMENU, tmp_str, FONT_WHITE, -1.2, -0.9 + ny++ * 0.12, 0.002, 0.08, ALIGN_LEFT, ALIGN_TOP, UAVT_gui_%s%s_%s_change, 0.0);\n",
+														object_name, fieldname, element_name, object_name, fieldname, element_name);
 												fprintf(f_gui, "	}\n");
 												fprintf(f_gui, "	nn++;\n");
 												fprintf(f_gui, "\n");

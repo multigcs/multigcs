@@ -51,19 +51,19 @@
 #define MSP_GPSSVINFO            164    //out message         get Signal Strength (only U-Blox)
 
 
-void mwi21_init (uint8_t modelid, char *port, uint32_t baud);
-void mwi21_exit (uint8_t modelid);
-void mwi21_update (uint8_t modelid);
-uint8_t mwi21_connection_status (uint8_t modelid);
-void mwi21_xml_save (uint8_t modelid, FILE *fr);
-void mwi21_xml_load (uint8_t modelid, xmlDocPtr doc, xmlNodePtr cur);
+void mwi21_init(uint8_t modelid, char *port, uint32_t baud);
+void mwi21_exit(uint8_t modelid);
+void mwi21_update(uint8_t modelid);
+uint8_t mwi21_connection_status(uint8_t modelid);
+void mwi21_xml_save(uint8_t modelid, FILE *fr);
+void mwi21_xml_load(uint8_t modelid, xmlDocPtr doc, xmlNodePtr cur);
 
-void mwi21_cal_acc (uint8_t modelid);
-void mwi21_cal_mac (uint8_t modelid);
-void mwi21_get_values (uint8_t modelid);
-void mwi21_write_rom (uint8_t modelid);
+void mwi21_cal_acc(uint8_t modelid);
+void mwi21_cal_mac(uint8_t modelid);
+void mwi21_get_values(uint8_t modelid);
+void mwi21_write_rom(uint8_t modelid);
 
-void mwi21_web_get (uint8_t modelid, char *url, char *content, char *type);
+void mwi21_web_get(uint8_t modelid, char *url, char *content, char *type);
 
 extern uint8_t mwi21_serial_buf[MODELS_MAX][255];
 extern uint8_t serial_buffer[MODELS_MAX][1024];

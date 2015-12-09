@@ -1,15 +1,15 @@
-/* Low level USB code to access DPF.
- *
- * (c) 2010, 2011 <hackfin@section5.ch>
- *
- * This currently uses the SCSI command set
- *
- * The reason for this is that we want to access the hacked frame
- * non-root and without having to wait for the SCSI interface to
- * intialize.
- *
- * Later, we'll replace the SCSI command stuff.
- */
+/*  Low level USB code to access DPF.
+
+    (c) 2010, 2011 <hackfin@section5.ch>
+
+    This currently uses the SCSI command set
+
+    The reason for this is that we want to access the hacked frame
+    non-root and without having to wait for the SCSI interface to
+    intialize.
+
+    Later, we'll replace the SCSI command stuff.
+*/
 
 #include "dpf.h"
 #include "sglib.h"
@@ -29,60 +29,55 @@ struct known_device {
 	{ 0 , 0, 0 } /* NEVER REMOVE THIS */
 };
 
-int handle_error(char *txt)
-{
+int handle_error(char *txt) {
 	fprintf(stderr, "Error: %s\n", txt);
 	return -1;
 }
 
-void usb_flush(usb_dev_handle *dev)
-{
+void usb_flush(usb_dev_handle *dev) {
 	char buf[20];
 	usb_bulk_read(dev, ENDPT_IN, buf, 3, 1000);
 }
 
-int check_known_device(struct usb_device *d)
-{
+int check_known_device(struct usb_device *d) {
 	struct known_device *dev = g_known_devices;
-
 	while (dev->desc) {
 		if ((d->descriptor.idVendor == dev->vid) &&
-		    (d->descriptor.idProduct == dev->pid)) { 
-				printf("Found %s\n", dev->desc);
-				return 1;
+				(d->descriptor.idProduct == dev->pid)) {
+			printf("Found %s\n", dev->desc);
+			return 1;
 		}
 		dev++;
 	}
 	return 0;
 }
 
-static struct usb_device *find_dev(void)
-{
-    struct usb_bus *b;
-    struct usb_device *d;
-
-    b = usb_get_busses();
-
-    while(1) {
-        if (b == NULL) break;
-
-        d = b->devices;
-        while(1) {
-            if (!d) break;
-
-			if (check_known_device(d))
+static struct usb_device *find_dev(void) {
+	struct usb_bus *b;
+	struct usb_device *d;
+	b = usb_get_busses();
+	while (1) {
+		if (b == NULL) {
+			break;
+		}
+		d = b->devices;
+		while (1) {
+			if (!d) {
+				break;
+			}
+			if (check_known_device(d)) {
 				return d;
-
+			}
 #ifdef DEBUG
-            printf("%04x %04x\n",
-                   d->descriptor.idVendor,
-                   d->descriptor.idProduct);
+			printf("%04x %04x\n",
+				   d->descriptor.idVendor,
+				   d->descriptor.idProduct);
 #endif
-            d = d->next;
-        }
-        b = b->next;
-    }
-    return NULL;
+			d = d->next;
+		}
+		b = b->next;
+	}
+	return NULL;
 }
 
 char g_buf[] = {
@@ -101,27 +96,24 @@ char g_buf[] = {
 };
 
 int emulate_scsi(usb_dev_handle *dev, unsigned char *cmd, int cmdlen, char out,
-	unsigned char *data, unsigned long block_len)
-{
+				 unsigned char *data, unsigned long block_len) {
 	int len;
 	int ret;
 	static unsigned char ansbuf[13]; // Do not change size.
-
 	g_buf[14] = cmdlen;
 	memcpy(&g_buf[15], cmd, cmdlen);
-
 	g_buf[8] = block_len;
 	g_buf[9] = block_len >> 8;
 	g_buf[10] = block_len >> 16;
 	g_buf[11] = block_len >> 24;
-
 	ret = usb_bulk_write(dev, ENDPT_OUT, g_buf, sizeof(g_buf), 1000);
-	if (ret < 0) return ret;
-
+	if (ret < 0) {
+		return ret;
+	}
 	if (out == DIR_OUT) {
 		if (data) {
-			ret = usb_bulk_write(dev, ENDPT_OUT, (const char* )data,
-					block_len, 1000);
+			ret = usb_bulk_write(dev, ENDPT_OUT, (const char *)data,
+								 block_len, 1000);
 			if (ret != block_len) {
 				perror("bulk write");
 				return ret;
@@ -147,21 +139,17 @@ int emulate_scsi(usb_dev_handle *dev, unsigned char *cmd, int cmdlen, char out,
 	return ret;
 }
 
-usb_dev_handle *dpf_usb_open(void)
-{
-    struct usb_device *d;
+usb_dev_handle *dpf_usb_open(void) {
+	struct usb_device *d;
 	usb_dev_handle *usb_dev;
-
-    usb_init();
-    usb_find_busses();
-    usb_find_devices();
-
-    d = find_dev();
-    if (!d) {
+	usb_init();
+	usb_find_busses();
+	usb_find_devices();
+	d = find_dev();
+	if (!d) {
 		handle_error("No matching USB device found!");
 		return NULL;
 	}
-
 	usb_dev = usb_open(d);
 	if (usb_dev == NULL) {
 		handle_error("Failed to open usb device!");

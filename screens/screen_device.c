@@ -5,15 +5,15 @@
 
 static uint8_t show_device = 0;
 static uint8_t device_page = 0;
-static uint8_t (*save_callback) (char *, float, float, int8_t, float, uint8_t);
+static uint8_t (*save_callback)(char *, float, float, int8_t, float, uint8_t);
 static char device_filter[FILTER_MAX][200];
 static uint8_t device_filter_num = 0;
 
-void device_set_callback (uint8_t (*callback) (char *, float, float, int8_t, float, uint8_t action)) {
+void device_set_callback(uint8_t (*callback)(char *, float, float, int8_t, float, uint8_t action)) {
 	save_callback = callback;
 }
 
-uint8_t device_page_move (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t device_page_move(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (data < 0.0) {
 		if (device_page > 0) {
 			device_page += (int8_t)data;
@@ -24,16 +24,16 @@ uint8_t device_page_move (char *name, float x, float y, int8_t button, float dat
 	return 0;
 }
 
-void device_set_mode (uint8_t mode) {
+void device_set_mode(uint8_t mode) {
 	show_device = mode;
 	device_page = 0;
 }
 
-uint8_t device_get_mode (void) {
+uint8_t device_get_mode(void) {
 	return show_device;
 }
 
-uint8_t device_filter_match (char *filename) {
+uint8_t device_filter_match(char *filename) {
 	if (device_filter_num == 0) {
 		return 1;
 	} else {
@@ -47,7 +47,7 @@ uint8_t device_filter_match (char *filename) {
 	return 0;
 }
 
-void device_add_filter (char *filter) {
+void device_add_filter(char *filter) {
 	if (device_filter_num < FILTER_MAX) {
 		strncpy(device_filter[device_filter_num++], filter, 199);
 	} else {
@@ -55,7 +55,7 @@ void device_add_filter (char *filter) {
 	}
 }
 
-void device_reset_filter (void) {
+void device_reset_filter(void) {
 	uint8_t n = 0;
 	for (n = 0; n < FILTER_MAX; n++) {
 		device_filter[n][0] = 0;
@@ -63,16 +63,16 @@ void device_reset_filter (void) {
 	device_filter_num = 0;
 }
 
-uint8_t device_name_cancel (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t device_name_cancel(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	show_device = 0;
 	return 0;
 }
 
-uint8_t device_null (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t device_null(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	return 0;
 }
 
-uint8_t device_name_save (char *name, float x, float y, int8_t button, float data, uint8_t action) {
+uint8_t device_name_save(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	show_device = 0;
 	(*save_callback)(name, x, y, button, 1.0, 0);
 	return 0;
@@ -82,7 +82,7 @@ uint8_t device_name_save (char *name, float x, float y, int8_t button, float dat
 extern char bt_devices[100][1023];
 #endif
 
-void screen_device (ESContext *esContext) {
+void screen_device(ESContext *esContext) {
 	if (show_device != setup.view_mode) {
 		return;
 	}
@@ -147,8 +147,8 @@ void screen_device (ESContext *esContext) {
 	HKEY hKey;
 	lnResult = RegOpenKeyEx(HKEY_LOCAL_MACHINE, "HARDWARE\\DEVICEMAP\\SERIALCOMM", 0, KEY_READ, &hKey);
 	if (lnResult == ERROR_SUCCESS) {
-		while(RegEnumValue(hKey, Index, ValueName, &dwValueNameLength, NULL, &dwTypeCode, (BYTE *)Value, &dwValueLength) == ERROR_SUCCESS) {
-			if(dwTypeCode == REG_SZ) {
+		while (RegEnumValue(hKey, Index, ValueName, &dwValueNameLength, NULL, &dwTypeCode, (BYTE *)Value, &dwValueLength) == ERROR_SUCCESS) {
+			if (dwTypeCode == REG_SZ) {
 				sprintf(new_path, "\\\\.\\%s", Value);
 				sprintf(tmp_str, "%s (%s)", ValueName, Value);
 				draw_text_button(esContext, new_path, setup.view_mode, tmp_str, FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, device_name_save, 0.0);
@@ -182,9 +182,7 @@ void screen_device (ESContext *esContext) {
 		n++;
 	}
 #endif
-
 	draw_text_button(esContext, "UNSET", setup.view_mode, "UNSET", FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, device_name_save, 0.0);
-
 	if (device_page > 0) {
 		sprintf(tmp_str, "^ (%i/%i)", device_page, n2);
 		draw_text_button(esContext, "up", setup.view_mode, tmp_str, FONT_WHITE, 0.0, -0.9, 0.002, 0.08, 1, 0, device_page_move, -1.0);
@@ -193,8 +191,6 @@ void screen_device (ESContext *esContext) {
 		sprintf(tmp_str, "v (%i/%i)", device_page, n2);
 		draw_text_button(esContext, "down", setup.view_mode, tmp_str, FONT_WHITE, 0.0, 0.8, 0.002, 0.08, 1, 0, device_page_move, +1.0);
 	}
-
 	draw_text_button(esContext, "show", setup.view_mode, "[CANCEL]", FONT_WHITE, 0.0, 0.9, 0.002, 0.06, 1, 0, device_name_cancel, 0.0);
-
 }
 

@@ -1,14 +1,14 @@
 
 #include <all.h>
 
-extern int file_exists (char *fileName);
+extern int file_exists(char *fileName);
 
 #ifdef SDLGL
 Object3d obj3d;
 #endif
 
 
-uint8_t get_background_model (uint8_t modelid, char *filename) {
+uint8_t get_background_model(uint8_t modelid, char *filename) {
 	char tmp_str[1024];
 	filename[0] = 0;
 	if (ModelData[modelid].dronetype < MAV_TYPE_ENUM_END) {
@@ -39,7 +39,7 @@ uint8_t get_background_model (uint8_t modelid, char *filename) {
 	return 1;
 }
 
-void screen_background (ESContext *esContext) {
+void screen_background(ESContext *esContext) {
 	char tmp_str[1024];
 	static float rotate = 0.0;
 	rotate += 0.3;

@@ -1,3 +1,3 @@
 
-void screen_telemetry (ESContext *esContext);
+void screen_telemetry(ESContext *esContext);
 
