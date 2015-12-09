@@ -1134,95 +1134,114 @@ void GeoMap_draw(GeoMap *mapdata) {
 	uint8_t tiles_x = (setup.screen_w + 255) / 256;
 	uint8_t tiles_y = (setup.screen_h + 255) / 256;
 	uint8_t tiles_num = 0;
-	// move map offset
-	if (mapdata->map_view != 1 && mapdata->map_view != 3 && mapdata->map_view != 4 && mapdata->map_view != 5) {
-		esTranslate(&modelview, -mapdata->offset_x1, mapdata->offset_y1, 0.0);
-	}
-#ifndef SDLGL
-	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
-	esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
+#ifdef MAP_LISTCACHE
+	static int last_tile_x = -1;
+	static int last_tile_y = -1;
+	static uint32_t last_zoom = -1;
+	static uint8_t last_map_view = -1;
+	if (last_tile_x != tile_x || last_tile_y != tile_y || last_zoom != mapdata->zoom || last_map_view != mapdata->map_view) {
+		last_tile_x = tile_x;
+		last_tile_y = tile_y;
+		last_zoom = mapdata->zoom;
+		last_map_view = mapdata->map_view;
+		glNewList(1, GL_COMPILE);
 #endif
-	// draw Sky in 3D-Mode
-	if (setup.hud_view_video == 0) {
-		if (mapdata->map_view == 3 || mapdata->map_view == 5) {
-			draw_box_f3c2(mapdata->esContext, -3.0, -3.0, -1.0, 3.0, -3.0, 3.0, 0x01, 0x8e, 0xea, 255, 0x01, 0x8e, 0xea, 255);
-			draw_box_f3c2(mapdata->esContext, -3.0, 3.0, -1.0, 3.0, 3.0, 3.0, 0x01, 0x8e, 0xea, 255, 0x01, 0x8e, 0xea, 255);
-			draw_box_f3c2b(mapdata->esContext, -3.0, -3.0, -1.0, -3.0, 3.0, 3.0, 0x01, 0x8e, 0xea, 255, 0x01, 0x8e, 0xea, 255);
-			draw_box_f3c2b(mapdata->esContext, 3.0, -3.0, -1.0, 3.0, 3.0, 3.0, 0x01, 0x8e, 0xea, 255, 0x01, 0x8e, 0xea, 255);
-			draw_box_f3(mapdata->esContext, -3.0, -3.0, 3.0, 3.0, 3.0, 3.0, 0x01, 0x8e, 0xea, 255);
+		// move map offset
+		if (mapdata->map_view != 1 && mapdata->map_view != 3 && mapdata->map_view != 4 && mapdata->map_view != 5) {
+			esTranslate(&modelview, -mapdata->offset_x1, mapdata->offset_y1, 0.0);
 		}
-	}
-	// draw Titles
-	if (mapdata->zoom <= 18 && mapdata->map_view != 4) {
-		for (y_n = -MAP_OVERLAY; y_n < tiles_y + MAP_OVERLAY; y_n++) {
-			for (x_n = -MAP_OVERLAY; x_n < tiles_x + MAP_OVERLAY; x_n++) {
-				float _grid = mapdata->grid;
-				if (strncmp(mapnames[map_type][MAP_URL], "file:/", 6) == 0) {
-					if (strcmp(mapnames[map_type][MAP_TYPE], "ZYX") == 0) {
-						sprintf(tile_name, mapnames[map_type][MAP_URL] + 6, mapdata->zoom, tile_y + y_n, tile_x + x_n);
-					} else if (strcmp(mapnames[map_type][MAP_TYPE], "ZXY") == 0) {
-						sprintf(tile_name, mapnames[map_type][MAP_URL] + 6, mapdata->zoom, tile_x + x_n, tile_y + y_n);
-					} else if (strcmp(mapnames[map_type][MAP_TYPE], "XYZ") == 0) {
-						sprintf(tile_name, mapnames[map_type][MAP_URL] + 6, tile_x + x_n, tile_y + y_n, mapdata->zoom);
-					} else if (strcmp(mapnames[map_type][MAP_TYPE], "TMS") == 0) {
-						int ymax = (1 << mapdata->zoom);
-						int y = ymax - (tile_y + y_n) - 1;
-						sprintf(tile_name, mapnames[map_type][MAP_URL] + 6, mapdata->zoom, tile_x + x_n, y);
-					}
-				} else {
-					sprintf(tile_name, mapnames[map_type][MAP_FILE], get_datadirectory(), mapdata->zoom, tile_x + x_n, tile_y + y_n);
-				}
-				if (file_exists(tile_name) == 0) {
-					tile_name[0] = 0;
-					_grid = 1.0;
-				}
-				if (mapdata->draw_tiles == 0) {
-					tile_name[0] = 0;
-				}
-				if (mapdata->alpha1 == 0.0 && mapdata->alpha2 == 0.0 && mapdata->map_color == 1) {
-					mapdata->alpha1 = 0.5;
-					mapdata->alpha2 = 0.5;
-				}
-				if (mapdata->map_view == 3 || mapdata->map_view == 4 || mapdata->map_view == 5) {
-					draw_image_srtm(mapdata->esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, mapdata->zoom), tilex2long(tile_x + x_n, mapdata->zoom), tiley2lat(tile_y + y_n + 1,
-									mapdata->zoom), tilex2long(tile_x + x_n + 1, mapdata->zoom), mapdata->alpha0, mapdata->alpha1, mapdata->alpha2, _grid);
-				} else if (mapdata->map_view == 1) {
-					draw_image_srtm(mapdata->esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, mapdata->zoom), tilex2long(tile_x + x_n, mapdata->zoom), tiley2lat(tile_y + y_n + 1,
-									mapdata->zoom), tilex2long(tile_x + x_n + 1, mapdata->zoom), mapdata->alpha0, mapdata->alpha1, mapdata->alpha2, _grid);
-				} else {
-					if (tile_name[0] != 0) {
-						draw_image(mapdata->esContext, x_n * 256, y_n * 256, 256, 256, tile_name);
-					} else {
-						draw_rect(mapdata->esContext, x_n * 256, y_n * 256, x_n * 256 + 256, y_n * 256 + 256, 255, 255, 255, 255);
-					}
-				}
-				if (mapdata->draw_tiles != 0 && omapnames[omap_type][MAP_FILE][0] != 0) {
-					if (strncmp(omapnames[map_type][MAP_URL], "file:/", 6) == 0) {
-						if (strcmp(omapnames[map_type][MAP_TYPE], "ZYX") == 0) {
-							sprintf(tile_name, omapnames[map_type][MAP_URL] + 6, mapdata->zoom, tile_y + y_n, tile_x + x_n);
-						} else if (strcmp(omapnames[map_type][MAP_TYPE], "ZXY") == 0) {
-							sprintf(tile_name, omapnames[map_type][MAP_URL] + 6, mapdata->zoom, tile_x + x_n, tile_y + y_n);
-						} else if (strcmp(omapnames[map_type][MAP_TYPE], "XYZ") == 0) {
-							sprintf(tile_name, omapnames[map_type][MAP_URL] + 6, tile_x + x_n, tile_y + y_n, mapdata->zoom);
-						} else if (strcmp(omapnames[map_type][MAP_TYPE], "TMS") == 0) {
-							int ymax = (1 << mapdata->zoom);
-							int y = ymax - (tile_y + y_n) - 1;
-							sprintf(tile_name, omapnames[map_type][MAP_URL] + 6, mapdata->zoom, tile_x + x_n, y);
-						}
-					} else {
-						sprintf(tile_name, omapnames[omap_type][MAP_FILE], get_datadirectory(), mapdata->zoom, tile_x + x_n, tile_y + y_n);
-					}
-					if (file_exists(tile_name) != 0) {
-						if (mapdata->map_view == 1) {
-							draw_image_srtm(mapdata->esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, mapdata->zoom), tilex2long(tile_x + x_n, mapdata->zoom), tiley2lat(tile_y + y_n + 1,
-											mapdata->zoom), tilex2long(tile_x + x_n + 1, mapdata->zoom), 0.5, 0.0, 0.0, 0.0);
-						} else {
-							draw_image(mapdata->esContext, x_n * 256, y_n * 256, 256, 256, tile_name);
-						}
-					}
-				}
-				tiles_num++;
+#ifndef SDLGL
+		esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
+		esMatrixMultiply(&userData->mvpMatrix2, &modelview, &userData->perspective);
+#endif
+		// draw Sky in 3D-Mode
+		if (setup.hud_view_video == 0) {
+			if (mapdata->map_view == 3 || mapdata->map_view == 5) {
+				draw_box_f3c2(mapdata->esContext, -3.0, -3.0, -1.0, 3.0, -3.0, 3.0, 0x01, 0x8e, 0xea, 255, 0x01, 0x8e, 0xea, 255);
+				draw_box_f3c2(mapdata->esContext, -3.0, 3.0, -1.0, 3.0, 3.0, 3.0, 0x01, 0x8e, 0xea, 255, 0x01, 0x8e, 0xea, 255);
+				draw_box_f3c2b(mapdata->esContext, -3.0, -3.0, -1.0, -3.0, 3.0, 3.0, 0x01, 0x8e, 0xea, 255, 0x01, 0x8e, 0xea, 255);
+				draw_box_f3c2b(mapdata->esContext, 3.0, -3.0, -1.0, 3.0, 3.0, 3.0, 0x01, 0x8e, 0xea, 255, 0x01, 0x8e, 0xea, 255);
+				draw_box_f3(mapdata->esContext, -3.0, -3.0, 3.0, 3.0, 3.0, 3.0, 0x01, 0x8e, 0xea, 255);
 			}
 		}
+		// draw Titles
+		if (mapdata->zoom <= 18 && mapdata->map_view != 4) {
+			for (y_n = -MAP_OVERLAY; y_n < tiles_y + MAP_OVERLAY; y_n++) {
+				for (x_n = -MAP_OVERLAY; x_n < tiles_x + MAP_OVERLAY; x_n++) {
+					float _grid = mapdata->grid;
+					if (strncmp(mapnames[map_type][MAP_URL], "file:/", 6) == 0) {
+						if (strcmp(mapnames[map_type][MAP_TYPE], "ZYX") == 0) {
+							sprintf(tile_name, mapnames[map_type][MAP_URL] + 6, mapdata->zoom, tile_y + y_n, tile_x + x_n);
+						} else if (strcmp(mapnames[map_type][MAP_TYPE], "ZXY") == 0) {
+							sprintf(tile_name, mapnames[map_type][MAP_URL] + 6, mapdata->zoom, tile_x + x_n, tile_y + y_n);
+						} else if (strcmp(mapnames[map_type][MAP_TYPE], "XYZ") == 0) {
+							sprintf(tile_name, mapnames[map_type][MAP_URL] + 6, tile_x + x_n, tile_y + y_n, mapdata->zoom);
+						} else if (strcmp(mapnames[map_type][MAP_TYPE], "TMS") == 0) {
+							int ymax = (1 << mapdata->zoom);
+							int y = ymax - (tile_y + y_n) - 1;
+							sprintf(tile_name, mapnames[map_type][MAP_URL] + 6, mapdata->zoom, tile_x + x_n, y);
+						}
+					} else {
+						sprintf(tile_name, mapnames[map_type][MAP_FILE], get_datadirectory(), mapdata->zoom, tile_x + x_n, tile_y + y_n);
+					}
+					if (file_exists(tile_name) == 0) {
+						tile_name[0] = 0;
+						_grid = 1.0;
+					}
+					if (mapdata->draw_tiles == 0) {
+						tile_name[0] = 0;
+					}
+					if (mapdata->alpha1 == 0.0 && mapdata->alpha2 == 0.0 && mapdata->map_color == 1) {
+						mapdata->alpha1 = 0.5;
+						mapdata->alpha2 = 0.5;
+					}
+					if (mapdata->map_view == 3 || mapdata->map_view == 4 || mapdata->map_view == 5) {
+						draw_image_srtm(mapdata->esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, mapdata->zoom), tilex2long(tile_x + x_n, mapdata->zoom), tiley2lat(tile_y + y_n + 1,
+										mapdata->zoom), tilex2long(tile_x + x_n + 1, mapdata->zoom), mapdata->alpha0, mapdata->alpha1, mapdata->alpha2, _grid);
+					} else if (mapdata->map_view == 1) {
+						draw_image_srtm(mapdata->esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, mapdata->zoom), tilex2long(tile_x + x_n, mapdata->zoom), tiley2lat(tile_y + y_n + 1,
+										mapdata->zoom), tilex2long(tile_x + x_n + 1, mapdata->zoom), mapdata->alpha0, mapdata->alpha1, mapdata->alpha2, _grid);
+					} else {
+						if (tile_name[0] != 0) {
+							draw_image(mapdata->esContext, x_n * 256, y_n * 256, 256, 256, tile_name);
+						} else {
+							draw_rect(mapdata->esContext, x_n * 256, y_n * 256, x_n * 256 + 256, y_n * 256 + 256, 255, 255, 255, 255);
+						}
+					}
+					if (mapdata->draw_tiles != 0 && omapnames[omap_type][MAP_FILE][0] != 0) {
+						if (strncmp(omapnames[map_type][MAP_URL], "file:/", 6) == 0) {
+							if (strcmp(omapnames[map_type][MAP_TYPE], "ZYX") == 0) {
+								sprintf(tile_name, omapnames[map_type][MAP_URL] + 6, mapdata->zoom, tile_y + y_n, tile_x + x_n);
+							} else if (strcmp(omapnames[map_type][MAP_TYPE], "ZXY") == 0) {
+								sprintf(tile_name, omapnames[map_type][MAP_URL] + 6, mapdata->zoom, tile_x + x_n, tile_y + y_n);
+							} else if (strcmp(omapnames[map_type][MAP_TYPE], "XYZ") == 0) {
+								sprintf(tile_name, omapnames[map_type][MAP_URL] + 6, tile_x + x_n, tile_y + y_n, mapdata->zoom);
+							} else if (strcmp(omapnames[map_type][MAP_TYPE], "TMS") == 0) {
+								int ymax = (1 << mapdata->zoom);
+								int y = ymax - (tile_y + y_n) - 1;
+								sprintf(tile_name, omapnames[map_type][MAP_URL] + 6, mapdata->zoom, tile_x + x_n, y);
+							}
+						} else {
+							sprintf(tile_name, omapnames[omap_type][MAP_FILE], get_datadirectory(), mapdata->zoom, tile_x + x_n, tile_y + y_n);
+						}
+						if (file_exists(tile_name) != 0) {
+							if (mapdata->map_view == 1) {
+								draw_image_srtm(mapdata->esContext, x_n * 256, y_n * 256, 256, 256, tile_name, tiley2lat(tile_y + y_n, mapdata->zoom), tilex2long(tile_x + x_n, mapdata->zoom), tiley2lat(tile_y + y_n + 1,
+												mapdata->zoom), tilex2long(tile_x + x_n + 1, mapdata->zoom), 0.5, 0.0, 0.0, 0.0);
+							} else {
+								draw_image(mapdata->esContext, x_n * 256, y_n * 256, 256, 256, tile_name);
+							}
+						}
+					}
+					tiles_num++;
+				}
+			}
+		}
+#ifdef MAP_LISTCACHE
+		glEndList();
+		glCallList(1);
+	} else {
+		glCallList(1);
 	}
+#endif
 }
