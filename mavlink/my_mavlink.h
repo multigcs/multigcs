@@ -62,6 +62,8 @@ typedef struct {
 	int8_t type;
 	uint16_t option1;
 	uint16_t option2;
+	uint8_t sysid;
+	uint8_t compid;
 } ValueList;
 
 typedef struct {

@@ -49,12 +49,16 @@ static uint8_t model_mavlink_forward_change(char *name, float x, float y, int8_t
 }
 
 static uint8_t model_mavlink_sysid_change(char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	if (button == 4) {
-		ModelData[ModelActive].mavlink_sysid++;
-	} else if (button == 5) {
-		ModelData[ModelActive].mavlink_sysid--;
+	if (data == -1.0) {
+		if (button == 4) {
+			ModelData[ModelActive].mavlink_sysid++;
+		} else if (button == 5) {
+			ModelData[ModelActive].mavlink_sysid--;
+		} else {
+			model_sysid_edit(name, x, y, button, data, action);
+		}
 	} else {
-		model_sysid_edit(name, x, y, button, data, action);
+		ModelData[ModelActive].mavlink_sysid = (uint8_t)data;
 	}
 	return 0;
 }
@@ -79,11 +83,19 @@ uint8_t model_teletype_set(char *name, float x, float y, int8_t button, float da
 	}
 	select_teletype = 0;
 	reset_telemetry(ModelActive);
+	reset_buttons();
 	return 0;
 }
 
 static uint8_t model_use_deviceid_change(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	ModelData[ModelActive].use_deviceid = 1 - ModelData[ModelActive].use_deviceid;
+	reset_buttons();
+	return 0;
+}
+
+static uint8_t model_use_sysid_change(char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	ModelData[ModelActive].use_sysid = 1 - ModelData[ModelActive].use_sysid;
+	reset_buttons();
 	return 0;
 }
 
@@ -99,18 +111,21 @@ static uint8_t model_dronetype_change(char *name, float x, float y, int8_t butto
 
 static uint8_t model_teletype_change(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	select_teletype = 1;
+	reset_buttons();
 	return 0;
 }
 
 
 static uint8_t model_baud_set(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	ModelData[ModelActive].telemetry_baud = atoi(name);
+	reset_buttons();
 	return 0;
 }
 
 static uint8_t model_baud_change(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	baud_set_callback(model_baud_set);
 	baud_set_mode(setup.view_mode);
+	reset_buttons();
 	return 0;
 }
 
@@ -118,6 +133,7 @@ static uint8_t model_baud_change(char *name, float x, float y, int8_t button, fl
 static uint8_t model_device_set(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	strncpy(ModelData[ModelActive].telemetry_port, name, 199);
 	serial_info_get(ModelData[ModelActive].telemetry_port, ModelData[ModelActive].deviceid);
+	reset_buttons();
 	return 0;
 }
 
@@ -369,6 +385,7 @@ void screen_model(ESContext *esContext) {
 #endif
 	draw_title(esContext, "Model");
 	char tmp_str[100];
+	char tmp_str2[100];
 	int n = 0;
 #ifndef SDLGL
 	esMatrixLoadIdentity(&modelview);
@@ -394,14 +411,14 @@ void screen_model(ESContext *esContext) {
 		strcpy(ModelData[ModelActive].name, "model1");
 	}
 	sprintf(tmp_str, "%s", ModelData[ModelActive].name);
-	draw_text_button(esContext, "model_name_edit", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_name_edit, 0);
+	draw_text_button(esContext, "model_name_edit", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.5, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_name_edit, 0);
 	n++;
 	draw_text_button(esContext, "model_type", VIEW_MODE_MODEL, "TYPE:", FONT_WHITE, -1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_dronetype_change, 0);
 	if (ModelData[ModelActive].dronetype > 26) {
 		sprintf(tmp_str, "UNKNOWN: %i", ModelData[ModelActive].dronetype);
-		draw_text_button(esContext, "dronetype_change", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_dronetype_change, 0);
+		draw_text_button(esContext, "dronetype_change", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.5, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_dronetype_change, 0);
 	} else {
-		draw_text_button(esContext, "dronetype_change", VIEW_MODE_MODEL, dronetypes[ModelData[ModelActive].dronetype], FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP,
+		draw_text_button(esContext, "dronetype_change", VIEW_MODE_MODEL, dronetypes[ModelData[ModelActive].dronetype], FONT_WHITE, -1.1 + 0.5, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP,
 						 model_dronetype_change, 0);
 	}
 #ifdef SDLGL
@@ -445,14 +462,14 @@ void screen_model(ESContext *esContext) {
 #endif
 	n++;
 	draw_text_button(esContext, "model_image_change", VIEW_MODE_MODEL, "IMAGE:", FONT_WHITE, -1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_image_change, 0);
-	draw_image_f3(esContext, -1.1 + 0.3, -0.8 + n * 0.12 - 0.02, -1.2 + 0.3 + 0.4, -0.8 + n * 0.12 + 0.3 - 0.02, 0.002, ModelData[ModelActive].image);
+	draw_image_f3(esContext, -1.1 + 0.5, -0.8 + n * 0.12 - 0.02, -1.2 + 0.3 + 0.4, -0.8 + n * 0.12 + 0.3 - 0.02, 0.002, ModelData[ModelActive].image);
 	n++;
 	n++;
 	draw_text_button(esContext, "Telemetry", VIEW_MODE_MODEL, "Telemetry", FONT_WHITE, -1.25, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_null, (float)n);
 	draw_line_f3(esContext, -1.3, -0.8 + n * 0.12 + 0.1, 0.002, 1.25, -0.8 + n * 0.12 + 0.1, 0.002, 255, 255, 0, 128);
 	n++;
 	draw_text_button(esContext, "model_load3", VIEW_MODE_MODEL, "TYPE:", FONT_WHITE, -1.1, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_teletype_change, 0);
-	draw_text_button(esContext, "model_teletype_change", VIEW_MODE_MODEL, teletypes[ModelData[ModelActive].teletype], FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP,
+	draw_text_button(esContext, "model_teletype_change", VIEW_MODE_MODEL, teletypes[ModelData[ModelActive].teletype], FONT_WHITE, -1.1 + 0.5, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP,
 					 model_teletype_change, 0);
 	n++;
 #ifdef SDLGL
@@ -485,49 +502,60 @@ void screen_model(ESContext *esContext) {
 		//		strcpy(ModelData[ModelActive].telemetry_port, "/dev/rfcomm0");
 	}
 	sprintf(tmp_str, "%s [SELECT]", ModelData[ModelActive].telemetry_port);
-	draw_text_button(esContext, "device_select", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_device_change, 0);
+	draw_text_button(esContext, "device_select", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.5, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_device_change, 0);
 	n++;
 	if (strcmp(ModelData[ModelActive].telemetry_port, "TCP") == 0) {
 		draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "IP:");
 		sprintf(tmp_str, "%s [CHANGE]", ModelData[ModelActive].netip);
-		draw_text_button(esContext, "model_ip_edit", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_ip_edit, n);
+		draw_text_button(esContext, "model_ip_edit", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.5, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_ip_edit, n);
 		n++;
 		draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "PORT:");
 		sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].netport);
-		draw_text_button(esContext, "model_port_edit", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_port_edit, n);
+		draw_text_button(esContext, "model_port_edit", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.5, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_port_edit, n);
 		n++;
 	} else if (strcmp(ModelData[ModelActive].telemetry_port, "UDP") == 0) {
-		if (ModelData[ModelActive].teletype == TELETYPE_ARDUPILOT) {
-			draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "USEID:");
-			sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].use_deviceid);
-			if (ModelData[ModelActive].use_deviceid == 1) {
-				draw_text_button(esContext, "rc_useid", VIEW_MODE_MODEL, tmp_str, FONT_GREEN, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
-				n++;
-				draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "SysID:");
-				sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].mavlink_sysid);
-				draw_text_button(esContext, "rc_mavlink_sysid", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_mavlink_sysid_change, n);
-			} else {
-				draw_text_button(esContext, "rc_useid", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
-			}
-		}
-		n++;
 	} else {
 		draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "BAUD:");
 		sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].telemetry_baud);
-		draw_text_button(esContext, "rc_baud", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_baud_change, n);
+		draw_text_button(esContext, "rc_baud", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.5, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_baud_change, n);
 		n++;
-		draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "USEID:");
+		draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "USE_DEVID:");
 		sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].use_deviceid);
 		if (ModelData[ModelActive].use_deviceid == 1) {
-			draw_text_button(esContext, "rc_useid", VIEW_MODE_MODEL, tmp_str, FONT_GREEN, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
+			draw_text_button(esContext, "rc_useid", VIEW_MODE_MODEL, tmp_str, FONT_GREEN, -1.1 + 0.5, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
 			n++;
-			draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "ID:");
-			draw_text_button(esContext, "rc_deviceid", VIEW_MODE_MODEL, ModelData[ModelActive].deviceid, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_null, n);
+			draw_text_f3(esContext, -1.1 + 0.05, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "DeviceID:");
+			draw_text_button(esContext, "rc_deviceid", VIEW_MODE_MODEL, ModelData[ModelActive].deviceid, FONT_WHITE, -1.1 + 0.5 + 0.05, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_null, n);
 		} else {
-			draw_text_button(esContext, "rc_useid", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
+			draw_text_button(esContext, "rc_useid", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.5, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_deviceid_change, n);
 		}
 		n++;
 	}
+	if (ModelData[ModelActive].teletype == TELETYPE_ARDUPILOT || ModelData[ModelActive].teletype == TELETYPE_AUTOQUAD) {
+		draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "USE_SYSID:");
+		sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].use_sysid);
+		if (ModelData[ModelActive].use_sysid == 1) {
+			draw_text_button(esContext, "rc_usesysid", VIEW_MODE_MODEL, tmp_str, FONT_GREEN, -1.1 + 0.5, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_sysid_change, n);
+			n++;
+			draw_text_f3(esContext, -1.1 + 0.05, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "SysID:");
+			sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].mavlink_sysid);
+			draw_text_button(esContext, "rc_mavlink_sysid", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.5 + 0.05, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_mavlink_sysid_change, -1.0);
+			uint8_t ln = 0;
+			uint8_t lny = 0;
+			for (ln = 0; ln < 16; ln++) {
+				if (ModelData[ModelActive].sysid_list[ln] != 0xff) {
+					sprintf(tmp_str, "%i", ModelData[ModelActive].sysid_list[ln]);
+					sprintf(tmp_str2, "sysidlist-%i", ModelData[ModelActive].sysid_list[ln]);
+					draw_text_button(esContext, tmp_str2, VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.5 + 0.07 + (lny * 0.05), -0.85 + (n + 1) * 0.12, 0.002, 0.03, ALIGN_LEFT, ALIGN_TOP, model_mavlink_sysid_change, ModelData[ModelActive].sysid_list[ln]);
+					lny++;
+				}
+			}
+		} else {
+			draw_text_button(esContext, "rc_usesysid", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.5, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_use_sysid_change, n);
+		}
+	}
+	n++;
+
 	draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "FORWARD:");
 	if (ModelData[ModelActive].mavlink_forward == 0) {
 		sprintf(tmp_str, "NO [CHANGE]");
@@ -536,7 +564,7 @@ void screen_model(ESContext *esContext) {
 	} else if (ModelData[ModelActive].mavlink_forward == 2) {
 		sprintf(tmp_str, "WRITE PROTECT [CHANGE]");
 	}
-	draw_text_button(esContext, "mavlink_forward_change", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.3, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_mavlink_forward_change, n);
+	draw_text_button(esContext, "mavlink_forward_change", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.5, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_mavlink_forward_change, n);
 	n++;
 	if (strstr(ModelData[ModelActive].telemetry_port, "rfcomm") > 0) {
 		n++;

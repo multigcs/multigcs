@@ -620,6 +620,7 @@ void setup_save(void) {
 			fprintf(fr, "telemetry_baud		%i\n", ModelData[n].telemetry_baud);
 			fprintf(fr, "deviceid		%s\n", ModelData[n].deviceid);
 			fprintf(fr, "use_deviceid		%i\n", ModelData[n].use_deviceid);
+			fprintf(fr, "use_sysid		%i\n", ModelData[n].use_sysid);
 			fprintf(fr, "mavlink_sysid		%i\n", ModelData[n].mavlink_sysid);
 			fprintf(fr, "mavlink_forward	%i\n", ModelData[n].mavlink_forward);
 			fprintf(fr, "model_name		%s\n", ModelData[n].name);
@@ -776,6 +777,7 @@ void setup_load(void) {
 		ModelData[model_n].pilottype = 250;
 		strcpy(ModelData[model_n].deviceid, "");
 		ModelData[model_n].use_deviceid = 0;
+		ModelData[model_n].use_sysid = 0;
 		ModelData[model_n].mavlink_sysid = 0;
 		ModelData[model_n].mavlink_forward = 1;
 		ModelData[model_n].sysid = 250;
@@ -1036,6 +1038,8 @@ void setup_load(void) {
 					strcpy(ModelData[model_n].deviceid, val);
 				} else if (strcmp(var, "use_deviceid") == 0) {
 					ModelData[model_n].use_deviceid = atoi(val);
+				} else if (strcmp(var, "use_sysid") == 0) {
+					ModelData[model_n].use_sysid = atoi(val);
 				} else if (strcmp(var, "mavlink_sysid") == 0) {
 					ModelData[model_n].mavlink_sysid = atoi(val);
 				} else if (strcmp(var, "mavlink_forward") == 0) {

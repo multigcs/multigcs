@@ -114,9 +114,11 @@ typedef struct {
 	uint32_t telemetry_baud;
 	char deviceid[1024];
 	uint8_t use_deviceid;
+	uint8_t use_sysid;
 	uint8_t mavlink_sysid;
 	uint8_t mavlink_org_sysid;
 	uint8_t mavlink_forward;
+	uint8_t sysid_list[16];
 	char netip[16];
 	uint16_t netport;
 	int netsock;

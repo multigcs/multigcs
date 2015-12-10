@@ -113,6 +113,28 @@ void mavlink_xml_save(uint8_t modelid, FILE *fr) {
 	fprintf(fr, " </mavlink>\n");
 }
 
+void mavlink_sysid_list_reset(uint8_t modelid) {
+	uint8_t n = 0;
+	for (n = 0; n < 16; n++) {
+		ModelData[modelid].sysid_list[n] = 0xff;
+	}
+}
+
+void mavlink_sysid_list_set(uint8_t modelid, uint8_t sysid) {
+	uint8_t n = 0;
+	for (n = 0; n < 16; n++) {
+		if (ModelData[modelid].sysid_list[n] == sysid) {
+			return;
+		}
+	}
+	for (n = 0; n < 16; n++) {
+		if (ModelData[modelid].sysid_list[n] == 0xff) {
+			ModelData[modelid].sysid_list[n] = sysid;
+			return;
+		}
+	}
+}
+
 void mavlink_init_udp(void) {
 	udp_running = 1;
 #ifdef SDL2
@@ -146,6 +168,7 @@ uint8_t mavlink_init(uint8_t modelid, char *port, uint32_t baud) {
 	}
 #endif
 #endif
+	mavlink_sysid_list_reset(modelid);
 	mavlink_maxparam[modelid] = 0;
 	mavlink_foundparam[modelid] = 0;
 	SDL_Log("mavlink(%i): init serial port...\n", modelid);
@@ -161,6 +184,8 @@ uint8_t mavlink_init(uint8_t modelid, char *port, uint32_t baud) {
 		MavLinkVars[modelid][n].onload = 0.0;
 		MavLinkVars[modelid][n].type = MAV_VAR_FLOAT;
 		MavLinkVars[modelid][n].id = -1;
+		MavLinkVars[modelid][n].sysid = 0xff;
+		MavLinkVars[modelid][n].compid = 0xff;
 	}
 	mavlink_message_t msg2;
 	mavlink_msg_heartbeat_pack(MAVLINK_GSC_SYSID, 0, &msg2, MAV_TYPE_GCS, MAV_AUTOPILOT_INVALID, 0, 0, 0);
@@ -170,6 +195,7 @@ uint8_t mavlink_init(uint8_t modelid, char *port, uint32_t baud) {
 
 void mavlink_reload(uint8_t modelid) {
 	int n = 0;
+	mavlink_sysid_list_reset(modelid);
 	mavlink_maxparam[modelid] = 0;
 	mavlink_foundparam[modelid] = 0;
 	for (n = 0; n < MAVLINK_PARAMETER_MAX; n++) {
@@ -183,6 +209,8 @@ void mavlink_reload(uint8_t modelid) {
 		MavLinkVars[modelid][n].onload = 0.0;
 		MavLinkVars[modelid][n].type = MAV_VAR_FLOAT;
 		MavLinkVars[modelid][n].id = -1;
+		MavLinkVars[modelid][n].sysid = 0xff;
+		MavLinkVars[modelid][n].compid = 0xff;
 	}
 	mavlink_message_t msg2;
 	mavlink_msg_heartbeat_pack(MAVLINK_GSC_SYSID, 0, &msg2, MAV_TYPE_GCS, MAV_AUTOPILOT_INVALID, 0, 0, 0);
@@ -346,6 +374,8 @@ void mavlink_set_value(uint8_t modelid, char *name, float value, int8_t type, in
 				MavLinkVars[modelid][n].value = value;
 				MavLinkVars[modelid][n].onload = value;
 				MavLinkVars[modelid][n].id = id;
+				MavLinkVars[modelid][n].sysid = ModelData[modelid].sysid;
+				MavLinkVars[modelid][n].compid = ModelData[modelid].compid;
 				if (type == -1) {
 					type = MAV_VAR_FLOAT;
 				}
@@ -447,14 +477,14 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t *msg) {
 				ModelData[modelid].pilottype = packet.autopilot;
 				ModelData[modelid].mode = packet.custom_mode;
 				ModelData[modelid].armed = packet.system_status;
-				//			SDL_Log("Heartbeat(%i): %i, %i, %i\n", modelid, ModelData[modelid].armed, packet.custom_mode, packet.system_status);
+				//SDL_Log("Heartbeat(%i): %i, %i, %i\n", modelid, ModelData[modelid].armed, packet.custom_mode, packet.system_status);
 				if (mavlink_maxparam[modelid] == 0) {
 					mavlink_start_feeds(modelid);
 				} else if (ModelData[modelid].heartbeat == 0) {
 					mavlink_start_feeds(modelid);
 				}
 				ModelData[modelid].heartbeat = 100;
-				//			sprintf(sysmsg_str, "Heartbeat: %i", (int)time(0));
+				//sprintf(sysmsg_str, "Heartbeat: %i", (int)time(0));
 				if ((*msg).sysid != 0xff) {
 					ModelData[modelid].sysid = msg->sysid;
 					ModelData[modelid].compid = msg->compid;
@@ -1658,7 +1688,10 @@ void mavlink_update(uint8_t modelid) {
 		for (n = 0; n < res; n++) {
 			c = serial_buf[n];
 			if (mavlink_parse_char(modelid, c, &msg, &status)) {
-				mavlink_handleMessage(modelid, &msg);
+				mavlink_sysid_list_set(modelid, msg.sysid);
+				if (ModelData[modelid].use_sysid == 0 || msg.sysid == ModelData[modelid].mavlink_sysid) {
+					mavlink_handleMessage(modelid, &msg);
+				}
 			}
 		}
 	}
@@ -2430,7 +2463,8 @@ void mavlink_web_get(uint8_t modelid, char *url, char *content, char *type) {
 						if (strcmp(ModelData[modelid].telemetry_port, "TCP") == 0) {
 							for (n = 0; n < result; n++) {
 								if (mavlink_parse_char(modelid, buf[n], &msg, &status)) {
-									if (ModelData[modelid].use_deviceid == 0 || msg.sysid == ModelData[modelid].mavlink_sysid) {
+									mavlink_sysid_list_set(modelid, msg.sysid);
+									if (ModelData[modelid].use_sysid == 0 || msg.sysid == ModelData[modelid].mavlink_sysid) {
 										mavlink_handleMessage(modelid, &msg);
 										mavlink_tcp_active = 1;
 									}
@@ -2516,7 +2550,8 @@ int mavlink_tcp(void *data) {
 					int n = 0;
 					for (n = 0; n < rv; n++) {
 						if (mavlink_parse_char(modelid, buf[n], &msg, &status)) {
-							if (ModelData[modelid].use_deviceid == 0 || msg.sysid == ModelData[modelid].mavlink_sysid) {
+							mavlink_sysid_list_set(modelid, msg.sysid);
+							if (ModelData[modelid].use_sysid == 0 || msg.sysid == ModelData[modelid].mavlink_sysid) {
 								mavlink_handleMessage(modelid, &msg);
 								mavlink_tcp_active = 1;
 							}
@@ -2563,7 +2598,8 @@ int mavlink_udp(void *data) {
 				for (modelid = 0; modelid < MODELS_MAX; modelid++) {
 					if (strcmp(ModelData[modelid].telemetry_port, "UDP") == 0) {
 						if (mavlink_parse_char(modelid, buf[n], &msg, &status)) {
-							if (ModelData[modelid].use_deviceid == 0 || msg.sysid == ModelData[modelid].mavlink_sysid) {
+							mavlink_sysid_list_set(modelid, msg.sysid);
+							if (ModelData[modelid].use_sysid == 0 || msg.sysid == ModelData[modelid].mavlink_sysid) {
 								mavlink_handleMessage(modelid, &msg);
 								mavlink_udp_active = 1;
 							}
