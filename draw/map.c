@@ -578,6 +578,9 @@ int thread_get_maps2(void *data) {
 }
 
 void draw_model(ESContext *esContext, float mark_lat, float mark_long, float mark_alt, float roll, float pitch, float yaw, uint8_t modelid, uint8_t mode, float lat, float lon, uint8_t zoom) {
+	if (ModelData[modelid].dronetype == 26) {
+		return;
+	}
 	ESMatrix modelview;
 #ifndef SDLGL
 	UserData *userData = esContext->userData;
