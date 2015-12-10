@@ -1681,6 +1681,7 @@ void mavlink_update(uint8_t modelid) {
 	}
 	uint8_t c = 0;
 	uint16_t n = 0;
+	uint8_t model_n = 0;
 	mavlink_message_t msg;
 	mavlink_status_t status;
 	while ((res = serial_read(ModelData[modelid].serial_fd, serial_buf, 1000)) > 0) {
@@ -1691,6 +1692,11 @@ void mavlink_update(uint8_t modelid) {
 				mavlink_sysid_list_set(modelid, msg.sysid);
 				if (ModelData[modelid].use_sysid == 0 || msg.sysid == ModelData[modelid].mavlink_sysid) {
 					mavlink_handleMessage(modelid, &msg);
+				}
+				for (model_n = 0; model_n < MODELS_MAX; model_n++) {
+					if (strcmp(ModelData[model_n].telemetry_port, "SUBSYS") == 0 && ModelData[model_n].masterid == modelid) {
+						mavlink_handleMessage(model_n, &msg);
+					}
 				}
 			}
 		}

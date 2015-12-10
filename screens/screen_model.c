@@ -177,6 +177,23 @@ static uint8_t model_port_edit(char *name, float x, float y, int8_t button, floa
 	return 0;
 }
 
+static uint8_t model_masterid_edit(char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (button == 5) {
+		if (ModelData[ModelActive].masterid > 0) {
+			ModelData[ModelActive].masterid--;
+		} else {
+			ModelData[ModelActive].masterid = MODELS_MAX - 1;
+		}
+	} else {
+		if (ModelData[ModelActive].masterid < MODELS_MAX - 1) {
+			ModelData[ModelActive].masterid++;
+		} else {
+			ModelData[ModelActive].masterid = 0;
+		}
+	}
+	return 0;
+}
+
 static uint8_t model_save_xml(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	reset_buttons();
 	FILE *fr;
@@ -514,6 +531,14 @@ void screen_model(ESContext *esContext) {
 		draw_text_button(esContext, "model_port_edit", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.5, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_port_edit, n);
 		n++;
 	} else if (strcmp(ModelData[ModelActive].telemetry_port, "UDP") == 0) {
+	} else if (strcmp(ModelData[ModelActive].telemetry_port, "SUBSYS") == 0) {
+		if (ModelData[ModelActive].teletype == TELETYPE_ARDUPILOT || ModelData[ModelActive].teletype == TELETYPE_AUTOQUAD) {
+			draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "MASTER_MODEL:");
+			sprintf(tmp_str, "%s [CHANGE]", ModelData[ModelData[ModelActive].masterid].name);
+			draw_text_button(esContext, "model_masterid_edit", VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.5, -0.8 + n * 0.12, 0.002, 0.06, ALIGN_LEFT, ALIGN_TOP, model_masterid_edit, n);
+			n++;
+		}
+		ModelData[ModelActive].use_sysid = 1;
 	} else {
 		draw_text_f3(esContext, -1.1, -0.8 + n * 0.12, 0.002, 0.06, 0.06, FONT_WHITE, "BAUD:");
 		sprintf(tmp_str, "%i [CHANGE]", ModelData[ModelActive].telemetry_baud);
@@ -543,11 +568,20 @@ void screen_model(ESContext *esContext) {
 			uint8_t ln = 0;
 			uint8_t lny = 0;
 			for (ln = 0; ln < 16; ln++) {
-				if (ModelData[ModelActive].sysid_list[ln] != 0xff) {
-					sprintf(tmp_str, "%i", ModelData[ModelActive].sysid_list[ln]);
-					sprintf(tmp_str2, "sysidlist-%i", ModelData[ModelActive].sysid_list[ln]);
-					draw_text_button(esContext, tmp_str2, VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.5 + 0.07 + (lny * 0.05), -0.85 + (n + 1) * 0.12, 0.002, 0.03, ALIGN_LEFT, ALIGN_TOP, model_mavlink_sysid_change, ModelData[ModelActive].sysid_list[ln]);
-					lny++;
+				if (strcmp(ModelData[ModelActive].telemetry_port, "SUBSYS") == 0) {
+					if (ModelData[ModelData[ModelActive].masterid].sysid_list[ln] != 0xff) {
+						sprintf(tmp_str, "%i", ModelData[ModelData[ModelActive].masterid].sysid_list[ln]);
+						sprintf(tmp_str2, "sysidlist-%i", ModelData[ModelData[ModelActive].masterid].sysid_list[ln]);
+						draw_text_button(esContext, tmp_str2, VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.5 + 0.07 + (lny * 0.05), -0.85 + (n + 1) * 0.12, 0.002, 0.03, ALIGN_LEFT, ALIGN_TOP, model_mavlink_sysid_change, ModelData[ModelData[ModelActive].masterid].sysid_list[ln]);
+						lny++;
+					}
+				} else {
+					if (ModelData[ModelActive].sysid_list[ln] != 0xff) {
+						sprintf(tmp_str, "%i", ModelData[ModelActive].sysid_list[ln]);
+						sprintf(tmp_str2, "sysidlist-%i", ModelData[ModelActive].sysid_list[ln]);
+						draw_text_button(esContext, tmp_str2, VIEW_MODE_MODEL, tmp_str, FONT_WHITE, -1.1 + 0.5 + 0.07 + (lny * 0.05), -0.85 + (n + 1) * 0.12, 0.002, 0.03, ALIGN_LEFT, ALIGN_TOP, model_mavlink_sysid_change, ModelData[ModelActive].sysid_list[ln]);
+						lny++;
+					}
 				}
 			}
 		} else {

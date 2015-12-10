@@ -135,6 +135,8 @@ void screen_device(ESContext *esContext) {
 	n++;
 	draw_text_button(esContext, "UDP", setup.view_mode, "UDP", FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, device_name_save, 0.0);
 	n++;
+	draw_text_button(esContext, "SUBSYS", setup.view_mode, "SUBSYS", FONT_WHITE, -1.0, -0.8 + n * 0.1, 0.002, 0.06, 0, 0, device_name_save, 0.0);
+	n++;
 #else
 	n = 0;
 	DWORD Index = 0;

@@ -119,6 +119,7 @@ typedef struct {
 	uint8_t mavlink_org_sysid;
 	uint8_t mavlink_forward;
 	uint8_t sysid_list[16];
+	uint8_t masterid;
 	char netip[16];
 	uint16_t netport;
 	int netsock;

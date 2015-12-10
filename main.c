@@ -625,6 +625,7 @@ void setup_save(void) {
 			fprintf(fr, "mavlink_forward	%i\n", ModelData[n].mavlink_forward);
 			fprintf(fr, "model_name		%s\n", ModelData[n].name);
 			fprintf(fr, "model_sysstr		%s\n", ModelData[n].sysstr);
+			fprintf(fr, "masterid		%i\n", ModelData[n].masterid);
 			fprintf(fr, "telemetry_type		%i\n", ModelData[n].teletype);
 			fprintf(fr, "pilottype		%i\n", ModelData[n].pilottype);
 			fprintf(fr, "dronetype		%i\n", ModelData[n].dronetype);
@@ -686,6 +687,7 @@ void setup_load(void) {
 	char line[1024];
 	char var[1024];
 	char val[1024];
+	int n = 0;
 	int mode = 0;
 	int model_n = 0;
 	int wp_num = 0;
@@ -782,6 +784,7 @@ void setup_load(void) {
 		ModelData[model_n].mavlink_forward = 1;
 		ModelData[model_n].sysid = 250;
 		ModelData[model_n].compid = 0;
+		ModelData[model_n].masterid = 0xff;
 		ModelData[model_n].p_lat = 50.2942581;
 		ModelData[model_n].p_long = 9.1228580;
 		ModelData[model_n].p_alt = 150.0;
@@ -795,6 +798,9 @@ void setup_load(void) {
 		ModelData[model_n].get_param = 0;
 		ModelData[model_n].heartbeat = 0;
 		ModelData[model_n].follow = 0;
+		for (n = 0; n < 16; n++) {
+			ModelData[model_n].sysid_list[n] = 0xff;
+		}
 	}
 	model_n = 0;
 	char filename[1024];
@@ -1044,6 +1050,8 @@ void setup_load(void) {
 					ModelData[model_n].mavlink_sysid = atoi(val);
 				} else if (strcmp(var, "mavlink_forward") == 0) {
 					ModelData[model_n].mavlink_forward = atoi(val);
+				} else if (strcmp(var, "masterid") == 0) {
+					ModelData[model_n].masterid = atoi(val);
 				} else if (strcmp(var, "Model_lat") == 0) {
 					ModelData[model_n].p_lat = atof(val);
 				} else if (strcmp(var, "Model_long") == 0) {
@@ -1175,7 +1183,7 @@ void setup_load(void) {
 	strncpy(WayPoints[ModelActive][0].name, "HOME", 127);
 	serial_info_update();
 	for (model_n = 0; model_n < MODELS_MAX; model_n++) {
-		if (strcmp(ModelData[model_n].telemetry_port, "UDP") == 0 || strcmp(ModelData[model_n].telemetry_port, "TCP") == 0) {
+		if (strcmp(ModelData[model_n].telemetry_port, "UDP") == 0 || strcmp(ModelData[model_n].telemetry_port, "TCP") == 0 || strcmp(ModelData[model_n].telemetry_port, "SUBSYS") == 0) {
 		} else if (ModelData[model_n].use_deviceid == 1) {
 			ModelData[model_n].telemetry_port[0] = 0;
 			serial_get_device_by_id(ModelData[model_n].deviceid, ModelData[model_n].telemetry_port);
