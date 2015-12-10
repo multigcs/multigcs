@@ -436,7 +436,12 @@ void mavlink_set_value(uint8_t modelid, char *name, float value, int8_t type, in
 void mavlink_handleMessage(uint8_t modelid, mavlink_message_t *msg) {
 	mavlink_message_t msg2;
 	char sysmsg_str[1024];
-	if (param_complete[modelid] == 0) {
+
+	if (ModelData[modelid].use_sysid != 0 && msg->sysid != ModelData[modelid].mavlink_sysid) {
+		return;
+	}
+	//printf("#### %i %i %i ####\n", modelid, msg->sysid, ModelData[modelid].mavlink_sysid);
+	if (param_complete[modelid] != -1 && param_complete[modelid]++ < 200) {
 		if (param_timeout[modelid] > 1) {
 			param_timeout[modelid]--;
 		} else if (param_timeout[modelid] == 1) {
@@ -454,8 +459,11 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t *msg) {
 					}
 				}
 				if (flag == 0) {
-					//					SDL_Log("mavlink(%i): param %i not found #\n", modelid, n2);
+					//SDL_Log("mavlink(%i): param %i not found #\n", modelid, n2);
 					mavlink_param_get_id(modelid, n2);
+					if (n2 > 0) {
+						mavlink_param_get_id(modelid, n2 - 1);
+					}
 					flag2 = 1;
 					n3++;
 					if (n3 > 10) {
@@ -465,7 +473,7 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t *msg) {
 			}
 			if (flag2 == 0) {
 				SDL_Log("mavlink(%i): parameter complete\n", modelid);
-				param_complete[modelid] = 1;
+				param_complete[modelid] = -1;
 			}
 		}
 	}
@@ -473,12 +481,16 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t *msg) {
 		case MAVLINK_MSG_ID_HEARTBEAT: {
 				mavlink_heartbeat_t packet;
 				mavlink_msg_heartbeat_decode(msg, &packet);
-				ModelData[modelid].dronetype = packet.type;
+				if (strcmp(ModelData[modelid].telemetry_port, "SUBSYS") == 0) {
+					ModelData[modelid].dronetype = packet.type;
+				} else if (packet.type != 26) {
+					ModelData[modelid].dronetype = packet.type;
+				}
 				ModelData[modelid].pilottype = packet.autopilot;
 				ModelData[modelid].mode = packet.custom_mode;
 				ModelData[modelid].armed = packet.system_status;
 				//SDL_Log("Heartbeat(%i): %i, %i, %i\n", modelid, ModelData[modelid].armed, packet.custom_mode, packet.system_status);
-				if (mavlink_maxparam[modelid] == 0) {
+				if (mavlink_maxparam[modelid] == 0 && ModelData[modelid].dronetype != 26) {
 					mavlink_start_feeds(modelid);
 				} else if (ModelData[modelid].heartbeat == 0) {
 					mavlink_start_feeds(modelid);
@@ -1322,34 +1334,38 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t *msg) {
 		case MAVLINK_MSG_ID_COMMAND_ACK: {
 				mavlink_command_ack_t packet;
 				mavlink_msg_command_ack_decode(msg, &packet);
-				SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK command %i ##\n", modelid, packet.command); //UINT16_T
-				if (ModelData[modelid].pilottype == MAV_AUTOPILOT_AUTOQUAD) {
-					if (packet.result == MAV_CMD_ACK_OK) {
-						SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: OK ##\n", modelid, packet.result); //UINT8_T
-						sys_message("COMMAND OK");
+				if (packet.command != 205) {
+					SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK command %i ##\n", modelid, packet.command); //UINT16_T
+					if (ModelData[modelid].pilottype == MAV_AUTOPILOT_AUTOQUAD) {
+						if (packet.result == MAV_CMD_ACK_OK) {
+							SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: OK ##\n", modelid, packet.result); //UINT8_T
+							sys_message("COMMAND OK");
+						} else {
+							SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: FAILED ##\n", modelid, packet.result); //UINT8_T
+							sys_message("COMMAND FALIED");
+						}
 					} else {
-						SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: FAILED ##\n", modelid, packet.result); //UINT8_T
-						sys_message("COMMAND FALIED");
-					}
-				} else {
-					if (packet.result == MAV_RESULT_ACCEPTED) {
-						SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: ACCEPTED ##\n", modelid, packet.result); //UINT8_T
-					} else if (packet.result == MAV_RESULT_TEMPORARILY_REJECTED) {
-						SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: TEMPORARILY_REJECTED ##\n", modelid, packet.result); //UINT8_T
-					} else if (packet.result == MAV_RESULT_DENIED) {
-						SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: DENIED ##\n", modelid, packet.result); //UINT8_T
-					} else if (packet.result == MAV_RESULT_UNSUPPORTED) {
-						SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: UNSUPPORTED ##\n", modelid, packet.result); //UINT8_T
-					} else if (packet.result == MAV_RESULT_FAILED) {
-						SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: FAILED ##\n", modelid, packet.result); //UINT8_T
-					} else {
-						SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: UNKNOWN ##\n", modelid, packet.result); //UINT8_T
+						if (packet.result == MAV_RESULT_ACCEPTED) {
+							SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: ACCEPTED ##\n", modelid, packet.result); //UINT8_T
+						} else if (packet.result == MAV_RESULT_TEMPORARILY_REJECTED) {
+							SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: TEMPORARILY_REJECTED ##\n", modelid, packet.result); //UINT8_T
+						} else if (packet.result == MAV_RESULT_DENIED) {
+							SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: DENIED ##\n", modelid, packet.result); //UINT8_T
+						} else if (packet.result == MAV_RESULT_UNSUPPORTED) {
+							SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: UNSUPPORTED ##\n", modelid, packet.result); //UINT8_T
+						} else if (packet.result == MAV_RESULT_FAILED) {
+							SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: FAILED ##\n", modelid, packet.result); //UINT8_T
+						} else {
+							SDL_Log("mavlink(%i): ## MAVLINK_MSG_ID_COMMAND_ACK result %i: UNKNOWN ##\n", modelid, packet.result); //UINT8_T
+						}
 					}
 				}
 				break;
 			}
 		default: {
-				SDL_Log("mavlink(%i): ## UNSUPPORTED MSG_ID == %i (mavlink/get_case_by_file.sh %i) ##\n", modelid, msg->msgid, msg->msgid);
+				if (msg->msgid != 152) {
+					SDL_Log("mavlink(%i): ## UNSUPPORTED MSG_ID == %i (mavlink/get_case_by_file.sh %i) ##\n", modelid, msg->msgid, msg->msgid);
+				}
 				break;
 			}
 	}
@@ -1647,9 +1663,22 @@ void mavlink_send_message(uint8_t modelid, mavlink_message_t *msg) {
 	uint8_t buf[MAVLINK_MAX_PACKET_LEN];
 	uint16_t len = mavlink_msg_to_send_buffer(buf, msg);
 	uint16_t i = 0;
-	for (i = 0; i < len; i++) {
-		uint8_t c = buf[i];
-		serial_write(ModelData[modelid].serial_fd, &c, 1);
+	uint8_t model_n = 0;
+	if (ModelData[modelid].serial_fd != -1) {
+		for (i = 0; i < len; i++) {
+			uint8_t c = buf[i];
+			serial_write(ModelData[modelid].serial_fd, &c, 1);
+		}
+	}
+	for (model_n = 0; model_n < MODELS_MAX; model_n++) {
+		if (strcmp(ModelData[model_n].telemetry_port, "SUBSYS") == 0 && ModelData[model_n].masterid == modelid) {
+			if (ModelData[model_n].serial_fd != -1) {
+				for (i = 0; i < len; i++) {
+					uint8_t c = buf[i];
+					serial_write(ModelData[model_n].serial_fd, &c, 1);
+				}
+			}
+		}
 	}
 #ifndef WINDOWS
 	if (mavlink_udp_active == 1) {

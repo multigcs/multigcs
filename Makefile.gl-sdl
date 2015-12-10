@@ -10,7 +10,7 @@ COMP = clang
 INCDIR = 
 LIBS = 
 CFLAGS += -DSDLGL -O3 -Wall -DBASE_DIR="\"$(BASE_DIR)\""
-#CFLAGS += -ggdb
+CFLAGS += -ggdb
 #CFLAGS += -pg
 
 

@@ -1830,7 +1830,7 @@ void screen_mavlink_menu(ESContext *esContext) {
 	char tmp_str2[1024];
 	int8_t flag = 0;
 	int8_t flag2 = 0;
-	static char main_groups[MAVLINK_PARAMETER_MAX][1024];
+	char main_groups[MAVLINK_PARAMETER_MAX][1024];
 	draw_text_button(esContext, "ml_screen", VIEW_MODE_FCMENU, "[MAIN]", FONT_WHITE, 0.0, 0.9, 0.002, 0.06, 1, 0, mavlink_view_screen_change, -1.0);
 	draw_text_button(esContext, "load", VIEW_MODE_FCMENU, "[LOAD FILE]", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 1, 0, mavlink_param_load, 1.0);
 	draw_text_button(esContext, "save", VIEW_MODE_FCMENU, "[SAVE FILE]", FONT_WHITE, -0.5, 0.9, 0.002, 0.06, 1, 0, mavlink_param_save, 1.0);
@@ -1950,6 +1950,9 @@ void screen_mavlink_menu(ESContext *esContext) {
 	}
 	draw_title(esContext, "MavLink-Parameter");
 	row2 = 0;
+	for (row = 0; row < MAVLINK_PARAMETER_MAX; row++) {
+		main_groups[row][0] = 0;
+	}
 	for (row = 0; row < MAVLINK_PARAMETER_MAX; row++) {
 		if (strlen(MavLinkVars[ModelActive][row].name) > 3) {
 			strncpy(tmp_str, MavLinkVars[ModelActive][row].name, 17);
