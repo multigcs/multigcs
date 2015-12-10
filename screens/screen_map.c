@@ -1898,13 +1898,13 @@ void display_map(ESContext *esContext, float lat, float lon, uint8_t zoom, uint8
 		glMatrixMode(GL_PROJECTION);
 		glPushMatrix();
 		glRotatef(-90.0, 1.0, 0.0, 0.0);
-		glTranslatef(0.0, 0.0015, -0.0068);
+//		glTranslatef(0.0, 0.0015, -0.0068);
 		if (setup.hud_view_stab == 1) {
 			glRotatef(0.0, 1.0, 1.0, 1.0);
 		} else if (setup.hud_view_stab == 2) {
 			glRotatef(-ModelData[ModelActive].mnt_pitch, 1.0, 0.0, 0.0);
 			glRotatef(-ModelData[ModelActive].mnt_roll, 0.0, 1.0, 0.0);
-			glRotatef(-ModelData[ModelActive].mnt_yaw, 0.0, 0.0, 1.0);
+			glRotatef(ModelData[ModelActive].mnt_yaw, 0.0, 0.0, 1.0);
 		} else {
 			glRotatef(-ModelData[ModelActive].pitch, 1.0, 0.0, 0.0);
 			glRotatef(-ModelData[ModelActive].roll, 0.0, 1.0, 0.0);
@@ -2621,28 +2621,74 @@ void display_map(ESContext *esContext, float lat, float lon, uint8_t zoom, uint8
 	float DEG2RAD = PI / 180.0;
 	float distance = 0.0;
 	float nalt = 0.0;
+
+
+	float pitch = ModelData[ModelActive].pitch;
+	float yaw = ModelData[ModelActive].yaw;
+
 	for (nf = 1; nf < 1024; nf += 20) {
-		next_point_ll(esContext, ModelData[ModelActive].p_long, ModelData[ModelActive].p_lat, ModelData[ModelActive].yaw * -1.0 - 90.0, nf, &nx2, &ny2);
+		next_point_ll(esContext, ModelData[ModelActive].p_long, ModelData[ModelActive].p_lat, yaw * -1.0 - 90.0, nf, &nx2, &ny2);
 		mark_alt = get_altitude(ny2, nx2);
 		distance = get_distance(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ny2, nx2, mark_alt);
-		nalt = (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) + distance * tan(ModelData[ModelActive].pitch * DEG2RAD * 0.7);
-		//		mark_point(esContext, ny2, nx2, nalt, "", "", 0, 0.1, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
+		nalt = (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) + distance * tan(pitch * DEG2RAD * 0.7);
+		//mark_point(esContext, ny2, nx2, nalt, "", "", 0, 0.1, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
 		if (mark_alt >= (int16_t)nalt) {
 			break;
 		}
 	}
 	if (nf < 1024 && nf > 20) {
 		for (nf -= 20; nf < 1024; nf += 1) {
-			next_point_ll(esContext, ModelData[ModelActive].p_long, ModelData[ModelActive].p_lat, ModelData[ModelActive].yaw * -1.0 - 90.0, nf, &nx2, &ny2);
+			next_point_ll(esContext, ModelData[ModelActive].p_long, ModelData[ModelActive].p_lat, yaw * -1.0 - 90.0, nf, &nx2, &ny2);
 			mark_alt = get_altitude(ny2, nx2);
 			distance = get_distance(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ny2, nx2, mark_alt);
-			nalt = (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) + distance * tan(ModelData[ModelActive].pitch * DEG2RAD * 0.7);
-			//			mark_point(esContext, ny2, nx2, nalt, "", "", 0, 0.1, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
+			nalt = (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) + distance * tan(pitch * DEG2RAD * 0.7);
+			//mark_point(esContext, ny2, nx2, nalt, "", "", 0, 0.1, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
 			if (mark_alt >= (int16_t)nalt) {
 				break;
 			}
 		}
 		mark_point(esContext, ny2, nx2, mark_alt, "", "", 5, 0.1, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
+		if (setup.hud_view_mark == 1) {
+			setup.hud_view_mark = 0;
+			for (n = 0; n < MAX_WAYPOINTS; n++) {
+				if (WayPoints[ModelActive][n].p_lat == 0.0) {
+					WayPoints[ModelActive][n].p_lat = ny2;
+					WayPoints[ModelActive][n].p_long = nx2;
+					WayPoints[ModelActive][n].p_alt = mark_alt;
+					WayPoints[ModelActive][n].param4 = ModelData[ModelActive].yaw;
+					sprintf(WayPoints[ModelActive][n].name, "MARK%i", n);
+					strcpy(WayPoints[ModelActive][n].command, "WAYPOINT");
+					break;
+				}
+			}
+		}
+	}
+	//if (setup.hud_view_stab == 2) {
+		pitch = ModelData[ModelActive].mnt_pitch;
+		yaw += ModelData[ModelActive].mnt_yaw;
+	//}
+	for (nf = 1; nf < 1024; nf += 20) {
+		next_point_ll(esContext, ModelData[ModelActive].p_long, ModelData[ModelActive].p_lat, yaw * -1.0 - 90.0, nf, &nx2, &ny2);
+		mark_alt = get_altitude(ny2, nx2);
+		distance = get_distance(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ny2, nx2, mark_alt);
+		nalt = (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) + distance * tan(pitch * DEG2RAD * 0.7);
+		//mark_point(esContext, ny2, nx2, nalt, "", "", 0, 0.1, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
+		if (mark_alt >= (int16_t)nalt) {
+			break;
+		}
+	}
+	if (nf < 1024 && nf > 20) {
+		for (nf -= 20; nf < 1024; nf += 1) {
+			next_point_ll(esContext, ModelData[ModelActive].p_long, ModelData[ModelActive].p_lat, yaw * -1.0 - 90.0, nf, &nx2, &ny2);
+			mark_alt = get_altitude(ny2, nx2);
+			distance = get_distance(ModelData[ModelActive].p_lat, ModelData[ModelActive].p_long, ny2, nx2, mark_alt);
+			nalt = (ModelData[ModelActive].p_alt - ModelData[ModelActive].alt_offset) + distance * tan(pitch * DEG2RAD * 0.7);
+			//mark_point(esContext, ny2, nx2, nalt, "", "", 0, 0.1, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
+			if (mark_alt >= (int16_t)nalt) {
+				break;
+			}
+		}
+		mark_point(esContext, ny2, nx2, nalt, "", "", 0, 0.1, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
 		if (setup.hud_view_mark == 1) {
 			setup.hud_view_mark = 0;
 			for (n = 0; n < MAX_WAYPOINTS; n++) {

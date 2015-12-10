@@ -1105,8 +1105,8 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t *msg) {
 				mavlink_ahrs2_t packet;
 				mavlink_msg_ahrs2_decode(msg, &packet);
 				ahrs2_found[modelid] = 1;
-				//			ModelData[modelid].roll = toDeg(packet.roll);
-				//			ModelData[modelid].pitch = toDeg(packet.pitch);
+				// ModelData[modelid].roll = toDeg(packet.roll);
+				// ModelData[modelid].pitch = toDeg(packet.pitch);
 				mavlink_update_yaw = 1;
 #ifndef TELEMTRY_BRIDGE
 				redraw_flag = 1;
@@ -1119,6 +1119,13 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t *msg) {
 				ModelData[modelid].mnt_pitch = (float)packet.pointing_a / 100.0;
 				ModelData[modelid].mnt_roll = (float)packet.pointing_b / 100.0;
 				ModelData[modelid].mnt_yaw = (float)packet.pointing_c / 100.0;
+
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_MOUNT_STATUS pointing_a %i ##\n", packet.pointing_a); //INT32_T
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_MOUNT_STATUS pointing_b %i ##\n", packet.pointing_b); //INT32_T
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_MOUNT_STATUS pointing_c %i ##\n", packet.pointing_c); //INT32_T
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_MOUNT_STATUS target_system %i ##\n", packet.target_system); //UINT8_T
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_MOUNT_STATUS target_component %i ##\n", packet.target_component); //UINT8_T
+
 			}
 		case MAVLINK_MSG_ID_WIND: {
 				mavlink_wind_t packet;
