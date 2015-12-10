@@ -15,7 +15,7 @@ Uint32 amask = 0xff000000;
 #endif
 
 SrtmCache AltCache[MAX_ALTCACHE];
-const GLfloat DEG2RAD = 3.14159 / 180.0;
+const GLfloat DEG2RAD = PI / 180.0;
 
 uint8_t screen_select(char *name, float x, float y, int8_t button, float data, uint8_t action);
 

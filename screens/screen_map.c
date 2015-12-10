@@ -2618,7 +2618,7 @@ void display_map(ESContext *esContext, float lat, float lon, uint8_t zoom, uint8
 	float ny2 = 0.0;
 	float nf = 0.0;
 	float mark_alt = 0.0;
-	float DEG2RAD = 3.14159 / 180.0;
+	float DEG2RAD = PI / 180.0;
 	float distance = 0.0;
 	float nalt = 0.0;
 	for (nf = 1; nf < 1024; nf += 20) {

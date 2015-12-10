@@ -384,7 +384,7 @@ void draw_circle_f3(ESContext *esContext, float x1, float y1, float z1, float ra
 	} else if (num_segments > 360.0) {
 		num_segments = 360.0;
 	}
-	float theta = 2 * 3.1415926 / num_segments;
+	float theta = 2 * PI / num_segments;
 	float tangetial_factor = tanf(theta);
 	float radial_factor = cosf(theta);
 	float x = radius;//we start at angle = 0
@@ -415,7 +415,7 @@ void draw_circleSS_f3(ESContext *esContext, float x1, float y1, float z1, float 
 	} else if (num_segments > 360.0) {
 		num_segments = 360.0;
 	}
-	float theta = 2 * 3.1415926 / num_segments;
+	float theta = 2 * PI / num_segments;
 	float tangetial_factor = tanf(theta);
 	float radial_factor = cosf(theta);
 	float x = radius;//we start at angle = 0
@@ -447,7 +447,7 @@ void draw_circleSS_strip_f3(ESContext *esContext, float x1, float y1, float z1, 
 	} else if (num_segments > 360.0) {
 		num_segments = 360.0;
 	}
-	float theta = 2 * 3.1415926 / num_segments;
+	float theta = 2 * PI / num_segments;
 	float tangetial_factor = tanf(theta);
 	float radial_factor = cosf(theta);
 	float x = radius;//we start at angle = 0
@@ -477,7 +477,7 @@ void draw_circleFilled_f3(ESContext *esContext, float x1, float y1, float z1, fl
 	} else if (num_segments > 360.0) {
 		num_segments = 360.0;
 	}
-	float theta = 2 * 3.1415926 / num_segments;
+	float theta = 2 * PI / num_segments;
 	float tangetial_factor = tanf(theta);
 	float radial_factor = cosf(theta);
 	float x = radius;//we start at angle = 0
@@ -535,7 +535,7 @@ void draw_circleFilled_f3_part(ESContext *esContext, float x1, float y1, float z
 	} else if (num_segments > 360.0) {
 		num_segments = 360.0;
 	}
-	float theta = 2 * 3.1415926 / num_segments;
+	float theta = 2 * PI / num_segments;
 	float tangetial_factor = tanf(theta);
 	float radial_factor = cosf(theta);
 	float x = radius;

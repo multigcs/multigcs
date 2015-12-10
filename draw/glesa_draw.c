@@ -52,8 +52,6 @@ void gl_exit(int rc) {
 
 /* gluPerspective from http://code.google.com/p/glues/source/checkout */
 
-#define __glPi 3.14159265358979323846
-
 static void __gluMakeIdentityf(GLfloat m[16]) {
 	m[0 + 4 * 0] = 1;
 	m[0 + 4 * 1] = 0;
@@ -76,7 +74,7 @@ static void __gluMakeIdentityf(GLfloat m[16]) {
 void gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar) {
 	GLfloat m[4][4];
 	GLfloat sine, cotangent, deltaZ;
-	GLfloat radians = (GLfloat)(fovy / 2.0f * __glPi / 180.0f);
+	GLfloat radians = (GLfloat)(fovy / 2.0f * PI / 180.0f);
 	deltaZ = zFar - zNear;
 	sine = (GLfloat)sin(radians);
 	if ((deltaZ == 0.0f) || (sine == 0.0f) || (aspect == 0.0f)) {
@@ -370,7 +368,7 @@ void draw_circle_f3(ESContext *esContext, float x1, float y1, float z1, float ra
 	} else if (num_segments > 360.0) {
 		num_segments = 360.0;
 	}
-	float theta = 2 * 3.1415926 / num_segments;
+	float theta = 2 * PI / num_segments;
 	float tangetial_factor = tanf(theta);
 	float radial_factor = cosf(theta);
 	float x = radius;//we start at angle = 0
@@ -427,7 +425,7 @@ void draw_circleFilled_f3(ESContext *esContext, float x1, float y1, float z1, fl
 	} else if (num_segments > 360.0) {
 		num_segments = 360.0;
 	}
-	float theta = 2 * 3.1415926 / num_segments;
+	float theta = 2 * PI / num_segments;
 	float tangetial_factor = tanf(theta);
 	float radial_factor = cosf(theta);
 	float x = radius;//we start at angle = 0
@@ -937,7 +935,7 @@ void draw_circleFilled_f3_part(ESContext *esContext, float x1, float y1, float z
 	} else if (num_segments > 360.0) {
 		num_segments = 360.0;
 	}
-	float theta = 2 * 3.1415926 / num_segments;
+	float theta = 2 * PI / num_segments;
 	float tangetial_factor = tanf(theta);
 	float radial_factor = cosf(theta);
 	float x = radius;

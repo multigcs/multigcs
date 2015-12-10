@@ -7,7 +7,6 @@ extern void save_screenshot2(void);
 extern volatile uint8_t zoom;
 
 #define BUFSIZE 298096
-#define PI 3.14159265
 
 #define MENU "<TABLE class=\"menubar\" id=\"menubar\" width=\"100%\" border=\"0\"><TR bgcolor=\"#AAAAAA\"><TH width=\"10%\"><A href=\"/hud.html\">[HUD]</A></TH><TH width=\"10%\"><A href=\"/map.html\">[MAP]</A></TH><TH width=\"10%\"><A href=\"/waypoints.html\">[WAYPOINTS]</A></TH><TH width=\"10%\"><A href=\"/mavlink.html\">[MAVLINK]</A></TH><TH width=\"10%\"><A href=\"/mwii.html\">[MWII]</A></TH><TH width=\"10%\"><A href=\"/logfiles/\">[LOGFILES]</A></TH><TH width=\"10%\"><A href=\"/gcssetup.html\">[SETUP]</A></TH><TH width=\"10%\"><A href=\"/misc.html\">[MISC]</A></TH></TR></TABLE>\n"
 

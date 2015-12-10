@@ -1245,8 +1245,8 @@ void screen_hud_internal(ESContext *esContext) {
 		if (b < 1.0) {
 			b = 1.0;
 		}
-		double c = sqrt((a * a) + (b * b) - (2.0 * a * b * cos(C * 3.14159 / 180.0)));
-		double A = acos((a * a - b * b - c * c) / (-2 * b * c)) * 180.0 / 3.14159; // Correction-Angle
+		double c = sqrt((a * a) + (b * b) - (2.0 * a * b * cos(C * PI / 180.0)));
+		double A = acos((a * a - b * b - c * c) / (-2 * b * c)) * 180.0 / PI; // Correction-Angle
 		if (C > 0.0) {
 			A *= -1.0;
 		}

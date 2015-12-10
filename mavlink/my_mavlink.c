@@ -481,69 +481,67 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t *msg) {
 		case MAVLINK_MSG_ID_HEARTBEAT: {
 				mavlink_heartbeat_t packet;
 				mavlink_msg_heartbeat_decode(msg, &packet);
-				if (strcmp(ModelData[modelid].telemetry_port, "SUBSYS") == 0) {
+				if (strcmp(ModelData[modelid].telemetry_port, "SUBSYS") == 0 || packet.type != 26) {
 					ModelData[modelid].dronetype = packet.type;
-				} else if (packet.type != 26) {
-					ModelData[modelid].dronetype = packet.type;
-				}
-				ModelData[modelid].pilottype = packet.autopilot;
-				ModelData[modelid].mode = packet.custom_mode;
-				ModelData[modelid].armed = packet.system_status;
-				//SDL_Log("Heartbeat(%i): %i, %i, %i\n", modelid, ModelData[modelid].armed, packet.custom_mode, packet.system_status);
-				if (mavlink_maxparam[modelid] == 0 && ModelData[modelid].dronetype != 26) {
-					mavlink_start_feeds(modelid);
-				} else if (ModelData[modelid].heartbeat == 0) {
-					mavlink_start_feeds(modelid);
-				}
-				ModelData[modelid].heartbeat = 100;
-				//sprintf(sysmsg_str, "Heartbeat: %i", (int)time(0));
-				if ((*msg).sysid != 0xff) {
-					ModelData[modelid].sysid = msg->sysid;
-					ModelData[modelid].compid = msg->compid;
-				}
-				mavlink_msg_heartbeat_pack(MAVLINK_GSC_SYSID, 0, &msg2, MAV_TYPE_GCS, MAV_AUTOPILOT_INVALID, 0, 0, 0);
-				mavlink_send_message(modelid, &msg2);
-				if (ModelData[modelid].pilottype == MAV_AUTOPILOT_GENERIC) {
-					strcpy(ModelData[modelid].sysstr, "Generic autopilot");
-				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_PIXHAWK) {
-					strcpy(ModelData[modelid].sysstr, "Pixhawk");
-				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_SLUGS) {
-					strcpy(ModelData[modelid].sysstr, "SLUGS autopilot");
-				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_ARDUPILOTMEGA) {
-					strcpy(ModelData[modelid].sysstr, "ArduPilotMega");
-				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_OPENPILOT) {
-					strcpy(ModelData[modelid].sysstr, "OpenPilot");
-				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_GENERIC_WAYPOINTS_ONLY) {
-					strcpy(ModelData[modelid].sysstr, "simple Generic autopilot");
-				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_GENERIC_WAYPOINTS_AND_SIMPLE_NAVIGATION_ONLY) {
-					strcpy(ModelData[modelid].sysstr, "simple2 Generic autopilot");
-				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_GENERIC_MISSION_FULL) {
-					strcpy(ModelData[modelid].sysstr, "Generic autopilot");
-				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_INVALID) {
-					strcpy(ModelData[modelid].sysstr, "GCS or other MAVLink component");
-				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_PPZ) {
-					strcpy(ModelData[modelid].sysstr, "PPZ UAV");
-				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_UDB) {
-					strcpy(ModelData[modelid].sysstr, "UAV Dev Board");
-				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_FP) {
-					strcpy(ModelData[modelid].sysstr, "FlexiPilot");
-				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_PX4) {
-					strcpy(ModelData[modelid].sysstr, "PX4 Autopilot");
-				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_SMACCMPILOT) {
-					strcpy(ModelData[modelid].sysstr, "SMACCMPilot");
-				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_AUTOQUAD) {
-					strcpy(ModelData[modelid].sysstr, "AutoQuad");
-				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_ARMAZILA) {
-					strcpy(ModelData[modelid].sysstr, "Armazila");
-				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_AEROB) {
-					strcpy(ModelData[modelid].sysstr, "Aerob");
-				} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_ASLUAV) {
-					strcpy(ModelData[modelid].sysstr, "ASLUAV autopilot");
-				} else if (ModelData[modelid].pilottype == 83) {
-					strcpy(ModelData[modelid].sysstr, "GIMBAL");
-				} else {
-					sprintf(ModelData[modelid].sysstr, "UNKNOWN_FC(%i)", ModelData[modelid].pilottype);
-					printf("%s ##\n", ModelData[modelid].sysstr);
+					ModelData[modelid].pilottype = packet.autopilot;
+					ModelData[modelid].mode = packet.custom_mode;
+					ModelData[modelid].armed = packet.system_status;
+					//SDL_Log("Heartbeat(%i): %i, %i, %i\n", modelid, ModelData[modelid].armed, packet.custom_mode, packet.system_status);
+					if (mavlink_maxparam[modelid] == 0 && ModelData[modelid].dronetype != 26) {
+						mavlink_start_feeds(modelid);
+					} else if (ModelData[modelid].heartbeat == 0) {
+						mavlink_start_feeds(modelid);
+					}
+					ModelData[modelid].heartbeat = 100;
+					//sprintf(sysmsg_str, "Heartbeat: %i", (int)time(0));
+					if ((*msg).sysid != 0xff) {
+						ModelData[modelid].sysid = msg->sysid;
+						ModelData[modelid].compid = msg->compid;
+					}
+					mavlink_msg_heartbeat_pack(MAVLINK_GSC_SYSID, 0, &msg2, MAV_TYPE_GCS, MAV_AUTOPILOT_INVALID, 0, 0, 0);
+					mavlink_send_message(modelid, &msg2);
+					if (ModelData[modelid].pilottype == MAV_AUTOPILOT_GENERIC) {
+						strcpy(ModelData[modelid].sysstr, "Generic autopilot");
+					} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_PIXHAWK) {
+						strcpy(ModelData[modelid].sysstr, "Pixhawk");
+					} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_SLUGS) {
+						strcpy(ModelData[modelid].sysstr, "SLUGS autopilot");
+					} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_ARDUPILOTMEGA) {
+						strcpy(ModelData[modelid].sysstr, "ArduPilotMega");
+					} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_OPENPILOT) {
+						strcpy(ModelData[modelid].sysstr, "OpenPilot");
+					} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_GENERIC_WAYPOINTS_ONLY) {
+						strcpy(ModelData[modelid].sysstr, "simple Generic autopilot");
+					} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_GENERIC_WAYPOINTS_AND_SIMPLE_NAVIGATION_ONLY) {
+						strcpy(ModelData[modelid].sysstr, "simple2 Generic autopilot");
+					} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_GENERIC_MISSION_FULL) {
+						strcpy(ModelData[modelid].sysstr, "Generic autopilot");
+					} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_INVALID) {
+						strcpy(ModelData[modelid].sysstr, "GCS or other MAVLink component");
+					} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_PPZ) {
+						strcpy(ModelData[modelid].sysstr, "PPZ UAV");
+					} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_UDB) {
+						strcpy(ModelData[modelid].sysstr, "UAV Dev Board");
+					} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_FP) {
+						strcpy(ModelData[modelid].sysstr, "FlexiPilot");
+					} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_PX4) {
+						strcpy(ModelData[modelid].sysstr, "PX4 Autopilot");
+					} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_SMACCMPILOT) {
+						strcpy(ModelData[modelid].sysstr, "SMACCMPilot");
+					} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_AUTOQUAD) {
+						strcpy(ModelData[modelid].sysstr, "AutoQuad");
+					} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_ARMAZILA) {
+						strcpy(ModelData[modelid].sysstr, "Armazila");
+					} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_AEROB) {
+						strcpy(ModelData[modelid].sysstr, "Aerob");
+					} else if (ModelData[modelid].pilottype == MAV_AUTOPILOT_ASLUAV) {
+						strcpy(ModelData[modelid].sysstr, "ASLUAV autopilot");
+					} else if (ModelData[modelid].pilottype == 83) {
+						strcpy(ModelData[modelid].sysstr, "GIMBAL");
+					} else {
+						sprintf(ModelData[modelid].sysstr, "UNKNOWN_FC(%i)", ModelData[modelid].pilottype);
+						printf("%s ##\n", ModelData[modelid].sysstr);
+					}
 				}
 				break;
 			}
