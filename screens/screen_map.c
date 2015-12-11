@@ -40,6 +40,7 @@ uint8_t map_show_notam = 0;
 uint8_t map_show_poi = 0;
 uint8_t map_rotate = 0;
 uint8_t map_side = 1;
+float map_side_angle = 45.0;
 uint8_t map_dir = 0;
 uint8_t map_show_fov = 0;
 uint8_t map_show_profile = 0;
@@ -296,7 +297,17 @@ uint8_t map_rotate_change(char *name, float x, float y, int8_t button, float dat
 }
 
 uint8_t map_side_change(char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	map_side = 1 - map_side;
+	if (button == 4) {
+		if (map_side != 0 && map_side_angle < 90.0) {
+			map_side_angle += 1.0;
+		}
+	} else if (button == 5) {
+		if (map_side != 0 && map_side_angle > 0.0) {
+			map_side_angle -= 1.0;
+		}
+	} else {
+		map_side = 1 - map_side;
+	}
 	return 0;
 }
 
@@ -1223,7 +1234,8 @@ void map_draw_buttons(ESContext *esContext) {
 		if (map_side == 1) {
 			draw_button(esContext, "map_side", setup.view_mode, "SIDE", FONT_GREEN, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER,
 						map_side_change, 0.0);
-			draw_text_button(esContext, "map_side_", setup.view_mode, "side view", FONT_WHITE, -1.28, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_side_change, 0.0);
+			sprintf(tmp_str, "side view (%0.0f)", map_side_angle);
+			draw_text_button(esContext, "map_side_", setup.view_mode, tmp_str, FONT_WHITE, -1.28, -0.8 + ny * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_side_change, 0.0);
 			ny++;
 			draw_box_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 0, 0, 0, 127);
 			draw_rect_f3(esContext, -1.45, -0.8 + ny * 0.12 - 0.055, 0.002, -1.15, -0.8 + ny * 0.12 + 0.055, 0.002, 255, 255, 255, 127);
@@ -1860,7 +1872,7 @@ void display_map(ESContext *esContext, float lat, float lon, uint8_t zoom, uint8
 	if (_map_view == 1) {
 		esTranslate(&userData->perspective, 0.0, 0.0, -3.0);
 		if (map_side != 0) {
-			esRotate(&userData->perspective, 45.0, 1.0, 0.0, 0.0);
+			esRotate(&userData->perspective, map_side_angle, 1.0, 0.0, 0.0);
 		}
 		if (roty != 0.0) {
 			esRotate(&userData->perspective, roty, 0.0, 0.0, -1.0);
@@ -1883,7 +1895,7 @@ void display_map(ESContext *esContext, float lat, float lon, uint8_t zoom, uint8
 		glPushMatrix();
 		glTranslatef(0.0, 0.0, -2.0);
 		if (map_side != 0) {
-			glRotatef(-45.0, 1.0, 0.0, 0.0);
+			glRotatef(-map_side_angle, 1.0, 0.0, 0.0);
 		}
 		if (roty != 0.0) {
 			glRotatef(roty, 0.0, 0.0, 1.0);
@@ -2725,7 +2737,7 @@ void display_map(ESContext *esContext, float lat, float lon, uint8_t zoom, uint8
 			esRotate(&userData->perspective, roty, 0.0, 0.0, 1.0);
 		}
 		if (map_side != 0) {
-			esRotate(&userData->perspective, -45.0, 1.0, 0.0, 0.0);
+			esRotate(&userData->perspective, -map_side_angle, 1.0, 0.0, 0.0);
 		}
 		esTranslate(&userData->perspective, 0.0, 0.0, 3.0);
 	} else if (_map_view == 3 || _map_view == 4 || _map_view == 5) {
