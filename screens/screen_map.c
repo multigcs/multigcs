@@ -2476,6 +2476,15 @@ void display_map(ESContext *esContext, float lat, float lon, uint8_t zoom, uint8
 				n++;
 			}
 		}
+
+		uint8_t num_uavs = 1;
+		uint8_t active_uav = 0;
+		static float route_len = 0;
+		float route_len_new = 0;
+		float part_len = route_len / num_uavs;
+		float last_np_lat = 0.0;
+		float last_np_long = 0.0;
+		float last_alt = 0.0;
 		float n_x = 0.0;
 		float n_y = 0.0;
 		float lastn_x = 0.0;
@@ -2525,14 +2534,24 @@ void display_map(ESContext *esContext, float lat, float lon, uint8_t zoom, uint8
 				if (lastn_x != 0.0 || lastn_y != 0.0) {
 					int nfzone = 0;
 					if ((nfzone = survey_check_intersect_nofly(esContext, lastn_x, lastn_y, px1, py1)) >= 0) {
-						n = survey_reroute(esContext, lastn_x, lastn_y, px1, py1, alt, nfzone, SurveySetup.write, n, fr);
+						n = survey_reroute(esContext, lastn_x, lastn_y, px1, py1, alt, nfzone, SurveySetup.write, n, fr, &last_np_lat, &last_np_long, &route_len_new);
 						glLineWidth(1);
 						draw_line_f3(esContext, lastn_x, lastn_y, (lastn_alt / alt_zoom), px1, py1, (alt / alt_zoom), 255, 0, 0, 255);
 					} else {
 						if (SurveySetup.write == 1) {
 							n = survey_add_wp(fr, n, np_lat, np_long, alt, 0);
 						}
-						draw_line_f3(esContext, lastn_x, lastn_y, (lastn_alt / alt_zoom), px1, py1, (alt / alt_zoom), 0, 255, 255, 255);
+						if (last_np_lat != 0.0 && last_np_long != 0.0) {
+							route_len_new += get_distance(last_np_lat, last_np_long, np_lat, np_long, alt);
+						}
+						if (route_len_new >= (part_len * active_uav + 1)) {
+							active_uav++;
+						}
+						last_np_lat = np_lat;
+						last_np_long = np_long;
+						last_alt = alt;
+						glLineWidth(3);
+						draw_line_f3(esContext, lastn_x, lastn_y, (lastn_alt / alt_zoom), px1, py1, (alt / alt_zoom), 0, 255 - active_uav * 90, active_uav * 90, 255);
 					}
 				}
 				glLineWidth(1);
@@ -2576,15 +2595,25 @@ void display_map(ESContext *esContext, float lat, float lon, uint8_t zoom, uint8
 				if (lastn_x != 0.0 || lastn_y != 0.0) {
 					int nfzone = 0;
 					if ((nfzone = survey_check_intersect_nofly(esContext, lastn_x, lastn_y, px1, py1)) >= 0) {
-						n = survey_reroute(esContext, lastn_x, lastn_y, px1, py1, alt, nfzone, SurveySetup.write, n, fr);
+						n = survey_reroute(esContext, lastn_x, lastn_y, px1, py1, alt, nfzone, SurveySetup.write, n, fr, &last_np_lat, &last_np_long, &route_len_new);
 						glLineWidth(1);
 						draw_line_f3(esContext, lastn_x, lastn_y, (lastn_alt / alt_zoom), px1, py1, (alt / alt_zoom), 255, 0, 0, 255);
 					} else {
 						if (SurveySetup.write == 1) {
 							n = survey_add_wp(fr, n, np_lat, np_long, alt, 0);
 						}
+						if (last_np_lat != 0.0 && last_np_long != 0.0) {
+							float llenn = get_distance(last_np_lat, last_np_long, np_lat, np_long, alt);
+							route_len_new += llenn;
+						}
+						if (route_len_new >= (part_len * active_uav + 1)) {
+							active_uav++;
+						}
+						last_np_lat = np_lat;
+						last_np_long = np_long;
+						last_alt = alt;
 						glLineWidth(3);
-						draw_line_f3(esContext, lastn_x, lastn_y, (lastn_alt / alt_zoom), px1, py1, (alt / alt_zoom), 0, 255, 255, 255);
+						draw_line_f3(esContext, lastn_x, lastn_y, (lastn_alt / alt_zoom), px1, py1, (alt / alt_zoom), 0, 255 - active_uav * 90, active_uav * 90, 255);
 					}
 				}
 				glLineWidth(1);
@@ -2617,7 +2646,12 @@ void display_map(ESContext *esContext, float lat, float lon, uint8_t zoom, uint8
 			map_show_survey_setup = 0;
 			map_show_poly = 0;
 			map_show_wp = 1;
+
 		}
+
+		route_len = route_len_new;
+		printf("## %f  %f ##\n", route_len_new, part_len);
+
 	}
 	// drawing Cam-FOV
 	if (map_show_fov == 1 || (map_show_survey_setup == 1 && SurveySetup.mode == 0)) {
