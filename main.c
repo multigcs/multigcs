@@ -1,6 +1,8 @@
 
 #include <all.h>
 
+GcsSetup setup;
+
 char screennames[VIEW_MODE_LAST + 2][16] = {
 	"HUD",
 	"TELEMETRY",
@@ -89,7 +91,93 @@ char dronetypes[MAV_TYPE_ENUM_END + 6][32] = {
 	"BL-Gimbal",
 };
 
-GcsSetup setup;
+SetupVariables setupVariables[] = {
+	{"gcs_gps_port", VAR_TYPE_CHAR, &setup.gcs_gps_port, 1024, "/dev/ttyUSB20"},
+	{"gcs_gps_baud", VAR_TYPE_UINT32_T, &setup.gcs_gps_baud, 0, "9600"},
+	{"rcflow_port", VAR_TYPE_CHAR, &setup.rcflow_port, 1024, "/dev/ttyUSB22"},
+	{"rcflow_baud", VAR_TYPE_UINT32_T, &setup.rcflow_baud, 0, "9600"},
+	{"jeti_port", VAR_TYPE_CHAR, &setup.jeti_port, 1024, "/dev/ttyUSB23"},
+	{"jeti_baud", VAR_TYPE_UINT32_T, &setup.jeti_baud, 0, "9600"},
+	{"frsky_port", VAR_TYPE_CHAR, &setup.frsky_port, 1024, "/dev/ttyUSB24"},
+	{"frsky_baud", VAR_TYPE_UINT32_T, &setup.frsky_baud, 0, "9600"},
+	{"tracker_port", VAR_TYPE_CHAR, &setup.tracker_port, 1024, "/dev/ttyUSB25"},
+	{"tracker_baud", VAR_TYPE_UINT32_T, &setup.tracker_baud, 0, "9600"},
+	{"waypoint_active", VAR_TYPE_INT8_T, &setup.waypoint_active, 0, "0"},
+	{"polypoint_active", VAR_TYPE_INT8_T, &setup.polypoint_active, 0, "0"},
+	{"polypointnf_active", VAR_TYPE_INT8_T, &setup.polypointnf_active, 0, "0"},
+	{"fullscreen", VAR_TYPE_UINT8_T, &setup.fullscreen, 0, "0"},
+	{"borderless", VAR_TYPE_UINT8_T, &setup.borderless, 0, "0"},
+	{"view_mode", VAR_TYPE_UINT8_T, &setup.view_mode, 0, "0"},
+	{"hud_view_screen", VAR_TYPE_UINT8_T, &setup.hud_view_screen, 0, "0"},
+	{"hud_view_stab", VAR_TYPE_UINT8_T, &setup.hud_view_stab, 0, "0"},
+	{"hud_view_map", VAR_TYPE_UINT8_T, &setup.hud_view_map, 0, "0"},
+	{"hud_view_video", VAR_TYPE_UINT8_T, &setup.hud_view_video, 0, "0"},
+	{"hud_view_tunnel", VAR_TYPE_UINT8_T, &setup.hud_view_tunnel, 0, "0"},
+	{"hud_view_mark", VAR_TYPE_UINT8_T, &setup.hud_view_mark, 0, "0"},
+	{"contrast", VAR_TYPE_UINT8_T, &setup.contrast, 0, "0"},
+	{"screen_w", VAR_TYPE_UINT16_T, &setup.screen_w, 0, "1280"},
+	{"screen_h", VAR_TYPE_UINT16_T, &setup.screen_h, 0, "1024"},
+	{"screen_border_x", VAR_TYPE_UINT16_T, &setup.screen_border_x, 0, "0"},
+	{"screen_border_y", VAR_TYPE_UINT16_T, &setup.screen_border_y, 0, "0"},
+	{"side_by_side", VAR_TYPE_UINT8_T, &setup.side_by_side, 0, "0"},
+	{"keep_ratio", VAR_TYPE_FLOAT, &setup.keep_ratio, 0, "1.4222"},
+
+	{"touchscreen_device", VAR_TYPE_CHAR, &setup.touchscreen_device, 200, ""},
+	{"calibration_mode", VAR_TYPE_UINT8_T, &setup.calibration_mode, 0, "1"},
+	{"calibration_min_x", VAR_TYPE_INT, &setup.calibration_min_x, 0, "1000"},
+	{"calibration_max_x", VAR_TYPE_INT, &setup.calibration_max_x, 0, "3000"},
+	{"calibration_min_y", VAR_TYPE_INT, &setup.calibration_min_y, 0, "1000"},
+	{"calibration_max_y", VAR_TYPE_INT, &setup.calibration_max_y, 0, "3000"},
+
+	{"speak", VAR_TYPE_INT8_T, &setup.speak, 0, "0"},
+	{"volt_min", VAR_TYPE_FLOAT, &setup.volt_min, 0, "11.0"},
+
+	{"opencv_file", VAR_TYPE_CHAR, &setup.opencv_file, 1025, ""},
+#ifdef ANDROID
+	{"opencv_device", VAR_TYPE_INT, &setup.opencv_device, 0, "0"},
+#else
+	{"opencv_device", VAR_TYPE_INT, &setup.opencv_device, 0, "-1"},
+#endif
+	{"opencv_features", VAR_TYPE_INT, &setup.opencv_features, 0, ""},
+
+	{"qrcheck", VAR_TYPE_UINT8_T, &setup.qrcheck, 0, "0"},
+
+	{"videocapture_device", VAR_TYPE_CHAR, &setup.videocapture_device, 1024, "/dev/video0"},
+	{"videocapture_width", VAR_TYPE_UINT16_T, &setup.videocapture_width, 0, "800"},
+	{"videocapture_height", VAR_TYPE_UINT16_T, &setup.videocapture_height, 0, "600"},
+
+	{"webport", VAR_TYPE_UINT16_T, &setup.webport, 0, "8080"},
+	{"gearth_interval", VAR_TYPE_FLOAT, &setup.gearth_interval, 0, "1.0"},
+
+	{"weather_enable", VAR_TYPE_UINT8_T, &setup.weather_enable, 0, "0"},
+
+	{"mavlink_tcp_server", VAR_TYPE_CHAR, &setup.mavlink_tcp_server, 128, "127.0.0.1"},
+	{"mavlink_tcp_port", VAR_TYPE_INT, &setup.mavlink_tcp_port, 0, "5760"},
+	{"mavlink_udp_port", VAR_TYPE_INT, &setup.mavlink_udp_port, 0, "14550"},
+
+	{"mavlink_forward_udp_local_port", VAR_TYPE_INT, &setup.mavlink_forward_udp_local_port, 0, "14561"},
+	{"mavlink_forward_udp_remote_port", VAR_TYPE_INT, &setup.mavlink_forward_udp_remote_port, 0, "14560"},
+	{"mavlink_forward_udp_remote_ip", VAR_TYPE_CHAR, &setup.mavlink_forward_udp_remote_ip, 128, "127.0.0.1"},
+
+#ifdef USE_WIFIBC
+	{"wifibc_device", VAR_TYPE_CHAR, &setup.wifibc_device, 128, "wlan1"},
+	{"wifibc_channel", VAR_TYPE_INT, &setup.wifibc_channel, 0, "13"},
+	{"wifibc_port", VAR_TYPE_INT, &setup.wifibc_port, 0, "0"},
+	{"wifibc_blocksize", VAR_TYPE_INT, &setup.wifibc_blocksize, 0, "8"},
+	{"wifibc_packetlen", VAR_TYPE_INT, &setup.wifibc_packetlen, 0, "1024"},
+	{"wifibc_record", VAR_TYPE_UINT8_T, &setup.wifibc_record, 0, "0"},
+	{"wifibc_record_size", VAR_TYPE_UINT32_T, &setup.wifibc_record_size, 0, "0"},
+#endif
+
+#if defined USE_APRS
+	{"aprs_server", VAR_TYPE_CHAR, &setup.aprs_server, 128, "146.229.162.182"},
+	{"aprs_port", VAR_TYPE_INT, &setup.aprs_port, 0, "10153"},
+	{"aprs_filter", VAR_TYPE_CHAR, &setup.aprs_filter, 128, ""},
+	{"aprs_enable", VAR_TYPE_INT, &setup.aprs_enable, 0, "0"},
+#endif
+	{"", VAR_TYPE_LAST, NULL, 0, ""}
+};
+
 uint8_t gui_ov_lock = 0;
 uint8_t key_pressed = 0;
 uint8_t ModelActive = 0;
@@ -464,31 +552,111 @@ void sys_message(char *msg) {
 	redraw_flag = 1;
 }
 
+
+void gcs_setup_defaults (void) {
+	int n = 0;
+	while (setupVariables[n].value != NULL) {
+		if (setupVariables[n].type == VAR_TYPE_CHAR) {
+			if (setupVariables[n].size == 0) {
+				*(char *)(setupVariables[n].value) = (char)atoi(setupVariables[n].default_value);
+			} else {
+				strcpy((char *)(setupVariables[n].value), (char *)setupVariables[n].default_value);
+			}
+		} else if (setupVariables[n].type == VAR_TYPE_FLOAT) {
+			*(float *)(setupVariables[n].value) = (float)atof(setupVariables[n].default_value);
+		} else if (setupVariables[n].type == VAR_TYPE_INT) {
+			*(int *)(setupVariables[n].value) = (int)atoi(setupVariables[n].default_value);
+		} else if (setupVariables[n].type == VAR_TYPE_INT8_T) {
+			*(int8_t *)(setupVariables[n].value) = (int8_t)atoi(setupVariables[n].default_value);
+		} else if (setupVariables[n].type == VAR_TYPE_UINT16_T) {
+			*(uint16_t *)(setupVariables[n].value) = (int16_t)atoi(setupVariables[n].default_value);
+		} else if (setupVariables[n].type == VAR_TYPE_UINT32_T) {
+			*(uint32_t *)(setupVariables[n].value) = (int32_t)atoi(setupVariables[n].default_value);
+		} else if (setupVariables[n].type == VAR_TYPE_UINT8_T) {
+			*(uint8_t *)(setupVariables[n].value) = (uint8_t)atoi(setupVariables[n].default_value);
+		}
+		n++;
+	}
+}
+
+void gcs_setup_save (FILE *fr) {
+	int n = 0;
+	if (fr != 0) {
+		while (setupVariables[n].value != NULL) {
+			if (setupVariables[n].type == VAR_TYPE_CHAR) {
+				if (setupVariables[n].size == 0) {
+					fprintf(fr, "%20s		%c\n", setupVariables[n].name, *(char *)(setupVariables[n].value));
+				} else {
+					fprintf(fr, "%20s		%s\n", setupVariables[n].name, (char *)(setupVariables[n].value));
+				}
+			} else if (setupVariables[n].type == VAR_TYPE_FLOAT) {
+				fprintf(fr, "%20s		%f\n", setupVariables[n].name, *(float *)(setupVariables[n].value));
+			} else if (setupVariables[n].type == VAR_TYPE_INT) {
+				fprintf(fr, "%20s		%i\n", setupVariables[n].name, *(int *)(setupVariables[n].value));
+			} else if (setupVariables[n].type == VAR_TYPE_INT8_T) {
+				fprintf(fr, "%20s		%i\n", setupVariables[n].name, *(int8_t *)(setupVariables[n].value));
+			} else if (setupVariables[n].type == VAR_TYPE_UINT16_T) {
+				fprintf(fr, "%20s		%i\n", setupVariables[n].name, *(uint16_t *)(setupVariables[n].value));
+			} else if (setupVariables[n].type == VAR_TYPE_UINT32_T) {
+				fprintf(fr, "%20s		%i\n", setupVariables[n].name, *(uint32_t *)(setupVariables[n].value));
+			} else if (setupVariables[n].type == VAR_TYPE_UINT8_T) {
+				fprintf(fr, "%20s		%i\n", setupVariables[n].name, *(uint8_t *)(setupVariables[n].value));
+			}
+			n++;
+		}
+	}
+}
+
+void gcs_setup_load (char *line) {
+	int n = 0;
+	char var[1024];
+	char val[1024];
+	var[0] = 0;
+	val[0] = 0;
+	sscanf(line, "%s %s", (char *)&var, (char *)&val);
+	while (setupVariables[n].value != NULL) {
+		if (strcmp(var, setupVariables[n].name) == 0) {
+			if (setupVariables[n].type == VAR_TYPE_CHAR) {
+				if (setupVariables[n].size == 0) {
+					*(char *)(setupVariables[n].value) = (char)val;
+				} else {
+					strcpy((char *)(setupVariables[n].value), (char *)val);
+				}
+			} else if (setupVariables[n].type == VAR_TYPE_FLOAT) {
+				*(float *)(setupVariables[n].value) = (float)atof(val);
+			} else if (setupVariables[n].type == VAR_TYPE_INT) {
+				*(int *)(setupVariables[n].value) = (int)atoi(val);
+			} else if (setupVariables[n].type == VAR_TYPE_INT8_T) {
+				*(int8_t *)(setupVariables[n].value) = (int8_t)atoi(val);
+			} else if (setupVariables[n].type == VAR_TYPE_UINT16_T) {
+				*(uint16_t *)(setupVariables[n].value) = (int16_t)atoi(val);
+			} else if (setupVariables[n].type == VAR_TYPE_UINT32_T) {
+				*(uint32_t *)(setupVariables[n].value) = (int32_t)atoi(val);
+			} else if (setupVariables[n].type == VAR_TYPE_UINT8_T) {
+				*(uint8_t *)(setupVariables[n].value) = (uint8_t)atoi(val);
+			}
+		}
+		n++;
+	}
+}
+
 void setup_save(void) {
 	if (clientmode == 1) {
 		return;
 	}
-	FILE *fr;
 	int n = 0;
 	int nn = 0;
 	if (setup.calibration_mode > 0) {
 		setup.calibration_mode = 1;
 	}
-	//	SDL_Log("** saving file\n");
+	FILE *fr;
 	char filename[1024];
 	sprintf(filename, "%s/setup.cfg", get_datadirectory());
 	fr = fopen(filename, "wb");
 	if (fr != 0) {
-		fprintf(fr, "view_mode		%i\n", setup.view_mode);
-		fprintf(fr, "contrast		%i\n", setup.contrast);
-		fprintf(fr, "screen_w		%i\n", setup.screen_w);
-		fprintf(fr, "screen_h		%i\n", setup.screen_h);
-		fprintf(fr, "screen_border_x		%i\n", setup.screen_border_x);
-		fprintf(fr, "screen_border_y		%i\n", setup.screen_border_y);
-		fprintf(fr, "keep_ratio		%f\n", setup.keep_ratio);
-		fprintf(fr, "fullscreen		%i\n", setup.fullscreen);
-		fprintf(fr, "borderless		%i\n", setup.borderless);
-		fprintf(fr, "side_by_side	%i\n", setup.side_by_side);
+
+		gcs_setup_save(fr);
+
 		fprintf(fr, "\n");
 		fprintf(fr, "lat			%0.8f\n", lat);
 		fprintf(fr, "lon			%0.8f\n", lon);
@@ -496,92 +664,10 @@ void setup_save(void) {
 		fprintf(fr, "map_type		%i\n", map_type);
 		fprintf(fr, "omap_type		%i\n", omap_type);
 		fprintf(fr, "center_map		%i\n", center_map);
-		fprintf(fr, "weather_enable	%i\n", setup.weather_enable);
-		fprintf(fr, "\n");
-		fprintf(fr, "gcs_gps_port		%s\n", setup.gcs_gps_port);
-		fprintf(fr, "gcs_gps_baud		%i\n", setup.gcs_gps_baud);
-		fprintf(fr, "\n");
-		fprintf(fr, "rcflow_port		%s\n", setup.rcflow_port);
-		fprintf(fr, "rcflow_baud		%i\n", setup.rcflow_baud);
-		fprintf(fr, "\n");
-		fprintf(fr, "jeti_port		%s\n", setup.jeti_port);
-		fprintf(fr, "jeti_baud		%i\n", setup.jeti_baud);
-		fprintf(fr, "\n");
-		fprintf(fr, "frsky_port		%s\n", setup.frsky_port);
-		fprintf(fr, "frsky_baud		%i\n", setup.frsky_baud);
-		fprintf(fr, "\n");
-		fprintf(fr, "tracker_port		%s\n", setup.tracker_port);
-		fprintf(fr, "tracker_baud		%i\n", setup.tracker_baud);
-		fprintf(fr, "\n");
-		fprintf(fr, "volt_min		%0.1f\n", setup.volt_min);
-		fprintf(fr, "speak			%i\n", setup.speak);
-		fprintf(fr, "\n");
-		fprintf(fr, "hud_view_screen		%i\n", setup.hud_view_screen);
-		fprintf(fr, "hud_view_video		%i\n", setup.hud_view_video);
-		fprintf(fr, "hud_view_map		%i\n", setup.hud_view_map);
-		fprintf(fr, "hud_view_tunnel		%i\n", setup.hud_view_tunnel);
-		fprintf(fr, "\n");
 		fprintf(fr, "map_view		%i\n", map_view);
 		fprintf(fr, "map_show_profile	%i\n", map_show_profile);
-		fprintf(fr, "\n");
-		fprintf(fr, "webport			%i\n", setup.webport);
-		fprintf(fr, "\n");
-		fprintf(fr, "gearth_interval		%f\n", setup.gearth_interval);
-		fprintf(fr, "\n");
-		fprintf(fr, "touchscreen_device	%s\n", setup.touchscreen_device);
-		fprintf(fr, "calibration_mode	%i\n", setup.calibration_mode);
-		fprintf(fr, "calibration_min_x	%i\n", setup.calibration_min_x);
-		fprintf(fr, "calibration_max_x	%i\n", setup.calibration_max_x);
-		fprintf(fr, "calibration_min_y	%i\n", setup.calibration_min_y);
-		fprintf(fr, "calibration_max_y	%i\n", setup.calibration_max_y);
-		fprintf(fr, "\n");
-		fprintf(fr, "videolist_lastfile	%s\n", videolist_lastfile);
-#ifdef USE_WIFIBC
-		fprintf(fr, "\n");
-		fprintf(fr, "wifibc_device			%s\n", setup.wifibc_device);
-		fprintf(fr, "wifibc_channel			%i\n", setup.wifibc_channel);
-		fprintf(fr, "wifibc_port			%i\n", setup.wifibc_port);
-		fprintf(fr, "wifibc_blocksize			%i\n", setup.wifibc_blocksize);
-		fprintf(fr, "wifibc_packetlen			%i\n", setup.wifibc_packetlen);
-		fprintf(fr, "wifibc_record				%i\n", setup.wifibc_record);
-#endif
-#ifdef USE_OPENCV
-		fprintf(fr, "\n");
-		fprintf(fr, "qrcheck			%i\n", setup.qrcheck);
-		fprintf(fr, "opencv_file		%s\n", setup.opencv_file);
-		fprintf(fr, "opencv_device		%i\n", setup.opencv_device);
-		fprintf(fr, "opencv_features		%i\n", setup.opencv_features);
-#endif
-#ifdef USE_V4L
-		fprintf(fr, "\n");
-		fprintf(fr, "videocapture_device	%s\n", setup.videocapture_device);
-		fprintf(fr, "videocapture_width	%i\n", setup.videocapture_width);
-		fprintf(fr, "videocapture_height	%i\n", setup.videocapture_height);
-#endif
-		fprintf(fr, "\n");
-		fprintf(fr, "mavlink_tcp_server		%s\n", setup.mavlink_tcp_server);
-		fprintf(fr, "mavlink_tcp_port		%i\n", setup.mavlink_tcp_port);
-		fprintf(fr, "mavlink_udp_port		%i\n", setup.mavlink_udp_port);
-		fprintf(fr, "mavlink_forward_udp_local_port		%i\n", setup.mavlink_forward_udp_local_port);
-		fprintf(fr, "mavlink_forward_udp_remote_port		%i\n", setup.mavlink_forward_udp_remote_port);
-		fprintf(fr, "mavlink_forward_udp_remote_ip		%s\n", setup.mavlink_forward_udp_remote_ip);
-#if defined USE_APRS
-		fprintf(fr, "\n");
-		fprintf(fr, "aprs_server		%s\n", setup.aprs_server);
-		fprintf(fr, "aprs_port		%i\n", setup.aprs_port);
-		fprintf(fr, "aprs_filter	%s\n", setup.aprs_filter);
-		fprintf(fr, "aprs_enable		%i\n", setup.aprs_enable);
-#endif
 		fprintf(fr, "waypoint_active		%i\n", waypoint_active);
-		fprintf(fr, "\n");
-		fprintf(fr, "Ground_lat		%f\n", GroundData.p_lat);
-		fprintf(fr, "Ground_long		%f\n", GroundData.p_long);
-		fprintf(fr, "Ground_alt		%f\n", GroundData.p_alt);
-		fprintf(fr, "Ground_dir		%f\n", GroundData.dir);
-		fprintf(fr, "Ground_fm_alt	%f\n", GroundData.fm_alt);
-		fprintf(fr, "Ground_fm_radius	%f\n", GroundData.fm_radius);
-		fprintf(fr, "Ground_sp_alt	%f\n", GroundData.sp_alt);
-		fprintf(fr, "Ground_sp_radius	%f\n", GroundData.sp_radius);
+		fprintf(fr, "videolist_lastfile	%s\n", videolist_lastfile);
 		fprintf(fr, "\n");
 		fprintf(fr, "SurveySetup.name	%s\n", SurveySetup.name);
 		fprintf(fr, "SurveySetup.interval	%i\n", SurveySetup.interval);
@@ -611,6 +697,15 @@ void setup_save(void) {
 			fprintf(fr, "SwarmSetup.offset_y%i	%i\n", n, SwarmSetup.offset_y[n]);
 			fprintf(fr, "SwarmSetup.offset_z%i	%i\n", n, SwarmSetup.offset_z[n]);
 		}
+		fprintf(fr, "\n");
+		fprintf(fr, "Ground_lat		%f\n", GroundData.p_lat);
+		fprintf(fr, "Ground_long		%f\n", GroundData.p_long);
+		fprintf(fr, "Ground_alt		%f\n", GroundData.p_alt);
+		fprintf(fr, "Ground_dir		%f\n", GroundData.dir);
+		fprintf(fr, "Ground_fm_alt	%f\n", GroundData.fm_alt);
+		fprintf(fr, "Ground_fm_radius	%f\n", GroundData.fm_radius);
+		fprintf(fr, "Ground_sp_alt	%f\n", GroundData.sp_alt);
+		fprintf(fr, "Ground_sp_radius	%f\n", GroundData.sp_radius);
 		fprintf(fr, "\n");
 		fprintf(fr, "ModelActive		%i\n", ModelActive);
 		for (n = 0; n < MODELS_MAX; n++) {
@@ -693,80 +788,16 @@ void setup_load(void) {
 	int wp_num = 0;
 	int pp_num = 1;
 	int ppnf_num = 1;
-	strncpy(setup.gcs_gps_port, "/dev/ttyUSB20", 1023);
-	setup.gcs_gps_baud = 9600;
-	strncpy(setup.rcflow_port, "/dev/ttyUSB21", 1023);
-	setup.rcflow_baud = 115200;
-	strncpy(setup.jeti_port, "/dev/ttyUSB10", 1023);
-	setup.jeti_baud = 9600;
-	strncpy(setup.frsky_port, "/dev/ttyUSB30", 1023);
-	setup.frsky_baud = 9600;
-	strncpy(setup.tracker_port, "/dev/ttyUSB40", 1023);
-	setup.tracker_baud = 38400;
-	setup.fullscreen = 0;
-	setup.borderless = 0;
-	setup.side_by_side = 0;
-	setup.screen_w = SCREEN_W;
-	setup.screen_h = SCREEN_H;
-	setup.screen_border_x = 0;
-	setup.screen_border_y = 0;
-	setup.keep_ratio = 1.4222;
-	setup.touchscreen_device[0] = 0;
+
 	keyboard_key[0] = 0;
-	setup.calibration_mode = 1;
-	setup.calibration_min_x = 1000;
-	setup.calibration_max_x = 3000;
-	setup.calibration_min_y = 1000;
-	setup.calibration_max_y = 3000;
-	setup.hud_view_screen = 0;
-	setup.hud_view_stab = 0;
-	setup.hud_view_map = 0;
-	setup.hud_view_video = 0;
-	setup.hud_view_tunnel = 0;
-	setup.hud_view_mark = 0;
-	setup.webport = 8080;
-	setup.gearth_interval = 1.0;
-	setup.volt_min = 11.0;
-	setup.speak = 0;
-	setup.view_mode = 0;
-	setup.contrast = 0;
-	strcpy(setup.videocapture_device, "/dev/video0");
-	setup.qrcheck = 0;
-	setup.weather_enable = 1;
-	strcpy(setup.mavlink_tcp_server, "127.0.0.1");
-	setup.mavlink_tcp_port = 5760;
-	setup.mavlink_udp_port = 14550;
-	setup.mavlink_forward_udp_local_port = 14561;
-	setup.mavlink_forward_udp_remote_port = 14560;
-	strcpy(setup.mavlink_forward_udp_remote_ip, "127.0.0.1");
 	map_type = 1;
-#ifdef USE_WIFIBC
-	strcpy(setup.wifibc_device, "wlan1");
-	setup.wifibc_channel = 13;
-	setup.wifibc_port = 0;
-	setup.wifibc_blocksize = 8;
-	setup.wifibc_packetlen = 1024;
-	setup.wifibc_record = 0;
-#endif
-#if defined USE_APRS
-	setup.aprs_server[0] = 0;
-	strcpy(setup.aprs_server, "146.229.162.182");
-	setup.aprs_port = 10153;
-	setup.aprs_filter[0] = 0;
-	setup.aprs_enable = 0;
+
 	SwarmSetup.active = 0;
 	SwarmSetup.yaw_mode = 0;
 	SwarmSetup.rotate = 0;
-#endif
-#ifdef ANDROID
-	setup.opencv_device = 0;
-#else
-	setup.opencv_device = -1;
-#endif
-	setup.opencv_file[0] = 0;
-	setup.opencv_features = 0;
-	setup.videocapture_width = 640;
-	setup.videocapture_height = 480;
+
+	gcs_setup_defaults();
+
 	for (model_n = 0; model_n < MODELS_MAX; model_n++) {
 		sprintf(ModelData[model_n].name, "Model%i", model_n + 1);
 		strcpy(ModelData[model_n].sysstr, "");
@@ -812,6 +843,9 @@ void setup_load(void) {
 			val[0] = 0;
 			sscanf(line, "%s %s", (char *)&var, (char *)&val);
 			if (mode == 0) {
+
+				gcs_setup_load(line);
+
 				if (strcmp(var, "view_mode") == 0) {
 					setup.view_mode = atoi(val);
 					view_mode_next = setup.view_mode;

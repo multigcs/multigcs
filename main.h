@@ -71,7 +71,16 @@ enum {
 	VIEW_MODE_WPEDIT,
 };
 
-char screennames[VIEW_MODE_LAST + 2][16];
+enum {
+	VAR_TYPE_CHAR,
+	VAR_TYPE_FLOAT,
+	VAR_TYPE_INT,
+	VAR_TYPE_INT8_T,
+	VAR_TYPE_UINT16_T,
+	VAR_TYPE_UINT32_T,
+	VAR_TYPE_UINT8_T,
+	VAR_TYPE_LAST
+};
 
 #define MAX_WAYPOINTS 250
 typedef struct {
@@ -128,6 +137,15 @@ struct list_element {
 	char *line;
 	struct list_element *next;
 };
+
+typedef struct {
+	char name[128];
+	int type;
+	void *value;
+	int size;
+	char default_value[128];
+} SetupVariables;
+
 
 typedef struct {
 	char gcs_gps_port[1024];
@@ -211,6 +229,7 @@ typedef struct {
 #endif
 } GcsSetup;
 
+
 extern Button Buttons[MAX_BUTTONS + 1];
 extern WayPoint WayPoints[MODELS_MAX][MAX_WAYPOINTS + 1];
 extern PolyPoint PolyPoints[MAX_POLYPOINTS + 1];
@@ -241,6 +260,7 @@ extern char display_html[HTML_MAX];
 extern char display_html2[HTML_MAX];
 #endif
 
+extern char screennames[VIEW_MODE_LAST + 2][16];
 extern char teletypes[16][16];
 extern char dronetypes[MAV_TYPE_ENUM_END + 6][32];
 extern char pilottypes[MAV_AUTOPILOT_ENUM_END][64];
