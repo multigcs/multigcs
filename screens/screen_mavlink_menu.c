@@ -1172,10 +1172,10 @@ void screen_mavlink_rccal(ESContext *esContext) {
 		row++;
 	}
 	if (mavlink_view_rccal == 1) {
-		draw_text_button(esContext, "rccalchange", VIEW_MODE_FCMENU, "[CAL]", FONT_GREEN, -1.0, 0.9, 0.002, 0.06, 1, 0, mavlink_view_rccal_change, 0.0);
-		draw_text_button(esContext, "rccalsave", VIEW_MODE_FCMENU, "[SAVE]", FONT_GREEN, 0.0, 0.9, 0.002, 0.06, 1, 0, mavlink_view_rccal_save, 0.0);
+		draw_text_button(esContext, "rccalchange", VIEW_MODE_FCMENU, "[CAL]", FONT_GREEN, -0.4, 0.8, 0.002, 0.06, 1, 0, mavlink_view_rccal_change, 0.0);
+		draw_text_button(esContext, "rccalsave", VIEW_MODE_FCMENU, "[SAVE]", FONT_GREEN, 0.0, 0.8, 0.002, 0.06, 1, 0, mavlink_view_rccal_save, 0.0);
 	} else {
-		draw_text_button(esContext, "rccalchange", VIEW_MODE_FCMENU, "[CAL]", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 1, 0, mavlink_view_rccal_change, 0.0);
+		draw_text_button(esContext, "rccalchange", VIEW_MODE_FCMENU, "[CAL]", FONT_WHITE, -0.4, 0.8, 0.002, 0.06, 1, 0, mavlink_view_rccal_change, 0.0);
 	}
 	if (mavlink_channel_select_num != 0) {
 		if (mavlink_channel_select == 1) {
@@ -1832,9 +1832,9 @@ void screen_mavlink_menu(ESContext *esContext) {
 	int8_t flag2 = 0;
 	char main_groups[MAVLINK_PARAMETER_MAX][1024];
 	draw_text_button(esContext, "ml_screen", VIEW_MODE_FCMENU, "[MAIN]", FONT_WHITE, 0.0, 0.9, 0.002, 0.06, 1, 0, mavlink_view_screen_change, -1.0);
-	draw_text_button(esContext, "load", VIEW_MODE_FCMENU, "[LOAD FILE]", FONT_WHITE, -1.0, 0.9, 0.002, 0.06, 1, 0, mavlink_param_load, 1.0);
-	draw_text_button(esContext, "save", VIEW_MODE_FCMENU, "[SAVE FILE]", FONT_WHITE, -0.5, 0.9, 0.002, 0.06, 1, 0, mavlink_param_save, 1.0);
-	draw_text_button(esContext, "reload", VIEW_MODE_FCMENU, "[RELOAD]", FONT_WHITE, -1.0, 0.8, 0.002, 0.06, 1, 0, mavlink_param_reload, 1.0);
+	draw_text_button(esContext, "load", VIEW_MODE_FCMENU, "[LOAD FILE]", FONT_WHITE, -0.85, 0.9, 0.002, 0.06, 1, 0, mavlink_param_load, 1.0);
+	draw_text_button(esContext, "save", VIEW_MODE_FCMENU, "[SAVE FILE]", FONT_WHITE, -0.4, 0.9, 0.002, 0.06, 1, 0, mavlink_param_save, 1.0);
+	draw_text_button(esContext, "reload", VIEW_MODE_FCMENU, "[RELOAD]", FONT_WHITE, -1.25, 0.9, 0.002, 0.06, 1, 0, mavlink_param_reload, 1.0);
 	//	draw_text_button(esContext, "upload", VIEW_MODE_FCMENU, "[UPLOAD ALL]", FONT_WHITE, 1.0, 0.9, 0.002, 0.06, 1, 0, mavlink_param_upload_all, 1.0);
 	if (ModelData[ModelActive].teletype != TELETYPE_ARDUPILOT && ModelData[ModelActive].teletype != TELETYPE_MEGAPIRATE_NG) {
 		draw_text_button(esContext, "flash_r", VIEW_MODE_FCMENU, "[LOAD FLASH]", FONT_WHITE, 0.5, 0.9, 0.002, 0.06, 1, 0, mavlink_flashload, 0.0);
