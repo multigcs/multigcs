@@ -1025,15 +1025,13 @@ void mark_poi(ESContext *esContext, float mark_lat, float mark_long, char *text,
 }
 
 float get_distance(float from_lat, float from_lon, float to_lat, float to_lon, float alt) {
-	// 6378.137 == Radius of earth in Km (add UAV-Altitude to calc ???)
-	float distance = acos(
-						 cos(toRad(from_lat))
-						 * cos(toRad(to_lat))
-						 * cos(toRad(from_lon) - toRad(to_lon))
-						 + sin(toRad(from_lat))
-						 * sin(toRad(to_lat))
-					 ) * 6378.137 * 1000.0 + alt;
-	return distance;
+	float o1 = toRad(from_lat);
+	float o2 = toRad(to_lat);
+	float Ao = toRad((to_lat - from_lat));
+	float AA = toRad((to_lon - from_lon));
+	float a = sin(Ao / 2.0) * sin(Ao / 2.0) + cos(o1) * cos(o2) * sin(AA / 2.0) * sin(AA / 2.0);
+	float c = 2.0 * atan2(sqrt(a), sqrt(1.0 - a));
+	return 6372798.2 * c;
 }
 
 float get_m_per_pixel(float lat, int zoomlevel) {
