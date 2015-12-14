@@ -411,7 +411,7 @@ void setup_waypoints(void) {
 		}
 		WayPoints[modeln][0].p_lat = 50.2942581;
 		WayPoints[modeln][0].p_long = 9.1228580;
-		WayPoints[modeln][0].p_alt = 150.0;
+		WayPoints[modeln][0].p_alt = 15.0;
 		WayPoints[modeln][0].param1 = 0.0;
 		WayPoints[modeln][0].param2 = 2.0;
 		WayPoints[modeln][0].param3 = 0.0;
@@ -427,10 +427,10 @@ void setup_waypoints(void) {
 	GroundData.dir = 0.0;
 	GroundData.active = 0;
 	GroundData.followme = 0;
-	GroundData.fm_alt = 15.0;
-	GroundData.fm_radius = 6.0;
-	GroundData.sp_alt = 15.0;
-	GroundData.sp_radius = 2.0;
+	GroundData.fm_alt = 4.0;
+	GroundData.fm_radius = 3.0;
+	GroundData.sp_alt = 4.0;
+	GroundData.sp_radius = 1.0;
 	GroundData.wifibc_rssi[0] = 0;
 	GroundData.wifibc_rssi[1] = 0;
 	GroundData.wifibc_rssi[2] = 0;
