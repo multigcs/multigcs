@@ -167,7 +167,7 @@ void olist_mv2close(Point2D p, Point2D from, int f) {
 	}
 }
 
-uint16_t survey_reroute(ESContext *esContext, float x1, float y1, float x2, float y2, float alt, int nfzone, uint8_t do_write, uint16_t nwp, FILE *fr) {
+uint16_t survey_reroute(ESContext *esContext, float x1, float y1, float x2, float y2, float alt, int nfzone, uint8_t do_write, uint16_t nwp, FILE *fr, float *last_lat, float *last_long, float *len) {
 	Point2D active;
 	Point2D mypoly[PMAX];
 	Point2D mypoly_sort[PMAX];
@@ -277,15 +277,18 @@ uint16_t survey_reroute(ESContext *esContext, float x1, float y1, float x2, floa
 			break;
 		}
 	}
-	if (do_write == 1) {
-		for (n = pp_sort - 1; n >= 0; n--) {
-			if (mypoly_sort[n].x != 0.0 && mypoly_sort[n].y != 0.0) {
-				int16_t bx = (mypoly_sort[n].x / aspect + 1.0) / 2.0 * (float)esContext->width;
-				int16_t by = (mypoly_sort[n].y + 1.0) / 2.0 * (float)esContext->height;
-				float np2_long = x2long(bx, lon, mapdata->zoom);
-				float np2_lat = y2lat(by, lat, mapdata->zoom);
+	for (n = pp_sort - 1; n >= 0; n--) {
+		if (mypoly_sort[n].x != 0.0 && mypoly_sort[n].y != 0.0) {
+			int16_t bx = (mypoly_sort[n].x / aspect + 1.0) / 2.0 * (float)esContext->width;
+			int16_t by = (mypoly_sort[n].y + 1.0) / 2.0 * (float)esContext->height;
+			float np2_long = x2long(bx, lon, mapdata->zoom);
+			float np2_lat = y2lat(by, lat, mapdata->zoom);
+			if (do_write == 1) {
 				nwp = survey_add_wp(fr, nwp, np2_lat, np2_long, alt, 1);
 			}
+			*len += get_distance(*last_lat, *last_long, np2_lat, np2_long, alt);
+			*last_lat = np2_lat;
+			*last_long = np2_long;
 		}
 	}
 	return nwp;
