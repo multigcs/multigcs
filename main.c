@@ -734,7 +734,7 @@ void setup_save(void) {
 			fprintf(fr, "\n");
 			fprintf(fr, "[waypoints]\n");
 			for (nn = 0; nn < MAX_WAYPOINTS; nn++) {
-				if (WayPoints[ModelActive][nn].p_lat != 0.0) {
+				if (WayPoints[n][nn].p_lat != 0.0) {
 					fprintf(fr, "name	%s\n", WayPoints[n][nn].name);
 					fprintf(fr, "command	%s\n", WayPoints[n][nn].command);
 					fprintf(fr, "lat	%0.8f\n", WayPoints[n][nn].p_lat);
