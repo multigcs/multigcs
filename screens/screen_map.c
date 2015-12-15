@@ -1017,6 +1017,8 @@ void list_waypoints_cup(ESContext *esContext, char *search) {
 }
 
 void map_exit(void) {
+	setup.map_offset_x = mapdata->offset_x1;
+	setup.map_offset_y = mapdata->offset_y1;
 	GeoMap_exit(mapdata);
 }
 
@@ -1777,6 +1779,8 @@ void init_map(ESContext *esContext, float lat, float lon, uint8_t zoom, uint8_t 
 			omapnames[n][MAP_COPYRIGHT][0] = 0;
 		}
 		mapdata = GeoMap_init();
+		mapdata->offset_x1 = setup.map_offset_x;
+		mapdata->offset_y1 = setup.map_offset_y;
 	}
 	mapdata->lat = lat;
 	mapdata->lon = lon;

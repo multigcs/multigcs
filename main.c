@@ -159,6 +159,9 @@ SetupVariables setupVariables[] = {
 	{"mavlink_forward_udp_remote_port", VAR_TYPE_INT, &setup.mavlink_forward_udp_remote_port, 0, "14560"},
 	{"mavlink_forward_udp_remote_ip", VAR_TYPE_CHAR, &setup.mavlink_forward_udp_remote_ip, 128, "127.0.0.1"},
 
+	{"map_offset_x", VAR_TYPE_FLOAT, &setup.map_offset_x, 0, "0.0"},
+	{"map_offset_y", VAR_TYPE_FLOAT, &setup.map_offset_y, 0, "0.0"},
+
 #ifdef USE_WIFIBC
 	{"wifibc_device", VAR_TYPE_CHAR, &setup.wifibc_device, 128, "wlan1"},
 	{"wifibc_channel", VAR_TYPE_INT, &setup.wifibc_channel, 0, "13"},
@@ -843,35 +846,9 @@ void setup_load(void) {
 			val[0] = 0;
 			sscanf(line, "%s %s", (char *)&var, (char *)&val);
 			if (mode == 0) {
-
 				gcs_setup_load(line);
-
-				if (strcmp(var, "view_mode") == 0) {
-					setup.view_mode = atoi(val);
-					view_mode_next = setup.view_mode;
-				} else if (strcmp(var, "volt_min") == 0) {
-					setup.volt_min = atof(val);
-				} else if (strcmp(var, "contrast") == 0) {
-					setup.contrast = atoi(val);
-				} else if (strcmp(var, "screen_w") == 0) {
-					setup.screen_w = atoi(val);
-				} else if (strcmp(var, "screen_h") == 0) {
-					setup.screen_h = atoi(val);
-				} else if (strcmp(var, "screen_border_x") == 0) {
-					setup.screen_border_x = atoi(val);
-				} else if (strcmp(var, "screen_border_y") == 0) {
-					setup.screen_border_y = atoi(val);
-				} else if (strcmp(var, "keep_ratio") == 0) {
-					setup.keep_ratio = atof(val);
-				} else if (strcmp(var, "speak") == 0) {
-					setup.speak = atoi(val);
-				} else if (strcmp(var, "fullscreen") == 0) {
-					setup.fullscreen = atoi(val);
-				} else if (strcmp(var, "borderless") == 0) {
-					setup.borderless = atoi(val);
-				} else if (strcmp(var, "side_by_side") == 0) {
-					setup.side_by_side = atoi(val);
-				} else if (strcmp(var, "lat") == 0) {
+				view_mode_next = setup.view_mode;
+				if (strcmp(var, "lat") == 0) {
 					lat = atof(val);
 				} else if (strcmp(var, "lon") == 0) {
 					lon = atof(val);
@@ -879,91 +856,19 @@ void setup_load(void) {
 					zoom = atoi(val);
 				} else if (strcmp(var, "waypoint_active") == 0) {
 					waypoint_active = atoi(val);
-				} else if (strcmp(var, "gcs_gps_port") == 0) {
-					strncpy(setup.gcs_gps_port, val, 1023);
-				} else if (strcmp(var, "gcs_gps_baud") == 0) {
-					setup.gcs_gps_baud = atoi(val);
-				} else if (strcmp(var, "rcflow_port") == 0) {
-					strncpy(setup.rcflow_port, val, 1023);
-				} else if (strcmp(var, "rcflow_baud") == 0) {
-					setup.rcflow_baud = atoi(val);
-				} else if (strcmp(var, "jeti_port") == 0) {
-					strncpy(setup.jeti_port, val, 1023);
-				} else if (strcmp(var, "jeti_baud") == 0) {
-					setup.jeti_baud = atoi(val);
-				} else if (strcmp(var, "frsky_port") == 0) {
-					strncpy(setup.frsky_port, val, 1023);
-				} else if (strcmp(var, "frsky_baud") == 0) {
-					setup.frsky_baud = atoi(val);
-				} else if (strcmp(var, "tracker_port") == 0) {
-					strncpy(setup.tracker_port, val, 1023);
-				} else if (strcmp(var, "tracker_baud") == 0) {
-					setup.tracker_baud = atoi(val);
+				} else if (strcmp(var, "map_type") == 0) {
 				} else if (strcmp(var, "map_type") == 0) {
 					map_type = atoi(val);
 				} else if (strcmp(var, "omap_type") == 0) {
 					omap_type = atoi(val);
 				} else if (strcmp(var, "center_map") == 0) {
 					center_map = atoi(val);
-				} else if (strcmp(var, "touchscreen_device") == 0) {
-					strncpy(setup.touchscreen_device, val, 200);
-				} else if (strcmp(var, "calibration_mode") == 0) {
-					setup.calibration_mode = atoi(val);
-				} else if (strcmp(var, "calibration_min_x") == 0) {
-					setup.calibration_min_x = atoi(val);
-				} else if (strcmp(var, "calibration_max_x") == 0) {
-					setup.calibration_max_x = atoi(val);
-				} else if (strcmp(var, "calibration_min_y") == 0) {
-					setup.calibration_min_y = atoi(val);
-				} else if (strcmp(var, "calibration_max_y") == 0) {
-					setup.calibration_max_y = atoi(val);
 				} else if (strcmp(var, "videolist_lastfile") == 0) {
 					strncpy(videolist_lastfile, val, 1023);
-				} else if (strcmp(var, "hud_view_screen") == 0) {
-					setup.hud_view_screen = atoi(val);
-				} else if (strcmp(var, "hud_view_map") == 0) {
-					setup.hud_view_map = atoi(val);
-					setup.hud_view_map = atoi(val);
-				} else if (strcmp(var, "hud_view_video") == 0) {
-					setup.hud_view_video = atoi(val);
-				} else if (strcmp(var, "hud_view_tunnel") == 0) {
-					setup.hud_view_tunnel = atoi(val);
 				} else if (strcmp(var, "map_view") == 0) {
 					map_view = atoi(val);
 				} else if (strcmp(var, "map_show_profile") == 0) {
 					map_show_profile = atoi(val);
-				} else if (strcmp(var, "webport") == 0) {
-					setup.webport = atoi(val);
-				} else if (strcmp(var, "gearth_interval") == 0) {
-					setup.gearth_interval = atoi(val);
-#ifdef USE_WIFIBC
-				} else if (strcmp(var, "wifibc_device") == 0) {
-					strncpy(setup.wifibc_device, val, 127);
-				} else if (strcmp(var, "wifibc_channel") == 0) {
-					setup.wifibc_channel = atoi(val);
-				} else if (strcmp(var, "wifibc_port") == 0) {
-					setup.wifibc_port = atoi(val);
-				} else if (strcmp(var, "wifibc_blocksize") == 0) {
-					setup.wifibc_blocksize = atoi(val);
-				} else if (strcmp(var, "wifibc_packetlen") == 0) {
-					setup.wifibc_packetlen = atoi(val);
-				} else if (strcmp(var, "wifibc_record") == 0) {
-					setup.wifibc_record = atoi(val);
-#endif
-				} else if (strcmp(var, "videocapture_device") == 0) {
-					strncpy(setup.videocapture_device, val, 1023);
-				} else if (strcmp(var, "qrcheck") == 0) {
-					setup.qrcheck = atoi(val);
-				} else if (strcmp(var, "opencv_file") == 0) {
-					strncpy(setup.opencv_file, val, 1024);
-				} else if (strcmp(var, "opencv_device") == 0) {
-					setup.opencv_device = atoi(val);
-				} else if (strcmp(var, "opencv_features") == 0) {
-					setup.opencv_features = atoi(val);
-				} else if (strcmp(var, "videocapture_width") == 0) {
-					setup.videocapture_width = atoi(val);
-				} else if (strcmp(var, "videocapture_height") == 0) {
-					setup.videocapture_height = atoi(val);
 				} else if (strcmp(var, "Ground_lat") == 0) {
 					GroundData.p_lat = atof(val);
 				} else if (strcmp(var, "Ground_long") == 0) {
@@ -980,30 +885,6 @@ void setup_load(void) {
 					GroundData.sp_alt = atof(val);
 				} else if (strcmp(var, "Ground_sp_radius") == 0) {
 					GroundData.sp_radius = atof(val);
-				} else if (strcmp(var, "weather_enable") == 0) {
-					setup.weather_enable = atoi(val);
-				} else if (strcmp(var, "mavlink_tcp_server") == 0) {
-					strncpy(setup.mavlink_tcp_server, val, 128);
-				} else if (strcmp(var, "mavlink_tcp_port") == 0) {
-					setup.mavlink_tcp_port = atoi(val);
-				} else if (strcmp(var, "mavlink_udp_port") == 0) {
-					setup.mavlink_udp_port = atoi(val);
-				} else if (strcmp(var, "mavlink_forward_udp_local_port") == 0) {
-					setup.mavlink_forward_udp_local_port = atoi(val);
-				} else if (strcmp(var, "mavlink_forward_udp_remote_port") == 0) {
-					setup.mavlink_forward_udp_remote_port = atoi(val);
-				} else if (strcmp(var, "mavlink_forward_udp_remote_ip") == 0) {
-					strcpy(setup.mavlink_forward_udp_remote_ip, val);
-#if defined USE_APRS
-				} else if (strcmp(var, "aprs_server") == 0) {
-					strncpy(setup.aprs_server, val, 128);
-				} else if (strcmp(var, "aprs_port") == 0) {
-					setup.aprs_port = atoi(val);
-				} else if (strcmp(var, "aprs_filter") == 0) {
-					strncpy(setup.aprs_filter, val, 128);
-				} else if (strcmp(var, "aprs_enable") == 0) {
-					setup.aprs_enable = atoi(val);
-#endif
 				} else if (strcmp(var, "SurveySetup.name") == 0) {
 					strncpy(SurveySetup.name, val, 1000);
 				} else if (strcmp(var, "SurveySetup.interval") == 0) {
@@ -2738,7 +2619,6 @@ void ShutDown(ESContext *esContext) {
 	gui_running = 0;
 	SDL_Delay(600);
 	LogSave();
-	setup_save();
 	for (n = 0; n < MODELS_MAX; n++) {
 		stop_telemetry(n);
 	}
@@ -2753,6 +2633,7 @@ void ShutDown(ESContext *esContext) {
 	gcs_gps_exit();
 	webserv_exit();
 	map_exit();
+	setup_save();
 #ifdef DPF_DISPLAY
 	SDL_WaitThread(thread_dpf, NULL);
 	dpf_exit();

@@ -211,6 +211,9 @@ typedef struct {
 	int mavlink_forward_udp_remote_port;
 	char mavlink_forward_udp_remote_ip[128];
 
+	float map_offset_x;
+	float map_offset_y;
+
 #ifdef USE_WIFIBC
 	char wifibc_device[128];
 	int wifibc_channel;
