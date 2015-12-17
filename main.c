@@ -1181,9 +1181,17 @@ void check_events(ESContext *esContext, SDL_Event event) {
 		} else if (strcmp(keyname, "down") == 0) {
 			key_pressed &= ~(1 << 3);
 		} else if (strcmp(keyname, "[+]") == 0 || strcmp(keyname, "keypad +") == 0) {
-			key_pressed &= ~(1 << 4);
+			if (setup.view_mode == VIEW_MODE_MAP) {
+				if (zoom < 18) {
+					zoom++;
+				}
+			}
 		} else if (strcmp(keyname, "[-]") == 0 || strcmp(keyname, "keypad -") == 0) {
-			key_pressed &= ~(1 << 5);
+			if (setup.view_mode == VIEW_MODE_MAP) {
+				if (zoom > 0) {
+					zoom--;
+				}
+			}
 		} else if (strcmp(keyname, "[4]") == 0 || strcmp(keyname, "keypad 4") == 0) {
 			ModelData[ModelActive].roll -= 3.0;
 		} else if (strcmp(keyname, "[6]") == 0 || strcmp(keyname, "keypad 6") == 0) {
@@ -1192,6 +1200,10 @@ void check_events(ESContext *esContext, SDL_Event event) {
 			ModelData[ModelActive].pitch -= 3.0;
 		} else if (strcmp(keyname, "[2]") == 0 || strcmp(keyname, "keypad 2") == 0) {
 			ModelData[ModelActive].pitch += 3.0;
+		} else if (strcmp(keyname, "[9]") == 0 || strcmp(keyname, "keypad +") == 0) {
+			key_pressed &= ~(1 << 4);
+		} else if (strcmp(keyname, "[3]") == 0 || strcmp(keyname, "keypad -") == 0) {
+			key_pressed &= ~(1 << 5);
 		} else if (strcmp(keyname, "right shift") == 0 || strcmp(keyname, "left shift") == 0) {
 			keyboard_shift = 0;
 		} else if (strcmp(keyname, "alt gr") == 0) {
@@ -2165,9 +2177,9 @@ void Draw(ESContext *esContext) {
 		key_pressed |= (1 << 2);
 	} else if (strcmp(keyboard_key, "down") == 0) {
 		key_pressed |= (1 << 3);
-	} else if (strcmp(keyboard_key, "[+]") == 0 || strcmp(keyboard_key, "keypad +") == 0) {
+	} else if (strcmp(keyboard_key, "[9]") == 0 || strcmp(keyboard_key, "keypad +") == 0) {
 		key_pressed |= (1 << 4);
-	} else if (strcmp(keyboard_key, "[-]") == 0 || strcmp(keyboard_key, "keypad -") == 0) {
+	} else if (strcmp(keyboard_key, "[3]") == 0 || strcmp(keyboard_key, "keypad -") == 0) {
 		key_pressed |= (1 << 5);
 	} else if (strcmp(keyboard_key, "h") == 0) {
 		int tile_y = lat2tiley(WayPoints[ModelActive][0].p_lat, zoom) - 1;
