@@ -630,6 +630,8 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t *msg) {
 		case MAVLINK_MSG_ID_GPS_RAW_INT: {
 				mavlink_gps_raw_int_t packet;
 				mavlink_msg_gps_raw_int_decode(msg, &packet);
+				ModelData[modelid].numSat = packet.satellites_visible;
+				ModelData[modelid].gpsfix = packet.fix_type;
 				if (packet.lat != 0 && packet.lon != 0) {
 					ModelData[modelid].p_lat = (float)packet.lat / 10000000.0;
 					ModelData[modelid].p_long = (float)packet.lon / 10000000.0;
@@ -643,8 +645,6 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t *msg) {
 									pos[modelid]++;
 					*/
 					ModelData[modelid].speed = (float)packet.vel / 100.0;
-					ModelData[modelid].numSat = packet.satellites_visible;
-					ModelData[modelid].gpsfix = packet.fix_type;
 					ModelData[modelid].hdop = (float)packet.eph / 100.0;
 					ModelData[modelid].vdop = (float)packet.epv / 100.0;
 					if (ModelData[modelid].gpsfix > 2) {
