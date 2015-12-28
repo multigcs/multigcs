@@ -511,15 +511,15 @@ void setup_waypoints(void) {
 		WayPoints[modeln][0].type = 1;
 		strncpy(WayPoints[modeln][0].name, "HOME", 127);
 		strncpy(WayPoints[modeln][0].command, "", 127);
+		ModelData[modeln].followme = 0;
+		ModelData[modeln].fm_alt = 3.0;
+		ModelData[modeln].fm_radius = 1.0;
 	}
 	GroundData.p_lat = WayPoints[ModelActive][0].p_lat;
 	GroundData.p_long = WayPoints[ModelActive][0].p_long;
 	GroundData.p_alt = WayPoints[ModelActive][0].p_alt;
 	GroundData.dir = 0.0;
 	GroundData.active = 0;
-	GroundData.followme = 0;
-	GroundData.fm_alt = 4.0;
-	GroundData.fm_radius = 3.0;
 	GroundData.sp_alt = 4.0;
 	GroundData.sp_radius = 1.0;
 	GroundData.wifibc_rssi[0] = 0;
@@ -705,8 +705,6 @@ void setup_save(void) {
 		fprintf(fr, "Ground_long		%f\n", GroundData.p_long);
 		fprintf(fr, "Ground_alt		%f\n", GroundData.p_alt);
 		fprintf(fr, "Ground_dir		%f\n", GroundData.dir);
-		fprintf(fr, "Ground_fm_alt	%f\n", GroundData.fm_alt);
-		fprintf(fr, "Ground_fm_radius	%f\n", GroundData.fm_radius);
 		fprintf(fr, "Ground_sp_alt	%f\n", GroundData.sp_alt);
 		fprintf(fr, "Ground_sp_radius	%f\n", GroundData.sp_radius);
 		fprintf(fr, "\n");
@@ -734,6 +732,8 @@ void setup_save(void) {
 			fprintf(fr, "Model_netip		%s\n", ModelData[n].netip);
 			fprintf(fr, "Model_netport		%i\n", ModelData[n].netport);
 			fprintf(fr, "Model_get_param		%i\n", ModelData[n].get_param);
+			fprintf(fr, "Model_fm_alt	%f\n", ModelData[n].fm_alt);
+			fprintf(fr, "Model_fm_radius	%f\n", ModelData[n].fm_radius);
 			fprintf(fr, "\n");
 			fprintf(fr, "[waypoints]\n");
 			for (nn = 0; nn < MAX_WAYPOINTS; nn++) {
@@ -877,10 +877,6 @@ void setup_load(void) {
 					GroundData.p_alt = atof(val);
 				} else if (strcmp(var, "Ground_dir") == 0) {
 					GroundData.dir = atof(val);
-				} else if (strcmp(var, "Ground_fm_alt") == 0) {
-					GroundData.fm_alt = atof(val);
-				} else if (strcmp(var, "Ground_fm_radius") == 0) {
-					GroundData.fm_radius = atof(val);
 				} else if (strcmp(var, "Ground_sp_alt") == 0) {
 					GroundData.sp_alt = atof(val);
 				} else if (strcmp(var, "Ground_sp_radius") == 0) {
@@ -981,6 +977,10 @@ void setup_load(void) {
 					ModelData[model_n].netport = atoi(val);
 				} else if (strcmp(var, "Model_get_param") == 0) {
 					ModelData[model_n].get_param = atoi(val);
+				} else if (strcmp(var, "Model_fm_alt") == 0) {
+					ModelData[model_n].fm_alt = atof(val);
+				} else if (strcmp(var, "Model_fm_radius") == 0) {
+					ModelData[model_n].fm_radius = atof(val);
 				} else if (strcmp(var, "[waypoints]") == 0) {
 					mode = 1;
 					wp_num = 0;
@@ -1605,7 +1605,6 @@ void check_events(ESContext *esContext, SDL_Event event) {
 					}
 					map_sethome = 0;
 				} else if (map_setpos == 1) {
-					GroundData.followme = 0;
 					mavlink_send_cmd_follow(ModelActive, mouse_lat, mouse_long, GroundData.sp_alt, GroundData.sp_radius);
 				} else {
 					waypoint_active = -1;
@@ -1773,48 +1772,52 @@ int telemetry_thread(void *data) {
 			}
 		}
 		static uint16_t utimer = 0;
-		if (utimer >= 300 && GroundData.active == 1 && GroundData.followme == 1) {
-			SwarmSetup.active = 0;
-			mavlink_send_cmd_follow(ModelActive, GroundData.p_lat, GroundData.p_long, GroundData.fm_alt, GroundData.fm_radius);
-			utimer = 0;
-		}
-		if (utimer >= 300 && SwarmSetup.active == 1 && SwarmSetup.master != -1) {
-			GroundData.followme = 0;
-			float p_lat = 0.0;
-			float p_long = 0.0;
-			float p_alt = 0.0;
-			float p_yaw = 0.0;
-			if (SwarmSetup.master == -1) {
-				p_lat = GroundData.p_lat;
-				p_long = GroundData.p_long;
-				p_alt = GroundData.fm_alt;
-				p_yaw = 0.0;
-			} else {
-				p_lat = ModelData[SwarmSetup.master].p_lat;
-				p_long = ModelData[SwarmSetup.master].p_long;
-				p_alt = ModelData[SwarmSetup.master].p_alt;
-				p_yaw = ModelData[SwarmSetup.master].yaw;
+
+		if (utimer >= 300) {
+			if (SwarmSetup.active == 1 && SwarmSetup.master != -1) {
+				float p_lat = 0.0;
+				float p_long = 0.0;
+				float p_alt = 0.0;
+				float p_yaw = 0.0;
+				if (SwarmSetup.master == -1) {
+					p_lat = GroundData.p_lat;
+					p_long = GroundData.p_long;
+					p_alt = GroundData.sp_alt;
+					p_yaw = 0.0;
+				} else {
+					p_lat = ModelData[SwarmSetup.master].p_lat;
+					p_long = ModelData[SwarmSetup.master].p_long;
+					p_alt = ModelData[SwarmSetup.master].p_alt;
+					p_yaw = ModelData[SwarmSetup.master].yaw;
+				}
+				int nn = 0;
+				for (nn = 0; nn < 4; nn++) {
+					if (SwarmSetup.slave[nn] == -1) {
+						continue;
+					}
+					float off_x = SwarmSetup.offset_x[nn];
+					float off_y = SwarmSetup.offset_y[nn];
+					if (SwarmSetup.rotate == 1) {
+						float radius = sqrt((SwarmSetup.offset_x[nn] * SwarmSetup.offset_x[nn]) + (SwarmSetup.offset_y[nn] * SwarmSetup.offset_y[nn]));
+						float angle = p_yaw + 90.0 + atan(SwarmSetup.offset_x[nn] / SwarmSetup.offset_y[nn]) * RAD_TO_DEG;
+						off_x = cos(angle * DEG2RAD) * radius;
+						off_y = sin(angle * DEG2RAD) * radius;
+					}
+					latlong_offset(&p_lat, &p_long, &p_alt, off_y, off_x, SwarmSetup.offset_z[nn]);
+					if (SwarmSetup.yaw_mode == 1) {
+						mavlink_send_cmd_yaw(SwarmSetup.slave[nn], p_yaw, 360.0);
+					}
+					mavlink_send_cmd_follow(SwarmSetup.slave[nn], p_lat, p_long, p_alt, 2.0);
+					ModelData[SwarmSetup.slave[nn]].followme = 0;
+				}
+				utimer = 0;
 			}
-			int nn = 0;
-			for (nn = 0; nn < 4; nn++) {
-				if (SwarmSetup.slave[nn] == -1) {
-					continue;
+			for (modelid = 0; modelid < MODELS_MAX; modelid++) {
+				if (GroundData.active == 1 && ModelData[modelid].followme == 1) {
+					mavlink_send_cmd_follow(modelid, GroundData.p_lat, GroundData.p_long, ModelData[modelid].fm_alt, ModelData[modelid].fm_radius);
+					utimer = 0;
 				}
-				float off_x = SwarmSetup.offset_x[nn];
-				float off_y = SwarmSetup.offset_y[nn];
-				if (SwarmSetup.rotate == 1) {
-					float radius = sqrt((SwarmSetup.offset_x[nn] * SwarmSetup.offset_x[nn]) + (SwarmSetup.offset_y[nn] * SwarmSetup.offset_y[nn]));
-					float angle = p_yaw + 90.0 + atan(SwarmSetup.offset_x[nn] / SwarmSetup.offset_y[nn]) * RAD_TO_DEG;
-					off_x = cos(angle * DEG2RAD) * radius;
-					off_y = sin(angle * DEG2RAD) * radius;
-				}
-				latlong_offset(&p_lat, &p_long, &p_alt, off_y, off_x, SwarmSetup.offset_z[nn]);
-				if (SwarmSetup.yaw_mode == 1) {
-					mavlink_send_cmd_yaw(SwarmSetup.slave[nn], p_yaw, 360.0);
-				}
-				mavlink_send_cmd_follow(SwarmSetup.slave[nn], p_lat, p_long, p_alt, 2.0);
 			}
-			utimer = 0;
 		}
 		utimer++;
 		SDL_Delay(1);

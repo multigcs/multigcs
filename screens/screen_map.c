@@ -202,7 +202,7 @@ uint8_t map_poly_set(char *name, float x, float y, int8_t button, float data, ui
 }
 
 uint8_t map_followme_change(char *name, float x, float y, int8_t button, float data, uint8_t action) {
-	GroundData.followme = 1 - GroundData.followme;
+	ModelData[ModelActive].followme = 1 - ModelData[ModelActive].followme;
 	map_setpos = 0;
 	return 0;
 }
@@ -531,30 +531,30 @@ uint8_t map_polypointnf_add(char *name, float x, float y, int8_t button, float d
 
 uint8_t map_setpos_change(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	map_setpos = 1 - map_setpos;
-	GroundData.followme = 0;
+	ModelData[ModelActive].followme = 0;
 	return 0;
 }
 
 uint8_t map_fm_alt_change(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 4) {
-		GroundData.fm_alt += 1.0;
+		ModelData[ModelActive].fm_alt += 1.0;
 	} else if (button == 5) {
-		GroundData.fm_alt -= 1.0;
+		ModelData[ModelActive].fm_alt -= 1.0;
 	}
-	if (GroundData.fm_alt < 2.0) {
-		GroundData.fm_alt = 2.0;
+	if (ModelData[ModelActive].fm_alt < 2.0) {
+		ModelData[ModelActive].fm_alt = 2.0;
 	}
 	return 0;
 }
 
 uint8_t map_fm_radius_change(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (button == 4) {
-		GroundData.fm_radius += 1.0;
+		ModelData[ModelActive].fm_radius += 1.0;
 	} else if (button == 5) {
-		GroundData.fm_radius -= 1.0;
+		ModelData[ModelActive].fm_radius -= 1.0;
 	}
-	if (GroundData.fm_radius < 1.0) {
-		GroundData.fm_radius = 1.0;
+	if (ModelData[ModelActive].fm_radius < 0.0) {
+		ModelData[ModelActive].fm_radius = 0.0;
 	}
 	return 0;
 }
@@ -1557,7 +1557,7 @@ void map_draw_buttons(ESContext *esContext) {
 					0.0);
 		map_setpos = 0;
 	} else {
-		GroundData.followme = 0;
+		ModelData[ModelActive].followme = 0;
 		draw_button(esContext, "map_sp", setup.view_mode, "GOTO", FONT_GREEN, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_sp_change,
 					0.0);
 		ny2 = ny;
@@ -1598,7 +1598,7 @@ void map_draw_buttons(ESContext *esContext) {
 	if (map_menu_r != MR_FOLLOW) {
 		draw_button(esContext, "map_fm", setup.view_mode, "FOLLOW", FONT_WHITE, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_fm_change,
 					0.0);
-		GroundData.followme = 0;
+		ModelData[ModelActive].followme = 0;
 	} else {
 		map_setpos = 0;
 		draw_button(esContext, "map_fm", setup.view_mode, "FOLLOW", FONT_GREEN, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_fm_change,
@@ -1606,7 +1606,7 @@ void map_draw_buttons(ESContext *esContext) {
 		ny2 = ny;
 		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
 		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
-		if (GroundData.followme == 0) {
+		if (ModelData[ModelActive].followme == 0) {
 			draw_button(esContext, "map_fallowme", setup.view_mode, "ACTIVE", FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER,
 						map_followme_change, 0.0);
 		} else {
@@ -1617,14 +1617,14 @@ void map_draw_buttons(ESContext *esContext) {
 		ny2++;
 		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
 		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
-		sprintf(tmp_str, "%0.0fm", GroundData.fm_alt);
+		sprintf(tmp_str, "%0.0fm", ModelData[ModelActive].fm_alt);
 		draw_button(esContext, "map_fm_alt_change", setup.view_mode, tmp_str, FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER,
 					map_fm_alt_change, 0.0);
 		draw_text_button(esContext, "map_fm_alt_change_", setup.view_mode, "altitude", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_fm_alt_change, 0.0);
 		ny2++;
 		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
 		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
-		sprintf(tmp_str, "%0.0fm", GroundData.fm_radius);
+		sprintf(tmp_str, "%0.0fm", ModelData[ModelActive].fm_radius);
 		draw_button(esContext, "map_fm_radius_change", setup.view_mode, tmp_str, FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER,
 					map_fm_radius_change, 0.0);
 		draw_text_button(esContext, "map_fm_radius_change_", setup.view_mode, "radius", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_fm_radius_change, 0.0);
@@ -2094,21 +2094,30 @@ void display_map(ESContext *esContext, float lat, float lon, uint8_t zoom, uint8
 	}
 #endif
 	// drawing Groundstation
-	if (GroundData.active == 1) {
-		if (GroundData.followme == 1) {
-			static uint8_t blink = 0;
-			if (blink > 30) {
+	if (GroundData.active != 1) {
+		static uint8_t blink = 0;
+		if (ModelData[ModelActive].followme == 1) {
+			if (blink > 18) {
 				mark_point(esContext, GroundData.p_lat, GroundData.p_long, GroundData.p_alt, "GCS", "", 1, 0.0, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
 			} else {
 				mark_point(esContext, GroundData.p_lat, GroundData.p_long, GroundData.p_alt, "GCS", "", 0, 0.0, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
 			}
-			if (blink < 60) {
-				blink++;
-			} else {
-				blink = 0;
-			}
 		} else {
 			mark_point(esContext, GroundData.p_lat, GroundData.p_long, GroundData.p_alt, "GCS", "", 0, 0.0, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
+		}
+		for (n = 0; n < MODELS_MAX; n++) {
+			if (ModelData[n].followme == 1 && ModelData[n].heartbeat > 0) {
+				if (blink > 20 + n || blink < n) {
+					mark_point(esContext, ModelData[n].p_lat, ModelData[n].p_long, ModelData[n].p_alt, "", "", 1, 0.0, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
+				} else {
+					mark_point(esContext, ModelData[n].p_lat, ModelData[n].p_long, ModelData[n].p_alt, "", "", 0, 0.0, 0.0, mapdata->lat, mapdata->lon, mapdata->zoom);
+				}
+			}
+		}
+		if (blink < 40) {
+			blink++;
+		} else {
+			blink = 0;
 		}
 	}
 	// drawing Home(Launchpoint)

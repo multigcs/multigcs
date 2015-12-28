@@ -128,6 +128,9 @@ typedef struct {
 	uint8_t num_motors;
 	EscStat escstat[16];
 	int8_t follow;
+	uint8_t followme;
+	float fm_alt;
+	float fm_radius;
 } Model;
 
 typedef struct {
@@ -136,9 +139,6 @@ typedef struct {
 	float p_alt;
 	float dir;
 	uint8_t active;
-	uint8_t followme;
-	float fm_alt;
-	float fm_radius;
 	float sp_alt;
 	float sp_radius;
 	int16_t wifibc_rssi[4];
