@@ -1336,6 +1336,22 @@ void mavlink_handleMessage(uint8_t modelid, mavlink_message_t *msg) {
 				*/
 				break;
 			}
+		case MAVLINK_MSG_ID_COMMAND_LONG: {
+				mavlink_command_long_t packet;
+				mavlink_msg_command_long_decode(msg, &packet);
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_COMMAND_LONG param1 %f ##\n", packet.param1); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_COMMAND_LONG param2 %f ##\n", packet.param2); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_COMMAND_LONG param3 %f ##\n", packet.param3); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_COMMAND_LONG param4 %f ##\n", packet.param4); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_COMMAND_LONG param5 %f ##\n", packet.param5); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_COMMAND_LONG param6 %f ##\n", packet.param6); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_COMMAND_LONG param7 %f ##\n", packet.param7); //FLOAT
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_COMMAND_LONG command %i ##\n", packet.command); //UINT16_T
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_COMMAND_LONG target_system %i ##\n", packet.target_system); //UINT8_T
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_COMMAND_LONG target_component %i ##\n", packet.target_component); //UINT8_T
+				SDL_Log("mavlink: ## MAVLINK_MSG_ID_COMMAND_LONG confirmation %i ##\n", packet.confirmation); //UINT8_T
+				break;
+			}
 		case MAVLINK_MSG_ID_COMMAND_ACK: {
 				mavlink_command_ack_t packet;
 				mavlink_msg_command_ack_decode(msg, &packet);
