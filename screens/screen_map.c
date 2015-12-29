@@ -536,14 +536,24 @@ uint8_t map_setpos_change(char *name, float x, float y, int8_t button, float dat
 }
 
 uint8_t map_fm_alt_change(char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	uint8_t n = 0;
+	float value = ModelData[ModelActive].fm_alt;
 	if (button == 4) {
-		ModelData[ModelActive].fm_alt += 1.0;
+		value += 1.0;
 	} else if (button == 5) {
-		ModelData[ModelActive].fm_alt -= 1.0;
+		value -= 1.0;
 	}
-	if (ModelData[ModelActive].fm_alt < 2.0) {
-		ModelData[ModelActive].fm_alt = 2.0;
+	// minimal alt
+	if (value < 2.0) {
+		value = 2.0;
 	}
+	// check for collisions
+	for (n = 0; n < MODELS_MAX; n++) {
+		if (n != ModelActive && ModelData[n].followme == 1 && ModelData[n].fm_alt == value) {
+			ModelData[ModelActive].followme = 0;
+		}
+	}
+	ModelData[ModelActive].fm_alt = value;
 	return 0;
 }
 
@@ -1117,7 +1127,6 @@ void map_draw_buttons(ESContext *esContext) {
 	ny++;
 	if (map_type_select == 1) {
 		ny2 = ny - 1;
-		nn = 0;
 		for (nn = 0; nn < maplen; nn++) {
 #ifndef USE_FMAP
 			if (strcmp(mapnames[nn][MAP_TYPE], "FMAP") == 0) {
@@ -1141,7 +1150,6 @@ void map_draw_buttons(ESContext *esContext) {
 	ny++;
 	if (omap_type_select == 1) {
 		ny2 = ny;
-		nn = 0;
 		for (nn = 0; nn < omaplen; nn++) {
 			draw_box_f3(esContext, -1.15, -0.99 + ny2 * 0.12 - 0.055, 0.002, -0.85, -0.99 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
 			draw_rect_f3(esContext, -1.15, -0.99 + ny2 * 0.12 - 0.055, 0.002, -0.85, -0.99 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
@@ -1601,14 +1609,26 @@ void map_draw_buttons(ESContext *esContext) {
 		ModelData[ModelActive].followme = 0;
 	} else {
 		map_setpos = 0;
+		// check for collisions
+		uint8_t flag = 0;
+		for (nn = 0; nn < MODELS_MAX; nn++) {
+			if (nn != ModelActive && ModelData[nn].followme == 1 && ModelData[nn].fm_alt == ModelData[ModelActive].fm_alt) {
+				flag = 1;
+			}
+		}
 		draw_button(esContext, "map_fm", setup.view_mode, "FOLLOW", FONT_GREEN, 1.12, -0.8 + ny * 0.12 - 0.055, 0.002, 1.42, -0.8 + ny * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER, map_fm_change,
 					0.0);
 		ny2 = ny;
 		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
 		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
 		if (ModelData[ModelActive].followme == 0) {
-			draw_button(esContext, "map_fallowme", setup.view_mode, "ACTIVE", FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER,
-						map_followme_change, 0.0);
+			if (flag == 1) {
+				draw_button(esContext, "map_fallowme", setup.view_mode, "ACTIVE", FONT_PINK, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER,
+							map_null, 0.0);
+			} else {
+				draw_button(esContext, "map_fallowme", setup.view_mode, "ACTIVE", FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER,
+							map_followme_change, 0.0);
+			}
 		} else {
 			draw_button(esContext, "map_fallowme", setup.view_mode, "ACTIVE", FONT_GREEN, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER,
 						map_followme_change, 0.0);
@@ -1617,9 +1637,15 @@ void map_draw_buttons(ESContext *esContext) {
 		ny2++;
 		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
 		draw_rect_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 255, 255, 255, 200);
-		sprintf(tmp_str, "%0.0fm", ModelData[ModelActive].fm_alt);
-		draw_button(esContext, "map_fm_alt_change", setup.view_mode, tmp_str, FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER,
-					map_fm_alt_change, 0.0);
+		if (flag == 1) {
+			sprintf(tmp_str, "%0.0fm !", ModelData[ModelActive].fm_alt);
+			draw_button(esContext, "map_fm_alt_change", setup.view_mode, tmp_str, FONT_PINK, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER,
+						map_fm_alt_change, 0.0);
+		} else {
+			sprintf(tmp_str, "%0.0fm", ModelData[ModelActive].fm_alt);
+			draw_button(esContext, "map_fm_alt_change", setup.view_mode, tmp_str, FONT_WHITE, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0.06, ALIGN_CENTER, ALIGN_CENTER,
+						map_fm_alt_change, 0.0);
+		}
 		draw_text_button(esContext, "map_fm_alt_change_", setup.view_mode, "altitude", FONT_WHITE, 0.98, -0.8 + ny2 * 0.12 + 0.02, 0.002, 0.03, ALIGN_CENTER, ALIGN_TOP, map_fm_alt_change, 0.0);
 		ny2++;
 		draw_box_f3(esContext, 0.82, -0.8 + ny2 * 0.12 - 0.055, 0.002, 1.12, -0.8 + ny2 * 0.12 + 0.055, 0.002, 0, 0, 0, 200);
