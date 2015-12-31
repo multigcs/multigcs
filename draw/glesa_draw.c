@@ -1097,17 +1097,56 @@ void resize_border(void) {
 }
 
 void draw_update(ESContext *esContext) {
-	SDL_GL_SwapWindow(state->windows[0]);
+	float cPlaneLeft[4] = { -1.0, 0.0, 0.0, 0.0};
+	float cPlaneRight[4] = {1.0, 0.0, 0.0, 0.0};
+	if (setup.side_by_side == 1) {
+		static int n = 0;
+		if (n == 0) {
 #ifndef SDLGL
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	esMatrixLoadIdentity(&modelview);
-	esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
+			esMatrixLoadIdentity(&modelview);
+			esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
 #else
-	glMatrixMode(GL_MODELVIEW);
-	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
 #endif
+			glClipPlanef(GL_CLIP_PLANE1, cPlaneRight);
+			glEnable(GL_CLIP_PLANE1);
+			glScalef(0.5, 1.0, 1.0);
+			glTranslatef(1.0 * aspect, 0.0, 0.0);
+			n = 1;
+		} else {
+			SDL_GL_SwapWindow(state->windows[0]);
+#ifndef SDLGL
+			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			esMatrixLoadIdentity(&modelview);
+			esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
+#else
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glClearColor(0.0, 0.0, 0.0, 1.0);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+#endif
+			glClipPlanef(GL_CLIP_PLANE1, cPlaneLeft);
+			glEnable(GL_CLIP_PLANE1);
+			glScalef(0.5, 1.0, 1.0);
+			glTranslatef(-1.0 * aspect, 0.0, 0.0);
+			n = 0;
+		}
+	} else {
+		SDL_GL_SwapWindow(state->windows[0]);
+#ifndef SDLGL
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		esMatrixLoadIdentity(&modelview);
+		esMatrixMultiply(&userData->mvpMatrix, &modelview, &userData->perspective);
+#else
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		glClearColor(0.0, 0.0, 0.0, 1.0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+#endif
+	}
 }
 
 void draw_init(ESContext *esContext) {

@@ -429,6 +429,7 @@ public class SDLActivity extends Activity {
     public static native void onNativeTouch(int touchDevId, int pointerFingerId,
                                             int action, float x, 
                                             float y, float p);
+    public static native void onNativeZoom(float zoom);
     public static native void onNativeAccel(float x, float y, float z);
     public static native void onNativeSurfaceChanged();
     public static native void onNativeSurfaceDestroyed();
@@ -652,7 +653,6 @@ class SDLMain implements Runnable {
     }
 }
 
-
 /**
     SDLSurface. This is what we draw on, so we need to know when it's created
     in order to do anything useful. 
@@ -661,6 +661,10 @@ class SDLMain implements Runnable {
 */
 class SDLSurface extends SurfaceView implements SurfaceHolder.Callback, 
     View.OnKeyListener, View.OnTouchListener, SensorEventListener  {
+
+	private ScaleGestureDetector mScaleDetector;
+	private float mScaleFactor = 1.f;
+	private float mScaleFactorLast = 1.f;
 
     // Sensors
     protected static SensorManager mSensorManager;
@@ -675,6 +679,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
         setFocusable(true);
         setFocusableInTouchMode(true);
         requestFocus();
+        mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
         setOnKeyListener(this); 
         setOnTouchListener(this);   
         mSensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
@@ -693,6 +698,16 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
         mWidth = 1.0f;
         mHeight = 1.0f;
     }
+
+	private class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+		@Override
+		public boolean onScale(ScaleGestureDetector detector) {
+			mScaleFactor *= detector.getScaleFactor();
+			SDLActivity.onNativeZoom((float)(mScaleFactor - mScaleFactorLast));
+			mScaleFactorLast = mScaleFactor;
+			return true;
+		}
+	}
 
     public Surface getNativeSurface() {
         return getHolder().getSurface();
@@ -816,32 +831,22 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
     // Touch events
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-             final int touchDevId = event.getDeviceId();
-             final int pointerCount = event.getPointerCount();
-             // touchId, pointerId, action, x, y, pressure
-             int actionPointerIndex = (event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK) >> MotionEvent.ACTION_POINTER_ID_SHIFT; /* API 8: event.getActionIndex(); */
-             int pointerFingerId = event.getPointerId(actionPointerIndex);
-             int action = (event.getAction() & MotionEvent.ACTION_MASK); /* API 8: event.getActionMasked(); */
-
-             float x = event.getX(actionPointerIndex) / mWidth;
-             float y = event.getY(actionPointerIndex) / mHeight;
-             float p = event.getPressure(actionPointerIndex);
-
-             if (action == MotionEvent.ACTION_MOVE && pointerCount > 1) {
-                // TODO send motion to every pointer if its position has
-                // changed since prev event.
-                for (int i = 0; i < pointerCount; i++) {
-                    pointerFingerId = event.getPointerId(i);
-                    x = event.getX(i) / mWidth;
-                    y = event.getY(i) / mHeight;
-                    p = event.getPressure(i);
-                    SDLActivity.onNativeTouch(touchDevId, pointerFingerId, action, x, y, p);
-                }
-             } else {
-                SDLActivity.onNativeTouch(touchDevId, pointerFingerId, action, x, y, p);
-             }
-      return true;
-   } 
+		final int touchDevId = event.getDeviceId();
+		final int pointerCount = event.getPointerCount();
+		if (pointerCount > 1) {
+			mScaleDetector.onTouchEvent(event);
+		} else {
+			// touchId, pointerId, action, x, y, pressure
+			int actionPointerIndex = (event.getAction() & MotionEvent.ACTION_POINTER_ID_MASK) >> MotionEvent.ACTION_POINTER_ID_SHIFT; /* API 8: event.getActionIndex(); */
+			int pointerFingerId = event.getPointerId(actionPointerIndex);
+			int action = (event.getAction() & MotionEvent.ACTION_MASK); /* API 8: event.getActionMasked(); */
+			float x = event.getX(actionPointerIndex) / mWidth;
+			float y = event.getY(actionPointerIndex) / mHeight;
+			float p = event.getPressure(actionPointerIndex);
+			SDLActivity.onNativeTouch(touchDevId, pointerFingerId, action, x, y, p);
+		}
+		return true;
+	} 
 
     // Sensor events
     public void enableSensor(int sensortype, boolean enabled) {
@@ -928,6 +933,7 @@ class SDLSurface extends SurfaceView implements SurfaceHolder.Callback,
 	    case Sensor.TYPE_ACCELEROMETER:
 	        // copy new accelerometer data into accel array and calculate orientation
 	        System.arraycopy(event.values, 0, accel, 0, 3);
+			SDLActivity.onNativeAccel(accel[0], accel[1], accel[2]);
 	        calculateAccMagOrientation();
 	        break;
 	 
@@ -1346,7 +1352,7 @@ class mylocationlistener implements LocationListener {
           Log.d("LOCATION CHANGED", location.getLatitude() + "");
           Log.d("LOCATION CHANGED", location.getLongitude() + "");
 
-          gpsSetPosition((float)location.getLatitude(), (float)location.getLongitude(), (float)location.getAltitude(), (float)((float)location.getSpeed() * 3600 / 1000));
+          gpsSetPosition((float)location.getLatitude(), (float)location.getLongitude(), (float)location.getAltitude(), (float)((float)location.getSpeed() * 3600 / 1000), (float)location.getAccuracy(), (float)location.getExtras().getInt("satellites"));
 
         }
     }
@@ -1355,9 +1361,10 @@ class mylocationlistener implements LocationListener {
     @Override public void onProviderEnabled(String provider) {
     }
     @Override public void onStatusChanged(String provider, int status, Bundle extras) {
+          gpsSetPosition((float)0.0, (float)0.0, (float)0.0, (float)0.0, (float)0.0, (float)extras.getInt("satellites"));
     }
 
-    public native void gpsSetPosition(float lat, float lon, float alt, float speed);
+    public native void gpsSetPosition(float lat, float lon, float alt, float speed, float hdop, float sats);
 
 }
 

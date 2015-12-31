@@ -79,6 +79,8 @@ static jmethodID midAudioQuit;
 static float fLastAccelerometer[3];
 static bool bHasNewData;
 
+static float ZoomDiff;
+
 /*******************************************************************************
                  Functions called by JNI
 *******************************************************************************/
@@ -201,13 +203,29 @@ void Java_org_libsdl_app_SDLActivity_onNativeKeyboardFocusLost(
 	SDL_StopTextInput();
 }
 
-
 /* Touch */
 void Java_org_libsdl_app_SDLActivity_onNativeTouch(
 	JNIEnv *env, jclass jcls,
 	jint touch_device_id_in, jint pointer_finger_id_in,
 	jint action, jfloat x, jfloat y, jfloat p) {
 	Android_OnTouch(touch_device_id_in, pointer_finger_id_in, action, x, y, p);
+}
+
+/* Pinch-Zoom */
+void Java_org_libsdl_app_SDLActivity_onNativeZoom(
+	JNIEnv *env, jclass jcls,
+	jfloat zoom) {
+	ZoomDiff += (float)zoom;
+}
+
+void Android_JNI_GetZoom(float *zoom) {
+	if (ZoomDiff > 0.1) {
+		*zoom = ZoomDiff;
+		ZoomDiff = 0.0;
+	} else if (ZoomDiff < -0.1) {
+		*zoom = ZoomDiff;
+		ZoomDiff = 0.0;
+	}
 }
 
 /* Accelerometer */

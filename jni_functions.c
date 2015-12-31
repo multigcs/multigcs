@@ -10,19 +10,29 @@ char bt_devices[100][1023];
 uint8_t aserbuffer[2048];
 int aserbuffer_pos = 0;
 
-void Java_org_libsdl_app_mylocationlistener_gpsSetPosition(JNIEnv *env, jclass cls, jfloat lat, jfloat lon, jfloat alt, jfloat speed) {
+void Java_org_libsdl_app_mylocationlistener_gpsSetPosition(JNIEnv *env, jclass cls, jfloat lat, jfloat lon, jfloat alt, jfloat speed, jfloat hdop, jfloat sats) {
 	if (lat != 0.0 && lon != 0.0) {
-		if (ModelData[ModelActive].heartbeat == 0) {
-			ModelData[ModelActive].p_lat = lat;
-			ModelData[ModelActive].p_long = lon;
-			ModelData[ModelActive].p_alt = alt;
-			ModelData[ModelActive].speed = speed;
-		} else {
-			WayPoints[ModelActive][0].p_lat = lat;
-			WayPoints[ModelActive][0].p_long = lon;
-			WayPoints[ModelActive][0].p_alt = alt;
-		}
+		GroundData.p_lat = lat;
+		GroundData.p_long = lon;
+		GroundData.p_alt = alt;
 	}
+	GroundData.numSat = 1;
+	GroundData.active = 1;
+	GroundData.gpsfix = 1;
+	GroundData.hdop = hdop;
+	GroundData.numSat = sats;
+	if (lat != 0.0 && lon != 0.0) {
+		GroundData.gpsfix = 3;
+		ModelData[MODELS_MAX - 1].p_lat = lat;
+		ModelData[MODELS_MAX - 1].p_long = lon;
+		ModelData[MODELS_MAX - 1].p_alt = alt;
+		ModelData[MODELS_MAX - 1].speed = speed;
+		WayPoints[MODELS_MAX - 1][0].p_lat = lat;
+		WayPoints[MODELS_MAX - 1][0].p_long = lon;
+		WayPoints[MODELS_MAX - 1][0].p_alt = alt;
+	}
+	ModelData[MODELS_MAX - 1].hdop = hdop;
+	ModelData[MODELS_MAX - 1].numSat = sats;
 	return;
 }
 
@@ -42,9 +52,10 @@ void Java_org_libsdl_app_SDLSurface_attitudeSetPosition(JNIEnv *env, jclass cls,
 			yaw -= 360;
 		}
 		jni_att_yaw = yaw;
-		ModelData[ModelActive].pitch = jni_att_pitch;
-		ModelData[ModelActive].roll = jni_att_roll;
-		ModelData[ModelActive].yaw = jni_att_yaw;
+		GroundData.dir = jni_att_yaw;
+		ModelData[MODELS_MAX - 1].pitch = jni_att_pitch;
+		ModelData[MODELS_MAX - 1].roll = jni_att_roll;
+		ModelData[MODELS_MAX - 1].yaw = jni_att_yaw;
 	}
 	return;
 }

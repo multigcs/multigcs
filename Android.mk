@@ -8,8 +8,8 @@ include $(LOCAL_PATH)/android-dev/opencv-android-sdk/sdk/native/jni/OpenCV.mk
 LOCAL_MODULE := main
 
 BASE_DIR = .
-#LOCAL_CFLAGS += -DANDROID -DBASE_DIR="\"$(BASE_DIR)\"" -DANDROID -DSDLGL -DUSE_OPENCV -DSDL2 -DUSE_FILE32API
-LOCAL_CFLAGS += -DANDROID -DBASE_DIR="\"$(BASE_DIR)\"" -DANDROID -DSDLGL -DSDL2 -DUSE_FILE32API
+LOCAL_CFLAGS += -DANDROID -DBASE_DIR="\"$(BASE_DIR)\"" -DANDROID -DSDLGL -DUSE_OPENCV -DSDL2 -DUSE_FILE32API
+#LOCAL_CFLAGS += -DANDROID -DBASE_DIR="\"$(BASE_DIR)\"" -DANDROID -DSDLGL -DSDL2 -DUSE_FILE32API
 
 SDL_PATH := ../SDL2
 SDL_IMAGE_PATH := ../SDL2_image
@@ -28,8 +28,8 @@ LOCAL_SRC_FILES += $(SDL_PATH)/src/main/android/SDL_android_main.c \
  screens/screen_rcflow.c screens/screen_keyboard.c screens/screen_filesystem.c screens/screen_device.c screens/screen_baud.c screens/screen_model.c screens/screen_background.c screens/screen_wpedit.c screens/screen_hud.c screens/screen_map.c screens/screen_map_survey.c screens/screen_map_swarm.c screens/screen_calibration.c screens/screen_fms.c screens/screen_system.c screens/screen_mavlink_menu.c screens/screen_tracker.c screens/screen_mwi_menu.c screens/screen_openpilot_menu.c openpilot/uavobjects_store.c openpilot/uavobjects_encode.c openpilot/uavobjects_decode.c screens/screen_graph.c screens/screen_telemetry.c \
  mavlink/my_mavlink.c mavlink/my_mavlink_rewrite.c gps/my_gps.c mwi21/mwi21.c jeti/jeti.c openpilot/openpilot.c openpilot/openpilot_xml.c frsky/frsky.c tracker/tracker.c net/savepng.c net/webserv.c net/webclient.c logging.c \
  draw/android_gles.c draw/glesa_draw.c weather.c screens/screen_number.c \
- jni_functions.c kml.c
-# draw/opencv.c
+ jni_functions.c kml.c \
+ draw/opencv.c
 
 
 LOCAL_SHARED_LIBRARIES += SDL2 SDL2_image libxml2

@@ -1142,6 +1142,17 @@ void check_events(ESContext *esContext, SDL_Event event) {
 	static uint8_t mousewheel_flag = 0;
 	static float mousestart_x = 0.0;
 	static float mousestart_y = 0.0;
+#ifdef ANDROID
+	if (setup.view_mode == VIEW_MODE_MAP) {
+		float zoomdiff = 0.0;
+		Android_JNI_GetZoom(&zoomdiff);
+		if (zoomdiff > 0.0 && zoom < 18) {
+			zoom++;
+		} else if (zoomdiff < 0.0 && zoom > 0) {
+			zoom--;
+		}
+	}
+#endif
 	if (event.type == SDL_QUIT) {
 		ShutDown(esContext);
 		exit(0);

@@ -564,6 +564,15 @@ void screen_system(ESContext *esContext) {
 		sprintf(tmp_str, "TRACKER %s (%i)", setup.tracker_port, setup.tracker_baud);
 		draw_text_button(esContext, "tracker", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
 	}
+
+	float zoom = 0.0;
+	Android_JNI_GetZoom(&zoom);
+	sprintf(tmp_str, "Zoom: %f", zoom);
+	draw_text_button(esContext, "_border_x", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, 0.55, 0.2, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_x, 0.0);
+
+	sprintf(tmp_str, "Resolution: %ix%i", esContext->width, esContext->height);
+	draw_text_button(esContext, "_border_x", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, 0.55, 0.3, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_x, 0.0);
+
 	draw_text_button(esContext, "_border_x", VIEW_MODE_SYSTEM, "X-Border", FONT_GREEN, 0.55, 0.4, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_x, 0.0);
 	draw_text_button(esContext, "_border_x--", VIEW_MODE_SYSTEM, "[-]", FONT_GREEN, 0.85, 0.4, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_x, -2.0);
 	draw_text_button(esContext, "_border_x++", VIEW_MODE_SYSTEM, "[+]", FONT_GREEN, 0.95, 0.4, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_x, 2.0);

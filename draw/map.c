@@ -2,6 +2,10 @@
 #include <all.h>
 #include <kml.h>
 
+#ifndef ANDROID
+//#define MAP_LISTCACHE
+#endif
+
 uint8_t maplen = 0;
 uint8_t omaplen = 0;
 char mapnames[20][7][1024];
