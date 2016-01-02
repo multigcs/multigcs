@@ -2,6 +2,41 @@
 #include <all.h>
 
 
+#define FONT_MAX 32
+char *fontnames[FONT_MAX] = {
+	"astrology.jhf",
+	"cursive.jhf",
+	"cyrilc_1.jhf",
+	"cyrillic.jhf",
+	"futural.jhf",
+	"futuram.jhf",
+	"gothgbt.jhf",
+	"gothgrt.jhf",
+	"gothiceng.jhf",
+	"gothicger.jhf",
+	"gothicita.jhf",
+	"gothitt.jhf",
+	"greekc.jhf",
+	"greek.jhf",
+	"greeks.jhf",
+	"japanese.jhf",
+	"markers.jhf",
+	"mathlow.jhf",
+	"mathupp.jhf",
+	"meteorology.jhf",
+	"music.jhf",
+	"rowmand.jhf",
+	"rowmans.jhf",
+	"rowmant.jhf",
+	"scriptc.jhf",
+	"scripts.jhf",
+	"symbolic.jhf",
+	"timesg.jhf",
+	"timesib.jhf",
+	"timesi.jhf",
+	"timesrb.jhf",
+	"timesr.jhf",
+};
 
 static char port_selected[100];
 static char baud_selected[100];
@@ -139,6 +174,15 @@ uint8_t system_update(char *name, float x, float y, int8_t button, float data, u
 }
 
 uint8_t system_null(char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	return 0;
+}
+
+uint8_t system_set_font(char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	if (setup.font < FONT_MAX - 1) {
+		setup.font++;
+	} else {
+		setup.font = 0;
+	}
 	return 0;
 }
 
@@ -565,13 +609,11 @@ void screen_system(ESContext *esContext) {
 		draw_text_button(esContext, "tracker", VIEW_MODE_SYSTEM, tmp_str, FONT_WHITE, -1.3, 0.2 + n++ * 0.065, 0.002, 0.04, ALIGN_LEFT, ALIGN_TOP, system_device_change, 0.0);
 	}
 
-	float zoom = 0.0;
-	Android_JNI_GetZoom(&zoom);
-	sprintf(tmp_str, "Zoom: %f", zoom);
-	draw_text_button(esContext, "_border_x", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, 0.55, 0.2, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_x, 0.0);
+	sprintf(tmp_str, "Font: %s (%i/%i)", fontnames[(int)setup.font], setup.font + 1, FONT_MAX);
+	draw_text_button(esContext, "_font", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, 0.55, 0.2, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_font, 0.0);
 
 	sprintf(tmp_str, "Resolution: %ix%i", esContext->width, esContext->height);
-	draw_text_button(esContext, "_border_x", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, 0.55, 0.3, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_x, 0.0);
+	draw_text_button(esContext, "_res", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, 0.55, 0.3, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
 
 	draw_text_button(esContext, "_border_x", VIEW_MODE_SYSTEM, "X-Border", FONT_GREEN, 0.55, 0.4, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_x, 0.0);
 	draw_text_button(esContext, "_border_x--", VIEW_MODE_SYSTEM, "[-]", FONT_GREEN, 0.85, 0.4, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_x, -2.0);
