@@ -24,6 +24,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.app.Activity;
 import android.app.ActionBar;
+import android.view.View;
+import android.os.Build;
 
 import java.util.Locale;
 import java.util.Random;
@@ -62,6 +64,7 @@ import org.opencv.android.OpenCVLoader;
 */
 public class SDLActivity extends Activity {
     private static final String TAG = "SDL";
+    private static int m_stickyFlags = 0x0;
 
     // Keep track of the paused state
     public static boolean mIsPaused = false, mIsSurfaceReady = false, mHasFocus = true;
@@ -255,6 +258,28 @@ public class SDLActivity extends Activity {
     protected void onResume() {
         Log.v("SDL", "onResume()");
         super.onResume();
+
+        int SDK_INT = android.os.Build.VERSION.SDK_INT;
+        int flags = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+            | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+			| View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+			| View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+		;
+		if(SDK_INT >= 11 && SDK_INT < 14) {
+			flags = flags | View.STATUS_BAR_HIDDEN;
+        } else if(SDK_INT >= 14) {
+            flags = flags | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LOW_PROFILE | View.GONE;
+        }
+//		if (SDK_INT >= 19) {
+//			flags = flags | View.SYSTEM_UI_FLAG_IMMERSIVE;
+//			flags = flags | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+//		//}
+
+        final View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(flags);
+
+		m_stickyFlags = flags;
+
         SDLActivity.handleResume();
         mSurface.initListeners();
     }
@@ -263,6 +288,9 @@ public class SDLActivity extends Activity {
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         Log.v("SDL", "onWindowFocusChanged(): " + hasFocus);
+
+//        final View decorView = getWindow().getDecorView();
+//        decorView.setSystemUiVisibility(m_stickyFlags);
 
         SDLActivity.mHasFocus = hasFocus;
         if (hasFocus) {
