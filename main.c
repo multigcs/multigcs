@@ -116,6 +116,7 @@ SetupVariables setupVariables[] = {
 	{"hud_view_mark", VAR_TYPE_UINT8_T, &setup.hud_view_mark, 0, "0"},
 	{"contrast", VAR_TYPE_UINT8_T, &setup.contrast, 0, "0"},
 	{"font", VAR_TYPE_UINT8_T, &setup.font, 0, "29"},
+	{"show_fps", VAR_TYPE_UINT8_T, &setup.show_fps, 0, "0"},
 	{"screen_w", VAR_TYPE_UINT16_T, &setup.screen_w, 0, "1024"},
 	{"screen_h", VAR_TYPE_UINT16_T, &setup.screen_h, 0, "768"},
 	{"screen_border_x", VAR_TYPE_UINT16_T, &setup.screen_border_x, 0, "0"},
@@ -2600,6 +2601,33 @@ void Draw(ESContext *esContext) {
 	if (logplay == 1) {
 		logplay_draw_control(esContext, 0.0, 0.85);
 	}
+
+	if (setup.show_fps == 1) {
+		static struct timeval t1, t2;
+		static struct timezone tz;
+		static float deltatime = 0.0f;
+		static float totaltime = 0.0f;
+		static float fps = 0;
+		static int frames = -1;
+		if (frames == -1) {
+			frames = 0;
+			gettimeofday(&t1 , &tz);
+		}
+		gettimeofday(&t2, &tz);
+		deltatime = (float)(t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec) * 1e-6);
+		t1 = t2;
+		totaltime += deltatime;
+		frames++;
+		if (totaltime > 2.0f) {
+			fps = frames / totaltime;
+			SDL_Log("%4d frames rendered in %1.4f seconds -> FPS=%3.4f\n", frames, totaltime, fps);
+			totaltime -= 2.0f;
+			frames = 0;
+		}
+		sprintf(tmp_str, "FPS: %0.2f", fps);
+		draw_text_button(esContext, "fps", setup.view_mode, tmp_str, FONT_WHITE, -aspect + 0.01, -0.99, 0.003, 0.04, ALIGN_LEFT, ALIGN_TOP, overview_show, 0.0);
+	}
+
 #ifndef ANDROID
 	// Mouse-Pointer
 	draw_pointer(esContext, mouse_x, mouse_y, 16, 16, TEXTURE_POINTER);
@@ -2627,27 +2655,6 @@ void Draw(ESContext *esContext) {
 	draw_update(esContext);
 #endif
 	gui_ov_lock = 0;
-#ifdef SHOW_FPS
-	static struct timeval t1, t2;
-	static struct timezone tz;
-	static float deltatime = 0.0f;
-	static float totaltime = 0.0f;
-	static int frames = -1;
-	if (frames == -1) {
-		frames = 0;
-		gettimeofday(&t1 , &tz);
-	}
-	gettimeofday(&t2, &tz);
-	deltatime = (float)(t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec) * 1e-6);
-	t1 = t2;
-	totaltime += deltatime;
-	frames++;
-	if (totaltime > 5.0f) {
-		SDL_Log("%4d frames rendered in %1.4f seconds -> FPS=%3.4f\n", frames, totaltime, frames / totaltime);
-		totaltime -= 5.0f;
-		frames = 0;
-	}
-#endif
 	SDL_Delay(10);
 }
 

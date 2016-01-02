@@ -177,6 +177,11 @@ uint8_t system_null(char *name, float x, float y, int8_t button, float data, uin
 	return 0;
 }
 
+uint8_t system_set_fps(char *name, float x, float y, int8_t button, float data, uint8_t action) {
+	setup.show_fps = 1 - setup.show_fps;
+	return 0;
+}
+
 uint8_t system_set_font(char *name, float x, float y, int8_t button, float data, uint8_t action) {
 	if (setup.font < FONT_MAX - 1) {
 		setup.font++;
@@ -613,7 +618,7 @@ void screen_system(ESContext *esContext) {
 	draw_text_button(esContext, "_font", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, 0.55, 0.2, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_font, 0.0);
 
 	sprintf(tmp_str, "Resolution: %ix%i", esContext->width, esContext->height);
-	draw_text_button(esContext, "_res", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, 0.55, 0.3, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_null, 0.0);
+	draw_text_button(esContext, "_res", VIEW_MODE_SYSTEM, tmp_str, FONT_GREEN, 0.55, 0.3, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_fps, 0.0);
 
 	draw_text_button(esContext, "_border_x", VIEW_MODE_SYSTEM, "X-Border", FONT_GREEN, 0.55, 0.4, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_x, 0.0);
 	draw_text_button(esContext, "_border_x--", VIEW_MODE_SYSTEM, "[-]", FONT_GREEN, 0.85, 0.4, 0.002, 0.05, ALIGN_LEFT, ALIGN_TOP, system_set_border_x, -2.0);

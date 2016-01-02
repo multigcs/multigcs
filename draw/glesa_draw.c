@@ -4,6 +4,12 @@
 #include <SDL_opengles.h>
 #include <vectorfont.h>
 
+#define USE_VECTOR_FONTS
+
+#ifdef USE_VECTOR_FONTS
+#include <font.h>
+#endif
+
 #ifndef GL_BGRA
 #define GL_BGRA 0x80E1
 #define GL_RGBA	0x1908
@@ -354,13 +360,8 @@ void draw_line_f3(ESContext *esContext, float x1, float y1, float z1, float x2, 
 }
 
 void draw_circle_f3(ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+	GLfloat vVertices[3 * 360];
 	y1 = y1 * -1;
-	GLfloat vVertices[9];
-	UserData *userData = esContext->userData;
-	colors[0] = (float)r / 255;
-	colors[1] = (float)g / 255;
-	colors[2] = (float)b / 255;
-	colors[3] = (float)a / 255;
 	uint16_t ii = 0;
 	float num_segments = radius * 300.0;
 	if (num_segments < 100.0) {
@@ -368,100 +369,70 @@ void draw_circle_f3(ESContext *esContext, float x1, float y1, float z1, float ra
 	} else if (num_segments > 360.0) {
 		num_segments = 360.0;
 	}
+	if (num_segments > 360.0) {
+		num_segments = 360.0;
+	}
 	float theta = 2 * PI / num_segments;
 	float tangetial_factor = tanf(theta);
 	float radial_factor = cosf(theta);
-	float x = radius;//we start at angle = 0
+	float x = radius;
 	float y = 0;
-	float last_x = x + x1;
-	float last_y = y + y1;
-	float tx = -y;
-	float ty = x;
-	x += tx * tangetial_factor;
-	y += ty * tangetial_factor;
-	x *= radial_factor;
-	y *= radial_factor;
+	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
 	for (ii = 0; ii < num_segments; ii++) {
-		vVertices[0] = x1;
-		vVertices[1] = y1;
-		vVertices[2] = -2.0 + z1;
-		vVertices[3] = last_x;
-		vVertices[4] = last_y;
-		vVertices[5] = -2.0 + z1;
-		vVertices[6] = x + x1;
-		vVertices[7] = y + y1;
-		vVertices[8] = -2.0 + z1;
-		GLushort indices[] = { 0, 1, 2 };
-		glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
-		glVertexPointer(3, GL_FLOAT, 0, vVertices);
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glDrawElements(GL_LINES, 3, GL_UNSIGNED_SHORT, indices);
-		last_x = x + x1;
-		last_y = y + y1;
-		tx = -y;
-		ty = x;
+		vVertices[0 + ii * 3] = x + x1;
+		vVertices[1 + ii * 3] = y + y1;
+		vVertices[2 + ii * 3] = -2.0 + z1;
+		float tx = -y;
+		float ty = x;
 		x += tx * tangetial_factor;
 		y += ty * tangetial_factor;
 		x *= radial_factor;
 		y *= radial_factor;
 	}
+	glVertexPointer(3, GL_FLOAT, 0, vVertices);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glDrawArrays(GL_LINE_LOOP, 0, num_segments);
 }
 
 void draw_circle_f3_slow(ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
 }
 
 void draw_circleFilled_f3(ESContext *esContext, float x1, float y1, float z1, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
+	GLfloat vVertices[3 * 180 + 3];
 	y1 = y1 * -1;
-	GLfloat vVertices[9];
-	UserData *userData = esContext->userData;
-	colors[0] = (float)r / 255;
-	colors[1] = (float)g / 255;
-	colors[2] = (float)b / 255;
-	colors[3] = (float)a / 255;
 	uint16_t ii = 0;
-	float num_segments = radius * 300.0;
+	float num_segments = radius * 150.0;
 	if (num_segments < 100.0) {
 		num_segments = 100.0;
-	} else if (num_segments > 360.0) {
-		num_segments = 360.0;
+	} else if (num_segments > 180.0) {
+		num_segments = 180.0;
+	}
+	if (num_segments > 180.0) {
+		num_segments = 180.0;
 	}
 	float theta = 2 * PI / num_segments;
 	float tangetial_factor = tanf(theta);
 	float radial_factor = cosf(theta);
-	float x = radius;//we start at angle = 0
+	float x = radius;
 	float y = 0;
-	float last_x = x + x1;
-	float last_y = y + y1;
-	float tx = -y;
-	float ty = x;
-	x += tx * tangetial_factor;
-	y += ty * tangetial_factor;
-	x *= radial_factor;
-	y *= radial_factor;
+	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
+	vVertices[0 + ii * 3] = x1;
+	vVertices[1 + ii * 3] = y1;
+	vVertices[2 + ii * 3] = -2.0 + z1;
 	for (ii = 0; ii < num_segments; ii++) {
-		vVertices[0] = x1;
-		vVertices[1] = y1;
-		vVertices[2] = -2.0 + z1;
-		vVertices[3] = last_x;
-		vVertices[4] = last_y;
-		vVertices[5] = -2.0 + z1;
-		vVertices[6] = x + x1;
-		vVertices[7] = y + y1;
-		vVertices[8] = -2.0 + z1;
-		GLushort indices[] = { 0, 1, 2 };
-		glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
-		glVertexPointer(3, GL_FLOAT, 0, vVertices);
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, indices);
-		last_x = x + x1;
-		last_y = y + y1;
-		tx = -y;
-		ty = x;
+		vVertices[0 + ii * 3] = x + x1;
+		vVertices[1 + ii * 3] = y + y1;
+		vVertices[2 + ii * 3] = -2.0 + z1;
+		float tx = -y;
+		float ty = x;
 		x += tx * tangetial_factor;
 		y += ty * tangetial_factor;
 		x *= radial_factor;
 		y *= radial_factor;
 	}
+	glVertexPointer(3, GL_FLOAT, 0, vVertices);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glDrawArrays(GL_TRIANGLE_FAN, 0, num_segments);
 	draw_circle_f3(esContext, x1, y1 * -1, z1, radius, r, g, b, a);
 }
 
@@ -812,6 +783,42 @@ void draw_texture_f3(ESContext *esContext, float x1, float y1, float x2, float y
 	}
 }
 
+#ifdef USE_VECTOR_FONTS
+int output_char_gl (char c, float x, float y, float z, float s, GLfloat *vVertices, int ii) {
+	int n = c - 32;
+	if (c >= 32 && c <= 126) {
+		int pn = 0;
+		int px = 0;
+		int py = 0;
+		int last_px = 0;
+		int last_py = 0;
+		y -= s * 1.2;
+		x += s * 0.7;
+		s /= 42.0;
+		x -= ((float)fontdata[(int)setup.font][n][1] * s) / 2.0;
+		for (pn = 2; pn < 112; pn += 2) {
+			px = fontdata[(int)setup.font][n][pn];
+			py = fontdata[(int)setup.font][n][pn + 1];
+			if (pn != 2 && px != -1 && last_px != -1) {
+//				glVertex3f(x + (float)last_px * s, y + (float)last_py * s, z);
+//				glVertex3f(x + (float)px * s, y + (float)py * s, z);
+				vVertices[0 + ii * 6] = x + (float)last_px * s;
+				vVertices[1 + ii * 6] = y + (float)last_py * s;
+				vVertices[2 + ii * 6] = -2.0 + z;
+				vVertices[3 + ii * 6] = x + (float)px * s;
+				vVertices[4 + ii * 6] = y + (float)py * s;
+				vVertices[5 + ii * 6] = -2.0 + z;
+				ii++;
+			}
+			last_px = px;
+			last_py = py;
+		}
+		return ii;
+	}
+	return 0.0;
+}
+#endif
+
 inline void draw_char_f3_fast(ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, int8_t tex_num, char num) {
 	UserData *userData = esContext->userData;
 	int nnn = 0;
@@ -858,6 +865,41 @@ inline void draw_char_f3_fast(ESContext *esContext, float x1, float y1, float z1
 void draw_text_f3_fast(ESContext *esContext, float x1, float y1, float z1, float w, float h, char *file, char *text) {
 	UserData *userData = esContext->userData;
 	int16_t n = 0;
+#ifdef USE_VECTOR_FONTS
+	int ii = 0;
+	GLfloat *vVertices = NULL;
+	vVertices = malloc(112 * 6 * sizeof(GLfloat));
+	if (h < 0.03) {
+		glLineWidth(1);
+	} else {
+		glLineWidth(2);
+	}
+	if (strcmp(file, FONT_GREEN_BG) == 0) {
+		glColor4f(0.0, 1.0, 0.0, 1.0);
+	} else if (strcmp(file, FONT_TRANS) == 0) {
+		glColor4f(1.0, 1.0, 1.0, 0.75);
+	} else if (strcmp(file, FONT_BLACK_BG) == 0) {
+		glColor4f(0.0, 0.0, 0.0, 1.0);
+	} else if (strcmp(file, FONT_WHITE) == 0) {
+		glColor4f(1.0, 1.0, 1.0, 1.0);
+	} else if (strcmp(file, FONT_GREEN) == 0) {
+		glColor4f(0.0, 1.0, 0.0, 1.0);
+	} else if (strcmp(file, FONT_PINK) == 0) {
+		glColor4f(1.0, 0.0, 0.0, 1.0);
+	} else {
+		glColor4f(1.0, 1.0, 1.0, 1.0);
+	}
+//	glBegin(GL_LINES);
+	for (n = 0; n < strlen(text); n++) {
+		ii = output_char_gl(text[n], x1 + n * ((float)w * 0.6), -y1, z1, h, vVertices, ii);
+		vVertices = realloc(vVertices, (ii + 112) * 6 * sizeof(GLfloat));
+	}
+	glVertexPointer(3, GL_FLOAT, 0, vVertices);
+	glDrawArrays(GL_LINES, 0, ii * 2);
+	free(vVertices);
+	glLineWidth(1);
+//	glEnd();
+#else
 	int16_t tex_num = -1;
 	int16_t old_num = -1;
 	uint32_t atime_min = 0xFFFFFFFF;
@@ -912,6 +954,7 @@ void draw_text_f3_fast(ESContext *esContext, float x1, float y1, float z1, float
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		glDisable(GL_TEXTURE_2D);
 	}
+#endif
 }
 
 void draw_char_f3(ESContext *esContext, float x1, float y1, float z1, float x2, float y2, float z2, char *file, char num) {

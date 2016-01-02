@@ -419,61 +419,6 @@ void draw_circle_f3(ESContext *esContext, float x1, float y1, float z1, float ra
 	glVertexPointer(3, GL_FLOAT, 0, vVertices);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glDrawArrays(GL_LINE_LOOP, 0, num_segments);
-
-/*
-	y1 = y1 * -1;
-	UserData *userData = esContext->userData;
-	colors[0] = (float)r / 255;
-	colors[1] = (float)g / 255;
-	colors[2] = (float)b / 255;
-	colors[3] = (float)a / 255;
-	uint16_t ii = 0;
-	float num_segments = radius * 300.0;
-	if (num_segments < 100.0) {
-		num_segments = 100.0;
-	} else if (num_segments > 360.0) {
-		num_segments = 360.0;
-	}
-	GLfloat vVertices[9 * 360];
-	float theta = 2 * PI / num_segments;
-	float tangetial_factor = tanf(theta);
-	float radial_factor = cosf(theta);
-	float x = radius;//we start at angle = 0
-	float y = 0;
-	float last_x = x + x1;
-	float last_y = y + y1;
-	float tx = -y;
-	float ty = x;
-	x += tx * tangetial_factor;
-	y += ty * tangetial_factor;
-	x *= radial_factor;
-	y *= radial_factor;
-	for (ii = 0; ii < num_segments; ii++) {
-		vVertices[0 + ii * 9] = x1;
-		vVertices[1 + ii * 9] = y1;
-		vVertices[2 + ii * 9] = -2.0 + z1;
-		vVertices[3 + ii * 9] = last_x;
-		vVertices[4 + ii * 9] = last_y;
-		vVertices[5 + ii * 9] = -2.0 + z1;
-		vVertices[6 + ii * 9] = x + x1;
-		vVertices[7 + ii * 9] = y + y1;
-		vVertices[8 + ii * 9] = -2.0 + z1;
-
-		last_x = x + x1;
-		last_y = y + y1;
-		tx = -y;
-		ty = x;
-		x += tx * tangetial_factor;
-		y += ty * tangetial_factor;
-		x *= radial_factor;
-		y *= radial_factor;
-	}
-
-	glVertexPointer(3, GL_FLOAT, 0, vVertices);
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glDrawArrays(GL_LINES, 1, 3 * num_segments);
-*/
-
 }
 
 void draw_circleSS_f3(ESContext *esContext, float x1, float y1, float z1, float radius, float start, float stop, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {
@@ -554,7 +499,6 @@ void draw_circleFilled_f3(ESContext *esContext, float x1, float y1, float z1, fl
 	if (num_segments > 180.0) {
 		num_segments = 180.0;
 	}
-
 	float theta = 2 * PI / num_segments;
 	float tangetial_factor = tanf(theta);
 	float radial_factor = cosf(theta);
@@ -562,19 +506,14 @@ void draw_circleFilled_f3(ESContext *esContext, float x1, float y1, float z1, fl
 	float y = 0;
 //	glBegin(GL_LINE_LOOP);
 	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
-
 	vVertices[0 + ii * 3] = x1;
 	vVertices[1 + ii * 3] = y1;
 	vVertices[2 + ii * 3] = -2.0 + z1;
-
 	for (ii = 0; ii < num_segments; ii++) {
 //		glVertex3f(x + x1, y + y1, -2.0 + z1);
-
 		vVertices[0 + ii * 3] = x + x1;
 		vVertices[1 + ii * 3] = y + y1;
 		vVertices[2 + ii * 3] = -2.0 + z1;
-
-
 		float tx = -y;
 		float ty = x;
 		x += tx * tangetial_factor;
@@ -583,46 +522,9 @@ void draw_circleFilled_f3(ESContext *esContext, float x1, float y1, float z1, fl
 		y *= radial_factor;
 	}
 //	glEnd();
-
 	glVertexPointer(3, GL_FLOAT, 0, vVertices);
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glDrawArrays(GL_TRIANGLE_FAN, 0, num_segments);
-
-/*
-	y1 = y1 * -1;
-	uint16_t ii = 0;
-	float num_segments = radius * 300.0;
-	if (num_segments < 100.0) {
-		num_segments = 100.0;
-	} else if (num_segments > 360.0) {
-		num_segments = 360.0;
-	}
-	float theta = 2 * PI / num_segments;
-	float tangetial_factor = tanf(theta);
-	float radial_factor = cosf(theta);
-	float x = radius;//we start at angle = 0
-	float y = 0;
-	float tx = -y;
-	float ty = x;
-	x += tx * tangetial_factor;
-	y += ty * tangetial_factor;
-	x *= radial_factor;
-	y *= radial_factor;
-	glBegin(GL_TRIANGLE_FAN);
-	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
-	glVertex3f(x1, y1, -2.0 + z1);
-	for (ii = 0; ii <= num_segments; ii++) {
-		glVertex3f(x + x1, y + y1, -2.0 + z1);
-		tx = -y;
-		ty = x;
-		x += tx * tangetial_factor;
-		y += ty * tangetial_factor;
-		x *= radial_factor;
-		y *= radial_factor;
-	}
-	glEnd();
-	draw_circle_f3(esContext, x1, y1 * -1, z1, radius, r, g, b, a);
-*/
 }
 
 void draw_zylinder_f3(ESContext *esContext, float x1, float y1, float z1, float z2, float radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a) {

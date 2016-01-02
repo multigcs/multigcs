@@ -172,6 +172,7 @@ typedef struct {
 	uint8_t hud_view_mark;
 	uint8_t contrast;
 	uint8_t font;
+	uint8_t show_fps;
 	uint16_t screen_w;
 	uint16_t screen_h;
 	uint16_t screen_border_x;
