@@ -115,8 +115,9 @@ SetupVariables setupVariables[] = {
 	{"hud_view_tunnel", VAR_TYPE_UINT8_T, &setup.hud_view_tunnel, 0, "0"},
 	{"hud_view_mark", VAR_TYPE_UINT8_T, &setup.hud_view_mark, 0, "0"},
 	{"contrast", VAR_TYPE_UINT8_T, &setup.contrast, 0, "0"},
-	{"screen_w", VAR_TYPE_UINT16_T, &setup.screen_w, 0, "1280"},
-	{"screen_h", VAR_TYPE_UINT16_T, &setup.screen_h, 0, "1024"},
+	{"font", VAR_TYPE_UINT8_T, &setup.font, 0, "29"},
+	{"screen_w", VAR_TYPE_UINT16_T, &setup.screen_w, 0, "1024"},
+	{"screen_h", VAR_TYPE_UINT16_T, &setup.screen_h, 0, "768"},
 	{"screen_border_x", VAR_TYPE_UINT16_T, &setup.screen_border_x, 0, "0"},
 	{"screen_border_y", VAR_TYPE_UINT16_T, &setup.screen_border_y, 0, "0"},
 	{"side_by_side", VAR_TYPE_UINT8_T, &setup.side_by_side, 0, "0"},
@@ -2152,10 +2153,10 @@ void Draw(ESContext *esContext) {
 			//			fprintf(stderr, "\n");
 			mavlink_send_channels(ModelActive, values);
 		}
-		//		for (n = 0; n < 8; ++n) {
-		//			values[n] = 1500;
-		//		}
-		//		mavlink_send_channels(ModelActive, values);
+		//for (n = 0; n < 8; ++n) {
+		//	values[n] = 1500;
+		//}
+		//mavlink_send_channels(ModelActive, values);
 	}
 #endif
 	Logging();
@@ -2626,7 +2627,28 @@ void Draw(ESContext *esContext) {
 	draw_update(esContext);
 #endif
 	gui_ov_lock = 0;
-	SDL_Delay(15);
+#ifdef SHOW_FPS
+	static struct timeval t1, t2;
+	static struct timezone tz;
+	static float deltatime = 0.0f;
+	static float totaltime = 0.0f;
+	static int frames = -1;
+	if (frames == -1) {
+		frames = 0;
+		gettimeofday(&t1 , &tz);
+	}
+	gettimeofday(&t2, &tz);
+	deltatime = (float)(t2.tv_sec - t1.tv_sec + (t2.tv_usec - t1.tv_usec) * 1e-6);
+	t1 = t2;
+	totaltime += deltatime;
+	frames++;
+	if (totaltime > 5.0f) {
+		SDL_Log("%4d frames rendered in %1.4f seconds -> FPS=%3.4f\n", frames, totaltime, frames / totaltime);
+		totaltime -= 5.0f;
+		frames = 0;
+	}
+#endif
+	SDL_Delay(10);
 }
 
 void ShutDown(ESContext *esContext) {

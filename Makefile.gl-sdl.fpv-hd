@@ -5,6 +5,7 @@ VERSION_NAME = fpvhd
 EXTRA_OBJECTS = draw/gl_draw.o
 BASE_DIR = /usr/share/multigcs
 COMP = clang
+#COMP = gcc
 
 
 INCDIR = 
