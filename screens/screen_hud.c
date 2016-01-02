@@ -912,7 +912,7 @@ void screen_hud_internal(ESContext *esContext) {
 	UserData *userData = esContext->userData;
 #else
 #ifndef WINDOWS
-	if (draw_target() == 0 && setup.view_mode == VIEW_MODE_HUD) {
+	if (draw_target() == 0 && setup.view_mode == VIEW_MODE_HUD && setup.side_by_side == 0) {
 		draw_to_buffer();
 		display_map(esContext, lat, lon, zoom, 0, 1, 1.0, 0.0, 0.0, 0.0);
 		draw_to_screen();
@@ -938,7 +938,7 @@ void screen_hud_internal(ESContext *esContext) {
 		}
 	}
 	float upm = (pointer_val + 54.0) * 8000.0 / 288;
-	if (setup.hud_view_screen != 2 && draw_target() == 0) {
+	if (setup.hud_view_screen != 2 && draw_target() == 0 && setup.side_by_side == 0) {
 		if (upm < 800.0) {
 			draw_image_f3(esContext, 0.0 - 0.2, 0.0 - 0.3, 0.0 + 0.2, 0.0 + 0.1, 0.012, "car-door.png");
 		} else if (upm < 1600.0) {
@@ -1795,7 +1795,7 @@ void screen_hud_internal(ESContext *esContext) {
 	draw_text_button(esContext, "view_hud_v", VIEW_MODE_HUD, tmp_str, FONT_GREEN, 0.0, -0.99, 0.002, 0.06, 1, 0, hud_null, 0);
 #ifdef SDLGL
 #ifndef WINDOWS
-	if (setup.hud_view_screen != 2 && draw_target() == 0) {
+	if (setup.hud_view_screen != 2 && draw_target() == 0 && setup.side_by_side == 0) {
 		draw_buffer_to_screen(0.9, 0.45, 1.4, 0.9, 0.0, 1.0);
 		draw_rect_f3(esContext, 0.9, 0.45, 0.002, 1.4, 0.9, 0.002, 0, 0, 0, 255);
 		draw_rect_f3(esContext, 0.9 - 0.005, 0.45 - 0.005, 0.002, 1.4 + 0.005, 0.9 + 0.005, 0.002, 255, 255, 255, 255);

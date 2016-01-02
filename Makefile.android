@@ -50,11 +50,13 @@ install:
 run:
 	$(ADB) shell am start -n org.libsdl.app/org.libsdl.app.MultiGCS
 
+shell:
+	$(ADB) shell
+
 logcat:
 	$(ADB) logcat
 
 tail: logcat
-
 
 clean:
 	(cd android ; $(NDKBUILD) clean)

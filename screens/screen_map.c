@@ -1109,7 +1109,7 @@ void map_draw_buttons(ESContext *esContext) {
 	glDisable(GL_DEPTH_TEST);
 #ifdef SDLGL
 #ifndef WINDOWS
-	if (draw_target() == 0) {
+	if (draw_target() == 0 && setup.side_by_side == 0) {
 		draw_buffer_to_screen(0.9, 0.45, 1.4, 0.9, 0.0, 1.0);
 		draw_rect_f3(esContext, 0.9, 0.45, 0.002, 1.4, 0.9, 0.002, 0, 0, 0, 255);
 		draw_rect_f3(esContext, 0.9 - 0.005, 0.45 - 0.005, 0.002, 1.4 + 0.005, 0.9 + 0.005, 0.002, 255, 255, 255, 255);
@@ -1834,7 +1834,7 @@ void display_map(ESContext *esContext, float lat, float lon, uint8_t zoom, uint8
 	init_map(esContext, lat, lon, zoom, _map_view, draw_tiles, alpha0, alpha1, alpha2, grid);
 #ifdef SDLGL
 #ifndef WINDOWS
-	if (draw_target() == 0 && setup.view_mode == VIEW_MODE_MAP) {
+	if (draw_target() == 0 && setup.view_mode == VIEW_MODE_MAP && setup.side_by_side == 0) {
 		draw_to_buffer();
 		hud_draw_horizon(esContext, 0);
 		draw_to_screen();
