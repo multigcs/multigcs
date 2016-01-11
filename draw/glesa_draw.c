@@ -17,8 +17,12 @@
 #define GL_RGB 0x1907
 #endif
 
+//#define OFFSET_Z -2.0f
+#define OFFSET_Z 0.0f
+
 static SDLTest_CommonState *state;
 static SDL_GLContext *context = NULL;
+static int depth = 16;
 
 SDL_Window *MainWindow = NULL;
 SDL_GLContext MainGLcontext;
@@ -100,6 +104,8 @@ void gluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar) {
 void gl_init(ESContext *esContext) {
 	int i;
 	int value;
+	int fsaa;
+	int accel;
 	SDL_DisplayMode mode;
 	int status;
 	SDL_LogSetPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO);
@@ -141,6 +147,60 @@ void gl_init(ESContext *esContext) {
 	SDL_Log("Version    : %s\n", glGetString(GL_VERSION));
 	SDL_Log("Extensions : %s\n", glGetString(GL_EXTENSIONS));
 	SDL_Log("\n");
+	status = SDL_GL_GetAttribute(SDL_GL_RED_SIZE, &value);
+	if (!status) {
+		SDL_Log("SDL_GL_RED_SIZE: requested %d, got %d\n", 5, value);
+	} else {
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to get SDL_GL_RED_SIZE: %s\n",
+					 SDL_GetError());
+	}
+	status = SDL_GL_GetAttribute(SDL_GL_GREEN_SIZE, &value);
+	if (!status) {
+		SDL_Log("SDL_GL_GREEN_SIZE: requested %d, got %d\n", 5, value);
+	} else {
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to get SDL_GL_GREEN_SIZE: %s\n",
+					 SDL_GetError());
+	}
+	status = SDL_GL_GetAttribute(SDL_GL_BLUE_SIZE, &value);
+	if (!status) {
+		SDL_Log("SDL_GL_BLUE_SIZE: requested %d, got %d\n", 5, value);
+	} else {
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to get SDL_GL_BLUE_SIZE: %s\n",
+					 SDL_GetError());
+	}
+	status = SDL_GL_GetAttribute(SDL_GL_DEPTH_SIZE, &value);
+	if (!status) {
+		SDL_Log("SDL_GL_DEPTH_SIZE: requested %d, got %d\n", depth, value);
+	} else {
+		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to get SDL_GL_DEPTH_SIZE: %s\n",
+					 SDL_GetError());
+	}
+	if (fsaa) {
+		status = SDL_GL_GetAttribute(SDL_GL_MULTISAMPLEBUFFERS, &value);
+		if (!status) {
+			SDL_Log("SDL_GL_MULTISAMPLEBUFFERS: requested 1, got %d\n", value);
+		} else {
+			SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to get SDL_GL_MULTISAMPLEBUFFERS: %s\n",
+						 SDL_GetError());
+		}
+		status = SDL_GL_GetAttribute(SDL_GL_MULTISAMPLESAMPLES, &value);
+		if (!status) {
+			SDL_Log("SDL_GL_MULTISAMPLESAMPLES: requested %d, got %d\n", fsaa,
+					value);
+		} else {
+			SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to get SDL_GL_MULTISAMPLESAMPLES: %s\n",
+						 SDL_GetError());
+		}
+	}
+	if (accel) {
+		status = SDL_GL_GetAttribute(SDL_GL_ACCELERATED_VISUAL, &value);
+		if (!status) {
+			SDL_Log("SDL_GL_ACCELERATED_VISUAL: requested 1, got %d\n", value);
+		} else {
+			SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to get SDL_GL_ACCELERATED_VISUAL: %s\n",
+						 SDL_GetError());
+		}
+	}
 	for (i = 0; i < state->num_windows; ++i) {
 		status = SDL_GL_MakeCurrent(state->windows[i], context[i]);
 		if (status) {
@@ -263,10 +323,10 @@ void draw_surface_f3(ESContext *esContext, float x1, float y1, float x2, float y
 		return;
 	}
 	GLfloat vVertices[] = {
-		x1, y1, -2.0f + z,  // Position 0
-		x1, y2, -2.0f + z,  // Position 1
-		x2, y2, -2.0f + z,   // Position 2
-		x2, y1, -2.0f + z,   // Position 3
+		x1, y1, OFFSET_Z + z,  // Position 0
+		x1, y2, OFFSET_Z + z,  // Position 1
+		x2, y2, OFFSET_Z + z,   // Position 2
+		x2, y1, OFFSET_Z + z,   // Position 3
 	};
 	GLfloat vTex[] = {
 		0.0f,  0.0f,         // TexCoord 0
@@ -474,10 +534,10 @@ void draw_box_f3(ESContext *esContext, float x1, float y1, float z1, float x2, f
 	y1 = y1 * -1;
 	y2 = y2 * -1;
 	GLfloat vVertices[] = {
-		x1, y1, -2.0f + z1,  // Position 0
-		x1, y2, -2.0f + z1,  // Position 1
-		x2, y2, -2.0f + z1,   // Position 2
-		x2, y1, -2.0f + z1,   // Position 3
+		x1, y1, OFFSET_Z + z1,  // Position 0
+		x1, y2, OFFSET_Z + z1,  // Position 1
+		x2, y2, OFFSET_Z + z1,   // Position 2
+		x2, y1, OFFSET_Z + z1,   // Position 3
 	};
 	GLushort indices[] = { 0, 1, 2, 0, 2, 3 };
 	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
@@ -491,10 +551,10 @@ void draw_box_f3c2(ESContext *esContext, float x1, float y1, float z1, float x2,
 	y1 = y1 * -1;
 	y2 = y2 * -1;
 	GLfloat vVertices[] = {
-		x1, y1, -2.0f + z1,  // Position 0
-		x1, y2, -2.0f + z1,  // Position 1
-		x2, y2, -2.0f + z1,   // Position 2
-		x2, y1, -2.0f + z1,   // Position 3
+		x1, y1, OFFSET_Z + z1,  // Position 0
+		x1, y2, OFFSET_Z + z1,  // Position 1
+		x2, y2, OFFSET_Z + z1,   // Position 2
+		x2, y1, OFFSET_Z + z1,   // Position 3
 	};
 	GLushort indices[] = { 0, 1, 2, 0, 2, 3 };
 	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
@@ -526,9 +586,9 @@ void draw_triaFilled_f3(ESContext *esContext, float x1, float y1, float z1, floa
 	y2 = y2 * -1;
 	y3 = y3 * -1;
 	GLfloat vVertices[] = {
-		x1, y1, -2.0f + z1,  // Position 0
-		x2, y2, -2.0f + z2,  // Position 1
-		x3, y3, -2.0f + z3,   // Position 2
+		x1, y1, OFFSET_Z + z1,  // Position 0
+		x2, y2, OFFSET_Z + z2,  // Position 1
+		x3, y3, OFFSET_Z + z3,   // Position 2
 	};
 	GLushort indices[] = { 0, 1, 2 };
 	colors[0] = (float)r / 255;
@@ -632,10 +692,10 @@ void draw_image_srtm(ESContext *esContext, int16_t x, int16_t y, int16_t w, int1
 			z3 = z + (float)_alt3 / alt_zoom;
 			z4 = z + (float)_alt4 / alt_zoom;
 			GLfloat vVertices[] = {
-				tx1, ty1, -2.0f + z1,  // Position 0
-				tx1, ty2, -2.0f + z4,  // Position 1
-				tx2, ty2, -2.0f + z3,   // Position 2
-				tx2, ty1, -2.0f + z2,   // Position 3
+				tx1, ty1, OFFSET_Z + z1,  // Position 0
+				tx1, ty2, OFFSET_Z + z4,  // Position 1
+				tx2, ty2, OFFSET_Z + z3,   // Position 2
+				tx2, ty1, OFFSET_Z + z2,   // Position 3
 			};
 			GLfloat vTex[] = {
 				tex1, tey1,         // TexCoord 3
@@ -729,10 +789,10 @@ void draw_image_f3(ESContext *esContext, float x1, float y1, float x2, float y2,
 		TexCache[tex_num].atime = time(0);
 		//		SDL_Log("# %s = %i\n", TexCache[tex_num].name, TexCache[tex_num].texture);
 		GLfloat vVertices[] = {
-			x1, y1, -2.0f + z,  // Position 0
-			x1, y2, -2.0f + z,  // Position 1
-			x2, y2, -2.0f + z,   // Position 2
-			x2, y1, -2.0f + z,   // Position 3
+			x1, y1, OFFSET_Z + z,  // Position 0
+			x1, y2, OFFSET_Z + z,  // Position 1
+			x2, y2, OFFSET_Z + z,   // Position 2
+			x2, y1, OFFSET_Z + z,   // Position 3
 		};
 		GLfloat vTex[] = {
 			0.0f,  0.0f,         // TexCoord 0
@@ -759,10 +819,10 @@ void draw_texture_f3(ESContext *esContext, float x1, float y1, float x2, float y
 	y2 = y2 * -1;
 	if (texture != 0) {
 		GLfloat vVertices[] = {
-			x1, y1, -2.0f + z,  // Position 0
-			x1, y2, -2.0f + z,  // Position 1
-			x2, y2, -2.0f + z,   // Position 2
-			x2, y1, -2.0f + z,   // Position 3
+			x1, y1, OFFSET_Z + z,  // Position 0
+			x1, y2, OFFSET_Z + z,  // Position 1
+			x2, y2, OFFSET_Z + z,   // Position 2
+			x2, y1, OFFSET_Z + z,   // Position 3
 		};
 		GLfloat vTex[] = {
 			0.0f,  1.0f,         // TexCoord 0
@@ -784,7 +844,7 @@ void draw_texture_f3(ESContext *esContext, float x1, float y1, float x2, float y
 }
 
 #ifdef USE_VECTOR_FONTS
-int output_char_gl (char c, float x, float y, float z, float s, GLfloat *vVertices, int ii) {
+int output_char_gl(char c, float x, float y, float z, float s, GLfloat *vVertices, int ii) {
 	int n = c - 32;
 	if (c >= 32 && c <= 126) {
 		int pn = 0;
@@ -800,8 +860,8 @@ int output_char_gl (char c, float x, float y, float z, float s, GLfloat *vVertic
 			px = fontdata[(int)setup.font][n][pn];
 			py = fontdata[(int)setup.font][n][pn + 1];
 			if (pn != 2 && px != -1 && last_px != -1) {
-//				glVertex3f(x + (float)last_px * s, y + (float)last_py * s, z);
-//				glVertex3f(x + (float)px * s, y + (float)py * s, z);
+				//				glVertex3f(x + (float)last_px * s, y + (float)last_py * s, z);
+				//				glVertex3f(x + (float)px * s, y + (float)py * s, z);
 				vVertices[0 + ii * 6] = x + (float)last_px * s;
 				vVertices[1 + ii * 6] = y + (float)last_py * s;
 				vVertices[2 + ii * 6] = -2.0 + z;
@@ -889,7 +949,7 @@ void draw_text_f3_fast(ESContext *esContext, float x1, float y1, float z1, float
 	} else {
 		glColor4f(1.0, 1.0, 1.0, 1.0);
 	}
-//	glBegin(GL_LINES);
+	//	glBegin(GL_LINES);
 	for (n = 0; n < strlen(text); n++) {
 		ii = output_char_gl(text[n], x1 + n * ((float)w * 0.6), -y1, z1, h, vVertices, ii);
 		vVertices = realloc(vVertices, (ii + 112) * 6 * sizeof(GLfloat));
@@ -898,7 +958,7 @@ void draw_text_f3_fast(ESContext *esContext, float x1, float y1, float z1, float
 	glDrawArrays(GL_LINES, 0, ii * 2);
 	free(vVertices);
 	glLineWidth(1);
-//	glEnd();
+	//	glEnd();
 #else
 	int16_t tex_num = -1;
 	int16_t old_num = -1;
@@ -1097,10 +1157,10 @@ void draw_box_f3c2b(ESContext *esContext, float x1, float y1, float z1, float x2
 	y1 = y1 * -1;
 	y2 = y2 * -1;
 	GLfloat vVertices[] = {
-		x1, y1, -2.0f + z1,  // Position 0
-		x1, y2, -2.0f + z1,  // Position 1
-		x2, y2, -2.0f + z1,   // Position 2
-		x2, y1, -2.0f + z1,   // Position 3
+		x1, y1, OFFSET_Z + z1,  // Position 0
+		x1, y2, OFFSET_Z + z1,  // Position 1
+		x2, y2, OFFSET_Z + z1,   // Position 2
+		x2, y1, OFFSET_Z + z1,   // Position 3
 	};
 	GLushort indices[] = { 0, 1, 2, 0, 2, 3 };
 	glColor4f((float)r / 255.0, (float)g / 255.0, (float)b / 255.0, (float)a / 255.0);
