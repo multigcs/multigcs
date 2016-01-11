@@ -37,6 +37,8 @@ all:
 	cp -a net/simple.dae android/assets/webserv/simple.dae
 	cp -a copyright android/assets/webserv/copyright
 	cp -a GPLv2.txt android/assets/webserv/GPLv2.txt
+	ln -sf ../../../../../../SDL_android.c android/jni/SDL2/src/core/android/SDL_android.c
+	ln -sf ../../../../../../SDL_android.h android/jni/SDL2/src/core/android/SDL_android.h
 	grep -s -q "jidctfst.S" android/jni/SDL2_image/Android.mk && sed -i "s|jidctfst.S|jidctfst.c|g" android/jni/SDL2_image/Android.mk || true
 	grep -s -q "SUPPORT_WEBP := true" android/jni/SDL2_image/Android.mk && sed -i "s|SUPPORT_WEBP := true|SUPPORT_WEBP := false|g" android/jni/SDL2_image/Android.mk || true
 	(cd android-dev/opencv-android-sdk/sdk/java/ ; $(ANDROID) update project -s -p ./ -t android-18)
