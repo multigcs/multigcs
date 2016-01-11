@@ -2,10 +2,12 @@
 
 ## Linux-Desktop Open-GL/SDL2 Version ##
 DEB_DEPENDS = tcl8.5,coreutils,libasound2,libasyncns0,libattr1,libc6,libcaca0,libcap2,libcomerr2,libdbus-1-3,libdirectfb-1.2-9,libflac8,libfreetype6,libgcc1,libgpg-error0,libgssapi-krb5-2,libice6,libidn11,libjbig0,libjpeg8,libk5crypto3,libkeyutils1,libkrb5-3,libkrb5support0,libldap-2.4-2,libncursesw5,libogg0,libp11-kit0,libpng12-0,libpulse0,libsasl2-2,libsdl1.2debian,libsdl-image1.2,libslang2,libsm6,libsndfile1,libssh2-1,libssl1.0.0,libstdc++6,libtinfo5,libuuid1,libvorbis0a,libvorbisenc2,libwrap0,libx11-6,libx11-xcb1,libxau6,libxcb1,libxdmcp6,libxext6,libxi6,libxtst6,zlib1g
-VERSION_NAME = sdl
-EXTRA_OBJECTS = draw/gl_draw.o
+VERSION_NAME = glsdl2
+EXTRA_OBJECTS = draw/gl_draw.c
 BASE_DIR = /usr/share/multigcs
 COMP = clang
+
+BUILDDIR := build/$(VERSION_NAME)
 
 INCDIR = -I/usr/local/include
 LIBS = -L/usr/local/lib
@@ -20,7 +22,7 @@ CFLAGS += -ggdb
 
 ## ldd gcs  | grep -v /opt | awk '{print $1}' | xargs -r -l dpkg -S  | cut -d":" -f1 | sort -u | tr  "\n" "," ##
 
-COMMONSRC = draw/opencv.o
+COMMONSRC = draw/opencv.c
 COMMONHRD = 
 
 include make.inc

@@ -39,3 +39,4 @@ utils/log2kmlroute
 utils/logdump
 utils/udevtest
 wifibc-tx
+build/

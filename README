@@ -50,19 +50,19 @@ Compilation/Installation:
 Android-Permissions:
 	READ/WRITE_EXTERNAL_STORAGE
 		to read and write map-files on storrage
-	
+
 	INTERNET
 		to get maps and open server-port for the html5-gui/blender/google-earth support (closed by default)
-	
+
 	ACCESS_FINE_LOCATION
 		to get gps-data for the map
-	
+
 	BATTERY_STATS
 		to get battery-data
-	
+
 	BLUETOOTH / BLUETOOTH_ADMIN
 		for fc-connection over bluetooth
-	
+
 	CAMERA
 		for video-input/display in the hud-screen
 

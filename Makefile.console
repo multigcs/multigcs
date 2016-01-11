@@ -3,10 +3,11 @@
 ## Linux-Desktop GL Version ##
 DEB_DEPENDS = tcl8.5,espeak,coreutils,bluez,imagemagick,ia32-libs,lib32asound2,lib32gcc1,lib32stdc++6,lib32tinfo5,lib32z1,libasound2,libasyncns0,libattr1,libc6,libc6-i386,libcaca0,libcap2,libcomerr2,libdbus-1-3,libdirectfb-1.2-9,libflac8,libfreetype6,libgcc1,libgcrypt11,libgl1-mesa-glx,libgl1-nvidia-glx,libglu1-mesa,libgnutls26,libgpg-error0,libgssapi-krb5-2,libice6,libidn11,libjbig0,libjpeg8,libjson0,libk5crypto3,libkeyutils1,libkrb5-3,libkrb5support0,libldap-2.4-2,libncursesw5,libogg0,libp11-kit0,libpng12-0,libpulse0,librtmp0,libsasl2-2,libsdl1.2debian,libsdl-image1.2,libsdl-ttf2.0-0,libslang2,libsm6,libsndfile1,libssh2-1,libssl1.0.0,libstdc++6,libtasn1-3,libtiff4,libtinfo5,libts-0.0-0,libuuid1,libvorbis0a,libvorbisenc2,libwebp2,libwrap0,libx11-6,libx11-xcb1,libxau6,libxcb1,libxdmcp6,libxext6,libxi6,libxtst6,zlib1g
 VERSION_NAME = console
-EXTRA_OBJECTS = draw/gl_draw.o
+EXTRA_OBJECTS = draw/gl_draw.c
 BASE_DIR = /usr/share/multigcs
 COMP = clang
 
+BUILDDIR := build/$(VERSION_NAME)
 
 INCDIR = 
 LIBS = 
@@ -19,7 +20,7 @@ CFLAGS += -DSDLGL -O3 -Wall -DBASE_DIR="\"$(BASE_DIR)\"" -DCONSOLE_ONLY -DHTML_D
 #CFLAGS += -DUSE_WIFIBC
 #INCDIR += -I./wifibc
 #LIBS += -lrt -lpcap -lavformat -lavcodec -lswscale -lz -lavutil
-#EXTRA_OBJECTS += wifibc/wifibc.o wifibc/lib.o wifibc/radiotap.o wifibc/fec.o
+#EXTRA_OBJECTS += wifibc/wifibc.c wifibc/lib.c wifibc/radiotap.c wifibc/fec.c
 
 ## video for linux api for cam ##
 #CFLAGS += -DUSE_V4L
@@ -34,10 +35,10 @@ LIBS += $(shell pkg-config --libs opencv)
 #CFLAGS += -DUSE_VLC
 #INCDIR += $(shell pkg-config --cflags libvlc)
 #LIBS += $(shell pkg-config --libs libvlc)
-#EXTRA_OBJECTS += draw/vlcinput.o
+#EXTRA_OBJECTS += draw/vlcinput.c
 
 CFLAGS += -DUSE_APRS
-EXTRA_OBJECTS += aprs.o
+EXTRA_OBJECTS += aprs.c
 
 INCDIR += $(shell pkg-config --cflags sdl) $(shell pkg-config --cflags SDL_image) $(shell pkg-config --cflags SDL_net) $(shell pkg-config --cflags gl) $(shell pkg-config --cflags glu) \
 -I/usr/local/include -Iquirc
@@ -46,11 +47,11 @@ LIBS += -ludev
 
 ## ldd gcs  | grep -v /opt | awk '{print $1}' | xargs -r -l dpkg -S  | cut -d":" -f1 | sort -u | tr  "\n" "," ##
 
-COMMONSRC = draw/opencv.o quirc/decode.o quirc/identify.o quirc/quirc.o quirc/version_db.o quirc/qrcheck.o
+COMMONSRC = draw/opencv.c quirc/decode.c quirc/identify.c quirc/quirc.c quirc/version_db.c quirc/qrcheck.c
 COMMONHRD = 
 
 # dpf-display support
-#COMMONSRC += dpf/display_dpf.o  dpf/dpflib.o  dpf/rawusb.o
+#COMMONSRC += dpf/display_dpf.c  dpf/dpflib.c  dpf/rawusb.c
 #LIBS += -lusb
 #CFLAGS += -DDPF_DISPLAY
 

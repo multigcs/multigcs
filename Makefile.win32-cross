@@ -1,11 +1,12 @@
 
 ## Windows-Desktop GL Version ##
 VERSION_NAME = win32
-EXTRA_OBJECTS = draw/gl_draw.o
+EXTRA_OBJECTS = draw/gl_draw.c
 BASE_DIR = /usr/share/multigcs
 COMP = /usr/bin/i686-w64-mingw32-gcc
 MINGW_DIR = /usr/i686-w64-mingw32
 
+BUILDDIR := build/$(VERSION_NAME)
 
 INCDIR = 
 LIBS = 
@@ -17,7 +18,7 @@ CFLAGS += -DSDLGL -DSDL2 -DWINDOWS -DUSE_OPENCV -O3 -Wall -DBASE_DIR="\"$(BASE_D
 #CFLAGS += -DUSE_TCL
 #INCDIR +=  -I$(MINGW_DIR)/include/tcl -Itcl
 #LIBS += -ltcl85 
-#EXTRA_OBJECTS += screens/screen_tcl.o 
+#EXTRA_OBJECTS += screens/screen_tcl.c 
 
 INCDIR += -I$(MINGW_DIR)/include -I$(MINGW_DIR)/include/SDL2 -I$(MINGW_DIR)/include/libxml2 -I$(MINGW_DIR)/include/libpng12 -I$(MINGW_DIR)/include/opencv
 LIBS += -Lc:/MinGW/lib/SDL2 -static-libgcc -lmingw32 -lopengl32 -lglu32 -lglew32.dll -lSDL2main -mwindows -lSDL2 -lSDL2_image -lSDL2_net -L$(MINGW_DIR)/bin \
@@ -26,7 +27,7 @@ LIBS += -Lc:/MinGW/lib/SDL2 -static-libgcc -lmingw32 -lopengl32 -lglu32 -lglew32
 
 ## ldd gcs  | grep -v /opt | awk '{print $1}' | xargs -r -l dpkg -S  | cut -d":" -f1 | sort -u | tr  "\n" "," ##
 
-COMMONSRC = draw/opencv.o
+COMMONSRC = draw/opencv.c
 COMMONHRD = 
 
 
@@ -38,21 +39,25 @@ BASE_DIR = Data
 INCDIR += -I./ -ICommon -Iscreens -Inet -Idraw -Imavlink -Igps -Imwi21 -Ijeti -Iopenpilot -Ifrsky -Iminizip -Itracker -Iutils
 
 
-GCS = $(EXTRA_OBJECTS) main.o serial.o draw/draw.o draw/videocapture.o draw/map.o geomag70.o \
-	minizip/ioapi.o minizip/unzip.o net/htmlget-sdl.o \
-	screens/screen_rcflow.o screens/screen_keyboard.o screens/screen_filesystem.o screens/screen_device.o screens/screen_baud.o screens/screen_number.o screens/screen_model.o screens/screen_background.o screens/screen_wpedit.o screens/screen_hud.o screens/screen_map.o screens/screen_map_swarm.o screens/screen_map_survey.o screens/screen_calibration.o screens/screen_fms.o screens/screen_system.o screens/screen_mavlink_menu.o screens/screen_tracker.o screens/screen_mwi_menu.o screens/screen_openpilot_menu.o screens/screen_videolist.o screens/screen_graph.o screens/screen_telemetry.o \
-	mavlink/my_mavlink.o mavlink/my_mavlink_rewrite.o gps/my_gps.o mwi21/mwi21.o jeti/jeti.o openpilot/openpilot.o openpilot/openpilot_xml.o frsky/frsky.o tracker/tracker.o net/savepng.o net/webserv.o net/webclient.o logging.o kml.o \
-	openpilot/uavobjects_store.o openpilot/uavobjects_encode.o openpilot/uavobjects_decode.o \
-	weather.o \
+GCS = $(EXTRA_OBJECTS) main.c serial.c draw/draw.c draw/videocapture.c draw/map.c geomag70.c \
+	minizip/ioapi.c minizip/unzip.c net/htmlget-sdl.c \
+	screens/screen_rcflow.c screens/screen_keyboard.c screens/screen_filesystem.c screens/screen_device.c screens/screen_baud.c screens/screen_number.c screens/screen_model.c screens/screen_background.c screens/screen_wpedit.c screens/screen_hud.c screens/screen_map.c screens/screen_map_swarm.c screens/screen_map_survey.c screens/screen_calibration.c screens/screen_fms.c screens/screen_system.c screens/screen_mavlink_menu.c screens/screen_tracker.c screens/screen_mwi_menu.c screens/screen_openpilot_menu.c screens/screen_videolist.c screens/screen_graph.c screens/screen_telemetry.c \
+	mavlink/my_mavlink.c mavlink/my_mavlink_rewrite.c gps/my_gps.c mwi21/mwi21.c jeti/jeti.c openpilot/openpilot.c openpilot/openpilot_xml.c frsky/frsky.c tracker/tracker.c net/savepng.c net/webserv.c net/webclient.c logging.c kml.c \
+	openpilot/uavobjects_store.c openpilot/uavobjects_encode.c openpilot/uavobjects_decode.c \
+	weather.c \
 	$(MINGW_DIR)/lib/libz.a \
+
+
+OBJ = $(GCS:%.c=$(BUILDDIR)/%.o)
+COMMONOBJ = $(COMMONSRC:%.c=$(BUILDDIR)/%.o)
 
 
 default: all
 
-all: gcs.exe
+all: $(BUILDDIR)/gcs.exe
 
 clean:
-	rm -rf gcs.exe exe.rc exe.res installer.nsis gcs Windows *.o Common/*.o screens/*.o net/*.o draw/*.o tcl/*.o mavlink/*.o gps/*.o mwi21/*.o jeti/*.o openpilot/*.o frsky/*.o tracker/*.o minizip/*.o tracker/*.o quirc/*.o
+	rm -rf $(BUILDDIR)/gcs.exe exe.rc exe.res installer.nsis gcs Windows build/
 
 %.o: %.c
 	@echo "$< -> $@"
@@ -64,7 +69,7 @@ exe.rc: data/exe.rc
 exe.res: exe.rc
 	i686-w64-mingw32-windres exe.rc -O coff exe.res
 
-gcs.exe: ${COMMONSRC} ${COMMONHDR} ${GCS} exe.res
+$(BUILDDIR)/gcs.exe: ${COMMONSRC} ${COMMONHDR} ${GCS} exe.res
 	@echo "linking $@"
 	@$(COMP) -DBASE_DIR="\"$(BASE_DIR)\"" $(CFLAGS) ${COMMONSRC} ${GCS} -o $@ ${INCDIR} ${LIBS} exe.res
 
@@ -81,7 +86,7 @@ installer:
 pack:
 	rm -rf Windows
 	mkdir -p Windows/MultiGCS
-	cp -a gcs.exe Windows/MultiGCS/MultiGCS.exe
+	cp -a $(BUILDDIR)/gcs.exe Windows/MultiGCS/MultiGCS.exe
 	mkdir -p Windows/MultiGCS/$(BASE_DIR)
 	cp -a data/WMM.COF Windows/MultiGCS/$(BASE_DIR)/
 	cp -a data/map-services.xml Windows/MultiGCS/$(BASE_DIR)/
