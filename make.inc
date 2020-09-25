@@ -5,14 +5,15 @@ VERSION_BUILD := `date +%s`
 BASE_DIR := /usr/share/multigcs
 
 INCDIR += -I./ -ICommon -Iscreens -Inet -Itcl -Idraw -Imavlink -Igps -Imwi21 -Ijeti -Iopenpilot -Ifrsky -Iminizip -Itracker -Iutils
-INCDIR += -I/usr/include/tcl8.5
+#INCDIR += -I/usr/include/tcl8.5
 INCDIR += $(shell pkg-config --cflags libxml-2.0) $(shell pkg-config --cflags x11) $(shell pkg-config --cflags libpng) $(shell pkg-config --cflags zlib)
 
-LIBS += -lm -ltcl8.5
+#LIBS += -lm -ltcl8.5
+LIBS += -lm
 LIBS += $(shell pkg-config --libs libxml-2.0) $(shell pkg-config --libs x11) $(shell pkg-config --libs libpng) $(shell pkg-config --libs zlib)
 
 GCS += $(EXTRA_OBJECTS) main.c serial.c draw/draw.c draw/videocapture.c draw/map.c geomag70.c \
-	minizip/ioapi.c minizip/unzip.c net/htmlget-sdl.c \
+	minizip/ioapi.c minizip/unzip.c net/htmlget-wget.c \
 	screens/screen_rcflow.c screens/screen_keyboard.c screens/screen_filesystem.c screens/screen_device.c screens/screen_baud.c screens/screen_number.c screens/screen_model.c screens/screen_background.c screens/screen_wpedit.c screens/screen_hud.c screens/screen_map.c screens/screen_map_survey.c screens/screen_map_swarm.c screens/screen_calibration.c screens/screen_fms.c screens/screen_system.c screens/screen_tcl.c screens/screen_mavlink_menu.c screens/screen_tracker.c screens/screen_mwi_menu.c screens/screen_openpilot_menu.c screens/screen_videolist.c screens/screen_graph.c screens/screen_telemetry.c \
 	mavlink/my_mavlink.c mavlink/my_mavlink_rewrite.c gps/my_gps.c mwi21/mwi21.c jeti/jeti.c openpilot/openpilot.c openpilot/openpilot_xml.c frsky/frsky.c tracker/tracker.c net/savepng.c net/webserv.c net/webclient.c logging.c kml.c \
 	openpilot/uavobjects_store.c openpilot/uavobjects_encode.c openpilot/uavobjects_decode.c \
