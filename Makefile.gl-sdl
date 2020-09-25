@@ -25,8 +25,8 @@ CFLAGS += -ggdb
 #CFLAGS += -DUSE_V4L
 
 # opencv api for cam and video-files ##
-CFLAGS += -DUSE_OPENCV
-CFLAGS += -DOPENCV_EFFECTS -DUSE_QUIRC
+#CFLAGS += -DUSE_OPENCV
+#CFLAGS += -DOPENCV_EFFECTS -DUSE_QUIRC
 INCDIR += $(shell pkg-config --cflags opencv)
 LIBS += $(shell pkg-config --libs opencv)
 
